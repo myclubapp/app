@@ -9,8 +9,7 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e",
-    "pretty-quick": "pretty-quick"
+    "e2e": "ng e2e"
   },
   "private": true,
   "dependencies": {
@@ -48,7 +47,7 @@
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-jsdoc": "30.7.6",
     "eslint-plugin-prefer-arrow": "1.2.2",
-    "husky": "^4.3.5",
+    "husky": "^6.0.0",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~5.2.0",
@@ -68,5 +67,5 @@
       "pre-commit": "pretty-quick --staged"
     }
   },
-  "description": "myclub app | the next generation "
+  "description": "myclub app | the next generation"
 }
