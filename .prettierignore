@@ -1,2 +1,7 @@
 **/scully/**/*
 **/src/assets/scully-routes.json
+package.json
+package-lock.json
+yarn.lock
+dist
+www
