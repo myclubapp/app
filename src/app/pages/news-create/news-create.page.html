@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()">
+        abbrechen
+      </ion-button>
+    </ion-buttons>
+    <ion-title>News erfassen</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="createNews()">
+        <ion-text><b>erfassen</b></ion-text>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">News erfassen</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+
+  <ion-list lines="full">
+ 
+  <ion-list-header>
+      <ion-label>
+        Empfänger wählen
+      </ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let club of clubList">
+      <ion-label slot="start">{{club.name}}</ion-label>
+      <ion-checkbox name="club" value="{{club.id}}" slot="end" [(ngModel)]="club.isChecked"></ion-checkbox>
+    </ion-item>
+    <ion-item *ngFor="let team of teamList">
+      <ion-label slot="start">{{team.name}}</ion-label>
+      <ion-checkbox name="team" value="{{team.id}}" slot="end" [(ngModel)]="team.isChecked"></ion-checkbox>
+    </ion-item>
+
+<!--
+  <ion-item>
+      <ion-label  position="stacked">Club-News</ion-label>
+    
+   <ion-select [interfaceOptions]="" interface="alert" [(ngModel)]="news.clubId" value="{{news.clubId}}" multiple="false" placeholder="Wähle einen Club aus">
+        <ion-select-option *ngFor="let club of clubList" value="{{club.id}}">{{club.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label  position="stacked">Team-News</ion-label>      
+      <ion-select [interfaceOptions]="" interface="alert" [(ngModel)]="news.teamId" value="{{news.teamId}}" multiple="false" placeholder="Wähle ein Team">
+        <ion-select-option *ngFor="let team of teamList" value="{{team.id}}">{{team.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+-->
+
+    <ion-list-header>
+      <ion-label>
+        Details
+      </ion-label>
+    </ion-list-header>
+
+
+    <ion-item>
+      <ion-label position="stacked">Titel</ion-label>
+      <ion-input [(ngModel)]="news.title" value="{{news.title}}"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Beschreibung</ion-label>
+      <ion-textarea [(ngModel)]="news.description" value="{{news.description}}"></ion-textarea>
+    </ion-item>
+
+
+  </ion-list>
+
+</ion-content>

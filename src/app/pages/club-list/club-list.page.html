@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()">
+        schliessen
+      </ion-button>
+
+
+    </ion-buttons>
+    <ion-title>Account einrichten</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="next()">
+        <ion-text>
+          <b>
+            weiter
+          </b>
+        </ion-text>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Account einrichten</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-searchbar animated placeholder="Club suchen" type="text" inputmode="text" (ionInput)="filterList($event)"></ion-searchbar>
+
+  <ion-list>
+    <ion-list-header>
+      <ion-label>
+        Wähle deinen Club aus:
+      </ion-label>
+    </ion-list-header>
+  
+      <ion-item *ngFor="let club of unihockeyClubList ">
+        <ion-label>{{club.text}}</ion-label>
+        <ion-checkbox slot="end" [(ngModel)]="club.isSelected"></ion-checkbox>
+      </ion-item>   
+  </ion-list>
+
+  <ion-list *ngIf="unihockeyClubList.length <= 0">
+    <ion-item *ngFor="let i of skeletonList">
+      <ion-label>
+        <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

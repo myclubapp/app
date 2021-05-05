@@ -1,0 +1,425 @@
+<!--<ion-header no-border>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button color='primary' routerLink="/home/timeline" >schliessen</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+-->
+
+<!-- UNDRAW https://undraw.co/illustrations -->
+
+<ion-content fullscreen="true">
+  <ion-slides #slides (ionSlideWillChange)="onSlideChangeStart($event)" pager="false">
+    <ion-slide>
+      <img src="assets/tutorial/welcome2.svg" class="slide-image" />
+      <h2 class="slide-title">
+        Willkommen bei
+        <b>myclub</b>
+      </h2>
+      <p>
+        <b>myclub | the next generation App</b> unterstützt dich und deinen Verein damit du mehr Zeit für das hast, was
+        du in deiner Freizeit am liebsten machst.
+      </p>
+    </ion-slide>
+
+    <ion-slide>
+      <img src="assets/tutorial/fitnesstracking.svg" class="slide-image" />
+      <h2 class="slide-title">Was ist myclub?</h2>
+      <p>
+        <b>myclub</b> ist eine App für dich und deinen Verein um Trainings zu organisieren, Neuigkeiten zu teilen,
+        Events zu verantstalten oder den Meisterschaftsbetrieb zu meistern.</p>
+    </ion-slide>
+    <!--
+    <ion-slide>
+      <img src="assets/tutorial/email.svg" class="slide-image" />
+      <h2 class="slide-title">Timeline</h2>
+      <p>
+        Die <b>Timeline</b> hilft dir alles im Überblick zu haben was in deinem Verein gerade los ist.</p>
+    </ion-slide>
+
+    <ion-slide>
+      <img src="assets/tutorial/messages.svg" class="slide-image" />
+      <h2 class="slide-title">News</h2>
+      <p>
+        Bleib informiert was in deinem Verein los ist.</p>
+    </ion-slide>
+    <ion-slide>
+      <img src="assets/tutorial/training.svg" class="slide-image" />
+      <h2 class="slide-title">Training</h2>
+      <p>
+        <b>Ionic Appflow</b> is a powerful set of services and features built on top of Ionic Framework that brings a
+        totally new
+        level of app development agility to mobile dev teams.</p>
+    </ion-slide>
+
+    <ion-slide>
+      <img src="assets/tutorial/championship.svg" class="slide-image" />
+      <h2 class="slide-title">Meisterschaft</h2>
+      <p>
+        <b>Ionic Appflow</b> is a powerful set of services and features built on top of Ionic Framework that brings a
+        totally new
+        level of app development agility to mobile dev teams.</p>
+    </ion-slide>
+
+    <ion-slide>
+      <img src="assets/tutorial/events.svg" class="slide-image" />
+      <h2 class="slide-title">Events</h2>
+      <p>
+        <b>Ionic Appflow</b> is a powerful set of services and features built on top of Ionic Framework that brings a
+        totally new
+        level of app development agility to mobile dev teams.</p>
+    </ion-slide>
+    -->
+    <ion-slide>
+      <img src="assets/splash.svg" class="slide-image" />
+      <h2 class="slide-title">Bist du bereit?</h2>
+      <ion-button fill="clear" (click)="continue()">
+        Loslegen
+        <ion-icon slot="end" name="arrow-forward"></ion-icon>
+      </ion-button>
+    </ion-slide>
+  </ion-slides>
+</ion-content>
+
+
+<!--
+  
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Tutorial</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/home/timeline" routerDirection="back"> schliessen</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Tutorial</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+
+
+
+    <ion-grid>
+      <ion-row>
+        <ion-text>
+          <h1>Willkommen bei myclub</h1>
+        </ion-text>
+      </ion-row>
+      <ion-row>
+        <ion-col size="4"></ion-col>
+        <ion-col size="4">
+
+          <ion-img src="./assets/tutorial/welcome2.svg"></ion-img>
+        </ion-col>
+        <ion-col size="4"></ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-slide>
+
+      <ion-slide>
+        <ion-grid>
+          <ion-row>
+            <ion-text>
+              <h1>Willkommen bei myclub</h1>
+            </ion-text>
+          </ion-row>
+        <ion-row>
+          <ion-col size="12" size-xs="12" size-sm="3" size-lg="3"></ion-col>
+          <ion-col size="12" size-xs="12" size-sm="6" size-lg="6">
+            
+            <ion-img src="./assets/tutorial/welcome1.svg"></ion-img>
+          </ion-col>
+          <ion-col size="12" size-xs="12" size-sm="3" size-lg="3"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Sende E-Mails</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">
+            <ion-img src="./assets/tutorial/email.svg"></ion-img>
+
+          </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Push</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">
+
+            <ion-img src="./assets/tutorial/pushnotifications.svg"></ion-img>
+          </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Maps</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col> 
+           <ion-col size="4">
+
+             <ion-img src="./assets/tutorial/map_directions.svg"></ion-img>
+           </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+   
+    
+
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Events</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">
+
+            <ion-img src="./assets/tutorial/events.svg"></ion-img>
+          </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+
+
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Meisterschaft</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">
+            <ion-img src="./assets/tutorial/championship.svg"></ion-img>
+          </ion-col>
+            <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+
+    
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Team</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">
+            <ion-img src="./assets/tutorial/team.svg"></ion-img>
+
+          </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Training</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>  <ion-col size="4">
+
+            <ion-img src="./assets/tutorial/training.svg"></ion-img>
+          </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+    
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Training 2</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">
+
+            <ion-img src="./assets/tutorial/training2.svg"></ion-img>
+          </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+
+
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Fitness</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">
+
+            <ion-img src="./assets/tutorial/fitnesstracking.svg"></ion-img>
+          </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+    
+    
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Tennis</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">
+
+            <ion-img src="./assets/tutorial/tennis.svg"></ion-img>
+          </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+
+    
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Fussball</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">
+
+            <ion-img src="./assets/tutorial/fussball.svg"></ion-img>
+          </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+
+
+    
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Dart</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">
+
+            <ion-img src="./assets/tutorial/dart.svg"></ion-img>
+          </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+    
+
+    
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Basketball</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">
+            <ion-img src="./assets/tutorial/basketball.svg"></ion-img>
+
+          </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+
+
+
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Cheers</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">
+            <ion-img src="./assets/tutorial/cheers.svg"></ion-img>
+          </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+
+
+    <ion-slide>
+      <ion-grid>
+        <ion-row>
+          <ion-text>
+            <h1>Messages</h1>
+          </ion-text>
+        </ion-row>
+        <ion-row>
+          <ion-col size="4"></ion-col>
+          <ion-col size="4">
+
+            <ion-img src="./assets/tutorial/messages.svg"></ion-img>
+          </ion-col>
+          <ion-col size="4"></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-slide>
+
+    
+
+  </ion-content>
+ -->

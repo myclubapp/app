@@ -1,0 +1,108 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>News</ion-title>
+
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+
+
+  
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">News</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="showButton">
+    <ion-fab-button (click)="openCreate()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-list>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-xs="12" size-sm="6" size-lg="6"  *ngFor="let i of skeletonList">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-subtitle >
+                <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              </ion-card-subtitle>
+              <ion-card-title >
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+
+        <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let news of newsList">
+
+          <ion-card  type="button" button="true" >
+            <ion-fab vertical="top" horizontal="end" >
+              <ion-fab-button size="small" (click)="share(news)">
+                <ion-icon  size="small" name="share"></ion-icon>
+              </ion-fab-button>
+            </ion-fab>
+            <ion-img [src]="news.image" (click)="openDetail(news)"></ion-img>
+            <ion-card-header (click)="openDetail(news)">
+
+              <ion-card-subtitle>{{news.author}} | {{news.date  | date }}</ion-card-subtitle>
+              <ion-card-title>{{news.title}}</ion-card-title>
+
+            </ion-card-header>
+            <ion-card-content (click)="openDetail(news)">
+              <!-- <ion-badge *ngFor="let tag of news.tags">{{tag}}</ion-badge>-->
+              <ion-text>
+                {{news.leadText}}
+              </ion-text>
+
+            </ion-card-content>
+          </ion-card>
+
+        </ion-col>
+        
+ 
+      </ion-row>
+    </ion-grid>
+
+  </ion-list>
+
+  
+  <web-social-share [show]="showSocialShare" [share]="shareSocialShareOptions" (closed)="showSocialShare=false">
+    <ion-icon name="logo-twitter" ariaLabel="Twitter" slot="twitter" style="color: #00aced;display:block">
+    </ion-icon>
+    <ion-icon name="logo-facebook" ariaLabel="Facebook" slot="facebook" style="color: #00aced;display:block">
+    </ion-icon>
+    <ion-icon name="logo-whatsapp" ariaLabel="WhatsApp" slot="whatsapp" style="color: #25D366;display:block">
+    </ion-icon>
+    <ion-icon name="logo-linkedin" ariaLabel="Linkedin" slot="linkedin" style="color: #0077B5;display:block">
+    </ion-icon>
+    <ion-icon name="mail" slot="email" ariaLabel="Email" style="color: #ff8ea3;display:block">
+    </ion-icon>
+    <ion-icon name="copy" slot="copy" ariaLabel="Copy" style="color: #ff8ea3;display:block">
+    </ion-icon>
+  </web-social-share>
+
+
+  <!--  <div id="container">
+    <strong>Ready to create an app?</strong>
+    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer"
+        href="https://ionicframework.com/docs/components">UI Components</a></p>
+  </div> -->
+</ion-content>

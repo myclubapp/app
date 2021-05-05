@@ -1,0 +1,16 @@
+ion-content{
+  //  --background: #fff url('./../../../assets/login_background.jpg') no-repeat center center / cover;
+}
+
+ion-toolbar{
+    --background: transparent;
+}
+
+ion-footer{
+    font-size: small;
+    text-align: center;
+    background-color: var(--ion-color-primary);
+    a{
+        color: var(--ion-font-color);
+    }
+}

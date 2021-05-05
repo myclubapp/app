@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()">
+        schliessen
+      </ion-button>
+    </ion-buttons>
+   
+    <ion-title>Detail</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Detail</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+
+  <ion-card>
+    <ion-card-content>
+      <p>Ticket: <strong>${{currentEvent?.price}}</strong></p>
+      <p>Date: <strong>{{currentEvent?.date}}</strong></p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

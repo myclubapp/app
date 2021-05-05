@@ -1,0 +1,109 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{club?.name}}</ion-title>
+    <ion-buttons slot="end" *ngIf="showButton">
+      <ion-button (click)="saveClub()">
+        speichern
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{club?.name}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>
+        Administratoren
+      </ion-label>
+      <ion-fab horizontal="end" *ngIf="showButton">
+        <ion-fab-button color="primary"  size="small" (click)="addAdminToClub()">
+          <ion-icon  name="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ion-list-header>
+    <ion-item *ngFor="let member of adminList">
+      <ion-avatar  slot="start">
+        <img src="{{member.picture}}">
+      </ion-avatar>
+      <ion-label>
+        {{member.firstName}} {{member.lastName}}
+      </ion-label>
+      <ion-fab horizontal="end" *ngIf="showButton && adminList.length > 1">
+        <ion-fab-button color="danger"  size="small" (click)="removeAdminFromClub(member.id)">
+          <ion-icon  name="trash-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ion-item>
+
+
+
+    <ion-list-header>
+      <ion-label>
+        Mitglieder: {{memberList.length}}
+      </ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let member of memberList">
+      <ion-avatar  slot="start">
+        <img src="{{member.picture}}">
+      </ion-avatar>
+      <ion-label>
+        {{member.firstName}} {{member.lastName}}
+      </ion-label>
+      <ion-fab horizontal="end" *ngIf="showButton && memberList.length > 1" (click)="removeMemberFromClub(member.id)">
+        <ion-fab-button color="danger"  size="small">
+          <ion-icon  name="trash-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ion-item>
+  </ion-list>
+
+
+  <ion-list *ngIf="showButton">
+
+    <ion-list-header>
+      <ion-label>
+        Club Einstellungen:
+      </ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-icon slot="start" name="home-outline"></ion-icon>
+      <ion-label position="stacked">Club Name</ion-label>
+      <ion-input readonly [(ngModel)]="club.name" type="url"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon  slot="start" name="reader-outline"></ion-icon>
+      <ion-label position="stacked">Club Typ</ion-label>
+      <ion-input readonly [(ngModel)]="club.type" type="url"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon slot="start" name="library-outline"></ion-icon>
+      <ion-label position="stacked">Verband ID</ion-label>
+      <ion-input readonly [(ngModel)]="club.verbandId" type="url"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon slot="start" name="globe-outline"></ion-icon>
+      <ion-label position="stacked">Wordpress-Webseite</ion-label>
+      <ion-input [(ngModel)]="club.wordpress" type="url"></ion-input>
+    </ion-item>
+
+
+
+
+
+  </ion-list>
+
+</ion-content>

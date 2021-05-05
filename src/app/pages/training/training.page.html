@@ -1,0 +1,162 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Training</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+
+<!--  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+-->
+
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Training</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="showButton">
+    <ion-fab-button (click)="openCreate()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Aktuelle Trainings</ion-label>
+    </ion-list-header>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let i of skeletonList">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-subtitle>
+                <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              </ion-card-subtitle>
+              <ion-card-title>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+
+        <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let training of trainingList">
+          <ion-card button="true" type="button">
+            <ion-img class="{{training.status}}" (click)="openDetail(training)">
+            </ion-img>
+            <ion-card-header (click)="openDetail(training)">
+              <ion-card-subtitle>
+                <ion-badge>{{training.team.name}}</ion-badge>
+              </ion-card-subtitle>
+              <ion-card-title>{{training.date.seconds * 1000 | date: 'EEE d. MMM yyyy' : 'GMT' : 'de-CH'}}</ion-card-title>
+              <ion-card-subtitle>{{training.timeFrom}} - {{training.timeTo}} | {{training.location}}</ion-card-subtitle>
+            </ion-card-header>
+            <ion-footer>
+              <ion-row>
+                <ion-col center text-center>
+                  <ion-fab>
+                    <ion-fab-button size="small" color="success" (click)="acceptTraining(training)">
+                      <ion-icon size="small" name="thumbs-up"></ion-icon>
+                    </ion-fab-button>
+                  </ion-fab>
+                </ion-col>
+                <ion-col center text-center>
+                  <ion-badge>{{training?.membersAccepted}} / {{training?.membersRejected}}</ion-badge>
+                </ion-col>
+                <ion-col center text-center>
+                  <ion-fab horizontal="start">
+                    <ion-fab-button size="small" color="danger" (click)="rejectTraining(training)">
+                      <ion-icon size="small" name="thumbs-down"></ion-icon>
+                    </ion-fab-button>
+                  </ion-fab>
+                </ion-col>
+              </ion-row>
+            </ion-footer>
+            
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-list>
+
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Vergangene Trainings</ion-label>
+    </ion-list-header>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let i of skeletonList">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-subtitle>
+                <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              </ion-card-subtitle>
+              <ion-card-title>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+
+
+        <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let training of trainingListPast">
+          <ion-card button="true" type="button">
+            <ion-img class="{{training.status}}"  (click)="openDetail(training)">
+            </ion-img>
+
+            <ion-card-header (click)="openDetail(training)">
+              <ion-card-subtitle>
+                <ion-badge>{{training.team.name}}</ion-badge>
+              </ion-card-subtitle>
+              <ion-card-title>{{training.date.seconds * 1000 | date: 'EEE d. MMMM yyyy'}}</ion-card-title>
+              <ion-card-subtitle>{{training.timeFrom}} - {{training.timeTo}} | {{training.location}}</ion-card-subtitle>
+            </ion-card-header>
+            <ion-footer>
+              <ion-row>
+                <ion-col center text-center>
+                  <ion-fab>
+                    <ion-fab-button size="small" color="success" (click)="acceptTraining(training)">
+                      <ion-icon size="small" name="thumbs-up"></ion-icon>
+                    </ion-fab-button>
+                  </ion-fab>
+                </ion-col>
+                <ion-col center text-center>
+                  <ion-badge>{{training?.membersAccepted}} / {{training?.membersRejected}}</ion-badge>
+                </ion-col>
+                <ion-col center text-center>
+                  <ion-fab horizontal="start">
+                    <ion-fab-button size="small" color="danger" (click)="rejectTraining(training)">
+                      <ion-icon size="small" name="thumbs-down"></ion-icon>
+                    </ion-fab-button>
+                  </ion-fab>
+                </ion-col>
+              </ion-row>
+            </ion-footer>
+
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-list>
+</ion-content>

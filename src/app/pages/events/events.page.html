@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Events</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Events</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+
+  <ion-list>
+    <ion-list-header> <ion-label>Your next events</ion-label> </ion-list-header>
+    <ion-item
+      tappable
+      *ngFor="let event of eventList"
+      (click)="openDetail(event.id)"
+    >
+      <ion-label>
+        <h2>{{event?.name}}</h2>
+        <p>Ticket: <strong>${{event?.price}}</strong></p>
+        <p>Date: <strong>{{event?.date}}</strong></p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openCreate()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

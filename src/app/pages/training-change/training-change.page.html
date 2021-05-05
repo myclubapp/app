@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()">
+        abbrechen
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Training bearbeiten</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="saveTraining()">
+        <ion-text><b>speichern</b></ion-text>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Training bearbeiten</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+
+  <ion-list lines="full">
+
+
+    <ion-list-header>
+      <ion-label>
+        Details
+      </ion-label>
+    </ion-list-header>
+
+
+    <ion-item>
+      <ion-label position="stacked">Titel</ion-label>
+      <ion-icon slot="start" name="star-outline"></ion-icon>
+      <ion-input id="title" (ionChange)="changeValue($event)" [(ngModel)]="training.title" value="{{training.title}}" type="text" ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Beschreibung</ion-label>
+      <ion-icon slot="start" name="information-outline"></ion-icon>
+      <ion-textarea id="description" (ionChange)="changeValue($event)" [(ngModel)]="training.description"  value="{{training.description}}" type="text"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Ort</ion-label>
+      <ion-icon slot="start" name="location-outline"></ion-icon>
+      <ion-input id="location" (ionChange)="changeValue($event)" [(ngModel)]="training.location"  value="{{training.location}}" type="text"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Uhrzeit von:</ion-label>
+      <ion-icon slot="start" name="time-outline"></ion-icon>
+      <ion-datetime id="timeFrom" (ionChange)="changeValue($event)" [(ngModel)]="training.timeFrom"  value="{{training.timeFrom}}" display-timezone="" display-format="HH:mm" picker-format="HH:mm"
+       ></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Uhrzeit bis:</ion-label>
+      <ion-icon slot="start" name="time"></ion-icon>
+      <ion-datetime id="timeTo" (ionChange)="changeValue($event)" [(ngModel)]="training.timeTo"  value="{{training.timeTo}}" display-timezone="" display-format="HH:mm" picker-format="HH:mm"
+      ></ion-datetime>
+    </ion-item>
+
+  </ion-list>
+
+</ion-content>

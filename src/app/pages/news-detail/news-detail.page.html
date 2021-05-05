@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    
+    <ion-title>{{news.title}}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="dismiss()">
+        schliessen
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{news.title}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-card>
+    <!--<ion-fab vertical="top" horizontal="end" >
+      <ion-fab-button size="small">
+        <ion-icon  size="small" name="share"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>-->
+    <ion-img [src]="news.image"></ion-img>
+    <ion-card-header>
+
+      <ion-card-subtitle>{{news.author}} {{news.date  | date }}</ion-card-subtitle>
+      <ion-card-title>{{news.title}}</ion-card-title>
+
+    </ion-card-header>
+    <ion-card-content>
+      <ion-text>
+        {{news.text}}
+      </ion-text>
+    </ion-card-content>
+ </ion-card>
+
+
+
+</ion-content>

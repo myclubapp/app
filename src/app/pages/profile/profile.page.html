@@ -1,0 +1,247 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/" ></ion-back-button>
+    </ion-buttons>
+    <ion-title>Profil</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="saveProfile()">
+        speichern
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Profil</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12" size-xs="12" size-sm="6" size-lg="6">
+        <ion-card>
+          <ion-fab vertical="top" horizontal="start">
+            <ion-fab-button (click)="takePicture()">
+              <ion-icon name="camera-outline"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+          <!--<ion-fab vertical="top" horizontal="end">
+            <ion-fab-button (click)="uploadPicture()">
+              <ion-icon name="images-outline"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>-->
+          <ion-avatar>
+            <img src="{{userProfile?.picture}}">
+            
+          </ion-avatar>
+          <!--
+          <ion-img src="{{userProfile?.picture}}">
+          </ion-img>-->
+          <ion-card-header>
+
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list lines="full">
+              <!--  <ion-item>
+            <ion-label slot="stacked">
+              Profilbild
+            </ion-label>
+            <ion-avatar slot="start">
+              <img src="{{userProfile?.picture}}">
+            </ion-avatar>
+          </ion-item>-->
+              <ion-list-header> Persönliche Informationen </ion-list-header>
+              <ion-item>
+                <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+                <ion-label position="stacked">Vorname</ion-label>
+                <ion-input [(ngModel)]="userProfile.firstName" type="text"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+                <ion-label position="stacked">Nachname</ion-label>
+                <ion-input [(ngModel)]="userProfile.lastName" type="text"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-icon slot="start" name="home-outline"></ion-icon>
+                <ion-label position="stacked">Strasse & Nr.</ion-label>
+                <ion-input [(ngModel)]="userProfile.street" type="text"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-icon slot="start" name="home-outline"></ion-icon>
+                <ion-label position="stacked">PLZ</ion-label>
+                <ion-input [(ngModel)]="userProfile.plz" type="number" inputmode="numeric"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-icon slot="start" name="home-outline"></ion-icon>
+                <ion-label position="stacked">Ort</ion-label>
+                <ion-input [(ngModel)]="userProfile.location" type="text"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-icon slot="start" name="calendar-outline"></ion-icon>
+                <ion-label position="stacked">Geburtsdatum</ion-label>
+                <ion-datetime displayFormat="DD. MM. YYYY" pickerFormat="DD MM YYYY" [(ngModel)]="userProfile.birthDate"
+                  (ionChange)="updateDOB(userProfile.birthDate)">
+                </ion-datetime>
+              </ion-item>
+
+              <ion-item>
+                <ion-icon slot="start" name="call-outline"></ion-icon>
+                <ion-label position="stacked">Handynr.</ion-label>
+                <ion-input [(ngModel)]="userProfile.handy" type="tel" inputmode="tel"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-icon slot="start" name="transgender-outline"></ion-icon>
+                <ion-label position="stacked">Geschlecht</ion-label>
+                <!--<ion-input [(ngModel)]="userProfile.gender" type="text"></ion-input>-->
+
+                <ion-select placeholder="Wähle.." [(ngModel)]="userProfile.gender" >
+                  <ion-select-option value="f">Weiblich</ion-select-option>
+                  <ion-select-option value="m">Männlicih</ion-select-option>
+                  <ion-select-option value="o">Anderes</ion-select-option>
+                </ion-select>
+
+
+              </ion-item>
+
+              <ion-item>
+                <ion-icon slot="start" name="language-outline"></ion-icon>
+                <ion-label position="stacked">Sprache</ion-label>
+                <!--<ion-input [(ngModel)]="userProfile.language" type="text"></ion-input>-->
+
+                <ion-select placeholder="Wähle.." [(ngModel)]="userProfile.language" >
+                  <ion-select-option value="d">Deutsch</ion-select-option>
+                  <ion-select-option value="f">Französisch</ion-select-option>
+                  <ion-select-option value="i">Italienisch</ion-select-option>
+                  <ion-select-option value="e">Englisch</ion-select-option>
+                  <ion-select-option value="o">Andere</ion-select-option>
+                </ion-select>
+              </ion-item>
+
+              <ion-item>
+                <ion-icon slot="start" name="language-outline"></ion-icon>
+                <ion-label position="stacked">Nationalität</ion-label>
+                <!--<ion-input [(ngModel)]="userProfile.nationality" type="text"></ion-input>-->
+                <ion-select placeholder="Wähle.." [(ngModel)]="userProfile.nationality" >
+                  <ion-select-option value="ch">Schweiz</ion-select-option>
+                  <ion-select-option value="de">Deutschland</ion-select-option>
+                  <ion-select-option value="it">Italien</ion-select-option>
+                  <ion-select-option value="fr">Frankreich</ion-select-option>
+                  <ion-select-option value="o">Andere</ion-select-option>
+                </ion-select>
+              </ion-item>
+
+     
+            </ion-list>
+          </ion-card-content>
+
+        </ion-card>
+
+
+      </ion-col>
+      <ion-col size="12" size-xs="12" size-sm="6" size-lg="6">
+        <ion-card>
+          <ion-card-content>
+
+          <ion-list>
+              <ion-list-header> Club Informationen </ion-list-header>
+              <ion-item>
+                <ion-icon slot="start" name="american-football-outline"></ion-icon>
+                <ion-label position="stacked">J+S Nummer</ion-label>
+                <ion-input [(ngModel)]="userProfile.jsnumber" type="number"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-icon slot="start" name="finger-print-outline"></ion-icon>
+                <ion-label position="stacked">Lizenznummer</ion-label>
+                <ion-input [(ngModel)]="userProfile.license" type="number"></ion-input>
+              </ion-item>
+
+<!--
+              <ion-list-header> Dokumente </ion-list-header>
+              <ion-item>
+                <ion-icon slot="start" name="document-text-outline"></ion-icon>
+                <ion-label position="stacked">Identitätskarte vorne {{userProfile.filenameIDFront}}</ion-label>
+                <ion-button type="file" (click)="uploadIdentityFront()">
+                  
+                  <ion-icon slot="end" name="cloud-upload-outline"></ion-icon>
+                </ion-button>
+              </ion-item>
+              <ion-item>
+                <ion-icon slot="start" name="document-text-outline"></ion-icon>
+                <ion-label position="stacked">Identitätskarte hinten  {{userProfile.filenameIDBack}}</ion-label>
+                <ion-button type="file" (click)="uploadIdentityBack()">
+                  
+                  <ion-icon slot="end" name="cloud-upload-outline"></ion-icon>
+                </ion-button>
+              </ion-item>      
+              
+              <ion-item>
+                <ion-icon slot="start" name="document-text-outline"></ion-icon>
+                <ion-label position="stacked">Spieler-Einverständniserklärung</ion-label>
+                Kommt bald
+                <ion-button type="file">
+                  <ion-icon slot="end" name="cloud-upload-outline"></ion-icon>
+                  <input type="file" (change)="loadFileFromDevice($event)" id="file-input"
+                  accept="application/pdf, image/png, image/jpeg">
+                </ion-button>
+              </ion-item>   
+              -->
+
+              <ion-list-header> Account Informationen </ion-list-header>
+
+              <ion-item (click)="updateEmail()">
+                <ion-label>
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col class="ion-text-start" size="5"> Email </ion-col>
+                      <ion-col class="ion-text-center" size="7" *ngIf="userProfile?.email">
+                        {{userProfile?.email}}
+                      </ion-col>
+                      <ion-col size="7" class="placeholder-profile ion-text-center" *ngIf="!userProfile?.email">
+                        <span> Tap here to edit. </span>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-label>
+              </ion-item>
+
+              <ion-item (click)="updatePassword()">
+                <ion-label>
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col class="ion-text-start" size="5"> Password </ion-col>
+                      <ion-col class="ion-text-center placeholder-profile" size="7">
+                        <span> Tap here to edit. </span>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+          <ion-footer>
+            <ion-row>
+              <ion-col>
+
+              </ion-col>
+              <ion-col>
+                <ion-button size="small" color="danger" (click)="deleteAccount()">
+                  <ion-icon slot="start" name="trash-outline"></ion-icon>
+                  Account löschen
+                </ion-button>
+              </ion-col>
+              <ion-col>
+                
+              </ion-col>
+            </ion-row>
+          </ion-footer>
+        </ion-card>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

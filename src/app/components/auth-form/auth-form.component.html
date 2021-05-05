@@ -1,0 +1,54 @@
+<form [formGroup]="authForm">
+  <ion-item>
+    <ion-label position="stacked">E-Mail</ion-label>
+    <ion-input
+      formControlName="email"
+      type="email"
+      placeholder="Deine E-Mail Adresse"
+      [class.invalid]="!authForm.controls['email'].valid &&
+ authForm.controls['email'].touched"
+    >
+    </ion-input>
+  </ion-item>
+  <ion-item
+    class="error-message"
+    *ngIf="!authForm.controls['email'].valid &&
+ authForm.controls['email'].touched"
+  >
+    <ion-label>Bitte eine gültige E-Mail Adresse eingeben.</ion-label>
+  </ion-item>
+
+  <ion-item *ngIf="!isPasswordResetPage">
+    <ion-label position="stacked">Passwort</ion-label>
+    <ion-input
+      formControlName="password"
+      type="password"
+      placeholder="Dein Passwort"
+      [class.invalid]="!authForm.controls['password'].valid&& authForm.controls['password'].touched"
+    >
+    </ion-input>
+  </ion-item>
+  <ion-item
+    class="error-message"
+    *ngIf="!authForm.controls['password'].valid
+ && authForm.controls['password'].touched && !isPasswordResetPage"
+  >
+    <ion-label>Dein Passwort muss mindestens 6 Zeichen lang sein.</ion-label>
+  </ion-item>
+
+  <!--
+  <ion-item  *ngIf="isSignupPage">
+    <ion-label position="stacked">AGB akzeptieren</ion-label>
+    <ion-checkbox formControlName="agb" color="primary" checked="false"></ion-checkbox>
+  </ion-item>
+-->
+
+
+  <ion-button
+    (click)="submitCredentials(authForm)"
+    expand="block"
+    [disabled]="!authForm.valid"
+  >
+    {{ actionButtonText }}
+  </ion-button>
+</form>

@@ -1,3 +1,94 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+
+  <ion-split-pane contentId="main" [hidden]="hidden">
+    <!--  the side menu  -->
+    <ion-menu menuId="menu" contentId="main" type="overlay">
+      <ion-content>
+        <ion-list id="inbox-list">
+          <ion-list-header>Navigation</ion-list-header>
+          <!--<ion-note>{{displayName}}</ion-note>-->
+
+
+          <ion-menu-toggle auto-hide="false">
+            <ion-item routerDirection="root" [routerLink]="'/home/timeline'">
+              <ion-icon slot="start" name="time-outline"></ion-icon>
+              <ion-label>Timeline</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle auto-hide="false">
+            <ion-item routerDirection="root" [routerLink]="'/home/news'">
+              <ion-icon slot="start" name="newspaper-outline"></ion-icon>
+              <ion-label>News</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle auto-hide="false">
+            <ion-item routerDirection="root" [routerLink]="'/home/training'">
+              <ion-icon slot="start" name="barbell"></ion-icon>
+              <ion-label>Training</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle auto-hide="false">
+            <ion-item routerDirection="root" [routerLink]="'/home/championship'">
+              <ion-icon slot="start" name="trophy-outline"></ion-icon>
+              <ion-label>Meisterschaft</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+        </ion-list>
+
+        <ion-list>
+          <ion-list-header>Einstellungen</ion-list-header>
+
+          <ion-menu-toggle auto-hide="false">
+            <ion-item routerDirection="root" [routerLink]="'/home/profile'">
+              <ion-icon slot="start" name="person"></ion-icon>
+              <ion-label>Profil</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+
+          <ion-menu-toggle autoHide="false">
+            <ion-item [routerLink]="'/home/support'"  routerLinkActive="active" routerDirection="root"detail="false">
+              <ion-icon slot="start" name="help"></ion-icon>
+              <ion-label>
+                Support
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-menu-toggle autoHide="false">
+          <ion-item  [routerLink]="'/home/tutorial'"  routerLinkActive="active" routerDirection="root" detail="false">
+            <ion-icon  slot="start" name="book-outline"></ion-icon>
+            <ion-label>
+              Tutorial
+            </ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        
+          <ion-menu-toggle autoHide="false">
+            <ion-item button (click)="logout()" detail="false">
+              <ion-icon slot="start" name="log-out"></ion-icon>
+              <ion-label>
+                Logout
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        </ion-list>
+      </ion-content>
+      <ion-footer class="ion-padding">
+        <ion-note>
+          copyright 2020 liitu consulting gmbh
+        </ion-note>
+      </ion-footer>
+    </ion-menu>
+
+    <!-- the main content -->
+    <ion-router-outlet id="main"></ion-router-outlet>
+
+
+  </ion-split-pane>
+
 </ion-app>
