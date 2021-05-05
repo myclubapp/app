@@ -1,28 +1,10 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
-import {
-  AlertController,
-  ToastController
-} from '@ionic/angular';
-import {
-  AuthService
-} from '../../services/auth.service';
-import {
-  ProfileService
-} from '../../services/user/profile.service';
-import {
-  Router
-} from '@angular/router';
-import {
-  Plugins,
-  CameraResultType,
-  CameraSource
-} from '@capacitor/core';
-const {
-  Camera
-} = Plugins;
+import {Component, OnInit} from '@angular/core';
+import {AlertController, ToastController} from '@ionic/angular';
+import {AuthService} from '../../services/auth.service';
+import {ProfileService} from '../../services/user/profile.service';
+import {Router} from '@angular/router';
+import {Plugins, CameraResultType, CameraSource} from '@capacitor/core';
+const {Camera} = Plugins;
 
 @Component({
   selector: 'app-profile',
@@ -37,50 +19,49 @@ export class ProfilePage implements OnInit {
     private profileService: ProfileService,
     private toastController: ToastController,
     private router: Router
-  ) {
-
-
-  }
+  ) {}
 
   ngOnInit() {
-
     //Dokumente
     //https://portal.swissunihockey.ch/pdf/spielerlizenz/erklaerung/d
 
-
-    this.profileService.getUserProfile().then(userProfileSnapshot => {
+    this.profileService.getUserProfile().then((userProfileSnapshot) => {
       if (userProfileSnapshot.data()) {
         this.userProfile = userProfileSnapshot.data();
       }
     });
   }
 
-  async takePicture(): Promise < void > {
+  async takePicture(): Promise<void> {
     const debtPicture: any = await Camera.getPhoto({
       quality: 90,
       allowEditing: true,
       resultType: CameraResultType.Base64,
-      source: CameraSource.Camera
-    }).catch(error => {
+      source: CameraSource.Camera,
+    }).catch((error) => {
       console.log(error);
-      this.toastController.create({
-        message: 'Aktion abgebrochen',
-        color: "danger",
-        duration: 2000
-      }).then(toast => {
-        toast.present();
-      });
+      this.toastController
+        .create({
+          message: 'Aktion abgebrochen',
+          color: 'danger',
+          duration: 2000,
+        })
+        .then((toast) => {
+          toast.present();
+        });
       return;
     });
     if (debtPicture) {
-      this.profileService.userProfilePicture(debtPicture.base64String).then(done => {
-        this.toastController.create({
-          message: 'Profilbild gespeichert',
-          color: "success",
-          duration: 2000
-        }).then(toast => {
-          toast.present();
-        });
+      this.profileService.userProfilePicture(debtPicture.base64String).then((done) => {
+        this.toastController
+          .create({
+            message: 'Profilbild gespeichert',
+            color: 'success',
+            duration: 2000,
+          })
+          .then((toast) => {
+            toast.present();
+          });
       });
     }
   }
@@ -91,11 +72,11 @@ export class ProfilePage implements OnInit {
     });
   }
 
-
-  async updateName(): Promise < void > {
+  async updateName(): Promise<void> {
     const alert = await this.alertCtrl.create({
       subHeader: 'Your first name & last name',
-      inputs: [{
+      inputs: [
+        {
           type: 'text',
           name: 'firstName',
           placeholder: 'Your first name',
@@ -108,12 +89,13 @@ export class ProfilePage implements OnInit {
           value: this.userProfile.lastName,
         },
       ],
-      buttons: [{
-          text: 'Cancel'
+      buttons: [
+        {
+          text: 'Cancel',
         },
         {
           text: 'Save',
-          handler: data => {
+          handler: (data) => {
             this.profileService.updateName(data.firstName, data.lastName);
           },
         },
@@ -128,31 +110,33 @@ export class ProfilePage implements OnInit {
     this.profileService.updateDOB(birthDate);
   }
 
-  async updateEmail(): Promise < void > {
+  async updateEmail(): Promise<void> {
     const alert = await this.alertCtrl.create({
-      inputs: [{
+      inputs: [
+        {
           type: 'text',
           name: 'newEmail',
-          placeholder: 'Your new email'
+          placeholder: 'Your new email',
         },
         {
           name: 'password',
           placeholder: 'Your password',
-          type: 'password'
+          type: 'password',
         },
       ],
-      buttons: [{
-          text: 'Cancel'
+      buttons: [
+        {
+          text: 'Cancel',
         },
         {
           text: 'Save',
-          handler: data => {
+          handler: (data) => {
             this.profileService
               .updateEmail(data.newEmail, data.password)
               .then(() => {
                 console.log('Email Changed Successfully');
               })
-              .catch(error => {
+              .catch((error) => {
                 console.log('ERROR: ' + error.message);
               });
           },
@@ -162,29 +146,28 @@ export class ProfilePage implements OnInit {
     await alert.present();
   }
 
-  async updatePassword(): Promise < void > {
+  async updatePassword(): Promise<void> {
     const alert = await this.alertCtrl.create({
-      inputs: [{
+      inputs: [
+        {
           name: 'newPassword',
           placeholder: 'New password',
-          type: 'password'
+          type: 'password',
         },
         {
           name: 'oldPassword',
           placeholder: 'Old password',
-          type: 'password'
+          type: 'password',
         },
       ],
-      buttons: [{
-          text: 'Cancel'
+      buttons: [
+        {
+          text: 'Cancel',
         },
         {
           text: 'Save',
-          handler: data => {
-            this.profileService.updatePassword(
-              data.newPassword,
-              data.oldPassword
-            );
+          handler: (data) => {
+            this.profileService.updatePassword(data.newPassword, data.oldPassword);
           },
         },
       ],
@@ -193,77 +176,74 @@ export class ProfilePage implements OnInit {
   }
 
   saveProfile() {
-
-    this.profileService.save(this.userProfile).then(done => {
-      this.toastController.create({
-        message: 'Profil gespeichert',
-        color: "success",
-        duration: 2000
-      }).then(toast => {
-        toast.present();
-      });
-    },error=>{
-      this.toastController.create({
-        message: 'Fehler',
-        color: "danger",
-        duration: 2000
-      }).then(toast => {
-        toast.present();
-      });
-    });
-
+    this.profileService.save(this.userProfile).then(
+      (done) => {
+        this.toastController
+          .create({
+            message: 'Profil gespeichert',
+            color: 'success',
+            duration: 2000,
+          })
+          .then((toast) => {
+            toast.present();
+          });
+      },
+      (error) => {
+        this.toastController
+          .create({
+            message: 'Fehler',
+            color: 'danger',
+            duration: 2000,
+          })
+          .then((toast) => {
+            toast.present();
+          });
+      }
+    );
   }
 
-
   async deleteAccount() {
-
     const alert = await this.alertCtrl.create({
       header: 'Profil löschen?',
       message: 'Möchtest du wirklich dein Profil  <strong>löschen</strong>?',
-      buttons: [{
+      buttons: [
+        {
           text: 'Abbrechen',
           role: 'cancel',
-          handler: data => {
-
-            this.toastController.create({
-              message: 'Aktion abgebrochen',
-              color: "danger",
-              duration: 2000
-            }).then(toast => {
-              toast.present();
-            });
-
-          }
+          handler: (data) => {
+            this.toastController
+              .create({
+                message: 'Aktion abgebrochen',
+                color: 'danger',
+                duration: 2000,
+              })
+              .then((toast) => {
+                toast.present();
+              });
+          },
         },
         {
           text: 'Profil löschen',
-          handler: data => {
+          handler: (data) => {
+            this.profileService.deleteAccount(this.userProfile).then((done) => {
+              this.toastController
+                .create({
+                  message: 'Profil gelöscht',
+                  color: 'danger',
+                  duration: 2000,
+                })
+                .then((toast) => {
+                  toast.present();
 
-            this.profileService.deleteAccount(this.userProfile).then(done => {
-
-              this.toastController.create({
-                message: 'Profil gelöscht',
-                color: "danger",
-                duration: 2000
-              }).then(toast => {
-                toast.present();
-
-                this.authService.logout();
-                this.router.navigateByUrl('/login');
-              });
-
-
+                  this.authService.logout();
+                  this.router.navigateByUrl('/login');
+                });
             });
           },
         },
       ],
     });
     await alert.present();
-
-
-
-
-
   }
 
   loadFileFromDevice(event) {
@@ -272,27 +252,34 @@ export class ProfilePage implements OnInit {
     reader.readAsArrayBuffer(file);
     reader.onload = () => {
       // get the blob of the image:
-      let blob: Blob = new Blob([new Uint8Array((reader.result as ArrayBuffer))]);
+      let blob: Blob = new Blob([new Uint8Array(reader.result as ArrayBuffer)]);
       // create blobURL, such that we could use it in an image element:
       let blobURL: string = URL.createObjectURL(blob);
-      this.profileService.verbandAgreement(blobURL).then(ok=>{
-        this.toastController.create({
-          message: 'Dokument erfolgreich hochgeladen',
-          color: "success",
-          duration: 2000
-        }).then(toast => {
-          toast.present();
-        });
-      },error=>{
-        console.log(error);
-        this.toastController.create({
-          message: 'Fehler: ' + error.message,
-          color: "danger",
-          duration: 5000
-        }).then(toast => {
-          toast.present();
-        });
-      })
+      this.profileService.verbandAgreement(blobURL).then(
+        (ok) => {
+          this.toastController
+            .create({
+              message: 'Dokument erfolgreich hochgeladen',
+              color: 'success',
+              duration: 2000,
+            })
+            .then((toast) => {
+              toast.present();
+            });
+        },
+        (error) => {
+          console.log(error);
+          this.toastController
+            .create({
+              message: 'Fehler: ' + error.message,
+              color: 'danger',
+              duration: 5000,
+            })
+            .then((toast) => {
+              toast.present();
+            });
+        }
+      );
     };
     reader.onerror = (error) => {
       //handle errors
@@ -304,38 +291,45 @@ export class ProfilePage implements OnInit {
       quality: 90,
       allowEditing: true,
       resultType: CameraResultType.Base64,
-      source: CameraSource.Camera
-    }).catch(error => {
+      source: CameraSource.Camera,
+    }).catch((error) => {
       console.log(error);
-      this.toastController.create({
-        message: 'Aktion abgebrochen',
-        color: "danger",
-        duration: 2000
-      }).then(toast => {
-        toast.present();
-      });
+      this.toastController
+        .create({
+          message: 'Aktion abgebrochen',
+          color: 'danger',
+          duration: 2000,
+        })
+        .then((toast) => {
+          toast.present();
+        });
       return;
     });
     if (picture) {
-
-      this.profileService.uploadIdentityFront(picture.base64String).then(done => {
-        this.toastController.create({
-          message: 'Dokument erfolgreich hochgeladen',
-          color: "success",
-          duration: 2000
-        }).then(toast => {
-          toast.present();
-        });
-
-      }, error => {
-        this.toastController.create({
-          message: 'Fehler: ' + error.message,
-          color: "danger",
-          duration: 5000
-        }).then(toast => {
-          toast.present();
-        });
-      })
+      this.profileService.uploadIdentityFront(picture.base64String).then(
+        (done) => {
+          this.toastController
+            .create({
+              message: 'Dokument erfolgreich hochgeladen',
+              color: 'success',
+              duration: 2000,
+            })
+            .then((toast) => {
+              toast.present();
+            });
+        },
+        (error) => {
+          this.toastController
+            .create({
+              message: 'Fehler: ' + error.message,
+              color: 'danger',
+              duration: 5000,
+            })
+            .then((toast) => {
+              toast.present();
+            });
+        }
+      );
     }
   }
   async uploadIdentityBack() {
@@ -343,41 +337,45 @@ export class ProfilePage implements OnInit {
       quality: 90,
       allowEditing: true,
       resultType: CameraResultType.Base64,
-      source: CameraSource.Camera
-    }).catch(error => {
+      source: CameraSource.Camera,
+    }).catch((error) => {
       console.log(error);
-      this.toastController.create({
-        message: 'Aktion abgebrochen',
-        color: "danger",
-        duration: 2000
-      }).then(toast => {
-        toast.present();
-      });
+      this.toastController
+        .create({
+          message: 'Aktion abgebrochen',
+          color: 'danger',
+          duration: 2000,
+        })
+        .then((toast) => {
+          toast.present();
+        });
       return;
     });
     if (picture) {
-
-      this.profileService.uploadIdentityBack(picture.base64String).then(done => {
-        this.toastController.create({
-          message: 'Dokument erfolgreich hochgeladen',
-          color: "success",
-          duration: 2000
-        }).then(toast => {
-          toast.present();
-        });
-
-      }, error => {
-        this.toastController.create({
-          message: 'Fehler: ' + error.message,
-          color: "danger",
-          duration: 5000
-        }).then(toast => {
-          toast.present();
-        });
-      })
+      this.profileService.uploadIdentityBack(picture.base64String).then(
+        (done) => {
+          this.toastController
+            .create({
+              message: 'Dokument erfolgreich hochgeladen',
+              color: 'success',
+              duration: 2000,
+            })
+            .then((toast) => {
+              toast.present();
+            });
+        },
+        (error) => {
+          this.toastController
+            .create({
+              message: 'Fehler: ' + error.message,
+              color: 'danger',
+              duration: 5000,
+            })
+            .then((toast) => {
+              toast.present();
+            });
+        }
+      );
     }
   }
-
-
-
 }

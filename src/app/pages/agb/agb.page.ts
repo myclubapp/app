@@ -1,5 +1,5 @@
-import { MenuController, ModalController, NavParams } from '@ionic/angular';
-import { Component, OnInit } from '@angular/core';
+import {MenuController, ModalController, NavParams} from '@ionic/angular';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-agb',
@@ -8,9 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AgbPage implements OnInit {
   public status;
-  constructor(
-    public menuCtrl: MenuController,
-  ) {
+  constructor(public menuCtrl: MenuController) {
     this.menuCtrl.enable(false, 'menu');
   }
 
@@ -18,4 +16,3 @@ export class AgbPage implements OnInit {
     this.menuCtrl.enable(false, 'menu');
   }
 }
- 

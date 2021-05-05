@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController, NavParams } from '@ionic/angular';
+import {Component, OnInit} from '@angular/core';
+import {ModalController, NavParams} from '@ionic/angular';
 
 @Component({
   selector: 'app-news-detail',
@@ -7,13 +7,10 @@ import { ModalController, NavParams } from '@ionic/angular';
   styleUrls: ['./news-detail.page.scss'],
 })
 export class NewsDetailPage implements OnInit {
-public news;
-  constructor(
-    private navParams: NavParams,
-    private modalCtrl: ModalController
-  ) {
+  public news;
+  constructor(private navParams: NavParams, private modalCtrl: ModalController) {
     this.news = this.navParams.get('news');
-   }
+  }
 
   ngOnInit() {
     this.news = this.navParams.get('news');
@@ -22,7 +19,7 @@ public news;
     // using the injected ModalController this page
     // can "dismiss" itself and optionally pass back data
     this.modalCtrl.dismiss({
-      'dismissed': true
+      dismissed: true,
     });
   }
 }

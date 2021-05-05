@@ -7,16 +7,13 @@
     </ion-buttons>
     <ion-title>{{training?.date?.seconds * 1000 | date: 'EEE d. MMM yyyy'}}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="dismiss()">
-        schliessen
-      </ion-button>
+      <ion-button (click)="dismiss()"> schliessen </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-
       <ion-buttons collapse="true" slot="primary">
         <ion-button (click)="openPopover($event)">
           <ion-icon slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
@@ -25,7 +22,6 @@
       <ion-title size="large">{{training?.date?.seconds * 1000 | date: 'EEE d. MMM yyyy'}}</ion-title>
     </ion-toolbar>
   </ion-header>
-
 
   <ion-list lines="full">
     <ion-item>
@@ -47,13 +43,9 @@
       <ion-icon slot="start" name="time-outline"></ion-icon>
       <ion-label>{{training?.timeFrom}} - {{training?.timeTo}}</ion-label>
     </ion-item>
-
-
   </ion-list>
 
   <ion-list>
-
-
     <ion-list-header>
       <ion-label>Teilnehmer</ion-label>
     </ion-list-header>
@@ -71,7 +63,7 @@
       <ion-list *ngFor="let member of acceptList" lines="full">
         <ion-item>
           <ion-avatar slot="start">
-            <img src="{{member.user.picture}}">
+            <img src="{{member.user.picture}}" />
           </ion-avatar>
           <ion-label>{{member.user.firstName}} {{member.user.lastName}}</ion-label>
         </ion-item>
@@ -82,13 +74,11 @@
       <ion-list *ngFor="let member of rejectList" lines="full">
         <ion-item>
           <ion-avatar slot="start">
-            <img src="{{member.user.picture}}">
+            <img src="{{member.user.picture}}" />
           </ion-avatar>
           <ion-label>{{member.user.firstName}} {{member.user.lastName}}</ion-label>
         </ion-item>
       </ion-list>
     </div>
-
   </ion-list>
-
 </ion-content>

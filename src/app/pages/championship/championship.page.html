@@ -4,17 +4,14 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Meisterschaft</ion-title>
-    <ion-buttons  collapse="true" slot="end">
+    <ion-buttons collapse="true" slot="end">
       <ion-button (click)="openPopover($event)">
         <ion-icon slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
       </ion-button>
     </ion-buttons>
-
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
-
-
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
@@ -37,7 +34,6 @@
 
     <ion-grid>
       <ion-row>
-
         <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let i of skeletonList">
           <ion-card>
             <ion-card-header>
@@ -59,14 +55,8 @@
         </ion-col>
 
         <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let game of gamesList">
-
           <ion-card button="true" type="button">
-           
-    
-
-            <ion-img class="{{game.status}}" (click)="openDetail(game)">
-
-            </ion-img>
+            <ion-img class="{{game.status}}" (click)="openDetail(game)"> </ion-img>
             <ion-card-header (click)="openDetail(game)">
               <ion-card-subtitle>
                 <ion-badge>{{game?.group}}</ion-badge>
@@ -76,17 +66,17 @@
             </ion-card-header>
             <ion-footer>
               <ion-row>
-                <ion-col  center text-center>
+                <ion-col center text-center>
                   <ion-fab>
                     <ion-fab-button size="small" color="success" (click)="acceptGame(game)">
                       <ion-icon size="small" name="thumbs-up"></ion-icon>
                     </ion-fab-button>
                   </ion-fab>
                 </ion-col>
-                <ion-col  center text-center>
-                 <!-- <ion-badge>{{game?.membersAccepted}} / {{game?.membersRejected}}</ion-badge>-->
+                <ion-col center text-center>
+                  <!-- <ion-badge>{{game?.membersAccepted}} / {{game?.membersRejected}}</ion-badge>-->
                 </ion-col>
-                <ion-col  center text-center>
+                <ion-col center text-center>
                   <ion-fab horizontal="start">
                     <ion-fab-button size="small" color="danger" (click)="rejectGame(game)">
                       <ion-icon size="small" name="thumbs-down"></ion-icon>
@@ -97,11 +87,8 @@
             </ion-footer>
           </ion-card>
         </ion-col>
-
-
       </ion-row>
     </ion-grid>
-
   </ion-list>
 
   <ion-list>
@@ -111,7 +98,6 @@
 
     <ion-grid>
       <ion-row>
-
         <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let i of skeletonList">
           <ion-card>
             <ion-card-header>
@@ -133,13 +119,8 @@
         </ion-col>
 
         <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let game of gamesListPast">
-
-
           <ion-card button="true" type="button">
-
-            <ion-img class="{{game.status}}" (click)="openDetail(game)">
-
-            </ion-img>
+            <ion-img class="{{game.status}}" (click)="openDetail(game)"> </ion-img>
             <ion-card-header (click)="openDetail(game)">
               <ion-card-subtitle>
                 <ion-badge>{{game?.group}}</ion-badge>
@@ -147,22 +128,20 @@
               <ion-card-title>{{game?.teamHome}} vs {{game?.teamAway}}</ion-card-title>
               <ion-card-subtitle>{{game?.date}} {{game?.time}} | {{game?.sportshall}} in {{game?.location}}</ion-card-subtitle>
             </ion-card-header>
-            <ion-card-content (click)="openDetail(game)">
-  
-            </ion-card-content>
+            <ion-card-content (click)="openDetail(game)"> </ion-card-content>
             <ion-footer>
               <ion-row>
-                <ion-col  center text-center>
+                <ion-col center text-center>
                   <ion-fab>
                     <ion-fab-button size="small" color="success" (click)="acceptGame(game)">
                       <ion-icon size="small" name="thumbs-up"></ion-icon>
                     </ion-fab-button>
                   </ion-fab>
                 </ion-col>
-                <ion-col  center text-center>
+                <ion-col center text-center>
                   <ion-badge>{{game?.membersAccepted}} / {{game?.membersRejected}}</ion-badge>
                 </ion-col>
-                <ion-col  center text-center>
+                <ion-col center text-center>
                   <ion-fab horizontal="start">
                     <ion-fab-button size="small" color="danger" (click)="rejectGame(game)">
                       <ion-icon size="small" name="thumbs-down"></ion-icon>
@@ -175,6 +154,5 @@
         </ion-col>
       </ion-row>
     </ion-grid>
-
   </ion-list>
 </ion-content>

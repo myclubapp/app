@@ -13,14 +13,9 @@
     </ion-toolbar>
   </ion-header>
 
-
   <ion-list>
     <ion-list-header> <ion-label>Your next events</ion-label> </ion-list-header>
-    <ion-item
-      tappable
-      *ngFor="let event of eventList"
-      (click)="openDetail(event.id)"
-    >
+    <ion-item tappable *ngFor="let event of eventList" (click)="openDetail(event.id)">
       <ion-label>
         <h2>{{event?.name}}</h2>
         <p>Ticket: <strong>${{event?.price}}</strong></p>

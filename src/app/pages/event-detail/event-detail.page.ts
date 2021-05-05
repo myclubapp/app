@@ -1,7 +1,7 @@
-import { NavParams, ModalController } from '@ionic/angular';
-import { EventService } from './../../services/event/event.service';
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {NavParams, ModalController} from '@ionic/angular';
+import {EventService} from './../../services/event/event.service';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-event-detail',
@@ -10,17 +10,11 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class EventDetailPage implements OnInit {
   public currentEvent: any = {};
-  constructor(
-    private navParams: NavParams,
-    private eventService: EventService,
-    private route: ActivatedRoute,
-    private modalCtrl: ModalController
-  ) {}
+  constructor(private navParams: NavParams, private eventService: EventService, private route: ActivatedRoute, private modalCtrl: ModalController) {}
 
   ngOnInit() {
-
-    const eventId: string = this.navParams.get('eventId'); //this.route.snapshot.paramMap.get('id') || 
-    this.eventService.getEventDetail(eventId).then(eventSnapshot => {
+    const eventId: string = this.navParams.get('eventId'); //this.route.snapshot.paramMap.get('id') ||
+    this.eventService.getEventDetail(eventId).then((eventSnapshot) => {
       this.currentEvent = eventSnapshot.data();
       this.currentEvent.id = eventSnapshot.id;
     });
@@ -29,7 +23,7 @@ export class EventDetailPage implements OnInit {
     // using the injected ModalController this page
     // can "dismiss" itself and optionally pass back data
     this.modalCtrl.dismiss({
-      'dismissed': true
+      dismissed: true,
     });
   }
 }

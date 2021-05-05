@@ -1,19 +1,13 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="dismiss()">
-        schliessen
-      </ion-button>
-
-
+      <ion-button (click)="dismiss()"> schliessen </ion-button>
     </ion-buttons>
     <ion-title>{{clubName}}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="next()">
         <ion-text>
-          <b>
-            beitreten
-          </b>
+          <b> beitreten </b>
         </ion-text>
       </ion-button>
     </ion-buttons>
@@ -25,21 +19,18 @@
       <ion-title size="large">{{clubName}}</ion-title>
     </ion-toolbar>
   </ion-header>
-  
+
   <ion-searchbar animated placeholder="Team suchen" type="text" inputmode="text" (ionInput)="filterList($event)"></ion-searchbar>
 
   <ion-list>
     <ion-list-header>
-      <ion-label>
-        Wähle dein(e) Team(s) aus:
-      </ion-label>
+      <ion-label> Wähle dein(e) Team(s) aus: </ion-label>
     </ion-list-header>
-  
-      <ion-item *ngFor="let team of unihockeyTeamList ">
-        <ion-label>{{team.text}}</ion-label>
-        <ion-checkbox slot="end" [(ngModel)]="team.isSelected"></ion-checkbox>
-      </ion-item>
 
+    <ion-item *ngFor="let team of unihockeyTeamList ">
+      <ion-label>{{team.text}}</ion-label>
+      <ion-checkbox slot="end" [(ngModel)]="team.isSelected"></ion-checkbox>
+    </ion-item>
   </ion-list>
 
   <ion-list *ngIf="unihockeyTeamList.length <= 0">
@@ -49,5 +40,4 @@
       </ion-label>
     </ion-item>
   </ion-list>
-
 </ion-content>

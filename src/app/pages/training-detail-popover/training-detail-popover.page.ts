@@ -1,6 +1,6 @@
-import { Router } from '@angular/router';
-import { PopoverController } from '@ionic/angular';
-import { Component, OnInit } from '@angular/core';
+import {Router} from '@angular/router';
+import {PopoverController} from '@ionic/angular';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-training-detail-popover',
@@ -8,19 +8,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./training-detail-popover.page.scss'],
 })
 export class TrainingDetailPopoverPage implements OnInit {
+  constructor(private router: Router, public popoverCtrl: PopoverController) {}
 
-  constructor(
-    private router: Router,
-    public popoverCtrl: PopoverController
-  ) { }
-
-  ngOnInit() {
+  ngOnInit() {}
+  changeTraining() {
+    this.popoverCtrl.dismiss({action: 'change'});
   }
-  changeTraining(){
-    this.popoverCtrl.dismiss({action:'change'});
-
-  }
-  deleteTraining(){
-    this.popoverCtrl.dismiss({action:'delete'});
+  deleteTraining() {
+    this.popoverCtrl.dismiss({action: 'delete'});
   }
 }

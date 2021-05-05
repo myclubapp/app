@@ -1,9 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="dismiss()">
-        abbrechen
-      </ion-button>
+      <ion-button (click)="dismiss()"> abbrechen </ion-button>
     </ion-buttons>
     <ion-title>News erfassen</ion-title>
     <ion-buttons slot="end">
@@ -20,13 +18,9 @@
     </ion-toolbar>
   </ion-header>
 
-
   <ion-list lines="full">
- 
-  <ion-list-header>
-      <ion-label>
-        Empfänger wählen
-      </ion-label>
+    <ion-list-header>
+      <ion-label> Empfänger wählen </ion-label>
     </ion-list-header>
     <ion-item *ngFor="let club of clubList">
       <ion-label slot="start">{{club.name}}</ion-label>
@@ -37,7 +31,7 @@
       <ion-checkbox name="team" value="{{team.id}}" slot="end" [(ngModel)]="team.isChecked"></ion-checkbox>
     </ion-item>
 
-<!--
+    <!--
   <ion-item>
       <ion-label  position="stacked">Club-News</ion-label>
     
@@ -55,11 +49,8 @@
 -->
 
     <ion-list-header>
-      <ion-label>
-        Details
-      </ion-label>
+      <ion-label> Details </ion-label>
     </ion-list-header>
-
 
     <ion-item>
       <ion-label position="stacked">Titel</ion-label>
@@ -70,8 +61,5 @@
       <ion-label position="stacked">Beschreibung</ion-label>
       <ion-textarea [(ngModel)]="news.description" value="{{news.description}}"></ion-textarea>
     </ion-item>
-
-
   </ion-list>
-
 </ion-content>

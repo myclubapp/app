@@ -1,13 +1,13 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {Routes, RouterModule} from '@angular/router';
 
-import { TimelinePage } from './timeline.page';
+import {TimelinePage} from './timeline.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: TimelinePage
-  }
+    component: TimelinePage,
+  },
 ];
 
 @NgModule({

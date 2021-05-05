@@ -7,8 +7,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
-
-<!--  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+  <!--  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 -->
@@ -52,11 +51,9 @@
           </ion-card>
         </ion-col>
 
-
         <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let training of trainingList">
           <ion-card button="true" type="button">
-            <ion-img class="{{training.status}}" (click)="openDetail(training)">
-            </ion-img>
+            <ion-img class="{{training.status}}" (click)="openDetail(training)"> </ion-img>
             <ion-card-header (click)="openDetail(training)">
               <ion-card-subtitle>
                 <ion-badge>{{training.team.name}}</ion-badge>
@@ -85,7 +82,6 @@
                 </ion-col>
               </ion-row>
             </ion-footer>
-            
           </ion-card>
         </ion-col>
       </ion-row>
@@ -119,11 +115,9 @@
           </ion-card>
         </ion-col>
 
-
         <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let training of trainingListPast">
           <ion-card button="true" type="button">
-            <ion-img class="{{training.status}}"  (click)="openDetail(training)">
-            </ion-img>
+            <ion-img class="{{training.status}}" (click)="openDetail(training)"> </ion-img>
 
             <ion-card-header (click)="openDetail(training)">
               <ion-card-subtitle>
@@ -153,7 +147,6 @@
                 </ion-col>
               </ion-row>
             </ion-footer>
-
           </ion-card>
         </ion-col>
       </ion-row>

@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { WordpressService } from './wordpress.service';
+import {WordpressService} from './wordpress.service';
 
 describe('WordpressService', () => {
   let service: WordpressService;

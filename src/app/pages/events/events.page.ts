@@ -1,8 +1,8 @@
-import { EventDetailPage } from './../event-detail/event-detail.page';
-import { EventCreatePage } from './../event-create/event-create.page';
-import { IonRouterOutlet, ModalController } from '@ionic/angular';
-import { EventService } from './../../services/event/event.service';
-import { Component, OnInit } from '@angular/core';
+import {EventDetailPage} from './../event-detail/event-detail.page';
+import {EventCreatePage} from './../event-create/event-create.page';
+import {IonRouterOutlet, ModalController} from '@ionic/angular';
+import {EventService} from './../../services/event/event.service';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-events',
@@ -10,60 +10,48 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./events.page.scss'],
 })
 export class EventsPage implements OnInit {
-
   public eventList: Array<any>;
-  constructor(
-    private eventService: EventService,
-    private routerOutlet: IonRouterOutlet,
-    private modalController: ModalController,
-    ) {}
+  constructor(private eventService: EventService, private routerOutlet: IonRouterOutlet, private modalController: ModalController) {}
 
   ngOnInit() {
-    this.eventService.getEventList().then(eventListSnapshot => {
+    this.eventService.getEventList().then((eventListSnapshot) => {
       this.eventList = [];
-      eventListSnapshot.forEach(snap => {
+      eventListSnapshot.forEach((snap) => {
         this.eventList.push({
           id: snap.id,
           name: snap.data().name,
           price: snap.data().price,
-          date: snap.data().date
+          date: snap.data().date,
         });
         return false;
       });
     });
   }
 
-
   async openCreate() {
-    console.log("clicked");
+    console.log('clicked');
     const modal = await this.modalController.create({
       component: EventCreatePage,
-  
+
       swipeToClose: true,
-      presentingElement: this.routerOutlet.nativeEl
+      presentingElement: this.routerOutlet.nativeEl,
     });
     await modal.present();
-    const {
-      data
-    } = await modal.onWillDismiss();
+    const {data} = await modal.onWillDismiss();
     console.log(data);
-
   }
   async openDetail(id) {
-    console.log("clicked");
+    console.log('clicked');
     const modal = await this.modalController.create({
       component: EventDetailPage,
       componentProps: {
-        eventId: id
+        eventId: id,
       },
       swipeToClose: true,
-      presentingElement: this.routerOutlet.nativeEl
+      presentingElement: this.routerOutlet.nativeEl,
     });
     await modal.present();
-    const {
-      data
-    } = await modal.onWillDismiss();
+    const {data} = await modal.onWillDismiss();
     console.log(data);
   }
-
 }

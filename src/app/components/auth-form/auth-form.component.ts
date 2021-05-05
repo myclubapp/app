@@ -1,12 +1,12 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { UserCredential } from 'src/app/models/user';
-import { LoadingController, AlertController } from '@ionic/angular';
+import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import {FormGroup, Validators, FormBuilder} from '@angular/forms';
+import {UserCredential} from 'src/app/models/user';
+import {LoadingController, AlertController} from '@ionic/angular';
 
 @Component({
   selector: 'app-auth-form',
   templateUrl: './auth-form.component.html',
-  styleUrls: ['./auth-form.component.scss']
+  styleUrls: ['./auth-form.component.scss'],
 })
 export class AuthFormComponent implements OnInit {
   public loading: HTMLIonLoadingElement;
@@ -15,14 +15,10 @@ export class AuthFormComponent implements OnInit {
   @Input() isPasswordResetPage = false;
   @Output() formSubmitted = new EventEmitter<any>();
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private loadingCtrl: LoadingController,
-    private alertCtrl: AlertController
-  ) {
+  constructor(private formBuilder: FormBuilder, private loadingCtrl: LoadingController, private alertCtrl: AlertController) {
     this.authForm = this.formBuilder.group({
       email: ['', Validators.compose([Validators.required, Validators.email])],
-      password: ['', Validators.minLength(6)]
+      password: ['', Validators.minLength(6)],
     });
   }
 
@@ -35,7 +31,7 @@ export class AuthFormComponent implements OnInit {
       this.showLoading();
       const credentials: UserCredential = {
         email: authForm.value.email,
-        password: authForm.value.password
+        password: authForm.value.password,
       };
       this.formSubmitted.emit(credentials);
     }
@@ -57,7 +53,7 @@ export class AuthFormComponent implements OnInit {
   async handleError(error): Promise<void> {
     const alert = await this.alertCtrl.create({
       message: error.message,
-      buttons: [{ text: 'Ok', role: 'cancel' }]
+      buttons: [{text: 'Ok', role: 'cancel'}],
     });
     await alert.present();
   }

@@ -1,13 +1,13 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {Routes, RouterModule} from '@angular/router';
 
-import { EventDetailPage } from './event-detail.page';
+import {EventDetailPage} from './event-detail.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: EventDetailPage
-  }
+    component: EventDetailPage,
+  },
 ];
 
 @NgModule({

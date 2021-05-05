@@ -5,16 +5,11 @@
       formControlName="email"
       type="email"
       placeholder="Deine E-Mail Adresse"
-      [class.invalid]="!authForm.controls['email'].valid &&
- authForm.controls['email'].touched"
+      [class.invalid]="!authForm.controls['email'].valid && authForm.controls['email'].touched"
     >
     </ion-input>
   </ion-item>
-  <ion-item
-    class="error-message"
-    *ngIf="!authForm.controls['email'].valid &&
- authForm.controls['email'].touched"
-  >
+  <ion-item class="error-message" *ngIf="!authForm.controls['email'].valid && authForm.controls['email'].touched">
     <ion-label>Bitte eine gültige E-Mail Adresse eingeben.</ion-label>
   </ion-item>
 
@@ -24,15 +19,11 @@
       formControlName="password"
       type="password"
       placeholder="Dein Passwort"
-      [class.invalid]="!authForm.controls['password'].valid&& authForm.controls['password'].touched"
+      [class.invalid]="!authForm.controls['password'].valid && authForm.controls['password'].touched"
     >
     </ion-input>
   </ion-item>
-  <ion-item
-    class="error-message"
-    *ngIf="!authForm.controls['password'].valid
- && authForm.controls['password'].touched && !isPasswordResetPage"
-  >
+  <ion-item class="error-message" *ngIf="!authForm.controls['password'].valid && authForm.controls['password'].touched && !isPasswordResetPage">
     <ion-label>Dein Passwort muss mindestens 6 Zeichen lang sein.</ion-label>
   </ion-item>
 
@@ -43,12 +34,7 @@
   </ion-item>
 -->
 
-
-  <ion-button
-    (click)="submitCredentials(authForm)"
-    expand="block"
-    [disabled]="!authForm.valid"
-  >
+  <ion-button (click)="submitCredentials(authForm)" expand="block" [disabled]="!authForm.valid">
     {{ actionButtonText }}
   </ion-button>
 </form>

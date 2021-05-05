@@ -1,13 +1,13 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {Routes, RouterModule} from '@angular/router';
 
-import { ChampionshipDetailPopoverPage } from './championship-detail-popover.page';
+import {ChampionshipDetailPopoverPage} from './championship-detail-popover.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: ChampionshipDetailPopoverPage
-  }
+    component: ChampionshipDetailPopoverPage,
+  },
 ];
 
 @NgModule({

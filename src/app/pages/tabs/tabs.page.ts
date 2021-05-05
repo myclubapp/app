@@ -1,5 +1,5 @@
-import { MenuController } from '@ionic/angular';
-import { Component, OnInit } from '@angular/core';
+import {MenuController} from '@ionic/angular';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-tabs',
@@ -7,14 +7,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./tabs.page.scss'],
 })
 export class TabsPage implements OnInit {
-
-  constructor(
-    public menuCtrl: MenuController
-  ) { 
+  constructor(public menuCtrl: MenuController) {
     this.menuCtrl.enable(true, 'menu');
   }
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

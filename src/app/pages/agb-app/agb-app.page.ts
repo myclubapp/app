@@ -1,5 +1,5 @@
-import { ModalController, NavParams, MenuController } from '@ionic/angular';
-import { Component, OnInit } from '@angular/core';
+import {ModalController, NavParams, MenuController} from '@ionic/angular';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-agb-app',
@@ -8,20 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AgbAppPage implements OnInit {
   public status;
-  constructor(
-    private modalCtrl: ModalController,
-    private navParams: NavParams,
-    public menuCtrl: MenuController
-  ) { 
-    
+  constructor(private modalCtrl: ModalController, private navParams: NavParams, public menuCtrl: MenuController) {
     this.status = this.navParams.get('data');
     this.menuCtrl.enable(false, 'menu');
-
   }
 
-  ngOnInit() {
-  }
-  ionViewDidLeave(){
+  ngOnInit() {}
+  ionViewDidLeave() {
     //console.log("ionViewDidLeave");
     this.menuCtrl.enable(true, 'menu');
   }
@@ -29,8 +22,8 @@ export class AgbAppPage implements OnInit {
     // using the injected ModalController this page
     // can "dismiss" itself and optionally pass back data
     this.modalCtrl.dismiss({
-      'dismissed': true,
-      'status': true
+      dismissed: true,
+      status: true,
     });
   }
 }

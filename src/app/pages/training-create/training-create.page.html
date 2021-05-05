@@ -1,9 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="dismiss()">
-        abbrechen
-      </ion-button>
+      <ion-button (click)="dismiss()"> abbrechen </ion-button>
     </ion-buttons>
     <ion-title>Training erstellen</ion-title>
     <ion-buttons slot="end">
@@ -11,7 +9,7 @@
         <ion-text><b>erstellen</b></ion-text>
       </ion-button>
     </ion-buttons>
-  </ion-toolbar> 
+  </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
@@ -20,28 +18,38 @@
     </ion-toolbar>
   </ion-header>
 
-
   <ion-list lines="full">
     <ion-item>
-      <ion-label  position="stacked">Club</ion-label>
-      <ion-select [interfaceOptions]="" interface="alert" [(ngModel)]="training.clubId" value="{{training.clubId}}" multiple="false" placeholder="Wähle einen Club aus">
+      <ion-label position="stacked">Club</ion-label>
+      <ion-select
+        [interfaceOptions]=""
+        interface="alert"
+        [(ngModel)]="training.clubId"
+        value="{{training.clubId}}"
+        multiple="false"
+        placeholder="Wähle einen Club aus"
+      >
         <ion-select-option *ngFor="let club of clubList" value="{{club.id}}">{{club.name}}</ion-select-option>
       </ion-select>
     </ion-item>
 
     <ion-item>
-      <ion-label  position="stacked">Team</ion-label>
-      <ion-select [interfaceOptions]="" interface="alert" [(ngModel)]="training.teamId" value="{{training.teamId}}" multiple="false" placeholder="Wähle ein Team">
+      <ion-label position="stacked">Team</ion-label>
+      <ion-select
+        [interfaceOptions]=""
+        interface="alert"
+        [(ngModel)]="training.teamId"
+        value="{{training.teamId}}"
+        multiple="false"
+        placeholder="Wähle ein Team"
+      >
         <ion-select-option *ngFor="let team of teamList" value="{{team.id}}">{{team.name}}</ion-select-option>
       </ion-select>
     </ion-item>
 
     <ion-list-header>
-      <ion-label>
-        Details
-      </ion-label>
+      <ion-label> Details </ion-label>
     </ion-list-header>
-
 
     <ion-item>
       <ion-label position="stacked">Titel</ion-label>
@@ -64,21 +72,25 @@
     <ion-item>
       <ion-label position="stacked">Uhrzeit von:</ion-label>
       <ion-icon slot="start" name="time-outline"></ion-icon>
-      <ion-datetime [(ngModel)]="training.timeFrom"  value="{{training.timeFrom}}" display-timezone="" display-format="HH:mm" picker-format="HH:mm"
-       ></ion-datetime>
+      <ion-datetime
+        [(ngModel)]="training.timeFrom"
+        value="{{training.timeFrom}}"
+        display-timezone=""
+        display-format="HH:mm"
+        picker-format="HH:mm"
+      ></ion-datetime>
     </ion-item>
 
     <ion-item>
       <ion-label position="stacked">Uhrzeit bis:</ion-label>
       <ion-icon slot="start" name="time"></ion-icon>
-      <ion-datetime [(ngModel)]="training.timeTo" value="{{training.timeTo}}" display-timezone="" display-format="HH:mm" picker-format="HH:mm"
-      ></ion-datetime>
+      <ion-datetime [(ngModel)]="training.timeTo" value="{{training.timeTo}}" display-timezone="" display-format="HH:mm" picker-format="HH:mm"></ion-datetime>
     </ion-item>
 
     <ion-item>
       <ion-label position="stacked">Wochentag:</ion-label>
       <ion-icon slot="start" name="calendar"></ion-icon>
-      <ion-select [(ngModel)]="training.weekday"  value="{{training.weekday}}" multiple="true" cancelText="abbrechen" okText="ok">
+      <ion-select [(ngModel)]="training.weekday" value="{{training.weekday}}" multiple="true" cancelText="abbrechen" okText="ok">
         <ion-select-option value="1">Montag</ion-select-option>
         <ion-select-option value="2">Dienstag</ion-select-option>
         <ion-select-option value="3">Mittwoch</ion-select-option>
@@ -86,15 +98,19 @@
         <ion-select-option value="5">Freitag</ion-select-option>
         <ion-select-option value="6">Samstag</ion-select-option>
         <ion-select-option value="0">Sonntag</ion-select-option>
-
       </ion-select>
     </ion-item>
 
     <ion-item>
       <ion-label position="stacked">Startdatum:</ion-label>
       <ion-icon slot="start" name="caret-forward-circle-outline"></ion-icon>
-      <ion-datetime [(ngModel)]="training.startDate" display-timezone="" display-format="DDDD DD. MMM YYYY"
-        picker-format="DD. MM YYYY" value="{{training.startDate}}"></ion-datetime>
+      <ion-datetime
+        [(ngModel)]="training.startDate"
+        display-timezone=""
+        display-format="DDDD DD. MMM YYYY"
+        picker-format="DD. MM YYYY"
+        value="{{training.startDate}}"
+      ></ion-datetime>
     </ion-item>
 
     <ion-item>
@@ -102,8 +118,5 @@
       <ion-icon slot="start" name="repeat"></ion-icon>
       <ion-input [(ngModel)]="training.repeat" value="{{training.repeat}}" type="number"></ion-input>
     </ion-item>
-
-
   </ion-list>
-
 </ion-content>

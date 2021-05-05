@@ -8,43 +8,33 @@
 </ion-header>
 
 <ion-content>
-
-
   <ion-grid>
     <ion-row>
       <ion-col size="12" size-xs="12" size-sm="3" size-lg="3"></ion-col>
       <ion-col size="12" size-xs="12" size-sm="6" size-lg="6">
-        
         <ion-text>
-        <p>Du hast ein Problem mit der App oder du kannst deine Mitglieder nicht korrekt verwalten? Bei Fragen dieser Art stehen wir dir gerne zur Verfügung. Bitte hinterlasse uns dafür eine Nachricht über das folgende Formular. Vielen Dank!</p>
-      </ion-text>
-        
+          <p>
+            Du hast ein Problem mit der App oder du kannst deine Mitglieder nicht korrekt verwalten? Bei Fragen dieser Art stehen wir dir gerne zur Verfügung.
+            Bitte hinterlasse uns dafür eine Nachricht über das folgende Formular. Vielen Dank!
+          </p>
+        </ion-text>
+
         <ion-list>
-          
           <ion-list-header>
-            <ion-label>
-              Supportanfrage
-            </ion-label>
+            <ion-label> Supportanfrage </ion-label>
           </ion-list-header>
           <ion-item>
-            <ion-label position="stacked">
-              Vorname & Name
-            </ion-label>
+            <ion-label position="stacked"> Vorname & Name </ion-label>
             <ion-input [(ngModel)]="support.name" type="text"></ion-input>
           </ion-item>
 
           <ion-item>
-            <ion-label position="stacked">
-              Deine Nachricht
-            </ion-label>
+            <ion-label position="stacked"> Deine Nachricht </ion-label>
             <ion-textarea [(ngModel)]="support.message"></ion-textarea>
           </ion-item>
 
           <ion-button expand="block" (click)="sendSupport(support)">Anfrage absenden</ion-button>
-
         </ion-list>
-
-
       </ion-col>
       <ion-col size="12" size-xs="12" size-sm="3" size-lg="3"></ion-col>
     </ion-row>

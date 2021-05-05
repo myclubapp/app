@@ -1,33 +1,29 @@
 img {
-
-    max-height: 200px;
-    max-width: 400px;
-
+  max-height: 200px;
+  max-width: 400px;
 }
 
 .intro {
-    text-align: left;
+  text-align: left;
 
-    h1 {
-        font-size: xx-large;
-    }
+  h1 {
+    font-size: xx-large;
+  }
 }
 
-
-.image{
-    display: flex;
+.image {
+  display: flex;
 }
 
-.image img{
-    margin: auto;  /* Magic! */
+.image img {
+  margin: auto; /* Magic! */
 }
 
-
-ion-footer{
-    font-size: small;
-    text-align: center;
-    background-color: var(--ion-color-primary);
-    a{
-        color: var(--ion-font-color);
-    }
+ion-footer {
+  font-size: small;
+  text-align: center;
+  background-color: var(--ion-color-primary);
+  a {
+    color: var(--ion-font-color);
+  }
 }

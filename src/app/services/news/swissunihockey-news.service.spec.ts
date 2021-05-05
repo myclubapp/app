@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { SwissunihockeyNewsService } from './swissunihockey-news.service';
+import {SwissunihockeyNewsService} from './swissunihockey-news.service';
 
 describe('SwissunihockeyNewsService', () => {
   let service: SwissunihockeyNewsService;

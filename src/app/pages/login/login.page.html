@@ -17,20 +17,13 @@
       <ion-col size="12" size-xs="12" size-sm="6" size-lg="4">
         <app-auth-form #loginForm (formSubmitted)="loginUser($event)" [actionButtonText]="'Login'"></app-auth-form>
 
-        <ion-button expand="block" fill="clear" routerLink="/signup">
-          Neuen Account erstellen
-        </ion-button>
+        <ion-button expand="block" fill="clear" routerLink="/signup"> Neuen Account erstellen </ion-button>
 
-        <ion-button expand="block" fill="clear" routerLink="/reset-password">
-          Ich habe mein Passwort vergessen :(
-        </ion-button>
-
+        <ion-button expand="block" fill="clear" routerLink="/reset-password"> Ich habe mein Passwort vergessen :( </ion-button>
       </ion-col>
       <ion-col size="12" size-xs="12" size-sm="3" size-lg="4"></ion-col>
     </ion-row>
   </ion-grid>
-  
-  
 </ion-content>
 
 <ion-footer class="ion-no-border ion-padding">

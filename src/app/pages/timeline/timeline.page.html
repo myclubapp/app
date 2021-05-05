@@ -1,5 +1,5 @@
-<ion-header >
-  <ion-toolbar >
+<ion-header>
+  <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
@@ -7,8 +7,8 @@
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense" >
-    <ion-toolbar  >
+  <ion-header collapse="condense">
+    <ion-toolbar>
       <ion-title size="large">Timeline</ion-title>
     </ion-toolbar>
   </ion-header>
@@ -17,66 +17,44 @@
     <ion-list-header>
       <ion-label> Erste Schritte mit my-club 🚀</ion-label>
     </ion-list-header>
-    
+
     <ion-grid>
       <ion-row>
         <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngIf="setupAccountTutorial">
           <ion-card type="button" button="true" (click)="setupTutorial()">
             <ion-card-header>
-              <ion-card-subtitle>
-                1. Schritt
-              </ion-card-subtitle>
-              <ion-card-title>
-                Tutorial anschauen
-              </ion-card-title>
+              <ion-card-subtitle> 1. Schritt </ion-card-subtitle>
+              <ion-card-title> Tutorial anschauen </ion-card-title>
             </ion-card-header>
-
           </ion-card>
         </ion-col>
-        <ion-col size="12" size-xs="12" size-sm="6" size-lg="6"  *ngIf="setupAccountAGB">
+        <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngIf="setupAccountAGB">
           <ion-card type="button" button="true" (click)="setupAGB()">
             <ion-card-header>
-              <ion-card-subtitle>
-                2. Schritt
-              </ion-card-subtitle>
-              <ion-card-title>
-                AGBs akzeptieren
-              </ion-card-title>
+              <ion-card-subtitle> 2. Schritt </ion-card-subtitle>
+              <ion-card-title> AGBs akzeptieren </ion-card-title>
             </ion-card-header>
-  
           </ion-card>
         </ion-col>
-        <ion-col size="12" size-xs="12" size-sm="6" size-lg="6"  *ngIf="setupAccountProfile">
+        <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngIf="setupAccountProfile">
           <ion-card type="button" button="true" routerDirection="forward" (click)="setupProfile()">
             <ion-card-header>
-              <ion-card-subtitle>
-                3. Schritt
-              </ion-card-subtitle>
-              <ion-card-title>
-                Profil einrichten
-              </ion-card-title>
+              <ion-card-subtitle> 3. Schritt </ion-card-subtitle>
+              <ion-card-title> Profil einrichten </ion-card-title>
             </ion-card-header>
-   
           </ion-card>
         </ion-col>
-        <ion-col size="12" size-xs="12" size-sm="6" size-lg="6"  *ngIf="setupAccountClub">
+        <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngIf="setupAccountClub">
           <ion-card type="button" button="true" routerDirection="forward" (click)="openJoinClub()">
             <ion-card-header>
-              <ion-card-subtitle>
-                4. Schritt
-              </ion-card-subtitle>
-              <ion-card-title>
-                Club beitreten
-              </ion-card-title>
+              <ion-card-subtitle> 4. Schritt </ion-card-subtitle>
+              <ion-card-title> Club beitreten </ion-card-title>
             </ion-card-header>
-         
           </ion-card>
-        </ion-col>        
+        </ion-col>
       </ion-row>
     </ion-grid>
   </ion-list>
-
-
 
   <ion-list *ngIf="openRequestList.length > 0">
     <ion-list-header>
@@ -87,11 +65,8 @@
     </ion-item>
   </ion-list>
 
-
   <ion-list *ngIf="requestList.length > 0">
-    <ion-list-header>
-      Requests
-    </ion-list-header>
+    <ion-list-header> Requests </ion-list-header>
 
     <ion-grid>
       <ion-row>
@@ -108,46 +83,35 @@
               </ion-fab-button>
             </ion-fab>
             <ion-avatar>
-              <img src="{{request.user.picture}}">
+              <img src="{{request.user.picture}}" />
             </ion-avatar>
             <ion-card-header>
-              <ion-card-subtitle>
-                {{request.club.name}} - {{request.team.name}}
-              </ion-card-subtitle>
-              <ion-card-title>
-                {{request.user.firstName}} {{request.user.lastName}}
-              </ion-card-title>
+              <ion-card-subtitle> {{request.club.name}} - {{request.team.name}} </ion-card-subtitle>
+              <ion-card-title> {{request.user.firstName}} {{request.user.lastName}} </ion-card-title>
             </ion-card-header>
-            <ion-card-content>
-
-            </ion-card-content>
+            <ion-card-content> </ion-card-content>
           </ion-card>
         </ion-col>
       </ion-row>
     </ion-grid>
   </ion-list>
 
-
   <ion-list *ngIf="timelineList.length > 0">
-    <ion-list-header>
-      Trainings & Meisterschaft
-    </ion-list-header>
-    
-        <ion-slides #slides [options]="sliderConfig">
+    <ion-list-header> Trainings & Meisterschaft </ion-list-header>
 
-          <ion-slide  *ngFor="let timeline of timelineList">
-            <ion-card button="true" type="button" (click)="openTimeline(timeline)">      
-              <ion-card-header>
-                <ion-card-subtitle>
-                  <ion-badge>{{timeline.team.name}}</ion-badge>
-                </ion-card-subtitle>
-                <ion-card-title>{{timeline.date.seconds * 1000 | date: 'EEE d. MMM yyyy'}}</ion-card-title>
-                <ion-card-subtitle>{{timeline.timeFrom}} - {{timeline.timeTo}} |   {{timeline.location}}</ion-card-subtitle>
-              </ion-card-header>
-            </ion-card>
-            
-          </ion-slide>
-        </ion-slides>
+    <ion-slides #slides [options]="sliderConfig">
+      <ion-slide *ngFor="let timeline of timelineList">
+        <ion-card button="true" type="button" (click)="openTimeline(timeline)">
+          <ion-card-header>
+            <ion-card-subtitle>
+              <ion-badge>{{timeline.team.name}}</ion-badge>
+            </ion-card-subtitle>
+            <ion-card-title>{{timeline.date.seconds * 1000 | date: 'EEE d. MMM yyyy'}}</ion-card-title>
+            <ion-card-subtitle>{{timeline.timeFrom}} - {{timeline.timeTo}} | {{timeline.location}}</ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
+      </ion-slide>
+    </ion-slides>
   </ion-list>
 
   <!--<ion-list *ngIf="timelineList.length > 0">
@@ -175,30 +139,22 @@
         </ion-slides>
   </ion-list>-->
 
-
   <ion-list *ngIf="teamList.length > 0">
-    <ion-list-header>
-      Teams
-    </ion-list-header>
+    <ion-list-header> Teams </ion-list-header>
     <ion-grid>
       <ion-row>
         <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let team of teamList">
           <ion-card type="button" button="true">
             <ion-card-header (click)="openTeam(team)">
-              <ion-card-subtitle>
-                {{team.clubName}}
-              </ion-card-subtitle>
-              <ion-card-title>
-                {{team.name}}
-              </ion-card-title>
+              <ion-card-subtitle> {{team.clubName}} </ion-card-subtitle>
+              <ion-card-title> {{team.name}} </ion-card-title>
             </ion-card-header>
             <ion-fab vertical="bottom" horizontal="end">
               <ion-fab-button size="small" color="danger" (click)="leaveTeam(team.id)">
                 <ion-icon name="trash-outline"></ion-icon>
               </ion-fab-button>
             </ion-fab>
-            <ion-card-content>
-            </ion-card-content>
+            <ion-card-content> </ion-card-content>
           </ion-card>
         </ion-col>
       </ion-row>
@@ -206,63 +162,40 @@
   </ion-list>
 
   <ion-list *ngIf="clubList.length > 0">
-    <ion-list-header>
-      Clubs
-    </ion-list-header>
+    <ion-list-header> Clubs </ion-list-header>
     <ion-grid>
       <ion-row>
         <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let club of clubList">
           <ion-card type="button" button="true">
             <ion-card-header (click)="openClub(club)">
-              <ion-card-subtitle>
-                {{club.type}}
-              </ion-card-subtitle>
-              <ion-card-title>
-                {{club.name}}
-              </ion-card-title>
+              <ion-card-subtitle> {{club.type}} </ion-card-subtitle>
+              <ion-card-title> {{club.name}} </ion-card-title>
             </ion-card-header>
             <ion-fab vertical="bottom" horizontal="end">
               <ion-fab-button size="small" color="danger" (click)="leaveClub(club.id)">
                 <ion-icon name="trash-outline"></ion-icon>
               </ion-fab-button>
             </ion-fab>
-
           </ion-card>
-
         </ion-col>
       </ion-row>
     </ion-grid>
-
-
   </ion-list>
-
-
 
   <ion-list>
     <ion-grid>
       <ion-row>
         <ion-col size="12" size-xs="12" size-sm="6" size-lg="6">
-
           <ion-card type="button" button="true" (click)="openJoinClub()">
             <ion-card-header>
-              <ion-card-subtitle>
-                Anfrage senden
-              </ion-card-subtitle>
-              <ion-card-title>
-                Club/Team beitreten
-              </ion-card-title>
+              <ion-card-subtitle> Anfrage senden </ion-card-subtitle>
+              <ion-card-title> Club/Team beitreten </ion-card-title>
             </ion-card-header>
 
-            <ion-card-content>
-              Wähle deinen Club aus und tritt deinem Team bei!
-            </ion-card-content>
-
+            <ion-card-content> Wähle deinen Club aus und tritt deinem Team bei! </ion-card-content>
           </ion-card>
         </ion-col>
       </ion-row>
     </ion-grid>
-
   </ion-list>
-
-
 </ion-content>

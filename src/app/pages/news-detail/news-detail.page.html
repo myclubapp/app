@@ -1,11 +1,8 @@
 <ion-header>
   <ion-toolbar>
-    
     <ion-title>{{news.title}}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="dismiss()">
-        schliessen
-      </ion-button>
+      <ion-button (click)="dismiss()"> schliessen </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -24,18 +21,11 @@
     </ion-fab>-->
     <ion-img [src]="news.image"></ion-img>
     <ion-card-header>
-
-      <ion-card-subtitle>{{news.author}} {{news.date  | date }}</ion-card-subtitle>
+      <ion-card-subtitle>{{news.author}} {{news.date | date }}</ion-card-subtitle>
       <ion-card-title>{{news.title}}</ion-card-title>
-
     </ion-card-header>
     <ion-card-content>
-      <ion-text>
-        {{news.text}}
-      </ion-text>
+      <ion-text> {{news.text}} </ion-text>
     </ion-card-content>
- </ion-card>
-
-
-
+  </ion-card>
 </ion-content>

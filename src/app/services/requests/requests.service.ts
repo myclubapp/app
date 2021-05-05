@@ -1,40 +1,36 @@
-import {
-  Injectable
-} from '@angular/core';
-import {
-  AuthService
-} from './../../services/auth.service';
+import {Injectable} from '@angular/core';
+import {AuthService} from './../../services/auth.service';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RequestsService {
   public teamListRef: firebase.default.firestore.CollectionReference;
 
   public requestListRef: firebase.default.firestore.CollectionReference;
-  constructor(
-    public authService: AuthService,
-  ) {
-
-  }
+  constructor(public authService: AuthService) {}
 
   approve(requestId) {
-    return firebase.default.firestore().collection('requests').doc(requestId).set({
-      "status": true
-    }, {
-      "merge": true
-    })
-
+    return firebase.default.firestore().collection('requests').doc(requestId).set(
+      {
+        status: true,
+      },
+      {
+        merge: true,
+      }
+    );
   }
   reject(requestId) {
-    return firebase.default.firestore().collection('requests').doc(requestId).set({
-      "status": "rejected"
-    }, {
-      "merge": true
-    })
-
+    return firebase.default.firestore().collection('requests').doc(requestId).set(
+      {
+        status: 'rejected',
+      },
+      {
+        merge: true,
+      }
+    );
   }
 
   getClubRequestList(clubId) {
@@ -47,21 +43,28 @@ export class RequestsService {
 
   async getUserRequestList() {
     const user: firebase.default.User = await this.authService.getUser();
-    return firebase.default.firestore().collection('requests').where('userRef', '==', firebase.default.firestore().doc('userProfile/' + user.uid));
+    return firebase.default
+      .firestore()
+      .collection('requests')
+      .where('userRef', '==', firebase.default.firestore().doc('userProfile/' + user.uid));
   }
 
-
-
-  async addRequest(clubId, teamId): Promise < any > {
+  async addRequest(clubId, teamId): Promise<any> {
     const user: firebase.default.User = await this.authService.getUser();
     let userRef = firebase.default.firestore().collection(`userProfile`).doc(user.uid);
-    let clubRef = firebase.default.firestore().collection('club').doc('su-' + clubId);
-    let teamRef = firebase.default.firestore().collection('team').doc('su-' + teamId);
+    let clubRef = firebase.default
+      .firestore()
+      .collection('club')
+      .doc('su-' + clubId);
+    let teamRef = firebase.default
+      .firestore()
+      .collection('team')
+      .doc('su-' + teamId);
 
     return firebase.default.firestore().collection('requests').add({
       userRef: userRef,
       clubRef: clubRef,
-      teamRef: teamRef
+      teamRef: teamRef,
     });
   }
   /*
@@ -156,8 +159,6 @@ export class RequestsService {
 
     }*/
 
-
-
   /* BACKUP 
             let club = await request.data().clubRef.get();
             let team = await request.data().teamRef.get();
@@ -179,5 +180,4 @@ export class RequestsService {
             });
 
             */
-
 }

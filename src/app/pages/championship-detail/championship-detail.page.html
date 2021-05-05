@@ -2,9 +2,7 @@
   <ion-toolbar>
     <ion-title>{{game?.teamHome}} vs {{game?.teamAway}}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="dismiss()">
-        schliessen
-      </ion-button>
+      <ion-button (click)="dismiss()"> schliessen </ion-button>
     </ion-buttons>
     <ion-buttons collapse="true" slot="secondary">
       <ion-button>
@@ -25,10 +23,7 @@
     </ion-toolbar>
   </ion-header>
   <ion-list lines="full">
-
-    <ion-list-header>
-      {{game?.subtitle}}
-    </ion-list-header>
+    <ion-list-header> {{game?.subtitle}} </ion-list-header>
 
     <ion-item>
       <ion-icon slot="start" name="today-outline"></ion-icon>
@@ -36,50 +31,40 @@
     </ion-item>
     <ion-item (click)="openMaps()">
       <ion-icon slot="start" name="location-outline"></ion-icon>
-      <ion-label>
-        {{game?.sportshall}} in {{game?.location}}
-      </ion-label>
+      <ion-label> {{game?.sportshall}} in {{game?.location}} </ion-label>
       <ion-icon slot="end" name="map-outline"></ion-icon>
     </ion-item>
     <ion-item>
       <ion-avatar slot="start">
-        <img src="{{game?.teamHomeImage}}">
+        <img src="{{game?.teamHomeImage}}" />
       </ion-avatar>
       <ion-label>{{game?.teamHome}}</ion-label>
     </ion-item>
 
     <ion-item>
       <ion-avatar slot="start">
-        <img src="{{game?.teamAwayImage}}">
+        <img src="{{game?.teamAwayImage}}" />
       </ion-avatar>
       <ion-label>{{game?.teamAway}}</ion-label>
     </ion-item>
 
     <ion-item *ngIf="game?.score">
       <ion-icon slot="start" name="stats-chart-outline"></ion-icon>
-      <ion-label>
-        {{game?.score}}
-      </ion-label>
+      <ion-label> {{game?.score}} </ion-label>
     </ion-item>
 
     <ion-item *ngIf="game?.spectators">
       <ion-icon slot="start" name="people-outline"></ion-icon>
-      <ion-label>
-        {{game?.spectators}}
-      </ion-label>
+      <ion-label> {{game?.spectators}} </ion-label>
     </ion-item>
 
     <ion-item *ngIf="game?.referee1">
       <ion-icon slot="start" name="person-add-outline"></ion-icon>
-      <ion-label>
-        {{game?.referee1}} {{game?.referee2}}
-      </ion-label>
+      <ion-label> {{game?.referee1}} {{game?.referee2}} </ion-label>
     </ion-item>
-
   </ion-list>
 
   <ion-list>
-
     <ion-list-header>
       <ion-label>Teilnehmer</ion-label>
     </ion-list-header>
@@ -97,7 +82,7 @@
       <ion-list *ngFor="let member of acceptList" lines="full">
         <ion-item>
           <ion-avatar slot="start">
-            <img src="{{member.user.picture}}">
+            <img src="{{member.user.picture}}" />
           </ion-avatar>
           <ion-label>{{member.user.firstName}} {{member.user.lastName}}</ion-label>
         </ion-item>
@@ -108,7 +93,7 @@
       <ion-list *ngFor="let member of rejectList" lines="full">
         <ion-item>
           <ion-avatar slot="start">
-            <img src="{{member.user.picture}}">
+            <img src="{{member.user.picture}}" />
           </ion-avatar>
           <ion-label>{{member.user.firstName}} {{member.user.lastName}}</ion-label>
         </ion-item>
@@ -119,7 +104,5 @@
     </ion-list-header>
   </ion-list>
 
-  <web-google-maps [apiKey]="apiKey" [markers]="markers" [options]="options" [lng]="game?.locationY"
-    [lat]="game?.locationX"></web-google-maps>
-
+  <web-google-maps [apiKey]="apiKey" [markers]="markers" [options]="options" [lng]="game?.locationY" [lat]="game?.locationX"></web-google-maps>
 </ion-content>

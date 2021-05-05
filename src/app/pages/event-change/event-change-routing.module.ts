@@ -1,13 +1,13 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {Routes, RouterModule} from '@angular/router';
 
-import { EventChangePage } from './event-change.page';
+import {EventChangePage} from './event-change.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: EventChangePage
-  }
+    component: EventChangePage,
+  },
 ];
 
 @NgModule({
