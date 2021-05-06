@@ -102,7 +102,7 @@ const routes: Routes = [
       {
         path: 'member',
         loadChildren: () => import('../member/member.module').then((m) => m.MemberPageModule),
-       //canActivate: [AuthGuard],
+        //canActivate: [AuthGuard],
       },
       {
         path: 'member-detail',

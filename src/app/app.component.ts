@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -20,12 +20,10 @@ const {PushNotifications} = Plugins;
 })
 export class AppComponent {
   constructor(
-
     private authService: AuthService,
     private swUpdate: SwUpdate,
     private alertController: AlertController,
     private pushNotificationService: PushNotificationService
-
   ) {
     this.initializeApp();
   }
@@ -101,7 +99,6 @@ export class AppComponent {
     this.pushNotificationService.receiveMessage();
   }
 
-  
   async presentAlert() {
     const alert = await this.alertController.create({
       //cssClass: 'my-custom-class',

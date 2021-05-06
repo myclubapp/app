@@ -27,9 +27,12 @@
     "@capacitor/core": "2.4.7",
     "@capacitor/ios": "^2.4.7",
     "@ionic/angular": "^5.5.2",
+    "@ionic/pwa-elements": "^3.0.2",
     "firebase": "^8.4.3",
     "rxjs": "~6.6.0",
     "tslib": "^2.2.0",
+    "web-google-maps": "^1.0.1",
+    "web-social-share": "^7.1.0",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
