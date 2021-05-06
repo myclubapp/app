@@ -177,7 +177,7 @@ export class TimelinePage implements OnInit {
       }
     });
 
-    const user: firebase.User = await this.authService.getUser();
+    const user: firebase.default.User = await this.authService.getUser();
     let teamListRef = this.teamSerivice.getTeamListChanges(user);
 
     teamListRef.onSnapshot(

@@ -1,6 +1,6 @@
 {
   "appId": "app.myclub",
-  "appName": "myclub",
+  "appName": "app",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",

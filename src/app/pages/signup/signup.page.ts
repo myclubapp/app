@@ -20,7 +20,7 @@ export class SignupPage implements OnInit {
 
   async signupUser(credentials: UserCredential): Promise<void> {
     try {
-      const userCredential: firebase.auth.UserCredential = await this.authService.signup(credentials.email, credentials.password);
+      const userCredential: firebase.default.auth.UserCredential = await this.authService.signup(credentials.email, credentials.password);
       this.authService.userId = userCredential.user.uid;
       await this.signupForm.hideLoading();
       this.router.navigateByUrl('/home/timeline');

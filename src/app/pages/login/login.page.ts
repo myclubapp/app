@@ -28,7 +28,7 @@ export class LoginPage implements OnInit {
 
   async loginUser(credentials: UserCredential): Promise<void> {
     try {
-      const userCredential: firebase.auth.UserCredential = await this.authService.login(credentials.email, credentials.password);
+      const userCredential: firebase.default.auth.UserCredential = await this.authService.login(credentials.email, credentials.password);
       this.authService.userId = userCredential.user.uid;
       await this.loginForm.hideLoading();
 
