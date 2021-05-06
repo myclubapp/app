@@ -8,9 +8,10 @@ import 'firebase/messaging';
 })
 export class PushNotificationService {
   pushNotificationToken: string = null;
-  constructor(private messaging: AngularFireMessaging, private profileService: ProfileService) //private profileService: ProfileService
-
-  {}
+  constructor(
+    private messaging: AngularFireMessaging,
+    private profileService: ProfileService //private profileService: ProfileService
+  ) {}
 
   requestPermission() {
     this.messaging.requestToken.subscribe(
