@@ -1,41 +1,51 @@
-<div class="body-bg min-h-screen pt-12 md:pt-20 pb-6 px-2 md:px-0" style="font-family:'Lato',sans-serif;">
+<div class="body-bg min-h-screen pt-12 md:pt-20 pb-6 px-2 md:px-0" style="font-family: 'Lato', sans-serif">
   <header class="max-w-lg mx-auto">
-      <a href="#">
-          <h1 class="text-4xl font-bold text-white text-center">my-club</h1>
-      </a>
+    <a href="#">
+      <h1 class="text-4xl font-bold text-white text-center">my-club</h1>
+    </a>
   </header>
 
   <main class="bg-white max-w-lg mx-auto p-8 md:p-12 my-10 rounded-lg shadow-2xl">
-      <section>
-          <h3 class="font-bold text-2xl">Willkommen bei my-club </h3>
-          <p class="text-gray-600 pt-2">Jetzt bei deinem Club einloggen</p>
-      </section>
+    <section>
+      <h3 class="font-bold text-2xl">Willkommen bei my-club</h3>
+      <p class="text-gray-600 pt-2">Jetzt bei deinem Club einloggen</p>
+    </section>
 
-      <section class="mt-10">
-          <form class="flex flex-col" method="POST" action="#">
-              <div class="mb-6 pt-3 rounded bg-gray-200">
-                  <label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="email">Email</label>
-                  <input type="text" id="email" class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3">
-              </div>
-              <div class="mb-6 pt-3 rounded bg-gray-200">
-                  <label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="password">Password</label>
-                  <input type="password" id="password" class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3">
-              </div>
-              <div class="flex justify-end">
-                  <a href="/reset-password" class="text-sm text-purple-600 hover:text-purple-700 hover:underline mb-6">Ich habe mein Passwort vergessen :( </a>
-              </div>
-              <button class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded shadow-lg hover:shadow-xl transition duration-200" type="submit">Einloggen</button>
-          </form>
-      </section>
+    <section class="mt-10">
+      <form class="flex flex-col" method="POST" action="#">
+        <div class="mb-6 pt-3 rounded bg-gray-200">
+          <label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="email">Email</label>
+          <input
+            type="text"
+            id="email"
+            class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3"
+          />
+        </div>
+        <div class="mb-6 pt-3 rounded bg-gray-200">
+          <label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3"
+          />
+        </div>
+        <div class="flex justify-end">
+          <a href="/reset-password" class="text-sm text-purple-600 hover:text-purple-700 hover:underline mb-6">Ich habe mein Passwort vergessen :( </a>
+        </div>
+        <button class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded shadow-lg hover:shadow-xl transition duration-200" type="submit">
+          Einloggen
+        </button>
+      </form>
+    </section>
   </main>
 
   <div class="max-w-lg mx-auto text-center mt-12 mb-6">
-      <p class="text-white">Noch keinen Account? <a href="/signup" class="font-bold hover:underline">Neuen Account erstellen</a>.</p>
+    <p class="text-white">Noch keinen Account? <a href="/signup" class="font-bold hover:underline">Neuen Account erstellen</a>.</p>
   </div>
 
   <footer class="max-w-lg mx-auto flex justify-center text-white">
-      <a href="#" class="hover:underline">Contact</a>
-      <span class="mx-3">•</span>
-      <a href="/agb" class="hover:underline">AGB</a>
+    <a href="#" class="hover:underline">Contact</a>
+    <span class="mx-3">•</span>
+    <a href="/agb" class="hover:underline">AGB</a>
   </footer>
 </div>
