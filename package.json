@@ -7,13 +7,13 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:ci": "npm run build --prod",
+    "build:prod": "cross-env NODE_ENV=production ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "prepare": "husky install",
-    "pretty-quick": "pretty-quick",
-    "build:prod": "cross-env NODE_ENV=production ng build --prod",
-    "build:ci": "npm run build --prod"
+    "pretty-quick": "pretty-quick"
   },
   "private": true,
   "dependencies": {
