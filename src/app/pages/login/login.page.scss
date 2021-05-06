@@ -2,6 +2,11 @@ ion-content {
   //  --background: #fff url('./../../../assets/login_background.jpg') no-repeat center center / cover;
 }
 
+.body-bg {
+  background-color: #795DEB;
+  background-image: linear-gradient(315deg, #9921e8 0%, #339BDE 74%);
+}
+
 ion-toolbar {
   --background: transparent;
 }
