@@ -11,7 +11,8 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "prepare": "husky install",
-    "pretty-quick": "pretty-quick"
+    "pretty-quick": "pretty-quick",
+    "build:ci": "npm run build --prod"
   },
   "private": true,
   "dependencies": {
