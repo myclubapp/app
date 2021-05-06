@@ -13,6 +13,7 @@
     "prepare": "husky install",
     "pretty-quick": "pretty-quick",
     "build:prod": "cross-env NODE_ENV=production ng build --prod"
+    "build:ci": "npm run build --prod"
   },
   "private": true,
   "dependencies": {
