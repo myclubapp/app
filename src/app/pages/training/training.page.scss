@@ -1,11 +1,25 @@
+ion-button {
+  --padding-start: 0px;
+}
+
+ion-card-content {
+  padding: 0 10px 0;
+}
 ion-card-header {
-  padding-bottom: 0px;
+  padding: 10px 10px 0;
+}
+ion-card {
+  margin: 2px 16px 10px;
+}
+ion-col {
+  padding: 0px;
 }
 
-ion-footer {
-  height: 60px;
+.cardDate {
+  margin: 0 0;
+  color: #797979;
 }
-
-ion-badge {
-  margin-top: 15px;
+.cardTop {
+  padding: 0;
+  margin: 0;
 }
