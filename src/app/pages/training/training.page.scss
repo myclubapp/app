@@ -14,6 +14,9 @@ ion-card {
 ion-col {
   padding: 0px;
 }
+ion-grid.TimelineGrid {
+  --ion-grid-columns: 24;
+}
 
 .cardDate {
   margin: 0 0;

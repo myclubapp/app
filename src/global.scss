@@ -31,16 +31,20 @@
 //custom Classes
 .true {
   //height: 5px;
-  --background-color: linear-gradient(270deg, #c6ffbd 1.26%, #f0ffc4 100%);
+  --background: linear-gradient(270deg, #c6ffbd 1.26%, #f0ffc4 100%) !important;
 }
 
 .false {
   //height: 5px;
-  --background-color: linear-gradient(270deg, #ffc5c5 0%, #ffecdb 100%);
+  --background: linear-gradient(270deg, #ffc5c5 0%, #ffecdb 100%) !important;
 }
 .undefined {
-  //height: 5px;
   --background: #ffffff;
+}
+
+p.ButtonSubtext {
+  font-size: 10px;
+  margin: 0;
 }
 
 //adjusted ionic Components
