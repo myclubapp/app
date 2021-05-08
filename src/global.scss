@@ -52,6 +52,9 @@ p.ButtonSubtext {
 ion-badge {
   --background: linear-gradient(90deg, #00d1ff 0%, #0578b9 100%);
 }
+ion-badge.red {
+  --background: linear-gradient(129.04deg, #ff7a00 21.86%, #ff00a8 82.33%);
+}
 
 ion-header {
   border: none !important;
