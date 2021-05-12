@@ -3,13 +3,14 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
+
     <ion-title>Timeline</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Timeline</ion-title>
+      <ion-title size="large">Home</ion-title>
     </ion-toolbar>
   </ion-header>
 
@@ -56,7 +57,7 @@
     </ion-grid>
   </ion-list>
 
-  <ion-list *ngIf="openRequestList.length > 0">
+  <ion-list *ngIf="openRequestList.length> 0">
     <ion-list-header>
       <ion-label> Offene Requests: {{openRequestList.length}}</ion-label>
     </ion-list-header>
@@ -65,7 +66,7 @@
     </ion-item>
   </ion-list>
 
-  <ion-list *ngIf="requestList.length > 0">
+  <ion-list *ngIf="requestList.length> 0">
     <ion-list-header> Requests </ion-list-header>
 
     <ion-grid>
@@ -96,10 +97,56 @@
     </ion-grid>
   </ion-list>
 
-  <ion-list *ngIf="timelineList.length > 0">
-    <ion-list-header> Trainings & Meisterschaft </ion-list-header>
+  <ion-list *ngIf="timelineList.length> 0">
+    <ion-grid>
+      <ion-list-header> Nächste Events </ion-list-header>
 
-    <ion-slides #slides [options]="sliderConfig">
+      <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let timeline of timelineList">
+
+        <ion-grid class="TimelineGrid" style="padding: 0">
+          <ion-row>
+            <ion-col size="1" style="height: 170px;">
+              <img src="../../../assets/icons/timelineSegment.svg" height="100%">
+            </ion-col>
+            <ion-col size="23">
+              <ion-grid class="cardTop">
+                <ion-row class="ion-align-items-center">
+                  <ion-col size="12" push="1">
+                    <p class="cardDate">{{timeline.date.seconds * 1000 | date: 'EEE d. MMM yyyy' : 'GMT' : 'de-CH'}}</p>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+              <ion-card button="true" type="button" (click)="openTimeline(timeline)">
+                <ion-card-header>
+                  <ion-row>
+                    <ion-col size="11">
+                      <ion-badge>{{timeline.team.name}}</ion-badge>
+                    </ion-col>
+                    <ion-col size="1" push="11">
+                      <!-- <ion-badge class="red" mode="ios">{{training?.membersAccepted}}</ion-badge> -->
+                    </ion-col>
+                  </ion-row>
+                  <ion-card-title>{{timeline.timeFrom}} - {{timeline.timeTo}}</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                  <ion-row class="ion-align-items-center">
+                    <ion-col size="8">{{timeline.location}}</ion-col>
+                    <ion-col size="2" push="10" center text-center>
+                      <div style="height: 60px"></div>
+                    </ion-col>
+                    <ion-col size="2" push="11" center text-center>
+
+                    </ion-col>
+                  </ion-row>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-col>
+
+
+      <!-- <ion-slides #slides [options]="sliderConfig">
       <ion-slide *ngFor="let timeline of timelineList">
         <ion-card button="true" type="button" (click)="openTimeline(timeline)">
           <ion-card-header>
@@ -111,7 +158,8 @@
           </ion-card-header>
         </ion-card>
       </ion-slide>
-    </ion-slides>
+    </ion-slides> -->
+    </ion-grid>
   </ion-list>
 
   <!--<ion-list *ngIf="timelineList.length > 0">
@@ -138,8 +186,7 @@
           </ion-slide>
         </ion-slides>
   </ion-list>-->
-
-  <ion-list *ngIf="teamList.length > 0">
+  <ion-list *ngIf="teamList.length> 0">
     <ion-list-header> Teams </ion-list-header>
     <ion-grid>
       <ion-row>
@@ -161,7 +208,7 @@
     </ion-grid>
   </ion-list>
 
-  <ion-list *ngIf="clubList.length > 0">
+  <ion-list *ngIf="clubList.length> 0">
     <ion-list-header> Clubs </ion-list-header>
     <ion-grid>
       <ion-row>
