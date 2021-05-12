@@ -5,6 +5,7 @@ import {Routes, RouterModule} from '@angular/router';
 import {TabsPage} from './tabs.page';
 
 const routes: Routes = [
+
   {
     path: 'home',
     component: TabsPage,
@@ -152,7 +153,8 @@ const routes: Routes = [
       },
     ],
     //canActivate: [AuthGuard],
-  },
+  }
+
 ];
 
 @NgModule({

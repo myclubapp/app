@@ -1,51 +1,85 @@
-<div class="body-bg min-h-screen pt-12 md:pt-20 pb-6 px-2 md:px-0" style="font-family: 'Lato', sans-serif">
-  <header class="max-w-lg mx-auto">
-    <a href="#">
-      <h1 class="text-4xl font-bold text-white text-center">my-club</h1>
-    </a>
-  </header>
-
-  <main class="bg-white max-w-lg mx-auto p-8 md:p-12 my-10 rounded-lg shadow-2xl">
-    <section>
-      <h3 class="font-bold text-2xl">Willkommen bei my-club</h3>
-      <p class="text-gray-600 pt-2">Jetzt bei deinem Club einloggen</p>
-    </section>
-
-    <section class="mt-10">
-      <form class="flex flex-col" method="POST" action="#">
-        <div class="mb-6 pt-3 rounded bg-gray-200">
-          <label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="email">Email</label>
-          <input
-            type="text"
-            id="email"
-            class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3"
-          />
+<!--
+  This example requires Tailwind CSS v2.0+ 
+  
+  This example requires some changes to your config:
+  
+  ```
+  // tailwind.config.js
+  module.exports = {
+    // ...
+    plugins: [
+      // ...
+      require('@tailwindcss/forms'),
+    ]
+  }
+  ```
+-->
+<div class="min-h-screen bg-white flex">
+    <div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+      <div class="mx-auto w-full max-w-sm lg:w-96">
+        <div>
+          <img class="h-12 w-auto" src="assets/icon/icon.png" alt="Logo">
+          <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+             Melden Sie sich bei Ihrem Konto an
+          </h2>
+          <p class="mt-2 text-sm text-gray-600">
+            Oder
+            <a href="/signup" class="font-medium text-indigo-600 hover:text-indigo-500">
+              erstellen Sie einen Account
+            </a>
+          </p>
         </div>
-        <div class="mb-6 pt-3 rounded bg-gray-200">
-          <label class="block text-gray-700 text-sm font-bold mb-2 ml-3" for="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            class="bg-gray-200 rounded w-full text-gray-700 focus:outline-none border-b-4 border-gray-300 focus:border-purple-600 transition duration-500 px-3 pb-3"
-          />
+  
+        <div class="mt-8">
+        
+  
+          <div class="mt-6">
+            <form action="#" method="POST" class="space-y-6">
+              <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">
+                  E-Mail Adresse
+                </label>
+                <div class="mt-1">
+                  <input id="email" name="email" type="email" autocomplete="email" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+              </div>
+  
+              <div class="space-y-1">
+                <label for="password" class="block text-sm font-medium text-gray-700">
+                  Passwort
+                </label>
+                <div class="mt-1">
+                  <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+              </div>
+  
+              <div class="flex items-center justify-between">
+                <!--<div class="flex items-center">
+                  <input id="remember_me" name="remember_me" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                  <label for="remember_me" class="ml-2 block text-sm text-gray-900">
+                    Remember me
+                  </label>
+                </div>-->
+  
+                <div class="text-sm">
+                  <a href="/reset-password" class="font-medium text-indigo-600 hover:text-indigo-500">
+                    Passwort vergessen??
+                  </a>
+                </div>
+              </div>
+  
+              <div>
+                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  Anmelden
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div class="flex justify-end">
-          <a href="/reset-password" class="text-sm text-purple-600 hover:text-purple-700 hover:underline mb-6">Ich habe mein Passwort vergessen :( </a>
-        </div>
-        <button class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded shadow-lg hover:shadow-xl transition duration-200" type="submit">
-          Einloggen
-        </button>
-      </form>
-    </section>
-  </main>
-
-  <div class="max-w-lg mx-auto text-center mt-12 mb-6">
-    <p class="text-white">Noch keinen Account? <a href="/signup" class="font-bold hover:underline">Neuen Account erstellen</a>.</p>
+      </div>
+    </div>
+    <div class="hidden lg:block relative w-0 flex-1">
+      <img class="absolute inset-0 h-full w-full object-cover" src="assets/img/floorball.jpg" alt="">
+    </div>
   </div>
-
-  <footer class="max-w-lg mx-auto flex justify-center text-white">
-    <a href="#" class="hover:underline">Contact</a>
-    <span class="mx-3">•</span>
-    <a href="/agb" class="hover:underline">AGB</a>
-  </footer>
-</div>
+  

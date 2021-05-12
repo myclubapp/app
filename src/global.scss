@@ -16,7 +16,7 @@
 @import "~@ionic/angular/css/normalize.css";
 @import "~@ionic/angular/css/structure.css";
 @import "~@ionic/angular/css/typography.css";
-@import '~@ionic/angular/css/display.css';
+@import "~@ionic/angular/css/display.css";
 
 /* Optional CSS utils that can be commented out */
 @import "~@ionic/angular/css/padding.css";
@@ -24,3 +24,60 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+//Font
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;600;700;900&display=swap");
+
+//custom Classes
+.true {
+  //height: 5px;
+  --background: linear-gradient(270deg, #c6ffbd 1.26%, #f0ffc4 100%) !important;
+}
+
+.false {
+  //height: 5px;
+  --background: linear-gradient(270deg, #ffc5c5 0%, #ffecdb 100%) !important;
+}
+.undefined {
+  --background: #ffffff;
+}
+
+p.ButtonSubtext {
+  font-size: 10px;
+  margin: 0;
+}
+
+//adjusted ionic Components
+
+ion-badge {
+  --background: linear-gradient(90deg, #00d1ff 0%, #0578b9 100%);
+}
+ion-badge.red {
+  --background: linear-gradient(129.04deg, #ff7a00 21.86%, #ff00a8 82.33%);
+}
+
+ion-header {
+  border: none !important;
+  ion-button,
+  ion-back-button {
+    --color: black !important;
+  }
+}
+
+ion-toolbar {
+  --border-width: 0 !important;
+}
+
+ion-title {
+  font-weight: bold !important;
+}
+
+ion-menu-button {
+  color: black;
+}
+
+.verticalTimeline {
+  position: fixed;
+  left: 11px;
+  z-index: 1;
+}

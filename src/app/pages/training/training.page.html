@@ -18,6 +18,11 @@
     </ion-toolbar>
   </ion-header>
 
+  <!-- <div class="verticalTimeline">
+    <svg width="4" height="766" viewBox="0 0 4 766" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 1.5V764" stroke="#D8D8D8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div> -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="showButton">
     <ion-fab-button (click)="openCreate()">
       <ion-icon name="add"></ion-icon>
@@ -25,9 +30,9 @@
   </ion-fab>
 
   <ion-list>
-    <ion-list-header>
-      <ion-label>Aktuelle Trainings</ion-label>
-    </ion-list-header>
+    <!-- <ion-list-header>
+        <ion-label>Aktuelle Trainings</ion-label>
+      </ion-list-header> -->
 
     <ion-grid>
       <ion-row>
@@ -52,37 +57,92 @@
         </ion-col>
 
         <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let training of trainingList">
-          <ion-card button="true" type="button">
-            <ion-img class="{{training.status}}" (click)="openDetail(training)"> </ion-img>
-            <ion-card-header (click)="openDetail(training)">
-              <ion-card-subtitle>
-                <ion-badge>{{training.team.name}}</ion-badge>
-              </ion-card-subtitle>
-              <ion-card-title>{{training.date.seconds * 1000 | date: 'EEE d. MMM yyyy' : 'GMT' : 'de-CH'}}</ion-card-title>
-              <ion-card-subtitle>{{training.timeFrom}} - {{training.timeTo}} | {{training.location}}</ion-card-subtitle>
-            </ion-card-header>
-            <ion-footer>
-              <ion-row>
-                <ion-col center text-center>
-                  <ion-fab>
-                    <ion-fab-button size="small" color="success" (click)="acceptTraining(training)">
-                      <ion-icon size="small" name="thumbs-up"></ion-icon>
-                    </ion-fab-button>
-                  </ion-fab>
-                </ion-col>
-                <ion-col center text-center>
-                  <ion-badge>{{training?.membersAccepted}} / {{training?.membersRejected}}</ion-badge>
-                </ion-col>
-                <ion-col center text-center>
-                  <ion-fab horizontal="start">
-                    <ion-fab-button size="small" color="danger" (click)="rejectTraining(training)">
-                      <ion-icon size="small" name="thumbs-down"></ion-icon>
-                    </ion-fab-button>
-                  </ion-fab>
-                </ion-col>
-              </ion-row>
-            </ion-footer>
-          </ion-card>
+
+          <ion-grid class="TimelineGrid" style="padding: 0">
+            <ion-row>
+              <ion-col size="1" style="height: 170px;">
+                <img src="../../../assets/icons/timelineSegment.svg" height="100%">
+              </ion-col>
+              <ion-col size="23">
+                <ion-grid class="cardTop">
+                  <ion-row class="ion-align-items-center">
+                    <!-- <ion-col size="1">
+                      <ion-icon name="radio-button-off-outline" style="z-index: 100"></ion-icon>
+                    </ion-col> -->
+                    <ion-col size="12" push="1">
+                      <p class="cardDate">{{training.date.seconds * 1000 | date: 'EEE d. MMM yyyy' : 'GMT' : 'de-CH'}}</p>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+                <ion-card class="{{training.status}}" button="true" type="button" (click)="openDetail(training)">
+                  <ion-card-header>
+                    <ion-row>
+                      <ion-col size="11">
+                        <ion-badge>{{training.team.name}}</ion-badge>
+                      </ion-col>
+                      <ion-col size="1" push="11">
+                        <ion-badge class="red" mode="ios">{{training?.membersAccepted}}</ion-badge>
+                      </ion-col>
+                    </ion-row>
+                    <ion-card-title>{{training.timeFrom}} - {{training.timeTo}}</ion-card-title>
+                  </ion-card-header>
+                  <ion-card-content>
+                    <ion-row class="ion-align-items-center">
+                      <ion-col size="8">{{training.location}}</ion-col>
+                      <ion-col size="2" push="10" center text-center>
+                        <ion-button (click)="acceptTraining(training)" color="success" fill="clear" size="large">
+                          <ion-icon slot="icon-only" name="checkmark-circle-outline"></ion-icon>
+                        </ion-button>
+                      </ion-col>
+                      <ion-col size="2" push="11" center text-center>
+                        <ion-button (click)="rejectTraining(training)" color="danger" fill="clear" size="large">
+                          <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+                        </ion-button>
+                      </ion-col>
+                    </ion-row>
+                  </ion-card-content>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+
+
+
+
+
+
+          <!-- <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let training of trainingList">
+            <ion-card button="true" type="button">
+              <ion-img class="{{training.status}}" (click)="openDetail(training)"> </ion-img>
+              <ion-card-header (click)="openDetail(training)">
+                <ion-card-subtitle>
+                  <ion-badge>{{training.team.name}}</ion-badge>
+                </ion-card-subtitle>
+                <ion-card-title>{{training.date.seconds * 1000 | date: 'EEE d. MMM yyyy' : 'GMT' : 'de-CH'}}</ion-card-title>
+                <ion-card-subtitle>{{training.timeFrom}} - {{training.timeTo}} | {{training.location}}</ion-card-subtitle>
+              </ion-card-header>
+              <ion-footer>
+                <ion-row>
+                  <ion-col center text-center>
+                    <ion-fab>
+                      <ion-fab-button size="small" color="success" (click)="acceptTraining(training)">
+                        <ion-icon size="small" name="thumbs-up"></ion-icon>
+                      </ion-fab-button>
+                    </ion-fab>
+                  </ion-col>
+                  <ion-col center text-center>
+                    <ion-badge>{{training?.membersAccepted}} / {{training?.membersRejected}}</ion-badge>
+                  </ion-col>
+                  <ion-col center text-center>
+                    <ion-fab horizontal="start">
+                      <ion-fab-button size="small" color="danger" (click)="rejectTraining(training)">
+                        <ion-icon size="small" name="thumbs-down"></ion-icon>
+                      </ion-fab-button>
+                    </ion-fab>
+                  </ion-col>
+                </ion-row>
+              </ion-footer>
+            </ion-card> -->
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -116,38 +176,49 @@
         </ion-col>
 
         <ion-col size="12" size-xs="12" size-sm="6" size-lg="6" *ngFor="let training of trainingListPast">
-          <ion-card button="true" type="button">
-            <ion-img class="{{training.status}}" (click)="openDetail(training)"> </ion-img>
+          <ion-grid class="TimelineGrid" style="padding: 0">
+            <ion-row>
+              <ion-col size="1" style="height: 170px;">
+                <img src="../../../assets/icons/timelineSegment.svg" height="100%">
+              </ion-col>
+              <ion-col size="23">
+                <ion-grid class="cardTop">
+                  <ion-row class="ion-align-items-center">
+                    <!-- <ion-col size="1">
+                      <ion-icon name="radio-button-off-outline" style="z-index: 100"></ion-icon>
+                    </ion-col> -->
+                    <ion-col size="12" push="1">
+                      <p class="cardDate">{{training.date.seconds * 1000 | date: 'EEE d. MMM yyyy' : 'GMT' : 'de-CH'}}</p>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+                <ion-card class="{{training.status}}" button="true" type="button" (click)="openDetail(training)">
+                  <ion-card-header>
+                    <ion-row>
+                      <ion-col size="11">
+                        <ion-badge>{{training.team.name}}</ion-badge>
+                      </ion-col>
+                      <ion-col size="1" push="11">
+                        <ion-badge class="red" mode="ios">{{training?.membersAccepted}}</ion-badge>
+                      </ion-col>
+                    </ion-row>
+                    <ion-card-title>{{training.timeFrom}} - {{training.timeTo}}</ion-card-title>
+                  </ion-card-header>
+                  <ion-card-content>
+                    <ion-row class="ion-align-items-center" style="min-height: 50px">
+                      <ion-col size="8">{{training.location}}</ion-col>
+                      <ion-col size="2" push="10" center text-center>
 
-            <ion-card-header (click)="openDetail(training)">
-              <ion-card-subtitle>
-                <ion-badge>{{training.team.name}}</ion-badge>
-              </ion-card-subtitle>
-              <ion-card-title>{{training.date.seconds * 1000 | date: 'EEE d. MMMM yyyy'}}</ion-card-title>
-              <ion-card-subtitle>{{training.timeFrom}} - {{training.timeTo}} | {{training.location}}</ion-card-subtitle>
-            </ion-card-header>
-            <ion-footer>
-              <ion-row>
-                <ion-col center text-center>
-                  <ion-fab>
-                    <ion-fab-button size="small" color="success" (click)="acceptTraining(training)">
-                      <ion-icon size="small" name="thumbs-up"></ion-icon>
-                    </ion-fab-button>
-                  </ion-fab>
-                </ion-col>
-                <ion-col center text-center>
-                  <ion-badge>{{training?.membersAccepted}} / {{training?.membersRejected}}</ion-badge>
-                </ion-col>
-                <ion-col center text-center>
-                  <ion-fab horizontal="start">
-                    <ion-fab-button size="small" color="danger" (click)="rejectTraining(training)">
-                      <ion-icon size="small" name="thumbs-down"></ion-icon>
-                    </ion-fab-button>
-                  </ion-fab>
-                </ion-col>
-              </ion-row>
-            </ion-footer>
-          </ion-card>
+                      </ion-col>
+                      <ion-col size="2" push="11" center text-center>
+
+                      </ion-col>
+                    </ion-row>
+                  </ion-card-content>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
         </ion-col>
       </ion-row>
     </ion-grid>
