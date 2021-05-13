@@ -12,7 +12,7 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class TrainingDetailPage implements OnInit {
   public training: any = {};
-  public segment: string = 'accept';
+  public segment = 'accept';
   public acceptList: any = [];
   public rejectList: any = [];
   constructor(
