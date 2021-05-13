@@ -1,4 +1,3 @@
-import {RequestPageModule} from './../request/request.module';
 import {NgModule} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
 //import {AuthGuard} from './../../services/auth.guard';
@@ -19,17 +18,17 @@ const routes: Routes = [
         loadChildren: () => import('../news/news.module').then((m) => m.NewsPageModule),
         //canActivate: [AuthGuard],
       },
-      /*     {
+           {
         path: 'news-detail/:id',
         loadChildren: () => import('../news-detail/news-detail.module').then((m) => m.NewsDetailPageModule),
         //canActivate: [AuthGuard],
-      },*/
+      },
       {
         path: 'training',
         loadChildren: () => import('../training/training.module').then((m) => m.TrainingPageModule),
         //canActivate: [AuthGuard],
       },
-      /*{
+      {
         path: 'training-detail/:id',
         loadChildren: () => import('../training-detail/training-detail.module').then((m) => m.TrainingDetailPageModule),
         //canActivate: [AuthGuard],
@@ -38,7 +37,7 @@ const routes: Routes = [
         path: 'training-create',
         loadChildren: () => import('../training-create/training-create.module').then((m) => m.TrainingCreatePageModule),
         //canActivate: [AuthGuard],
-      },*/
+      },
       {
         path: 'championship',
         loadChildren: () => import('../championship/championship.module').then((m) => m.ChampionshipPageModule),
