@@ -1,6 +1,6 @@
 {
   "name": "myclub",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "liitu consulting gmbh",
   "homepage": "https://liitu.ch/",
   "scripts": {
@@ -50,10 +50,7 @@
     "@angular/language-service": "~11.2.0",
     "@capacitor/cli": "2.4.7",
     "@ionic/angular-toolkit": "^2.3.3",
-    "@tailwindcss/aspect-ratio": "latest",
     "@tailwindcss/forms": "latest",
-    "@tailwindcss/line-clamp": "latest",
-    "@tailwindcss/typography": "latest",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
