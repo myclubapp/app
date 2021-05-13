@@ -1,14 +1,14 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
+    
     <ion-title>Meisterschaft</ion-title>
+
     <ion-buttons collapse="true" slot="end">
-      <ion-button (click)="openPopover($event)">
-        <ion-icon slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
+      <ion-button>
+        <ion-icon slot="icon-only" size="large" name="person-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
@@ -18,14 +18,29 @@
 
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-buttons collapse="true" slot="primary">
-        <ion-button (click)="openPopover($event)">
-          <ion-icon slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
+      <ion-title size="large">Meisterschaft</ion-title>
+      <ion-buttons collapse="true" slot="end">
+        <ion-button>
+          <ion-icon slot="icon-only" size="large" name="person-circle-outline"></ion-icon>
         </ion-button>
       </ion-buttons>
-      <ion-title size="large">Meisterschaft</ion-title>
+
     </ion-toolbar>
   </ion-header>
+
+  <ion-segment (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="games">
+      <ion-label>Spiele</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="ranking">
+      <ion-label>Tabelle</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="stats">
+      <ion-label>Statistik</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+
 
   <ion-list>
     <ion-list-header>
