@@ -73,15 +73,12 @@ export class TeamService {
     let promise = [];
 
     const user: firebase.default.User = await this.authService.getUser();
-
     let clubListSnapshot: firebase.default.firestore.QuerySnapshot = await firebase.default.firestore().collection(`userProfile/${user.uid}/clubList`).get();
-
     clubListSnapshot.forEach((club) => {
       promise.push(club.data().clubRef.get());
     });
 
     let data = await Promise.all(promise);
-
     for (let clubSnapshot of data) {
       clubList.push({
         ...clubSnapshot.data(),

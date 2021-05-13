@@ -35,41 +35,9 @@
             </ion-item>
           </ion-menu-toggle>
         </ion-list>
-
-        <ion-list>
-          <ion-list-header>Einstellungen</ion-list-header>
-
-          <ion-menu-toggle auto-hide="false">
-            <ion-item routerDirection="root" [routerLink]="'/home/profile'">
-              <ion-icon slot="start" name="person"></ion-icon>
-              <ion-label>Profil</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-
-          <ion-menu-toggle autoHide="false">
-            <ion-item [routerLink]="'/home/support'" routerLinkActive="active" routerDirection="root" detail="false">
-              <ion-icon slot="start" name="help"></ion-icon>
-              <ion-label> Support </ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-
-          <ion-menu-toggle autoHide="false">
-            <ion-item [routerLink]="'/home/tutorial'" routerLinkActive="active" routerDirection="root" detail="false">
-              <ion-icon slot="start" name="book-outline"></ion-icon>
-              <ion-label> Tutorial </ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-
-          <ion-menu-toggle autoHide="false">
-            <ion-item button (click)="logout()" detail="false">
-              <ion-icon slot="start" name="log-out"></ion-icon>
-              <ion-label> Logout </ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-        </ion-list>
       </ion-content>
       <ion-footer class="ion-padding">
-        <ion-note> copyright 2021 liitu consulting gmbh </ion-note>
+        <ion-note> &copy; 2021 liitu consulting gmbh. </ion-note>
       </ion-footer>
     </ion-menu>
 
