@@ -1,9 +1,15 @@
+const colors = require('tailwindcss/colors');
+
 module.exports = {
   mode: 'jit', // https://tailwindcss.com/docs/just-in-time-mode
   purge: ['./src/**/*.{html,ts}'],
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        rose: colors.rose,
+      },
+    },
   },
   variants: {
     extend: {},
