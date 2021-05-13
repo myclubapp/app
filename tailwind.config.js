@@ -1,4 +1,4 @@
-const colors = require('tailwindcss/colors')
+const colors = require('tailwindcss/colors');
 
 module.exports = {
   mode: 'jit', // https://tailwindcss.com/docs/just-in-time-mode
@@ -8,7 +8,7 @@ module.exports = {
     extend: {
       colors: {
         rose: colors.rose,
-      }
+      },
     },
   },
   variants: {

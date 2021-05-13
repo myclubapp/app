@@ -7,141 +7,149 @@
     <ion-title>Timeline</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content [fullscreen]="true" padding="true">
+
+
+
+<ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Timeline</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <div class="flow-root">
+  <!-- This example requires Tailwind CSS v2.0+ -->
+  <div class="flow-root p-2" >
     <ul class="-mb-8">
       <li>
         <div class="relative pb-8">
-          <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
-          <div class="relative flex items-start space-x-3">
-            <div class="relative">
-              <img class="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white" src="https://images.unsplash.com/photo-1520785643438-5bf77931f493?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80" alt="">
-  
-              <span class="absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px">
-                <!-- Heroicon name: solid/chat-alt -->
-                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd" />
+          <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+          <div class="relative flex space-x-3">
+            <div>
+              <span class="h-8 w-8 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white">
+                <!-- Heroicon name: solid/user -->
+                <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                  fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clip-rule="evenodd" />
                 </svg>
               </span>
             </div>
-            <div class="min-w-0 flex-1">
+            <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
               <div>
-                <div class="text-sm">
-                  <a href="#" class="font-medium text-gray-900">Eduardo Benz</a>
-                </div>
-                <p class="mt-0.5 text-sm text-gray-500">
-                  Commented 6d ago
-                </p>
+                <p class="text-sm text-gray-500">Applied to <a href="#" class="font-medium text-gray-900">Front End
+                    Developer</a></p>
               </div>
-              <div class="mt-2 text-sm text-gray-700">
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tincidunt nunc ipsum tempor purus vitae id. Morbi in vestibulum nec varius. Et diam cursus quis sed purus nam.
-                </p>
+              <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                <time datetime="2020-09-20">Sep 20</time>
               </div>
             </div>
           </div>
         </div>
       </li>
-  
+
       <li>
         <div class="relative pb-8">
-          <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
-          <div class="relative flex items-start space-x-3">
+          <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+          <div class="relative flex space-x-3">
             <div>
-              <div class="relative px-1">
-                <div class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center">
-                  <!-- Heroicon name: solid/user-circle -->
-                  <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div class="min-w-0 flex-1 py-1.5">
-              <div class="text-sm text-gray-500">
-                <a href="#" class="font-medium text-gray-900">Hilary Mahy</a>
-                assigned
-                <a href="#" class="font-medium text-gray-900">Kristin Watson</a>
-                <span class="whitespace-nowrap">2d ago</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-  
-      <li>
-        <div class="relative pb-8">
-          <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
-          <div class="relative flex items-start space-x-3">
-            <div>
-              <div class="relative px-1">
-                <div class="h-8 w-8 bg-gray-100 rounded-full ring-8 ring-white flex items-center justify-center">
-                  <!-- Heroicon name: solid/tag -->
-                  <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div class="min-w-0 flex-1 py-0">
-              <div class="text-sm leading-8 text-gray-500">
-                <span class="mr-0.5">
-                  <a href="#" class="font-medium text-gray-900">Hilary Mahy</a>
-                  added tags
-                </span>
-                <span class="mr-0.5">
-                  <a href="#" class="relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-sm">
-                    <span class="absolute flex-shrink-0 flex items-center justify-center">
-                      <span class="h-1.5 w-1.5 rounded-full bg-rose-500" aria-hidden="true"></span>
-                    </span>
-                    <span class="ml-3.5 font-medium text-gray-900">Bug</span>
-                  </a>
-                  <a href="#" class="relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-sm">
-                    <span class="absolute flex-shrink-0 flex items-center justify-center">
-                      <span class="h-1.5 w-1.5 rounded-full bg-indigo-500" aria-hidden="true"></span>
-                    </span>
-                    <span class="ml-3.5 font-medium text-gray-900">Accessibility</span>
-                  </a>
-                </span>
-                <span class="whitespace-nowrap">6h ago</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </li>
-  
-      <li>
-        <div class="relative pb-8">
-          <div class="relative flex items-start space-x-3">
-            <div class="relative">
-              <img class="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white" src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80" alt="">
-  
-              <span class="absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px">
-                <!-- Heroicon name: solid/chat-alt -->
-                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd" />
+              <span class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white">
+                <!-- Heroicon name: solid/thumb-up -->
+                <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                  fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
                 </svg>
               </span>
             </div>
-            <div class="min-w-0 flex-1">
+            <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
               <div>
-                <div class="text-sm">
-                  <a href="#" class="font-medium text-gray-900">Jason Meyers</a>
-                </div>
-                <p class="mt-0.5 text-sm text-gray-500">
-                  Commented 2h ago
-                </p>
+                <p class="text-sm text-gray-500">Advanced to phone screening by <a href="#"
+                    class="font-medium text-gray-900">Bethany Blake</a></p>
               </div>
-              <div class="mt-2 text-sm text-gray-700">
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tincidunt nunc ipsum tempor purus vitae id. Morbi in vestibulum nec varius. Et diam cursus quis sed purus nam. Scelerisque amet elit non sit ut tincidunt condimentum. Nisl ultrices eu venenatis diam.
-                </p>
+              <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                <time datetime="2020-09-22">Sep 22</time>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <div class="relative pb-8">
+          <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+          <div class="relative flex space-x-3">
+            <div>
+              <span class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
+                <!-- Heroicon name: solid/check -->
+                <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                  fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+            </div>
+            <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+              <div>
+                <p class="text-sm text-gray-500">Completed phone screening with <a href="#"
+                    class="font-medium text-gray-900">Martha Gardner</a></p>
+              </div>
+              <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                <time datetime="2020-09-28">Sep 28</time>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <div class="relative pb-8">
+          <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+          <div class="relative flex space-x-3">
+            <div>
+              <span class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white">
+                <!-- Heroicon name: solid/thumb-up -->
+                <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                  fill="currentColor" aria-hidden="true">
+                  <path
+                    d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
+                </svg>
+              </span>
+            </div>
+            <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+              <div>
+                <p class="text-sm text-gray-500">Advanced to interview by <a href="#"
+                    class="font-medium text-gray-900">Bethany Blake</a></p>
+              </div>
+              <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                <time datetime="2020-09-30">Sep 30</time>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li>
+        <div class="relative pb-8">
+          <div class="relative flex space-x-3">
+            <div>
+              <span class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
+                <!-- Heroicon name: solid/check -->
+                <svg class="h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                  fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+            </div>
+            <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+              <div>
+                <p class="text-sm text-gray-500">Completed interview with <a href="#"
+                    class="font-medium text-gray-900">Katherine Snyder</a></p>
+              </div>
+              <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                <time datetime="2020-10-04">Oct 4</time>
               </div>
             </div>
           </div>
@@ -149,6 +157,10 @@
       </li>
     </ul>
   </div>
+
+
+
+
 
 
 <!--
@@ -354,7 +366,4 @@
   
 
 -->
-
-
-
 </ion-content>
