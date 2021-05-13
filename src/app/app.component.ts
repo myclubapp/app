@@ -27,19 +27,17 @@ export class AppComponent {
   ) {
     this.initializeApp();
 
-    
-    
-    firebase.default.auth().onAuthStateChanged(function(user) {
+    firebase.default.auth().onAuthStateChanged(function (user) {
       if (user) {
         // User is signed in.
-        console.log("User is signed in.");
+        console.log('User is signed in.');
       } else {
         // No user is signed in.
-        console.log(" No user is signed in.");
+        console.log(' No user is signed in.');
       }
     });
 
-        // https://cloud.google.com/firestore/docs/manage-data/enable-offline
+    // https://cloud.google.com/firestore/docs/manage-data/enable-offline
     // The default cache size threshold is 40 MB. Configure "cacheSizeBytes"
     // for a different threshold (minimum 1 MB) or set to "CACHE_SIZE_UNLIMITED"
     // to disable clean-up.
@@ -62,7 +60,6 @@ export class AppComponent {
         }
       });
     // Subsequent queries will use persistence, if it was enabled successfully
-
   }
 
   ngOnInit() {
@@ -100,8 +97,6 @@ export class AppComponent {
         this.displayName = userProfileSnapshot.data().firstName;
       }
     });*/
-
-
   }
 
   initializeApp(): void {

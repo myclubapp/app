@@ -6,14 +6,9 @@ import {TabsPage} from './tabs.page';
 
 const routes: Routes = [
   {
-    path: 'home',
+    path: '',
     component: TabsPage,
     children: [
-      {
-        path: '',
-        loadChildren: () => import('../timeline/timeline.module').then((m) => m.TimelinePageModule),
-        //canActivate: [AuthGuard],
-      },
       {
         path: 'timeline',
         loadChildren: () => import('../timeline/timeline.module').then((m) => m.TimelinePageModule),
@@ -24,17 +19,17 @@ const routes: Routes = [
         loadChildren: () => import('../news/news.module').then((m) => m.NewsPageModule),
         //canActivate: [AuthGuard],
       },
-      {
+      /*     {
         path: 'news-detail/:id',
         loadChildren: () => import('../news-detail/news-detail.module').then((m) => m.NewsDetailPageModule),
         //canActivate: [AuthGuard],
-      },
+      },*/
       {
         path: 'training',
         loadChildren: () => import('../training/training.module').then((m) => m.TrainingPageModule),
         //canActivate: [AuthGuard],
       },
-      {
+      /*{
         path: 'training-detail/:id',
         loadChildren: () => import('../training-detail/training-detail.module').then((m) => m.TrainingDetailPageModule),
         //canActivate: [AuthGuard],
@@ -43,23 +38,23 @@ const routes: Routes = [
         path: 'training-create',
         loadChildren: () => import('../training-create/training-create.module').then((m) => m.TrainingCreatePageModule),
         //canActivate: [AuthGuard],
-      },
+      },*/
       {
         path: 'championship',
         loadChildren: () => import('../championship/championship.module').then((m) => m.ChampionshipPageModule),
         //canActivate: [AuthGuard],
       },
-      {
+      /*{
         path: 'championship-detail/:id',
         loadChildren: () => import('../championship-detail/championship-detail.module').then((m) => m.ChampionshipDetailPageModule),
         //canActivate: [AuthGuard],
-      },
+      },*/
       {
         path: 'event',
         loadChildren: () => import('../events/events.module').then((m) => m.EventsPageModule),
         //canActivate: [AuthGuard],
       },
-      {
+      /*{
         path: 'event-create',
         loadChildren: () => import('../event-create/event-create.module').then((m) => m.EventCreatePageModule),
         //canActivate: [AuthGuard],
@@ -149,9 +144,19 @@ const routes: Routes = [
         redirectTo: '/home/timeline',
         pathMatch: 'full',
         //canActivate: [AuthGuard],
+      },*/
+      {
+        path: '',
+        redirectTo: '/home/timeline',
+        pathMatch: 'full',
       },
     ],
     //canActivate: [AuthGuard],
+  },
+  {
+    path: '',
+    redirectTo: '/home/timeline',
+    pathMatch: 'full',
   },
 ];
 
