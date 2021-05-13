@@ -19,7 +19,7 @@ const routes: Routes = [
         loadChildren: () => import('../news/news.module').then((m) => m.NewsPageModule),
         //canActivate: [AuthGuard],
       },
- /*     {
+      /*     {
         path: 'news-detail/:id',
         loadChildren: () => import('../news-detail/news-detail.module').then((m) => m.NewsDetailPageModule),
         //canActivate: [AuthGuard],
@@ -148,15 +148,16 @@ const routes: Routes = [
       {
         path: '',
         redirectTo: '/home/timeline',
-        pathMatch: 'full'
-      }
+        pathMatch: 'full',
+      },
     ],
     //canActivate: [AuthGuard],
-  },{
+  },
+  {
     path: '',
     redirectTo: '/home/timeline',
-    pathMatch: 'full'
-  }
+    pathMatch: 'full',
+  },
 ];
 
 @NgModule({
@@ -164,5 +165,3 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 export class TabsPageRoutingModule {}
-
-
