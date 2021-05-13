@@ -1,10 +1,5 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="secondary">
-      <ion-button (click)="openPopover($event)">
-        <ion-icon slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
-      </ion-button>
-    </ion-buttons>
     <ion-title>{{training?.date?.seconds * 1000 | date: 'EEE d. MMM yyyy'}}</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="dismiss()"> schliessen </ion-button>
@@ -14,11 +9,6 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-buttons collapse="true" slot="primary">
-        <ion-button (click)="openPopover($event)">
-          <ion-icon slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
-        </ion-button>
-      </ion-buttons>
       <ion-title size="large">{{training?.date?.seconds * 1000 | date: 'EEE d. MMM yyyy'}}</ion-title>
     </ion-toolbar>
   </ion-header>
