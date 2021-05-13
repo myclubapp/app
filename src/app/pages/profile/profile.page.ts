@@ -37,7 +37,7 @@ export class ProfilePage implements OnInit {
       quality: 90,
       allowEditing: true,
       resultType: CameraResultType.Base64,
-      source: CameraSource.Camera,
+      source: CameraSource.Prompt,
     }).catch((error) => {
       console.log(error);
       this.toastController
