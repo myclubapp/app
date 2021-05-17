@@ -5,6 +5,8 @@ import {AuthService} from 'src/app/services/auth.service';
 import {AuthFormComponent} from 'src/app/components/auth-form/auth-form.component';
 import {Router} from '@angular/router';
 
+import firebase from 'firebase';
+
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.page.html',

@@ -5,6 +5,7 @@ import {AuthService} from 'src/app/services/auth.service';
 import {Router} from '@angular/router';
 import {MenuController, LoadingController} from '@ionic/angular';
 import {FormGroup, Validators, FormBuilder} from '@angular/forms';
+import firebase from 'firebase';
 
 @Component({
   selector: 'app-login',

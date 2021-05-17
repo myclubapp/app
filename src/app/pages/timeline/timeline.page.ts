@@ -12,6 +12,8 @@ import {MenuController, ModalController, IonRouterOutlet, ToastController, Alert
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {RequestsService} from 'src/app/services/requests/requests.service';
 
+import firebase from 'firebase';
+
 @Component({
   selector: 'app-timeline',
   templateUrl: './timeline.page.html',
@@ -94,23 +96,23 @@ export class TimelinePage implements OnInit {
 
   async ngOnInit() {
     //TIMELINE - TRAINING
-    let teamList = await this.teamSerivice.getTeamList();
-    for (let team of teamList) {
+    const teamList = await this.teamSerivice.getTeamList();
+    for (const team of teamList) {
       //future
-      let trainingRef = this.trainingService.getTeamTraining(team.id);
+      const trainingRef = this.trainingService.getTeamTraining(team.id);
       trainingRef.onSnapshot(async (querySnapshot) => {
-        let trainings = querySnapshot.docChanges();
+        const trainings = querySnapshot.docChanges();
 
-        for (let training of trainings) {
-          let team = await training.doc.data().teamRef.get();
-          let club = await training.doc.data().clubRef.get();
+        for (const training of trainings) {
+          const teamRef = await training.doc.data().teamRef.get();
+          const clubRef = await training.doc.data().clubRef.get();
 
           if (training.type === 'added') {
             this.timelineList.push({
               ...training.doc.data(),
               // ...{"status": status},
-              ...{team: team.data()},
-              ...{club: club.data()},
+              ...{team: teamRef.data()},
+              ...{club: clubRef.data()},
               ...{
                 id: training.doc.id,
               },
@@ -121,8 +123,8 @@ export class TimelinePage implements OnInit {
                 this.timelineList[index] = {
                   ...training.doc.data(),
                   //  ...{"status": status},
-                  ...{team: team.data()},
-                  ...{club: club.data()},
+                  ...{team: teamRef.data()},
+                  ...{club: clubRef.data()},
                   ...{
                     id: training.doc.id,
                   },
@@ -142,26 +144,26 @@ export class TimelinePage implements OnInit {
     }
 
     //Offene Requests anzeigen
-    let userRequestListRef = await this.requestService.getUserRequestList();
+    const userRequestListRef = await this.requestService.getUserRequestList();
     userRequestListRef.onSnapshot(async (snapshot) => {
-      let userRequests = snapshot.docChanges();
-      for (let request of userRequests) {
+      const userRequests = snapshot.docChanges();
+      for (const request of userRequests) {
         //console.log(request.doc.data());
 
-        let team = await request.doc.data().teamRef.get();
-        let club = await request.doc.data().clubRef.get();
+        const teamRef = await request.doc.data().teamRef.get();
+        const clubRef = await request.doc.data().clubRef.get();
 
-        if (request.type == 'added') {
+        if (request.type === 'added') {
           this.openRequestList.push({
             ...request.doc.data(),
             ...{
               id: request.doc.id,
             },
             ...{
-              club: club.data(),
+              club: clubRef.data(),
             },
             ...{
-              team: team.data(),
+              team: teamRef.data(),
             },
           });
         } else {
@@ -178,18 +180,18 @@ export class TimelinePage implements OnInit {
     });
 
     const user: firebase.User = await this.authService.getUser();
-    let teamListRef = this.teamSerivice.getTeamListChanges(user);
+    const teamListRef = this.teamSerivice.getTeamListChanges(user);
 
     teamListRef.onSnapshot(
       async (snapshot) => {
-        let teams = snapshot.docChanges();
-        for (let team of teams) {
-          let teamData = await team.doc.data().teamRef.get();
-          let clubRef = await teamData.data().clubRef.get();
+        const teams = snapshot.docChanges();
+        for (const team of teams) {
+          const teamRef = await team.doc.data().teamRef.get();
+          const clubRef = await teamRef.data().clubRef.get();
 
-          if (team.type == 'added') {
+          if (team.type === 'added') {
             this.teamList.push({
-              ...teamData.data(),
+              ...teamRef.data(),
               ...{
                 id: team.doc.id,
               },
@@ -200,7 +202,7 @@ export class TimelinePage implements OnInit {
                 clubName: clubRef.data().name,
               },
             });
-          } else if (team.type == 'removed') {
+          } else if (team.type === 'removed') {
             this.teamList.find((element, index) => {
               if (element) {
                 if (element.id === team.doc.id) {
@@ -221,23 +223,23 @@ export class TimelinePage implements OnInit {
      *  Club
      *
      **********************/
-    let clubListRef = this.teamSerivice.getClubListChanges(user);
+    const clubListRef = this.teamSerivice.getClubListChanges(user);
 
     clubListRef.onSnapshot(
       async (snapshot) => {
-        let clubs = snapshot.docChanges();
-        for (let club of clubs) {
-          let clubData = await club.doc.data().clubRef.get();
+        const clubs = snapshot.docChanges();
+        for (const club of clubs) {
+          const clubRef = await club.doc.data().clubRef.get();
           //console.log(club);
 
           if (club.type == 'added') {
             this.clubList.push({
-              ...clubData.data(),
+              ...clubRef.data(),
               ...{
                 id: club.doc.id,
               },
             });
-          } else if (club.type == 'removed') {
+          } else if (club.type === 'removed') {
             this.clubList.find((element, index) => {
               if (element) {
                 if (element.id === club.doc.id) {

@@ -16,7 +16,7 @@ export class ProfileService {
   constructor(private authService: AuthService, private afStorage: AngularFireStorage) {}
 
   async getUserProfileById(id): Promise<firebase.firestore.DocumentSnapshot> {
-    let userProfile = firebase.firestore().doc(`userProfile/${id}`);
+    const userProfile = firebase.firestore().doc(`userProfile/${id}`);
     return userProfile.get();
   }
 
@@ -98,7 +98,7 @@ export class ProfileService {
   updatePushToken(pushToken: string): Promise<void> {
     return this.userProfile.set(
       {
-        pushToken: pushToken,
+         pushToken,
       },
       {
         merge: true,
@@ -114,7 +114,7 @@ export class ProfileService {
         street: profile.street || '',
         plz: profile.plz || '',
         location: profile.location || '',
-        handy: string(profile.handy) || '',
+        handy: String(profile.handy) || '',
         language: profile.language || '',
         gender: profile.gender || '',
         nationality: profile.nationality || '',

@@ -11,10 +11,7 @@ export class ChampionshipService {
 
   getTeamChampionshipList(teamId: string) {
     //Where Bedingung ausgeklammert.
-    return firebase.firestore()
-    .collection('team')
-    .doc(teamId)
-    .collection('championshipList'); //.where("date", ">=", new Date(Date.now() - ( 365 * 24 * 60 * 60 * 1000)));
+    return firebase.firestore().collection('team').doc(teamId).collection('championshipList'); //.where("date", ">=", new Date(Date.now() - ( 365 * 24 * 60 * 60 * 1000)));
   }
 
   async acceptGame(game) {
@@ -100,7 +97,7 @@ export class ChampionshipService {
       .doc(`${game.id}`)
       .collection('memberList')
       .where('status', '==', false);
-      const list = await statusList.get();
+    const list = await statusList.get();
     //console.log(list);
     for (const element of list.docs) {
       const user = await this.profileService.getUserProfileById(element.id);

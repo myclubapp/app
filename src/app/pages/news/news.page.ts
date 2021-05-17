@@ -21,7 +21,7 @@ export class NewsPage implements OnInit {
   // Social Share Web Component
   shareSocialShareOptions: any;
   showSocialShare = false;
-  public showButton  = false;
+  public showButton = false;
   constructor(
     public newsSwissunihockey: SwissunihockeyNewsService,
     public modalController: ModalController,
@@ -58,8 +58,9 @@ export class NewsPage implements OnInit {
             for (const element of data.data) {
               this.newsList.push(element);
               //sort by date
-              this.newsList = this.newsList.sort( (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-                  // Turn your strings into dates, and then subtract them
+              this.newsList = this.newsList.sort(
+                (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+                // Turn your strings into dates, and then subtract them
                 // to get a value that is either negative, positive, or zero.
                 //console.log( b.date + " / " + a.date);
               );
@@ -74,8 +75,7 @@ export class NewsPage implements OnInit {
             for (const element of data.data) {
               this.newsList.push(element);
               //sort by date
-              this.newsList = this.newsList.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-              );
+              this.newsList = this.newsList.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
             }
 
             this.skeletonList = [];
@@ -100,7 +100,7 @@ export class NewsPage implements OnInit {
     const modal = await this.modalController.create({
       component: NewsDetailPage,
       componentProps: {
-        news
+        news,
       },
       swipeToClose: true,
       presentingElement: this.routerOutlet.nativeEl,
