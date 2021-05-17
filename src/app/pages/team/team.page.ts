@@ -43,7 +43,7 @@ export class TeamPage implements OnInit {
 
         let member = await adminMember.doc.data().memberRef.get();
 
-        if (adminMember.type == 'added') {
+        if (adminMember.type === 'added') {
           this.adminList.push({
             ...adminMember.doc.data(),
             ...{
@@ -73,7 +73,7 @@ export class TeamPage implements OnInit {
 
         let member = await teamMember.doc.data().memberRef.get();
 
-        if (teamMember.type == 'added') {
+        if (teamMember.type === 'added') {
           this.memberList.push({
             ...teamMember.doc.data(),
             ...{

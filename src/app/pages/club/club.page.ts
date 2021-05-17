@@ -42,7 +42,7 @@ export class ClubPage implements OnInit {
 
         let member = await adminMember.doc.data().memberRef.get();
 
-        if (adminMember.type == 'added') {
+        if (adminMember.type === 'added') {
           this.adminList.push({
             ...adminMember.doc.data(),
             ...{
@@ -72,7 +72,7 @@ export class ClubPage implements OnInit {
 
         let member = await clubMember.doc.data().memberRef.get();
 
-        if (clubMember.type == 'added') {
+        if (clubMember.type === 'added') {
           this.memberList.push({
             ...clubMember.doc.data(),
             ...{

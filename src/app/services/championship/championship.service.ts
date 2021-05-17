@@ -11,7 +11,8 @@ export class ChampionshipService {
 
   getTeamChampionshipList(teamId: string) {
     //Where Bedingung ausgeklammert.
-    return firebase.firestore().collection('team').doc(teamId).collection('championshipList'); //.where("date", ">=", new Date(Date.now() - ( 365 * 24 * 60 * 60 * 1000)));
+    return firebase.firestore().collection('team')
+    .doc(teamId).collection('championshipList'); //.where("date", ">=", new Date(Date.now() - ( 365 * 24 * 60 * 60 * 1000)));
   }
 
   async acceptGame(game) {

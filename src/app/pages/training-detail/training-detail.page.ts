@@ -77,11 +77,11 @@ export class TrainingDetailPage implements OnInit {
     popover.present();
 
     popover.onDidDismiss().then(async (done) => {
-      if (done.data && done.data.action && done.data.action == 'change') {
+      if (done.data && done.data.action && done.data.action === 'change') {
         this.modalController.dismiss({
           training: this.training,
         });
-      } else if (done.data && done.data.action && done.data.action == 'delete') {
+      } else if (done.data && done.data.action && done.data.action === 'delete') {
         const alert = await this.alertController.create({
           header: 'Training löschen?',
           message: 'Möchtest du wirklich das Training <strong>löschen</strong>?',

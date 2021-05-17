@@ -98,7 +98,7 @@ export class ProfileService {
   updatePushToken(pushToken: string): Promise<void> {
     return this.userProfile.set(
       {
-         pushToken,
+        pushToken,
       },
       {
         merge: true,

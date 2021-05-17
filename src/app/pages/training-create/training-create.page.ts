@@ -47,8 +47,8 @@ export class TrainingCreatePage implements OnInit {
       this.training.weekday === undefined ||
       this.training.startDate === undefined ||
       this.training.repeat === undefined ||
-      this.training.clubId == undefined ||
-      this.training.teamId == undefined
+      this.training.clubId === undefined ||
+      this.training.teamId === undefined
     ) {
       console.log(this.training);
       this.toastController

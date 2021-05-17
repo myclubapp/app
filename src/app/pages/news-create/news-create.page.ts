@@ -36,7 +36,7 @@ export class NewsCreatePage implements OnInit {
   checkBoxchangeTeam(event) {
     console.log(event.detail.value);
 
-    if (event.srcElement.name == 'team') {
+    if (event.srcElement.name === 'team') {
       for (let club of this.clubList) {
         if (club && club.isChecked) {
           club.isChecked = false;
@@ -47,7 +47,7 @@ export class NewsCreatePage implements OnInit {
   checkBoxchangeClub(event) {
     console.log(event.detail.value);
 
-    if (event.srcElement.name == 'club') {
+    if (event.srcElement.name === 'club') {
       for (let team of this.teamList) {
         if (team && team.isChecked) {
           team.isChecked = false;

@@ -20,26 +20,27 @@ import firebase from 'firebase';
   styleUrls: ['./timeline.page.scss'],
 })
 export class TimelinePage implements OnInit {
+  @ViewChild('slides', {
+    static: true,
+  })
   public requestList: Array<any> = [];
   public openRequestList: Array<any> = [];
   public timelineList: Array<any> = [];
   public teamList: Array<any> = [];
   public clubList: Array<any> = [];
 
-  setupAccountTutorial: boolean = false;
-  setupAccountAGB: boolean = false;
-  setupAccountProfile: boolean = false;
-  setupAccountClub: boolean = false;
+  slides: IonSlides;
+  setupAccountTutorial = false;
+  setupAccountAGB = false;
+  setupAccountProfile = false;
+  setupAccountClub = false;
 
   sliderConfig = {
     spaceBetween: 0,
     centeredSlides: true,
     slidesPerView: 1.4,
   };
-  @ViewChild('slides', {
-    static: true,
-  })
-  slides: IonSlides;
+
 
   constructor(
     private router: Router,
@@ -60,7 +61,7 @@ export class TimelinePage implements OnInit {
     this.profileService.getUserProfileChanges().then(
       (user) => {
         user.onSnapshot((snapshot) => {
-          let userProfile = snapshot.data();
+          const userProfile = snapshot.data();
 
           //setupAccountProfil
           if (!userProfile.firstName || !userProfile.lastName || !userProfile.picture) {
@@ -232,7 +233,7 @@ export class TimelinePage implements OnInit {
           const clubRef = await club.doc.data().clubRef.get();
           //console.log(club);
 
-          if (club.type == 'added') {
+          if (club.type === 'added') {
             this.clubList.push({
               ...clubRef.data(),
               ...{
@@ -269,27 +270,27 @@ export class TimelinePage implements OnInit {
       //this.clubList = clubList;
 
       // requests for club
-      for (let club of clubList) {
+      for (const club of clubList) {
         //console.log("club id " + club.id);
         this.requestService.getClubRequestList(club.id).onSnapshot(
           async (querySnapshot) => {
-            let requests = querySnapshot.docChanges();
-            for (let request of requests) {
-              let team = await request.doc.data().teamRef.get();
-              let club = await request.doc.data().clubRef.get();
-              let user = await request.doc.data().userRef.get();
+            const requests = querySnapshot.docChanges();
+            for (const request of requests) {
+              const teamRef = await request.doc.data().teamRef.get();
+              const clubRef = await request.doc.data().clubRef.get();
+              const userRef = await request.doc.data().userRef.get();
 
               if (request.type === 'added') {
                 this.requestList.push({
                   ...request.doc.data(),
                   ...{
-                    user: user.data(),
+                    user: userRef.data(),
                   },
                   ...{
-                    team: team.data(),
+                    team: teamRef.data(),
                   },
                   ...{
-                    club: club.data(),
+                    club: clubRef.data(),
                   },
                   ...{
                     id: request.doc.id,
@@ -301,13 +302,13 @@ export class TimelinePage implements OnInit {
                     this.requestList[index] = {
                       ...request.doc.data(),
                       ...{
-                        user: user.data(),
+                        user: userRef.data(),
                       },
                       ...{
-                        team: team.data(),
+                        team: teamRef.data(),
                       },
                       ...{
-                        club: club.data(),
+                        club: clubRef.data(),
                       },
                       ...{
                         id: request.doc.id,
@@ -417,9 +418,9 @@ export class TimelinePage implements OnInit {
     if (data && data.clubs) {
       //select teams for every club..
       data.clubs.forEach(async (club) => {
-        let clubId = club.set_in_context.club_id;
+        const clubId = club.set_in_context.club_id;
 
-        let status = await this.teamSerivice.checkIfClubNotExists('su-' + clubId);
+        const status = await this.teamSerivice.checkIfClubNotExists('su-' + clubId);
         // check Club Members?
         if (status) {
           const alert = await this.alertController.create({
@@ -466,7 +467,7 @@ export class TimelinePage implements OnInit {
       swipeToClose: true,
       componentProps: {
         clubName: club.text,
-        clubId: clubId,
+        clubId,
       },
       presentingElement: this.routerOutlet.nativeEl,
     });
@@ -476,7 +477,7 @@ export class TimelinePage implements OnInit {
     await modalTeam.onDidDismiss();
 
     club.teams.forEach(async (team) => {
-      let teamId = team.set_in_context.team_id;
+      const teamId = team.set_in_context.team_id;
       this.requestService.addRequest(clubId, teamId).then(
         (ok) => {
           this.toastController
