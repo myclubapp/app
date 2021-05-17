@@ -7,12 +7,13 @@ import {IonicModule, IonicRouteStrategy} from '@ionic/angular';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 
+import {environment} from 'src/environments/environment';
+
 import {AngularFireModule} from '@angular/fire';
 import {AngularFireFunctionsModule, REGION} from '@angular/fire/functions';
 import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
 import {AngularFireMessagingModule} from '@angular/fire/messaging';
 
-import {environment} from 'src/environments/environment';
 
 import {HttpClientModule} from '@angular/common/http';
 import {ServiceWorkerModule} from '@angular/service-worker';

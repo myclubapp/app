@@ -10,12 +10,7 @@ import {Router} from '@angular/router';
   styleUrls: ['./reset-password.page.scss'],
 })
 export class ResetPasswordPage implements OnInit {
-
-  constructor(
-    private authService: AuthService,
-    private alertCtrl: AlertController,
-    private router: Router,
-    public menuCtrl: MenuController) {
+  constructor(private authService: AuthService, private alertCtrl: AlertController, private router: Router, public menuCtrl: MenuController) {
     this.menuCtrl.enable(false, 'menu');
   }
 
@@ -23,7 +18,7 @@ export class ResetPasswordPage implements OnInit {
 
   async resetPassword(credentials: UserCredential): Promise<void> {
     try {
-      await this.authService.resetPassword(credentials.email); 
+      await this.authService.resetPassword(credentials.email);
       const alert = await this.alertCtrl.create({
         message: 'Check your inbox for the password reset link',
         buttons: [
@@ -38,7 +33,7 @@ export class ResetPasswordPage implements OnInit {
       });
       await alert.present();
     } catch (error) {
-     console.log(error);
+      console.log(error);
     }
   }
 }

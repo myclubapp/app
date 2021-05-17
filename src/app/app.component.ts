@@ -1,7 +1,10 @@
 import {Component} from '@angular/core';
 
 import firebase from 'firebase';
+import 'firebase/auth';
 import 'firebase/firestore';
+
+import { AngularFirestore } from '@angular/fire/firestore';
 
 import {AlertController} from '@ionic/angular';
 import {SwUpdate} from '@angular/service-worker';
@@ -15,7 +18,8 @@ export class AppComponent {
   constructor(
     //private authService: AuthService,
     private swUpdate: SwUpdate,
-    private alertController: AlertController
+    private alertController: AlertController,
+    firestore: AngularFirestore
   ) {
     this.initializeApp();
 

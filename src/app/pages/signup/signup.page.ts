@@ -13,7 +13,6 @@ import firebase from 'firebase';
   styleUrls: ['./signup.page.scss'],
 })
 export class SignupPage implements OnInit {
-
   constructor(private authService: AuthService, private router: Router, public menuCtrl: MenuController) {
     this.menuCtrl.enable(false, 'menu');
   }
