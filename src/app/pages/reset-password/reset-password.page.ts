@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {UserCredential} from 'src/app/models/user';
 import {AuthService} from 'src/app/services/auth.service';
-import {AuthFormComponent} from 'src/app/components/auth-form/auth-form.component';
 import {AlertController, MenuController} from '@ionic/angular';
 import {Router} from '@angular/router';
 
@@ -11,9 +10,12 @@ import {Router} from '@angular/router';
   styleUrls: ['./reset-password.page.scss'],
 })
 export class ResetPasswordPage implements OnInit {
-  @ViewChild(AuthFormComponent)
-  resetPasswordForm: AuthFormComponent;
-  constructor(private authService: AuthService, private alertCtrl: AlertController, private router: Router, public menuCtrl: MenuController) {
+
+  constructor(
+    private authService: AuthService,
+    private alertCtrl: AlertController,
+    private router: Router,
+    public menuCtrl: MenuController) {
     this.menuCtrl.enable(false, 'menu');
   }
 
@@ -21,8 +23,7 @@ export class ResetPasswordPage implements OnInit {
 
   async resetPassword(credentials: UserCredential): Promise<void> {
     try {
-      await this.authService.resetPassword(credentials.email);
-      await this.resetPasswordForm.hideLoading();
+      await this.authService.resetPassword(credentials.email); 
       const alert = await this.alertCtrl.create({
         message: 'Check your inbox for the password reset link',
         buttons: [
@@ -37,8 +38,7 @@ export class ResetPasswordPage implements OnInit {
       });
       await alert.present();
     } catch (error) {
-      await this.resetPasswordForm.hideLoading();
-      this.resetPasswordForm.handleError(error);
+     console.log(error);
     }
   }
 }

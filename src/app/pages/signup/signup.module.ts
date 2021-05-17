@@ -7,9 +7,9 @@ import {IonicModule} from '@ionic/angular';
 import {SignupPageRoutingModule} from './signup-routing.module';
 
 import {SignupPage} from './signup.page';
-import {AuthModule} from 'src/app/shared-modules/auth.module';
+
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, SignupPageRoutingModule, AuthModule],
+  imports: [CommonModule, FormsModule, IonicModule, SignupPageRoutingModule],
   declarations: [SignupPage],
 })
 export class SignupPageModule {}

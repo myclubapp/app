@@ -7,10 +7,9 @@ import {IonicModule} from '@ionic/angular';
 import {LoginPageRoutingModule} from './login-routing.module';
 
 import {LoginPage} from './login.page';
-import {AuthModule} from 'src/app/shared-modules/auth.module';
 import {ReactiveFormsModule} from '@angular/forms';
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule, LoginPageRoutingModule, AuthModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule, LoginPageRoutingModule],
   declarations: [LoginPage],
 })
 export class LoginPageModule {}

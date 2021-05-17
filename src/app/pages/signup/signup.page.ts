@@ -1,8 +1,8 @@
 import {MenuController} from '@ionic/angular';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {UserCredential} from 'src/app/models/user';
 import {AuthService} from 'src/app/services/auth.service';
-import {AuthFormComponent} from 'src/app/components/auth-form/auth-form.component';
+
 import {Router} from '@angular/router';
 
 import firebase from 'firebase';
@@ -13,8 +13,7 @@ import firebase from 'firebase';
   styleUrls: ['./signup.page.scss'],
 })
 export class SignupPage implements OnInit {
-  @ViewChild(AuthFormComponent)
-  signupForm: AuthFormComponent;
+
   constructor(private authService: AuthService, private router: Router, public menuCtrl: MenuController) {
     this.menuCtrl.enable(false, 'menu');
   }
@@ -24,12 +23,10 @@ export class SignupPage implements OnInit {
     try {
       const userCredential: firebase.auth.UserCredential = await this.authService.signup(credentials.email, credentials.password);
       this.authService.userId = userCredential.user.uid;
-      await this.signupForm.hideLoading();
       this.router.navigateByUrl('/home/timeline');
       this.menuCtrl.enable(true, 'menu');
     } catch (error) {
-      await this.signupForm.hideLoading();
-      this.signupForm.handleError(error);
+      console.log(error);
     }
   }
 }

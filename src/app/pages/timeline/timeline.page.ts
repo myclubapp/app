@@ -41,7 +41,6 @@ export class TimelinePage implements OnInit {
     slidesPerView: 1.4,
   };
 
-
   constructor(
     private router: Router,
     public menuCtrl: MenuController,
