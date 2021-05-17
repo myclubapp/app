@@ -1,6 +1,7 @@
 {
   "name": "myclub",
-  "short_name": "myclub app",
+  "short_name": "myclub",
+  "description": "myclub app | the next generation",
   "theme_color": "#1976d2",
   "background_color": "#fafafa",
   "display": "standalone",

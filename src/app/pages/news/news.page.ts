@@ -21,7 +21,7 @@ export class NewsPage implements OnInit {
   // Social Share Web Component
   shareSocialShareOptions: any;
   showSocialShare = false;
-  public showButton: boolean = false;
+  public showButton  = false;
   constructor(
     public newsSwissunihockey: SwissunihockeyNewsService,
     public modalController: ModalController,
@@ -52,18 +52,17 @@ export class NewsPage implements OnInit {
 
   loadNews() {
     this.teamService.getClubList().then((clubList) => {
-      for (let club of clubList) {
-        if (club.type == 'swissunihockey') {
+      for (const club of clubList) {
+        if (club.type === 'swissunihockey') {
           this.newsSwissunihockey.getNews().subscribe((data: any) => {
-            for (let element of data.data) {
+            for (const element of data.data) {
               this.newsList.push(element);
               //sort by date
-              this.newsList = this.newsList.sort(function (a, b) {
-                // Turn your strings into dates, and then subtract them
+              this.newsList = this.newsList.sort( (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+                  // Turn your strings into dates, and then subtract them
                 // to get a value that is either negative, positive, or zero.
                 //console.log( b.date + " / " + a.date);
-                return new Date(b.date).getTime() - new Date(a.date).getTime();
-              });
+              );
             }
             this.skeletonList = [];
           });
@@ -72,13 +71,11 @@ export class NewsPage implements OnInit {
         if (club.wordpress) {
           //console.log("club has wordpress news");
           this.wordpressService.getNews(club.wordpress, club.name).subscribe((data: any) => {
-            for (let element of data.data) {
+            for (const element of data.data) {
               this.newsList.push(element);
               //sort by date
-              this.newsList = this.newsList.sort(function (a, b) {
-                //console.log( b.date + " / " + a.date);
-                return new Date(b.date).getTime() - new Date(a.date).getTime();
-              });
+              this.newsList = this.newsList.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+              );
             }
 
             this.skeletonList = [];
@@ -103,7 +100,7 @@ export class NewsPage implements OnInit {
     const modal = await this.modalController.create({
       component: NewsDetailPage,
       componentProps: {
-        news: news,
+        news
       },
       swipeToClose: true,
       presentingElement: this.routerOutlet.nativeEl,
@@ -116,7 +113,7 @@ export class NewsPage implements OnInit {
   async share(news) {
     console.log(news);
     if (this.plt.is('mobile') && navigator && navigator['share']) {
-      let shareRet = await Share.share({
+      const shareRet = await Share.share({
         title: news.title,
         text: news.leadText,
         url: news.url,

@@ -1,11 +1,10 @@
 import {Component} from '@angular/core';
 
-import * as firebase from 'firebase/app';
+import firebase from 'firebase';;
 import 'firebase/firestore';
 
 import {AlertController} from '@ionic/angular';
 import {SwUpdate} from '@angular/service-worker';
-//import {AuthService} from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +19,7 @@ export class AppComponent {
   ) {
     this.initializeApp();
 
-    firebase.default.auth().onAuthStateChanged((user) => {
+    firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         // User is signed in.
         console.log('User is signed in.');
@@ -34,11 +33,11 @@ export class AppComponent {
     // The default cache size threshold is 40 MB. Configure "cacheSizeBytes"
     // for a different threshold (minimum 1 MB) or set to "CACHE_SIZE_UNLIMITED"
     // to disable clean-up.
-    firebase.default.firestore().settings({
-      cacheSizeBytes: firebase.default.firestore.CACHE_SIZE_UNLIMITED,
+    firebase.firestore().settings({
+      cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
     });
 
-    firebase.default
+    firebase
       .firestore()
       .enablePersistence()
       .catch((err) => {

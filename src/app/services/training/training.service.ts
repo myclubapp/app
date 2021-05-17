@@ -3,14 +3,14 @@ import {Time} from '@angular/common';
 import {TeamService} from './../club/team.service';
 import {AuthService} from './../../services/auth.service';
 import {Injectable} from '@angular/core';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase';
 import 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TrainingService {
-  public trainingListRef: firebase.default.firestore.CollectionReference;
+  public trainingListRef: firebase.firestore.CollectionReference;
   constructor(public authService: AuthService, private profileService: ProfileService) {}
   async createTraining(
     title: string,
@@ -23,9 +23,9 @@ export class TrainingService {
     repeat: number,
     clubId: string,
     teamId: string
-  ): Promise<firebase.default.firestore.DocumentReference> {
-    const user: firebase.default.User = await this.authService.getUser();
-    this.trainingListRef = firebase.default.firestore().collection(`userProfile/${user.uid}/trainingList`);
+  ): Promise<firebase.firestore.DocumentReference> {
+    const user: firebase.User = await this.authService.getUser();
+    this.trainingListRef = firebase.firestore().collection(`userProfile/${user.uid}/trainingList`);
     return this.trainingListRef.add({
       title: title,
       description: description,
@@ -41,7 +41,7 @@ export class TrainingService {
   }
 
   getTeamTraining(teamId: string) {
-    return firebase.default
+    return firebase
       .firestore()
       .collection('team')
       .doc(teamId)
@@ -51,7 +51,7 @@ export class TrainingService {
       .limit(20);
   }
   getTeamTrainingLimit(teamId: string) {
-    return firebase.default
+    return firebase
       .firestore()
       .collection('team')
       .doc(teamId)
@@ -61,7 +61,7 @@ export class TrainingService {
       .limit(3);
   }
   getPastTeamTraining(teamId: string) {
-    return firebase.default
+    return firebase
       .firestore()
       .collection('team')
       .doc(teamId)
@@ -72,8 +72,8 @@ export class TrainingService {
       .limit(20);
   }
   async acceptTraining(training) {
-    const user: firebase.default.User = await this.authService.getUser();
-    return firebase.default
+    const user: firebase.User = await this.authService.getUser();
+    return firebase
       .firestore()
       .collection(`team`)
       .doc(`${training.teamId}`)
@@ -90,8 +90,8 @@ export class TrainingService {
   }
 
   async rejectTraining(training) {
-    const user: firebase.default.User = await this.authService.getUser();
-    return firebase.default
+    const user: firebase.User = await this.authService.getUser();
+    return firebase
       .firestore()
       .collection(`team`)
       .doc(`${training.teamId}`)
@@ -107,9 +107,9 @@ export class TrainingService {
       );
   }
 
-  async getTrainingStatus(training): Promise<firebase.default.firestore.DocumentSnapshot> {
-    const user: firebase.default.User = await this.authService.getUser();
-    return firebase.default
+  async getTrainingStatus(training): Promise<firebase.firestore.DocumentSnapshot> {
+    const user: firebase.User = await this.authService.getUser();
+    return firebase
       .firestore()
       .collection(`team`)
       .doc(`${training.data().teamId}`)
@@ -122,7 +122,7 @@ export class TrainingService {
 
   async getAcceptList(training): Promise<any> {
     let acceptList = [];
-    let statusList = firebase.default
+    let statusList = firebase
       .firestore()
       .collection(`team`)
       .doc(`${training.teamId}`)
@@ -152,7 +152,7 @@ export class TrainingService {
   async getRejectList(training): Promise<any> {
     let rejectList = [];
 
-    let statusList = firebase.default
+    let statusList = firebase
       .firestore()
       .collection(`team`)
       .doc(`${training.teamId}`)
@@ -179,14 +179,14 @@ export class TrainingService {
   }
 
   async deleteTraining(training) {
-    //const user: firebase.default.User = await this.authService.getUser();
-    return firebase.default.firestore().collection(`team`).doc(`${training.teamId}`).collection(`trainingList`).doc(`${training.id}`).delete();
+    //const user: firebase.User = await this.authService.getUser();
+    return firebase.firestore().collection(`team`).doc(`${training.teamId}`).collection(`trainingList`).doc(`${training.id}`).delete();
   }
 
   async changeTraining(training) {
-    //const user: firebase.default.User = await this.authService.getUser();
+    //const user: firebase.User = await this.authService.getUser();
     console.log(training);
-    return firebase.default.firestore().collection(`team`).doc(`${training.teamId}`).collection(`trainingList`).doc(`${training.id}`).set(
+    return firebase.firestore().collection(`team`).doc(`${training.teamId}`).collection(`trainingList`).doc(`${training.id}`).set(
       training,
       /* 
       {

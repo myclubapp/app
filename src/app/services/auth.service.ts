@@ -3,7 +3,7 @@ import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {first} from 'rxjs/operators';
 
-import * as firebase from 'firebase/app';
+import firebase from 'firebase';
 import 'firebase/firestore';
 
 @Injectable({
@@ -13,7 +13,7 @@ export class AuthService {
   public userId: string;
   constructor(private afAuth: AngularFireAuth, private firestore: AngularFirestore) {}
 
-  getUser(): Promise<firebase.default.User> {
+  getUser(): Promise<firebase.User> {
     return this.afAuth.authState.pipe(first()).toPromise();
   }
 
@@ -69,13 +69,13 @@ export class AuthService {
     }
   }*/
 
-  login(email: string, password: string): Promise<firebase.default.auth.UserCredential> {
+  login(email: string, password: string): Promise<firebase.auth.UserCredential> {
     return this.afAuth.signInWithEmailAndPassword(email, password);
   }
 
-  async signup(email: string, password: string): Promise<firebase.default.auth.UserCredential> {
+  async signup(email: string, password: string): Promise<firebase.auth.UserCredential> {
     try {
-      const newUserCredential: firebase.default.auth.UserCredential = await this.afAuth.createUserWithEmailAndPassword(email, password);
+      const newUserCredential: firebase.auth.UserCredential = await this.afAuth.createUserWithEmailAndPassword(email, password);
       await this.firestore.doc(`userProfile/${newUserCredential.user.uid}`).set({
         email,
       });
@@ -90,7 +90,7 @@ export class AuthService {
   }
 
   logout(): Promise<void> {
-    firebase.default.firestore().clearPersistence();
+    firebase.firestore().clearPersistence();
 
     return this.afAuth.signOut();
   }

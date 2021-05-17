@@ -50,17 +50,17 @@ export class ChampionshipPage implements OnInit {
   loadGames() {
     this.unihockeyService.getCurrentSeason().subscribe((season: any) => {
       this.teamSerivice.getTeamList().then((teamList: any[]) => {
-        for (let team of teamList) {
+        for (const team of teamList) {
           //* Swiss Unihockey
           this.unihockeyService.getSUGames(team.verbandId, season.data.season).subscribe(async (games) => {
-            for (let game of games.data) {
-              let status: any = await this.championshipService.getGameStatus(game.teamId, game.id);
+            for (const game of games.data) {
+              const status: any = await this.championshipService.getGameStatus(game.teamId, game.id);
               if (status.exists) {
                 game.status = String(status.data().status);
               } else {
                 game.status = 'undefined';
               }
-              let date = new Date(game.dateObject);
+              const date = new Date(game.dateObject);
               if (date.getTime() >= Date.now() - 1 * 24 * 60 * 60 * 1000) {
                 // 1 tag zurück
                 this.gamesList.push(game);
@@ -71,8 +71,8 @@ export class ChampionshipPage implements OnInit {
             }
 
             this.gamesList = this.gamesList.sort((a, b) => {
-              let dateA = new Date(a.dateObject);
-              let dateB = new Date(b.dateObject);
+              const dateA = new Date(a.dateObject);
+              const dateB = new Date(b.dateObject);
               if (dateA.getTime() > dateB.getTime()) {
                 return 0;
               } else {
@@ -81,8 +81,8 @@ export class ChampionshipPage implements OnInit {
             });
 
             this.gamesListPast = this.gamesListPast.sort((a, b) => {
-              let dateA = new Date(a.dateObject);
-              let dateB = new Date(b.dateObject);
+              const dateA = new Date(a.dateObject);
+              const dateB = new Date(b.dateObject);
               if (dateA.getTime() > dateB.getTime()) {
                 return 0;
               } else {
@@ -91,11 +91,11 @@ export class ChampionshipPage implements OnInit {
             });
           });
 
-          let championshipRef = this.championshipService.getTeamChampionshipList(team.id);
+          const championshipRef = this.championshipService.getTeamChampionshipList(team.id);
           //liest aktuell alle spiele aus Firestore!!!
           championshipRef.onSnapshot(async (querySnapshot) => {
-            let games = querySnapshot.docChanges();
-            for (let game of games) {
+            const games = querySnapshot.docChanges();
+            for (const game of games) {
               if (game.type === 'modified' || game.type === 'added') {
                 this.gamesList.find((element, index) => {
                   if (element.id === game.doc.id) {
@@ -103,7 +103,7 @@ export class ChampionshipPage implements OnInit {
                     //this.gamesList[index].membersAccepted = game.doc.data().membersAccepted || 0;
                     //this.gamesList[index].membersRejected = game.doc.data().membersRejected || 0;
 
-                    if (game.type == 'modified') {
+                    if (game.type === 'modified') {
                       this.championshipService.getGameStatus(element.teamId, element.id).then((status: any) => {
                         console.log('status: ' + status.data().status);
                         if (status.exists) {
@@ -123,7 +123,7 @@ export class ChampionshipPage implements OnInit {
                     //this.gamesListPast[index].membersAccepted = game.doc.data().membersAccepted || 0;
                     //this.gamesListPast[index].membersRejected = game.doc.data().membersRejected || 0;
 
-                    if (game.type == 'modified') {
+                    if (game.type === 'modified') {
                       this.championshipService.getGameStatus(element.teamId, element.id).then((status: any) => {
                         console.log('status: ' + status.data().status);
                         if (status.exists) {
@@ -147,18 +147,18 @@ export class ChampionshipPage implements OnInit {
     //PAST SEASON
     this.unihockeyService.getCurrentSeason().subscribe((season: any) => {
       this.teamSerivice.getTeamList().then((teamList: any) => {
-        for (let team of teamList) {
+        for (const team of teamList) {
           //* Swiss Unihockey
           this.unihockeyService.getSUGames(team.verbandId, season.data.season - 1).subscribe(async (games) => {
-            for (let game of games.data) {
-              let status: any = await this.championshipService.getGameStatus(game.teamId, game.id);
+            for (const game of games.data) {
+              const status: any = await this.championshipService.getGameStatus(game.teamId, game.id);
               if (status.exists) {
                 game.status = String(status.data().status);
               } else {
                 game.status = 'undefined';
               }
 
-              let date = new Date(game.dateObject);
+              const date = new Date(game.dateObject);
               if (date.getTime() >= Date.now() - 1 * 24 * 60 * 60 * 1000) {
                 // 1 tag zurück
                 this.gamesList.push(game);
@@ -168,8 +168,8 @@ export class ChampionshipPage implements OnInit {
             }
 
             this.gamesList = this.gamesList.sort((a, b) => {
-              let dateA = new Date(a.dateObject);
-              let dateB = new Date(b.dateObject);
+              const dateA = new Date(a.dateObject);
+              const dateB = new Date(b.dateObject);
               if (dateA.getTime() > dateB.getTime()) {
                 return 0;
               } else {
@@ -178,8 +178,8 @@ export class ChampionshipPage implements OnInit {
             });
 
             this.gamesListPast = this.gamesListPast.sort((a, b) => {
-              let dateA = new Date(a.dateObject);
-              let dateB = new Date(b.dateObject);
+              const dateA = new Date(a.dateObject);
+              const dateB = new Date(b.dateObject);
 
               if (dateA.getTime() > dateB.getTime()) {
                 return 0;
@@ -191,11 +191,11 @@ export class ChampionshipPage implements OnInit {
             this.skeletonList = [];
           });
 
-          let championshipRef = this.championshipService.getTeamChampionshipList(team.id);
+          const championshipRef = this.championshipService.getTeamChampionshipList(team.id);
           //liest aktuell alle spiele aus Firestore!!!
           championshipRef.onSnapshot(async (querySnapshot) => {
-            let games = querySnapshot.docChanges();
-            for (let game of games) {
+            const games = querySnapshot.docChanges();
+            for (const game of games) {
               if (game.type === 'modified' || game.type === 'added') {
                 this.gamesList.find((element, index) => {
                   if (element.id === game.doc.id) {
@@ -203,7 +203,7 @@ export class ChampionshipPage implements OnInit {
                     //this.gamesList[index].membersAccepted = game.doc.data().membersAccepted || 0;
                     //this.gamesList[index].membersRejected = game.doc.data().membersRejected || 0;
 
-                    if (game.type == 'modified') {
+                    if (game.type === 'modified') {
                       this.championshipService.getGameStatus(element.teamId, element.id).then((status: any) => {
                         if (status.exists) {
                           status = String(status.data().status);
@@ -222,7 +222,7 @@ export class ChampionshipPage implements OnInit {
                     //this.gamesListPast[index].membersAccepted = game.doc.data().membersAccepted || 0;
                     //this.gamesListPast[index].membersRejected = game.doc.data().membersRejected || 0;
 
-                    if (game.type == 'modified') {
+                    if (game.type === 'modified') {
                       this.championshipService.getGameStatus(element.teamId, element.id).then((status: any) => {
                         if (status.exists) {
                           status = String(status.data().status);
@@ -248,7 +248,7 @@ export class ChampionshipPage implements OnInit {
     const modal = await this.modalController.create({
       component: ChampionshipDetailPage,
       componentProps: {
-        game: game,
+        game,
       },
       swipeToClose: true,
       presentingElement: this.routerOutlet.nativeEl,

@@ -13,7 +13,7 @@ const {Geolocation} = Plugins;
 })
 export class ChampionshipDetailPage implements OnInit {
   public markers: any;
-  public apiKey: String;
+  public apiKey: string;
   public options;
 
   public game: any = {};

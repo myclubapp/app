@@ -1,6 +1,6 @@
 import {AuthService} from './../auth.service';
 import {Injectable} from '@angular/core';
-import * as firebase from 'firebase/app';
+import firebase from 'firebase';
 import 'firebase/auth';
 import 'firebase/firestore';
 import {AngularFireStorage, AngularFireStorageReference} from '@angular/fire/storage';
@@ -10,18 +10,18 @@ import {UploadTaskSnapshot} from '@angular/fire/storage/interfaces';
   providedIn: 'root',
 })
 export class ProfileService {
-  public userProfile: firebase.default.firestore.DocumentReference;
-  public currentUser: firebase.default.User;
+  public userProfile: firebase.firestore.DocumentReference;
+  public currentUser: firebase.User;
 
   constructor(private authService: AuthService, private afStorage: AngularFireStorage) {}
 
-  async getUserProfileById(id): Promise<firebase.default.firestore.DocumentSnapshot> {
-    let userProfile = firebase.default.firestore().doc(`userProfile/${id}`);
+  async getUserProfileById(id): Promise<firebase.firestore.DocumentSnapshot> {
+    let userProfile = firebase.firestore().doc(`userProfile/${id}`);
     return userProfile.get();
   }
 
   async uploadIdentityFront(imageURL: string): Promise<any> {
-    const user: firebase.default.User = await this.authService.getUser();
+    const user: firebase.User = await this.authService.getUser();
     const storageRef: AngularFireStorageReference = this.afStorage.ref(`/userProfile/${user.uid}/identityFront/`);
 
     const uploadProcess: UploadTaskSnapshot = await storageRef.putString(imageURL, 'base64', {
@@ -29,12 +29,12 @@ export class ProfileService {
     });
 
     const downLoadURL: string = await storageRef.getDownloadURL().toPromise();
-    return firebase.default.firestore().collection('userProfile').doc(`${user.uid}`).update({
+    return firebase.firestore().collection('userProfile').doc(`${user.uid}`).update({
       identityFront: downLoadURL,
     });
   }
   async uploadIdentityBack(imageURL: string): Promise<any> {
-    const user: firebase.default.User = await this.authService.getUser();
+    const user: firebase.User = await this.authService.getUser();
     const storageRef: AngularFireStorageReference = this.afStorage.ref(`/userProfile/${user.uid}/identityBack/`);
 
     const uploadProcess: UploadTaskSnapshot = await storageRef.putString(imageURL, 'base64', {
@@ -42,12 +42,12 @@ export class ProfileService {
     });
 
     const downLoadURL: string = await storageRef.getDownloadURL().toPromise();
-    return firebase.default.firestore().collection('userProfile').doc(`${user.uid}`).update({
+    return firebase.firestore().collection('userProfile').doc(`${user.uid}`).update({
       identityBack: downLoadURL,
     });
   }
   async verbandAgreement(imageURL: string): Promise<any> {
-    const user: firebase.default.User = await this.authService.getUser();
+    const user: firebase.User = await this.authService.getUser();
     const storageRef: AngularFireStorageReference = this.afStorage.ref(`/userProfile/${user.uid}/verbandAgreement/`);
 
     const uploadProcess: UploadTaskSnapshot = await storageRef.putString(imageURL, 'base64url', {
@@ -55,13 +55,13 @@ export class ProfileService {
     });
 
     const downLoadURL: string = await storageRef.getDownloadURL().toPromise();
-    return firebase.default.firestore().collection('userProfile').doc(`${user.uid}`).update({
+    return firebase.firestore().collection('userProfile').doc(`${user.uid}`).update({
       verbandAgreement: downLoadURL,
     });
   }
 
   async userProfilePicture(imageURL: string): Promise<any> {
-    const user: firebase.default.User = await this.authService.getUser();
+    const user: firebase.User = await this.authService.getUser();
     const storageRef: AngularFireStorageReference = this.afStorage.ref(`/userProfile/${user.uid}/profilePicture/`);
 
     const uploadProcess: UploadTaskSnapshot = await storageRef.putString(imageURL, 'base64', {
@@ -69,16 +69,16 @@ export class ProfileService {
     });
 
     const downLoadURL: string = await storageRef.getDownloadURL().toPromise();
-    return firebase.default.firestore().collection('userProfile').doc(`${user.uid}`).update({
+    return firebase.firestore().collection('userProfile').doc(`${user.uid}`).update({
       picture: downLoadURL,
     });
   }
 
-  async getUserProfile(): Promise<firebase.default.firestore.DocumentSnapshot> {
-    const user: firebase.default.User = await this.authService.getUser();
+  async getUserProfile(): Promise<firebase.firestore.DocumentSnapshot> {
+    const user: firebase.User = await this.authService.getUser();
     if (user) {
       this.currentUser = user;
-      this.userProfile = firebase.default.firestore().doc(`userProfile/${user.uid}`);
+      this.userProfile = firebase.firestore().doc(`userProfile/${user.uid}`);
       return this.userProfile.get();
     } else {
       return;
@@ -86,10 +86,10 @@ export class ProfileService {
   }
 
   async getUserProfileChanges() {
-    const user: firebase.default.User = await this.authService.getUser();
+    const user: firebase.User = await this.authService.getUser();
     if (user) {
       this.currentUser = user;
-      return firebase.default.firestore().doc(`userProfile/${user.uid}`);
+      return firebase.firestore().doc(`userProfile/${user.uid}`);
     } else {
       return;
     }
@@ -114,7 +114,7 @@ export class ProfileService {
         street: profile.street || '',
         plz: profile.plz || '',
         location: profile.location || '',
-        handy: String(profile.handy) || '',
+        handy: string(profile.handy) || '',
         language: profile.language || '',
         gender: profile.gender || '',
         nationality: profile.nationality || '',
@@ -128,17 +128,17 @@ export class ProfileService {
   }
 
   async supportAnfrage(support: any) {
-    const user: firebase.default.User = await this.authService.getUser();
-    return firebase.default.firestore().doc(`userProfile/${user.uid}`).collection('support').add({
+    const user: firebase.User = await this.authService.getUser();
+    return firebase.firestore().doc(`userProfile/${user.uid}`).collection('support').add({
       name: support.name,
       message: support.message,
     });
   }
 
   async deleteAccount(profile: any) {
-    const user: firebase.default.User = await this.authService.getUser();
+    const user: firebase.User = await this.authService.getUser();
     console.log(user.uid);
-    return firebase.default.firestore().doc(`userProfile/${user.uid}`).set(
+    return firebase.firestore().doc(`userProfile/${user.uid}`).set(
       {
         status: 'delete',
       },
@@ -173,7 +173,7 @@ export class ProfileService {
 
   async updateEmail(newEmail: string, password: string): Promise<void> {
     try {
-      const credential: firebase.default.auth.AuthCredential = firebase.default.auth.EmailAuthProvider.credential(this.currentUser.email, password);
+      const credential: firebase.auth.AuthCredential = firebase.auth.EmailAuthProvider.credential(this.currentUser.email, password);
 
       await this.currentUser.reauthenticateWithCredential(credential);
       await this.currentUser.updateEmail(newEmail);
@@ -191,7 +191,7 @@ export class ProfileService {
   }
   async updatePassword(newPassword: string, oldPassword: string): Promise<void> {
     try {
-      const credential: firebase.default.auth.AuthCredential = firebase.default.auth.EmailAuthProvider.credential(this.currentUser.email, oldPassword);
+      const credential: firebase.auth.AuthCredential = firebase.auth.EmailAuthProvider.credential(this.currentUser.email, oldPassword);
 
       await this.currentUser.reauthenticateWithCredential(credential);
       return this.currentUser.updatePassword(newPassword);
@@ -201,14 +201,14 @@ export class ProfileService {
   }
 
   async setAGB(status): Promise<any> {
-    const user: firebase.default.User = await this.authService.getUser();
-    return firebase.default.firestore().collection('userProfile').doc(`${user.uid}`).update({
+    const user: firebase.User = await this.authService.getUser();
+    return firebase.firestore().collection('userProfile').doc(`${user.uid}`).update({
       agb: status,
     });
   }
   async setTutorial(status): Promise<any> {
-    const user: firebase.default.User = await this.authService.getUser();
-    return firebase.default.firestore().collection('userProfile').doc(`${user.uid}`).update({
+    const user: firebase.User = await this.authService.getUser();
+    return firebase.firestore().collection('userProfile').doc(`${user.uid}`).update({
       tutorial: status,
     });
   }

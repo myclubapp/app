@@ -34,7 +34,7 @@ export class AuthGuard implements CanActivate {
                 handler: (data) => {
                   user
                     .sendEmailVerification({
-                      url: String(window.location),
+                      url: string(window.location),
                     })
                     .then(
                       (ok) => {
