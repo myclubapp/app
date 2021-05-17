@@ -14,7 +14,6 @@ import {AngularFireFunctionsModule, REGION} from '@angular/fire/functions';
 import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
 import {AngularFireMessagingModule} from '@angular/fire/messaging';
 
-
 import {HttpClientModule} from '@angular/common/http';
 import {ServiceWorkerModule} from '@angular/service-worker';
 

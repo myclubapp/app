@@ -4,7 +4,7 @@ import firebase from 'firebase';
 import 'firebase/auth';
 import 'firebase/firestore';
 
-import { AngularFirestore } from '@angular/fire/firestore';
+import {AngularFirestore} from '@angular/fire/firestore';
 
 import {AlertController} from '@ionic/angular';
 import {SwUpdate} from '@angular/service-worker';
