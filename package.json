@@ -12,11 +12,18 @@
     "format": "prettier --write .",
     "e2e": "ng e2e"
   },
+
+
   "husky": {
     "hooks": {
-      "pre-commit": "prettier --write . && git add -A ."
+      "pre-commit": "lint-staged"
     }
   },
+  "lint-staged": {
+    "*": "prettier --write"
+  },
+
+
   "private": true,
   "dependencies": {
     "@angular/common": "~13.0.0",
