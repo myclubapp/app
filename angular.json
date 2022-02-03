@@ -30,6 +30,7 @@
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
               },
+              "src/manifest.webmanifest",
               "src/manifest.webmanifest"
             ],
             "styles": ["src/theme/variables.scss", "src/global.scss"],
@@ -113,6 +114,7 @@
                 "input": "src/assets",
                 "output": "/assets"
               },
+              "src/manifest.webmanifest",
               "src/manifest.webmanifest"
             ]
           },
