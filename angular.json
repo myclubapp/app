@@ -31,6 +31,7 @@
                 "output": "./svg"
               },
               "src/manifest.webmanifest",
+              "src/manifest.webmanifest",
               "src/manifest.webmanifest"
             ],
             "styles": ["src/theme/variables.scss", "src/global.scss"],
@@ -115,6 +116,7 @@
                 "output": "/assets"
               },
               "src/manifest.webmanifest",
+              "src/manifest.webmanifest",
               "src/manifest.webmanifest"
             ]
           },
@@ -170,6 +172,9 @@
             }
           }
         }
+      },
+      "i18n": {
+        "sourceLocale": "de-CH"
       }
     }
   },

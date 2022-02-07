@@ -1,8 +1,8 @@
 {
-  "name": "app",
-  "short_name": "app",
-  "theme_color": "#1976d2",
-  "background_color": "#fafafa",
+  "name": "myclub",
+  "short_name": "myclub",
+  "theme_color": "#339BDE",
+  "background_color": "#795DEB",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
