@@ -31,5 +31,7 @@ export class LoginPage implements OnInit {
     };
 
   }
-
+  submitCredentials(authForm:any){
+      
+  }
 }

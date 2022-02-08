@@ -39,9 +39,11 @@ export class NewsPage implements OnInit {
         loading.dismiss();
       }
       
-      if ( result.error){
+      console.log(result);
+      
+      if (result.errors){
         this.toastController.create({
-          message: JSON.stringify(result.error),
+          message: JSON.stringify(result.errors[0].message),
           duration: 2000
         }).then(toast=>{
           toast.present();

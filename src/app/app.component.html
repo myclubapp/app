@@ -7,19 +7,19 @@
           <!--<ion-note>hi@ionicframework.com</ion-note>-->
 
           <ion-menu-toggle auto-hide="false">
-            <ion-item routerDirection="root" [routerLink]="news" lines="none" detail="false" routerLinkActive="selected">
+            <ion-item routerDirection="root"  lines="none" detail="false" routerLinkActive="selected">
               <ion-icon slot="start" name="newspaper-outline" ></ion-icon>
               <ion-label>News</ion-label>
             </ion-item>
-            <ion-item routerDirection="root" [routerLink]="trainings" lines="none" detail="false" routerLinkActive="selected">
+            <ion-item routerDirection="root" lines="none" detail="false" routerLinkActive="selected">
               <ion-icon slot="start" name="barbell-outline"></ion-icon>
               <ion-label>Training</ion-label>
             </ion-item>
-            <ion-item routerDirection="root" [routerLink]="championship" lines="none" detail="false" routerLinkActive="selected">
+            <ion-item routerDirection="root"  lines="none" detail="false" routerLinkActive="selected">
               <ion-icon slot="start" name="trophy-outline"></ion-icon>
               <ion-label>Meisterschaft</ion-label>
             </ion-item>
-            <ion-item routerDirection="root" [routerLink]="events" lines="none" detail="false" routerLinkActive="selected">
+            <ion-item routerDirection="root"  lines="none" detail="false" routerLinkActive="selected">
               <ion-icon slot="start" name="calendar-outline"></ion-icon>
               <ion-label>Events</ion-label>
             </ion-item>
@@ -29,10 +29,7 @@
         <ion-list id="labels-list">
           <ion-list-header>Administration</ion-list-header>
 
-          <ion-item *ngFor="let label of labels" lines="none">
-            <ion-icon slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
-            <ion-label>{{ label }}</ion-label>
-          </ion-item>
+        
         </ion-list>
       </ion-content>
     </ion-menu>
