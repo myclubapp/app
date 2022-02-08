@@ -2,16 +2,24 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
+
+  {
+    path: '',
+    loadChildren: () => import('./pages/tabs/tabs.module').then(m => m.TabsPageModule)
+  },
+
   {
     path: 'home',
     loadChildren: () =>
       import('./pages/home/home.module').then((m) => m.HomePageModule),
   },
+  /*
   {
     path: '',
-    redirectTo: 'home',
+    redirectTo: 'tabs',
     pathMatch: 'full',
-  },
+  }, 
+  */
   {
     path: 'login',
     loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
@@ -48,6 +56,39 @@ const routes: Routes = [
     path: 'reset-password',
     loadChildren: () => import('./pages/reset-password/reset-password.module').then( m => m.ResetPasswordPageModule)
   },
+  {
+    path: 'profile',
+    loadChildren: () => import('./pages/profile/profile.module').then( m => m.ProfilePageModule)
+  },
+  {
+    path: 'trainings',
+    loadChildren: () => import('./pages/trainings/trainings.module').then( m => m.TrainingsPageModule)
+  },
+  {
+    path: 'training-detail',
+    loadChildren: () => import('./pages/training-detail/training-detail.module').then( m => m.TrainingDetailPageModule)
+  },
+  {
+    path: 'events',
+    loadChildren: () => import('./pages/events/events.module').then( m => m.EventsPageModule)
+  },
+  {
+    path: 'event-detail',
+    loadChildren: () => import('./pages/event-detail/event-detail.module').then( m => m.EventDetailPageModule)
+  },
+  {
+    path: 'news-detail',
+    loadChildren: () => import('./pages/news-detail/news-detail.module').then( m => m.NewsDetailPageModule)
+  },
+  {
+    path: 'championship',
+    loadChildren: () => import('./pages/championship/championship.module').then( m => m.ChampionshipPageModule)
+  },
+  {
+    path: 'championship-detail',
+    loadChildren: () => import('./pages/championship-detail/championship-detail.module').then( m => m.ChampionshipDetailPageModule)
+  },
+
 ];
 
 @NgModule({

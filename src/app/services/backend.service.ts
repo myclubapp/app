@@ -26,5 +26,23 @@ export class BackendService {
     }).valueChanges;
   }
 
+  getNews(): Observable<any>{
+    return this.apollo
+    .watchQuery({
+      query: gql`
+        {
+          news {
+            id
+            title
+            slug
+            image
+            leadText
+            text
+            htmlText
+          }
+        }
+      `,
+    }).valueChanges;
+  }
 
 }

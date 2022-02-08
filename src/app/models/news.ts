@@ -4,8 +4,12 @@ export interface News {
   slug: string;
   image: string;
   leadText: string;
+  date: Date;
   text: string;
   htmlText: string;
+  tags: [string];
+  author: string;
+  authorImage: string;
 
 }
 export interface SwissUnihockeyNews extends News {
