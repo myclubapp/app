@@ -19,7 +19,7 @@
     <ion-card *ngFor="let news of newsList">
       <img src="{{news.image}}" />
       <ion-card-header>
-        <ion-card-subtitle>{{news.date}}</ion-card-subtitle>
+        <ion-card-subtitle>{{news.date | date:'dd.MM.YYYY HH:mm'}}</ion-card-subtitle>
         <ion-card-title>{{news.title}}</ion-card-title>
       </ion-card-header>
     
