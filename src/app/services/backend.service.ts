@@ -39,6 +39,10 @@ export class BackendService {
             leadText
             text
             htmlText
+            author
+            authorImage
+            tags
+            date
           }
         }
       `,
