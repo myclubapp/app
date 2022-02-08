@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "myclubmanagement"
+  },
+  "targets": {
+    "myclubmanagement": {
+      "hosting": {
+        "unihockey": [
+          "unihockey"
+        ],
+        "unihockeyclubapp": [
+          "unihockeyclubapp"
+        ]
+      }
+    }
   }
 }

@@ -1,5 +1,6 @@
 {
-  "hosting": {
+  "hosting": [{
+    "target": "unihockey",
     "public": "www",
     "ignore": [
       "firebase.json",
@@ -12,5 +13,20 @@
         "destination": "/index.html"
       }
     ]
-  }
+  },
+  {
+    "target": "unihockeyclubapp",
+    "public": "www",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }]
 }
