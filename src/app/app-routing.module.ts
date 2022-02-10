@@ -88,6 +88,10 @@ const routes: Routes = [
     path: 'championship-detail',
     loadChildren: () => import('./pages/championship-detail/championship-detail.module').then( m => m.ChampionshipDetailPageModule)
   },
+  {
+    path: 'onboarding',
+    loadChildren: () => import('./pages/onboarding/onboarding.module').then( m => m.OnboardingPageModule)
+  },
 
 ];
 
