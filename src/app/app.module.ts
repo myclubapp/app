@@ -12,12 +12,18 @@ import { GraphQLModule } from './graphql.module';
 import { HttpClientModule } from '@angular/common/http';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
 import { provideAuth,getAuth } from '@angular/fire/auth';
 import { provideFirestore,getFirestore } from '@angular/fire/firestore';
 import { provideMessaging,getMessaging } from '@angular/fire/messaging';
 import { provideRemoteConfig,getRemoteConfig } from '@angular/fire/remote-config';
 import { provideStorage,getStorage } from '@angular/fire/storage';
+
+import { PERSISTENCE } from '@angular/fire/compat/auth';
+import { LANGUAGE_CODE } from '@angular/fire/compat/auth';
+import { USE_DEVICE_LANGUAGE } from '@angular/fire/compat/auth';
+// import { TENANT_ID  } from '@angular/fire/compat/auth';
 
 @NgModule({
   declarations: [AppComponent],
@@ -42,7 +48,12 @@ import { provideStorage,getStorage } from '@angular/fire/storage';
     provideRemoteConfig(() => getRemoteConfig()),
     provideStorage(() => getStorage()),
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: PERSISTENCE, useValue: 'local' }, // https://firebase.google.com/docs/auth/web/auth-state-persistence
+    { provide: LANGUAGE_CODE, useValue: 'de' },
+    { provide: USE_DEVICE_LANGUAGE, useValue: true },
+    //{ provide: TENANT_ID, useValue: 'tenant-id-app-one' },
+  ],
   bootstrap: [AppComponent],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })
