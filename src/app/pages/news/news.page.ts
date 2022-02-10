@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { News } from 'src/app/models/news';
 import { BackendService } from 'src/app/services/backend.service';
+import { Browser } from '@capacitor/browser';
+
 
 @Component({
   selector: 'app-news',
@@ -19,6 +21,14 @@ export class NewsPage implements OnInit {
 
   ngOnInit() {
     this.getNews();
+  }
+
+  async openNews(news: News){
+    await Browser.open({ url: news.url, presentationStyle: 'popover', windowName: '_self' });
+  }
+
+  async openBrowser(url: string){
+    await Browser.open({ url: url, presentationStyle: 'popover', windowName: '_self' });
   }
 
   async getNews() {
@@ -39,7 +49,7 @@ export class NewsPage implements OnInit {
         loading.dismiss();
       }
       
-      console.log(result);
+      // console.log(result);
       
       if (result.errors){
         this.toastController.create({

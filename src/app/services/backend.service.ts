@@ -42,7 +42,8 @@ export class BackendService {
             author
             authorImage
             tags
-            date
+            date,
+            url
           }
         }
       `,

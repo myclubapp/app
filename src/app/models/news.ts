@@ -10,6 +10,7 @@ export interface News {
   tags: [string];
   author: string;
   authorImage: string;
+  url: string;
 
 }
 export interface SwissUnihockeyNews extends News {

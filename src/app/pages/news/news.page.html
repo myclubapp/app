@@ -17,20 +17,21 @@
   <ion-list>
 
     <ion-card button="true" *ngFor="let news of newsList">
-      <ion-fab vertical="top" horizontal="end" >
-        <ion-fab-button size="small">
+
+      <ion-fab *ngIf="news.url"vertical="top" horizontal="end" >
+        <ion-fab-button size="small" (click)="openBrowser(news.url)">
           <ion-icon name="share" size="small"></ion-icon>
         </ion-fab-button>
       </ion-fab>
 
 
-      <img src="{{news.image}}" />
-      <ion-card-header>
+      <img (click)="openNews(news)"  src="{{news.image}}" />
+      <ion-card-header (click)="openNews(news)" >
         <ion-card-subtitle>{{news.date | date:'dd.MM.YYYY HH:mm'}}</ion-card-subtitle>
         <ion-card-title>{{news.title}}</ion-card-title>
       </ion-card-header>
 
-      <ion-card-content>
+      <ion-card-content (click)="openNews(news)" >
         {{news.leadText}}
       </ion-card-content>
       <ion-row>
