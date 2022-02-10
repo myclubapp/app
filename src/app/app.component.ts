@@ -27,6 +27,7 @@ export class AppComponent {
       //cssClass: 'my-custom-class',
       header: 'Neue Version',
       message: 'Eine neue Version ist verfügbar. Neue Version laden?',
+      backdropDismiss: false,
       buttons: [
         {
           text: 'Abbrechen',
