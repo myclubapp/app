@@ -5,11 +5,8 @@
   "targets": {
     "myclubmanagement": {
       "hosting": {
-        "unihockey": [
+        "app": [
           "unihockey"
-        ],
-        "unihockeyclubapp": [
-          "unihockeyclubapp"
         ]
       }
     }

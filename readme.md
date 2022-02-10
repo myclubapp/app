@@ -35,3 +35,6 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 -- fr-CH 	French (Switzerland)
 -- it-CH    Italian (Switzerland)
 -- en-US    English
+- Angular Fire ng add @angular/fire
+- Fontawesome Icons
+- Ionicons

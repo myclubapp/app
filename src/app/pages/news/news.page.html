@@ -19,7 +19,7 @@
     <ion-card button="true" *ngFor="let news of newsList">
 
       <ion-fab *ngIf="news.url"vertical="top" horizontal="end" >
-        <ion-fab-button size="small" (click)="openBrowser(news.url)">
+        <ion-fab-button size="small" (click)="share(news)">
           <ion-icon name="share" size="small"></ion-icon>
         </ion-fab-button>
       </ion-fab>
@@ -114,4 +114,13 @@
     </ion-card>
 
   </ion-list>
+
+  <web-social-share [show]="showSocialShare" [share]="shareSocialShareOptions" (closed)="showSocialShare = false">
+    <fa-icon [icon]="faTwitter" slot="twitter" style="color: #00aced; display: block"></fa-icon>
+    <fa-icon [icon]="faFacebook" slot="facebook" style="color: #00aced; display: block"></fa-icon>
+    <fa-icon [icon]="faWhatsapp" slot="facebook" slot="whatsapp" style="color: #25d366; display: block"></fa-icon>
+    <fa-icon [icon]="faLinkedin" slot="linkedin" style="color: #0077b5; display: block"></fa-icon>
+    <fa-icon [icon]="faEnvelope" slot="email" ariaLabel="Email" style="color: #ff8ea3; display: block"></fa-icon>
+    <fa-icon [icon]="faCopy" slot="copy" ariaLabel="Copy" style="color: #ff8ea3; display: block"></fa-icon>
+  </web-social-share>
 </ion-content>

@@ -1,0 +1,8 @@
+div.web-social-share p {
+
+	color: black !important;
+
+    @media (prefers-color-scheme: dark) {
+        color: #000 !important;
+    }
+}

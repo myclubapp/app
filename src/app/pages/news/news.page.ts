@@ -3,7 +3,12 @@ import { LoadingController, ToastController } from '@ionic/angular';
 import { News } from 'src/app/models/news';
 import { BackendService } from 'src/app/services/backend.service';
 import { Browser } from '@capacitor/browser';
+import { Share } from '@capacitor/share';
+import { Device } from '@capacitor/device';
 
+
+import {faTwitter, faFacebook, faWhatsapp, faLinkedin} from '@fortawesome/free-brands-svg-icons';
+import {faEnvelope, faCopy} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-news',
@@ -13,6 +18,17 @@ import { Browser } from '@capacitor/browser';
 export class NewsPage implements OnInit {
   newsList: News[]
   loading = true;
+
+// Social Share
+shareSocialShareOptions: any;
+showSocialShare = false;
+faTwitter = faTwitter;
+faFacebook = faFacebook;
+faWhatsapp = faWhatsapp;
+faLinkedin = faLinkedin;
+faEnvelope = faEnvelope;
+faCopy = faCopy;
+
   constructor(
     private backend: BackendService,
     public loadingController: LoadingController,
@@ -24,11 +40,14 @@ export class NewsPage implements OnInit {
   }
 
   async openNews(news: News){
-    await Browser.open({ url: news.url, presentationStyle: 'popover', windowName: '_self' });
+    
   }
 
   async openBrowser(url: string){
     await Browser.open({ url: url, presentationStyle: 'popover', windowName: '_self' });
+  }
+  async shareNews(news: News){
+    
   }
 
   async getNews() {
@@ -62,6 +81,65 @@ export class NewsPage implements OnInit {
       }
       this.loading = result.loading;
 
+    });
+  }
+
+  async share(news: News) {
+    const device = await Device.getInfo();
+      if (device.platform === 'web' && navigator && navigator['share']) {
+        let shareRet = await Share.share({
+          title: news.title,
+          text: news.leadText,
+          url: news.url,
+          dialogTitle: news.title,
+        }).catch((onrejected) => {});
+      } else {
+        await this.shareFallback(news);
+      }
+  }
+
+  shareFallback(news: News) {
+    return new Promise(async (resolve) => {
+      // The configuration, set the share options
+      this.shareSocialShareOptions = {
+        displayNames: true,
+        config: [
+          {
+            twitter: {
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
+              socialSharePopupWidth: 300,
+              socialSharePopupHeight: 400,
+            },
+          },
+          {
+            facebook: {
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
+            },
+          },
+          {
+            whatsapp: {
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
+            },
+          },
+          {
+            linkedin: {
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
+            },
+          },
+          {
+            email: {
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
+            },
+          },
+          {
+            copy: {
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
+            },
+          },
+        ],
+      };
+      this.showSocialShare = true;
+      resolve(true);
     });
   }
 
