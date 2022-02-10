@@ -17,12 +17,19 @@
   <ion-list>
 
     <ion-card button="true" *ngFor="let news of newsList">
+      <ion-fab vertical="top" horizontal="end" >
+        <ion-fab-button size="small">
+          <ion-icon name="share" size="small"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+
+
       <img src="{{news.image}}" />
       <ion-card-header>
         <ion-card-subtitle>{{news.date | date:'dd.MM.YYYY HH:mm'}}</ion-card-subtitle>
         <ion-card-title>{{news.title}}</ion-card-title>
       </ion-card-header>
-    
+
       <ion-card-content>
         {{news.leadText}}
       </ion-card-content>
@@ -30,13 +37,15 @@
         <ion-col size="8">
           <ion-chip>
             <ion-avatar>
-              <img src="{{news.authorImage}}"> 
+              <img src="{{news.authorImage}}">
             </ion-avatar>
             <ion-label>{{news.author}}</ion-label>
           </ion-chip>
 
         </ion-col>
-        <ion-col size="4"> <ion-label></ion-label></ion-col>
+        <ion-col size="4">
+          <ion-label></ion-label>
+        </ion-col>
       </ion-row>
     </ion-card>
 
@@ -44,12 +53,16 @@
 
   <ion-list *ngIf="loading">
     <ion-card>
-     
+
       <ion-card-header>
-        <ion-card-subtitle><ion-skeleton-text animated style="width: 60%"></ion-skeleton-text></ion-card-subtitle>
-        <ion-card-title><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></ion-card-title>
+        <ion-card-subtitle>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </ion-card-subtitle>
+        <ion-card-title>
+          <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+        </ion-card-title>
       </ion-card-header>
-    
+
       <ion-card-content>
         <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
         <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
@@ -60,12 +73,16 @@
     </ion-card>
 
     <ion-card>
-     
+
       <ion-card-header>
-        <ion-card-subtitle><ion-skeleton-text animated style="width: 60%"></ion-skeleton-text></ion-card-subtitle>
-        <ion-card-title><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></ion-card-title>
+        <ion-card-subtitle>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </ion-card-subtitle>
+        <ion-card-title>
+          <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+        </ion-card-title>
       </ion-card-header>
-    
+
       <ion-card-content>
         <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
         <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
@@ -76,12 +93,16 @@
     </ion-card>
 
     <ion-card>
-    
+
       <ion-card-header>
-        <ion-card-subtitle><ion-skeleton-text animated style="width: 60%"></ion-skeleton-text></ion-card-subtitle>
-        <ion-card-title><ion-skeleton-text animated style="width: 80%"></ion-skeleton-text></ion-card-title>
+        <ion-card-subtitle>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </ion-card-subtitle>
+        <ion-card-title>
+          <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+        </ion-card-title>
       </ion-card-header>
-    
+
       <ion-card-content>
         <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
         <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
