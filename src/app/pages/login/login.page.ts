@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { UserCredential } from 'src/app/models/user';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { MenuController } from '@ionic/angular';
-// import { AuthService } from 'src/app/services/auth.service';
-// import firebase from 'firebase/compat/app';
+import { AuthService } from 'src/app/services/auth.service';
+import firebase from 'firebase/compat/app';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +16,7 @@ export class LoginPage implements OnInit {
   public user: UserCredential;
   public authForm: FormGroup;
   constructor(
-    // private authService: AuthService,
+    private authService: AuthService,
     private router: Router,
     private formBuilder: FormBuilder,
     public menuCtrl: MenuController,
@@ -44,13 +44,15 @@ export class LoginPage implements OnInit {
 
 
   async submitCredentials(authForm:any){
-    try {
-    /*  const userCredential:firebase.auth.UserCredential = await this.authService.login(
-        authForm.email,
-        authForm.password
-      );
-      */
 
+    console.log(authForm);
+
+    try {
+      const userCredential: firebase.auth.UserCredential = await this.authService.login(
+        authForm.value.email,
+        authForm.value.password
+      );
+      
       this.router.navigateByUrl('/').catch(error=>{
         console.log(error.message);
         this.router.navigateByUrl('');
