@@ -10,8 +10,8 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./pages/tabs/tabs.module').then(m => m.TabsPageModule), 
-     canActivate: [AngularFireAuthGuard],
-    // data: { authGuardPipe: redirectUnauthorizedToLogin}
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin}
   },
 
   {

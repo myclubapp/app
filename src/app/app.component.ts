@@ -21,7 +21,7 @@ export class AppComponent {
     // private router: Router,
   ) {
     this.initializeApp();
-    //this.initializeFirebase();
+    // this.initializeFirebase();
 
    /* this.afAuth.onAuthStateChanged((user)=>{
         if (user) {

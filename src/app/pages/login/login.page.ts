@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 // import { AlertController, LoadingController } from '@ionic/angular';
 import { UserCredential } from 'src/app/models/user';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import { MenuController } from '@ionic/angular';
 // import { AuthService } from 'src/app/services/auth.service';
 // import firebase from 'firebase/compat/app';
 
@@ -18,6 +19,7 @@ export class LoginPage implements OnInit {
     // private authService: AuthService,
     private router: Router,
     private formBuilder: FormBuilder,
+    public menuCtrl: MenuController,
     // private loadingCtrl: LoadingController,
     // private alertCtrl: AlertController
   ) { 
@@ -26,6 +28,7 @@ export class LoginPage implements OnInit {
       password: ['', Validators.minLength(6)],
     });
     
+    this.menuCtrl.enable(false, 'menu');
   }
 
   ngOnInit() {
@@ -34,7 +37,12 @@ export class LoginPage implements OnInit {
       password: '',
     };
 
+    this.menuCtrl.enable(false, 'menu');
+
   }
+  
+
+
   async submitCredentials(authForm:any){
     try {
     /*  const userCredential:firebase.auth.UserCredential = await this.authService.login(
