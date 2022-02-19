@@ -7,7 +7,8 @@
         <!-- Open Accordion -->
         <ion-accordion-group value="colors">
           <ion-accordion value="colors">
-   ¨<!--         <ion-item slot="header">
+            ¨
+            <!--         <ion-item slot="header">
               <ion-label>myclub</ion-label>
             </ion-item>-->
 
@@ -60,7 +61,13 @@
           </ion-accordion>
         </ion-accordion-group>
 
-
+        <ion-list>
+          <ion-item (click)="logout()">
+            <ion-icon slot="start" name="exit-outline"></ion-icon>
+            <ion-label>Logout</ion-label>
+            <ion-button (click)="logout()">Logout</ion-button>
+          </ion-item>
+        </ion-list>
         <!--
 
         <ion-list id="inbox-list">

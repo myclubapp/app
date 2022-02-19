@@ -6,6 +6,7 @@ import { AlertController, ModalController } from '@ionic/angular';
 
 // import { AngularFireAuth } from '@angular/fire/compat/auth';
 import firebase from 'firebase/compat/app';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,7 @@ export class AppComponent {
   constructor(
     private swUpdate: SwUpdate,
     private alertController: AlertController,
+    private authService: AuthService,
     // private modalController: ModalController,
     // private afAuth: AngularFireAuth,
     // private router: Router,
@@ -97,5 +99,10 @@ export class AppComponent {
     });
 
     await alert.present();
+  }
+  async logout(){
+    await this.authService.logout();
+    
+
   }
 }

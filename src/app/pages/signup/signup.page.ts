@@ -79,21 +79,19 @@ export class SignupPage implements OnInit {
 
     console.log('signup user: ' + this.user.email);
 
-    this.authService.signup(credentials.email, credentials.password).then(
-     async (data) => {
-    
-        //this.userProfileRef = this.afs.collection('users').doc < UserProfile > (data.user.uid);
-        // await this.userProfileRef.set(userData);
-      
-        this.router.navigateByUrl('tabs');
-      }).catch(err=>{
-        this.alertCtrl.create({
-          message: err.message,
-          buttons: [{ text: 'Ok', role: 'cancel' }],
-        }).then(alert=>{
-          alert.present();
-        });
+    try {
+      const userCredential = await this.authService.signup(credentials.email, credentials.password, userData.firstName, userData.lastName);
 
+      await this.router.navigateByUrl('tabs');
+
+    } catch(err) {
+      this.alertCtrl.create({
+        message: err.message,
+        buttons: [{ text: 'Ok', role: 'cancel' }],
+      }).then(alert=>{
+        alert.present();
       });
+    }
+
   }
 }
