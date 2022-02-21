@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore'
-import { Router } from '@angular/router';
 import firebase from 'firebase/compat/app';
 
 @Injectable({
@@ -50,11 +50,11 @@ export class AuthService {
     return this.afAuth.sendPasswordResetEmail(email);
   }
 
-  logout(): Promise < void > {
+  async logout(): Promise < void > {
     // this.afAuth.signOut();
     // firebase.firestore().clearPersistence();
-    return this.afAuth.signOut();
-    this.router.navigateByUrl('/logout');
+    await this.afAuth.signOut();
+    await this.router.navigateByUrl('/logout');
   }
 
 

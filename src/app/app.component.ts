@@ -7,6 +7,7 @@ import { AlertController, ModalController } from '@ionic/angular';
 // import { AngularFireAuth } from '@angular/fire/compat/auth';
 import firebase from 'firebase/compat/app';
 import { AuthService } from './services/auth.service';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Component({
   selector: 'app-root',
@@ -19,11 +20,11 @@ export class AppComponent {
     private alertController: AlertController,
     private authService: AuthService,
     // private modalController: ModalController,
-    // private afAuth: AngularFireAuth,
+    private afAuth: AngularFireAuth,
     // private router: Router,
   ) {
     this.initializeApp();
-    // this.initializeFirebase();
+    this.initializeFirebase();
 
    /* this.afAuth.onAuthStateChanged((user)=>{
         if (user) {
@@ -69,7 +70,7 @@ export class AppComponent {
         }
       });
     // Subsequent queries will use persistence, if it was enabled successfully
-    // this.afAuth.setPersistence('local');
+    this.afAuth.setPersistence('local');
 
   }
 
@@ -101,6 +102,7 @@ export class AppComponent {
     await alert.present();
   }
   async logout(){
+    console.log("logout");
     await this.authService.logout();
     
 

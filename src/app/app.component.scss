@@ -1,4 +1,13 @@
-img{
-    margin-top: 10px;
-    margin-bottom: 10px;
+img {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+ion-menu.md ion-note {
+  margin-bottom: 30px;
+}
+
+ion-menu.md ion-list-header,
+ion-menu.md ion-note {
+  padding-left: 20px;
 }

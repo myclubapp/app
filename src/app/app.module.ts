@@ -30,6 +30,7 @@ import { provideStorage,getStorage } from '@angular/fire/storage';
 
 //https://github.com/angular/angularfire/blob/4c877b146daf3dfff4d04d45ab49b2655872aab6/docs/install-and-setup.md
 import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFireAuthGuardModule } from '@angular/fire/compat/auth-guard';
 
@@ -58,6 +59,7 @@ import { USE_DEVICE_LANGUAGE } from '@angular/fire/compat/auth';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFireAuthGuardModule,
+    AngularFirestoreModule,
     
     /*
     AngularFireModule.initializeApp(environment.firebase),

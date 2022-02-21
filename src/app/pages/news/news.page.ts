@@ -47,14 +47,13 @@ faCopy = faCopy;
     await Browser.open({ url: url, presentationStyle: 'popover', windowName: '_self' });
   }
   async shareNews(news: News){
-    
   }
 
   async getNews() {
     const loading = await this.loadingController.create({
-      spinner: null,
-      duration: 5000,
-      message: 'Loading news...',
+      spinner: 'circles',
+      // duration: 5000,
+      message: 'Lade News...',
       translucent: true,
       cssClass: 'custom-class custom-loading',
 
