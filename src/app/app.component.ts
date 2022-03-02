@@ -15,6 +15,8 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
+  public email: string;
+
   constructor(
     private swUpdate: SwUpdate,
     private alertController: AlertController,
@@ -25,6 +27,10 @@ export class AppComponent {
   ) {
     this.initializeApp();
     this.initializeFirebase();
+
+    this.authService.getUser().then(user=>{
+      this.email = user.email;
+    });
 
    /* this.afAuth.onAuthStateChanged((user)=>{
         if (user) {

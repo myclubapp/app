@@ -1,4 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+
+import firebase from 'firebase/compat/app';
+
+//Services
+import { FirebaseService } from 'src/app/services/firebase.service';
+import { AuthService } from 'src/app/services/auth.service';
+
+//models
+import { UserProfile } from 'src/app/models/user';
 
 @Component({
   selector: 'app-profile',
@@ -7,9 +17,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProfilePage implements OnInit {
 
-  constructor() { }
+  userProfile$: Observable<UserProfile>;
+  constructor(
+    private authService: AuthService,
+    private fbService: FirebaseService
+  ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    const user: firebase.User = await this.authService.getUser();
+    this.userProfile$ = this.fbService.getUserProfile(user);   
   }
 
 }

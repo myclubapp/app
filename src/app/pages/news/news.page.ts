@@ -53,7 +53,7 @@ faCopy = faCopy;
     const loading = await this.loadingController.create({
       spinner: 'circles',
       // duration: 5000,
-      message: 'Lade News...',
+      message: 'News',
       translucent: true,
       cssClass: 'custom-class custom-loading',
 

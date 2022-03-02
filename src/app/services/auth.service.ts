@@ -1,8 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { first } from 'rxjs/operators';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore'
 import firebase from 'firebase/compat/app';
+import {
+  Firestore, addDoc, collection, collectionData,
+  doc, docData, deleteDoc, updateDoc, DocumentReference, setDoc
+} from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +15,16 @@ export class AuthService {
 
   constructor(
     private afAuth: AngularFireAuth,
-    private afStore: AngularFirestore,
     private router: Router,
+    private firestore: Firestore,
   ) {
 
    }
+
+
+   getUser() {
+    return this.afAuth.authState.pipe(first()).toPromise();
+  }
 
    login( email: string, password: string): Promise < firebase.auth.UserCredential > {
     return this.afAuth.signInWithEmailAndPassword(email, password);
@@ -33,11 +42,20 @@ export class AuthService {
         password
       );
 
-      await this.afStore.collection('userProfile').doc(newUserCredential.user.uid).set( {
+      const userProfileDocRef = doc(this.firestore,`userProfile/${newUserCredential.user.uid}/inviteList`);
+
+      updateDoc(userProfileDocRef, {
         firstName: firstName,
         lastName: lastName,
         email: newUserCredential.user.email
       });
+
+
+      /*await this.afStore.collection('userProfile').doc(newUserCredential.user.uid).set( {
+        firstName: firstName,
+        lastName: lastName,
+        email: newUserCredential.user.email
+      });*/
 
       return newUserCredential;
       

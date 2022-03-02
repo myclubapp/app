@@ -19,7 +19,7 @@
 
 
             <ion-list slot="content">
-              <ion-note>hi@ionicframework.com</ion-note>
+              <ion-note>{{email}}</ion-note>
 
               <ion-menu-toggle auto-hide="false">
                 <ion-item routerDirection="root" [routerLink]="['/tabs/news']" lines="none" detail="true" routerLinkActive="selected">
@@ -47,6 +47,13 @@
             </ion-item>
 
             <ion-list slot="content">
+              <ion-menu-toggle auto-hide="false">
+              <ion-item  routerDirection="root" [routerLink]="['/onboarding']" lines="none" detail="true" routerLinkActive="selected">
+                <ion-label>Onboarding</ion-label>
+              </ion-item>
+              <ion-item  routerDirection="root" [routerLink]="['/profile']" lines="none" detail="true" routerLinkActive="selected">
+                <ion-label>Profil</ion-label>
+              </ion-item>              
               <ion-item  routerDirection="root" [routerLink]="['/tabs/club']" lines="none" detail="true" routerLinkActive="selected">
                 <ion-label>Club</ion-label>
               </ion-item>
@@ -56,6 +63,7 @@
               <ion-item  routerDirection="root" [routerLink]="['/tabs/events']" lines="none" detail="true" routerLinkActive="selected">
                 <ion-label>Events</ion-label>
               </ion-item>
+              </ion-menu-toggle>
             </ion-list>
           </ion-accordion>
         </ion-accordion-group>

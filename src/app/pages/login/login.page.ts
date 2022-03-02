@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 // import { AlertController, LoadingController } from '@ionic/angular';
 import { UserCredential } from 'src/app/models/user';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { MenuController } from '@ionic/angular';
+import { AlertController, MenuController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import firebase from 'firebase/compat/app';
 
@@ -15,7 +15,9 @@ import firebase from 'firebase/compat/app';
 export class LoginPage implements OnInit {
   public user: UserCredential;
   public authForm: FormGroup;
+  
   constructor(
+    private alertCtrl: AlertController,
     private authService: AuthService,
     private router: Router,
     private formBuilder: FormBuilder,
@@ -45,8 +47,6 @@ export class LoginPage implements OnInit {
 
   async submitCredentials(authForm:any){
 
-    console.log(authForm);
-
     try {
       const userCredential: firebase.auth.UserCredential = await this.authService.login(
         authForm.value.email,
@@ -54,11 +54,18 @@ export class LoginPage implements OnInit {
       );
       
       this.router.navigateByUrl('/').catch(error=>{
-        console.log(error.message);
+        console.error(error.message);
         this.router.navigateByUrl('');
       });
-    } catch (error) {
-      console.error(error);
+
+    } catch (err) {
+      this.alertCtrl.create({
+        message: err.message,
+        buttons: [{ text: 'Ok', role: 'cancel' }],
+      }).then(alert=>{
+        alert.present();
+      });
+      console.error(err.message);
     }
   }
 }
