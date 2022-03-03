@@ -3,10 +3,14 @@ import { Router } from '@angular/router';
 import { first } from 'rxjs/operators';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import firebase from 'firebase/compat/app';
-import {
+ import {
   Firestore, addDoc, collection, collectionData,
   doc, docData, deleteDoc, updateDoc, DocumentReference, setDoc
-} from '@angular/fire/firestore';
+} from '@angular/fire/firestore'; 
+
+/******************************************************************************************
+ *  DOCS https://github.com/angular/angularfire/blob/master/docs/auth/getting-started.md
+*******************************************************************************************/
 
 @Injectable({
   providedIn: 'root'
@@ -14,9 +18,9 @@ import {
 export class AuthService {
 
   constructor(
+    private firestore: Firestore,
     private afAuth: AngularFireAuth,
     private router: Router,
-    private firestore: Firestore,
   ) {
 
    }
@@ -42,21 +46,14 @@ export class AuthService {
         password
       );
 
-      const userProfileDocRef = doc(this.firestore,`userProfile/${newUserCredential.user.uid}/inviteList`);
+       const userProfileDocRef = doc(this.firestore,`userProfile/${newUserCredential.user.uid}/inviteList`);
 
       updateDoc(userProfileDocRef, {
         firstName: firstName,
         lastName: lastName,
         email: newUserCredential.user.email
       });
-
-
-      /*await this.afStore.collection('userProfile').doc(newUserCredential.user.uid).set( {
-        firstName: firstName,
-        lastName: lastName,
-        email: newUserCredential.user.email
-      });*/
-
+  
       return newUserCredential;
       
     } catch (error) {
@@ -69,9 +66,8 @@ export class AuthService {
   }
 
   async logout(): Promise < void > {
-    // this.afAuth.signOut();
-    // firebase.firestore().clearPersistence();
     await this.afAuth.signOut();
+    firebase.firestore().clearPersistence();
     await this.router.navigateByUrl('/logout');
   }
 
