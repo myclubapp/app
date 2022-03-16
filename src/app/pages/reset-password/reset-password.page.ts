@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController, MenuController } from '@ionic/angular';
-import { UserCredential } from 'src/app/models/user';
+import { UserCredentialLogin } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrls: ['./reset-password.page.scss'],
 })
 export class ResetPasswordPage implements OnInit {
-  public user: UserCredential;
+  public user: UserCredentialLogin;
   public authForm: FormGroup;
   constructor(
     public menuCtrl: MenuController,
@@ -50,7 +50,7 @@ export class ResetPasswordPage implements OnInit {
 
     } else {
       this.presentLoading();
-      const credentials: UserCredential = {
+      const credentials: UserCredentialLogin = {
         email: authForm.value.email,
         password: authForm.value.password,
       };
@@ -71,7 +71,7 @@ export class ResetPasswordPage implements OnInit {
     console.log('Loading dismissed!');
   }
 
-  resetPassword(credentials: UserCredential): void {
+  resetPassword(credentials: UserCredentialLogin): void {
     this.authService.resetPassword(credentials.email).then(
       async () => {
         const alert = await this.alertCtrl.create({

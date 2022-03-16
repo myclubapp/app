@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController, MenuController } from '@ionic/angular';
-import { UserCredential, UserProfile } from 'src/app/models/user';
+import { UserCredentialLogin, UserProfile } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -12,7 +12,7 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class SignupPage implements OnInit {
   // private userProfileRef: AngularFirestoreDocument < UserProfile > ;
-  public user: UserCredential;
+  public user: UserCredentialLogin;
   public authForm: FormGroup;
   constructor(
     private authService: AuthService,
@@ -54,7 +54,7 @@ export class SignupPage implements OnInit {
 
     } else {
       this.presentLoading();
-      const credentials: UserCredential = {
+      const credentials: UserCredentialLogin = {
         email: authForm.value.email,
         password: authForm.value.password
       };
@@ -75,7 +75,7 @@ export class SignupPage implements OnInit {
     console.log('Loading dismissed!');
   }
 
-  async signupUser(credentials: UserCredential, userData: any): Promise<void> {
+  async signupUser(credentials: UserCredentialLogin, userData: any): Promise<void> {
 
     console.log('signup user: ' + this.user.email);
 

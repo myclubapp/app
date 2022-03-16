@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 // import { AlertController, LoadingController } from '@ionic/angular';
-import { UserCredential } from 'src/app/models/user';
+import {
+  UserCredential
+} from "@angular/fire/auth";
+
+import { UserCredentialLogin } from 'src/app/models/user';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { AlertController, MenuController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
@@ -13,7 +17,7 @@ import firebase from 'firebase/compat/app';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-  public user: UserCredential;
+  public user: UserCredentialLogin;
   public authForm: FormGroup;
   
   constructor(
@@ -48,7 +52,7 @@ export class LoginPage implements OnInit {
   async submitCredentials(authForm:any){
 
     try {
-      const userCredential: firebase.auth.UserCredential = await this.authService.login(
+      const userCredential: UserCredential = await this.authService.login(
         authForm.value.email,
         authForm.value.password
       );

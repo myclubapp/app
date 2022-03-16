@@ -5,9 +5,9 @@ import { Router } from '@angular/router';
 import { AlertController, ModalController } from '@ionic/angular';
 
 // import { AngularFireAuth } from '@angular/fire/compat/auth';
-import firebase from 'firebase/compat/app';
+// import firebase from 'firebase/compat/app';
 import { AuthService } from './services/auth.service';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+// import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Component({
   selector: 'app-root',
@@ -22,11 +22,11 @@ export class AppComponent {
     private alertController: AlertController,
     private authService: AuthService,
     // private modalController: ModalController,
-    private afAuth: AngularFireAuth,
+
     // private router: Router,
   ) {
     this.initializeApp();
-    this.initializeFirebase();
+    // this.initializeFirebase();
 
     this.authService.getUser().then(user=>{
       this.email = user.email;
@@ -59,6 +59,7 @@ export class AppComponent {
     // The default cache size threshold is 40 MB. Configure "cacheSizeBytes"
     // for a different threshold (minimum 1 MB) or set to "CACHE_SIZE_UNLIMITED"
     // to disable clean-up.
+    /*
     firebase.firestore().settings({
       cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
     });
@@ -76,7 +77,7 @@ export class AppComponent {
         }
       });
     // Subsequent queries will use persistence, if it was enabled successfully
-    this.afAuth.setPersistence('local');
+    */
 
   }
 

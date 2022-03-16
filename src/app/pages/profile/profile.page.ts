@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import firebase from 'firebase/compat/app';
+// import firebase from 'firebase/compat/app';
+import {
+  User
+} from "@angular/fire/auth";
 
 //Services
 import { FirebaseService } from 'src/app/services/firebase.service';
@@ -24,7 +27,7 @@ export class ProfilePage implements OnInit {
   ) { }
 
   async ngOnInit() {
-    const user: firebase.User = await this.authService.getUser();
+    const user: User = await this.authService.getUser();
     this.userProfile$ = this.fbService.getUserProfile(user);   
   }
 
