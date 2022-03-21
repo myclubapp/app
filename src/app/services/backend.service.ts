@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Apollo, gql} from 'apollo-angular';
+import {Apollo,ApolloBase, gql} from 'apollo-angular';
 import { Observable } from 'rxjs';
 
 
@@ -7,13 +7,13 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BackendService {
-
-  constructor(private apollo: Apollo) {
-    
+  private apolloUnihockey: ApolloBase;
+  constructor(private apolloProvider: Apollo) {
+    this.apolloUnihockey = this.apolloProvider.use('swissUnihockey');
   }
 
   getClubs(): Observable<any>{
-    return this.apollo
+    return this.apolloUnihockey
     .watchQuery({
       query: gql`
         {
@@ -27,7 +27,7 @@ export class BackendService {
   }
 
   getNews(): Observable<any>{
-    return this.apollo
+    return this.apolloUnihockey
     .watchQuery({
       query: gql`
         {
@@ -42,8 +42,8 @@ export class BackendService {
             author
             authorImage
             tags
-            date,
-            url
+            date
+     
           }
         }
       `,

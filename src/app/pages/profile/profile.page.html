@@ -15,7 +15,7 @@
   </ion-header>
 
 
-  <ng-container *ngIf="userProfle$ | async as userProfile; else loading">
+  <ng-container *ngIf="userProfile$ | async as userProfile; else loading">
 
     <ion-list>
       <ion-list-header>
@@ -25,23 +25,40 @@
       </ion-list-header>
 
       <ion-item>
+        <ion-avatar slot="start">
+          <img src="{{userProfile.profilePicture}}">
+        </ion-avatar>
+        <ion-label>Item Avatar</ion-label>
+        <ion-button slot="end" (click)="takePicture()">
+          <ion-icon slot="icon-only" name="camera"></ion-icon>
+        </ion-button>
+        
+      </ion-item>
 
+      <ion-item>
         <ion-label position="stacked">
           Vorname
         </ion-label>
         <ion-input readonly [(ngModel)]="userProfile.firstName" value="{{userProfile.firstName}}">
         </ion-input>
-
       </ion-item>
 
       <ion-item>
         <ion-label position="stacked">
           Nachname
         </ion-label>
-        <ion-input>
-
+        <ion-input readonly [(ngModel)]="userProfile.lastName" value="{{userProfile.lastName}}">
         </ion-input>
       </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">
+          E-Mail
+        </ion-label>
+        <ion-input readonly [(ngModel)]="userProfile.email" value="{{userProfile.email}}">
+        </ion-input>
+      </ion-item>
+            
     </ion-list>
 
   </ng-container>

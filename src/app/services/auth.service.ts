@@ -43,11 +43,10 @@ export class AuthService {
   /* getUser(): Promise<User> {
     return authState(this.auth).pipe(first()).toPromise();
   }*/
-  async getUser(): Promise<User | null> {
-    return await this.user$.pipe(first()).toPromise();
+   getUser(): Promise<User | null> {
+     console.log("getUser auth service");
+    return this.user$.pipe(first()).toPromise();
   }
-  
-
 
    login( email: string, password: string){
     return signInWithEmailAndPassword(this.auth ,email ,password);

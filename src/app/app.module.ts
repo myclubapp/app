@@ -8,14 +8,17 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
-import { GraphQLModule } from './graphql.module';
 import { HttpClientModule } from '@angular/common/http';
+
+import { GraphQLModule } from './graphql.module';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { provideFirebaseApp, getApp, initializeApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { provideAuth, getAuth, setPersistence,inMemoryPersistence } from '@angular/fire/auth';
+import { provideStorage, getStorage } from '@angular/fire/storage';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -36,6 +39,7 @@ import { provideAuth, getAuth, setPersistence,inMemoryPersistence } from '@angul
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),
     provideAuth(() => getAuth()),
+    provideStorage(() => getStorage()),
    /* provideAuth(() => {
       const auth =  getAuth();
       setPersistence(auth, inMemoryPersistence);

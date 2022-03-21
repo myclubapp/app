@@ -36,6 +36,9 @@ faCopy = faCopy;
   ) { }
 
   ngOnInit() {
+    //this.getNews();
+  }
+  ngAfterViewInit(): void {
     this.getNews();
   }
 
@@ -67,7 +70,7 @@ faCopy = faCopy;
         loading.dismiss();
       }
       
-      // console.log(result);
+       //console.log("SANDRO" + result);
       
       if (result.errors){
         this.toastController.create({
@@ -80,6 +83,13 @@ faCopy = faCopy;
       }
       this.loading = result.loading;
 
+    }, (error: any)=>{
+      this.toastController.create({
+        message: JSON.stringify(error.message),
+        duration: 2000
+      }).then(toast=>{
+        toast.present();
+      });
     });
   }
 

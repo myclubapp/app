@@ -86,6 +86,14 @@ const routes: Routes = [
     path: '**',
     loadChildren: () => import('./pages/not-found/not-found.module').then( m => m.NotFoundPageModule)
   },
+  {
+    path: 'club',
+    loadChildren: () => import('./pages/club/club.module').then( m => m.ClubPageModule)
+  },
+  {
+    path: 'team',
+    loadChildren: () => import('./pages/team/team.module').then( m => m.TeamPageModule)
+  },
 
 ];
 

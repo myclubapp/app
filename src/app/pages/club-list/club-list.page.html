@@ -6,4 +6,38 @@
 
 <ion-content>
 
+
+  <!-- Open Accordion -->
+  <ion-accordion-group value="type">
+
+    <ion-accordion value="swissunihockey">
+      <ion-item slot="header">
+        <ion-label>Swiss Unihockey</ion-label>
+      </ion-item>
+
+      <ion-list slot="content">
+        <ion-item *ngFor="let club of suClubList">
+          <ion-label>
+            {{club.name}}
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-accordion>
+
+    <ion-accordion value="swissvolley">
+      <ion-item slot="header">
+        <ion-label>Swiss Volley</ion-label>
+      </ion-item>
+
+      <ion-list slot="content">
+        <ion-item *ngFor="let club of svClubList">
+          <ion-label>
+            {{club.name}}
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-accordion>
+  </ion-accordion-group>
+
+
 </ion-content>
