@@ -2,24 +2,27 @@ import { Injectable } from '@angular/core';
 import {Apollo,ApolloBase, gql} from 'apollo-angular';
 import { Observable } from 'rxjs';
 
-
 @Injectable({
   providedIn: 'root'
 })
-export class BackendService {
-  private apolloUnihockey: ApolloBase;
+export class SwissvolleyService {
+  private apollo: ApolloBase;
   constructor(private apolloProvider: Apollo) {
-    this.apolloUnihockey = this.apolloProvider.use('swissUnihockey');
+    this.apollo = this.apolloProvider.use('swissvolley');
   }
 
   getClubs(): Observable<any>{
-    return this.apolloUnihockey
+    return this.apollo
     .watchQuery({
       query: gql`
         {
-          clubs {
+          associations{
             id
             name
+            clubs {
+              id
+              name
+            }
           }
         }
       `,
@@ -27,7 +30,7 @@ export class BackendService {
   }
 
   getNews(): Observable<any>{
-    return this.apolloUnihockey
+    return this.apollo
     .watchQuery({
       query: gql`
         {
@@ -43,7 +46,24 @@ export class BackendService {
             authorImage
             tags
             date
-     
+            url
+          }
+        }
+      `,
+    }).valueChanges;
+  }
+  getGames(teamId: string): Observable<any>{
+    return this.apollo
+    .watchQuery({
+      query: gql`
+        {
+          team(teamId: teamId){
+            id
+            name
+            games{
+              id
+            }
+            
           }
         }
       `,

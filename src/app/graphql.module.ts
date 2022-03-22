@@ -8,11 +8,11 @@ const uriSV = 'https://europe-west6-myclubmanagement.cloudfunctions.net/api/swis
 export function createApollo(httpLink: HttpLink): NamedOptions {
   
   return {
-    swissUnihockey: {
+    swissunihockey: {
       link: httpLink.create({uri: uriSU}),
       cache: new InMemoryCache(),
     },
-    swissVolley: {
+    swissvolley: {
       link: httpLink.create({uri: uriSV}),
       cache: new InMemoryCache(),
     }

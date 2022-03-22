@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { News } from 'src/app/models/news';
-import { BackendService } from 'src/app/services/backend.service';
 import { Browser } from '@capacitor/browser';
 import { Share } from '@capacitor/share';
 import { Device } from '@capacitor/device';
 
-
 import {faTwitter, faFacebook, faWhatsapp, faLinkedin} from '@fortawesome/free-brands-svg-icons';
 import {faEnvelope, faCopy} from '@fortawesome/free-solid-svg-icons';
+import { SwissunihockeyService } from 'src/app/services/backend/swissunihockey.service';
 
 @Component({
   selector: 'app-news',
@@ -22,15 +21,16 @@ export class NewsPage implements OnInit {
 // Social Share
 shareSocialShareOptions: any;
 showSocialShare = false;
-faTwitter = faTwitter;
-faFacebook = faFacebook;
-faWhatsapp = faWhatsapp;
-faLinkedin = faLinkedin;
-faEnvelope = faEnvelope;
-faCopy = faCopy;
+
+faTwitter: any = faTwitter;
+faFacebook: any = faFacebook;
+faWhatsapp: any = faWhatsapp;
+faLinkedin: any = faLinkedin;
+faEnvelope: any = faEnvelope;
+faCopy: any = faCopy;
 
   constructor(
-    private backend: BackendService,
+    private swissunihockey: SwissunihockeyService,
     public loadingController: LoadingController,
     public toastController: ToastController
   ) { }
@@ -47,13 +47,11 @@ faCopy = faCopy;
   }
 
   async openBrowser(url: string){
-    await Browser.open({ url: url, presentationStyle: 'popover', windowName: '_self' });
+    await Browser.open({ url: url , presentationStyle: 'popover' });
   }
-  async shareNews(news: News){
-  }
-
+  
   async getNews() {
-    const loading = await this.loadingController.create({
+    /* const loading = await this.loadingController.create({
       spinner: 'circles',
       // duration: 5000,
       message: 'News',
@@ -61,13 +59,13 @@ faCopy = faCopy;
       cssClass: 'custom-class custom-loading',
 
     });
-    await loading.present();
+    await loading.present(); */
 
   
-    this.backend.getNews().subscribe((result: any) => {
+    this.swissunihockey.getNews().subscribe((result: any) => {
       this.newsList = result?.data?.news as News[];
       if (result.loading == false){
-        loading.dismiss();
+        // loading.dismiss();
       }
       
        //console.log("SANDRO" + result);

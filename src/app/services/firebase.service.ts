@@ -60,8 +60,13 @@ export class FirebaseService {
   }
 
   getTrainings(){
-
+    
   }
+
+  addTraining(){
+    
+  }
+
 
   getEvents(){
 
