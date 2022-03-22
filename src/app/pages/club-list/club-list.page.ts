@@ -18,7 +18,11 @@ export class ClubListPage implements OnInit {
     private swissvolley: SwissvolleyService,
     public loadingController: LoadingController,
     public toastController: ToastController
-  ) { }
+  ) { 
+
+    this.suClubList = [];
+    this.svClubList = [];
+  }
 
   ngOnInit() {
   
