@@ -3,10 +3,10 @@ import {ApolloModule, APOLLO_OPTIONS, APOLLO_NAMED_OPTIONS, NamedOptions } from 
 import {ApolloClientOptions, InMemoryCache} from '@apollo/client/core';
 import {HttpLink} from 'apollo-angular/http';
 
-const uriSU = 'https://europe-west3-myclubmanagement.cloudfunctions.net/api/swissunihockey'; // <-- add the URL of the GraphQL server here
-const uriSV = 'https://europe-west3-myclubmanagement.cloudfunctions.net/api/swissvolley'; // <-- add the URL of the GraphQL server here
-const uriSH = 'https://europe-west3-myclubmanagement.cloudfunctions.net/api/swisshandball'; // <-- add the URL of the GraphQL server here
-const uriST = 'https://europe-west3-myclubmanagement.cloudfunctions.net/api/swissturnverband'; // <-- add the URL of the GraphQL server here
+const uriSU = 'https://europe-west6-myclubmanagement.cloudfunctions.net/api/swissunihockey'; // <-- add the URL of the GraphQL server here
+const uriSV = 'https://europe-west6-myclubmanagement.cloudfunctions.net/api/swissvolley'; // <-- add the URL of the GraphQL server here
+const uriSH = 'https://europe-west6-myclubmanagement.cloudfunctions.net/api/swisshandball'; // <-- add the URL of the GraphQL server here
+const uriST = 'https://europe-west6-myclubmanagement.cloudfunctions.net/api/swissturnverband'; // <-- add the URL of the GraphQL server here
 export function createApollo(httpLink: HttpLink): NamedOptions {
   
   return {

@@ -5,9 +5,11 @@ import { first } from 'rxjs/operators';
 
 import {
   Auth,
+  getAuth,
   authState,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
+  sendEmailVerification ,
   signInWithEmailAndPassword,
   signOut,
   UserCredential,
@@ -16,10 +18,10 @@ import {
 import { Observable } from 'rxjs';
 
 // import firebase from 'firebase/compat/app';
-/* import {
+import {
   Firestore, addDoc, collection, collectionData,
   doc, docData, deleteDoc, updateDoc, DocumentReference, setDoc
-} from '@angular/fire/firestore'; */
+} from '@angular/fire/firestore';
 
 /******************************************************************************************
  *  DOCS https://github.com/angular/angularfire/blob/master/docs/auth/getting-started.md
@@ -31,7 +33,7 @@ import { Observable } from 'rxjs';
 export class AuthService {
   user$: Observable<User | null>;
   constructor(
-    // private firestore: Firestore,
+    private firestore: Firestore,
     private auth: Auth,
     private router: Router,
   ) {
@@ -52,6 +54,11 @@ export class AuthService {
     return signInWithEmailAndPassword(this.auth ,email ,password);
   }
 
+  sendVerifyEmail(){
+    const auth = getAuth();
+    return sendEmailVerification(auth.currentUser);
+  }
+
   async signup(
     email: string,
     password: string,
@@ -65,9 +72,15 @@ export class AuthService {
         password
       );
 
-      /*const userProfileDocRef = doc(this.firestore,`userProfile/${newUserCredential.user.uid}/inviteList`);
+      // const userProfileRef = collection(this.firestore, 'userProfile');
+      const userProfileDocRef = doc(this.firestore, `userProfile/${newUserCredential.user.uid}`);
+      setDoc(userProfileDocRef, {
+        firstName: firstName,
+        lastName: lastName,
+        email: newUserCredential.user.email
+      })
 
-      updateDoc(userProfileDocRef, {
+      /*addDoc(userProfileRef, {
         firstName: firstName,
         lastName: lastName,
         email: newUserCredential.user.email

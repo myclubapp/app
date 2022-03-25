@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import {SwUpdate} from '@angular/service-worker';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 import { Router } from '@angular/router';
 
 import { AlertController, ModalController } from '@ionic/angular';
@@ -23,34 +25,34 @@ export class AppComponent {
     private authService: AuthService,
     // private modalController: ModalController,
 
-    // private router: Router,
+    private router: Router,
   ) {
     this.initializeApp();
     // this.initializeFirebase();
 
-    this.authService.getUser().then(user=>{
-      this.email = user.email;
-    });
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.email = user.email;
 
-   /* this.afAuth.onAuthStateChanged((user)=>{
-        if (user) {
-          // User is signed in.
-          console.log('User is signed in.');
-  
-        } else {
-          // No user is signed in.
-          console.log(' No user is signed in.');
-          this.router.navigateByUrl('login');
+        if (!user.emailVerified){
+          this.presentAlertEmailNotVerified();
         }
-      });*/
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        // const uid = user.uid;
+        // ...
+      } else {
+        // User is signed out
+        // ...
+      }
+    });
   }
 
   initializeApp(): void {
-    if (this.swUpdate.available) {
-      this.swUpdate.available.subscribe(() => {
-        this.presentAlert();
-      });
-    }
+    this.swUpdate.versionUpdates.subscribe(() => {
+      this.presentAlert();
+    });
   }
 
   initializeFirebase(){
@@ -80,6 +82,39 @@ export class AppComponent {
     */
 
   }
+
+
+  async presentAlertEmailNotVerified() {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'E-Mail Adresse ist nicht verifiziert',
+      subHeader: '',
+      message: 'Bitte prüfen Sie ihr E-Mail Postfach oder den Spam Ordner und aktivieren sie ihren my-club Account um fortzufahren. Sollen wir nochmals eine E-Mail senden?',
+      buttons: [{
+        text: "Nein",
+        role: 'cancel',
+        handler: () =>{
+          console.log("Nein");
+          this.authService.logout();
+        }
+      },
+      {
+        text: "Ja",
+        handler: () =>{
+          console.log("Email nochmals senden");
+          this.authService.sendVerifyEmail();
+          this.authService.logout();
+
+        }
+      }]
+    });
+
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+    console.log('onDidDismiss resolved with role', role);
+  }
+
 
   async presentAlert() {
     const alert = await this.alertController.create({
