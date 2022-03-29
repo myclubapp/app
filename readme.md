@@ -44,3 +44,4 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 Questions: 
 - How to build different Splash Screens / Icons for different deployments?
 - npm install --global pwa-asset-generator
+- pwa-asset-generator ./resources/splash.jpg -i ./src/index.html -m ./src/manifest.webmanifest --splash-only --dark-mode
