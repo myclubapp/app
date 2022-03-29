@@ -1,0 +1,94 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Trainings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Trainings</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list>
+    <ion-item-sliding #item >
+      <ion-item >
+        <ion-icon (click)="subscribe(item)" slot="icon-only" color="danger" slot="start" name="close-circle"></ion-icon>
+        <ion-icon (click)="unsubscribe(item)" slot="icon-only" color="success" slot="start" name="checkmark-circle"></ion-icon>
+        <ion-label (click)="openTraining()">
+          <h2>Dienstag Abend Training</h2>
+          <h3>29.03.2022 20:00 - 21:30 Uhr</h3>
+          <h3>Ort: BBZ Halle</h3>
+          <p>Normales Training</p>
+        </ion-label>
+        <ion-note (click)="openTraining()" slot="end">
+          <ion-badge color="primary">9</ion-badge>
+        </ion-note>
+      </ion-item>
+  
+      <ion-item-options side="start">
+        <ion-item-option color="success" (click)="subscribe(item)" >
+          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger"  (click)="unsubscribe(item)" >
+          <ion-icon slot="icon-only"  name="close-circle"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+  
+      <ion-item-options side="end">
+        <ion-item-option>
+          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+
+    <ion-item-sliding >
+      <ion-item >
+        <ion-icon (click)="toggleTraining()" slot="icon-only" color="danger" slot="start" name="close-circle"></ion-icon>
+        <ion-label (click)="openTraining()">
+          <h2>Dienstag Abend Training</h2>
+          <h3>05.04.2022 20:00 - 21:30 Uhr</h3>
+          <h3>Ort: BBZ Halle</h3>
+          <p>Normales Training</p>
+        </ion-label>
+        <ion-note (click)="openTraining()" slot="end">
+          <ion-badge color="primary">11</ion-badge>
+        </ion-note>
+      </ion-item>
+  
+      <ion-item-options side="start">
+        <ion-item-option color="success" >
+          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger">
+          <ion-icon slot="icon-only"  name="close-circle"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+  
+      <ion-item-options side="end">
+        <ion-item-option>
+          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <!-- fab placed to the bottom end -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openAddTraining()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

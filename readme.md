@@ -38,3 +38,9 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 - Angular Fire ng add @angular/fire
 - Fontawesome Icons
 - Ionicons
+
+
+## Splash Screen / Icon / Customization
+Questions: 
+- How to build different Splash Screens / Icons for different deployments?
+- npm install --global pwa-asset-generator

@@ -14,15 +14,15 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
+    loadChildren: () => import('./pages/auth/login/login.module').then( m => m.LoginPageModule)
   },
   {
     path: 'logout',
-    loadChildren: () => import('./pages/logout/logout.module').then( m => m.LogoutPageModule)
+    loadChildren: () => import('./pages/auth/logout/logout.module').then( m => m.LogoutPageModule)
   },
   {
     path: 'signup',
-    loadChildren: () => import('./pages/signup/signup.module').then( m => m.SignupPageModule)
+    loadChildren: () => import('./pages/auth/signup/signup.module').then( m => m.SignupPageModule)
   },
 
   {
@@ -39,11 +39,11 @@ const routes: Routes = [
   },
   {
     path: 'news',
-    loadChildren: () => import('./pages/news/news.module').then( m => m.NewsPageModule)
+    loadChildren: () => import('./pages/news/news/news.module').then( m => m.NewsPageModule)
   },
   {
     path: 'reset-password',
-    loadChildren: () => import('./pages/reset-password/reset-password.module').then( m => m.ResetPasswordPageModule)
+    loadChildren: () => import('./pages/auth/reset-password/reset-password.module').then( m => m.ResetPasswordPageModule)
   },
   {
     path: 'profile',
@@ -51,31 +51,31 @@ const routes: Routes = [
   },
   {
     path: 'trainings',
-    loadChildren: () => import('./pages/trainings/trainings.module').then( m => m.TrainingsPageModule)
+    loadChildren: () => import('./pages/training/trainings/trainings.module').then( m => m.TrainingsPageModule)
   },
   {
     path: 'training-detail',
-    loadChildren: () => import('./pages/training-detail/training-detail.module').then( m => m.TrainingDetailPageModule)
+    loadChildren: () => import('./pages/training/training-detail/training-detail.module').then( m => m.TrainingDetailPageModule)
   },
   {
     path: 'events',
-    loadChildren: () => import('./pages/events/events.module').then( m => m.EventsPageModule)
+    loadChildren: () => import('./pages/event/events/events.module').then( m => m.EventsPageModule)
   },
   {
     path: 'event-detail',
-    loadChildren: () => import('./pages/event-detail/event-detail.module').then( m => m.EventDetailPageModule)
+    loadChildren: () => import('./pages/event/event-detail/event-detail.module').then( m => m.EventDetailPageModule)
   },
   {
     path: 'news-detail',
-    loadChildren: () => import('./pages/news-detail/news-detail.module').then( m => m.NewsDetailPageModule)
+    loadChildren: () => import('./pages/news/news-detail/news-detail.module').then( m => m.NewsDetailPageModule)
   },
   {
     path: 'championship',
-    loadChildren: () => import('./pages/championship/championship.module').then( m => m.ChampionshipPageModule)
+    loadChildren: () => import('./pages/championship/championship/championship.module').then( m => m.ChampionshipPageModule)
   },
   {
     path: 'championship-detail',
-    loadChildren: () => import('./pages/championship-detail/championship-detail.module').then( m => m.ChampionshipDetailPageModule)
+    loadChildren: () => import('./pages/championship/championship-detail/championship-detail.module').then( m => m.ChampionshipDetailPageModule)
   },
   {
     path: 'onboarding',
@@ -92,6 +92,14 @@ const routes: Routes = [
   {
     path: 'team',
     loadChildren: () => import('./pages/team/team.module').then( m => m.TeamPageModule)
+  },
+  {
+    path: 'training-add',
+    loadChildren: () => import('./pages/training/training-add/training-add.module').then( m => m.TrainingAddPageModule)
+  },
+  {
+    path: 'news-add',
+    loadChildren: () => import('./pages/news/news-add/news-add.module').then( m => m.NewsAddPageModule)
   },
 
 ];

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { IonRouterOutlet, LoadingController, ModalController, ToastController } from '@ionic/angular';
 import { News } from 'src/app/models/news';
 import { Browser } from '@capacitor/browser';
 import { Share } from '@capacitor/share';
@@ -8,6 +8,7 @@ import { Device } from '@capacitor/device';
 import {faTwitter, faFacebook, faWhatsapp, faLinkedin} from '@fortawesome/free-brands-svg-icons';
 import {faEnvelope, faCopy} from '@fortawesome/free-solid-svg-icons';
 import { SwissunihockeyService } from 'src/app/services/backend/swissunihockey.service';
+import { NewsAddPage } from '../news-add/news-add.page';
 
 @Component({
   selector: 'app-news',
@@ -32,7 +33,9 @@ faCopy: any = faCopy;
   constructor(
     private swissunihockey: SwissunihockeyService,
     public loadingController: LoadingController,
-    public toastController: ToastController
+    public toastController: ToastController,
+    private routerOutlet: IonRouterOutlet,
+    private modalController: ModalController,
   ) { }
 
   ngOnInit() {
@@ -44,6 +47,17 @@ faCopy: any = faCopy;
 
   async openNews(news: News){
     
+  }
+
+  async openAddNews(){
+    const modal = await this.modalController.create({
+      component: NewsAddPage,
+      cssClass: 'my-custom-class',
+      swipeToClose: true,
+      backdropDismiss: true,
+      presentingElement: this.routerOutlet.nativeEl
+    });
+    return await modal.present();
   }
 
   async openBrowser(url: string){
