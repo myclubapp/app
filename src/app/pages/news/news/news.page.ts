@@ -18,6 +18,7 @@ import { NewsAddPage } from '../news-add/news-add.page';
 export class NewsPage implements OnInit {
   newsList: News[]
   loading = true;
+  skeleton = new Array(12);
 
 // Social Share
 shareSocialShareOptions: any;
@@ -36,7 +37,8 @@ faCopy: any = faCopy;
     public toastController: ToastController,
     private routerOutlet: IonRouterOutlet,
     private modalController: ModalController,
-  ) { }
+  ) { 
+  }
 
   ngOnInit() {
     //this.getNews();

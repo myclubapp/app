@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package app.myclub.app;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -64,48 +64,8 @@
   <ion-list *ngIf="loading">
     <ion-grid>
       <ion-row  > 
-        <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
-          <ion-card>
-            <ion-card-header>
-              <ion-card-subtitle>
-                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              </ion-card-subtitle>
-              <ion-card-title>
-                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              </ion-card-title>
-            </ion-card-header>
-
-            <ion-card-content>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-            </ion-card-content>
-          </ion-card>
-
-          <ion-card>
-
-            <ion-card-header>
-              <ion-card-subtitle>
-                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              </ion-card-subtitle>
-              <ion-card-title>
-                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              </ion-card-title>
-            </ion-card-header>
-
-            <ion-card-content>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-            </ion-card-content>
-          </ion-card>
-
-          <ion-card>
-
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
+          <ion-card >
             <ion-card-header>
               <ion-card-subtitle>
                 <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>

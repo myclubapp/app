@@ -1,15 +1,8 @@
 import { Component } from '@angular/core';
 import {SwUpdate} from '@angular/service-worker';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-
-import { Router } from '@angular/router';
-
 import { AlertController, ModalController } from '@ionic/angular';
-
-// import { AngularFireAuth } from '@angular/fire/compat/auth';
-// import firebase from 'firebase/compat/app';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { AuthService } from './services/auth.service';
-// import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Component({
   selector: 'app-root',
@@ -23,9 +16,6 @@ export class AppComponent {
     private swUpdate: SwUpdate,
     private alertController: AlertController,
     private authService: AuthService,
-    // private modalController: ModalController,
-
-    private router: Router,
   ) {
     this.initializeApp();
     // this.initializeFirebase();
@@ -53,6 +43,8 @@ export class AppComponent {
     this.swUpdate.versionUpdates.subscribe(() => {
       this.presentAlert();
     });
+
+    
   }
 
   initializeFirebase(){
