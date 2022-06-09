@@ -15,9 +15,18 @@
   </ion-header>
 
   <ion-list>
+    <ion-item >
+      <ion-label slot="start">
+        Status
+      </ion-label>
+      <ion-label slot="end">
+        Teilnehmer
+      </ion-label>
+    </ion-item>
+  
+    
     <ion-item-sliding #item >
       <ion-item >
-        <ion-icon (click)="subscribe(item)" slot="icon-only" color="danger" slot="start" name="close-circle"></ion-icon>
         <ion-icon (click)="unsubscribe(item)" slot="icon-only" color="success" slot="start" name="checkmark-circle"></ion-icon>
         <ion-label (click)="openTraining()">
           <h2>Dienstag Abend Training</h2>
@@ -31,9 +40,7 @@
       </ion-item>
   
       <ion-item-options side="start">
-        <ion-item-option color="success" (click)="subscribe(item)" >
-          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-        </ion-item-option>
+
         <ion-item-option color="danger"  (click)="unsubscribe(item)" >
           <ion-icon slot="icon-only"  name="close-circle"></ion-icon>
         </ion-item-option>
@@ -50,6 +57,138 @@
       </ion-item-options>
     </ion-item-sliding>
 
+    <ion-item-sliding >
+      <ion-item >
+        <ion-icon (click)="toggleTraining()" slot="icon-only" color="danger" slot="start" name="close-circle"></ion-icon>
+        <ion-label (click)="openTraining()">
+          <h2>Dienstag Abend Training</h2>
+          <h3>05.04.2022 20:00 - 21:30 Uhr</h3>
+          <h3>Ort: BBZ Halle</h3>
+          <p>Normales Training</p>
+        </ion-label>
+        <ion-note (click)="openTraining()" slot="end">
+          <ion-badge color="primary">11</ion-badge>
+        </ion-note>
+      </ion-item>
+  
+      <ion-item-options side="start">
+        <ion-item-option color="success" >
+          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger">
+          <ion-icon slot="icon-only"  name="close-circle"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+  
+      <ion-item-options side="end">
+        <ion-item-option>
+          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+    <ion-item-sliding >
+      <ion-item >
+        <ion-icon (click)="toggleTraining()" slot="icon-only" color="danger" slot="start" name="close-circle"></ion-icon>
+        <ion-label (click)="openTraining()">
+          <h2>Dienstag Abend Training</h2>
+          <h3>05.04.2022 20:00 - 21:30 Uhr</h3>
+          <h3>Ort: BBZ Halle</h3>
+          <p>Normales Training</p>
+        </ion-label>
+        <ion-note (click)="openTraining()" slot="end">
+          <ion-badge color="primary">11</ion-badge>
+        </ion-note>
+      </ion-item>
+  
+      <ion-item-options side="start">
+        <ion-item-option color="success" >
+          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger">
+          <ion-icon slot="icon-only"  name="close-circle"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+  
+      <ion-item-options side="end">
+        <ion-item-option>
+          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+    <ion-item-sliding >
+      <ion-item >
+        <ion-icon (click)="toggleTraining()" slot="icon-only" color="danger" slot="start" name="close-circle"></ion-icon>
+        <ion-label (click)="openTraining()">
+          <h2>Dienstag Abend Training</h2>
+          <h3>05.04.2022 20:00 - 21:30 Uhr</h3>
+          <h3>Ort: BBZ Halle</h3>
+          <p>Normales Training</p>
+        </ion-label>
+        <ion-note (click)="openTraining()" slot="end">
+          <ion-badge color="primary">11</ion-badge>
+        </ion-note>
+      </ion-item>
+  
+      <ion-item-options side="start">
+        <ion-item-option color="success" >
+          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger">
+          <ion-icon slot="icon-only"  name="close-circle"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+  
+      <ion-item-options side="end">
+        <ion-item-option>
+          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+    <ion-item-sliding >
+      <ion-item >
+        <ion-icon (click)="toggleTraining()" slot="icon-only" color="danger" slot="start" name="close-circle"></ion-icon>
+        <ion-label (click)="openTraining()">
+          <h2>Dienstag Abend Training</h2>
+          <h3>05.04.2022 20:00 - 21:30 Uhr</h3>
+          <h3>Ort: BBZ Halle</h3>
+          <p>Normales Training</p>
+        </ion-label>
+        <ion-note (click)="openTraining()" slot="end">
+          <ion-badge color="primary">11</ion-badge>
+        </ion-note>
+      </ion-item>
+  
+      <ion-item-options side="start">
+        <ion-item-option color="success" >
+          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger">
+          <ion-icon slot="icon-only"  name="close-circle"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+  
+      <ion-item-options side="end">
+        <ion-item-option>
+          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
     <ion-item-sliding >
       <ion-item >
         <ion-icon (click)="toggleTraining()" slot="icon-only" color="danger" slot="start" name="close-circle"></ion-icon>
