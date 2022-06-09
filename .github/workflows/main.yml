@@ -5,7 +5,7 @@ on:
       - feat/2022
 jobs:
   build:
-    name: Build & Deploy Production App
+    name: Build & Deploy App
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
