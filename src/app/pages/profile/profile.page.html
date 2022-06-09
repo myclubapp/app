@@ -16,7 +16,6 @@
 
 
   <ng-container *ngIf="userProfile$ | async as userProfile; else loading">
-
     <ion-list>
       <ion-list-header>
         <ion-label>
@@ -32,7 +31,7 @@
         <ion-button slot="end" (click)="takePicture()">
           <ion-icon slot="icon-only" name="camera"></ion-icon>
         </ion-button>
-        
+
       </ion-item>
 
       <ion-item>
@@ -58,9 +57,39 @@
         <ion-input readonly [(ngModel)]="userProfile.email" value="{{userProfile.email}}">
         </ion-input>
       </ion-item>
-            
+
     </ion-list>
 
+  </ng-container>
+
+  <ng-container *ngIf="clubList$ | async as clubList; else loading">
+    <ion-list>
+      <ion-list-header>
+        <ion-label>
+          Meine Clubs
+        </ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="const club of clubList">
+        <ion-label>
+          {{club.data().name}}
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+  <ng-container *ngIf="teamList$ | async as teamList; else loading">
+    <ion-list>
+      <ion-list-header>
+        <ion-label>
+          Meine Teams
+        </ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="const team of teamList">
+        <ion-label>
+         asd {{team.data().name}}
+        </ion-label>
+      </ion-item>
+    </ion-list>
   </ng-container>
 
 </ion-content>

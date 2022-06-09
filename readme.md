@@ -17,6 +17,7 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 - Generate your app icon and splash screens using cordova-res --skip-config --copy
 - Icon generator for manifest https://manifest-gen.netlify.app/
 - Favicon generator https://www.hoststar.ch/de/tools/favicon-generator
+- npm install --global pwa-asset-generator: pwa-asset-generator ./resources/splash.jpg -i ./src/index.html -m ./src/manifest.webmanifest --splash-only --dark-mode
 
 ## Native
 - Run ionic capacitor add to add a native iOS or Android project using Capacitor
@@ -38,10 +39,3 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 - Angular Fire ng add @angular/fire
 - Fontawesome Icons
 - Ionicons
-
-
-## Splash Screen / Icon / Customization
-Questions: 
-- How to build different Splash Screens / Icons for different deployments?
-- npm install --global pwa-asset-generator
-- pwa-asset-generator ./resources/splash.jpg -i ./src/index.html -m ./src/manifest.webmanifest --splash-only --dark-mode

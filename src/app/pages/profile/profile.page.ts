@@ -9,10 +9,13 @@ import {FirebaseService} from 'src/app/services/firebase.service';
 import {AuthService} from 'src/app/services/auth.service';
 
 //models
-import {  UserProfile} from 'src/app/models/user';
+import {Profile} from 'src/app/models/user';
 
 // Capacitor
 import { Camera, CameraResultType, Photo } from '@capacitor/camera';
+import { Club } from 'src/app/models/club';
+import { Team } from 'src/app/models/team';
+import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
 
 @Component({
   selector: 'app-profile',
@@ -21,10 +24,13 @@ import { Camera, CameraResultType, Photo } from '@capacitor/camera';
 })
 export class ProfilePage implements OnInit, AfterViewInit {
 
-  userProfile$: Observable < UserProfile > ;
+  userProfile$: Observable < Profile > ;
+  clubList$: Observable < Club > ;
+  teamList$: Observable < Team > ;
   constructor(
     private authService: AuthService,
-    private fbService: FirebaseService
+    private fbService: FirebaseService,
+    private profileService: UserProfileService
   ) {}
 
   async ngOnInit() {
@@ -33,11 +39,24 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.getUser();
+    this.getClubList();
+  }
+
+  async getClubList(){
+    const user: User = await this.authService.getUser();
+    // this.clubList$ = 
+    this.fbService.getClubs(user).subscribe(data=>{
+      console.log(data);
+    });
+  }
+  async getTeamList(){
+    const user: User = await this.authService.getUser();
+    this.teamList$ = this.fbService.getTeams(user);
   }
 
   async getUser() {
     const user: User = await this.authService.getUser();
-    this.userProfile$ = this.fbService.getUserProfile(user);
+    this.userProfile$ = this.profileService.getUserProfile(user);
   }
 
   async takePicture() {
@@ -59,7 +78,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     console.log(image);
 
     const user: User = await this.authService.getUser();
-    this.fbService.setUserProfilePicture(user, image);
+    this.profileService.setUserProfilePicture(user, image);
   };
 
 }

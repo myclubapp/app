@@ -6,14 +6,17 @@ import {
 
 import { Storage, ref, uploadString, getDownloadURL } from '@angular/fire/storage';
 
-
 // import firebase from 'firebase/compat/app';
-import { Observable } from 'rxjs';
-import { UserProfile } from '../models/user';
+import { Observable, Observer } from 'rxjs';
+import { Profile } from '../models/user';
+import { Club, SwissHandballClub, SwissUnihockeyClub, SwissVolleyClub, SwissTurnverbandClub } from '../models/club';
+import { Team } from '../models/team';
 import {
   User
 } from "@angular/fire/auth";
 import { Photo } from '@capacitor/camera';
+
+import {AuthService} from 'src/app/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,31 +25,11 @@ export class FirebaseService {
   inviteList: any = [];
   constructor(
     private firestore: Firestore,
-    private storage: Storage
+    private storage: Storage,
+    private authService: AuthService,
+
   ) {
 
-  }
-
-  getUserProfile(user: User): Observable<UserProfile> {
-    const userProfileRef = doc(this.firestore,`userProfile/${user.uid}`);
-    return docData(userProfileRef, {idField: 'id'}) as Observable<UserProfile>
-  }
-
-  async setUserProfilePicture(user: User, photo: Photo){
-
-    const storageRef = ref(this.storage,`userProfile/${user.uid}/profilePicture.${photo.format}`);
-
-    await uploadString(storageRef, photo.base64String, 'base64', {});
-
-    const url = await getDownloadURL(storageRef);
-
-    const userProfileRef = doc(this.firestore,`userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { profilePicture: url });
-  }
-
-  setUserProfile(userProfile: UserProfile){
-    const userProfileRef = doc(this.firestore,`userProfile/${userProfile.id}`);
-    return updateDoc(userProfileRef, {userProfile});
   }
 
   getInvites(user: User) {
@@ -59,21 +42,26 @@ export class FirebaseService {
     return updateDoc(inviteListDocRef, { status: "accepted" });
   }
 
-  getTrainings(){
-    
+
+  getClub(clubId){
+    const clubRef = doc(this.firestore,`club/${clubId}`);
+    return docData(clubRef, {idField: 'id'}) as Observable<Club>
   }
 
-  addTraining(){
-    
+  getClubs(user: User): Observable<Club>  {
+      const clubRefList = collection(this.firestore, `userProfile/${user.uid}/clubs`);
+      return collectionData(clubRefList, { idField: 'id' }) as unknown as Observable<Club>;
   }
 
-
-  getEvents(){
-
+  getTeam(teamId){
+    const teamRef = doc(this.firestore,`/teams/${teamId}`);
+    return docData(teamRef, {idField: 'id'}) as Observable<Team>
   }
 
-  getGames(){
-
+  getTeams(user: User): Observable<Team> {
+    const teamRefLIst = collection(this.firestore, `userProfile/${user.uid}/teams`);
+    return collectionData(teamRefLIst,  {idField: 'id'}) as Observable<any>;
   }
+
 
 }

@@ -14,6 +14,70 @@
     </ion-toolbar>
   </ion-header>
 
+  <!-- Teams -->
+   <ion-list>
+    <ion-list-header>
+      <ion-label>
+        Teams
+      </ion-label>
+    </ion-list-header>
+     <ion-grid>
+      <ion-row>
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let team of clubTeamList">
+
+          <ion-card button="true">
+            <img (click)="openTeam(team)" src="{{team.picture}}" />
+            <ion-card-header (click)="openTeam(team)">
+              <ion-card-subtitle>TEXT</ion-card-subtitle>
+              <ion-card-title>{{user.name}}</ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content (click)="openTeam(team)">
+              TEXT
+            </ion-card-content>
+         
+          </ion-card>
+
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+
+  </ion-list>
+
+  <ion-list *ngIf="loadingTeam">
+    <ion-grid>
+      <ion-row  > 
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
+          <ion-card >
+            <ion-card-header>
+              <ion-card-subtitle>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              </ion-card-subtitle>
+              <ion-card-title>
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+            </ion-card-content>
+          </ion-card>
+
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+
+  </ion-list>
+
+
+
+  <!-- Club Members -->
   <ion-list>
     <ion-list-header>
       <ion-label>
@@ -29,7 +93,7 @@
           <ion-card button="true">
 
             <ion-fab vertical="top" horizontal="end">
-              <ion-fab-button size="small" (click)="share(user)">
+              <ion-fab-button size="small" (click)="shareUser(user)">
                 <ion-icon name="share" size="small"></ion-icon>
               </ion-fab-button>
             </ion-fab>
