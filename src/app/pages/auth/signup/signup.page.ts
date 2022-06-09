@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController, MenuController } from '@ionic/angular';
 import { UserCredentialLogin, Profile } from 'src/app/models/user';
@@ -13,11 +13,11 @@ import { AuthService } from 'src/app/services/auth.service';
 export class SignupPage implements OnInit {
   // private userProfileRef: AngularFirestoreDocument < UserProfile > ;
   public user: UserCredentialLogin;
-  public authForm: FormGroup;
+  public authForm: UntypedFormGroup;
   constructor(
     private authService: AuthService,
     private alertCtrl: AlertController,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
    // private afs: AngularFirestore,
    public menuCtrl: MenuController,
     private loadingCtrl: LoadingController,
@@ -41,7 +41,7 @@ export class SignupPage implements OnInit {
     this.menuCtrl.enable(false, 'menu');
   }
 
-  submitCredentials(authForm: FormGroup): void {
+  submitCredentials(authForm: UntypedFormGroup): void {
     if (!authForm.valid) {
       //console.log('Form is not valid yet, current value:', authForm.value);
       this.alertCtrl.create({

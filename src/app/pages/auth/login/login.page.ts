@@ -6,7 +6,7 @@ import {
 } from "@angular/fire/auth";
 
 import { UserCredentialLogin } from 'src/app/models/user';
-import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import { UntypedFormGroup, Validators, UntypedFormBuilder } from '@angular/forms';
 import { AlertController, MenuController } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth.service';
 import firebase from 'firebase/compat/app';
@@ -18,13 +18,13 @@ import firebase from 'firebase/compat/app';
 })
 export class LoginPage implements OnInit {
   public user: UserCredentialLogin;
-  public authForm: FormGroup;
+  public authForm: UntypedFormGroup;
   
   constructor(
     private alertCtrl: AlertController,
     private authService: AuthService,
     private router: Router,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     public menuCtrl: MenuController,
     // private loadingCtrl: LoadingController,
     // private alertCtrl: AlertController

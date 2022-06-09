@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController, MenuController } from '@ionic/angular';
 import { UserCredentialLogin } from 'src/app/models/user';
@@ -12,13 +12,13 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class ResetPasswordPage implements OnInit {
   public user: UserCredentialLogin;
-  public authForm: FormGroup;
+  public authForm: UntypedFormGroup;
   constructor(
     public menuCtrl: MenuController,
     private authService: AuthService,
     private alertCtrl: AlertController,
     private router: Router,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private loadingCtrl: LoadingController,
 
   ) {
@@ -37,7 +37,7 @@ export class ResetPasswordPage implements OnInit {
     };
   }
 
-  submitCredentials(authForm: FormGroup): void {
+  submitCredentials(authForm: UntypedFormGroup): void {
     if (!authForm.get('email').valid) {
       //console.log('Form is not valid yet, current value:', authForm.value);
       this.alertCtrl.create({

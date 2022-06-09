@@ -21,43 +21,41 @@ import { provideStorage, getStorage } from '@angular/fire/storage';
 
 
 @NgModule({
-  declarations: [AppComponent],
-  entryComponents: [],
-  imports: [
-    BrowserModule,
-    FontAwesomeModule,
-    IonicModule.forRoot(),
-    AppRoutingModule,
-    ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: environment.production,
-      // Register the ServiceWorker as soon as the app is stable
-      // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000',
-    }),
-    GraphQLModule,
-    HttpClientModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideFirestore(() => getFirestore()),
-    provideAuth(() => getAuth()),
-    provideStorage(() => getStorage()),
-   /* provideAuth(() => {
-      const auth =  getAuth();
-      setPersistence(auth, inMemoryPersistence);
-      // setPersistence(auth, inMemoryPersistence);
-      // setPersistence(auth,browserLocalPersistence)
-      // setPersistence(auth, indexedDBLocalPersistence);
-      // setPersistence(auth, browserSessionPersistence);
-      return auth;
-    }),*/
-    
-  ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-   // { provide: PERSISTENCE, useValue: 'local' }, // https://firebase.google.com/docs/auth/web/auth-state-persistence
-   // { provide: LANGUAGE_CODE, useValue: 'de' },
-   // { provide: USE_DEVICE_LANGUAGE, useValue: true },
-    //{ provide: TENANT_ID, useValue: 'tenant-id-app-one' },
-  ],
-  bootstrap: [AppComponent],
-  schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
+    declarations: [AppComponent],
+    imports: [
+        BrowserModule,
+        FontAwesomeModule,
+        IonicModule.forRoot(),
+        AppRoutingModule,
+        ServiceWorkerModule.register('ngsw-worker.js', {
+            enabled: environment.production,
+            // Register the ServiceWorker as soon as the app is stable
+            // or after 30 seconds (whichever comes first).
+            registrationStrategy: 'registerWhenStable:30000',
+        }),
+        GraphQLModule,
+        HttpClientModule,
+        provideFirebaseApp(() => initializeApp(environment.firebase)),
+        provideFirestore(() => getFirestore()),
+        provideAuth(() => getAuth()),
+        provideStorage(() => getStorage()),
+        /* provideAuth(() => {
+           const auth =  getAuth();
+           setPersistence(auth, inMemoryPersistence);
+           // setPersistence(auth, inMemoryPersistence);
+           // setPersistence(auth,browserLocalPersistence)
+           // setPersistence(auth, indexedDBLocalPersistence);
+           // setPersistence(auth, browserSessionPersistence);
+           return auth;
+         }),*/
+    ],
+    providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+        // { provide: PERSISTENCE, useValue: 'local' }, // https://firebase.google.com/docs/auth/web/auth-state-persistence
+        // { provide: LANGUAGE_CODE, useValue: 'de' },
+        // { provide: USE_DEVICE_LANGUAGE, useValue: true },
+        //{ provide: TENANT_ID, useValue: 'tenant-id-app-one' },
+    ],
+    bootstrap: [AppComponent],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {}
