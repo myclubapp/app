@@ -9,6 +9,9 @@ import {faTwitter, faFacebook, faWhatsapp, faLinkedin} from '@fortawesome/free-b
 import {faEnvelope, faCopy} from '@fortawesome/free-solid-svg-icons';
 import { SwissunihockeyService } from 'src/app/services/backend/swissunihockey.service';
 import { NewsAddPage } from '../news-add/news-add.page';
+import { AuthService } from 'src/app/services/auth.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
+import { User } from 'firebase/auth';
 
 @Component({
   selector: 'app-news',
@@ -32,6 +35,8 @@ faEnvelope: any = faEnvelope;
 faCopy: any = faCopy;
 
   constructor(
+    private authService: AuthService,
+    private fbService: FirebaseService,
     private swissunihockey: SwissunihockeyService,
     public loadingController: LoadingController,
     public toastController: ToastController,
@@ -67,17 +72,26 @@ faCopy: any = faCopy;
   }
   
   async getNews() {
-    /* const loading = await this.loadingController.create({
-      spinner: 'circles',
-      // duration: 5000,
-      message: 'News',
-      translucent: true,
-      cssClass: 'custom-class custom-loading',
 
-    });
-    await loading.present(); */
+    const user: User = await this.authService.getUser();
+    // this.clubList$ = 
+  this.fbService.getClubs(user).subscribe(async (data: any)=>{
+    
+    for (const club of data) {
+      this.fbService.getClub(club.id).subscribe(clubData=>{
+        // console.log(clubData.type);
+        if ( clubData.type === 'swissunihockey' ) {
+          this.getSUNews();
+        }
+      });
+    }
 
-  
+
+  });
+
+  }
+
+  getSUNews(){
     this.swissunihockey.getNews().subscribe((result: any) => {
       this.newsList = result?.data?.news as News[];
       if (result.loading == false){

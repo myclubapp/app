@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { IonItemSliding, IonRouterOutlet, ModalController } from '@ionic/angular';
+import { User } from 'firebase/auth';
+import { AuthService } from 'src/app/services/auth.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
+import { TrainingService } from 'src/app/services/firebase/training.service';
 import { TrainingAddPage } from '../training-add/training-add.page';
 import { TrainingDetailPage } from '../training-detail/training-detail.page';
 
@@ -13,13 +17,29 @@ export class TrainingsPage implements OnInit {
   constructor(
     private routerOutlet: IonRouterOutlet,
     private modalController: ModalController,
+    private authService: AuthService,
+    private trainingService: TrainingService,
+    private fbService: FirebaseService,
     ) { }
 
   ngOnInit() {
+    this.getTeamList();
   }
 
   toggleTraining(){
     console.log("toggle");
+  }
+
+
+  async getTeamList(){
+    const user: User = await this.authService.getUser();
+    let teamList$ = this.fbService.getTeams(user);
+    teamList$.subscribe(teamListData=>{
+
+      this.trainingService.getTrainings(teamListData.id).subscribe(trainingData=>{
+        console.log(trainingData);
+      });
+    })
   }
 
 

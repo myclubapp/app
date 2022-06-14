@@ -62,39 +62,61 @@
 
   </ng-container>
 
-  <ng-container *ngIf="clubList$ | async as clubList; else loading">
+  <ng-container *ngIf="clubList$ | async as clubList; else loadingClub">
     <ion-list>
       <ion-list-header>
         <ion-label>
           Meine Clubs
         </ion-label>
+        <ion-button>
+          <ion-icon slot="icon-only" name="add"></ion-icon>
+        </ion-button>
       </ion-list-header>
-      <ion-item *ngFor="const club of clubList">
+      <ion-item *ngFor="let club of clubList">
         <ion-label>
-          {{club.data().name}}
+          {{club.id}}
         </ion-label>
+        <ion-button slot="end">
+          <ion-icon slot="icon-only"  color="danger" name="remove-circle-outline"></ion-icon>
+        </ion-button>
       </ion-item>
     </ion-list>
   </ng-container>
 
-  <ng-container *ngIf="teamList$ | async as teamList; else loading">
+  <ng-container *ngIf="teamList$ | async as teamList; else loadingTeams">
     <ion-list>
       <ion-list-header>
         <ion-label>
           Meine Teams
         </ion-label>
+        <ion-button >
+          <ion-icon slot="icon-only" name="add"></ion-icon>
+        </ion-button>
       </ion-list-header>
-      <ion-item *ngFor="const team of teamList">
+      <ion-item *ngFor="let team of teamList">
         <ion-label>
-         asd {{team.data().name}}
+         {{team.id}}
         </ion-label>
+        <ion-button slot="end">
+          <ion-icon slot="icon-only"   color="danger" name="remove-circle-outline"></ion-icon>
+        </ion-button>
       </ion-item>
     </ion-list>
   </ng-container>
-
 </ion-content>
 
 <ng-template #loading>
+  <!-- Bubbles -->
+<ion-spinner name="bubbles"></ion-spinner>
+</ng-template>
+
+<ng-template #loadingClub>
+  <ion-text>
+    loading
+  </ion-text>
+</ng-template>
+
+<ng-template #loadingTeams>
   <ion-text>
     loading
   </ion-text>

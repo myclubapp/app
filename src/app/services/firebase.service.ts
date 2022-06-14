@@ -43,9 +43,9 @@ export class FirebaseService {
   }
 
 
-  getClub(clubId){
+  getClub(clubId:string){
     const clubRef = doc(this.firestore,`club/${clubId}`);
-    return docData(clubRef, {idField: 'id'}) as Observable<Club>
+    return docData(clubRef, {idField: 'id'}) as unknown as Observable<Club>
   }
 
   getClubs(user: User): Observable<Club>  {
@@ -60,8 +60,7 @@ export class FirebaseService {
 
   getTeams(user: User): Observable<Team> {
     const teamRefLIst = collection(this.firestore, `userProfile/${user.uid}/teams`);
-    return collectionData(teamRefLIst,  {idField: 'id'}) as Observable<any>;
+    return collectionData(teamRefLIst, { idField: 'id' }) as unknown as Observable<Team>;
   }
-
 
 }

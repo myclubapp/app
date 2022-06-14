@@ -40,15 +40,15 @@ export class ProfilePage implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.getUser();
     this.getClubList();
+    this.getTeamList();
   }
 
   async getClubList(){
     const user: User = await this.authService.getUser();
     // this.clubList$ = 
-    this.fbService.getClubs(user).subscribe(data=>{
-      console.log(data);
-    });
+    this.clubList$ = this.fbService.getClubs(user);
   }
+  
   async getTeamList(){
     const user: User = await this.authService.getUser();
     this.teamList$ = this.fbService.getTeams(user);

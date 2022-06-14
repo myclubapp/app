@@ -46,7 +46,7 @@ export class AuthService {
     return authState(this.auth).pipe(first()).toPromise();
   }*/
    getUser(): Promise<User | null> {
-     console.log("getUser auth service");
+     // console.log("getUser auth service");
     return this.user$.pipe(first()).toPromise();
   }
 
