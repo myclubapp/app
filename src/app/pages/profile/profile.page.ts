@@ -39,8 +39,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.getUser();
-    this.getClubList();
-    this.getTeamList();
+    // this.getClubList();
+    // this.getTeamList();
   }
 /* 
   async getClubList(){
