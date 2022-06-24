@@ -50,6 +50,10 @@ export class AuthService {
     return this.user$.pipe(first()).toPromise();
   }
 
+ getUser$() {
+     // console.log("getUser auth service");
+    return this.user$.pipe(first());
+  }
    login( email: string, password: string){
     return signInWithEmailAndPassword(this.auth ,email ,password);
   }

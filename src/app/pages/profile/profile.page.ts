@@ -46,12 +46,12 @@ export class ProfilePage implements OnInit, AfterViewInit {
   async getClubList(){
     const user: User = await this.authService.getUser();
     // this.clubList$ = 
-    this.clubList$ = this.fbService.getClubs(user);
+    this.clubList$ = this.fbService.getClubRefs(user);
   }
   
   async getTeamList(){
     const user: User = await this.authService.getUser();
-    this.teamList$ = this.fbService.getTeams(user);
+    this.teamList$ = this.fbService.getTeamRefs(user);
   }
 
   async getUser() {

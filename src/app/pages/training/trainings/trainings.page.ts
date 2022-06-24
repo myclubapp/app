@@ -33,12 +33,15 @@ export class TrainingsPage implements OnInit {
 
   async getTeamList(){
     const user: User = await this.authService.getUser();
-    let teamList$ = this.fbService.getTeams(user);
-    teamList$.subscribe(teamListData=>{
+    let teamList$ = this.fbService.getTeamList(user);
+    teamList$.subscribe(teamListDataArray=>{
+      for(let team of teamListDataArray){
 
-      this.trainingService.getTrainings(teamListData.id).subscribe(trainingData=>{
-        console.log(trainingData);
-      });
+        this.trainingService.getTrainings(team.id).subscribe(trainingData=>{
+          console.log(trainingData);
+        });
+      }
+
     })
   }
 

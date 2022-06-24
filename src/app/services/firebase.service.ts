@@ -48,19 +48,39 @@ export class FirebaseService {
     return docData(clubRef, {idField: 'id'}) as unknown as Observable<Club>
   }
 
-  getClubs(user: User): Observable<Club>  {
+  getClubRefs(user: User): Observable<Club>  {
       const clubRefList = collection(this.firestore, `userProfile/${user.uid}/clubs`);
-      return collectionData(clubRefList, { idField: 'id' }) as unknown as Observable<Club>;
+      return collectionData(clubRefList, { idField: 'id' }) as unknown as Observable<any>;
   }
 
+  getClubList(user: User): Observable<Club>  {
+    this.getClubRefs(user).subscribe((clubRefs:any)=>{
+
+      for (let clubRef of clubRefs){
+        this.getClub(clubRef.id)
+
+
+      }
+
+
+    })
+
+    const clubRefList = collection(this.firestore, `userProfile/${user.uid}/clubs`);
+    return collectionData(clubRefList, { idField: 'id' }) as unknown as Observable<Club>;
+}
+
   getTeam(teamId){
+    console.log(`Read team ${teamId}`);
     const teamRef = doc(this.firestore,`/teams/${teamId}`);
     return docData(teamRef, {idField: 'id'}) as Observable<Team>
   }
 
-  getTeams(user: User): Observable<Team> {
+  getTeamRefs(user: User): Observable<Team> {
     const teamRefLIst = collection(this.firestore, `userProfile/${user.uid}/teams`);
     return collectionData(teamRefLIst, { idField: 'id' }) as unknown as Observable<Team>;
   }
-
+  getTeamList(user: User): Observable<[Team]> {
+    const teamRefLIst = collection(this.firestore, `userProfile/${user.uid}/teams`);
+    return collectionData(teamRefLIst, { idField: 'id' }) as unknown as Observable<[Team]>;
+  }
 }

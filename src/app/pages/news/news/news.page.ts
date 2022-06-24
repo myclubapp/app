@@ -75,7 +75,7 @@ faCopy: any = faCopy;
 
     const user: User = await this.authService.getUser();
     // this.clubList$ = 
-  this.fbService.getClubs(user).subscribe(async (data: any)=>{
+  this.fbService.getClubRefs(user).subscribe(async (data: any)=>{
     
     for (const club of data) {
       this.fbService.getClub(club.id).subscribe(clubData=>{
