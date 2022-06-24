@@ -41,3 +41,15 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 - Angular Fire ng add @angular/fire
 - Fontawesome Icons
 - Ionicons
+
+
+# CUSTOM
+
+## Add Default Sites
+firebase target:apply hosting app-unihockey unihockey
+
+## Add Custom Sites
+firebase target:apply hosting custom-FIREBASE_SITE_MYAPP FIREBASE_SITE_MYAPP
+
+## Remove
+firebase target:remove hosting FIREBASE_SITE_MYAPP

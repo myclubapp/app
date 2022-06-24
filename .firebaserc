@@ -5,28 +5,26 @@
   "targets": {
     "myclubmanagement": {
       "hosting": {
-        "app": [
-          "unihockey",
-          "unihockeyclubapp"
-        ],
         "app-turnverein": [
-          "turnverein",
-          "turnvereinapp"
+          "turnverein"
         ],
         "app-volleyball": [
-          "volleyapp",
           "volleyballclubapp"
         ],
         "app-kadetten-unihockey": [
           "kadetten-unihockey"
         ],
         "app-handball": [
-          "handballclub",
-          "handballclubapp"
+          "handballclub"
         ],
         "app-fussball": [
-          "fussballclub",
-          "fussballclubapp"
+          "fussballclub"
+        ],
+        "app-unihockey": [
+          "unihockey"
+        ],
+        "app-uhc-win-u": [
+          "uhc-win-u"
         ]
       }
     }
