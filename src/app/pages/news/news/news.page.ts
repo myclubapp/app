@@ -8,7 +8,7 @@ import { Device } from '@capacitor/device';
 import {faTwitter, faFacebook, faWhatsapp, faLinkedin} from '@fortawesome/free-brands-svg-icons';
 import {faEnvelope, faCopy} from '@fortawesome/free-solid-svg-icons';
 import { SwissunihockeyService } from 'src/app/services/backend/swissunihockey.service';
-import { NewsAddPage } from '../news-add/news-add.page';
+
 import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { User } from 'firebase/auth';
@@ -57,14 +57,14 @@ faCopy: any = faCopy;
   }
 
   async openAddNews(){
-    const modal = await this.modalController.create({
+   /* const modal = await this.modalController.create({
       component: NewsAddPage,
       cssClass: 'my-custom-class',
       swipeToClose: true,
       backdropDismiss: true,
       presentingElement: this.routerOutlet.nativeEl
     });
-    return await modal.present();
+    return await modal.present();*/
   }
 
   async openBrowser(url: string){

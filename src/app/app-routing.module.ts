@@ -89,14 +89,6 @@ const routes: Routes = [
     path: 'team',
     loadChildren: () => import('./pages/team/team.module').then( m => m.TeamPageModule)
   },
-  /* Als modal {
-    path: 'training-add',
-    loadChildren: () => import('./pages/training/training-add/training-add.module').then( m => m.TrainingAddPageModule)
-  },
-  {
-    path: 'news-add',
-    loadChildren: () => import('./pages/news/news-add/news-add.module').then( m => m.NewsAddPageModule)
-  }, */
   {
     path: '**',
     loadChildren: () => import('./pages/not-found/not-found.module').then( m => m.NotFoundPageModule)

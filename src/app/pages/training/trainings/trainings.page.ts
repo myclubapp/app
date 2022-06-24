@@ -4,7 +4,7 @@ import { User } from 'firebase/auth';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { TrainingService } from 'src/app/services/firebase/training.service';
-import { TrainingAddPage } from '../training-add/training-add.page';
+
 import { TrainingDetailPage } from '../training-detail/training-detail.page';
 
 @Component({
@@ -67,13 +67,13 @@ export class TrainingsPage implements OnInit {
     return await modal.present();
   }
   async openAddTraining(){
-    const modal = await this.modalController.create({
+   /* const modal = await this.modalController.create({
       component: TrainingAddPage,
       cssClass: 'my-custom-class',
       swipeToClose: true,
       backdropDismiss: true,
       presentingElement: this.routerOutlet.nativeEl
     });
-    return await modal.present();
+    return await modal.present();*/
   }
 }
