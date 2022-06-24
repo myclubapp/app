@@ -6,25 +6,27 @@
     "myclubmanagement": {
       "hosting": {
         "app": [
-          "unihockey", "unihockeyclubapp"
+          "unihockey",
+          "unihockeyclubapp"
         ],
         "app-turnverein": [
-          "turnverein", "turnvereinapp"
+          "turnverein",
+          "turnvereinapp"
         ],
         "app-volleyball": [
-          "volleyapp", "volleyballclubapp"
+          "volleyapp",
+          "volleyballclubapp"
         ],
-        "app-kadetten-unihockey":[
+        "app-kadetten-unihockey": [
           "kadetten-unihockey"
         ],
-        "app-handball":  [
-          "handballclubapp", "handballclub"
+        "app-handball": [
+          "handballclub",
+          "handballclubapp"
         ],
-        "app-fussball":  [
-          "fussballclubapp", "fussballclub"
-        ],
-        "app-basketball": [
-          "basketballclub"
+        "app-fussball": [
+          "fussballclub",
+          "fussballclubapp"
         ]
       }
     }
