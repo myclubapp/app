@@ -25,8 +25,8 @@ import { UserProfileService } from 'src/app/services/firebase/user-profile.servi
 export class ProfilePage implements OnInit, AfterViewInit {
 
   userProfile$: Observable < Profile > ;
-  clubList$: Observable < Club > ;
-  teamList$: Observable < Team > ;
+  // clubList$: Observable < Club > ;
+  // teamList$: Observable < Team > ;
   constructor(
     private authService: AuthService,
     private fbService: FirebaseService,
@@ -42,7 +42,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.getClubList();
     this.getTeamList();
   }
-
+/* 
   async getClubList(){
     const user: User = await this.authService.getUser();
     // this.clubList$ = 
@@ -53,7 +53,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     const user: User = await this.authService.getUser();
     this.teamList$ = this.fbService.getTeamRefs(user);
   }
-
+*/
   async getUser() {
     const user: User = await this.authService.getUser();
     this.userProfile$ = this.profileService.getUserProfile(user);

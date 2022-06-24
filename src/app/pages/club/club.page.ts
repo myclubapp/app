@@ -8,7 +8,7 @@ import { Profile } from 'src/app/models/user';
   styleUrls: ['./club.page.scss'],
 })
 export class ClubPage implements OnInit {
-
+  
   clubTeamList: Team[];
   constructor(  
 

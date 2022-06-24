@@ -36,6 +36,11 @@ export interface Game {
   type:  string;
   updated: Date;
   clubRef: any;
+  
+  
+  // Business Logic Fields 
+  status: boolean;
+  attendees: any;
 
 }
 export interface SwissUnihockeyGame extends Game {

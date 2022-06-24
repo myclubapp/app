@@ -45,10 +45,10 @@
 
   </ion-list>
 
-  <ion-list *ngIf="loadingTeam">
+  <ion-list >
     <ion-grid>
       <ion-row  > 
-        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" >
           <ion-card >
             <ion-card-header>
               <ion-card-subtitle>
@@ -77,15 +77,15 @@
 
 
 
-  <!-- Club Members -->
+  <!-- Club Members
   <ion-list>
     <ion-list-header>
       <ion-label>
         Club Members
       </ion-label>
     </ion-list-header>
-    <ion-searchbar animated="true" showCancelButton="focus"></ion-searchbar>
-
+    <ion-searchbar animated="true" showCancelButton="focus"></ion-searchbar> -->
+<!--
     <ion-grid>
       <ion-row>
         <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let user of userList">
@@ -118,10 +118,9 @@
 
   </ion-list>
 
-  <ion-list *ngIf="loading">
     <ion-grid>
       <ion-row  > 
-        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" >
           <ion-card >
             <ion-card-header>
               <ion-card-subtitle>
@@ -147,11 +146,11 @@
     </ion-grid>
 
   </ion-list>
-
+-->
 
   <!-- fab placed to the bottom end -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="openAddNews()">
+    <ion-fab-button >
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>

@@ -10,4 +10,7 @@ export interface Profile {
   lastName: string;
   profilePicture: string;
   phone: number;
+
+  // Business Logic Fields
+  isAdmin: boolean;
 }
