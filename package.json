@@ -8,12 +8,13 @@
     "start": "ng serve",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
-    "build-deploy:app-kadetten-unihockey": "ng build --configuration app-kadetten-unihockey; firebase deploy --only hosting:app-kadetten-unihockey",
+    "build:app-kadetten-unihockey": "ng build --configuration app-kadetten-unihockey",
     "test": "ng test",
     "lint": "prettier --check .",
     "format": "prettier --write .",
     "e2e": "ng e2e",
     "deploy": "firebase deploy --only hosting:app-unihockey",
+    "deploy:app-kadetten-unihockey": "firebase deploy --only hosting:app-kadetten-unihockey",
     "build-deploy": "npm run build:prod && npm run deploy"
   },
   "husky": {

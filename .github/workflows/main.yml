@@ -5,7 +5,7 @@ on:
       - feat/2022
 jobs:
   build:
-    name: Build & Deploy App
+    name: Build & Deploy Default Unihockey App
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -14,9 +14,26 @@ jobs:
         run: npm install      
       - name: Build
         run: npm run build:prod
-      - name: Deploy to Firebase
+      - name: Deploy to Firebase (Default Unihockey)
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only hosting
+          args: deploy --only hosting:app-unihockey
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  build:
+    name: Build & Deploy Kadetten Unihockey App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        run: npm install      
+      - name: Build Kadetten App 
+        run: npm run build:app-kadetten-unihockey
+      - name: Deploy to Firebase (Kadetten)
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting:app-kadetten-unihockey
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}        
+
