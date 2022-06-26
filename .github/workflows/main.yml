@@ -20,7 +20,6 @@ jobs:
           args: deploy --only hosting:app-unihockey
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          
     name: Build & Deploy Kadetten Unihockey App
     runs-on: ubuntu-latest
     steps:
