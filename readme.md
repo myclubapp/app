@@ -18,8 +18,8 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 - Icon generator for manifest https://manifest-gen.netlify.app/
 - Favicon generator https://www.hoststar.ch/de/tools/favicon-generator
 - npm install --global pwa-asset-generator: 
--- LIGHT: pwa-asset-generator ./resources/icon_dark.png -i ./src/index.html -m ./src/manifest.webmanifest --splash-only --dark-mode -p 0%
--- DARK: pwa-asset-generator ./resources/icon.png -i ./src/index.html -m ./src/manifest.webmanifest --splash-only -p 0%  
+-- LIGHT: pwa-asset-generator ./resources/icon.png -i ./src/index.html -m ./src/manifest.webmanifest --splash-only --dark-mode -p 0%
+-- DARK: pwa-asset-generator ./resources/icon_dark.png -i ./src/index.html -m ./src/manifest.webmanifest --splash-only -p 0%  
 
 ## Native
 - Run ionic capacitor add to add a native iOS or Android project using Capacitor

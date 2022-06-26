@@ -50,6 +50,123 @@
           },
           "configurations": {
             "production": {
+              "assets": [
+                {
+                  "input": "src/app-themes/default/bg",
+                  "output": "src/assets/bg",
+                  "glob": "*.jpg"
+                },
+                {
+                  "input": "src/app-themes/default/favicon",
+                  "output": "src/assets",
+                  "glob": "*.png"
+                },
+                {
+                  "input": "src/app-themes/default/icons",
+                  "output": "src/assets",
+                  "glob": "*.png"
+                },
+                {
+                  "input": "src/app-themes/default/splash",
+                  "output": "src/assets",
+                  "glob": "*.jpg"
+                },
+                {
+                  "input": "src/app-themes/default",
+                  "output": "src/assets",
+                  "glob": "*.png"
+                },
+                {
+                  "input": "src/app-themes/default",
+                  "output": "src/assets",
+                  "glob": "*.jpg"
+                },
+                {
+                  "input": "src/app-themes/default",
+                  "output": "src/assets",
+                  "glob": "*.svg"
+                },
+                {
+                  "input": "src/app-themes/default",
+                  "output": "src/",
+                  "glob": "manifest.webmanifest"
+                },
+                {
+                  "input": "src/app-themes/default",
+                  "output": "src/theme",
+                  "glob": "variables.scss"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            },
+            "app-kadetten-unihockey": {
+              "assets": [
+                {
+                  "input": "src/app-themes/app-kadetten-unihockey/bg",
+                  "output": "src/assets/bg",
+                  "glob": "*.jpg"
+                },
+                {
+                  "input": "src/app-themes/app-kadetten-unihockey/favicon",
+                  "output": "src/assets",
+                  "glob": "*.png"
+                },
+                {
+                  "input": "src/app-themes/app-kadetten-unihockey/icons",
+                  "output": "src/assets",
+                  "glob": "*.png"
+                },
+                {
+                  "input": "src/app-themes/app-kadetten-unihockey/splash",
+                  "output": "src/assets",
+                  "glob": "*.jpg"
+                },
+                {
+                  "input": "src/app-themes/app-kadetten-unihockey",
+                  "output": "src/assets",
+                  "glob": "*.png"
+                },
+                {
+                  "input": "src/app-themes/app-kadetten-unihockey",
+                  "output": "src/assets",
+                  "glob": "*.jpg"
+                },
+                {
+                  "input": "src/app-themes/app-kadetten-unihockey",
+                  "output": "src/assets",
+                  "glob": "*.svg"
+                },
+                {
+                  "input": "src/app-themes/app-kadetten-unihockey",
+                  "output": "src/",
+                  "glob": "manifest.webmanifest"
+                },
+                {
+                  "input": "src/app-themes/app-kadetten-unihockey",
+                  "output": "src/theme",
+                  "glob": "variables.scss"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

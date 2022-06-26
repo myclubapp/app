@@ -8,6 +8,7 @@
     "start": "ng serve",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
+    "build-deploy:app-kadetten-unihockey": "ng build --configuration app-kadetten-unihockey; firebase deploy --only hosting:app-kadetten-unihockey",
     "test": "ng test",
     "lint": "prettier --check .",
     "format": "prettier --write .",
