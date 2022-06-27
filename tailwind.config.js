@@ -1,13 +1,8 @@
-const defaultTheme = require('tailwindcss/defaultTheme');
-
 module.exports = {
   darkMode: 'media', // or 'media' or 'class'
-  content: [],
+  content: ["./src/**/*.{html,js}"],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['Open Sans', ...defaultTheme.fontFamily.sans],
-      },
       colors: {
         myclublight: '#339BDE',
         myclubdark: '#795DEB',
