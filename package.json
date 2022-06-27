@@ -16,7 +16,8 @@
     "deploy": "firebase deploy --only hosting:app-unihockey",
     "deploy:app-kadetten-unihockey": "firebase deploy --only hosting:app-kadetten-unihockey",
     "build-deploy": "npm run build:prod && npm run deploy",
-    "build-deploy:app-kadetten-unihockey": "npm run build:app-kadetten-unihockey && npm run deploy:app-kadetten-unihockey"
+    "build-deploy:app-kadetten-unihockey": "ng build --configuration app-kadetten-unihockey && firebase deploy --only hosting:app-kadetten-unihockey",
+    "build-deploy:app-uhc-win-u": "ng build --configuration app-uhc-win-u && firebase deploy --only hosting:app-uhc-win-u"
   },
   "husky": {
     "hooks": {

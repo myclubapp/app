@@ -1,8 +1,8 @@
 {
-  "name": "KUSH App",
-  "short_name": "Kadetten Unihockey",
-  "theme_color": "#F89828",
-  "background_color": "#F89828",
+  "name": "WIN-U App",
+  "short_name": "UHC WIN-U",
+  "theme_color": "#EB1927",
+  "background_color": "#EB1927",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

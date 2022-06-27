@@ -44,6 +44,11 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 
 
 # CUSTOM
+Go to CUSTOM_THEMES and copy default folder. Then create icons and the following files change: 
+- index.html
+- tailwind.config.js
+- webmanifest.manifest
+
 
 ## Add Default Sites
 firebase target:apply hosting app-unihockey unihockey
@@ -53,3 +58,8 @@ firebase target:apply hosting custom-FIREBASE_SITE_MYAPP FIREBASE_SITE_MYAPP
 
 ## Remove
 firebase target:remove hosting FIREBASE_SITE_MYAPP
+
+## Icon
+pwa-asset-generator ./resources/app-CUSTOM_icon.png --splash-only --dark-mode -p 0%
+pwa-asset-generator ./resources/app-CUSTOM_icon.png  --splash-only -p 0%
+pwa-asset-generator ./resources/app-CUSTOM_icon.png  --icon-only --dark-mode -p 0%

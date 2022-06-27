@@ -29,11 +29,6 @@
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
               },
-              {
-                "glob": "tailwind.config.js",
-                "input": "src/custom-themes/app-kadetten-unihockey",
-                "output": "./"
-              },
               "src/manifest.webmanifest"
             ],
             "styles": [
@@ -69,11 +64,12 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/default",
                   "output": "./"
+                },
+                {
+                  "glob": "tailwind.config.js",
+                  "input": "src/custom-themes/default",
+                  "output": "./"
                 }
-              ],
-              "styles": [
-                "src/custom-themes/default/variables.scss",
-                "src/global.scss"
               ],
               "fileReplacements": [
                 {
@@ -81,9 +77,13 @@
                   "with": "src/environments/environment.prod.ts"
                 },
                 {
-                  "replace": "tailwind.config.js",
+                  "replace": "./tailwind.config.js",
                   "with": "src/custom-themes/default/tailwind.config.js"
                 }
+              ],
+              "styles": [
+                "src/custom-themes/default/variables.scss",
+                "src/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -125,19 +125,19 @@
                   "output": "./"
                 }
               ],
-              "styles": [
-                "src/custom-themes/app-kadetten-unihockey/variables.scss",
-                "src/global.scss"
-              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 },
                 {
-                  "replace": "tailwind.config.js",
+                  "replace": "./tailwind.config.js",
                   "with": "src/custom-themes/app-kadetten-unihockey/tailwind.config.js"
                 }
+              ],
+              "styles": [
+                "src/custom-themes/app-kadetten-unihockey/variables.scss",
+                "src/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -155,6 +155,56 @@
                 }
               ]
             },
+            "app-uhc-win-u": {
+              "index": "src/custom-themes/app-uhc-win-u/index.html",
+              "assets": [
+                {
+                  "glob": "**/*.svg",
+                  "input": "node_modules/ionicons/dist/ionicons/svg",
+                  "output": "./svg"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "src/custom-themes/app-uhc-win-u/assets",
+                  "output": "./assets"
+                },
+                {
+                  "glob": "manifest.webmanifest",
+                  "input": "src/custom-themes/app-uhc-win-u",
+                  "output": "./"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "./tailwind.config.js",
+                  "with": "src/custom-themes/app-uhc-win-u/tailwind.config.js"
+                }
+              ],
+              "styles": [
+                "src/custom-themes/app-uhc-win-u/variables.scss",
+                "src/global.scss"
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            },
+
             "ci": {
               "progress": false
             }
