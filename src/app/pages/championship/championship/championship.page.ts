@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { IonItemSliding, IonRouterOutlet, ModalController, ToastController } from '@ionic/angular';
 import { User } from 'firebase/auth';
-import { Observable, of,combineLatest } from 'rxjs';
+import { of,combineLatest } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { Game } from 'src/app/models/game';
-import { Team } from 'src/app/models/team';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { ChampionshipService } from 'src/app/services/firebase/championship.service';

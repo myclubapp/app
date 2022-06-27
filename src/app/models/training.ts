@@ -1,16 +1,16 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface Training {
   id: string;
-  title: string;
-  location: string;
-  start: Date;
-  end: Date;
-  canceled: boolean; 
-  team: string;
-  info: string;
-  excuses: [Excuse] | [];
+  name:  string;
+  description:  string;
+  dateTime: Timestamp;
+  location:  string;
+
+  teamId: string;
+  
+  // Business Logic Fields 
+  status: boolean;
+  attendees: any;
 }
 
-interface Excuse {
-  userId: string;
-  reason: string;
-}
