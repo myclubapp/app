@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {SwUpdate} from '@angular/service-worker';
+import { SwUpdate } from '@angular/service-worker';
 import { AlertController, ModalController } from '@ionic/angular';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { AuthService } from './services/auth.service';
@@ -42,9 +42,7 @@ export class AppComponent {
   initializeApp(): void {
     this.swUpdate.versionUpdates.subscribe(() => {
       this.presentAlert();
-    });
-
-    
+    });    
   }
 
   initializeFirebase(){
@@ -119,13 +117,14 @@ export class AppComponent {
           text: 'Abbrechen',
           role: 'cancel',
           cssClass: 'secondary',
-          handler: (blah) => {
-            //console.log('Confirm Cancel: blah');
+          handler: (data) => {
+            //console.log('Confirm Cancel: data');
           },
         },
         {
           text: 'Laden',
-          handler: () => {
+          handler: async () => {
+            await this.swUpdate.activateUpdate();
             window.location.reload();
             //console.log('Confirm Okay');
           },

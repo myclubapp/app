@@ -29,8 +29,6 @@
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
               },
-              "src/manifest.webmanifest",
-              "src/manifest.webmanifest",
               "src/manifest.webmanifest"
             ],
             "styles": [
@@ -50,52 +48,32 @@
           },
           "configurations": {
             "production": {
+              "index": "src/app-themes/default/index.html",
               "assets": [
                 {
-                  "input": "src/app-themes/default/bg",
-                  "output": "src/assets/bg",
-                  "glob": "*.jpg"
+                  "glob": "**/*.svg",
+                  "input": "node_modules/ionicons/dist/ionicons/svg",
+                  "output": "./svg"
                 },
                 {
-                  "input": "src/app-themes/default/favicon",
-                  "output": "src/assets",
-                  "glob": "*.png"
+                  "glob": "**/*",
+                  "input": "src/app-themes/default/assets",
+                  "output": "./assets"
                 },
                 {
-                  "input": "src/app-themes/default/icons",
-                  "output": "src/assets",
-                  "glob": "*.png"
-                },
-                {
-                  "input": "src/app-themes/default/splash",
-                  "output": "src/assets",
-                  "glob": "*.jpg"
-                },
-                {
+                  "glob": "manifest.webmanifest",
                   "input": "src/app-themes/default",
-                  "output": "src/assets",
-                  "glob": "*.png"
+                  "output": "/"
                 },
                 {
+                  "glob": "tailwind.config.js",
                   "input": "src/app-themes/default",
-                  "output": "src/assets",
-                  "glob": "*.jpg"
-                },
-                {
-                  "input": "src/app-themes/default",
-                  "output": "src/assets",
-                  "glob": "*.svg"
-                },
-                {
-                  "input": "src/app-themes/default",
-                  "output": "src/",
-                  "glob": "manifest.webmanifest"
-                },
-                {
-                  "input": "src/app-themes/default",
-                  "output": "src/theme",
-                  "glob": "variables.scss"
+                  "output": "./"
                 }
+              ],
+              "styles": [
+                "src/app-themes/default/variables.scss",
+                "src/global.scss"
               ],
               "fileReplacements": [
                 {
@@ -120,52 +98,32 @@
               ]
             },
             "app-kadetten-unihockey": {
+              "index": "src/app-themes/app-kadetten-unihockey/index.html",
               "assets": [
                 {
-                  "input": "src/app-themes/app-kadetten-unihockey/bg",
-                  "output": "src/assets/bg",
-                  "glob": "*.jpg"
+                  "glob": "**/*.svg",
+                  "input": "node_modules/ionicons/dist/ionicons/svg",
+                  "output": "./svg"
                 },
                 {
-                  "input": "src/app-themes/app-kadetten-unihockey/favicon",
-                  "output": "src/assets",
-                  "glob": "*.png"
+                  "glob": "**/*",
+                  "input": "src/app-themes/app-kadetten-unihockey/assets",
+                  "output": "./assets"
                 },
                 {
-                  "input": "src/app-themes/app-kadetten-unihockey/icons",
-                  "output": "src/assets",
-                  "glob": "*.png"
-                },
-                {
-                  "input": "src/app-themes/app-kadetten-unihockey/splash",
-                  "output": "src/assets",
-                  "glob": "*.jpg"
-                },
-                {
+                  "glob": "manifest.webmanifest",
                   "input": "src/app-themes/app-kadetten-unihockey",
-                  "output": "src/assets",
-                  "glob": "*.png"
+                  "output": "./"
                 },
                 {
+                  "glob": "tailwind.config.js",
                   "input": "src/app-themes/app-kadetten-unihockey",
-                  "output": "src/assets",
-                  "glob": "*.jpg"
-                },
-                {
-                  "input": "src/app-themes/app-kadetten-unihockey",
-                  "output": "src/assets",
-                  "glob": "*.svg"
-                },
-                {
-                  "input": "src/app-themes/app-kadetten-unihockey",
-                  "output": "src/",
-                  "glob": "manifest.webmanifest"
-                },
-                {
-                  "input": "src/app-themes/app-kadetten-unihockey",
-                  "output": "src/theme",
-                  "glob": "variables.scss"
+                  "output": "./"
                 }
+              ],
+              "styles": [
+                "src/app-themes/app-kadetten-unihockey/variables.scss",
+                "src/global.scss"
               ],
               "fileReplacements": [
                 {
@@ -234,8 +192,6 @@
                 "input": "src/assets",
                 "output": "/assets"
               },
-              "src/manifest.webmanifest",
-              "src/manifest.webmanifest",
               "src/manifest.webmanifest"
             ]
           },
