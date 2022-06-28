@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { SwUpdate } from '@angular/service-worker';
+import { SwUpdate, VersionEvent } from '@angular/service-worker';
 import { AlertController, ModalController } from '@ionic/angular';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { AuthService } from './services/auth.service';
+import packagejson from './../../package.json';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,7 @@ import { AuthService } from './services/auth.service';
 })
 export class AppComponent {
   public email: string;
-
+  public appVersion: string = packagejson.version;
   constructor(
     private swUpdate: SwUpdate,
     private alertController: AlertController,
@@ -40,8 +41,12 @@ export class AppComponent {
   }
 
   initializeApp(): void {
-    this.swUpdate.versionUpdates.subscribe(() => {
-      this.presentAlert();
+
+    this.swUpdate.versionUpdates.subscribe((event:VersionEvent) => {
+      if (event.type = 'VERSION_READY'){
+        this.presentAlert();
+
+      }
     });    
   }
 
@@ -109,8 +114,8 @@ export class AppComponent {
   async presentAlert() {
     const alert = await this.alertController.create({
       //cssClass: 'my-custom-class',
-      header: 'Neue Version',
-      message: 'Eine neue Version ist verfügbar. Neue Version laden?',
+      header: 'App Update verfügbar',
+      message: `Eine neue Version ${this.appVersion} ist verfügbar. Neue Version laden?`,
       backdropDismiss: false,
       buttons: [
         {
