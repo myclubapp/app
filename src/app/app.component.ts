@@ -128,9 +128,12 @@ export class AppComponent {
         {
           text: 'Laden',
           handler: async () => {
-            await this.swUpdate.activateUpdate();
-            window.location.reload();
-            //console.log('Confirm Okay');
+            const resolver = await this.swUpdate.activateUpdate();
+            if (resolver){
+              window.location.reload();
+            } else {
+              console.log('Already on latest version');
+            }
           },
         },
       ],
