@@ -1,128 +1,26 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+
+    <ion-title>{{club?.name}}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">schliessen</ion-button>
     </ion-buttons>
-    <ion-title>Club</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Club</ion-title>
+      <ion-title size="large">{{club.name}}</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  
-
   <ion-list >
-    <ion-grid>
-      <ion-row  > 
-        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" >
-          <ion-card >
-            <ion-card-header>
-              <ion-card-subtitle>
-                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              </ion-card-subtitle>
-              <ion-card-title>
-                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              </ion-card-title>
-            </ion-card-header>
-
-            <ion-card-content>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-            </ion-card-content>
-          </ion-card>
-
-        </ion-col>
-
-      </ion-row>
-    </ion-grid>
-
-  </ion-list>
-
-
-
-  <!-- Club Members
-  <ion-list>
     <ion-list-header>
-      <ion-label>
-        Club Members
-      </ion-label>
+      Members
     </ion-list-header>
-    <ion-searchbar animated="true" showCancelButton="focus"></ion-searchbar> -->
-<!--
-    <ion-grid>
-      <ion-row>
-        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let user of userList">
+    <ion-item>
 
-          <ion-card button="true">
-
-            <ion-fab vertical="top" horizontal="end">
-              <ion-fab-button size="small" (click)="shareUser(user)">
-                <ion-icon name="share" size="small"></ion-icon>
-              </ion-fab-button>
-            </ion-fab>
-
-
-            <img (click)="openUser(user)" src="{{user.profilePicture}}" />
-            <ion-card-header (click)="openUser(user)">
-              <ion-card-subtitle>{{user.date | date:'dd.MM.YYYY HH:mm'}}</ion-card-subtitle>
-              <ion-card-title>{{user.title}}</ion-card-title>
-            </ion-card-header>
-
-            <ion-card-content (click)="openUser(user)">
-              TEXT
-            </ion-card-content>
-         
-          </ion-card>
-
-        </ion-col>
-
-      </ion-row>
-    </ion-grid>
+    </ion-item>
 
   </ion-list>
-
-    <ion-grid>
-      <ion-row  > 
-        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" >
-          <ion-card >
-            <ion-card-header>
-              <ion-card-subtitle>
-                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              </ion-card-subtitle>
-              <ion-card-title>
-                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              </ion-card-title>
-            </ion-card-header>
-
-            <ion-card-content>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-            </ion-card-content>
-          </ion-card>
-
-        </ion-col>
-
-      </ion-row>
-    </ion-grid>
-
-  </ion-list>
--->
-
-  <!-- fab placed to the bottom end -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button >
-      <ion-icon name="add-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-</ion-content>

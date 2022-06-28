@@ -14,7 +14,7 @@ import { TrainingService } from 'src/app/services/firebase/training.service';
   styleUrls: ['./trainings.page.scss'],
 })
 export class TrainingsPage implements OnInit {
-
+  skeleton = new Array(12);
   user: User;
 
   trainingList: Training[];

@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { LoadingController, ToastController } from '@ionic/angular';
-import { Club, SwissHandballClub, SwissUnihockeyClub, SwissVolleyClub, SwissTurnverbandClub } from 'src/app/models/club';
-import { SwisshandballService } from 'src/app/services/backend/swisshandball.service';
-import { SwissunihockeyService } from 'src/app/services/backend/swissunihockey.service';
-import { SwissvolleyService } from 'src/app/services/backend/swissvolley.service';
-import { SwissturnverbandService } from 'src/app/services/backend/swissturnverband.service';
-
+import { Club } from 'src/app/models/club';
+import { AuthService } from 'src/app/services/auth.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
+import { switchMap, map } from 'rxjs/operators';
+import { of,combineLatest } from 'rxjs';
+import { User } from 'firebase/auth';
+import { ClubPage } from '../club/club.page';
+import { IonRouterOutlet, ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-club-list',
@@ -13,163 +14,63 @@ import { SwissturnverbandService } from 'src/app/services/backend/swissturnverba
   styleUrls: ['./club-list.page.scss'],
 })
 export class ClubListPage implements OnInit {
-  suClubList: SwissUnihockeyClub[];
-  svClubList: SwissVolleyClub[];
-  shClubList: SwissHandballClub[];
-  stClubList: SwissTurnverbandClub[];
-  loading = true;
+  clubList: Club[];
+  skeleton = new Array(12);
   constructor(
-    private swissunihockey: SwissunihockeyService,
-    private swissvolley: SwissvolleyService,
-    private swisshandball: SwisshandballService,
-    private swissturnverband: SwissturnverbandService,
-
-    public loadingController: LoadingController,
-    public toastController: ToastController
-  ) { 
-    this.suClubList = [];
-    this.svClubList = [];
-    this.shClubList = [];
-    this.stClubList = [];
-  }
+    private fbService: FirebaseService,
+    private authService: AuthService,
+    private routerOutlet: IonRouterOutlet,
+    private modalCtrl: ModalController
+  ) { }
 
   ngOnInit() {
+    this.getClubList();
+  }
   
-  }
-  ngAfterViewInit(): void {
-    this.getUnihockeyClubs();
-    this.getVolleyballClubs();
-    this.getHandballClubs();
-    this.getTurnvereine();
-  }
-
-  async getUnihockeyClubs() {
-   /* const loading = await this.loadingController.create({
-      spinner: 'circles',
-      // duration: 5000,
-      message: 'Clubs',
-      translucent: true,
-      cssClass: 'custom-class custom-loading',
-
+  async openModal(club: Club) {
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalCtrl.create({
+      component: ClubPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      swipeToClose: true,
+      showBackdrop: true,
+      componentProps: {
+        data: club
+      }
     });
-    await loading.present();
-*/
-  
-    this.swissunihockey.getClubs().subscribe((result: any) => {
-      this.suClubList = result?.data?.clubs as Club[];
-  
-      if (result.loading == false){
-       // loading.dismiss();
-      }
-      
-      // console.log(result);
-      
-      if (result.errors){
-        this.toastController.create({
-          message: JSON.stringify(result.errors[0].message),
-          duration: 2000
-        }).then(toast=>{
-          toast.present();
-        });
-        
-      }
-      this.loading = result.loading;
+    modal.present();
 
-    },(error:any)=>{
-      this.toastController.create({
-        message: JSON.stringify(error.message),
-        duration: 2000
-      }).then(toast=>{
-        toast.present();
-      });
+    const { data, role } = await modal.onWillDismiss();
 
-    });
-  }
-
-  async getVolleyballClubs() {
-  
-     this.swissvolley.getClubs().subscribe((result: any) => {
-      for (let association of result?.data?.associations){
-        for (let club of association.clubs){
-          this.svClubList.push(club);
-        }
-      }
-             
-       if (result.errors){
-         this.toastController.create({
-           message: JSON.stringify(result.errors[0].message),
-           duration: 2000
-         }).then(toast=>{
-           toast.present();
-         });
-         
-       }
-       this.loading = result.loading;
- 
-     },(error:any)=>{
-       this.toastController.create({
-         message: JSON.stringify(error.message),
-         duration: 2000
-       }).then(toast=>{
-         toast.present();
-       });
- 
-     });
-   }
-   
-  async getHandballClubs() {
-  
-     this.swisshandball.getClubs().subscribe((result: any) => {
-
-      this.shClubList = result?.data?.clubs as Club[];
-     
-       if (result.errors){
-         this.toastController.create({
-           message: JSON.stringify(result.errors[0].message),
-           duration: 2000
-         }).then(toast=>{
-           toast.present();
-         });
-         
-       }
-       this.loading = result.loading;
- 
-     },(error:any)=>{
-       this.toastController.create({
-         message: JSON.stringify(error.message),
-         duration: 2000
-       }).then(toast=>{
-         toast.present();
-       });
- 
-     });
-   }
-
-   async getTurnvereine() {
-  
-    this.swissturnverband.getClubs().subscribe((result: any) => {
-
-     this.stClubList = result?.data?.clubs as Club[];
+    if (role === 'confirm') {
     
-      if (result.errors){
-        this.toastController.create({
-          message: JSON.stringify(result.errors[0].message),
-          duration: 2000
-        }).then(toast=>{
-          toast.present();
-        });
-        
-      }
-      this.loading = result.loading;
+    }
+  }
 
-    },(error:any)=>{
-      this.toastController.create({
-        message: JSON.stringify(error.message),
-        duration: 2000
-      }).then(toast=>{
-        toast.present();
+  getClubList(){
+    this.authService.getUser$().pipe(
+      // GET TEAMS
+      switchMap((user:User) => this.fbService.getClubRefs(user)),
+      // Loop Over Clubs  
+      switchMap((allClubs:any) => combineLatest(
+        allClubs.map((club) => combineLatest(
+          of(club),
+          this.fbService.getClub(club.id),  
+        )),
+      )),
+      )
+      .subscribe(async (data:any)=>{
+        console.log(data);
+
+        let clubListNew = [];
+        for (let club of data){ // loop over clubs
+
+          let clubDetails = club[1];
+          clubListNew.push(clubDetails);
+         
+        }
+        this.clubList = [...new Set([].concat(...clubListNew))];
+        this.clubList = this.clubList.sort((a,b)=>Number(a.id)-Number(b.id));
       });
-
-    });
-  }   
+  }
 }

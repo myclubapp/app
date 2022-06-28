@@ -24,10 +24,12 @@ import { NewsDetailPage } from './pages/news/news-detail/news-detail.page';
 import { ChampionshipDetailPage } from './pages/championship/championship-detail/championship-detail.page';
 import { TrainingDetailPage } from './pages/training/training-detail/training-detail.page';
 import { EventDetailPage } from './pages/event/event-detail/event-detail.page';
+import { ClubPage } from './pages/club/club.page';
+import { TeamPage } from './pages/team/team.page';
 
 
 @NgModule({
-    declarations: [AppComponent, NewsDetailPage, ChampionshipDetailPage, TrainingDetailPage, EventDetailPage],
+    declarations: [AppComponent, NewsDetailPage, ChampionshipDetailPage, TrainingDetailPage, EventDetailPage, ClubPage, TeamPage],
     imports: [
         BrowserModule,
         FontAwesomeModule,

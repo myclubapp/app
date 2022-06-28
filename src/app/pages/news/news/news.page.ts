@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { IonRouterOutlet, LoadingController, ModalController, ToastController } from '@ionic/angular';
 import { News } from 'src/app/models/news';
-import { Browser } from '@capacitor/browser';
+
 import { Share } from '@capacitor/share';
 import { Device } from '@capacitor/device';
 
@@ -35,8 +35,6 @@ faLinkedin: any = faLinkedin;
 faEnvelope: any = faEnvelope;
 faCopy: any = faCopy;
 
-message = 'This modal example uses the modalController to present and dismiss modals.';
-
   constructor(
     private authService: AuthService,
     private fbService: FirebaseService,
@@ -56,10 +54,10 @@ message = 'This modal example uses the modalController to present and dismiss mo
   }
 
   async openModal(news: News) {
-    const presentingElement = await this.modalCtrl.getTop();
+    // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: NewsDetailPage,
-      presentingElement: presentingElement,
+      presentingElement: this.routerOutlet.nativeEl,
       swipeToClose: true,
       showBackdrop: true,
       componentProps: {
@@ -71,24 +69,15 @@ message = 'This modal example uses the modalController to present and dismiss mo
     const { data, role } = await modal.onWillDismiss();
 
     if (role === 'confirm') {
-      this.message = `Hello, ${data}!`;
+    
     }
   }
 
   async openAddNews(){
-   /* const modal = await this.modalController.create({
-      component: NewsAddPage,
-      cssClass: 'my-custom-class',
-      swipeToClose: true,
-      backdropDismiss: true,
-      presentingElement: this.routerOutlet.nativeEl
-    });
-    return await modal.present();*/
+
   }
 
-  async openBrowser(url: string){
-    await Browser.open({ url: url , presentationStyle: 'popover' });
-  }
+
   
   async getNews() {
 

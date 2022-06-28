@@ -15,6 +15,8 @@ import { EventService } from 'src/app/services/firebase/event.service';
   styleUrls: ['./events.page.scss'],
 })
 export class EventsPage implements OnInit {
+  skeleton = new Array(12);
+  
   user: User;
 
   eventsList: Event[];

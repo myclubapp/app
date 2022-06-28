@@ -3,77 +3,86 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Club List</ion-title>
+    <ion-title>Meine Clubs</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Club List</ion-title>
+      <ion-title size="large">Meine Clubs</ion-title>
     </ion-toolbar>
   </ion-header>
 
+  <ng-container *ngIf="clubList; else loading">
 
-  <!-- Open Accordion -->
-  <ion-accordion-group value="type">
+  <ion-list >
+    <ion-grid>
+      <ion-row  > 
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let club of clubList">
+          <ion-card (click)="openModal(club)">
+            <img src="{{club.logo}}" />
+            <ion-card-header>
+              <ion-card-subtitle>
+               
+              </ion-card-subtitle>
+              <ion-card-title>
+                {{club.name}}
+              </ion-card-title>
+            </ion-card-header>
 
-    <ion-accordion value="swissunihockey">
-      <ion-item slot="header">
-        <ion-label>swiss unihockey ({{suClubList.length}})</ion-label>
-      </ion-item>
+            <ion-card-content>
+              <ion-badge>
+                {{club.type}}
+              </ion-badge>
+            </ion-card-content>
+          </ion-card>
 
-      <ion-list slot="content">
-        <ion-item *ngFor="let club of suClubList">
-          <ion-label>
-            {{club.name}}
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-accordion>
+        </ion-col>
 
-    <ion-accordion value="swissvolley">
-      <ion-item slot="header">
-        <ion-label>Swiss Volley ({{svClubList.length}})</ion-label>
-      </ion-item>
+      </ion-row>
+    </ion-grid>
 
-      <ion-list slot="content">
-        <ion-item *ngFor="let club of svClubList">
-          <ion-label>
-            {{club.name}}
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-accordion>
+  </ion-list>
 
-    <ion-accordion value="swisshandball">
-      <ion-item slot="header">
-        <ion-label>Handball Schweiz ({{shClubList.length}})</ion-label>
-      </ion-item>
+</ng-container>
 
-      <ion-list slot="content">
-        <ion-item *ngFor="let club of shClubList">
-          <ion-label>
-            {{club.name}}
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-accordion>
-
-    <ion-accordion value="swissturnverband">
-      <ion-item slot="header">
-        <ion-label>Schweizerischer Turnverband ({{stClubList.length}})</ion-label>
-      </ion-item>
-
-      <ion-list slot="content">
-        <ion-item *ngFor="let club of stClubList">
-          <ion-label>
-            {{club.name}}
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-accordion>
-  </ion-accordion-group>
-
-
+  <!-- fab placed to the bottom end -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button >
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
+
+<ng-template #loading>
+  <ion-list>
+    <ion-grid>
+      <ion-row  > 
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
+          <ion-card >
+            <ion-card-header>
+              <ion-card-subtitle>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              </ion-card-subtitle>
+              <ion-card-title>
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+            </ion-card-content>
+          </ion-card>
+
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+
+  </ion-list>
+</ng-template>

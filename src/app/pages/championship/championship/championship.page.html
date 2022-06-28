@@ -104,11 +104,11 @@
         <ion-icon *ngIf="game.status === null"slot="icon-only" color="warning" slot="start" name="help-circle" (click)="toggle(true, game)"></ion-icon>
         <ion-icon *ngIf="game.status === false" slot="icon-only" color="danger" slot="start" name="close-circle" (click)="toggle( true, game)"></ion-icon>
         <ion-icon *ngIf="game.status === true"slot="icon-only" color="success" slot="start" name="checkmark-circle" (click)="toggle(false, game)"></ion-icon>
-        <ion-label>
+        <ion-label class="ion-text-wrap">
           <h2>{{game.teamHome}} vs.</h2>
           <h2>{{game.teamAway}}</h2>
           <h3>
-            <ion-icon slot="icon-only" name="home"></ion-icon>: {{game.location}} {{game.city}}
+            <ion-icon slot="icon-only" name="location"></ion-icon>: {{game.location}} {{game.city}}
           </h3>
           <h3>
             <ion-icon slot="icon-only" name="time"></ion-icon> {{game.date}} {{game.time}}
@@ -148,8 +148,35 @@
 </ng-container>
 
   <ng-template #loading>
-    <!-- Bubbles -->
-    <ion-spinner name="bubbles"></ion-spinner>
+    <ion-list *ngIf="loading">
+      <ion-grid>
+        <ion-row  > 
+          <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
+            <ion-card >
+              <ion-card-header>
+                <ion-card-subtitle>
+                  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                </ion-card-subtitle>
+                <ion-card-title>
+                  <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                </ion-card-title>
+              </ion-card-header>
+  
+              <ion-card-content>
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              </ion-card-content>
+            </ion-card>
+  
+          </ion-col>
+  
+        </ion-row>
+      </ion-grid>
+  
+    </ion-list>
   </ng-template>
 
 </ion-content>

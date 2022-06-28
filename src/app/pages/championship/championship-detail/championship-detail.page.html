@@ -1,17 +1,69 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
-    </ion-buttons>
     <ion-title>{{game?.name}}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="confirm()">Confirm</ion-button>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">schliessen</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
+  <ion-list>
+    
+    <ion-item>
+      <ion-icon *ngIf="game.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
+        (click)="toggle(true, game)"></ion-icon>
+      <ion-icon *ngIf="game.status === false" slot="icon-only" color="danger" slot="start" name="close-circle"
+        (click)="toggle( true, game)"></ion-icon>
+      <ion-icon *ngIf="game.status === true" slot="icon-only" color="success" slot="start" name="checkmark-circle"
+        (click)="toggle(false, game)"></ion-icon>
+    </ion-item>
 
-{{game?.description}}
+    <ion-item>
+      <ion-icon slot="start" name="home-outline"></ion-icon>
+      <ion-label>
+        <h2>{{game.teamHome}} vs.</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+      <ion-label>
+        <h2>{{game.teamAway}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="location-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.location}} {{game.city}}</h2>
+      </ion-label>
+    </ion-item>
+    
+    <ion-item>
+      <ion-icon slot="start" name="time-outline"></ion-icon>
+      <ion-label>
+        <h2>{{game.date}} {{game.time}}</h2>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon slot="start" name="trophy-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.liga}} {{game.teamName}}</h2>
+      </ion-label>
+    </ion-item>
+
+  </ion-list>
+ 
+  <ion-list>
+    <ion-list-header>
+      Anmeldungen
+    </ion-list-header>
+    <ion-item *ngFor="member of game.attendees">
+      {{member?.firstName}}
+
+    </ion-item>
+
+  </ion-list>
+  <capacitor-google-map id="map"></capacitor-google-map>
 
 
 </ion-content>

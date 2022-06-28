@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { ModalController, NavParams } from '@ionic/angular';
+import { Club } from 'src/app/models/club';
 import { Team } from 'src/app/models/team';
 import { Profile } from 'src/app/models/user';
 
@@ -9,27 +11,19 @@ import { Profile } from 'src/app/models/user';
 })
 export class ClubPage implements OnInit {
   
-  clubTeamList: Team[];
-  constructor(  
+  @Input("data") club: Club;
 
-  ) { 
-
-  }
-
+  constructor(private modalCtrl: ModalController,
+    public navParams : NavParams) {}
   ngOnInit() {
-
+    this.club = this.navParams.get('data');
+  }
+  close() {
+    return this.modalCtrl.dismiss(null, 'close');
   }
 
-  openTeam(team: Team){
-    console.log("open Team: " + team.name);
-  }
-
-  openUser(user: Profile){
-    console.log("open User: " + user.firstName);
-  }
-
-  shareUser(user: Profile){
-    console.log("share User: " + user.firstName);
+  confirm() {
+    return this.modalCtrl.dismiss(this.club, 'confirm');
   }
 
 }

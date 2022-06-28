@@ -8,13 +8,13 @@ import { Storage, ref, uploadString, getDownloadURL } from '@angular/fire/storag
 
 // import firebase from 'firebase/compat/app';
 import { Observable, Observer } from 'rxjs';
-import { Profile } from '../models/user';
+
 import { Club, SwissHandballClub, SwissUnihockeyClub, SwissVolleyClub, SwissTurnverbandClub } from '../models/club';
 import { Team } from '../models/team';
 import {
   User
 } from "@angular/fire/auth";
-import { Photo } from '@capacitor/camera';
+
 
 import {AuthService} from 'src/app/services/auth.service';
 
@@ -58,11 +58,7 @@ export class FirebaseService {
 
       for (let clubRef of clubRefs){
         this.getClub(clubRef.id)
-
-
       }
-
-
     })
 
     const clubRefList = collection(this.firestore, `userProfile/${user.uid}/clubs`);

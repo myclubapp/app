@@ -16,8 +16,7 @@ import { ChampionshipDetailPage } from '../championship-detail/championship-deta
 })
 export class ChampionshipPage implements OnInit {
 
-  message = 'This modal example uses the modalController to present and dismiss modals.';
-
+  skeleton = new Array(12);
   user: User;
 
   gamesList: Game[];
@@ -41,10 +40,10 @@ export class ChampionshipPage implements OnInit {
     this.user = await this.authService.getUser();
   }
   async openModal(game: Game) {
-    const presentingElement = await this.modalCtrl.getTop();
+    // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: ChampionshipDetailPage,
-      presentingElement: presentingElement,
+      presentingElement: this.routerOutlet.nativeEl,
       swipeToClose: true,
       showBackdrop: true,
       componentProps: {
@@ -56,7 +55,7 @@ export class ChampionshipPage implements OnInit {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === 'confirm') {
-      this.message = `Hello, ${data}!`;
+     
     }
   }
 
