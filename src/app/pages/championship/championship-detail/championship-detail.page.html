@@ -11,11 +11,11 @@
     
     <ion-item>
       <ion-icon *ngIf="game.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
-        (click)="toggle(true, game)"></ion-icon>
+       ></ion-icon>
       <ion-icon *ngIf="game.status === false" slot="icon-only" color="danger" slot="start" name="close-circle"
-        (click)="toggle( true, game)"></ion-icon>
+       ></ion-icon>
       <ion-icon *ngIf="game.status === true" slot="icon-only" color="success" slot="start" name="checkmark-circle"
-        (click)="toggle(false, game)"></ion-icon>
+       ></ion-icon>
     </ion-item>
 
     <ion-item>
@@ -57,7 +57,7 @@
     <ion-list-header>
       Anmeldungen
     </ion-list-header>
-    <ion-item *ngFor="member of game.attendees">
+    <ion-item *ngFor="let member of game.attendees">
       {{member?.firstName}}
 
     </ion-item>

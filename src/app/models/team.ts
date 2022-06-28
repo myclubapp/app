@@ -1,7 +1,9 @@
 export interface Team {
   id: string;
   name: string;
-  picture: string;
+  logo: string;
+  liga: string;
+  type: string;
 
 }
 export interface SwissUnihockeyTeam extends Team {

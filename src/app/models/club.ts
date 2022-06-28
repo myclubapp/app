@@ -2,6 +2,7 @@ export interface Club {
   id: string;
   name: string;
   type: string;
+  logo: string;
 
 }
 export interface SwissUnihockeyClub extends Club {

@@ -49,7 +49,7 @@ export class ChampionshipDetailPage implements OnInit {
         zoom: 8, // The initial zoom level to be rendered by the map
       },
     });
-    this.newMap.addMarker({title: this.game.description,coordinate:{
+    this.newMap.addMarker({title: `${this.game.location} in ${this.game.city}` ,coordinate:{
       lat: Number(this.game.latitude),
           lng: Number(this.game.longitude),
     }});
