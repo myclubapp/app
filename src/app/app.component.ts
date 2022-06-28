@@ -43,9 +43,8 @@ export class AppComponent {
   initializeApp(): void {
 
     this.swUpdate.versionUpdates.subscribe((event:VersionEvent) => {
-      if (event.type = 'VERSION_READY'){
+      if (event.type === 'VERSION_READY'){
         this.presentAlert();
-
       }
     });    
   }
