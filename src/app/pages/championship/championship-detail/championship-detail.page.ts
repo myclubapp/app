@@ -2,7 +2,7 @@ import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ModalController, NavParams } from '@ionic/angular';
 import { Game } from 'src/app/models/game';
 import { GoogleMap } from '@capacitor/google-maps';
-import { Geolocation } from '@capacitor/geolocation';
+import { Geolocation, PermissionStatus } from '@capacitor/geolocation';
 
 @Component({
   selector: 'app-championship-detail',
@@ -33,8 +33,6 @@ export class ChampionshipDetailPage implements OnInit {
     const apiKey = 'AIzaSyAM5x9P0syj9qtxUmFs98nW0B967xo52Fw';
 
     const mapRef = document.getElementById('map');
-    console.log(Number(this.game.latitude));
-    console.log(Number(this.game.longitude));
     
     this.newMap = await GoogleMap.create({
       id: 'my-map-' + this.game.id, // Unique identifier for this map instance
@@ -51,16 +49,18 @@ export class ChampionshipDetailPage implements OnInit {
     });
     this.newMap.addMarker({title: `${this.game.location} in ${this.game.city}` ,coordinate:{
       lat: Number(this.game.latitude),
-          lng: Number(this.game.longitude),
+      lng: Number(this.game.longitude),
     }});
 
+    const permission: PermissionStatus = await Geolocation.checkPermissions();
+    if (permission.location === 'denied' || permission.coarseLocation === 'denied' ){
+      await Geolocation.requestPermissions();
+    }
     const coordinates = await Geolocation.getCurrentPosition();
     this.newMap.addMarker({title: 'Meine Position', coordinate: {
       lat: coordinates.coords.latitude,
       lng: coordinates.coords.longitude
     }});
-
-
 
   }
   ngOnDestroy(){
