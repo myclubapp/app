@@ -19,9 +19,15 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { provideAuth, getAuth, setPersistence,inMemoryPersistence } from '@angular/fire/auth';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 
+// MODALs
+import { NewsDetailPage } from './pages/news/news-detail/news-detail.page';
+import { ChampionshipDetailPage } from './pages/championship/championship-detail/championship-detail.page';
+import { TrainingDetailPage } from './pages/training/training-detail/training-detail.page';
+import { EventDetailPage } from './pages/event/event-detail/event-detail.page';
+
 
 @NgModule({
-    declarations: [AppComponent],
+    declarations: [AppComponent, NewsDetailPage, ChampionshipDetailPage, TrainingDetailPage, EventDetailPage],
     imports: [
         BrowserModule,
         FontAwesomeModule,

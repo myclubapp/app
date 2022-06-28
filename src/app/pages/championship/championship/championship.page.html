@@ -34,7 +34,7 @@
       </ion-item>
 
 
-      <ion-item-sliding #item *ngFor="let game of gamesList">
+      <ion-item-sliding #item *ngFor="let game of gamesList" (click)="openModal(game)">
         <ion-item>
           <ion-icon *ngIf="game.status === null"slot="icon-only" color="warning" slot="start" name="help-circle" (click)="toggle(true, game)"></ion-icon>
           <ion-icon *ngIf="game.status === false" slot="icon-only" color="danger" slot="start" name="close-circle" (click)="toggle( true, game)"></ion-icon>
@@ -99,7 +99,7 @@
         </p>
       </ion-label>
     </ion-item>
-    <ion-item-sliding #item *ngFor="let game of gamesListPast">
+    <ion-item-sliding #item *ngFor="let game of gamesListPast" (click)="openModal(game)">
       <ion-item>
         <ion-icon *ngIf="game.status === null"slot="icon-only" color="warning" slot="start" name="help-circle" (click)="toggle(true, game)"></ion-icon>
         <ion-icon *ngIf="game.status === false" slot="icon-only" color="danger" slot="start" name="close-circle" (click)="toggle( true, game)"></ion-icon>

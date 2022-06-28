@@ -26,13 +26,13 @@
             </ion-fab>
 
 
-            <img (click)="openNews(news)" src="{{news.image}}" />
-            <ion-card-header (click)="openNews(news)">
+            <img (click)="openModal(news)" src="{{news.image}}" />
+            <ion-card-header (click)="openModal(news)">
               <ion-card-subtitle>{{news.date | date:'dd.MM.YYYY HH:mm'}}</ion-card-subtitle>
               <ion-card-title>{{news.title}}</ion-card-title>
             </ion-card-header>
 
-            <ion-card-content (click)="openNews(news)">
+            <ion-card-content (click)="openModal(news)">
               {{news.leadText}}
             </ion-card-content>
             <ion-row>

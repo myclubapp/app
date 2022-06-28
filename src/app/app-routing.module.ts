@@ -54,28 +54,12 @@ const routes: Routes = [
     loadChildren: () => import('./pages/training/trainings/trainings.module').then( m => m.TrainingsPageModule)
   },
   {
-    path: 'training-detail',
-    loadChildren: () => import('./pages/training/training-detail/training-detail.module').then( m => m.TrainingDetailPageModule)
-  },
-  {
     path: 'events',
     loadChildren: () => import('./pages/event/events/events.module').then( m => m.EventsPageModule)
   },
   {
-    path: 'event-detail',
-    loadChildren: () => import('./pages/event/event-detail/event-detail.module').then( m => m.EventDetailPageModule)
-  },
-  {
-    path: 'news-detail',
-    loadChildren: () => import('./pages/news/news-detail/news-detail.module').then( m => m.NewsDetailPageModule)
-  },
-  {
     path: 'championship',
     loadChildren: () => import('./pages/championship/championship/championship.module').then( m => m.ChampionshipPageModule)
-  },
-  {
-    path: 'championship-detail',
-    loadChildren: () => import('./pages/championship/championship-detail/championship-detail.module').then( m => m.ChampionshipDetailPageModule)
   },
   {
     path: 'onboarding',
@@ -93,6 +77,7 @@ const routes: Routes = [
     path: '**',
     loadChildren: () => import('./pages/not-found/not-found.module').then( m => m.NotFoundPageModule)
   },
+  
 ];
 
 @NgModule({

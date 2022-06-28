@@ -7,6 +7,7 @@ import { Game } from 'src/app/models/game';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { ChampionshipService } from 'src/app/services/firebase/championship.service';
+import { ChampionshipDetailPage } from '../championship-detail/championship-detail.page';
 
 @Component({
   selector: 'app-championship',
@@ -15,6 +16,8 @@ import { ChampionshipService } from 'src/app/services/firebase/championship.serv
 })
 export class ChampionshipPage implements OnInit {
 
+  message = 'This modal example uses the modalController to present and dismiss modals.';
+
   user: User;
 
   gamesList: Game[];
@@ -22,7 +25,7 @@ export class ChampionshipPage implements OnInit {
   constructor(
     public toastController: ToastController,
     private routerOutlet: IonRouterOutlet,
-    private modalController: ModalController,
+    private modalCtrl: ModalController,
     private authService: AuthService,
     private fbService: FirebaseService,
     private championshipService: ChampionshipService,
@@ -36,6 +39,25 @@ export class ChampionshipPage implements OnInit {
 
   async getUser(){
     this.user = await this.authService.getUser();
+  }
+  async openModal(game: Game) {
+    const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalCtrl.create({
+      component: ChampionshipDetailPage,
+      presentingElement: presentingElement,
+      swipeToClose: true,
+      showBackdrop: true,
+      componentProps: {
+        data: game
+      }
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === 'confirm') {
+      this.message = `Hello, ${data}!`;
+    }
   }
 
 

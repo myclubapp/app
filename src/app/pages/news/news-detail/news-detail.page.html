@@ -1,9 +1,16 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>news-detail</ion-title>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>{{news?.title}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="confirm()">Confirm</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
+<ion-content class="ion-padding">
 
-<ion-content>
+  {{news?.leadText}}
 
 </ion-content>

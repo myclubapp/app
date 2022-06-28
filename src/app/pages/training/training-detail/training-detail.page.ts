@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { Training } from '../../../models/training'
 
 @Component({
   selector: 'app-training-detail',
@@ -9,16 +7,9 @@ import { Training } from '../../../models/training'
 })
 export class TrainingDetailPage implements OnInit {
 
-
-  constructor(private modalController: ModalController) { }
+  constructor() { }
 
   ngOnInit() {
   }
-  dismiss() {
-    // using the injected ModalController this page
-    // can "dismiss" itself and optionally pass back data
-    this.modalController.dismiss({
-      'dismissed': true
-    });
-  }
+
 }

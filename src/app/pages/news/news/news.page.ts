@@ -12,6 +12,7 @@ import { SwissunihockeyService } from 'src/app/services/backend/swissunihockey.s
 import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { User } from 'firebase/auth';
+import { NewsDetailPage } from '../news-detail/news-detail.page';
 
 @Component({
   selector: 'app-news',
@@ -34,6 +35,8 @@ faLinkedin: any = faLinkedin;
 faEnvelope: any = faEnvelope;
 faCopy: any = faCopy;
 
+message = 'This modal example uses the modalController to present and dismiss modals.';
+
   constructor(
     private authService: AuthService,
     private fbService: FirebaseService,
@@ -41,7 +44,7 @@ faCopy: any = faCopy;
     public loadingController: LoadingController,
     public toastController: ToastController,
     private routerOutlet: IonRouterOutlet,
-    private modalController: ModalController,
+    private modalCtrl: ModalController
   ) { 
   }
 
@@ -52,8 +55,24 @@ faCopy: any = faCopy;
     this.getNews();
   }
 
-  async openNews(news: News){
-    
+  async openModal(news: News) {
+    const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalCtrl.create({
+      component: NewsDetailPage,
+      presentingElement: presentingElement,
+      swipeToClose: true,
+      showBackdrop: true,
+      componentProps: {
+        data: news
+      }
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === 'confirm') {
+      this.message = `Hello, ${data}!`;
+    }
   }
 
   async openAddNews(){
