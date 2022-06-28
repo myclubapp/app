@@ -50,7 +50,7 @@ export class ChampionshipDetailPage implements OnInit {
     this.newMap.addMarker({title: `${this.game.location} in ${this.game.city}` ,coordinate:{
       lat: Number(this.game.latitude),
       lng: Number(this.game.longitude),
-    }});
+    },  snippet: `${this.game.location} in ${this.game.city}`});
 
     const permission: PermissionStatus = await Geolocation.checkPermissions();
     if (permission.location === 'denied' || permission.coarseLocation === 'denied' ){
@@ -66,7 +66,7 @@ export class ChampionshipDetailPage implements OnInit {
       this.newMap.addMarker({title: 'Meine Position', coordinate: {
         lat: coordinates.coords.latitude,
         lng: coordinates.coords.longitude
-      }, isFlat: true});
+      }, isFlat: true, snippet: 'Meine Position'});
     }
       
   }
