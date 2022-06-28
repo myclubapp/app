@@ -46,20 +46,32 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 # CUSTOM
 Go to CUSTOM_THEMES and copy default folder. Then create icons and the following files change: 
 - index.html
-- tailwind.config.js
+- tailwind.config.js [This is still an issue]
 - webmanifest.manifest
 
+## General new custom app
 
-## Add Default Sites
+### Add Default Sites
 firebase target:apply hosting app-unihockey unihockey
 
-## Add Custom Sites
-firebase target:apply hosting custom-FIREBASE_SITE_MYAPP FIREBASE_SITE_MYAPP
+### Add Custom Sites
+firebase target:apply hosting app-FIREBASE_SITE_MYAPP FIREBASE_SITE_MYAPP
 
-## Remove
+### Remove
 firebase target:remove hosting FIREBASE_SITE_MYAPP
 
-## Icon
+### Icon
+Run commands to generate custom icons: 
 pwa-asset-generator ./resources/app-CUSTOM_icon.png --splash-only --dark-mode -p 0%
 pwa-asset-generator ./resources/app-CUSTOM_icon.png  --splash-only -p 0%
 pwa-asset-generator ./resources/app-CUSTOM_icon.png  --icon-only --dark-mode -p 0%
+
+then, copy icons to src/custom_themes/app-CUSTOM/assets
+- /icons
+- /splash
+
+Also upload login.jpg to /bg and create favicon.
+
+## Available Custom Apps: 
+- Kadetten Unihockey Schaffhausen
+- UHC Winterthur United
