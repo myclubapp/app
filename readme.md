@@ -15,11 +15,11 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 # Developer
 ## Create App Icon & Splash Screen
 - Generate your app icon and splash screens using cordova-res --skip-config --copy
-- Icon generator for manifest https://manifest-gen.netlify.app/
-- Favicon generator https://www.hoststar.ch/de/tools/favicon-generator
-- npm install --global pwa-asset-generator: 
--- LIGHT: pwa-asset-generator ./resources/icon.png -i ./src/index.html -m ./src/manifest.webmanifest --splash-only --dark-mode -p 0%
--- DARK: pwa-asset-generator ./resources/icon_dark.png -i ./src/index.html -m ./src/manifest.webmanifest --splash-only -p 0%  
+- Icon generator for manifest [Link](https://manifest-gen.netlify.app/)
+- Favicon generator [Link](https://www.hoststar.ch/de/tools/favicon-generator)
+- Install Asset generator: ``npm install --global pwa-asset-generator`` and run commands: 
+Light Mode: ``pwa-asset-generator ./resources/icon.png -i ./src/index.html -m ./src/manifest.webmanifest --splash-only --dark-mode -p 0% ``
+- Dark Mode: ``pwa-asset-generator ./resources/icon_dark.png -i ./src/index.html -m ./src/manifest.webmanifest --splash-only -p 0%  ``
 
 ## Native
 - Run ionic capacitor add to add a native iOS or Android project using Capacitor
@@ -28,28 +28,32 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 - Run ionic serve within the app dpy
 
 ## Installed packages
-- Tailwind CSS (npm install -D tailwindcss@latest postcss autoprefixer)
+- Tailwind CSS (``npm install -D tailwindcss@latest postcss autoprefixer``)
 - Capacitor JS (V3)
 - Ionicframework (V6)
-- Angular PWA (ng add @angular/pwa --project _project-name_)
-- Apollo Angular (ng add apollo-angular)
+- Angular PWA (``ng add @angular/pwa --project _project-name_``)
+- Apollo Angular (``ng add apollo-angular``)
 - [Angular Localize](https://angular.io/guide/i18n-common-locale-id) 
 -- de-CH 	German (Switzerland)
 -- fr-CH 	French (Switzerland)
 -- it-CH    Italian (Switzerland)
 -- en-US    English
-- Angular Fire ng add @angular/fire
+- Angular Fire ``ng add @angular/fire``
 - Fontawesome Icons
 - Ionicons
 
 
-# CUSTOM
+# CUSTOM Apps
+
+## Available Custom Apps: 
+- Kadetten Unihockey Schaffhausen [Link](https://kadetten-unihockey.web.app)
+- UHC Winterthur United [Link](https://uhc-win-u.web.app)
+
+## General new custom app
 Go to CUSTOM_THEMES and copy default folder. Then create icons and the following files change: 
 - index.html
 - tailwind.config.js [This is still an issue]
 - webmanifest.manifest
-
-## General new custom app
 
 ### Add Default Sites
 firebase target:apply hosting app-unihockey unihockey
@@ -71,7 +75,3 @@ then, copy icons to src/custom_themes/app-CUSTOM/assets
 - /splash
 
 Also upload login.jpg to /bg and create favicon.
-
-## Available Custom Apps: 
-- Kadetten Unihockey Schaffhausen
-- UHC Winterthur United

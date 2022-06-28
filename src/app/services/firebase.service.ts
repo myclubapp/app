@@ -70,7 +70,7 @@ export class FirebaseService {
 }
 
   getTeam(teamId){
-    console.log(`Read team ${teamId}`);
+    // console.log(`Read team ${teamId}`);
     const teamRef = doc(this.firestore,`/teams/${teamId}`);
     return docData(teamRef, {idField: 'id'}) as Observable<Team>
   }

@@ -172,6 +172,11 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/app-uhc-win-u",
                   "output": "./"
+                },
+                {
+                  "glob": "tailwind.config.js",
+                  "input": "src/custom-themes/app-uhc-win-u",
+                  "output": "./"
                 }
               ],
               "fileReplacements": [
