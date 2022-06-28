@@ -4,8 +4,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        myclublight: '#339BDE',
-        myclubdark: '#795DEB',
+        myclublight: '#EB1927',
+        myclubdark: '#EB1927',
       },
     },
   },

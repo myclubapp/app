@@ -6,6 +6,11 @@ export interface Training {
   description:  string;
   dateTime: Timestamp;
   location:  string;
+  city:  string;
+  date: string;
+  time:  string;
+  teamName: string;
+  liga: string;
 
   teamId: string;
   

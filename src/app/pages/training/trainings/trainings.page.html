@@ -3,230 +3,149 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Trainings</ion-title>
+    <ion-title>Training</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Trainings</ion-title>
+      <ion-title size="large">Training</ion-title>
     </ion-toolbar>
   </ion-header>
 
+<ng-container *ngIf="trainingList; else loading">
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Kommende Trainings</ion-label>
+      </ion-list-header>
+
+      <ion-item >
+        <ion-label slot="start">
+          <p>
+            Status
+          </p>
+        </ion-label>
+        <ion-label slot="end">
+          <p>
+            Teilnehmer
+          </p>
+        </ion-label>
+      </ion-item>
+
+
+      <ion-item-sliding #item *ngFor="let training of trainingList">
+        <ion-item>
+          <ion-icon *ngIf="training.status === null"slot="icon-only" color="warning" slot="start" name="help-circle" (click)="toggle(true, training)"></ion-icon>
+          <ion-icon *ngIf="training.status === false" slot="icon-only" color="danger" slot="start" name="close-circle" (click)="toggle( true, training)"></ion-icon>
+          <ion-icon *ngIf="training.status === true"slot="icon-only" color="success" slot="start" name="checkmark-circle" (click)="toggle(false, training)"></ion-icon>
+          <ion-label>
+            <h3>
+              <ion-icon slot="icon-only" name="home"></ion-icon>: {{training.location}} {{training.city}}
+            </h3>
+            <h3>
+              <ion-icon slot="icon-only" name="time"></ion-icon> {{training.date}} {{training.time}}
+            </h3>
+            <h3>
+              <ion-icon slot="icon-only" name="trophy"></ion-icon> {{training.liga}} {{training.teamName}}
+            </h3>
+          </ion-label>
+          <ion-note slot="end">
+            <ion-badge color="primary">{{training.attendees}}</ion-badge>
+          </ion-note>
+        </ion-item>
+
+        <ion-item-options side="start">
+          <ion-item-option color="success" *ngIf="training.status === false || training.status === null" (click)="toggleItem(item, true, training)">
+            <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger" *ngIf="training.status === true || training.status === null" (click)="toggleItem(item, false, training)">
+            <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+
+
+       <!--<ion-item-options side="end" *ngIf="user && user.">
+          <ion-item-option>
+            <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>-->
+      </ion-item-sliding>
+
+
+    </ion-list>
+
+</ng-container>
+
+<ng-container *ngIf="trainingListPast">
   <ion-list>
+    <ion-list-header>
+      <ion-label>Vergangene Trainings</ion-label>
+    </ion-list-header>
     <ion-item >
       <ion-label slot="start">
-        Status
+        <p>
+          Status
+        </p>
       </ion-label>
       <ion-label slot="end">
-        Teilnehmer
+        <p>
+          Teilnehmer
+        </p>
       </ion-label>
     </ion-item>
-  
-    
-    <ion-item-sliding #item >
-      <ion-item >
-        <ion-icon (click)="unsubscribe(item)" slot="icon-only" color="success" slot="start" name="checkmark-circle"></ion-icon>
-        <ion-label (click)="openTraining()">
-          <h2>Dienstag Abend Training</h2>
-          <h3>29.03.2022 20:00 - 21:30 Uhr</h3>
-          <h3>Ort: BBZ Halle</h3>
-          <p>Normales Training</p>
+    <ion-item-sliding #item *ngFor="let training of trainingListPast">
+      <ion-item>
+        <ion-icon *ngIf="training.status === null"slot="icon-only" color="warning" slot="start" name="help-circle" (click)="toggle(true, training)"></ion-icon>
+        <ion-icon *ngIf="training.status === false" slot="icon-only" color="danger" slot="start" name="close-circle" (click)="toggle( true, training)"></ion-icon>
+        <ion-icon *ngIf="training.status === true"slot="icon-only" color="success" slot="start" name="checkmark-circle" (click)="toggle(false, training)"></ion-icon>
+        <ion-label>
+        
+          <h3>
+            <ion-icon slot="icon-only" name="home"></ion-icon>: {{training.location}} {{training.city}}
+          </h3>
+          <h3>
+            <ion-icon slot="icon-only" name="time"></ion-icon> {{training.date}} {{training.time}}
+          </h3>
+          <h3>
+            <ion-icon slot="icon-only" name="trophy"></ion-icon> {{training.liga}} {{training.teamName}}
+          </h3>
         </ion-label>
-        <ion-note (click)="openTraining()" slot="end">
-          <ion-badge color="primary">9</ion-badge>
+        <ion-note slot="end">
+          <ion-badge color="primary">{{training.attendees}}</ion-badge>
         </ion-note>
       </ion-item>
-  
-      <ion-item-options side="start">
-        <ion-item-option color="danger"  (click)="unsubscribe(item)" >
-          <ion-icon slot="icon-only"  name="close-circle"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
 
-  
-      <ion-item-options side="end">
-        <ion-item-option>
-          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
-        </ion-item-option>
-        <ion-item-option color="danger">
-          <ion-icon slot="icon-only" name="trash"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
-
-    <ion-item-sliding >
-      <ion-item >
-        <ion-icon (click)="toggleTraining()" slot="icon-only" color="danger" slot="start" name="close-circle"></ion-icon>
-        <ion-label (click)="openTraining()">
-          <h2>Dienstag Abend Training</h2>
-          <h3>05.04.2022 20:00 - 21:30 Uhr</h3>
-          <h3>Ort: BBZ Halle</h3>
-          <p>Normales Training</p>
-        </ion-label>
-        <ion-note (click)="openTraining()" slot="end">
-          <ion-badge color="primary">11</ion-badge>
-        </ion-note>
-      </ion-item>
-  
       <ion-item-options side="start">
-        <ion-item-option color="success" >
+        <ion-item-option color="success" *ngIf="training.status === false || training.status === null" (click)="toggleItem(item, true, training)">
           <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
         </ion-item-option>
-        <ion-item-option color="danger">
-          <ion-icon slot="icon-only"  name="close-circle"></ion-icon>
+        <ion-item-option color="danger" *ngIf="training.status === true || training.status === null" (click)="toggleItem(item, false, training)">
+          <ion-icon slot="icon-only" name="close-circle"></ion-icon>
         </ion-item-option>
       </ion-item-options>
 
-  
-      <ion-item-options side="end">
+
+      <!--<ion-item-options side="end" *ngIf="user && user.isAdmin">
         <ion-item-option>
           <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
         </ion-item-option>
         <ion-item-option color="danger">
           <ion-icon slot="icon-only" name="trash"></ion-icon>
         </ion-item-option>
-      </ion-item-options>
+      </ion-item-options>-->
     </ion-item-sliding>
-    <ion-item-sliding >
-      <ion-item >
-        <ion-icon (click)="toggleTraining()" slot="icon-only" color="danger" slot="start" name="close-circle"></ion-icon>
-        <ion-label (click)="openTraining()">
-          <h2>Dienstag Abend Training</h2>
-          <h3>05.04.2022 20:00 - 21:30 Uhr</h3>
-          <h3>Ort: BBZ Halle</h3>
-          <p>Normales Training</p>
-        </ion-label>
-        <ion-note (click)="openTraining()" slot="end">
-          <ion-badge color="primary">11</ion-badge>
-        </ion-note>
-      </ion-item>
-  
-      <ion-item-options side="start">
-        <ion-item-option color="success" >
-          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-        </ion-item-option>
-        <ion-item-option color="danger">
-          <ion-icon slot="icon-only"  name="close-circle"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
 
-  
-      <ion-item-options side="end">
-        <ion-item-option>
-          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
-        </ion-item-option>
-        <ion-item-option color="danger">
-          <ion-icon slot="icon-only" name="trash"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
-    <ion-item-sliding >
-      <ion-item >
-        <ion-icon (click)="toggleTraining()" slot="icon-only" color="danger" slot="start" name="close-circle"></ion-icon>
-        <ion-label (click)="openTraining()">
-          <h2>Dienstag Abend Training</h2>
-          <h3>05.04.2022 20:00 - 21:30 Uhr</h3>
-          <h3>Ort: BBZ Halle</h3>
-          <p>Normales Training</p>
-        </ion-label>
-        <ion-note (click)="openTraining()" slot="end">
-          <ion-badge color="primary">11</ion-badge>
-        </ion-note>
-      </ion-item>
-  
-      <ion-item-options side="start">
-        <ion-item-option color="success" >
-          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-        </ion-item-option>
-        <ion-item-option color="danger">
-          <ion-icon slot="icon-only"  name="close-circle"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
 
-  
-      <ion-item-options side="end">
-        <ion-item-option>
-          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
-        </ion-item-option>
-        <ion-item-option color="danger">
-          <ion-icon slot="icon-only" name="trash"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
-    <ion-item-sliding >
-      <ion-item >
-        <ion-icon (click)="toggleTraining()" slot="icon-only" color="danger" slot="start" name="close-circle"></ion-icon>
-        <ion-label (click)="openTraining()">
-          <h2>Dienstag Abend Training</h2>
-          <h3>05.04.2022 20:00 - 21:30 Uhr</h3>
-          <h3>Ort: BBZ Halle</h3>
-          <p>Normales Training</p>
-        </ion-label>
-        <ion-note (click)="openTraining()" slot="end">
-          <ion-badge color="primary">11</ion-badge>
-        </ion-note>
-      </ion-item>
-  
-      <ion-item-options side="start">
-        <ion-item-option color="success" >
-          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-        </ion-item-option>
-        <ion-item-option color="danger">
-          <ion-icon slot="icon-only"  name="close-circle"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
-
-  
-      <ion-item-options side="end">
-        <ion-item-option>
-          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
-        </ion-item-option>
-        <ion-item-option color="danger">
-          <ion-icon slot="icon-only" name="trash"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
-    <ion-item-sliding >
-      <ion-item >
-        <ion-icon (click)="toggleTraining()" slot="icon-only" color="danger" slot="start" name="close-circle"></ion-icon>
-        <ion-label (click)="openTraining()">
-          <h2>Dienstag Abend Training</h2>
-          <h3>05.04.2022 20:00 - 21:30 Uhr</h3>
-          <h3>Ort: BBZ Halle</h3>
-          <p>Normales Training</p>
-        </ion-label>
-        <ion-note (click)="openTraining()" slot="end">
-          <ion-badge color="primary">11</ion-badge>
-        </ion-note>
-      </ion-item>
-  
-      <ion-item-options side="start">
-        <ion-item-option color="success" >
-          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-        </ion-item-option>
-        <ion-item-option color="danger">
-          <ion-icon slot="icon-only"  name="close-circle"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
-
-  
-      <ion-item-options side="end">
-        <ion-item-option>
-          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
-        </ion-item-option>
-        <ion-item-option color="danger">
-          <ion-icon slot="icon-only" name="trash"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>
-    </ion-item-sliding>
   </ion-list>
 
-  <!-- fab placed to the bottom end -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="openAddTraining()">
-      <ion-icon name="add-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+</ng-container>
+
 </ion-content>
+<ng-template #loading>
+  <!-- Bubbles -->
+  <ion-spinner name="bubbles"></ion-spinner>
+</ng-template>

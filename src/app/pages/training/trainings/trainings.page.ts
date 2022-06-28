@@ -17,7 +17,7 @@ export class TrainingsPage implements OnInit {
 
   user: User;
 
-  TrainingList: Training[];
+  trainingList: Training[];
   trainingListPast: Training[];
   constructor(
     public toastController: ToastController,
@@ -87,7 +87,7 @@ export class TrainingsPage implements OnInit {
         )
         .subscribe(async (data:any)=>{
   
-          let TrainingListNew = [];
+          let trainingListNew = [];
           for (let team of data){ // loop over teams
   
             let trainings = team[1];
@@ -106,11 +106,11 @@ export class TrainingsPage implements OnInit {
                 training.status = null;
               }
               
-              TrainingListNew.push(training);
+              trainingListNew.push(training);
             }
           }
-          this.TrainingList = [...new Set([].concat(...TrainingListNew))];
-          this.TrainingList = this.TrainingList.sort((a,b)=>a.dateTime.toMillis()-b.dateTime.toMillis());
+          this.trainingList = [...new Set([].concat(...trainingListNew))];
+          this.trainingList = this.trainingList.sort((a,b)=>a.dateTime.toMillis()-b.dateTime.toMillis());
         });
     }
     
@@ -139,7 +139,7 @@ export class TrainingsPage implements OnInit {
         )
         .subscribe(async (data:any)=>{
   
-          let TrainingListNew = [];
+          let trainingListNew = [];
           for (let team of data){ // loop over teams
   
             let trainings = team[1];
@@ -158,10 +158,10 @@ export class TrainingsPage implements OnInit {
                 training.status = null;
               }
               
-              TrainingListNew.push(training);
+              trainingListNew.push(training);
             }
           }
-          this.trainingListPast = [...new Set([].concat(...TrainingListNew))];
+          this.trainingListPast = [...new Set([].concat(...trainingListNew))];
           this.trainingListPast = this.trainingListPast.sort((a,b)=>b.dateTime.toMillis()-a.dateTime.toMillis());
         });
     }

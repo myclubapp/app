@@ -6,7 +6,9 @@ export interface Event {
   description:  string;
   dateTime: Timestamp;
   location:  string;
-
+  city: string;
+  date: string;
+  time:  string;
   teamId: string;
   
   // Business Logic Fields 

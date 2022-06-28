@@ -9,17 +9,6 @@ import { Training } from '../../../models/training'
 })
 export class TrainingDetailPage implements OnInit {
 
-  training: Training = {
-    id: '',
-    title: '',
-    location: '',
-    start: undefined,
-    end: undefined,
-    canceled: false,
-    team: '',
-    info: '',
-    excuses: []
-  }
 
   constructor(private modalController: ModalController) { }
 
