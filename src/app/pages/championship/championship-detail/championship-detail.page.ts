@@ -54,17 +54,19 @@ export class ChampionshipDetailPage implements OnInit {
 
     const permission: PermissionStatus = await Geolocation.checkPermissions();
     if (permission.location === 'denied' || permission.coarseLocation === 'denied' ){
-      await Geolocation.requestPermissions();
+      console.log("no permission");
     }
+    await Geolocation.requestPermissions();
     const coordinates = await Geolocation.getCurrentPosition();
-    this.newMap.addMarker({title: 'Meine Position', coordinate: {
-      lat: coordinates.coords.latitude,
-      lng: coordinates.coords.longitude
-    }});
-
+    if (coordinates.coords.latitude){
+      this.newMap.addMarker({title: 'Meine Position', coordinate: {
+        lat: coordinates.coords.latitude,
+        lng: coordinates.coords.longitude
+      }});
+    }
+      
   }
   ngOnDestroy(){
-
     this.newMap.destroy();
   }
 
