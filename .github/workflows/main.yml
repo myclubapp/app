@@ -4,7 +4,7 @@ on:
     branches:
       - feat/2022
 jobs:
-  build:
+  build_default:
     name: Build & Deploy Default Unihockey App
     runs-on: ubuntu-latest
     steps:
@@ -20,16 +20,35 @@ jobs:
           args: deploy --only hosting:app-unihockey
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  build_kadetten:
+    name: Build & Deploy Kadetten Unihockey App
+    runs-on: ubuntu-latest
+    steps:
       - name: Checkout Repo
         uses: actions/checkout@master
       - name: Install Dependencies
-        run: npm install      
-      - name: Build Kadetten App 
+        run: npm install --legacy-peer-deps       
+      - name: Build
         run: npm run build:app-kadetten-unihockey
-      - name: Deploy to Firebase (Kadetten)
+      - name: Deploy to Firebase 
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting:app-kadetten-unihockey
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}        
-
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  build_uhc_winu:
+    name: Build & Deploy UHC Winterthur United App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps       
+      - name: Build
+        run: npm run build:app-uhc-win-u
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting:app-uhc-win-u
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
