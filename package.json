@@ -9,6 +9,7 @@
     "build": "ng build",
     "build:prod": "ng build --configuration production",
     "build:app-kadetten-unihockey": "ng build --configuration app-kadetten-unihockey",
+    "build:app-uhc-win-u": "ng build --configuration app-kadetten-unihockey",
     "test": "ng test",
     "lint": "prettier --check .",
     "format": "prettier --write .",

@@ -13,7 +13,7 @@ jobs:
       - name: Install Dependencies
         run: npm install --legacy-peer-deps       
       - name: Build
-        run: ng build --configuration production
+        run: npm run build:prod
       - name: Deploy to Firebase (Default Unihockey)
         uses: w9jds/firebase-action@master
         with:
@@ -30,7 +30,7 @@ jobs:
       - name: Install Dependencies
         run: npm install --legacy-peer-deps       
       - name: Build
-        run: ng build --configuration app-kadetten-unihockey
+        run: npm run build:app-kadetten-unihockey
       - name: Deploy to Firebase 
         uses: w9jds/firebase-action@master
         with:
@@ -47,7 +47,7 @@ jobs:
       - name: Install Dependencies
         run: npm install --legacy-peer-deps       
       - name: Build
-        run: ng build --configuration app-uhc-win-u
+        run: npm run build:app-uhc-win-u
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
