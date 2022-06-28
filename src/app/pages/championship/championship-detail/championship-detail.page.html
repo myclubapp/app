@@ -1,33 +1,54 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>{{game?.name}}</ion-title>
+    <ion-title >{{game?.name}}</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="close()">schliessen</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
+  <capacitor-google-maps id="map"></capacitor-google-maps>
   <ion-list>
-    
+
     <ion-item>
-      <ion-icon *ngIf="game.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
-       ></ion-icon>
-      <ion-icon *ngIf="game.status === false" slot="icon-only" color="danger" slot="start" name="close-circle"
-       ></ion-icon>
-      <ion-icon *ngIf="game.status === true" slot="icon-only" color="success" slot="start" name="checkmark-circle"
-       ></ion-icon>
+      <ion-fab-button size="small" color="warning"  slot="start" *ngIf="game.status === null">
+        <ion-icon name="help-circle">
+        </ion-icon>
+      </ion-fab-button>
+
+      <ion-fab-button  size="small" color="danger" slot="start" *ngIf="game.status === false">
+        <ion-icon name="close-circle">
+        </ion-icon>
+      </ion-fab-button>
+
+      <ion-fab-button   size="small" color="success" slot="start" *ngIf="game.status === true">
+        <ion-icon name="checkmark-circle">
+        </ion-icon>
+      </ion-fab-button>
+
+      <ion-label>Mein Status</ion-label>
     </ion-item>
 
     <ion-item>
-      <ion-icon slot="start" name="home-outline"></ion-icon>
+      <ion-avatar slot="start">
+        <img src="{{game.teamHomeLogo}}">
+      </ion-avatar>
       <ion-label>
-        <h2>{{game.teamHome}} vs.</h2>
+        <h2>{{game.teamHome}}</h2>
       </ion-label>
     </ion-item>
     <ion-item>
-      <ion-icon slot="start" name="arrow-forward-circle-outline"></ion-icon>
+      <ion-avatar slot="start">
+        <img src="{{game.teamAwayLogo}}">
+      </ion-avatar>
       <ion-label>
         <h2>{{game.teamAway}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="home-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.description}}</h2>
       </ion-label>
     </ion-item>
     <ion-item>
@@ -36,7 +57,7 @@
         <h2>{{game.location}} {{game.city}}</h2>
       </ion-label>
     </ion-item>
-    
+
     <ion-item>
       <ion-icon slot="start" name="time-outline"></ion-icon>
       <ion-label>
@@ -52,7 +73,7 @@
     </ion-item>
 
   </ion-list>
- 
+
   <ion-list>
     <ion-list-header>
       Anmeldungen
@@ -63,7 +84,7 @@
     </ion-item>
 
   </ion-list>
-  <capacitor-google-map id="map"></capacitor-google-map>
+
 
 
 </ion-content>

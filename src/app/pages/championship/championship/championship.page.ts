@@ -76,7 +76,7 @@ export class ChampionshipPage implements OnInit {
   async presentToast() {
    
     const toast = await this.toastController.create({
-      message: 'changes has been saved',
+      message: 'Änderungen gespeichert',
       color: "primary",
       duration: 2000,
       position: "top"

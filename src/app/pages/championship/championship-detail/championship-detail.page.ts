@@ -56,13 +56,17 @@ export class ChampionshipDetailPage implements OnInit {
     if (permission.location === 'denied' || permission.coarseLocation === 'denied' ){
       console.log("no permission");
     }
-    await Geolocation.requestPermissions();
+    try{
+      await Geolocation.requestPermissions();
+    } catch (e) {
+      console.log("No Permission Request possible");
+    }
     const coordinates = await Geolocation.getCurrentPosition();
-    if (coordinates.coords.latitude){
+    if (coordinates.coords.latitude && coordinates.coords.longitude){
       this.newMap.addMarker({title: 'Meine Position', coordinate: {
         lat: coordinates.coords.latitude,
         lng: coordinates.coords.longitude
-      }});
+      }, isFlat: true});
     }
       
   }
