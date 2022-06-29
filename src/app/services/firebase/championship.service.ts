@@ -18,6 +18,14 @@ export class ChampionshipService {
     private firestore: Firestore
   ) { }
 
+/* TEAM GAME */
+
+  getTeamGameRef(teamId: string,gameId: string): Observable<Game> {
+    // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
+    const gameRef = doc(this.firestore, `teams/${teamId}/games/${gameId}`);
+    return docData(gameRef, { idField: 'id' }) as unknown as Observable<Game>;
+  }
+
   /* TEAM GAMES */
   getTeamGamesRef(teamId: string): Observable<Game[]> {
     // console.log(`Read Team Games List Ref ${teamId}`)
@@ -42,17 +50,16 @@ export class ChampionshipService {
 
 
   /* TEAM GAMES ATTENDEES */
-  getTeamGamesAttendeesRef(teamId: string,gameId: string): Observable<any[]> {
+  getTeamGameAttendeesRef(teamId: string, gameId: string): Observable<any[]> {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const attendeesRefList = collection(this.firestore, `teams/${teamId}/games/${gameId}/attendees`);
     return collectionData(attendeesRefList, { idField: 'id' }) as unknown as Observable<any[]>;
   }
 
-/* TEAM GAMES ATTENDEE Status */
+/* SET TEAM GAMES ATTENDEE Status */
   setTeamGameAttendeeStatus(userId: string, status: boolean, teamId: string,gameId: string) {
     const statusRef = doc(this.firestore,`teams/${teamId}/games/${gameId}/attendees/${userId}`);
     return setDoc(statusRef, { status: status });
-
   } 
 
 }

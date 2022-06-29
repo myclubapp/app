@@ -99,7 +99,7 @@ export class ChampionshipPage implements OnInit {
             switchMap((allGames:any)=>combineLatest(
               allGames.map((game)=> combineLatest(
                 of(game),
-                this.championshipService.getTeamGamesAttendeesRef(team.id, game.id),
+                this.championshipService.getTeamGameAttendeesRef(team.id, game.id),
               ))
             )),
           ), 
@@ -120,7 +120,8 @@ export class ChampionshipPage implements OnInit {
 
             game.teamName = teamDetails.name; 
             game.teamId = teamDetails.id;
-            game.attendees = attendees.filter(e=>e.status === true).length;
+            game.countAttendees = attendees.filter(e=>e.status === true).length;
+            game.attendees = attendees;
 
             if (attendees && attendees.filter(e=>e.id === this.user.uid).length === 1){
               game.status = attendees.filter(e=>e.id === this.user.uid)[0].status
@@ -151,7 +152,7 @@ export class ChampionshipPage implements OnInit {
             switchMap((allGames:any)=>combineLatest(
               allGames.map((game)=> combineLatest(
                 of(game),
-                this.championshipService.getTeamGamesAttendeesRef(team.id, game.id),
+                this.championshipService.getTeamGameAttendeesRef(team.id, game.id),
               ))
             )),
           ), 

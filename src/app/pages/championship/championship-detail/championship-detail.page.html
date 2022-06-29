@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title >{{game?.name}}</ion-title>
+    <ion-title>{{game?.name}}</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="close()">schliessen</ion-button>
     </ion-buttons>
@@ -9,22 +9,27 @@
 <ion-content class="ion-padding">
   <capacitor-google-maps id="map"></capacitor-google-maps>
   <ion-list>
-
     <ion-item>
-      <ion-fab-button size="small" color="warning"  slot="start" *ngIf="game.status === null">
-        <ion-icon name="help-circle">
-        </ion-icon>
-      </ion-fab-button>
+      <ng-container *ngIf="game.hasOwnProperty('status'); else loading">
 
-      <ion-fab-button  size="small" color="danger" slot="start" *ngIf="game.status === false">
-        <ion-icon name="close-circle">
-        </ion-icon>
-      </ion-fab-button>
+        <ion-fab-button (click)="toggle(true, game)" size="small" color="warning" slot="start"
+          *ngIf="game.status === null">
+          <ion-icon name="help-circle">
+          </ion-icon>
+        </ion-fab-button>
 
-      <ion-fab-button   size="small" color="success" slot="start" *ngIf="game.status === true">
-        <ion-icon name="checkmark-circle">
-        </ion-icon>
-      </ion-fab-button>
+        <ion-fab-button (click)="toggle(true, game)" size="small" color="danger" slot="start"
+          *ngIf="game.status === false">
+          <ion-icon name="close-circle">
+          </ion-icon>
+        </ion-fab-button>
+
+        <ion-fab-button (click)="toggle(false, game)" size="small" color="success" slot="start"
+          *ngIf="game.status === true">
+          <ion-icon name="checkmark-circle">
+          </ion-icon>
+        </ion-fab-button>
+      </ng-container>
 
       <ion-label>Mein Status</ion-label>
     </ion-item>
@@ -51,12 +56,6 @@
         <h2>{{game.description}}</h2>
       </ion-label>
     </ion-item>
-    <ion-item>
-      <ion-icon slot="start" name="location-outline"></ion-icon>
-      <ion-label class="ion-text-wrap">
-        <h2>{{game.location}} {{game.city}}</h2>
-      </ion-label>
-    </ion-item>
 
     <ion-item>
       <ion-icon slot="start" name="time-outline"></ion-icon>
@@ -64,6 +63,15 @@
         <h2>{{game.date}} {{game.time}}</h2>
       </ion-label>
     </ion-item>
+
+    <ion-item>
+      <ion-icon slot="start" name="location-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.location}} {{game.city}}</h2>
+      </ion-label>
+    </ion-item>
+
+
 
     <ion-item>
       <ion-icon slot="start" name="trophy-outline"></ion-icon>
@@ -74,17 +82,42 @@
 
   </ion-list>
 
-  <ion-list>
+  <ion-list *ngIf="attendeeListTrue.length>0">
     <ion-list-header>
-      Anmeldungen
+      Anmeldungen: {{attendeeListTrue.length}}
     </ion-list-header>
-    <ion-item *ngFor="let member of game.attendees">
-      {{member?.firstName}}
+    <ion-item *ngFor="let member of attendeeListTrue">
 
+      <ion-icon color="warning" slot="start" *ngIf="member.status === null" name="help-circle">
+      </ion-icon>
+      <ion-icon color="danger" slot="start" *ngIf="member.status === false" name="close-circle">
+      </ion-icon>
+      <ion-icon color="success" slot="start" *ngIf="member.status === true" name="checkmark-circle">
+      </ion-icon>
+
+      <ion-label>{{member?.firstName}} {{member?.lastName}}</ion-label>
     </ion-item>
-
   </ion-list>
 
+  <ion-list *ngIf="attendeeListFalse.length>0">
+    <ion-list-header>
+      Abmeldungen: {{attendeeListFalse.length}}
+    </ion-list-header>
+    <ion-item *ngFor="let member of attendeeListFalse">
 
+      <ion-icon color="warning" slot="start" *ngIf="member.status === null" name="help-circle">
+      </ion-icon>
+      <ion-icon color="danger" slot="start" *ngIf="member.status === false" name="close-circle">
+      </ion-icon>
+      <ion-icon color="success" slot="start" *ngIf="member.status === true" name="checkmark-circle">
+      </ion-icon>
+
+      <ion-label>{{member?.firstName}} {{member?.lastName}}</ion-label>
+    </ion-item>
+  </ion-list>
 
 </ion-content>
+
+<ng-template #loading>
+  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+</ng-template>

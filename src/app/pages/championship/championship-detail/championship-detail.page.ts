@@ -1,8 +1,14 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { ModalController, NavParams } from '@ionic/angular';
+import { ModalController, NavParams, ToastController } from '@ionic/angular';
 import { Game } from 'src/app/models/game';
 import { GoogleMap } from '@capacitor/google-maps';
 import { Geolocation, PermissionStatus } from '@capacitor/geolocation';
+import { ChampionshipService } from 'src/app/services/firebase/championship.service';
+import { combineLatest, Observable, of } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
+import { User } from 'firebase/auth';
+import { switchMap } from 'rxjs/operators';
+import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
 
 @Component({
   selector: 'app-championship-detail',
@@ -14,13 +20,90 @@ export class ChampionshipDetailPage implements OnInit {
   @ViewChild('map')
   mapRef: ElementRef<HTMLElement>;
   newMap: GoogleMap;
-
-  constructor(private modalCtrl: ModalController,
-    public navParams : NavParams) {}
+  // game$: Observable <Game>;
+  user: User;
+  attendeeList: any[] = [];
+  attendeeListTrue: any[] = [];
+  attendeeListFalse: any[] = [];
+  
+  constructor(
+    private modalCtrl: ModalController,
+    public navParams : NavParams,
+    private championshipService: ChampionshipService,
+    private toastController: ToastController,
+    private authService: AuthService,
+    private userProfileService: UserProfileService
+    ) {}
   ngOnInit() {
+    this.getUser();
+    // GET DATA 
     this.game = this.navParams.get('data');
     this.setMap();
+
+    // GET GAME
+    this.championshipService.getTeamGameRef(this.game.teamId, this.game.id).subscribe(game=>{
+      game.teamName = this.game.teamName;
+      game.teamId = this.game.teamId;     
+      this.game = game;
+    });
+
+    // GET ATTENDEE LIST
+    this.championshipService.getTeamGameRef(this.game.teamId, this.game.id).pipe(
+      switchMap((game)=> this.championshipService.getTeamGameAttendeesRef(this.game.teamId, this.game.id)),
+      switchMap((allAttendees:any) => combineLatest(
+        allAttendees.map((member)=> combineLatest(
+          of(member),
+          this.userProfileService.getUserProfileById(member.id),
+        )),
+      )),
+    ).subscribe((data:any)=>{
+      // console.log(data);
+      let attendeeListNew = [];
+      for (let attendee of data){ // loop over teams
+        let  status = attendee[0];
+        let  user = attendee[1];
+
+        user.status =  status.status;
+        attendeeListNew.push(user);
+
+        //update game user status
+        if (user.id === this.user.uid){
+          this.game.status = status.status
+        } else {
+          this.game.status = null;
+        }
+      }
+
+      this.attendeeList = [...new Set([].concat(...attendeeListNew))];
+      this.attendeeList = this.attendeeList.sort((a,b)=>b.firstName-a.firstName);
+      this.attendeeListTrue = this.attendeeList.filter(element=>element.status===true);
+      this.attendeeListFalse = this.attendeeList.filter(element=>element.status===false);
+    
+    })
+
   }
+
+  async toggle(status: boolean, game: Game){
+    console.log(`Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}` );
+    await this.championshipService.setTeamGameAttendeeStatus(this.user.uid, status, game.teamId,  game.id);
+    this.presentToast();
+  }
+
+  async presentToast() {
+   
+    const toast = await this.toastController.create({
+      message: 'Änderungen gespeichert',
+      color: "primary",
+      duration: 2000,
+      position: "top"
+    });
+    toast.present();
+  }
+
+  async getUser(){
+    this.user = await this.authService.getUser();
+  }
+
   close() {
     return this.modalCtrl.dismiss(null, 'close');
   }

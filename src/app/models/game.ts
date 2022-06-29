@@ -40,6 +40,7 @@ export interface Game {
   
   // Business Logic Fields 
   status: boolean;
+  countAttendees: number;
   attendees: any;
 
 }

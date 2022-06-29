@@ -28,6 +28,10 @@ export class UserProfileService {
     const userProfileRef = doc(this.firestore,`userProfile/${user.uid}`);
     return docData(userProfileRef, {idField: 'id'}) as Observable<Profile>
   }
+  getUserProfileById(userId: string): Observable<Profile> {
+    const userProfileRef = doc(this.firestore,`userProfile/${userId}`);
+    return docData(userProfileRef, {idField: 'id'}) as Observable<Profile>
+  }
 
   async setUserProfilePicture(user: User, photo: Photo){
     const storageRef = ref(this.storage,`userProfile/${user.uid}/profilePicture/picture.${photo.format}`);
