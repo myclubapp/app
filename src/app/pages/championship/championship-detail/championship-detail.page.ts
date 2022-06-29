@@ -48,6 +48,7 @@ export class ChampionshipDetailPage implements OnInit {
     });
 
     // GET ATTENDEE LIST
+    this.game.status = null;
     this.championshipService.getTeamGameRef(this.game.teamId, this.game.id).pipe(
       switchMap((game)=> this.championshipService.getTeamGameAttendeesRef(this.game.teamId, this.game.id)),
       switchMap((allAttendees:any) => combineLatest(
@@ -60,7 +61,7 @@ export class ChampionshipDetailPage implements OnInit {
       let attendeeListNew = [];
 
       //User ist im Falle keiner Antwort nicht in attendee Liste
-      this.game.status = null;
+      
       
       for (let attendee of data){ // loop over teams
         let  status = attendee[0];
