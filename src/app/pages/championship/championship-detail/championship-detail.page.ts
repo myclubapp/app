@@ -57,8 +57,11 @@ export class ChampionshipDetailPage implements OnInit {
         )),
       )),
     ).subscribe((data:any)=>{
-      // console.log(data);
       let attendeeListNew = [];
+
+      //User ist im Falle keiner Antwort nicht in attendee Liste
+      this.game.status = null;
+      
       for (let attendee of data){ // loop over teams
         let  status = attendee[0];
         let  user = attendee[1];
