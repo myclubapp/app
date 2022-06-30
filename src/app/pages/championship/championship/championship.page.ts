@@ -19,8 +19,8 @@ export class ChampionshipPage implements OnInit {
   skeleton = new Array(12);
   user: User;
 
-  gamesList: Game[];
-  gamesListPast: Game[];
+  gamesList: Game[] = [];;
+  gamesListPast: Game[] = [];
   constructor(
     public toastController: ToastController,
     private routerOutlet: IonRouterOutlet,
@@ -132,7 +132,7 @@ export class ChampionshipPage implements OnInit {
             gamesListNew.push(game);
           }
         }
-        this.gamesList = [...new Set([].concat(...gamesListNew))];
+        this.gamesList = [...new Set(this.gamesList.concat(...gamesListNew))];
         this.gamesList = this.gamesList.sort((a,b)=>a.dateTime.toMillis()-b.dateTime.toMillis());
       });
   }
@@ -184,7 +184,7 @@ export class ChampionshipPage implements OnInit {
             gamesListNew.push(game);
           }
         }
-        this.gamesListPast = [...new Set([].concat(...gamesListNew))];
+        this.gamesListPast = [...new Set(this.gamesListPast.concat(...gamesListNew))];
         this.gamesListPast = this.gamesListPast.sort((a,b)=>b.dateTime.toMillis()-a.dateTime.toMillis());
       });
   }

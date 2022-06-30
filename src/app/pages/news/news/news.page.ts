@@ -18,6 +18,7 @@ import { Observable } from 'rxjs';
 
 import { of,combineLatest } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
+import { Club } from 'src/app/models/club';
 
 @Component({
   selector: 'app-news',
@@ -28,7 +29,7 @@ export class NewsPage implements OnInit {
   skeleton = new Array(12);
   user: User;
 
-  newsList: News[];
+  newsList: News[] = [];
   newsList$: Observable<News[]>;
   
 
@@ -57,6 +58,7 @@ faCopy: any = faCopy;
 
   ngOnInit() {
     this.getUser();
+    
     this.getNews();
     this.getClubNews();
     this.getTeamNews();
@@ -96,21 +98,32 @@ faCopy: any = faCopy;
   
   async getNews() {
 
-    const user: User = await this.authService.getUser();
-    // this.clubList$ = 
-    this.fbService.getClubRefs(user).subscribe(async (data: any)=>{
-    
-    for (const club of data) {
-      this.fbService.getClubRef(club.id).subscribe(clubData=>{
-        // console.log(clubData.type);
-        if ( clubData.type === 'swissunihockey' ) {
-            this.newsList$ = this.newsService.getNewsRef(clubData.type);
-            // this.newsList$ = this.newsService.getClubNewsRef(clubData.type);
-        }
-      });
-    }
-  });
+    this.authService.getUser$().pipe(
+      // GET Clubs
+      switchMap((user:User) => this.fbService.getClubRefs(user)),
+      // Loop Over Clubs  
+      switchMap((allClubs:any) => combineLatest(
+        allClubs.map((club) => combineLatest(
+          of(club),
+          this.fbService.getClubRef(club.id).pipe(
+            switchMap((clubDetail) => this.newsService.getNewsRef(clubDetail.type)), // Array of news,
+          )
+        ))))
+      )
+      .subscribe(async (data:any)=>{
+        console.log(data);
 
+        let newsListNew = [];
+        for (let club of data){ // loop over news
+
+          for (let news of club[1]){ // Club News
+            newsListNew.push(news);
+          }
+        }
+
+        this.newsList = [...new Set(this.newsList.concat(...newsListNew))];
+        this.newsList = this.newsList.sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime()); 
+      });
   }
 
 
@@ -123,21 +136,25 @@ faCopy: any = faCopy;
       switchMap((allClubs:any) => combineLatest(
         allClubs.map((club) => combineLatest(
           of(club),
-          this.newsService.getClubNewsRef(club.id),
-          this.fbService.getClubRef(club.id),  
-        )),
-      )),
+          this.newsService.getClubNewsRef(club.id), // Array of news
+        ))))
       )
       .subscribe(async (data:any)=>{
-        console.log(data);
+//         console.log(data);
 
         let newsListNew = [];
-        for (let news of data){ // loop over news
+        for (let club of data){ // loop over news
+
+          for (let news of club[1]){ // Club News
             newsListNew.push(news);
           }
 
-        this.newsList = [...new Set([].concat(...newsListNew))];
-        // this.newsList = this.newsList.sort((a,b)=>a.dateTime.toMillis()-b.dateTime.toMillis()); // Not needed -> via service
+
+        }
+
+
+        this.newsList = [...new Set(this.newsList.concat(...newsListNew))];
+        this.newsList = this.newsList.sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime()); 
       });
   }
   getTeamNews() {
@@ -148,21 +165,27 @@ faCopy: any = faCopy;
       switchMap((allTeams:any) => combineLatest(
         allTeams.map((team) => combineLatest(
           of(team),
-          this.newsService.getTeamNewsRef(team.id),
-          this.fbService.getTeamRef(team.id),  
+          this.newsService.getTeamNewsRef(team.id), // Array of news
+          this.fbService.getTeamRef(team.id),       // team details
         )),
       )),
       )
       .subscribe(async (data:any)=>{
-        console.log(data);
+        // console.log(this.newsList);
 
         let newsListNew = [];
-        for (let news of data){ // loop over news
+        for (let team of data){ // loop over news
+
+          for (let news of team[1]){
+            // console.log("team news");
+            // console.log(news);
             newsListNew.push(news);
           }
 
-        this.newsList = [...new Set([].concat(...newsListNew))];
-        //this.newsList = this.newsList.sort((a,b)=>a.date-b.date); 
+        }
+
+        this.newsList = [...new Set(this.newsList.concat(...newsListNew))];
+        this.newsList = this.newsList.sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime()); 
       });
    
   }

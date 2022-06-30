@@ -21,6 +21,8 @@ export class NewsService {
    }
 
   getNewsRef(type: string): Observable<News[]> {
+    console.log("getNewsRef");
+    console.log(type);
     // console.log(`Read Team Events List Ref ${teamId}`)
     const newssRefList = collection(this.firestore, `news`);
     const q = query(newssRefList, orderBy("date", "desc"), where("type", "==", type), where("date", ">=", new Date(Date.now() - 1000 * 3600 * 24 * 20).toISOString())); // heute - 20 Tage

@@ -14,7 +14,8 @@
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="newsList$ | async as newsList; else loading">
+  <!-- <ng-container *ngIf="newsList$ | async as newsList; else loading">-->
+  <ng-container *ngIf="newsList.length>0; else loading">
     <ion-list>
       <ion-grid>
         <ion-row>
