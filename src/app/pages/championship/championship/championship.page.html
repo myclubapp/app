@@ -99,12 +99,12 @@
         </p>
       </ion-label>
     </ion-item>
-    <ion-item-sliding #item *ngFor="let game of gamesListPast" (click)="openModal(game)">
+    <ion-item-sliding #item *ngFor="let game of gamesListPast">
       <ion-item>
         <ion-icon *ngIf="game.status === null"slot="icon-only" color="warning" slot="start" name="help-circle" (click)="toggle(true, game)"></ion-icon>
         <ion-icon *ngIf="game.status === false" slot="icon-only" color="danger" slot="start" name="close-circle" (click)="toggle( true, game)"></ion-icon>
         <ion-icon *ngIf="game.status === true"slot="icon-only" color="success" slot="start" name="checkmark-circle" (click)="toggle(false, game)"></ion-icon>
-        <ion-label class="ion-text-wrap">
+        <ion-label class="ion-text-wrap"  (click)="openModal(game)">
           <h2>{{game.teamHome}} vs.</h2>
           <h2>{{game.teamAway}}</h2>
           <h3>
@@ -117,7 +117,7 @@
             <ion-icon slot="icon-only" name="trophy"></ion-icon> {{game.liga}} {{game.teamName}}
           </h3>
         </ion-label>
-        <ion-note slot="end">
+        <ion-note slot="end"  (click)="openModal(game)">
           <ion-badge color="primary">{{game.attendees}}</ion-badge>
         </ion-note>
       </ion-item>

@@ -21,7 +21,7 @@ export class EventService {
   getTeamEventsRef(teamId: string): Observable<Event[]> {
     // console.log(`Read Team Events List Ref ${teamId}`)
     const eventsRefList = collection(this.firestore, `teams/${teamId}/events`);
-    const q = query(eventsRefList, where("dateTime", ">=", Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 7)) )) ;; // heute - 1 Woche
+    const q = query(eventsRefList, where("dateTime", ">=", Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 7)) )) ;; // heute - 7 Tage
     return collectionData(q,  { idField: 'id' }) as unknown as Observable<Event[]>;
   }
 
@@ -29,7 +29,7 @@ export class EventService {
   getTeamEventsRefPast(teamId: string): Observable<Event[]> {
     // console.log(`Read Team Events List Ref ${teamId}`)
     const eventsRefList = collection(this.firestore, `teams/${teamId}/events`);
-    const q = query(eventsRefList, where("dateTime", "<", Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 7)) ), limit(20)) ;; // heute - 1 Woche
+    const q = query(eventsRefList, where("dateTime", "<", Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 7)) ), limit(20)) ;; // heute - 7 Tage
     return collectionData(q,  { idField: 'id' }) as unknown as Observable<Event[]>;
   }
   

@@ -13,6 +13,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { User } from 'firebase/auth';
 import { NewsDetailPage } from '../news-detail/news-detail.page';
+import { NewsService } from 'src/app/services/firebase/news.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-news',
@@ -20,7 +22,8 @@ import { NewsDetailPage } from '../news-detail/news-detail.page';
   styleUrls: ['./news.page.scss'],
 })
 export class NewsPage implements OnInit {
-  newsList: News[]
+  newsList: News[];
+  newsList$: Observable<News[]>;
   loading = true;
   skeleton = new Array(12);
 
@@ -36,6 +39,7 @@ faEnvelope: any = faEnvelope;
 faCopy: any = faCopy;
 
   constructor(
+    private newsService: NewsService,
     private authService: AuthService,
     private fbService: FirebaseService,
     private swissunihockey: SwissunihockeyService,
@@ -83,7 +87,7 @@ faCopy: any = faCopy;
 
     const user: User = await this.authService.getUser();
     // this.clubList$ = 
-  this.fbService.getClubRefs(user).subscribe(async (data: any)=>{
+    this.fbService.getClubRefs(user).subscribe(async (data: any)=>{
     
     for (const club of data) {
       this.fbService.getClub(club.id).subscribe(clubData=>{
@@ -100,7 +104,11 @@ faCopy: any = faCopy;
   }
 
   getSUNews(){
-    this.swissunihockey.getNews().subscribe((result: any) => {
+
+    this.newsList$ = this.newsService.getNewsRef();
+
+
+    /* this.swissunihockey.getNews().subscribe((result: any) => {
       this.newsList = result?.data?.news as News[];
       if (result.loading == false){
         // loading.dismiss();
@@ -126,7 +134,7 @@ faCopy: any = faCopy;
       }).then(toast=>{
         toast.present();
       });
-    });
+    });*/
   }
 
   async share(news: News) {

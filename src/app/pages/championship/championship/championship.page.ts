@@ -61,7 +61,7 @@ export class ChampionshipPage implements OnInit {
 
 
   async toggle(status: boolean, game: Game){
-    console.log(`Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}` );
+    // console.log(`Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}` );
     await this.championshipService.setTeamGameAttendeeStatus(this.user.uid, status, game.teamId,  game.id);
     this.presentToast();
   }
