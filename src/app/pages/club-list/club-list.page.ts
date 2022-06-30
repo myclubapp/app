@@ -55,7 +55,7 @@ export class ClubListPage implements OnInit {
       switchMap((allClubs:any) => combineLatest(
         allClubs.map((club) => combineLatest(
           of(club),
-          this.fbService.getClub(club.id),  
+          this.fbService.getClubRef(club.id),  
         )),
       )),
       )

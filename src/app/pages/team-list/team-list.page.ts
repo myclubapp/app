@@ -56,7 +56,7 @@ export class TeamListPage implements OnInit {
       switchMap((allTeams:any) => combineLatest(
         allTeams.map((team) => combineLatest(
           of(team),
-          this.fbService.getTeam(team.id),  
+          this.fbService.getTeamRef(team.id),  
         )),
       )),
       )

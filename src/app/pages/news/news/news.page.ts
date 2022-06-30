@@ -16,16 +16,21 @@ import { NewsDetailPage } from '../news-detail/news-detail.page';
 import { NewsService } from 'src/app/services/firebase/news.service';
 import { Observable } from 'rxjs';
 
+import { of,combineLatest } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
+
 @Component({
   selector: 'app-news',
   templateUrl: './news.page.html',
   styleUrls: ['./news.page.scss'],
 })
 export class NewsPage implements OnInit {
+  skeleton = new Array(12);
+  user: User;
+
   newsList: News[];
   newsList$: Observable<News[]>;
-  loading = true;
-  skeleton = new Array(12);
+  
 
 // Social Share
 shareSocialShareOptions: any;
@@ -51,10 +56,16 @@ faCopy: any = faCopy;
   }
 
   ngOnInit() {
-    //this.getNews();
+    this.getUser();
+    this.getNews();
+    this.getClubNews();
+    this.getTeamNews();
   }
   ngAfterViewInit(): void {
-    this.getNews();
+  }
+
+  async getUser(){
+    this.user = await this.authService.getUser();
   }
 
   async openModal(news: News) {
@@ -90,51 +101,70 @@ faCopy: any = faCopy;
     this.fbService.getClubRefs(user).subscribe(async (data: any)=>{
     
     for (const club of data) {
-      this.fbService.getClub(club.id).subscribe(clubData=>{
+      this.fbService.getClubRef(club.id).subscribe(clubData=>{
         // console.log(clubData.type);
         if ( clubData.type === 'swissunihockey' ) {
-          this.getSUNews();
+            this.newsList$ = this.newsService.getNewsRef(clubData.type);
+            // this.newsList$ = this.newsService.getClubNewsRef(clubData.type);
         }
       });
     }
-
-
   });
 
   }
 
-  getSUNews(){
 
-    this.newsList$ = this.newsService.getNewsRef();
+  getClubNews() {
 
+    this.authService.getUser$().pipe(
+      // GET Clubs
+      switchMap((user:User) => this.fbService.getClubRefs(user)),
+      // Loop Over Clubs  
+      switchMap((allClubs:any) => combineLatest(
+        allClubs.map((club) => combineLatest(
+          of(club),
+          this.newsService.getClubNewsRef(club.id),
+          this.fbService.getClubRef(club.id),  
+        )),
+      )),
+      )
+      .subscribe(async (data:any)=>{
+        console.log(data);
 
-    /* this.swissunihockey.getNews().subscribe((result: any) => {
-      this.newsList = result?.data?.news as News[];
-      if (result.loading == false){
-        // loading.dismiss();
-      }
-      
-       //console.log("SANDRO" + result);
-      
-      if (result.errors){
-        this.toastController.create({
-          message: JSON.stringify(result.errors[0].message),
-          duration: 2000
-        }).then(toast=>{
-          toast.present();
-        });
-        
-      }
-      this.loading = result.loading;
+        let newsListNew = [];
+        for (let news of data){ // loop over news
+            newsListNew.push(news);
+          }
 
-    }, (error: any)=>{
-      this.toastController.create({
-        message: JSON.stringify(error.message),
-        duration: 2000
-      }).then(toast=>{
-        toast.present();
+        this.newsList = [...new Set([].concat(...newsListNew))];
+        // this.newsList = this.newsList.sort((a,b)=>a.dateTime.toMillis()-b.dateTime.toMillis()); // Not needed -> via service
       });
-    });*/
+  }
+  getTeamNews() {
+    this.authService.getUser$().pipe(
+      // GET Teams
+      switchMap((user:User) => this.fbService.getTeamRefs(user)),
+      // Loop Over Teams  
+      switchMap((allTeams:any) => combineLatest(
+        allTeams.map((team) => combineLatest(
+          of(team),
+          this.newsService.getTeamNewsRef(team.id),
+          this.fbService.getTeamRef(team.id),  
+        )),
+      )),
+      )
+      .subscribe(async (data:any)=>{
+        console.log(data);
+
+        let newsListNew = [];
+        for (let news of data){ // loop over news
+            newsListNew.push(news);
+          }
+
+        this.newsList = [...new Set([].concat(...newsListNew))];
+        //this.newsList = this.newsList.sort((a,b)=>a.date-b.date); 
+      });
+   
   }
 
   async share(news: News) {

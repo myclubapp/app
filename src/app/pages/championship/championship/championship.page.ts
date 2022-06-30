@@ -103,7 +103,7 @@ export class ChampionshipPage implements OnInit {
               ))
             )),
           ), 
-          this.fbService.getTeam(team.id),  
+          this.fbService.getTeamRef(team.id),  
         )),
       )),
       )
@@ -156,7 +156,7 @@ export class ChampionshipPage implements OnInit {
               ))
             )),
           ), 
-          this.fbService.getTeam(team.id),  
+          this.fbService.getTeamRef(team.id),  
         )),
       )),
       )

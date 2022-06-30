@@ -43,7 +43,7 @@ export class FirebaseService {
   }
 
 
-  getClub(clubId:string){
+  getClubRef(clubId:string){
     const clubRef = doc(this.firestore,`club/${clubId}`);
     return docData(clubRef, {idField: 'id'}) as unknown as Observable<Club>
   }
@@ -57,7 +57,7 @@ export class FirebaseService {
     this.getClubRefs(user).subscribe((clubRefs:any)=>{
 
       for (let clubRef of clubRefs){
-        this.getClub(clubRef.id)
+        this.getClubRef(clubRef.id)
       }
     })
 
@@ -65,7 +65,7 @@ export class FirebaseService {
     return collectionData(clubRefList, { idField: 'id' }) as unknown as Observable<Club>;
 }
 
-  getTeam(teamId){
+  getTeamRef(teamId){
     // console.log(`Read team ${teamId}`);
     const teamRef = doc(this.firestore,`/teams/${teamId}`);
     return docData(teamRef, {idField: 'id'}) as Observable<Team>
