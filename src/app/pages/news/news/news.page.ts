@@ -48,7 +48,6 @@ faCopy: any = faCopy;
     private newsService: NewsService,
     private authService: AuthService,
     private fbService: FirebaseService,
-    private swissunihockey: SwissunihockeyService,
     public loadingController: LoadingController,
     public toastController: ToastController,
     private routerOutlet: IonRouterOutlet,
@@ -59,9 +58,11 @@ faCopy: any = faCopy;
   ngOnInit() {
     this.getUser();
     
+  
     this.getNews();
     this.getClubNews();
     this.getTeamNews();
+  
   }
   ngAfterViewInit(): void {
   }
@@ -94,7 +95,6 @@ faCopy: any = faCopy;
 
   }
 
-
   
   async getNews() {
 
@@ -108,11 +108,12 @@ faCopy: any = faCopy;
           this.fbService.getClubRef(club.id).pipe(
             switchMap((clubDetail) => this.newsService.getNewsRef(clubDetail.type)), // Array of news,
           )
-        ))))
+        )))),
       )
       .subscribe(async (data:any)=>{
         console.log(data);
 
+      
         let newsListNew = [];
         for (let club of data){ // loop over news
 
@@ -125,7 +126,6 @@ faCopy: any = faCopy;
         this.newsList = this.newsList.sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime()); 
       });
   }
-
 
   getClubNews() {
 
@@ -141,18 +141,12 @@ faCopy: any = faCopy;
       )
       .subscribe(async (data:any)=>{
 //         console.log(data);
-
         let newsListNew = [];
         for (let club of data){ // loop over news
-
           for (let news of club[1]){ // Club News
             newsListNew.push(news);
           }
-
-
         }
-
-
         this.newsList = [...new Set(this.newsList.concat(...newsListNew))];
         this.newsList = this.newsList.sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime()); 
       });
@@ -172,18 +166,14 @@ faCopy: any = faCopy;
       )
       .subscribe(async (data:any)=>{
         // console.log(this.newsList);
-
         let newsListNew = [];
         for (let team of data){ // loop over news
-
           for (let news of team[1]){
             // console.log("team news");
             // console.log(news);
             newsListNew.push(news);
           }
-
         }
-
         this.newsList = [...new Set(this.newsList.concat(...newsListNew))];
         this.newsList = this.newsList.sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime()); 
       });
