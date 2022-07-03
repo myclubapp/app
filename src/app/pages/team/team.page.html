@@ -16,24 +16,32 @@
   </ion-header>
 
   
-  <ion-list >
+  <ion-list>
     <ion-list-header>
       Members
     </ion-list-header>
     <ion-item *ngFor="let member of memberList">
-      {{member.firstName}} {{member.lastName}}
-
+      <ion-avatar slot="start">
+        <img src="{{member.profilePicture}}">
+      </ion-avatar>
+      <ion-label>
+        {{member.firstName}} {{member.lastName}}
+      </ion-label>
     </ion-item>
 
   </ion-list>
 
-  <ion-list >
+  <ion-list>
     <ion-list-header>
       Administrators
     </ion-list-header>
     <ion-item *ngFor="let member of adminList">
-      {{member.firstName}} {{member.lastName}}
-
+      <ion-avatar slot="start">
+        <img src="{{member.profilePicture}}">
+      </ion-avatar>
+      <ion-label>
+        {{member.firstName}} {{member.lastName}}
+      </ion-label>
     </ion-item>
 
   </ion-list>
