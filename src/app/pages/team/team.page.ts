@@ -31,7 +31,7 @@ export class TeamPage implements OnInit {
           this.userProfileService.getUserProfileById(member.id),
         )))),
     ).subscribe((data)=>{
-      console.log(data);
+      // console.log(data);
 
       this.memberList = [];
       for (let member of data){
@@ -47,7 +47,7 @@ export class TeamPage implements OnInit {
           this.userProfileService.getUserProfileById(member.id),
         )))),
     ).subscribe((data)=>{
-      console.log(data);
+      // console.log(data);
 
       this.adminList = [];
       for (let member of data){
