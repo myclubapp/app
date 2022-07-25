@@ -29,7 +29,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular-devkit/schematics": "^14.0.3",
+    "@angular-devkit/schematics": "^14.1.0",
     "@angular/common": "^14.0.3",
     "@angular/core": "^14.0.3",
     "@angular/fire": "^7.4.1",
