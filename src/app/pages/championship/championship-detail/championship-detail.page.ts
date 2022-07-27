@@ -141,22 +141,25 @@ export class ChampionshipDetailPage implements OnInit {
     },  snippet: `${this.game.location} in ${this.game.city}`});
 
     const permission: PermissionStatus = await Geolocation.checkPermissions();
-    if (permission.location === 'denied' || permission.coarseLocation === 'denied' ){
-      console.log("no permission");
-    }
     try{
-      await Geolocation.requestPermissions();
+      if (permission.location === 'denied' || permission.coarseLocation === 'denied' ){
+        console.log("no permission");
+        await Geolocation.requestPermissions();
+      }
     } catch (e) {
       console.log("No Permission Request possible");
     }
-    const coordinates = await Geolocation.getCurrentPosition();
-    if (coordinates.coords.latitude && coordinates.coords.longitude){
-      this.newMap.addMarker({title: 'Meine Position', coordinate: {
-        lat: coordinates.coords.latitude,
-        lng: coordinates.coords.longitude
-      }, isFlat: true, snippet: 'Meine Position'});
+    try{
+      const coordinates = await Geolocation.getCurrentPosition();
+      if (coordinates.coords.latitude && coordinates.coords.longitude){
+        this.newMap.addMarker({title: 'Meine Position', coordinate: {
+          lat: coordinates.coords.latitude,
+          lng: coordinates.coords.longitude
+        }, isFlat: true, snippet: 'Meine Position'});
+      }
+    } catch (e) {
+      console.log("no coordinates on map");
     }
-      
   }
   ngOnDestroy(){
     this.newMap.destroy();
