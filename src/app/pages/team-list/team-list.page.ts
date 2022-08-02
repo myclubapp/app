@@ -51,7 +51,7 @@ export class TeamListPage implements OnInit {
   getTeamList(){
     this.authService.getUser$().pipe(
       // GET TEAMS
-      switchMap((user:User) => this.fbService.getTeamRefs(user)),
+      switchMap((user:User) => this.fbService.getUserTeamRefs(user)),
       // Loop Over Teams  
       switchMap((allTeams:any) => combineLatest(
         allTeams.map((team) => combineLatest(

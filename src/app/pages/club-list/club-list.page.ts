@@ -50,7 +50,7 @@ export class ClubListPage implements OnInit {
   getClubList(){
     this.authService.getUser$().pipe(
       // GET TEAMS
-      switchMap((user:User) => this.fbService.getClubRefs(user)),
+      switchMap((user:User) => this.fbService.getUserClubRefs(user)),
       // Loop Over Clubs  
       switchMap((allClubs:any) => combineLatest(
         allClubs.map((club) => combineLatest(

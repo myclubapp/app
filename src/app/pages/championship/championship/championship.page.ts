@@ -88,7 +88,7 @@ export class ChampionshipPage implements OnInit {
     
     this.authService.getUser$().pipe(
       // GET TEAMS
-      switchMap((user:User) => this.fbService.getTeamRefs(user)),
+      switchMap((user:User) => this.fbService.getUserTeamRefs(user)),
       // Loop Over Teams  
       switchMap((allTeams:any) => combineLatest(
         allTeams.map((team) => combineLatest(
@@ -141,7 +141,7 @@ export class ChampionshipPage implements OnInit {
     
     this.authService.getUser$().pipe(
       // GET TEAMS
-      switchMap((user:User) => this.fbService.getTeamRefs(user)),
+      switchMap((user:User) => this.fbService.getUserTeamRefs(user)),
       // Loop Over Teams  
       switchMap((allTeams:any) => combineLatest(
         allTeams.map((team) => combineLatest(

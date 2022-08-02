@@ -25,8 +25,8 @@ export class TeamPage implements OnInit {
     this.team = this.navParams.get('data');
 
     this.fbService.getTeamMemberRefs(this.team.id).pipe(
-      switchMap((allClubMembers:any) => combineLatest(
-        allClubMembers.map((member) => combineLatest(
+      switchMap((allTeamMembers:any) => combineLatest(
+        allTeamMembers.map((member) => combineLatest(
           of(member),
           this.userProfileService.getUserProfileById(member.id),
         )))),
@@ -41,8 +41,8 @@ export class TeamPage implements OnInit {
 
     })
     this.fbService.getTeamAdminRefs(this.team.id).pipe(
-      switchMap((allClubMembers:any) => combineLatest(
-        allClubMembers.map((member) => combineLatest(
+      switchMap((allTeamAdmins:any) => combineLatest(
+        allTeamAdmins.map((member) => combineLatest(
           of(member),
           this.userProfileService.getUserProfileById(member.id),
         )))),

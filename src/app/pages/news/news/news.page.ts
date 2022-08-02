@@ -100,7 +100,7 @@ faCopy: any = faCopy;
 
     this.authService.getUser$().pipe(
       // GET Clubs
-      switchMap((user:User) => this.fbService.getClubRefs(user)),
+      switchMap((user:User) => this.fbService.getUserClubRefs(user)),
       // Loop Over Clubs  
       switchMap((allClubs:any) => combineLatest(
         allClubs.map((club) => combineLatest(
@@ -131,7 +131,7 @@ faCopy: any = faCopy;
 
     this.authService.getUser$().pipe(
       // GET Clubs
-      switchMap((user:User) => this.fbService.getClubRefs(user)),
+      switchMap((user:User) => this.fbService.getUserClubRefs(user)),
       // Loop Over Clubs  
       switchMap((allClubs:any) => combineLatest(
         allClubs.map((club) => combineLatest(
@@ -154,7 +154,7 @@ faCopy: any = faCopy;
   getTeamNews() {
     this.authService.getUser$().pipe(
       // GET Teams
-      switchMap((user:User) => this.fbService.getTeamRefs(user)),
+      switchMap((user:User) => this.fbService.getUserTeamRefs(user)),
       // Loop Over Teams  
       switchMap((allTeams:any) => combineLatest(
         allTeams.map((team) => combineLatest(

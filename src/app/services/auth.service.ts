@@ -13,6 +13,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   UserCredential,
+  RecaptchaVerifier,
   User
 } from "@angular/fire/auth";
 import { Observable } from 'rxjs';
@@ -38,23 +39,23 @@ export class AuthService {
     private router: Router,
   ) {
   // or use this version...
-  this.user$ = authState(auth);
-   }
-
+    this.user$ = authState(auth);
+  }
 
   /* getUser(): Promise<User> {
     return authState(this.auth).pipe(first()).toPromise();
   }*/
-   getUser(): Promise<User | null> {
-     // console.log("getUser auth service");
+  getUser(): Promise<User | null> {
+    // console.log("getUser auth service");
     return this.user$.pipe(first()).toPromise();
   }
 
- getUser$() {
+  getUser$() {
      // console.log("getUser auth service");
     return this.user$.pipe(first());
   }
-   login( email: string, password: string){
+
+  login( email: string, password: string){
     return signInWithEmailAndPassword(this.auth ,email ,password);
   }
 
@@ -70,6 +71,7 @@ export class AuthService {
     lastName: string,
   ): Promise<UserCredential> {
     try {
+
       const newUserCredential: UserCredential = await createUserWithEmailAndPassword(
         this.auth,
         email,
@@ -106,6 +108,4 @@ export class AuthService {
     //firebase.firestore().clearPersistence();
     await this.router.navigateByUrl('/logout');
   }
-
-
 }
