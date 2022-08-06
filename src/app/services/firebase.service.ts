@@ -1,78 +1,110 @@
 import { Injectable } from '@angular/core';
 import {
-  Firestore, addDoc, collection, collectionData,
-  doc, docData, deleteDoc, updateDoc, DocumentReference, setDoc
+  Firestore,
+  collection,
+  collectionData,
+  doc,
+  docData,
+  query,
+  orderBy,
 } from '@angular/fire/firestore';
+import { User } from '@angular/fire/auth';
 
-import { Storage, ref, uploadString, getDownloadURL } from '@angular/fire/storage';
+import { Observable } from 'rxjs';
 
-// import firebase from 'firebase/compat/app';
-import { Observable, Observer } from 'rxjs';
-
-import { Club, SwissHandballClub, SwissUnihockeyClub, SwissVolleyClub, SwissTurnverbandClub } from '../models/club';
-import { Team } from '../models/team';
-import {
-  User, UserProfile
-} from "@angular/fire/auth";
-
-
-import {AuthService} from 'src/app/services/auth.service';
+import { Club, ClubRef } from '../models/club';
+import { Team, TeamRef } from '../models/team';
+import { QueryConstraint, where } from 'firebase/firestore';
+import { News } from '../models/news';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FirebaseService {
-  inviteList: any = [];
-  constructor(
-    private firestore: Firestore,
-    private storage: Storage,
-    private authService: AuthService,
+  constructor(private readonly firestore: Firestore) {}
 
-  ) {
-
+  getClubRef(clubId: string): Observable<ClubRef> {
+    return this.getDocData<ClubRef>(`club/${clubId}`);
   }
 
-  /* CLUBS */
-  getClubRef(clubId:string){
-    const clubRef = doc(this.firestore,`club/${clubId}`);
-    return docData(clubRef, {idField: 'id'}) as unknown as Observable<Club>
+  getClubRefs(user: User): Observable<Array<ClubRef>> {
+    return this.getCollectionData<ClubRef>(`userProfile/${user.uid}/clubs`);
   }
 
-  getClubRefs(user: User): Observable<Club>  {
-      const clubRefList = collection(this.firestore, `userProfile/${user.uid}/clubs`);
-      return collectionData(clubRefList, { idField: 'id' }) as unknown as Observable<any>;
+  queryClubs(clubIds: Array<string>): Observable<Array<Club>> {
+    const queryConstraints = clubIds.length
+      ? [where('id', 'array-contains-any', clubIds)]
+      : [];
+    return this.getCollectionData<Club>('club', queryConstraints);
   }
 
-  getClubMemberRefs(clubId:string): Observable<any>  {
-    const clubMemberRefList = collection(this.firestore,`club/${clubId}/members`);
-    return collectionData(clubMemberRefList, { idField: 'id' }) as unknown as Observable<any>;
-}
-getClubAdminRefs(clubId:string): Observable<any>  {
-  const clubMemberRefList = collection(this.firestore,`club/${clubId}/admins`);
-  return collectionData(clubMemberRefList, { idField: 'id' }) as unknown as Observable<any>;
-}
-
-
-
-/* TEAMS */
-  getTeamRef(teamId){
-    // console.log(`Read team ${teamId}`);
-    const teamRef = doc(this.firestore,`/teams/${teamId}`);
-    return docData(teamRef, {idField: 'id'}) as Observable<Team>
+  getClubMemberRefs(clubId: string): Observable<Array<unknown>> {
+    return this.getCollectionData<unknown>(`club/${clubId}/members`);
   }
 
-  getTeamRefs(user: User): Observable<Team> {
-    const teamRefLIst = collection(this.firestore, `userProfile/${user.uid}/teams`);
-    return collectionData(teamRefLIst, { idField: 'id' }) as unknown as Observable<Team>;
+  getClubAdminRefs(clubId: string): Observable<Array<unknown>> {
+    return this.getCollectionData<unknown>(`club/${clubId}/admins`);
   }
-  getTeamMemberRefs(teamId:string): Observable<any>  {
-    const teamMemberRefList = collection(this.firestore,`teams/${teamId}/members`);
-    return collectionData(teamMemberRefList, { idField: 'id' }) as unknown as Observable<any>;
-}
 
-getTeamAdminRefs(teamId:string): Observable<any>  {
-  const teamMemberRefList = collection(this.firestore,`teams/${teamId}/admins`);
-  return collectionData(teamMemberRefList, { idField: 'id' }) as unknown as Observable<any>;
-}
+  getTeamRef(teamId: string): Observable<TeamRef> {
+    return this.getDocData<TeamRef>(`teams/${teamId}`);
+  }
 
+  getTeamRefs(user: User): Observable<Array<TeamRef>> {
+    return this.getCollectionData<TeamRef>(`userProfile/${user.uid}/teams`);
+  }
+
+  getTeamMemberRefs(teamId: string): Observable<Array<unknown>> {
+    return this.getCollectionData<unknown>(`teams/${teamId}/members`);
+  }
+
+  getTeamAdminRefs(teamId: string): Observable<Array<unknown>> {
+    return this.getCollectionData<unknown>(`teams/${teamId}/admins`);
+  }
+
+  getNewsRefs(clubTypes: Array<string>): Observable<Array<News>> {
+    const twentyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 20);
+    let queryConstraints = [
+      orderBy('date', 'desc'),
+      where('date', '>=', twentyDaysAgo.toISOString()),
+    ];
+    if (clubTypes.length) {
+      queryConstraints = [
+        ...queryConstraints,
+        where('type', 'array-contains-any', clubTypes),
+      ];
+    }
+    return this.getCollectionData<News>('news', queryConstraints);
+  }
+
+  getClubNewsRefs(clubId: string): Observable<Array<News>> {
+    const twentyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 20);
+    return this.getCollectionData<News>(`club/${clubId}/news`, [
+      orderBy('date', 'desc'),
+      where('date', '>=', twentyDaysAgo.toISOString()),
+    ]);
+  }
+
+  getTeamNewsRefs(teamId: string): Observable<Array<News>> {
+    const twentyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 20);
+    return this.getCollectionData<News>(`teams/${teamId}/news`, [
+      orderBy('date', 'desc'),
+      where('date', '>=', twentyDaysAgo.toISOString()),
+    ]);
+  }
+
+  private getDocData<T>(path: string, idField = 'id'): Observable<T> {
+    const reference = doc(this.firestore, path);
+    return docData(reference, { idField: idField }) as Observable<T>;
+  }
+
+  private getCollectionData<T>(
+    path: string,
+    queryConstraints: Array<QueryConstraint> = [],
+    idField = 'id'
+  ): Observable<Array<T>> {
+    const reference = collection(this.firestore, path);
+    const q = query(reference, ...queryConstraints);
+    return collectionData(q, { idField: idField }) as Observable<Array<T>>;
+  }
 }
