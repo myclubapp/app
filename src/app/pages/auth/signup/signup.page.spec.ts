@@ -9,7 +9,7 @@ describe('SignupPage', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SignupPage ],
+      declarations: [SignupPage],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
@@ -20,5 +20,5 @@ describe('SignupPage', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
+  })
 });

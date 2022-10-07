@@ -3,18 +3,16 @@ import { Apollo, ApolloBase, gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SwissturnverbandService {
-
-  private apollo: ApolloBase;
-  constructor(private apolloProvider: Apollo) {
+  private readonly apollo: ApolloBase;
+  constructor (private readonly apolloProvider: Apollo) {
     this.apollo = this.apolloProvider.use('swissturnverband');
   }
 
-  getClubs(): Observable<any>{
-    return this.apollo
-    .watchQuery({
+  getClubs (): Observable<any> {
+    return this.apollo.watchQuery({
       query: gql`
         {
           clubs {
@@ -22,13 +20,12 @@ export class SwissturnverbandService {
             name
           }
         }
-      `,
+      `
     }).valueChanges;
   }
 
-  getNews(): Observable<any>{
-    return this.apollo
-    .watchQuery({
+  getNews (): Observable<any> {
+    return this.apollo.watchQuery({
       query: gql`
         {
           news {
@@ -46,25 +43,23 @@ export class SwissturnverbandService {
             url
           }
         }
-      `,
-    }).valueChanges;
-  }
-  getGames(teamId: string): Observable<any>{
-    return this.apollo
-    .watchQuery({
-      query: gql`
-        {
-          team(teamId: teamId){
-            id
-            name
-            games{
-              id
-            }
-            
-          }
-        }
-      `,
+      `
     }).valueChanges;
   }
 
+  getGames (teamId: string): Observable<any> {
+    return this.apollo.watchQuery({
+      query: gql`
+        {
+          team(teamId: teamId) {
+            id
+            name
+            games {
+              id
+            }
+          }
+        }
+      `
+    }).valueChanges;
+  }
 }

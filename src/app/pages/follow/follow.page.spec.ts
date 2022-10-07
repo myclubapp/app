@@ -9,7 +9,7 @@ describe('FollowPage', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ FollowPage ],
+      declarations: [FollowPage],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
@@ -20,5 +20,5 @@ describe('FollowPage', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
+  })
 });

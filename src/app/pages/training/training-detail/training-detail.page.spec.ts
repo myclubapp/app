@@ -9,7 +9,7 @@ describe('TrainingDetailPage', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TrainingDetailPage ],
+      declarations: [TrainingDetailPage],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
@@ -20,5 +20,5 @@ describe('TrainingDetailPage', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
+  })
 });

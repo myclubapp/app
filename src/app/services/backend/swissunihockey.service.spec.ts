@@ -8,9 +8,9 @@ describe('SwissunihockeyService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(SwissunihockeyService);
-  });
+  })
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-  });
+  })
 });

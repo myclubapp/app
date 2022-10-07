@@ -29,7 +29,6 @@
   --ion-color-primary-shade: #2d88c3;
   --ion-color-primary-tint: #47a5e1;
 
-
   /** secondary **/
   --ion-color-secondary: #795deb;
   --ion-color-secondary-rgb: 121, 93, 235;
@@ -37,8 +36,6 @@
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
   --ion-color-secondary-shade: #6a52cf;
   --ion-color-secondary-tint: #866ded;
-
-
 
   /** tertiary **/
   --ion-color-tertiary: #5260ff;
@@ -120,19 +117,19 @@
     --ion-color-secondary-tint: #62ceff;
 ***/
 
---ion-color-primary: #795deb;
---ion-color-primary-rgb: 121, 93, 235;
---ion-color-primary-contrast: #ffffff;
---ion-color-primary-contrast-rgb: 255, 255, 255;
---ion-color-primary-shade: #6a52cf;
---ion-color-primary-tint: #866ded;
+    --ion-color-primary: #795deb;
+    --ion-color-primary-rgb: 121, 93, 235;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 255, 255, 255;
+    --ion-color-primary-shade: #6a52cf;
+    --ion-color-primary-tint: #866ded;
 
---ion-color-secondary: #339bde;
---ion-color-secondary-rgb: 51, 155, 222;
---ion-color-secondary-contrast: #ffffff;
---ion-color-secondary-contrast-rgb: 255, 255, 255;
---ion-color-secondary-shade: #2d88c3;
---ion-color-secondary-tint: #47a5e1;
+    --ion-color-secondary: #339bde;
+    --ion-color-secondary-rgb: 51, 155, 222;
+    --ion-color-secondary-contrast: #ffffff;
+    --ion-color-secondary-contrast-rgb: 255, 255, 255;
+    --ion-color-secondary-shade: #2d88c3;
+    --ion-color-secondary-tint: #47a5e1;
 
     --ion-color-tertiary: #6a64ff;
     --ion-color-tertiary-rgb: 106, 100, 255;
@@ -270,16 +267,16 @@
     --ion-card-background: #1e1e1e;
   }
 
-    /* DARK INPUT FIELDS */
-    .ios input{
-      --ion-text-color: #000000;
-      --ion-text-color-rgb: 0,0,0;
-      color: var(--ion-text-color);
-    }
-    
-    .md input{
-      --ion-text-color: #000000;
-      --ion-text-color-rgb: 0,0,0;
-      color: var(--ion-text-color);
-    }
+  /* DARK INPUT FIELDS */
+  .ios input {
+    --ion-text-color: #000000;
+    --ion-text-color-rgb: 0, 0, 0;
+    color: var(--ion-text-color);
+  }
+
+  .md input {
+    --ion-text-color: #000000;
+    --ion-text-color-rgb: 0, 0, 0;
+    color: var(--ion-text-color);
+  }
 }

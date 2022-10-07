@@ -9,12 +9,7 @@ import { TrainingsPageRoutingModule } from './trainings-routing.module';
 import { TrainingsPage } from './trainings.page';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    TrainingsPageRoutingModule
-  ],
+  imports: [CommonModule, FormsModule, IonicModule, TrainingsPageRoutingModule],
   declarations: [TrainingsPage]
 })
 export class TrainingsPageModule {}

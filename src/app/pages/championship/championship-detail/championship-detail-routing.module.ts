@@ -8,10 +8,10 @@ const routes: Routes = [
     path: '',
     component: ChampionshipDetailPage
   }
-];
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class ChampionshipDetailPageRoutingModule {}

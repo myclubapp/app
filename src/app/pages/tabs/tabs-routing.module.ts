@@ -10,36 +10,46 @@ const routes: Routes = [
     children: [
       {
         path: 'news',
-        loadChildren: () => import('../news/news/news.module').then(m => m.NewsPageModule)
+        loadChildren: async () =>
+          await import('../news/news/news.module').then((m) => m.NewsPageModule)
       },
       {
         path: 'training',
-        loadChildren: () => import('../training/trainings/trainings.module').then(m => m.TrainingsPageModule)
+        loadChildren: async () =>
+          await import('../training/trainings/trainings.module').then(
+            (m) => m.TrainingsPageModule
+          )
       },
       {
         path: 'championship',
-        loadChildren: () => import('../championship/championship/championship.module').then(m => m.ChampionshipPageModule)
+        loadChildren: async () =>
+          await import('../championship/championship/championship.module').then(
+            (m) => m.ChampionshipPageModule
+          )
       },
       {
         path: 'events',
-        loadChildren: () => import('../event/events/events.module').then(m => m.EventsPageModule)
+        loadChildren: async () =>
+          await import('../event/events/events.module').then(
+            (m) => m.EventsPageModule
+          )
       },
       {
         path: '',
         redirectTo: '/tabs/news',
-        pathMatch: 'full'
+        pathMatch: 'full',
       }
     ]
   },
   {
     path: '',
     redirectTo: '/tabs/news',
-    pathMatch: 'full'
+    pathMatch: 'full',
   }
-];
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class TabsPageRoutingModule {}

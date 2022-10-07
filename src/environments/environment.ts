@@ -11,10 +11,10 @@ export const environment = {
     locationId: 'europe-west6',
     apiKey: 'AIzaSyCG9_CYSbjzuvJsC0P6SOYQ7_jGN0Q2E5k',
     authDomain: 'myclubmanagement.firebaseapp.com',
-    messagingSenderId: '631527568360', 
+    messagingSenderId: '631527568360',
   },
-  production: false,
-};
+  production: false
+}
 
 /*
  * For easier debugging in development mode, you can import the following file

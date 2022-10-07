@@ -8,9 +8,9 @@ describe('TrainingService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(TrainingService);
-  });
+  })
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-  });
+  })
 });

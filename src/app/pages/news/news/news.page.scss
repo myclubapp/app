@@ -1,13 +1,13 @@
 div.web-social-share p {
+  color: black !important;
 
-	color: black !important;
-
-    @media (prefers-color-scheme: dark) {
-        color: #000 !important;
-    }
+  @media (prefers-color-scheme: dark) {
+    color: #000 !important;
+  }
 }
 
-// Funktioniert nicht.. 
-div.web-social-share-action-sheet-group { // div.web-social-share.web-social-share-open div.web-social-share-action-sheet div.web-social-share-action-sheet-container 
-    margin-bottom: 60px !important;
+// Funktioniert nicht..
+div.web-social-share-action-sheet-group {
+  // div.web-social-share.web-social-share-open div.web-social-share-action-sheet div.web-social-share-action-sheet-container
+  margin-bottom: 60px !important;
 }

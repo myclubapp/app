@@ -3,7 +3,7 @@ import { Team } from 'src/app/models/team';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { switchMap, map } from 'rxjs/operators';
-import { of,combineLatest } from 'rxjs';
+import { of, combineLatest } from 'rxjs';
 import { User } from 'firebase/auth';
 import { IonRouterOutlet, ModalController } from '@ionic/angular';
 import { TeamPage } from '../team/team.page';
@@ -17,18 +17,18 @@ export class TeamListPage implements OnInit {
   teamList: Team[];
   skeleton = new Array(12);
 
-  constructor(
-    private fbService: FirebaseService,
-    private authService: AuthService,
-    private routerOutlet: IonRouterOutlet,
-    private modalCtrl: ModalController
-  ) { }
+  constructor (
+    private readonly fbService: FirebaseService,
+    private readonly authService: AuthService,
+    private readonly routerOutlet: IonRouterOutlet,
+    private readonly modalCtrl: ModalController
+  ) {}
 
-  ngOnInit() {
+  ngOnInit () {
     this.getTeamList();
   }
 
-  async openModal(team: Team) {
+  async openModal (team: Team) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: TeamPage,
@@ -44,35 +44,38 @@ export class TeamListPage implements OnInit {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === 'confirm') {
-    
     }
   }
 
-  getTeamList(){
-    this.authService.getUser$().pipe(
-      // GET TEAMS
-      switchMap((user:User) => this.fbService.getUserTeamRefs(user)),
-      // Loop Over Teams  
-      switchMap((allTeams:any) => combineLatest(
-        allTeams.map((team) => combineLatest(
-          of(team),
-          this.fbService.getTeamRef(team.id),  
-        )),
-      )),
+  getTeamList () {
+    this.authService
+      .getUser$()
+      .pipe(
+        // GET TEAMS
+        switchMap((user: User) => this.fbService.getUserTeamRefs(user)),
+        // Loop Over Teams
+        switchMap((allTeams: any) =>
+          combineLatest(
+            allTeams.map((team) =>
+              combineLatest(of(team), this.fbService.getTeamRef(team.id))
+            )
+          )
+        )
       )
-      .subscribe(async (data:any)=>{
+      .subscribe(async (data: any) => {
         console.log(data);
 
-        let teamListNew = [];
-        for (let team of data){ // loop over teams
+        const teamListNew = []
+        for (const team of data) {
+          // loop over teams
 
-          let teamDetails = team[1];
+          const teamDetails = team[1]
           teamListNew.push(teamDetails);
-         
         }
         this.teamList = [...new Set([].concat(...teamListNew))];
-        this.teamList = this.teamList.sort((a,b)=>Number(a.id)-Number(b.id));
-      });
+        this.teamList = this.teamList.sort(
+          (a, b) => Number(a.id) - Number(b.id)
+        );
+      })
   }
-
 }

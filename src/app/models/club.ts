@@ -1,22 +1,13 @@
 export interface Club {
-  id: string;
-  name: string;
-  logo: string;
-  type: string;
-
+  id: string
+  name: string
+  logo: string
+  type: string
 }
-export interface SwissUnihockeyClub extends Club {
+export interface SwissUnihockeyClub extends Club {}
 
-}
+export interface SwissVolleyClub extends Club {}
 
-export interface SwissVolleyClub extends Club {
+export interface SwissHandballClub extends Club {}
 
-}
-
-export interface SwissHandballClub extends Club {
-
-}
-
-export interface SwissTurnverbandClub extends Club {
-
-}
+export interface SwissTurnverbandClub extends Club {}

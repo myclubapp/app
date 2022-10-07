@@ -22,7 +22,7 @@
 **/
 
   /** primary   **/
-  --ion-color-primary: #EB1927;
+  --ion-color-primary: #eb1927;
   --ion-color-primary-rgb: 235, 25, 39;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
@@ -124,7 +124,7 @@
 --ion-color-primary-tint: #866ded;
 ***/
 
-    --ion-color-primary: #EB1927;
+    --ion-color-primary: #eb1927;
     --ion-color-primary-rgb: 235, 25, 39;
     --ion-color-primary-contrast: #ffffff;
     --ion-color-primary-contrast-rgb: 255, 255, 255;
@@ -274,16 +274,16 @@
     --ion-card-background: #1e1e1e;
   }
 
-    /* DARK INPUT FIELDS */
-    .ios input{
-      --ion-text-color: #000000;
-      --ion-text-color-rgb: 0,0,0;
-      color: var(--ion-text-color);
-    }
-    
-    .md input{
-      --ion-text-color: #000000;
-      --ion-text-color-rgb: 0,0,0;
-      color: var(--ion-text-color);
-    }
+  /* DARK INPUT FIELDS */
+  .ios input {
+    --ion-text-color: #000000;
+    --ion-text-color-rgb: 0, 0, 0;
+    color: var(--ion-text-color);
+  }
+
+  .md input {
+    --ion-text-color: #000000;
+    --ion-text-color-rgb: 0, 0, 0;
+    color: var(--ion-text-color);
+  }
 }

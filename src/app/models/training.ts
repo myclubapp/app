@@ -1,21 +1,20 @@
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from 'firebase/firestore';
 
 export interface Training {
-  id: string;
-  name:  string;
-  description:  string;
-  dateTime: Timestamp;
-  location:  string;
-  city:  string;
-  date: string;
-  time:  string;
-  teamName: string;
-  liga: string;
+  id: string
+  name: string
+  description: string
+  dateTime: Timestamp
+  location: string
+  city: string
+  date: string
+  time: string
+  teamName: string
+  liga: string
 
-  teamId: string;
-  
-  // Business Logic Fields 
-  status: boolean;
-  attendees: any;
+  teamId: string
+
+  // Business Logic Fields
+  status: boolean
+  attendees: any
 }
-

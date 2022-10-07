@@ -7,15 +7,11 @@ import { MenuController } from '@ionic/angular';
   styleUrls: ['./logout.page.scss'],
 })
 export class LogoutPage implements OnInit {
-
-  constructor(
-    public menuCtrl: MenuController,
-  ) { 
+  constructor (public menuCtrl: MenuController) {
     this.menuCtrl.enable(false, 'menu');
   }
 
-  ngOnInit() {
+  ngOnInit () {
     this.menuCtrl.enable(false, 'menu');
   }
-
 }

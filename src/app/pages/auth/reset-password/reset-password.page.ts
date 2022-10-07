@@ -1,7 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  Validators
+} from '@angular/forms';
 import { Router } from '@angular/router';
-import { AlertController, LoadingController, MenuController } from '@ionic/angular';
+import {
+  AlertController,
+  LoadingController,
+  MenuController
+} from '@ionic/angular';
 import { UserCredentialLogin } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -13,65 +21,64 @@ import { AuthService } from 'src/app/services/auth.service';
 export class ResetPasswordPage implements OnInit {
   public user: UserCredentialLogin;
   public authForm: UntypedFormGroup;
-  constructor(
+  constructor (
     public menuCtrl: MenuController,
-    private authService: AuthService,
-    private alertCtrl: AlertController,
-    private router: Router,
-    private formBuilder: UntypedFormBuilder,
-    private loadingCtrl: LoadingController,
-
+    private readonly authService: AuthService,
+    private readonly alertCtrl: AlertController,
+    private readonly router: Router,
+    private readonly formBuilder: UntypedFormBuilder,
+    private readonly loadingCtrl: LoadingController
   ) {
     this.menuCtrl.enable(false, 'menu');
     this.authForm = this.formBuilder.group({
       email: ['', Validators.compose([Validators.required, Validators.email])],
       password: [''],
     });
-   }
+  }
 
-  ngOnInit() {
+  ngOnInit () {
     this.menuCtrl.enable(false, 'menu');
     this.user = {
       email: '',
-      password: ''
+      password: '',
     };
   }
 
-  submitCredentials(authForm: UntypedFormGroup): void {
+  submitCredentials (authForm: UntypedFormGroup): void {
     if (!authForm.get('email').valid) {
-      //console.log('Form is not valid yet, current value:', authForm.value);
-      this.alertCtrl.create({
-        message: 'Formular ist noch fehlerhaft',
-        buttons: [{ text: 'Ok', role: 'cancel' }],
-      }).then(alert=>{
-        alert.present();
-      });
-
-
+      // console.log('Form is not valid yet, current value:', authForm.value);
+      this.alertCtrl
+        .create({
+          message: 'Formular ist noch fehlerhaft',
+          buttons: [{ text: 'Ok', role: 'cancel' }]
+        })
+        .then((alert) => {
+          alert.present();
+        })
     } else {
       this.presentLoading();
       const credentials: UserCredentialLogin = {
         email: authForm.value.email,
-        password: authForm.value.password,
-      };
+        password: authForm.value.password
+      }
 
       this.resetPassword(credentials);
     }
   }
 
-  async presentLoading() {
+  async presentLoading () {
     const loading = await this.loadingCtrl.create({
       cssClass: 'my-custom-class',
       message: 'Bitte warten...',
-      duration: 2000,
-    });
+      duration: 2000
+    })
     await loading.present();
 
-    const {role, data} = await loading.onDidDismiss();
+    const { role, data } = await loading.onDidDismiss();
     console.log('Loading dismissed!');
   }
 
-  resetPassword(credentials: UserCredentialLogin): void {
+  resetPassword (credentials: UserCredentialLogin): void {
     this.authService.resetPassword(credentials.email).then(
       async () => {
         const alert = await this.alertCtrl.create({
@@ -82,17 +89,17 @@ export class ResetPasswordPage implements OnInit {
               role: 'cancel',
               handler: () => {
                 this.router.navigateByUrl('login');
-              },
-            },
-          ],
-        });
+              }
+            }
+          ]
+        })
         await alert.present();
       },
-      async error => {
+      async (error) => {
         const errorAlert = await this.alertCtrl.create({
           message: error.message,
-          buttons: [{ text: 'Ok', role: 'cancel' }],
-        });
+          buttons: [{ text: 'Ok', role: 'cancel' }]
+        })
         await errorAlert.present();
       }
     );

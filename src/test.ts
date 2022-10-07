@@ -4,18 +4,18 @@ import 'zone.js/dist/zone-testing';
 import { getTestBed } from '@angular/core/testing';
 import {
   BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
+  platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
 
 declare const require: {
-  context(
+  context: (
     path: string,
     deep?: boolean,
     filter?: RegExp
-  ): {
-    <T>(id: string): T;
-    keys(): string[];
-  };
+  ) => {
+    <T>(id: string): T
+    keys: () => string[]
+  }
 };
 
 // First, initialize the Angular testing environment.

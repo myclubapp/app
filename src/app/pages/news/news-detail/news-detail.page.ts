@@ -5,8 +5,13 @@ import { News } from 'src/app/models/news';
 import { Share } from '@capacitor/share';
 import { Device } from '@capacitor/device';
 
-import {faTwitter, faFacebook, faWhatsapp, faLinkedin} from '@fortawesome/free-brands-svg-icons';
-import {faEnvelope, faCopy} from '@fortawesome/free-solid-svg-icons';
+import {
+  faTwitter,
+  faFacebook,
+  faWhatsapp,
+  faLinkedin
+} from '@fortawesome/free-brands-svg-icons';
+import { faEnvelope, faCopy } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-news-detail',
@@ -14,7 +19,7 @@ import {faEnvelope, faCopy} from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./news-detail.page.scss'],
 })
 export class NewsDetailPage implements OnInit {
-  @Input("data") news: News;
+  @Input('data') news: News;
 
   // Social Share
   shareSocialShareOptions: any;
@@ -27,35 +32,39 @@ export class NewsDetailPage implements OnInit {
   faEnvelope: any = faEnvelope;
   faCopy: any = faCopy;
 
-  constructor(private modalCtrl: ModalController,
-    public navParams : NavParams) {}
-  ngOnInit() {
+  constructor (
+    private readonly modalCtrl: ModalController,
+    public navParams: NavParams
+  ) {}
+
+  ngOnInit () {
     this.news = this.navParams.get('data');
   }
-  close() {
-    return this.modalCtrl.dismiss(null, 'close');
+
+  async close () {
+    return await this.modalCtrl.dismiss(null, 'close');
   }
 
-  confirm() {
-    return this.modalCtrl.dismiss(this.news, 'confirm');
+  async confirm () {
+    return await this.modalCtrl.dismiss(this.news, 'confirm');
   }
 
-  async share(news: News) {
+  async share (news: News) {
     const device = await Device.getInfo();
-      if (device.platform === 'web' && navigator && navigator['share']) {
-        let shareRet = await Share.share({
-          title: news.title,
-          text: news.leadText,
-          url: news.url,
-          dialogTitle: news.title,
-        }).catch((onrejected) => {});
-      } else {
-        await this.shareFallback(news);
-      }
+    if (device.platform === 'web' && navigator && navigator.share) {
+      const shareRet = await Share.share({
+        title: news.title,
+        text: news.leadText,
+        url: news.url,
+        dialogTitle: news.title
+      }).catch((onrejected) => {})
+    } else {
+      await this.shareFallback(news);
+    }
   }
 
-  shareFallback(news: News) {
-    return new Promise(async (resolve) => {
+  async shareFallback (news: News) {
+    return await new Promise(async (resolve) => {
       // The configuration, set the share options
       this.shareSocialShareOptions = {
         displayNames: true,
@@ -64,39 +73,38 @@ export class NewsDetailPage implements OnInit {
             twitter: {
               socialShareUrl: '👉 ' + news.title + ': ' + news.url,
               socialSharePopupWidth: 300,
-              socialSharePopupHeight: 400,
-            },
+              socialSharePopupHeight: 400
+            }
           },
           {
             facebook: {
-              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
-            },
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url
+            }
           },
           {
             whatsapp: {
-              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
-            },
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url
+            }
           },
           {
             linkedin: {
-              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
-            },
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url
+            }
           },
           {
             email: {
-              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
-            },
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url
+            }
           },
           {
             copy: {
-              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
-            },
-          },
-        ],
-      };
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url
+            }
+          }
+        ]
+      }
       this.showSocialShare = true;
       resolve(true);
-    });
+    })
   }
-
 }

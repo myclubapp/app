@@ -8,10 +8,10 @@ const routes: Routes = [
     path: '',
     component: SignupPage
   }
-];
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class SignupPageRoutingModule {}

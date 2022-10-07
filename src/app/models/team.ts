@@ -1,23 +1,18 @@
 export interface Team {
-  id: string;
-  name: string;
-  logo: string;
-  website: string;
-  portrait: string;
-  liga: string;
-  type: string;
-
+  id: string
+  name: string
+  logo: string
+  website: string
+  portrait: string
+  liga: string
+  type: string
 }
-export interface SwissUnihockeyTeam extends Team {
-
-}
+export interface SwissUnihockeyTeam extends Team {}
 
 export interface SwissVolleyTeam extends Team {
-
-  gender: string;
-  clubId: string;
-  clubCaption: string;
-  leagueCaption: string;
-  organisationCaption: string;
-
+  gender: string
+  clubId: string
+  clubCaption: string
+  leagueCaption: string
+  organisationCaption: string
 }
