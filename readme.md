@@ -16,7 +16,11 @@ myclub App's architecture follows these principles:
 
 We use a GraphQL API for Sports Data. Check this [repository](https://github.com/myclubapp/backend).
 
-# Developer
+# Developers (You?)
+
+## Prettier Setup
+
+`npx husky-init; npm install --save-dev pretty-quick; npx husky set .husky/pre-commit "npx pretty-quick --staged";`
 
 ## Create App Icon & Splash Screen
 
@@ -51,9 +55,11 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 - Fontawesome Icons
 - Ionicons
 
-# CUSTOM Apps
+# MY-CLUB-PREMIUM
 
-## Available Custom Apps:
+Run my-club within your own domain and use your own design(css)
+
+## Custom Apps:
 
 - Kadetten Unihockey Schaffhausen [Link](https://kadetten-unihockey.web.app)
 - UHC Winterthur United [Link](https://uhc-win-u.web.app)
