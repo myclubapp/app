@@ -2,46 +2,73 @@
   <ion-split-pane contentId="main-content">
     <ion-menu menuId="menu" contentId="main-content" type="overlay">
       <ion-content>
-
-
         <!-- Open Accordion -->
         <ion-accordion-group value="colors">
           <ion-accordion value="colors">
-
-
             <ion-item slot="header">
               <ion-thumbnail slot="start">
-                <img src="assets/logo_trans.png">
+                <img src="assets/logo_trans.png" />
               </ion-thumbnail>
               <ion-label>myclub</ion-label>
             </ion-item>
 
-
-
             <ion-list slot="content">
-              <ion-note>{{email}}</ion-note>
+              <ion-note>{{ email }}</ion-note>
 
               <ion-menu-toggle auto-hide="false">
-                <ion-item routerDirection="root" [routerLink]="['/tabs/news']" lines="none" detail="true" routerLinkActive="selected">
+                <ion-item
+                  routerDirection="root"
+                  [routerLink]="['/tabs/news']"
+                  lines="none"
+                  detail="true"
+                  routerLinkActive="selected"
+                >
                   <ion-icon slot="start" name="newspaper-outline"></ion-icon>
                   <ion-label>News</ion-label>
                 </ion-item>
-                <ion-item routerDirection="root" [routerLink]="['/tabs/training']" lines="none" detail="true" routerLinkActive="selected">
+                <ion-item
+                  routerDirection="root"
+                  [routerLink]="['/tabs/training']"
+                  lines="none"
+                  detail="true"
+                  routerLinkActive="selected"
+                >
                   <ion-icon slot="start" name="barbell-outline"></ion-icon>
                   <ion-label>Training</ion-label>
                 </ion-item>
-                <ion-item routerDirection="root" [routerLink]="['/tabs/championship']" lines="none" detail="true" routerLinkActive="selected">
+                <ion-item
+                  routerDirection="root"
+                  [routerLink]="['/tabs/championship']"
+                  lines="none"
+                  detail="true"
+                  routerLinkActive="selected"
+                >
                   <ion-icon slot="start" name="trophy-outline"></ion-icon>
                   <ion-label>Meisterschaft</ion-label>
                 </ion-item>
-                <ion-item routerDirection="root" [routerLink]="['/tabs/events']" lines="none" detail="true" routerLinkActive="selected">
+                <ion-item
+                  routerDirection="root"
+                  [routerLink]="['/tabs/events']"
+                  lines="none"
+                  detail="true"
+                  routerLinkActive="selected"
+                >
                   <ion-icon slot="start" name="calendar-outline"></ion-icon>
                   <ion-label>Events</ion-label>
                 </ion-item>
-                <ion-item  routerDirection="root" [routerLink]="['/profile']" lines="none" detail="true" routerLinkActive="selected">
-                   <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+                <ion-item
+                  routerDirection="root"
+                  [routerLink]="['/profile']"
+                  lines="none"
+                  detail="true"
+                  routerLinkActive="selected"
+                >
+                  <ion-icon
+                    slot="start"
+                    name="person-circle-outline"
+                  ></ion-icon>
                   <ion-label>Profil</ion-label>
-                </ion-item>    
+                </ion-item>
               </ion-menu-toggle>
             </ion-list>
           </ion-accordion>
@@ -52,13 +79,24 @@
 
             <ion-list slot="content">
               <ion-menu-toggle auto-hide="false">
-              
-              <ion-item  routerDirection="root" [routerLink]="['/club-list']" lines="none" detail="true" routerLinkActive="selected">
-                <ion-label>Mein Club</ion-label>
-              </ion-item>
-              <ion-item  routerDirection="root" [routerLink]="['/team-list']" lines="none" detail="true" routerLinkActive="selected">
-                <ion-label>Mein Team</ion-label>
-              </ion-item>
+                <ion-item
+                  routerDirection="root"
+                  [routerLink]="['/club-list']"
+                  lines="none"
+                  detail="true"
+                  routerLinkActive="selected"
+                >
+                  <ion-label>Mein Club</ion-label>
+                </ion-item>
+                <ion-item
+                  routerDirection="root"
+                  [routerLink]="['/team-list']"
+                  lines="none"
+                  detail="true"
+                  routerLinkActive="selected"
+                >
+                  <ion-label>Mein Team</ion-label>
+                </ion-item>
               </ion-menu-toggle>
             </ion-list>
           </ion-accordion>
@@ -70,12 +108,8 @@
             <ion-label>Logout</ion-label>
             <ion-button (click)="logout()">Logout</ion-button>
           </ion-item>
-
-
         </ion-list>
-        <ion-note>
-          Version {{appVersion}}
-        </ion-note>
+        <ion-note> Version {{ appVersion }} </ion-note>
         <!--
 
         <ion-list id="inbox-list">

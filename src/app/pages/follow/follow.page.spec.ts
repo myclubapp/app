@@ -9,8 +9,8 @@ describe('FollowPage', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ FollowPage ],
-      imports: [IonicModule.forRoot()]
+      declarations: [FollowPage],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(FollowPage);

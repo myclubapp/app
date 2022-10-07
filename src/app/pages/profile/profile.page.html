@@ -14,52 +14,52 @@
     </ion-toolbar>
   </ion-header>
 
-
   <ng-container *ngIf="userProfile$ | async as userProfile; else loading">
     <ion-list>
       <ion-list-header>
-        <ion-label>
-          Öffentliches Profil
-        </ion-label>
+        <ion-label> Öffentliches Profil </ion-label>
       </ion-list-header>
 
       <ion-item>
         <ion-avatar slot="start">
-          <img src="{{userProfile.profilePicture}}">
+          <img src="{{userProfile.profilePicture}}" />
         </ion-avatar>
         <ion-label>Item Avatar</ion-label>
         <ion-button slot="end" (click)="takePicture()">
           <ion-icon slot="icon-only" name="camera"></ion-icon>
         </ion-button>
-
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">
-          Vorname
-        </ion-label>
-        <ion-input readonly [(ngModel)]="userProfile.firstName" value="{{userProfile.firstName}}">
+        <ion-label position="stacked"> Vorname </ion-label>
+        <ion-input
+          readonly
+          [(ngModel)]="userProfile.firstName"
+          value="{{userProfile.firstName}}"
+        >
         </ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">
-          Nachname
-        </ion-label>
-        <ion-input readonly [(ngModel)]="userProfile.lastName" value="{{userProfile.lastName}}">
+        <ion-label position="stacked"> Nachname </ion-label>
+        <ion-input
+          readonly
+          [(ngModel)]="userProfile.lastName"
+          value="{{userProfile.lastName}}"
+        >
         </ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">
-          E-Mail
-        </ion-label>
-        <ion-input readonly [(ngModel)]="userProfile.email" value="{{userProfile.email}}">
+        <ion-label position="stacked"> E-Mail </ion-label>
+        <ion-input
+          readonly
+          [(ngModel)]="userProfile.email"
+          value="{{userProfile.email}}"
+        >
         </ion-input>
       </ion-item>
-
     </ion-list>
-
   </ng-container>
 
   <!-- 
@@ -108,17 +108,13 @@
 </ion-content>
 <ng-template #loading>
   <!-- Bubbles -->
-<ion-spinner name="bubbles"></ion-spinner>
+  <ion-spinner name="bubbles"></ion-spinner>
 </ng-template>
 
 <ng-template #loadingClub>
-  <ion-text>
-    loading
-  </ion-text>
+  <ion-text> loading </ion-text>
 </ng-template>
 
 <ng-template #loadingTeams>
-  <ion-text>
-    loading
-  </ion-text>
+  <ion-text> loading </ion-text>
 </ng-template>

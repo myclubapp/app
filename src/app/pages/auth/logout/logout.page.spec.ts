@@ -9,8 +9,8 @@ describe('LogoutPage', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LogoutPage ],
-      imports: [IonicModule.forRoot()]
+      declarations: [LogoutPage],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LogoutPage);

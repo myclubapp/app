@@ -16,7 +16,7 @@ import { UserProfileService } from 'src/app/services/firebase/user-profile.servi
   styleUrls: ['./championship-detail.page.scss'],
 })
 export class ChampionshipDetailPage implements OnInit {
-  @Input("data") game: Game;
+  @Input('data') game: Game;
   @ViewChild('map')
   mapRef: ElementRef<HTMLElement>;
   newMap: GoogleMap;
@@ -25,87 +25,112 @@ export class ChampionshipDetailPage implements OnInit {
   attendeeList: any[] = [];
   attendeeListTrue: any[] = [];
   attendeeListFalse: any[] = [];
-  
+
   constructor(
     private modalCtrl: ModalController,
-    public navParams : NavParams,
+    public navParams: NavParams,
     private championshipService: ChampionshipService,
     private toastController: ToastController,
     private authService: AuthService,
     private userProfileService: UserProfileService
-    ) {}
+  ) {}
   ngOnInit() {
     this.getUser();
-    // GET DATA 
+    // GET DATA
     this.game = this.navParams.get('data');
     this.setMap();
 
     // GET GAME
-    this.championshipService.getTeamGameRef(this.game.teamId, this.game.id).subscribe(game=>{
-      game.teamName = this.game.teamName;
-      game.teamId = this.game.teamId;     
-      this.game = game;
-      
-      this.game.status = null;
-    });
+    this.championshipService
+      .getTeamGameRef(this.game.teamId, this.game.id)
+      .subscribe((game) => {
+        game.teamName = this.game.teamName;
+        game.teamId = this.game.teamId;
+        this.game = game;
+
+        this.game.status = null;
+      });
 
     // GET ATTENDEE LIST
-    
-    this.championshipService.getTeamGameRef(this.game.teamId, this.game.id).pipe(
-      switchMap((game)=> this.championshipService.getTeamGameAttendeesRef(this.game.teamId, this.game.id)),
-      switchMap((allAttendees:any) => combineLatest(
-        allAttendees.map((member)=> combineLatest(
-          of(member),
-          this.userProfileService.getUserProfileById(member.id),
-        )),
-      )),
-    ).subscribe((data:any)=>{
-      let attendeeListNew = [];
 
-      //User ist im Falle keiner Antwort nicht in attendee Liste
-      this.game.status = null;
-      for (let attendee of data){ // loop over teams
-        let  status = attendee[0];
-        let  user = attendee[1];
+    this.championshipService
+      .getTeamGameRef(this.game.teamId, this.game.id)
+      .pipe(
+        switchMap((game) =>
+          this.championshipService.getTeamGameAttendeesRef(
+            this.game.teamId,
+            this.game.id
+          )
+        ),
+        switchMap((allAttendees: any) =>
+          combineLatest(
+            allAttendees.map((member) =>
+              combineLatest(
+                of(member),
+                this.userProfileService.getUserProfileById(member.id)
+              )
+            )
+          )
+        )
+      )
+      .subscribe((data: any) => {
+        let attendeeListNew = [];
 
-        user.status =  status.status;
-        attendeeListNew.push(user);
+        //User ist im Falle keiner Antwort nicht in attendee Liste
+        this.game.status = null;
+        for (let attendee of data) {
+          // loop over teams
+          let status = attendee[0];
+          let user = attendee[1];
 
-        //update game user status
-        if (user.id === this.user.uid){
-          this.game.status = status.status
-        } else {
-          this.game.status = null;
+          user.status = status.status;
+          attendeeListNew.push(user);
+
+          //update game user status
+          if (user.id === this.user.uid) {
+            this.game.status = status.status;
+          } else {
+            this.game.status = null;
+          }
         }
-      }
 
-      this.attendeeList = [...new Set([].concat(...attendeeListNew))];
-      this.attendeeList = this.attendeeList.sort((a,b)=>b.firstName-a.firstName);
-      this.attendeeListTrue = this.attendeeList.filter(element=>element.status===true);
-      this.attendeeListFalse = this.attendeeList.filter(element=>element.status===false);
-    
-    })
-
+        this.attendeeList = [...new Set([].concat(...attendeeListNew))];
+        this.attendeeList = this.attendeeList.sort(
+          (a, b) => b.firstName - a.firstName
+        );
+        this.attendeeListTrue = this.attendeeList.filter(
+          (element) => element.status === true
+        );
+        this.attendeeListFalse = this.attendeeList.filter(
+          (element) => element.status === false
+        );
+      });
   }
 
-  async toggle(status: boolean, game: Game){
-    console.log(`Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}` );
-    await this.championshipService.setTeamGameAttendeeStatus(this.user.uid, status, game.teamId,  game.id);
+  async toggle(status: boolean, game: Game) {
+    console.log(
+      `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
+    );
+    await this.championshipService.setTeamGameAttendeeStatus(
+      this.user.uid,
+      status,
+      game.teamId,
+      game.id
+    );
     this.presentToast();
   }
 
   async presentToast() {
-   
     const toast = await this.toastController.create({
       message: 'Änderungen gespeichert',
-      color: "primary",
+      color: 'primary',
       duration: 2000,
-      position: "top"
+      position: 'top',
     });
     toast.present();
   }
 
-  async getUser(){
+  async getUser() {
     this.user = await this.authService.getUser();
   }
 
@@ -117,11 +142,11 @@ export class ChampionshipDetailPage implements OnInit {
     return this.modalCtrl.dismiss(this.game, 'confirm');
   }
 
-  async setMap(){
+  async setMap() {
     const apiKey = 'AIzaSyAM5x9P0syj9qtxUmFs98nW0B967xo52Fw';
 
     const mapRef = document.getElementById('map');
-    
+
     this.newMap = await GoogleMap.create({
       id: 'my-map-' + this.game.id, // Unique identifier for this map instance
       element: mapRef, // reference to the capacitor-google-map element
@@ -135,35 +160,45 @@ export class ChampionshipDetailPage implements OnInit {
         zoom: 8, // The initial zoom level to be rendered by the map
       },
     });
-    this.newMap.addMarker({title: `${this.game.location} in ${this.game.city}` ,coordinate:{
-      lat: Number(this.game.latitude),
-      lng: Number(this.game.longitude),
-    },  snippet: `${this.game.location} in ${this.game.city}`});
+    this.newMap.addMarker({
+      title: `${this.game.location} in ${this.game.city}`,
+      coordinate: {
+        lat: Number(this.game.latitude),
+        lng: Number(this.game.longitude),
+      },
+      snippet: `${this.game.location} in ${this.game.city}`,
+    });
 
     const permission: PermissionStatus = await Geolocation.checkPermissions();
-    try{
-      if (permission.location === 'denied' || permission.coarseLocation === 'denied' ){
-        console.log("no permission");
+    try {
+      if (
+        permission.location === 'denied' ||
+        permission.coarseLocation === 'denied'
+      ) {
+        console.log('no permission');
         await Geolocation.requestPermissions();
       }
     } catch (e) {
-      console.log("No Permission Request possible");
+      console.log('No Permission Request possible');
     }
-    try{
+    try {
       const coordinates = await Geolocation.getCurrentPosition();
-      if (coordinates.coords.latitude && coordinates.coords.longitude){
-        this.newMap.addMarker({title: 'Meine Position', coordinate: {
-          lat: coordinates.coords.latitude,
-          lng: coordinates.coords.longitude
-        }, isFlat: true, snippet: 'Meine Position'});
+      if (coordinates.coords.latitude && coordinates.coords.longitude) {
+        this.newMap.addMarker({
+          title: 'Meine Position',
+          coordinate: {
+            lat: coordinates.coords.latitude,
+            lng: coordinates.coords.longitude,
+          },
+          isFlat: true,
+          snippet: 'Meine Position',
+        });
       }
     } catch (e) {
-      console.log("no coordinates on map");
+      console.log('no coordinates on map');
     }
   }
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.newMap.destroy();
   }
-
-
 }

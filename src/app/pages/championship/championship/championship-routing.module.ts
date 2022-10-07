@@ -6,8 +6,8 @@ import { ChampionshipPage } from './championship.page';
 const routes: Routes = [
   {
     path: '',
-    component: ChampionshipPage
-  }
+    component: ChampionshipPage,
+  },
 ];
 
 @NgModule({

@@ -1,15 +1,15 @@
-import {  Component,  OnInit,  AfterViewInit} from '@angular/core';
-import {  Observable} from 'rxjs';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Observable } from 'rxjs';
 
 // import firebase from 'firebase/compat/app';
-import {  User} from "@angular/fire/auth";
+import { User } from '@angular/fire/auth';
 
 //Services
-import {FirebaseService} from 'src/app/services/firebase.service';
-import {AuthService} from 'src/app/services/auth.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 //models
-import {Profile} from 'src/app/models/user';
+import { Profile } from 'src/app/models/user';
 
 // Capacitor
 import { Camera, CameraResultType, Photo } from '@capacitor/camera';
@@ -23,8 +23,7 @@ import { UserProfileService } from 'src/app/services/firebase/user-profile.servi
   styleUrls: ['./profile.page.scss'],
 })
 export class ProfilePage implements OnInit, AfterViewInit {
-
-  userProfile$: Observable < Profile > ;
+  userProfile$: Observable<Profile>;
   // clubList$: Observable < Club > ;
   // teamList$: Observable < Team > ;
   constructor(
@@ -33,16 +32,14 @@ export class ProfilePage implements OnInit, AfterViewInit {
     private profileService: UserProfileService
   ) {}
 
-  async ngOnInit() {
-
-  }
+  async ngOnInit() {}
 
   ngAfterViewInit(): void {
     this.getUser();
     // this.getClubList();
     // this.getTeamList();
   }
-/* 
+  /* 
   async getClubList(){
     const user: User = await this.authService.getUser();
     // this.clubList$ = 
@@ -63,9 +60,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
     const image: Photo = await Camera.getPhoto({
       quality: 90,
       allowEditing: true,
-      resultType: CameraResultType.Base64
+      resultType: CameraResultType.Base64,
     });
-  
+
     // image.webPath will contain a path that can be set as an image src.
     // You can access the original file using image.path, which can be
     // passed to the Filesystem API to read the raw data of the image,
@@ -79,6 +76,5 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
     const user: User = await this.authService.getUser();
     this.profileService.setUserProfilePicture(user, image);
-  };
-
+  }
 }

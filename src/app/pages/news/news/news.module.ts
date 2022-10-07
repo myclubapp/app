@@ -1,7 +1,7 @@
-import { NgModule , CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { IonicModule } from '@ionic/angular';
 
@@ -15,9 +15,9 @@ import { NewsPage } from './news.page';
     FontAwesomeModule,
     FormsModule,
     IonicModule,
-    NewsPageRoutingModule
+    NewsPageRoutingModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  declarations: [NewsPage]
+  declarations: [NewsPage],
 })
 export class NewsPageModule {}

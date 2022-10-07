@@ -7,13 +7,9 @@ import { MenuController } from '@ionic/angular';
   styleUrls: ['./tabs.page.scss'],
 })
 export class TabsPage implements OnInit {
-
-  constructor(
-    public menuCtrl: MenuController,
-  ) { }
+  constructor(public menuCtrl: MenuController) {}
 
   ngOnInit() {
     this.menuCtrl.enable(true, 'menu');
   }
-
 }

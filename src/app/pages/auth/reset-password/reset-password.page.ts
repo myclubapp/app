@@ -1,7 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
-import { AlertController, LoadingController, MenuController } from '@ionic/angular';
+import {
+  AlertController,
+  LoadingController,
+  MenuController,
+} from '@ionic/angular';
 import { UserCredentialLogin } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -19,35 +27,34 @@ export class ResetPasswordPage implements OnInit {
     private alertCtrl: AlertController,
     private router: Router,
     private formBuilder: UntypedFormBuilder,
-    private loadingCtrl: LoadingController,
-
+    private loadingCtrl: LoadingController
   ) {
     this.menuCtrl.enable(false, 'menu');
     this.authForm = this.formBuilder.group({
       email: ['', Validators.compose([Validators.required, Validators.email])],
       password: [''],
     });
-   }
+  }
 
   ngOnInit() {
     this.menuCtrl.enable(false, 'menu');
     this.user = {
       email: '',
-      password: ''
+      password: '',
     };
   }
 
   submitCredentials(authForm: UntypedFormGroup): void {
     if (!authForm.get('email').valid) {
       //console.log('Form is not valid yet, current value:', authForm.value);
-      this.alertCtrl.create({
-        message: 'Formular ist noch fehlerhaft',
-        buttons: [{ text: 'Ok', role: 'cancel' }],
-      }).then(alert=>{
-        alert.present();
-      });
-
-
+      this.alertCtrl
+        .create({
+          message: 'Formular ist noch fehlerhaft',
+          buttons: [{ text: 'Ok', role: 'cancel' }],
+        })
+        .then((alert) => {
+          alert.present();
+        });
     } else {
       this.presentLoading();
       const credentials: UserCredentialLogin = {
@@ -67,7 +74,7 @@ export class ResetPasswordPage implements OnInit {
     });
     await loading.present();
 
-    const {role, data} = await loading.onDidDismiss();
+    const { role, data } = await loading.onDidDismiss();
     console.log('Loading dismissed!');
   }
 
@@ -88,7 +95,7 @@ export class ResetPasswordPage implements OnInit {
         });
         await alert.present();
       },
-      async error => {
+      async (error) => {
         const errorAlert = await this.alertCtrl.create({
           message: error.message,
           buttons: [{ text: 'Ok', role: 'cancel' }],

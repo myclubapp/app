@@ -5,8 +5,13 @@ import { News } from 'src/app/models/news';
 import { Share } from '@capacitor/share';
 import { Device } from '@capacitor/device';
 
-import {faTwitter, faFacebook, faWhatsapp, faLinkedin} from '@fortawesome/free-brands-svg-icons';
-import {faEnvelope, faCopy} from '@fortawesome/free-solid-svg-icons';
+import {
+  faTwitter,
+  faFacebook,
+  faWhatsapp,
+  faLinkedin,
+} from '@fortawesome/free-brands-svg-icons';
+import { faEnvelope, faCopy } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-news-detail',
@@ -14,7 +19,7 @@ import {faEnvelope, faCopy} from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./news-detail.page.scss'],
 })
 export class NewsDetailPage implements OnInit {
-  @Input("data") news: News;
+  @Input('data') news: News;
 
   // Social Share
   shareSocialShareOptions: any;
@@ -27,8 +32,10 @@ export class NewsDetailPage implements OnInit {
   faEnvelope: any = faEnvelope;
   faCopy: any = faCopy;
 
-  constructor(private modalCtrl: ModalController,
-    public navParams : NavParams) {}
+  constructor(
+    private modalCtrl: ModalController,
+    public navParams: NavParams
+  ) {}
   ngOnInit() {
     this.news = this.navParams.get('data');
   }
@@ -42,16 +49,16 @@ export class NewsDetailPage implements OnInit {
 
   async share(news: News) {
     const device = await Device.getInfo();
-      if (device.platform === 'web' && navigator && navigator['share']) {
-        let shareRet = await Share.share({
-          title: news.title,
-          text: news.leadText,
-          url: news.url,
-          dialogTitle: news.title,
-        }).catch((onrejected) => {});
-      } else {
-        await this.shareFallback(news);
-      }
+    if (device.platform === 'web' && navigator && navigator['share']) {
+      let shareRet = await Share.share({
+        title: news.title,
+        text: news.leadText,
+        url: news.url,
+        dialogTitle: news.title,
+      }).catch((onrejected) => {});
+    } else {
+      await this.shareFallback(news);
+    }
   }
 
   shareFallback(news: News) {
@@ -98,5 +105,4 @@ export class NewsDetailPage implements OnInit {
       resolve(true);
     });
   }
-
 }

@@ -12,11 +12,6 @@ export interface News {
   authorImage: string;
   url: string;
 }
-export interface SwissUnihockeyNews extends News {
+export interface SwissUnihockeyNews extends News {}
 
-}
-
-export interface SwissVolleyNews extends News {
-
-
-}
+export interface SwissVolleyNews extends News {}

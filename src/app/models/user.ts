@@ -1,7 +1,6 @@
 export interface UserCredentialLogin {
   email: string;
   password: string;
-
 }
 export interface Profile {
   id: string;

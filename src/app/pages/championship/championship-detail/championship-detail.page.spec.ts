@@ -9,8 +9,8 @@ describe('ChampionshipDetailPage', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChampionshipDetailPage ],
-      imports: [IonicModule.forRoot()]
+      declarations: [ChampionshipDetailPage],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ChampionshipDetailPage);

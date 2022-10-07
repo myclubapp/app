@@ -13,9 +13,9 @@ import { ChampionshipDetailPage } from './championship-detail.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    ChampionshipDetailPageRoutingModule
+    ChampionshipDetailPageRoutingModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  declarations: [ChampionshipDetailPage]
+  declarations: [ChampionshipDetailPage],
 })
 export class ChampionshipDetailPageModule {}

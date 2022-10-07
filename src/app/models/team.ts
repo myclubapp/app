@@ -6,18 +6,13 @@ export interface Team {
   portrait: string;
   liga: string;
   type: string;
-
 }
-export interface SwissUnihockeyTeam extends Team {
-
-}
+export interface SwissUnihockeyTeam extends Team {}
 
 export interface SwissVolleyTeam extends Team {
-
   gender: string;
   clubId: string;
   clubCaption: string;
   leagueCaption: string;
   organisationCaption: string;
-
 }

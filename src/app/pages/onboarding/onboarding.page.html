@@ -16,42 +16,35 @@
 
   <ion-list>
     <ion-list-header>
-      <ion-label>
-        Einladung
-      </ion-label>
+      <ion-label> Einladung </ion-label>
     </ion-list-header>
 
     <ion-item>
       <ion-label position="stacked">
         Einladungscode eingeben oder scannen
       </ion-label>
-      <ion-input value="{{code}}">
-      </ion-input>
+      <ion-input value="{{code}}"> </ion-input>
     </ion-item>
 
     <ion-list-header>
-      <ion-label>
-        Offene Einladungen
-      </ion-label>
+      <ion-label> Offene Einladungen </ion-label>
     </ion-list-header>
 
     <ion-item *ngFor="let invite of inviteList">
       <ion-label>
         <h2>{{invite?.data().clubName}}</h2>
-        <p>Gültig bis: {{invite?.data().validTo.seconds * 1000 | date:'dd.MM.YYYY HH:mm' }}</p>
+        <p>
+          Gültig bis: {{invite?.data().validTo.seconds * 1000 | date:'dd.MM.YYYY
+          HH:mm' }}
+        </p>
       </ion-label>
-      <ion-button (click)="acceptInvite(invite)">
-        annehmen
-      </ion-button>
+      <ion-button (click)="acceptInvite(invite)"> annehmen </ion-button>
     </ion-item>
-
   </ion-list>
-
 
   <ion-fab vertical="bottom" horizontal="center" slot="fixed">
     <ion-fab-button (click)="scanCode()">
       <ion-icon name="barcode"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-
 </ion-content>

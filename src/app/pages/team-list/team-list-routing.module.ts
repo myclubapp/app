@@ -6,8 +6,8 @@ import { TeamListPage } from './team-list.page';
 const routes: Routes = [
   {
     path: '',
-    component: TeamListPage
-  }
+    component: TeamListPage,
+  },
 ];
 
 @NgModule({

@@ -9,12 +9,7 @@ import { TeamPageRoutingModule } from './team-routing.module';
 import { TeamPage } from './team.page';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    TeamPageRoutingModule
-  ],
-  declarations: [TeamPage]
+  imports: [CommonModule, FormsModule, IonicModule, TeamPageRoutingModule],
+  declarations: [TeamPage],
 })
 export class TeamPageModule {}

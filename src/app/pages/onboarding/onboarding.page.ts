@@ -18,8 +18,8 @@ export class OnboardingPage implements OnInit {
   constructor(
     private qrservice: QrcodeService,
     // private fbService: FirebaseService,
-    public alertController: AlertController,
-  ) { }
+    public alertController: AlertController
+  ) {}
 
   async ngOnInit() {
     /* const inviteRef = await this.fbService.getInvites();
@@ -29,35 +29,34 @@ export class OnboardingPage implements OnInit {
     }) */
   }
 
-  async scanCode()  {
-    const image:any = await this.takePicture();
+  async scanCode() {
+    const image: any = await this.takePicture();
     this.code = this.qrservice.decode(image.base64String);
 
-    if (this.code){
+    if (this.code) {
       await this.scanOK(this.code);
-    }else{
+    } else {
       await this.scanNOTOK();
     }
-  };
+  }
 
-  async takePicture()  {
-    const image:any = await Camera.getPhoto({
+  async takePicture() {
+    const image: any = await Camera.getPhoto({
       quality: 90,
       allowEditing: true,
       width: 400,
       height: 400,
-      resultType: CameraResultType.Base64
-    }).catch(err=>{
-      console.log("abgebrochen");
+      resultType: CameraResultType.Base64,
+    }).catch((err) => {
+      console.log('abgebrochen');
     });
     return image;
   }
 
-  async acceptInvite(invite){
+  async acceptInvite(invite) {
     console.log(invite.id);
 
     // await this.fbService.acceptInvite(invite.id);
-
   }
 
   async scanOK(code) {
@@ -66,7 +65,7 @@ export class OnboardingPage implements OnInit {
       header: 'Scan erfolgreich',
       subHeader: 'Scan erfolgreich',
       message: `Einladungscode ${code} wurde erkannt`,
-      buttons: ['OK']
+      buttons: ['OK'],
     });
 
     await alert.present();
@@ -81,7 +80,7 @@ export class OnboardingPage implements OnInit {
       header: 'Scan nicht erfolgreich',
       subHeader: 'Scan nicht erfolgreich',
       message: `Einladungscode wurde nicht erkannt`,
-      buttons: ['OK']
+      buttons: ['OK'],
     });
 
     await alert.present();
@@ -89,5 +88,4 @@ export class OnboardingPage implements OnInit {
     const { role } = await alert.onDidDismiss();
     console.log('onDidDismiss resolved with role', role);
   }
-
 }

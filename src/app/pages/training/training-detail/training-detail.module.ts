@@ -13,8 +13,8 @@ import { TrainingDetailPage } from './training-detail.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    TrainingDetailPageRoutingModule
+    TrainingDetailPageRoutingModule,
   ],
-  declarations: [TrainingDetailPage]
+  declarations: [TrainingDetailPage],
 })
 export class TrainingDetailPageModule {}

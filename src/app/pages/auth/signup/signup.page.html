@@ -1,19 +1,32 @@
 <ion-content>
   <div class="min-h-screen bg-white flex">
-    <div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+    <div
+      class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24"
+    >
       <div class="mx-auto w-full max-w-sm lg:w-96">
         <div>
-
           <picture>
-            <source srcset="assets/logo_trans.png" media="(prefers-color-scheme: dark)">
-            <source srcset="assets/logo_trans.png" media="(prefers-color-scheme: light)">
+            <source
+              srcset="assets/logo_trans.png"
+              media="(prefers-color-scheme: dark)"
+            />
+            <source
+              srcset="assets/logo_trans.png"
+              media="(prefers-color-scheme: light)"
+            />
             <img class="h-12 w-auto" src="assets/logo_trans.png" alt="Logo" />
           </picture>
 
-          <h2 class="mt-6 text-3xl font-extrabold text-gray-900">Neuen Account erstellen</h2>
+          <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+            Neuen Account erstellen
+          </h2>
           <p class="mt-2 text-sm text-gray-600">
             Oder
-            <a href="/login" class="font-medium text-myclublight hover:text-myclubdark"> bist Du bereits registriert?
+            <a
+              href="/login"
+              class="font-medium text-myclublight hover:text-myclubdark"
+            >
+              bist Du bereits registriert?
             </a>
           </p>
         </div>
@@ -22,92 +35,81 @@
           <div class="mt-6">
             <form class="space-y-6" [formGroup]="authForm">
               <div>
-                <label for="email" class="block text-sm font-medium text-gray-700"> E-Mail Adresse </label>
+                <label
+                  for="email"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  E-Mail Adresse
+                </label>
                 <div class="mt-1">
-                  <input id="email" name="email" type="email" autocomplete="email" formControlName="email" required
-                    class="
-                      appearance-none
-                      block
-                      w-full
-                      px-3
-                      py-2
-                      border border-gray-300
-                      rounded-md
-                      shadow-sm
-                      placeholder-gray-400
-                      focus:outline-none
-                      focus:ring-indigo-500
-                      focus:border-indigo-500
-                      sm:text-sm
-                      dark:text-black
-                    " />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autocomplete="email"
+                    formControlName="email"
+                    required
+                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-black"
+                  />
                 </div>
               </div>
 
               <div class="space-y-1">
-                <label for="password" class="block text-sm font-medium text-gray-700"> Passwort </label>
+                <label
+                  for="password"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  Passwort
+                </label>
                 <div class="mt-1">
-                  <input id="password" formControlName="password" name="password" type="password"
-                    autocomplete="current-password" required class="
-                      appearance-none
-                      block
-                      w-full
-                      px-3
-                      py-2
-                      border border-gray-300
-                      rounded-md
-                      shadow-sm
-                      placeholder-gray-400
-                      focus:outline-none
-                      focus:ring-indigo-500
-                      focus:border-indigo-500
-                      sm:text-sm
-                    " />
+                  <input
+                    id="password"
+                    formControlName="password"
+                    name="password"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  />
                 </div>
               </div>
 
               <div>
-                <label for="firstName" class="block text-sm font-medium text-gray-700"> Vorname </label>
+                <label
+                  for="firstName"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  Vorname
+                </label>
                 <div class="mt-1">
-                  <input id="firstName" name="firstName" type="text" autocomplete="firstName" formControlName="firstName" required
-                    class="
-                      appearance-none
-                      block
-                      w-full
-                      px-3
-                      py-2
-                      border border-gray-300
-                      rounded-md
-                      shadow-sm
-                      placeholder-gray-400
-                      focus:outline-none
-                      focus:ring-indigo-500
-                      focus:border-indigo-500
-                      sm:text-sm
-                      dark:text-black
-                    " />
+                  <input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    autocomplete="firstName"
+                    formControlName="firstName"
+                    required
+                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-black"
+                  />
                 </div>
               </div>
               <div>
-                <label for="lastName" class="block text-sm font-medium text-gray-700"> Nachname </label>
+                <label
+                  for="lastName"
+                  class="block text-sm font-medium text-gray-700"
+                >
+                  Nachname
+                </label>
                 <div class="mt-1">
-                  <input id="lastName" name="lastName" type="text" autocomplete="lastName" formControlName="lastName" required
-                    class="
-                      appearance-none
-                      block
-                      w-full
-                      px-3
-                      py-2
-                      border border-gray-300
-                      rounded-md
-                      shadow-sm
-                      placeholder-gray-400
-                      focus:outline-none
-                      focus:ring-indigo-500
-                      focus:border-indigo-500
-                      sm:text-sm
-                      dark:text-black
-                    " />
+                  <input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    autocomplete="lastName"
+                    formControlName="lastName"
+                    required
+                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm dark:text-black"
+                  />
                 </div>
               </div>
 
@@ -122,29 +124,13 @@
                 <!--      <div class="text-sm">
                   <a href="/reset-password" class="font-medium text-myclublight hover:text-myclubdark"> Passwort vergessen? </a>
                 </div>
-              -->
-              </div>
+              --></div>
 
               <div>
-                <button (click)="submitCredentials(authForm)" class="
-                    w-full
-                    flex
-                    justify-center
-                    py-2
-                    px-4
-                    border border-transparent
-                    rounded-md
-                    shadow-sm
-                    text-sm
-                    font-medium
-                    text-white
-                    dark:text-white
-                    bg-myclublight
-                    dark:bg-myclubdark
-                    hover:bg-myclubdark
-                    focus:outline-none
-                    focus:ring-2 focus:ring-offset-2 focus:ring-bg-myclubdark
-                  ">
+                <button
+                  (click)="submitCredentials(authForm)"
+                  class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white dark:text-white bg-myclublight dark:bg-myclubdark hover:bg-myclubdark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bg-myclubdark"
+                >
                   Registrieren
                 </button>
               </div>
@@ -154,7 +140,11 @@
       </div>
     </div>
     <div class="hidden lg:block relative w-0 flex-1">
-      <img class="absolute inset-0 h-full w-full object-cover" src="assets/bg/mountain-4.jpg" alt="background image mountains" />
+      <img
+        class="absolute inset-0 h-full w-full object-cover"
+        src="assets/bg/mountain-4.jpg"
+        alt="background image mountains"
+      />
     </div>
   </div>
 </ion-content>

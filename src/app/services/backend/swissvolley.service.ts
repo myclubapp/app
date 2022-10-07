@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import {Apollo,ApolloBase, gql} from 'apollo-angular';
+import { Apollo, ApolloBase, gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SwissvolleyService {
   private apollo: ApolloBase;
@@ -11,12 +11,11 @@ export class SwissvolleyService {
     this.apollo = this.apolloProvider.use('swissvolley');
   }
 
-  getClubs(): Observable<any>{
-    return this.apollo
-    .watchQuery({
+  getClubs(): Observable<any> {
+    return this.apollo.watchQuery({
       query: gql`
         {
-          associations{
+          associations {
             id
             name
             clubs {
@@ -29,9 +28,8 @@ export class SwissvolleyService {
     }).valueChanges;
   }
 
-  getNews(): Observable<any>{
-    return this.apollo
-    .watchQuery({
+  getNews(): Observable<any> {
+    return this.apollo.watchQuery({
       query: gql`
         {
           news {
@@ -52,22 +50,19 @@ export class SwissvolleyService {
       `,
     }).valueChanges;
   }
-  getGames(teamId: string): Observable<any>{
-    return this.apollo
-    .watchQuery({
+  getGames(teamId: string): Observable<any> {
+    return this.apollo.watchQuery({
       query: gql`
         {
-          team(teamId: teamId){
+          team(teamId: teamId) {
             id
             name
-            games{
+            games {
               id
             }
-            
           }
         }
       `,
     }).valueChanges;
   }
-
 }

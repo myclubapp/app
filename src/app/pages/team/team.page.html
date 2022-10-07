@@ -1,6 +1,5 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-
     <ion-title>{{team?.name}}</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="close()">schliessen</ion-button>
@@ -15,33 +14,23 @@
     </ion-toolbar>
   </ion-header>
 
-  
   <ion-list *ngIf="memberList.length > 0">
-    <ion-list-header>
-      Members
-    </ion-list-header>
+    <ion-list-header> Members </ion-list-header>
     <ion-item *ngFor="let member of memberList">
       <ion-avatar slot="start">
-        <img src="{{member?.profilePicture}}">
+        <img src="{{member?.profilePicture}}" />
       </ion-avatar>
-      <ion-label>
-        {{member?.firstName}} {{member?.lastName}}
-      </ion-label>
+      <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
     </ion-item>
-
   </ion-list>
 
   <ion-list *ngIf="adminList.length > 0">
-    <ion-list-header>
-      Administrators
-    </ion-list-header>
+    <ion-list-header> Administrators </ion-list-header>
     <ion-item *ngFor="let member of adminList">
       <ion-avatar slot="start">
-        <img src="{{member?.profilePicture}}">
+        <img src="{{member?.profilePicture}}" />
       </ion-avatar>
-      <ion-label>
-        {{member?.firstName}} {{member?.lastName}}
-      </ion-label>
+      <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
     </ion-item>
-
-  </ion-list>
+  </ion-list></ion-content
+>

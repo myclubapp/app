@@ -3,7 +3,7 @@ import { Club } from 'src/app/models/club';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { switchMap, map } from 'rxjs/operators';
-import { of,combineLatest } from 'rxjs';
+import { of, combineLatest } from 'rxjs';
 import { User } from 'firebase/auth';
 import { ClubPage } from '../club/club.page';
 import { IonRouterOutlet, ModalController } from '@ionic/angular';
@@ -21,12 +21,12 @@ export class ClubListPage implements OnInit {
     private authService: AuthService,
     private routerOutlet: IonRouterOutlet,
     private modalCtrl: ModalController
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.getClubList();
   }
-  
+
   async openModal(club: Club) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
@@ -35,42 +35,46 @@ export class ClubListPage implements OnInit {
       swipeToClose: true,
       showBackdrop: true,
       componentProps: {
-        data: club
-      }
+        data: club,
+      },
     });
     modal.present();
 
     const { data, role } = await modal.onWillDismiss();
 
     if (role === 'confirm') {
-    
     }
   }
 
-  getClubList(){
-    this.authService.getUser$().pipe(
-      // GET TEAMS
-      switchMap((user:User) => this.fbService.getUserClubRefs(user)),
-      // Loop Over Clubs  
-      switchMap((allClubs:any) => combineLatest(
-        allClubs.map((club) => combineLatest(
-          of(club),
-          this.fbService.getClubRef(club.id),  
-        )),
-      )),
+  getClubList() {
+    this.authService
+      .getUser$()
+      .pipe(
+        // GET TEAMS
+        switchMap((user: User) => this.fbService.getUserClubRefs(user)),
+        // Loop Over Clubs
+        switchMap((allClubs: any) =>
+          combineLatest(
+            allClubs.map((club) =>
+              combineLatest(of(club), this.fbService.getClubRef(club.id))
+            )
+          )
+        )
       )
-      .subscribe(async (data:any)=>{
+      .subscribe(async (data: any) => {
         console.log(data);
 
         let clubListNew = [];
-        for (let club of data){ // loop over clubs
+        for (let club of data) {
+          // loop over clubs
 
           let clubDetails = club[1];
           clubListNew.push(clubDetails);
-         
         }
         this.clubList = [...new Set([].concat(...clubListNew))];
-        this.clubList = this.clubList.sort((a,b)=>Number(a.id)-Number(b.id));
+        this.clubList = this.clubList.sort(
+          (a, b) => Number(a.id) - Number(b.id)
+        );
       });
   }
 }

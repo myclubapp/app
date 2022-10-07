@@ -6,8 +6,8 @@ import { FollowPage } from './follow.page';
 const routes: Routes = [
   {
     path: '',
-    component: FollowPage
-  }
+    component: FollowPage,
+  },
 ];
 
 @NgModule({

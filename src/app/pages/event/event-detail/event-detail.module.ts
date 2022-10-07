@@ -13,8 +13,8 @@ import { EventDetailPage } from './event-detail.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    EventDetailPageRoutingModule
+    EventDetailPageRoutingModule,
   ],
-  declarations: [EventDetailPage]
+  declarations: [EventDetailPage],
 })
 export class EventDetailPageModule {}

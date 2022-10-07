@@ -6,8 +6,8 @@ import { LogoutPage } from './logout.page';
 const routes: Routes = [
   {
     path: '',
-    component: LogoutPage
-  }
+    component: LogoutPage,
+  },
 ];
 
 @NgModule({

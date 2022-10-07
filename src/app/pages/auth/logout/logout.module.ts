@@ -14,8 +14,8 @@ import { LogoutPage } from './logout.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    LogoutPageRoutingModule
+    LogoutPageRoutingModule,
   ],
-  declarations: [LogoutPage]
+  declarations: [LogoutPage],
 })
 export class LogoutPageModule {}
