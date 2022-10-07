@@ -2,9 +2,6 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
-    "paths": {
-      "tslib": ["node_modules/tslib/tslib.d.ts"]
-    },
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
