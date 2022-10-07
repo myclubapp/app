@@ -13,8 +13,8 @@ export const environment = {
     authDomain: 'myclubmanagement.firebaseapp.com',
     messagingSenderId: '631527568360',
   },
-  production: false,
-};
+  production: false
+}
 
 /*
  * For easier debugging in development mode, you can import the following file

@@ -6,12 +6,12 @@ import { NotFoundPage } from './not-found.page';
 const routes: Routes = [
   {
     path: '',
-    component: NotFoundPage,
-  },
-];
+    component: NotFoundPage
+  }
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class NotFoundPageRoutingModule {}

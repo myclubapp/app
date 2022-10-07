@@ -9,5 +9,5 @@ export const environment = {
     authDomain: 'myclubmanagement.firebaseapp.com',
     messagingSenderId: '631527568360',
   },
-  production: true,
-};
+  production: true
+}

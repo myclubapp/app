@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Camera, CameraResultType } from '@capacitor/camera';
 import { AlertController } from '@ionic/angular';
 /* import { Observable } from 'rxjs';
-import { FirebaseService } from 'src/app/services/firebase.service';*/
+import { FirebaseService } from 'src/app/services/firebase.service'; */
 import { QrcodeService } from 'src/app/services/qrcode.service';
 import firebase from 'firebase/compat/app';
 
@@ -14,14 +14,14 @@ import firebase from 'firebase/compat/app';
 export class OnboardingPage implements OnInit {
   imageUrl: any;
   public code: string;
-  inviteList: firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>[];
-  constructor(
-    private qrservice: QrcodeService,
+  inviteList: Array<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>>
+  constructor (
+    private readonly qrservice: QrcodeService,
     // private fbService: FirebaseService,
     public alertController: AlertController
   ) {}
 
-  async ngOnInit() {
+  async ngOnInit () {
     /* const inviteRef = await this.fbService.getInvites();
     inviteRef.subscribe(snapshot=>{
       //console.log(snapshot.docs);
@@ -29,7 +29,7 @@ export class OnboardingPage implements OnInit {
     }) */
   }
 
-  async scanCode() {
+  async scanCode () {
     const image: any = await this.takePicture();
     this.code = this.qrservice.decode(image.base64String);
 
@@ -40,26 +40,26 @@ export class OnboardingPage implements OnInit {
     }
   }
 
-  async takePicture() {
+  async takePicture () {
     const image: any = await Camera.getPhoto({
       quality: 90,
       allowEditing: true,
       width: 400,
       height: 400,
-      resultType: CameraResultType.Base64,
+      resultType: CameraResultType.Base64
     }).catch((err) => {
       console.log('abgebrochen');
     });
     return image;
   }
 
-  async acceptInvite(invite) {
+  async acceptInvite (invite) {
     console.log(invite.id);
 
     // await this.fbService.acceptInvite(invite.id);
   }
 
-  async scanOK(code) {
+  async scanOK (code) {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Scan erfolgreich',
@@ -74,12 +74,12 @@ export class OnboardingPage implements OnInit {
     console.log('onDidDismiss resolved with role', role);
   }
 
-  async scanNOTOK() {
+  async scanNOTOK () {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'Scan nicht erfolgreich',
       subHeader: 'Scan nicht erfolgreich',
-      message: `Einladungscode wurde nicht erkannt`,
+      message: 'Einladungscode wurde nicht erkannt',
       buttons: ['OK'],
     });
 

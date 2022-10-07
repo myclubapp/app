@@ -3,7 +3,7 @@ import {
   IonItemSliding,
   IonRouterOutlet,
   ModalController,
-  ToastController,
+  ToastController
 } from '@ionic/angular';
 import { User } from 'firebase/auth';
 import { of, combineLatest } from 'rxjs';
@@ -24,25 +24,26 @@ export class TrainingsPage implements OnInit {
 
   trainingList: Training[];
   trainingListPast: Training[];
-  constructor(
+  constructor (
     public toastController: ToastController,
-    private routerOutlet: IonRouterOutlet,
-    private modalController: ModalController,
-    private authService: AuthService,
-    private fbService: FirebaseService,
-    private trainingService: TrainingService
+    private readonly routerOutlet: IonRouterOutlet,
+    private readonly modalController: ModalController,
+    private readonly authService: AuthService,
+    private readonly fbService: FirebaseService,
+    private readonly trainingService: TrainingService
   ) {}
-  ngOnInit() {
+
+  ngOnInit () {
     this.getUser();
     this.getTrainingsList();
     this.getTrainingsListPast();
   }
 
-  async getUser() {
+  async getUser () {
     this.user = await this.authService.getUser();
   }
 
-  async toggle(status: boolean, training: Training) {
+  async toggle (status: boolean, training: Training) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
     );
@@ -54,7 +55,8 @@ export class TrainingsPage implements OnInit {
     );
     this.presentToast();
   }
-  async toggleItem(
+
+  async toggleItem (
     slidingItem: IonItemSliding,
     status: boolean,
     training: Training
@@ -73,7 +75,7 @@ export class TrainingsPage implements OnInit {
     this.presentToast();
   }
 
-  async presentToast() {
+  async presentToast () {
     const toast = await this.toastController.create({
       message: 'changes has been saved',
       color: 'primary',
@@ -83,7 +85,7 @@ export class TrainingsPage implements OnInit {
     toast.present();
   }
 
-  getTrainingsList() {
+  getTrainingsList () {
     this.authService
       .getUser$()
       .pipe(
@@ -121,15 +123,15 @@ export class TrainingsPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        let trainingListNew = [];
-        for (let team of data) {
+        const trainingListNew = []
+        for (const team of data) {
           // loop over teams
 
-          let trainings = team[1];
-          let teamDetails = team[2];
-          for (let trainingObject of trainings) {
-            let training = trainingObject[0];
-            let attendees = trainingObject[1];
+          const trainings = team[1]
+          const teamDetails = team[2]
+          for (const trainingObject of trainings) {
+            const training = trainingObject[0]
+            const attendees = trainingObject[1]
 
             training.teamName = teamDetails.name;
             training.teamId = teamDetails.id;
@@ -155,10 +157,10 @@ export class TrainingsPage implements OnInit {
         this.trainingList = this.trainingList.sort(
           (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis()
         );
-      });
+      })
   }
 
-  getTrainingsListPast() {
+  getTrainingsListPast () {
     this.authService
       .getUser$()
       .pipe(
@@ -196,15 +198,15 @@ export class TrainingsPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        let trainingListNew = [];
-        for (let team of data) {
+        const trainingListNew = []
+        for (const team of data) {
           // loop over teams
 
-          let trainings = team[1];
-          let teamDetails = team[2];
-          for (let trainingObject of trainings) {
-            let training = trainingObject[0];
-            let attendees = trainingObject[1];
+          const trainings = team[1]
+          const teamDetails = team[2]
+          for (const trainingObject of trainings) {
+            const training = trainingObject[0]
+            const attendees = trainingObject[1]
 
             training.teamName = teamDetails.name;
             training.teamId = teamDetails.id;
@@ -230,6 +232,6 @@ export class TrainingsPage implements OnInit {
         this.trainingListPast = this.trainingListPast.sort(
           (a, b) => b.dateTime.toMillis() - a.dateTime.toMillis()
         );
-      });
+      })
   }
 }

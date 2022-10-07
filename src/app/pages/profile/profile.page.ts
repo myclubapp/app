@@ -4,11 +4,11 @@ import { Observable } from 'rxjs';
 // import firebase from 'firebase/compat/app';
 import { User } from '@angular/fire/auth';
 
-//Services
+// Services
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { AuthService } from 'src/app/services/auth.service';
 
-//models
+// models
 import { Profile } from 'src/app/models/user';
 
 // Capacitor
@@ -26,48 +26,49 @@ export class ProfilePage implements OnInit, AfterViewInit {
   userProfile$: Observable<Profile>;
   // clubList$: Observable < Club > ;
   // teamList$: Observable < Team > ;
-  constructor(
-    private authService: AuthService,
-    private fbService: FirebaseService,
-    private profileService: UserProfileService
+  constructor (
+    private readonly authService: AuthService,
+    private readonly fbService: FirebaseService,
+    private readonly profileService: UserProfileService
   ) {}
 
-  async ngOnInit() {}
+  async ngOnInit () {}
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit (): void {
     this.getUser();
     // this.getClubList();
     // this.getTeamList();
   }
-  /* 
+
+  /*
   async getClubList(){
     const user: User = await this.authService.getUser();
-    // this.clubList$ = 
+    // this.clubList$ =
     this.clubList$ = this.fbService.getClubRefs(user);
   }
-  
+
   async getTeamList(){
     const user: User = await this.authService.getUser();
     this.teamList$ = this.fbService.getTeamRefs(user);
   }
 */
-  async getUser() {
+  async getUser () {
     const user: User = await this.authService.getUser();
     this.userProfile$ = this.profileService.getUserProfile(user);
   }
 
-  async takePicture() {
+  async takePicture () {
     const image: Photo = await Camera.getPhoto({
       quality: 90,
       allowEditing: true,
-      resultType: CameraResultType.Base64,
-    });
+      resultType: CameraResultType.Base64
+    })
 
     // image.webPath will contain a path that can be set as an image src.
     // You can access the original file using image.path, which can be
     // passed to the Filesystem API to read the raw data of the image,
     // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-    var imageUrl = image.base64String;
+    const imageUrl = image.base64String
 
     // Can be set to the src of an image now
     // imageElement.src = imageUrl;

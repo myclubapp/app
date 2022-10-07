@@ -10,6 +10,6 @@ import { TeamPage } from './team.page';
 
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule, TeamPageRoutingModule],
-  declarations: [TeamPage],
+  declarations: [TeamPage]
 })
 export class TeamPageModule {}

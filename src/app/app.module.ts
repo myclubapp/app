@@ -20,7 +20,7 @@ import {
   provideAuth,
   getAuth,
   setPersistence,
-  inMemoryPersistence,
+  inMemoryPersistence
 } from '@angular/fire/auth';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 
@@ -40,7 +40,7 @@ import { TeamPage } from './pages/team/team.page';
     TrainingDetailPage,
     EventDetailPage,
     ClubPage,
-    TeamPage,
+    TeamPage
   ],
   imports: [
     BrowserModule,
@@ -58,7 +58,7 @@ import { TeamPage } from './pages/team/team.page';
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),
     provideAuth(() => getAuth()),
-    provideStorage(() => getStorage()),
+    provideStorage(() => getStorage())
     /* provideAuth(() => {
            const auth =  getAuth();
            setPersistence(auth, inMemoryPersistence);
@@ -67,16 +67,16 @@ import { TeamPage } from './pages/team/team.page';
            // setPersistence(auth, indexedDBLocalPersistence);
            // setPersistence(auth, browserSessionPersistence);
            return auth;
-         }),*/
+         }), */
   ],
   providers: [
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
     // { provide: PERSISTENCE, useValue: 'local' }, // https://firebase.google.com/docs/auth/web/auth-state-persistence
     // { provide: LANGUAGE_CODE, useValue: 'de' },
     // { provide: USE_DEVICE_LANGUAGE, useValue: true },
-    //{ provide: TENANT_ID, useValue: 'tenant-id-app-one' },
+    // { provide: TENANT_ID, useValue: 'tenant-id-app-one' },
   ],
   bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {}

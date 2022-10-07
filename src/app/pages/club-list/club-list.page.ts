@@ -16,18 +16,18 @@ import { IonRouterOutlet, ModalController } from '@ionic/angular';
 export class ClubListPage implements OnInit {
   clubList: Club[];
   skeleton = new Array(12);
-  constructor(
-    private fbService: FirebaseService,
-    private authService: AuthService,
-    private routerOutlet: IonRouterOutlet,
-    private modalCtrl: ModalController
+  constructor (
+    private readonly fbService: FirebaseService,
+    private readonly authService: AuthService,
+    private readonly routerOutlet: IonRouterOutlet,
+    private readonly modalCtrl: ModalController
   ) {}
 
-  ngOnInit() {
+  ngOnInit () {
     this.getClubList();
   }
 
-  async openModal(club: Club) {
+  async openModal (club: Club) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: ClubPage,
@@ -35,8 +35,8 @@ export class ClubListPage implements OnInit {
       swipeToClose: true,
       showBackdrop: true,
       componentProps: {
-        data: club,
-      },
+        data: club
+      }
     });
     modal.present();
 
@@ -46,7 +46,7 @@ export class ClubListPage implements OnInit {
     }
   }
 
-  getClubList() {
+  getClubList () {
     this.authService
       .getUser$()
       .pipe(
@@ -64,17 +64,17 @@ export class ClubListPage implements OnInit {
       .subscribe(async (data: any) => {
         console.log(data);
 
-        let clubListNew = [];
-        for (let club of data) {
+        const clubListNew = []
+        for (const club of data) {
           // loop over clubs
 
-          let clubDetails = club[1];
+          const clubDetails = club[1]
           clubListNew.push(clubDetails);
         }
         this.clubList = [...new Set([].concat(...clubListNew))];
         this.clubList = this.clubList.sort(
           (a, b) => Number(a.id) - Number(b.id)
         );
-      });
+      })
   }
 }

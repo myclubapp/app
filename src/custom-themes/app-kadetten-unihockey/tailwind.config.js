@@ -5,9 +5,9 @@ module.exports = {
     extend: {
       colors: {
         myclublight: "#F89828",
-        myclubdark: "#F89828",
-      },
-    },
+        myclubdark: "#F89828"
+      }
+    }
   },
-  plugins: [require("@tailwindcss/forms"), require("@tailwindcss/typography")],
+  plugins: [require("@tailwindcss/forms"), require("@tailwindcss/typography")]
 };

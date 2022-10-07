@@ -6,12 +6,12 @@ import { ChampionshipDetailPage } from './championship-detail.page';
 const routes: Routes = [
   {
     path: '',
-    component: ChampionshipDetailPage,
-  },
-];
+    component: ChampionshipDetailPage
+  }
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class ChampionshipDetailPageRoutingModule {}

@@ -10,6 +10,6 @@ import { NotFoundPage } from './not-found.page';
 
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule, NotFoundPageRoutingModule],
-  declarations: [NotFoundPage],
+  declarations: [NotFoundPage]
 })
 export class NotFoundPageModule {}

@@ -15,7 +15,7 @@ import {
   query,
   where,
   orderBy,
-  QueryConstraint,
+  QueryConstraint
 } from '@angular/fire/firestore';
 import { Observable, Observer } from 'rxjs';
 import { News } from 'src/app/models/news';
@@ -26,13 +26,13 @@ import { News } from 'src/app/models/news';
 export class NewsService {
   twentyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 20);
 
-  constructor(private firestore: Firestore) {}
+  constructor (private readonly firestore: Firestore) {}
 
-  getNewsRef(type: string): Observable<News[]> {
+  getNewsRef (type: string): Observable<News[]> {
     console.log('getNewsRef');
     console.log(type);
     // console.log(`Read Team Events List Ref ${teamId}`)
-    const newssRefList = collection(this.firestore, `news`);
+    const newssRefList = collection(this.firestore, 'news');
     const q = query(
       newssRefList,
       orderBy('date', 'desc'),
@@ -40,10 +40,11 @@ export class NewsService {
       where('date', '>=', this.twentyDaysAgo.toISOString())
     ); // heute - 20 Tage
     return collectionData(q, { idField: 'id' }) as unknown as Observable<
-      News[]
+    News[]
     >;
   }
-  getClubNewsRef(clubId: string): Observable<News[]> {
+
+  getClubNewsRef (clubId: string): Observable<News[]> {
     // console.log(`Read Team Events List Ref ${teamId}`)
     const newssRefList = collection(this.firestore, `club/${clubId}/news`);
     const q = query(
@@ -52,10 +53,11 @@ export class NewsService {
       where('date', '>=', this.twentyDaysAgo.toISOString())
     ); // heute - 20 Tage
     return collectionData(q, { idField: 'id' }) as unknown as Observable<
-      News[]
+    News[]
     >;
   }
-  getTeamNewsRef(teamId: string): Observable<News[]> {
+
+  getTeamNewsRef (teamId: string): Observable<News[]> {
     // console.log(`Read Team Events List Ref ${teamId}`)
     const newssRefList = collection(this.firestore, `teams/${teamId}/news`);
     const q = query(
@@ -64,22 +66,22 @@ export class NewsService {
       where('date', '>=', this.twentyDaysAgo.toISOString())
     ); // heute - 20 Tage
     return collectionData(q, { idField: 'id' }) as unknown as Observable<
-      News[]
+    News[]
     >;
   }
 
   private getDocData<T>(path: string, idField = 'id'): Observable<T> {
     const reference = doc(this.firestore, path);
-    return docData(reference, { idField: idField }) as Observable<T>;
+    return docData(reference, { idField }) as Observable<T>;
   }
 
   private getCollectionData<T>(
     path: string,
-    queryConstraints: Array<QueryConstraint> = [],
+    queryConstraints: QueryConstraint[] = [],
     idField = 'id'
-  ): Observable<Array<T>> {
+  ): Observable<T[]> {
     const reference = collection(this.firestore, path);
     const q = query(reference, ...queryConstraints);
-    return collectionData(q, { idField: idField }) as Observable<Array<T>>;
+    return collectionData(q, { idField }) as Observable<T[]>
   }
 }

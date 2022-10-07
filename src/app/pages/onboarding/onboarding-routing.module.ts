@@ -6,12 +6,12 @@ import { OnboardingPage } from './onboarding.page';
 const routes: Routes = [
   {
     path: '',
-    component: OnboardingPage,
-  },
-];
+    component: OnboardingPage
+  }
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class OnboardingPageRoutingModule {}

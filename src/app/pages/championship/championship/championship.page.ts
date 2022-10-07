@@ -3,7 +3,7 @@ import {
   IonItemSliding,
   IonRouterOutlet,
   ModalController,
-  ToastController,
+  ToastController
 } from '@ionic/angular';
 import { User } from 'firebase/auth';
 import { of, combineLatest } from 'rxjs';
@@ -25,25 +25,26 @@ export class ChampionshipPage implements OnInit {
 
   gamesList: Game[] = [];
   gamesListPast: Game[] = [];
-  constructor(
+  constructor (
     public toastController: ToastController,
-    private routerOutlet: IonRouterOutlet,
-    private modalCtrl: ModalController,
-    private authService: AuthService,
-    private fbService: FirebaseService,
-    private championshipService: ChampionshipService
+    private readonly routerOutlet: IonRouterOutlet,
+    private readonly modalCtrl: ModalController,
+    private readonly authService: AuthService,
+    private readonly fbService: FirebaseService,
+    private readonly championshipService: ChampionshipService
   ) {}
 
-  ngOnInit() {
+  ngOnInit () {
     this.getUser();
     this.getGamesList();
     this.getGamesListPast();
   }
 
-  async getUser() {
+  async getUser () {
     this.user = await this.authService.getUser();
   }
-  async openModal(game: Game) {
+
+  async openModal (game: Game) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: ChampionshipDetailPage,
@@ -51,8 +52,8 @@ export class ChampionshipPage implements OnInit {
       swipeToClose: true,
       showBackdrop: true,
       componentProps: {
-        data: game,
-      },
+        data: game
+      }
     });
     modal.present();
 
@@ -62,7 +63,7 @@ export class ChampionshipPage implements OnInit {
     }
   }
 
-  async toggle(status: boolean, game: Game) {
+  async toggle (status: boolean, game: Game) {
     // console.log(`Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}` );
     await this.championshipService.setTeamGameAttendeeStatus(
       this.user.uid,
@@ -72,7 +73,8 @@ export class ChampionshipPage implements OnInit {
     );
     this.presentToast();
   }
-  async toggleItem(slidingItem: IonItemSliding, status: boolean, game: Game) {
+
+  async toggleItem (slidingItem: IonItemSliding, status: boolean, game: Game) {
     slidingItem.closeOpened();
 
     console.log(
@@ -87,7 +89,7 @@ export class ChampionshipPage implements OnInit {
     this.presentToast();
   }
 
-  async presentToast() {
+  async presentToast () {
     const toast = await this.toastController.create({
       message: 'Änderungen gespeichert',
       color: 'primary',
@@ -97,7 +99,7 @@ export class ChampionshipPage implements OnInit {
     toast.present();
   }
 
-  getGamesList() {
+  getGamesList () {
     this.authService
       .getUser$()
       .pipe(
@@ -135,15 +137,15 @@ export class ChampionshipPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        let gamesListNew = [];
-        for (let team of data) {
+        const gamesListNew = []
+        for (const team of data) {
           // loop over teams
 
-          let games = team[1];
-          let teamDetails = team[2];
-          for (let gameObject of games) {
-            let game = gameObject[0];
-            let attendees = gameObject[1];
+          const games = team[1]
+          const teamDetails = team[2]
+          for (const gameObject of games) {
+            const game = gameObject[0]
+            const attendees = gameObject[1]
 
             game.teamName = teamDetails.name;
             game.teamId = teamDetails.id;
@@ -170,10 +172,10 @@ export class ChampionshipPage implements OnInit {
         this.gamesList = this.gamesList.sort(
           (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis()
         );
-      });
+      })
   }
 
-  getGamesListPast() {
+  getGamesListPast () {
     this.authService
       .getUser$()
       .pipe(
@@ -211,15 +213,15 @@ export class ChampionshipPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        let gamesListNew = [];
-        for (let team of data) {
+        const gamesListNew = []
+        for (const team of data) {
           // loop over teams
 
-          let games = team[1];
-          let teamDetails = team[2];
-          for (let gameObject of games) {
-            let game = gameObject[0];
-            let attendees = gameObject[1];
+          const games = team[1]
+          const teamDetails = team[2]
+          for (const gameObject of games) {
+            const game = gameObject[0]
+            const attendees = gameObject[1]
 
             game.teamName = teamDetails.name;
             game.teamId = teamDetails.id;
@@ -240,11 +242,11 @@ export class ChampionshipPage implements OnInit {
           }
         }
         this.gamesListPast = [
-          ...new Set(this.gamesListPast.concat(...gamesListNew)),
-        ];
+          ...new Set(this.gamesListPast.concat(...gamesListNew))
+        ]
         this.gamesListPast = this.gamesListPast.sort(
           (a, b) => b.dateTime.toMillis() - a.dateTime.toMillis()
         );
-      });
+      })
   }
 }

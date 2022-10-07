@@ -1,22 +1,22 @@
 import { Timestamp } from 'firebase/firestore';
 
 export interface Event {
-  id: string;
-  name: string;
-  description: string;
-  dateTime: Timestamp;
-  location: string;
-  city: string;
-  date: string;
-  time: string;
-  teamId: string;
+  id: string
+  name: string
+  description: string
+  dateTime: Timestamp
+  location: string
+  city: string
+  date: string
+  time: string
+  teamId: string
 
   // Business Logic Fields
-  status: boolean;
-  attendees: any;
+  status: boolean
+  attendees: any
 }
 export interface HelferEvent extends Event {
-  schichten: [Schicht];
+  schichten: [Schicht]
 }
 
 interface Schicht {}

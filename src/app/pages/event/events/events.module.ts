@@ -10,6 +10,6 @@ import { EventsPage } from './events.page';
 
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule, EventsPageRoutingModule],
-  declarations: [EventsPage],
+  declarations: [EventsPage]
 })
 export class EventsPageModule {}

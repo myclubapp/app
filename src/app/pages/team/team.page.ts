@@ -17,13 +17,14 @@ export class TeamPage implements OnInit {
   memberList: any[] = [];
   adminList: any[] = [];
 
-  constructor(
-    private modalCtrl: ModalController,
+  constructor (
+    private readonly modalCtrl: ModalController,
     public navParams: NavParams,
-    private userProfileService: UserProfileService,
-    private fbService: FirebaseService
+    private readonly userProfileService: UserProfileService,
+    private readonly fbService: FirebaseService
   ) {}
-  ngOnInit() {
+
+  ngOnInit () {
     this.team = this.navParams.get('data');
 
     this.fbService
@@ -44,7 +45,7 @@ export class TeamPage implements OnInit {
         // console.log(data);
 
         this.memberList = [];
-        for (let member of data) {
+        for (const member of data) {
           this.memberList.push(member[1]);
         }
       });
@@ -66,16 +67,17 @@ export class TeamPage implements OnInit {
         // console.log(data);
 
         this.adminList = [];
-        for (let member of data) {
+        for (const member of data) {
           this.adminList.push(member[1]);
         }
       });
   }
-  close() {
-    return this.modalCtrl.dismiss(null, 'close');
+
+  async close () {
+    return await this.modalCtrl.dismiss(null, 'close');
   }
 
-  confirm() {
-    return this.modalCtrl.dismiss(this.team, 'confirm');
+  async confirm () {
+    return await this.modalCtrl.dismiss(this.team, 'confirm');
   }
 }

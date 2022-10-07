@@ -3,7 +3,7 @@ import {
   IonItemSliding,
   IonRouterOutlet,
   ModalController,
-  ToastController,
+  ToastController
 } from '@ionic/angular';
 import { User } from 'firebase/auth';
 import { of, combineLatest } from 'rxjs';
@@ -26,26 +26,26 @@ export class EventsPage implements OnInit {
 
   eventsList: Event[];
   eventsListPast: Event[];
-  constructor(
+  constructor (
     public toastController: ToastController,
-    private routerOutlet: IonRouterOutlet,
-    private modalController: ModalController,
-    private authService: AuthService,
-    private fbService: FirebaseService,
-    private eventService: EventService
+    private readonly routerOutlet: IonRouterOutlet,
+    private readonly modalController: ModalController,
+    private readonly authService: AuthService,
+    private readonly fbService: FirebaseService,
+    private readonly eventService: EventService
   ) {}
 
-  ngOnInit() {
+  ngOnInit () {
     this.getUser();
     this.getEventsList();
     this.getEventsListPast();
   }
 
-  async getUser() {
+  async getUser () {
     this.user = await this.authService.getUser();
   }
 
-  async toggle(status: boolean, event: Event) {
+  async toggle (status: boolean, event: Event) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${event.teamId} and event ${event.id}`
     );
@@ -57,7 +57,8 @@ export class EventsPage implements OnInit {
     );
     this.presentToast();
   }
-  async toggleItem(slidingItem: IonItemSliding, status: boolean, event: Event) {
+
+  async toggleItem (slidingItem: IonItemSliding, status: boolean, event: Event) {
     slidingItem.closeOpened();
 
     console.log(
@@ -72,7 +73,7 @@ export class EventsPage implements OnInit {
     this.presentToast();
   }
 
-  async presentToast() {
+  async presentToast () {
     const toast = await this.toastController.create({
       message: 'changes has been saved',
       color: 'primary',
@@ -82,7 +83,7 @@ export class EventsPage implements OnInit {
     toast.present();
   }
 
-  getEventsList() {
+  getEventsList () {
     this.authService
       .getUser$()
       .pipe(
@@ -120,15 +121,15 @@ export class EventsPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        let eventsListNew = [];
-        for (let team of data) {
+        const eventsListNew = []
+        for (const team of data) {
           // loop over teams
 
-          let events = team[1];
-          let teamDetails = team[2];
-          for (let eventObject of events) {
-            let event = eventObject[0];
-            let attendees = eventObject[1];
+          const events = team[1]
+          const teamDetails = team[2]
+          for (const eventObject of events) {
+            const event = eventObject[0]
+            const attendees = eventObject[1]
 
             event.teamName = teamDetails.name;
             event.teamId = teamDetails.id;
@@ -152,10 +153,10 @@ export class EventsPage implements OnInit {
         this.eventsList = this.eventsList.sort(
           (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis()
         );
-      });
+      })
   }
 
-  getEventsListPast() {
+  getEventsListPast () {
     this.authService
       .getUser$()
       .pipe(
@@ -193,15 +194,15 @@ export class EventsPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        let eventsListNew = [];
-        for (let team of data) {
+        const eventsListNew = []
+        for (const team of data) {
           // loop over teams
 
-          let events = team[1];
-          let teamDetails = team[2];
-          for (let eventObject of events) {
-            let event = eventObject[0];
-            let attendees = eventObject[1];
+          const events = team[1]
+          const teamDetails = team[2]
+          for (const eventObject of events) {
+            const event = eventObject[0]
+            const attendees = eventObject[1]
 
             event.teamName = teamDetails.name;
             event.teamId = teamDetails.id;
@@ -225,6 +226,6 @@ export class EventsPage implements OnInit {
         this.eventsListPast = this.eventsListPast.sort(
           (a, b) => b.dateTime.toMillis() - a.dateTime.toMillis()
         );
-      });
+      })
   }
 }

@@ -13,7 +13,7 @@ import {
   DocumentReference,
   setDoc,
   query,
-  where,
+  where
 } from '@angular/fire/firestore';
 import { Observable, Observer } from 'rxjs';
 import { Event } from 'src/app/models/event';
@@ -22,10 +22,10 @@ import { Event } from 'src/app/models/event';
   providedIn: 'root',
 })
 export class EventService {
-  constructor(private firestore: Firestore) {}
+  constructor (private readonly firestore: Firestore) {}
 
   /* TEAM EventS */
-  getTeamEventsRef(teamId: string): Observable<Event[]> {
+  getTeamEventsRef (teamId: string): Observable<Event[]> {
     // console.log(`Read Team Events List Ref ${teamId}`)
     const eventsRefList = collection(this.firestore, `teams/${teamId}/events`);
     const q = query(
@@ -37,12 +37,12 @@ export class EventService {
       )
     ); // heute - 7 Tage
     return collectionData(q, { idField: 'id' }) as unknown as Observable<
-      Event[]
+    Event[]
     >;
   }
 
   // PAST 20 Entries
-  getTeamEventsRefPast(teamId: string): Observable<Event[]> {
+  getTeamEventsRefPast (teamId: string): Observable<Event[]> {
     // console.log(`Read Team Events List Ref ${teamId}`)
     const eventsRefList = collection(this.firestore, `teams/${teamId}/events`);
     const q = query(
@@ -55,12 +55,12 @@ export class EventService {
       limit(20)
     ); // heute - 7 Tage
     return collectionData(q, { idField: 'id' }) as unknown as Observable<
-      Event[]
+    Event[]
     >;
   }
 
   /* CLUB EventS */
-  getClubEventsRef(clubId: string): Observable<Event> {
+  getClubEventsRef (clubId: string): Observable<Event> {
     const eventsRefList = collection(this.firestore, `club/${clubId}/events`);
     return collectionData(eventsRefList, {
       idField: 'id',
@@ -68,7 +68,7 @@ export class EventService {
   }
 
   /* TEAM EventS ATTENDEES */
-  getTeamEventsAttendeesRef(
+  getTeamEventsAttendeesRef (
     teamId: string,
     eventId: string
   ): Observable<any[]> {
@@ -83,7 +83,7 @@ export class EventService {
   }
 
   /* TEAM EventS ATTENDEE Status */
-  setTeamEventAttendeeStatus(
+  async setTeamEventAttendeeStatus (
     userId: string,
     status: boolean,
     teamId: string,
@@ -93,6 +93,6 @@ export class EventService {
       this.firestore,
       `teams/${teamId}/events/${eventId}/attendees/${userId}`
     );
-    return setDoc(statusRef, { status: status });
+    return await setDoc(statusRef, { status });
   }
 }

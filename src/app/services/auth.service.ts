@@ -14,7 +14,7 @@ import {
   signOut,
   UserCredential,
   RecaptchaVerifier,
-  User,
+  User
 } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 
@@ -29,7 +29,7 @@ import {
   deleteDoc,
   updateDoc,
   DocumentReference,
-  setDoc,
+  setDoc
 } from '@angular/fire/firestore';
 
 /******************************************************************************************
@@ -41,10 +41,10 @@ import {
 })
 export class AuthService {
   user$: Observable<User | null>;
-  constructor(
-    private firestore: Firestore,
-    private auth: Auth,
-    private router: Router
+  constructor (
+    private readonly firestore: Firestore,
+    private readonly auth: Auth,
+    private readonly router: Router
   ) {
     // or use this version...
     this.user$ = authState(auth);
@@ -52,27 +52,27 @@ export class AuthService {
 
   /* getUser(): Promise<User> {
     return authState(this.auth).pipe(first()).toPromise();
-  }*/
-  getUser(): Promise<User | null> {
+  } */
+  async getUser (): Promise<User | null> {
     // console.log("getUser auth service");
-    return this.user$.pipe(first()).toPromise();
+    return await this.user$.pipe(first()).toPromise();
   }
 
-  getUser$() {
+  getUser$ () {
     // console.log("getUser auth service");
     return this.user$.pipe(first());
   }
 
-  login(email: string, password: string) {
-    return signInWithEmailAndPassword(this.auth, email, password);
+  async login (email: string, password: string) {
+    return await signInWithEmailAndPassword(this.auth, email, password);
   }
 
-  sendVerifyEmail() {
+  async sendVerifyEmail () {
     const auth = getAuth();
-    return sendEmailVerification(auth.currentUser);
+    return await sendEmailVerification(auth.currentUser);
   }
 
-  async signup(
+  async signup (
     email: string,
     password: string,
     firstName: string,
@@ -88,16 +88,16 @@ export class AuthService {
         `userProfile/${newUserCredential.user.uid}`
       );
       setDoc(userProfileDocRef, {
-        firstName: firstName,
-        lastName: lastName,
-        email: newUserCredential.user.email,
-      });
+        firstName,
+        lastName,
+        email: newUserCredential.user.email
+      })
 
-      /*addDoc(userProfileRef, {
+      /* addDoc(userProfileRef, {
         firstName: firstName,
         lastName: lastName,
         email: newUserCredential.user.email
-      });*/
+      }); */
 
       return newUserCredential;
     } catch (error) {
@@ -105,13 +105,13 @@ export class AuthService {
     }
   }
 
-  resetPassword(email: string): Promise<void> {
-    return sendPasswordResetEmail(this.auth, email);
+  async resetPassword (email: string): Promise<void> {
+    return await sendPasswordResetEmail(this.auth, email);
   }
 
-  async logout(): Promise<void> {
+  async logout (): Promise<void> {
     await signOut(this.auth);
-    //firebase.firestore().clearPersistence();
+    // firebase.firestore().clearPersistence();
     await this.router.navigateByUrl('/logout');
   }
 }

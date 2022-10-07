@@ -10,6 +10,6 @@ import { ProfilePage } from './profile.page';
 
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule, ProfilePageRoutingModule],
-  declarations: [ProfilePage],
+  declarations: [ProfilePage]
 })
 export class ProfilePageModule {}

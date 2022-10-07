@@ -13,8 +13,8 @@ import { OnboardingPage } from './onboarding.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    OnboardingPageRoutingModule,
+    OnboardingPageRoutingModule
   ],
-  declarations: [OnboardingPage],
+  declarations: [OnboardingPage]
 })
 export class OnboardingPageModule {}

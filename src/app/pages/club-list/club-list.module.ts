@@ -10,6 +10,6 @@ import { ClubListPage } from './club-list.page';
 
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule, ClubListPageRoutingModule],
-  declarations: [ClubListPage],
+  declarations: [ClubListPage]
 })
 export class ClubListPageModule {}

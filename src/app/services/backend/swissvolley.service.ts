@@ -6,12 +6,12 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class SwissvolleyService {
-  private apollo: ApolloBase;
-  constructor(private apolloProvider: Apollo) {
+  private readonly apollo: ApolloBase;
+  constructor (private readonly apolloProvider: Apollo) {
     this.apollo = this.apolloProvider.use('swissvolley');
   }
 
-  getClubs(): Observable<any> {
+  getClubs (): Observable<any> {
     return this.apollo.watchQuery({
       query: gql`
         {
@@ -24,11 +24,11 @@ export class SwissvolleyService {
             }
           }
         }
-      `,
+      `
     }).valueChanges;
   }
 
-  getNews(): Observable<any> {
+  getNews (): Observable<any> {
     return this.apollo.watchQuery({
       query: gql`
         {
@@ -47,10 +47,11 @@ export class SwissvolleyService {
             url
           }
         }
-      `,
+      `
     }).valueChanges;
   }
-  getGames(teamId: string): Observable<any> {
+
+  getGames (teamId: string): Observable<any> {
     return this.apollo.watchQuery({
       query: gql`
         {
@@ -62,7 +63,7 @@ export class SwissvolleyService {
             }
           }
         }
-      `,
+      `
     }).valueChanges;
   }
 }

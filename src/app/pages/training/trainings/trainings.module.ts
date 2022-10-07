@@ -10,6 +10,6 @@ import { TrainingsPage } from './trainings.page';
 
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule, TrainingsPageRoutingModule],
-  declarations: [TrainingsPage],
+  declarations: [TrainingsPage]
 })
 export class TrainingsPageModule {}

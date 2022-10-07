@@ -3,7 +3,7 @@ import {
   IonRouterOutlet,
   LoadingController,
   ModalController,
-  ToastController,
+  ToastController
 } from '@ionic/angular';
 import { News } from 'src/app/models/news';
 
@@ -14,7 +14,7 @@ import {
   faTwitter,
   faFacebook,
   faWhatsapp,
-  faLinkedin,
+  faLinkedin
 } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { SwissunihockeyService } from 'src/app/services/backend/swissunihockey.service';
@@ -24,9 +24,8 @@ import { FirebaseService } from 'src/app/services/firebase.service';
 import { User } from 'firebase/auth';
 import { NewsDetailPage } from '../news-detail/news-detail.page';
 import { NewsService } from 'src/app/services/firebase/news.service';
-import { Observable } from 'rxjs';
+import { Observable, of, combineLatest } from "rxjs";
 
-import { of, combineLatest } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { Club } from 'src/app/models/club';
 
@@ -53,30 +52,31 @@ export class NewsPage implements OnInit {
   faEnvelope: any = faEnvelope;
   faCopy: any = faCopy;
 
-  constructor(
-    private newsService: NewsService,
-    private authService: AuthService,
-    private fbService: FirebaseService,
+  constructor (
+    private readonly newsService: NewsService,
+    private readonly authService: AuthService,
+    private readonly fbService: FirebaseService,
     public loadingController: LoadingController,
     public toastController: ToastController,
-    private routerOutlet: IonRouterOutlet,
-    private modalCtrl: ModalController
+    private readonly routerOutlet: IonRouterOutlet,
+    private readonly modalCtrl: ModalController
   ) {}
 
-  ngOnInit() {
+  ngOnInit () {
     this.getUser();
 
     this.getNews();
     this.getClubNews();
     this.getTeamNews();
   }
-  ngAfterViewInit(): void {}
 
-  async getUser() {
+  ngAfterViewInit (): void {}
+
+  async getUser () {
     this.user = await this.authService.getUser();
   }
 
-  async openModal(news: News) {
+  async openModal (news: News) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: NewsDetailPage,
@@ -84,8 +84,8 @@ export class NewsPage implements OnInit {
       swipeToClose: true,
       showBackdrop: true,
       componentProps: {
-        data: news,
-      },
+        data: news
+      }
     });
     modal.present();
 
@@ -95,9 +95,9 @@ export class NewsPage implements OnInit {
     }
   }
 
-  async openAddNews() {}
+  async openAddNews () {}
 
-  async getNews() {
+  async getNews () {
     this.authService
       .getUser$()
       .pipe(
@@ -122,11 +122,11 @@ export class NewsPage implements OnInit {
       .subscribe(async (data: any) => {
         console.log(data);
 
-        let newsListNew = [];
-        for (let club of data) {
+        const newsListNew = []
+        for (const club of data) {
           // loop over news
 
-          for (let news of club[1]) {
+          for (const news of club[1]) {
             // Club News
             newsListNew.push(news);
           }
@@ -136,10 +136,10 @@ export class NewsPage implements OnInit {
         this.newsList = this.newsList.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-      });
+      })
   }
 
-  getClubNews() {
+  getClubNews () {
     this.authService
       .getUser$()
       .pipe(
@@ -159,10 +159,10 @@ export class NewsPage implements OnInit {
       )
       .subscribe(async (data: any) => {
         //         console.log(data);
-        let newsListNew = [];
-        for (let club of data) {
+        const newsListNew = []
+        for (const club of data) {
           // loop over news
-          for (let news of club[1]) {
+          for (const news of club[1]) {
             // Club News
             newsListNew.push(news);
           }
@@ -171,9 +171,10 @@ export class NewsPage implements OnInit {
         this.newsList = this.newsList.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-      });
+      })
   }
-  getTeamNews() {
+
+  getTeamNews () {
     this.authService
       .getUser$()
       .pipe(
@@ -194,10 +195,10 @@ export class NewsPage implements OnInit {
       )
       .subscribe(async (data: any) => {
         // console.log(this.newsList);
-        let newsListNew = [];
-        for (let team of data) {
+        const newsListNew = []
+        for (const team of data) {
           // loop over news
-          for (let news of team[1]) {
+          for (const news of team[1]) {
             // console.log("team news");
             // console.log(news);
             newsListNew.push(news);
@@ -207,25 +208,25 @@ export class NewsPage implements OnInit {
         this.newsList = this.newsList.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-      });
+      })
   }
 
-  async share(news: News) {
+  async share (news: News) {
     const device = await Device.getInfo();
-    if (device.platform === 'web' && navigator && navigator['share']) {
-      let shareRet = await Share.share({
+    if (device.platform === 'web' && navigator && navigator.share) {
+      const shareRet = await Share.share({
         title: news.title,
         text: news.leadText,
         url: news.url,
-        dialogTitle: news.title,
-      }).catch((onrejected) => {});
+        dialogTitle: news.title
+      }).catch((onrejected) => {})
     } else {
       await this.shareFallback(news);
     }
   }
 
-  shareFallback(news: News) {
-    return new Promise(async (resolve) => {
+  async shareFallback (news: News) {
+    return await new Promise(async (resolve) => {
       // The configuration, set the share options
       this.shareSocialShareOptions = {
         displayNames: true,
@@ -234,38 +235,38 @@ export class NewsPage implements OnInit {
             twitter: {
               socialShareUrl: '👉 ' + news.title + ': ' + news.url,
               socialSharePopupWidth: 300,
-              socialSharePopupHeight: 400,
-            },
+              socialSharePopupHeight: 400
+            }
           },
           {
             facebook: {
-              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
-            },
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url
+            }
           },
           {
             whatsapp: {
-              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
-            },
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url
+            }
           },
           {
             linkedin: {
-              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
-            },
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url
+            }
           },
           {
             email: {
-              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
-            },
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url
+            }
           },
           {
             copy: {
-              socialShareUrl: '👉 ' + news.title + ': ' + news.url,
-            },
-          },
-        ],
-      };
+              socialShareUrl: '👉 ' + news.title + ': ' + news.url
+            }
+          }
+        ]
+      }
       this.showSocialShare = true;
       resolve(true);
-    });
+    })
   }
 }

@@ -10,7 +10,7 @@ describe('ProfilePage', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ProfilePage],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProfilePage);
@@ -20,5 +20,5 @@ describe('ProfilePage', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
+  })
 });

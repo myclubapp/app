@@ -13,10 +13,10 @@ import packagejson from './../../package.json';
 export class AppComponent {
   public email: string;
   public appVersion: string = packagejson.version;
-  constructor(
-    private swUpdate: SwUpdate,
-    private alertController: AlertController,
-    private authService: AuthService
+  constructor (
+    private readonly swUpdate: SwUpdate,
+    private readonly alertController: AlertController,
+    private readonly authService: AuthService
   ) {
     this.initializeApp();
     // this.initializeFirebase();
@@ -40,7 +40,7 @@ export class AppComponent {
     });
   }
 
-  initializeApp(): void {
+  initializeApp (): void {
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
       if (event.type === 'VERSION_READY') {
         this.presentAlert();
@@ -48,7 +48,7 @@ export class AppComponent {
     });
   }
 
-  initializeFirebase() {
+  initializeFirebase () {
     // https://cloud.google.com/firestore/docs/manage-data/enable-offline
     // The default cache size threshold is 40 MB. Configure "cacheSizeBytes"
     // for a different threshold (minimum 1 MB) or set to "CACHE_SIZE_UNLIMITED"
@@ -74,7 +74,7 @@ export class AppComponent {
     */
   }
 
-  async presentAlertEmailNotVerified() {
+  async presentAlertEmailNotVerified () {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       header: 'E-Mail Adresse ist nicht verifiziert',
@@ -88,7 +88,7 @@ export class AppComponent {
           handler: () => {
             console.log('Nein');
             this.authService.logout();
-          },
+          }
         },
         {
           text: 'Ja',
@@ -96,9 +96,9 @@ export class AppComponent {
             console.log('Email nochmals senden');
             this.authService.sendVerifyEmail();
             this.authService.logout();
-          },
-        },
-      ],
+          }
+        }
+      ]
     });
 
     await alert.present();
@@ -107,9 +107,9 @@ export class AppComponent {
     console.log('onDidDismiss resolved with role', role);
   }
 
-  async presentAlert() {
+  async presentAlert () {
     const alert = await this.alertController.create({
-      //cssClass: 'my-custom-class',
+      // cssClass: 'my-custom-class',
       header: 'App Update verfügbar',
       message: `Eine neue Version ${this.appVersion} ist verfügbar. Neue Version laden?`,
       backdropDismiss: false,
@@ -119,8 +119,8 @@ export class AppComponent {
           role: 'cancel',
           cssClass: 'secondary',
           handler: (data) => {
-            //console.log('Confirm Cancel: data');
-          },
+            // console.log('Confirm Cancel: data');
+          }
         },
         {
           text: 'Laden',
@@ -131,14 +131,15 @@ export class AppComponent {
             } else {
               console.log('Already on latest version');
             }
-          },
-        },
-      ],
-    });
+          }
+        }
+      ]
+    })
 
     await alert.present();
   }
-  async logout() {
+
+  async logout () {
     console.log('logout');
     await this.authService.logout();
   }

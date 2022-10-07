@@ -8,9 +8,9 @@ describe('SwissturnverbandService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(SwissturnverbandService);
-  });
+  })
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-  });
+  })
 });

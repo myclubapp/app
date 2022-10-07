@@ -13,8 +13,8 @@ import { ChampionshipPage } from './championship.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    ChampionshipPageRoutingModule,
+    ChampionshipPageRoutingModule
   ],
-  declarations: [ChampionshipPage],
+  declarations: [ChampionshipPage]
 })
 export class ChampionshipPageModule {}

@@ -15,9 +15,9 @@ import { NewsPage } from './news.page';
     FontAwesomeModule,
     FormsModule,
     IonicModule,
-    NewsPageRoutingModule,
+    NewsPageRoutingModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  declarations: [NewsPage],
+  declarations: [NewsPage]
 })
 export class NewsPageModule {}

@@ -9,14 +9,14 @@ import {
   deleteDoc,
   updateDoc,
   DocumentReference,
-  setDoc,
+  setDoc
 } from '@angular/fire/firestore';
 
 import {
   Storage,
   ref,
   uploadString,
-  getDownloadURL,
+  getDownloadURL
 } from '@angular/fire/storage';
 
 // import firebase from 'firebase/compat/app';
@@ -27,7 +27,7 @@ import {
   SwissHandballClub,
   SwissUnihockeyClub,
   SwissVolleyClub,
-  SwissTurnverbandClub,
+  SwissTurnverbandClub
 } from '../models/club';
 import { Team } from '../models/team';
 import { User, UserProfile } from '@angular/fire/auth';
@@ -39,19 +39,19 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class FirebaseService {
   inviteList: any = [];
-  constructor(
-    private firestore: Firestore,
-    private storage: Storage,
-    private authService: AuthService
+  constructor (
+    private readonly firestore: Firestore,
+    private readonly storage: Storage,
+    private readonly authService: AuthService
   ) {}
 
   /* CLUBS */
-  getClubRef(clubId: string) {
+  getClubRef (clubId: string) {
     const clubRef = doc(this.firestore, `club/${clubId}`);
     return docData(clubRef, { idField: 'id' }) as unknown as Observable<Club>;
   }
 
-  getUserClubRefs(user: User): Observable<Club> {
+  getUserClubRefs (user: User): Observable<Club> {
     const clubRefList = collection(
       this.firestore,
       `userProfile/${user.uid}/clubs`
@@ -61,7 +61,7 @@ export class FirebaseService {
     }) as unknown as Observable<any>;
   }
 
-  getClubMemberRefs(clubId: string): Observable<any> {
+  getClubMemberRefs (clubId: string): Observable<any> {
     const clubMemberRefList = collection(
       this.firestore,
       `club/${clubId}/members`
@@ -70,7 +70,8 @@ export class FirebaseService {
       idField: 'id',
     }) as unknown as Observable<any>;
   }
-  getClubAdminRefs(clubId: string): Observable<any> {
+
+  getClubAdminRefs (clubId: string): Observable<any> {
     const clubMemberRefList = collection(
       this.firestore,
       `club/${clubId}/admins`
@@ -81,13 +82,13 @@ export class FirebaseService {
   }
 
   /* TEAMS */
-  getTeamRef(teamId) {
+  getTeamRef (teamId) {
     // console.log(`Read team ${teamId}`);
     const teamRef = doc(this.firestore, `/teams/${teamId}`);
     return docData(teamRef, { idField: 'id' }) as Observable<Team>;
   }
 
-  getUserTeamRefs(user: User): Observable<Team> {
+  getUserTeamRefs (user: User): Observable<Team> {
     const teamRefLIst = collection(
       this.firestore,
       `userProfile/${user.uid}/teams`
@@ -96,7 +97,8 @@ export class FirebaseService {
       idField: 'id',
     }) as unknown as Observable<Team>;
   }
-  getTeamMemberRefs(teamId: string): Observable<any> {
+
+  getTeamMemberRefs (teamId: string): Observable<any> {
     const teamMemberRefList = collection(
       this.firestore,
       `teams/${teamId}/members`
@@ -106,7 +108,7 @@ export class FirebaseService {
     }) as unknown as Observable<any>;
   }
 
-  getTeamAdminRefs(teamId: string): Observable<any> {
+  getTeamAdminRefs (teamId: string): Observable<any> {
     const teamMemberRefList = collection(
       this.firestore,
       `teams/${teamId}/admins`

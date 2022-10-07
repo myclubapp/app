@@ -15,9 +15,9 @@ import { NewsDetailPage } from './news-detail.page';
     FontAwesomeModule,
     FormsModule,
     IonicModule,
-    NewsDetailPageRoutingModule,
+    NewsDetailPageRoutingModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  declarations: [NewsDetailPage],
+  declarations: [NewsDetailPage]
 })
 export class NewsDetailPageModule {}

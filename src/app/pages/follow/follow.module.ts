@@ -10,6 +10,6 @@ import { FollowPage } from './follow.page';
 
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule, FollowPageRoutingModule],
-  declarations: [FollowPage],
+  declarations: [FollowPage]
 })
 export class FollowPageModule {}

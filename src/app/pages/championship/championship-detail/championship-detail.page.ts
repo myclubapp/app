@@ -18,7 +18,7 @@ import { UserProfileService } from 'src/app/services/firebase/user-profile.servi
 export class ChampionshipDetailPage implements OnInit {
   @Input('data') game: Game;
   @ViewChild('map')
-  mapRef: ElementRef<HTMLElement>;
+    mapRef: ElementRef<HTMLElement>;
   newMap: GoogleMap;
   // game$: Observable <Game>;
   user: User;
@@ -26,15 +26,16 @@ export class ChampionshipDetailPage implements OnInit {
   attendeeListTrue: any[] = [];
   attendeeListFalse: any[] = [];
 
-  constructor(
-    private modalCtrl: ModalController,
+  constructor (
+    private readonly modalCtrl: ModalController,
     public navParams: NavParams,
-    private championshipService: ChampionshipService,
-    private toastController: ToastController,
-    private authService: AuthService,
-    private userProfileService: UserProfileService
+    private readonly championshipService: ChampionshipService,
+    private readonly toastController: ToastController,
+    private readonly authService: AuthService,
+    private readonly userProfileService: UserProfileService
   ) {}
-  ngOnInit() {
+
+  ngOnInit () {
     this.getUser();
     // GET DATA
     this.game = this.navParams.get('data');
@@ -49,7 +50,7 @@ export class ChampionshipDetailPage implements OnInit {
         this.game = game;
 
         this.game.status = null;
-      });
+      })
 
     // GET ATTENDEE LIST
 
@@ -74,19 +75,19 @@ export class ChampionshipDetailPage implements OnInit {
         )
       )
       .subscribe((data: any) => {
-        let attendeeListNew = [];
+        const attendeeListNew = []
 
-        //User ist im Falle keiner Antwort nicht in attendee Liste
+        // User ist im Falle keiner Antwort nicht in attendee Liste
         this.game.status = null;
-        for (let attendee of data) {
+        for (const attendee of data) {
           // loop over teams
-          let status = attendee[0];
-          let user = attendee[1];
+          const status = attendee[0]
+          const user = attendee[1]
 
           user.status = status.status;
           attendeeListNew.push(user);
 
-          //update game user status
+          // update game user status
           if (user.id === this.user.uid) {
             this.game.status = status.status;
           } else {
@@ -104,10 +105,10 @@ export class ChampionshipDetailPage implements OnInit {
         this.attendeeListFalse = this.attendeeList.filter(
           (element) => element.status === false
         );
-      });
+      })
   }
 
-  async toggle(status: boolean, game: Game) {
+  async toggle (status: boolean, game: Game) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
     );
@@ -120,7 +121,7 @@ export class ChampionshipDetailPage implements OnInit {
     this.presentToast();
   }
 
-  async presentToast() {
+  async presentToast () {
     const toast = await this.toastController.create({
       message: 'Änderungen gespeichert',
       color: 'primary',
@@ -130,19 +131,19 @@ export class ChampionshipDetailPage implements OnInit {
     toast.present();
   }
 
-  async getUser() {
+  async getUser () {
     this.user = await this.authService.getUser();
   }
 
-  close() {
-    return this.modalCtrl.dismiss(null, 'close');
+  async close () {
+    return await this.modalCtrl.dismiss(null, 'close');
   }
 
-  confirm() {
-    return this.modalCtrl.dismiss(this.game, 'confirm');
+  async confirm () {
+    return await this.modalCtrl.dismiss(this.game, 'confirm');
   }
 
-  async setMap() {
+  async setMap () {
     const apiKey = 'AIzaSyAM5x9P0syj9qtxUmFs98nW0B967xo52Fw';
 
     const mapRef = document.getElementById('map');
@@ -150,24 +151,24 @@ export class ChampionshipDetailPage implements OnInit {
     this.newMap = await GoogleMap.create({
       id: 'my-map-' + this.game.id, // Unique identifier for this map instance
       element: mapRef, // reference to the capacitor-google-map element
-      apiKey: apiKey, // Your Google Maps API Key
+      apiKey, // Your Google Maps API Key
       config: {
         center: {
           // The initial position to be rendered by the map
           lat: Number(this.game.latitude),
-          lng: Number(this.game.longitude),
+          lng: Number(this.game.longitude)
         },
-        zoom: 8, // The initial zoom level to be rendered by the map
-      },
+        zoom: 8 // The initial zoom level to be rendered by the map
+      }
     });
     this.newMap.addMarker({
       title: `${this.game.location} in ${this.game.city}`,
       coordinate: {
         lat: Number(this.game.latitude),
-        lng: Number(this.game.longitude),
+        lng: Number(this.game.longitude)
       },
-      snippet: `${this.game.location} in ${this.game.city}`,
-    });
+      snippet: `${this.game.location} in ${this.game.city}`
+    })
 
     const permission: PermissionStatus = await Geolocation.checkPermissions();
     try {
@@ -188,7 +189,7 @@ export class ChampionshipDetailPage implements OnInit {
           title: 'Meine Position',
           coordinate: {
             lat: coordinates.coords.latitude,
-            lng: coordinates.coords.longitude,
+            lng: coordinates.coords.longitude
           },
           isFlat: true,
           snippet: 'Meine Position',
@@ -198,7 +199,8 @@ export class ChampionshipDetailPage implements OnInit {
       console.log('no coordinates on map');
     }
   }
-  ngOnDestroy() {
+
+  ngOnDestroy () {
     this.newMap.destroy();
   }
 }

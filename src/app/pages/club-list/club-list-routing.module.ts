@@ -6,12 +6,12 @@ import { ClubListPage } from './club-list.page';
 const routes: Routes = [
   {
     path: '',
-    component: ClubListPage,
-  },
-];
+    component: ClubListPage
+  }
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class ClubListPageRoutingModule {}

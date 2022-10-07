@@ -13,7 +13,7 @@ import {
   DocumentReference,
   setDoc,
   query,
-  where,
+  where
 } from '@angular/fire/firestore';
 
 // import firebase from 'firebase/compat/app';
@@ -26,10 +26,10 @@ import { Training } from 'src/app/models/training';
   providedIn: 'root',
 })
 export class TrainingService {
-  constructor(private firestore: Firestore) {}
+  constructor (private readonly firestore: Firestore) {}
 
   /* TEAM TrainingS */
-  getTeamTrainingsRef(teamId: string): Observable<Training[]> {
+  getTeamTrainingsRef (teamId: string): Observable<Training[]> {
     // console.log(`Read Team Trainings List Ref ${teamId}`)
     const trainingsRefList = collection(
       this.firestore,
@@ -44,12 +44,12 @@ export class TrainingService {
       )
     ); // heute - 1 Woche
     return collectionData(q, { idField: 'id' }) as unknown as Observable<
-      Training[]
+    Training[]
     >;
   }
 
   // PAST 20 Entries
-  getTeamTrainingsRefPast(teamId: string): Observable<Training[]> {
+  getTeamTrainingsRefPast (teamId: string): Observable<Training[]> {
     // console.log(`Read Team Trainings List Ref ${teamId}`)
     const trainingsRefList = collection(
       this.firestore,
@@ -65,12 +65,12 @@ export class TrainingService {
       limit(20)
     ); // heute - 1 Woche
     return collectionData(q, { idField: 'id' }) as unknown as Observable<
-      Training[]
+    Training[]
     >;
   }
 
   /* CLUB TrainingS */
-  getClubTrainingsRef(clubId: string): Observable<Training> {
+  getClubTrainingsRef (clubId: string): Observable<Training> {
     const trainingsRefList = collection(
       this.firestore,
       `club/${clubId}/trainings`
@@ -81,7 +81,7 @@ export class TrainingService {
   }
 
   /* TEAM TrainingS ATTENDEES */
-  getTeamTrainingsAttendeesRef(
+  getTeamTrainingsAttendeesRef (
     teamId: string,
     trainingId: string
   ): Observable<any[]> {
@@ -96,7 +96,7 @@ export class TrainingService {
   }
 
   /* TEAM TrainingS ATTENDEE Status */
-  setTeamTrainingAttendeeStatus(
+  async setTeamTrainingAttendeeStatus (
     userId: string,
     status: boolean,
     teamId: string,
@@ -106,6 +106,6 @@ export class TrainingService {
       this.firestore,
       `teams/${teamId}/trainings/${trainingId}/attendees/${userId}`
     );
-    return setDoc(statusRef, { status: status });
+    return await setDoc(statusRef, { status });
   }
 }

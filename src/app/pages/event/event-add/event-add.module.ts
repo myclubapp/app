@@ -10,6 +10,6 @@ import { EventAddPage } from './event-add.page';
 
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule, EventAddPageRoutingModule],
-  declarations: [EventAddPage],
+  declarations: [EventAddPage]
 })
 export class EventAddPageModule {}
