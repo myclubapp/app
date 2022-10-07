@@ -24,9 +24,7 @@
       "pre-commit": "prettier --write . && git add -A ."
     }
   },
-  "lint-staged": {
-    "*": "prettier --write"
-  },
+
   "private": true,
   "dependencies": {
     "@angular/common": "^14.2.5",
