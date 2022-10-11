@@ -1,6 +1,6 @@
 {
-  "appId": "io.ionic.starter",
-  "appName": "app",
-  "webDir": "www",
-  "bundledWebRuntime": false
+	"appId": "app.my-club.app",
+	"appName": "app",
+	"webDir": "www",
+	"bundledWebRuntime": false
 }
