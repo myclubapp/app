@@ -17,7 +17,7 @@ import {
   faLinkedin
 } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faCopy } from '@fortawesome/free-solid-svg-icons';
-import { SwissunihockeyService } from 'src/app/services/backend/swissunihockey.service';
+// import { SwissunihockeyService } from 'src/app/services/backend/swissunihockey.service';
 
 import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';

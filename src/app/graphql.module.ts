@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+/* import { NgModule } from '@angular/core';
 import {
   ApolloModule,
   APOLLO_OPTIONS,
@@ -48,3 +48,4 @@ export function createApollo (httpLink: HttpLink): NamedOptions {
   ]
 })
 export class GraphQLModule {}
+*/ 

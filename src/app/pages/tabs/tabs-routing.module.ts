@@ -10,27 +10,27 @@ const routes: Routes = [
     children: [
       {
         path: 'news',
-        loadChildren: async () =>
-          await import('../news/news/news.module').then((m) => m.NewsPageModule)
+        loadChildren:  () =>
+          import('../news/news/news.module').then((m) => m.NewsPageModule)
       },
       {
         path: 'training',
-        loadChildren: async () =>
-          await import('../training/trainings/trainings.module').then(
+        loadChildren:  () =>
+           import('../training/trainings/trainings.module').then(
             (m) => m.TrainingsPageModule
           )
       },
       {
         path: 'championship',
-        loadChildren: async () =>
-          await import('../championship/championship/championship.module').then(
+        loadChildren:  () =>
+           import('../championship/championship/championship.module').then(
             (m) => m.ChampionshipPageModule
           )
       },
       {
         path: 'events',
-        loadChildren: async () =>
-          await import('../event/events/events.module').then(
+        loadChildren:  () =>
+           import('../event/events/events.module').then(
             (m) => m.EventsPageModule
           )
       },

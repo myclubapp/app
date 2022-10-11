@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+/* import { Injectable } from '@angular/core';
 import { Apollo, ApolloBase, gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
 
@@ -63,3 +63,4 @@ export class SwissturnverbandService {
     }).valueChanges;
   }
 }
+*/

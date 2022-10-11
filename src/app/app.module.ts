@@ -10,7 +10,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { HttpClientModule } from '@angular/common/http';
 
-import { GraphQLModule } from './graphql.module';
+// import { GraphQLModule } from './graphql.module';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -53,7 +53,7 @@ import { TeamPage } from './pages/team/team.page';
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
-    GraphQLModule,
+    // GraphQLModule,
     HttpClientModule,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),

@@ -12,100 +12,101 @@ const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
 const routes: Routes = [
   {
     path: '',
-    loadChildren: async () =>
-      await import('./pages/tabs/tabs.module').then((m) => m.TabsPageModule),
+    loadChildren:  () =>
+       import('./pages/tabs/tabs.module').then((m) => m.TabsPageModule),
     canActivate: [AuthGuard],
     data: { authGuardPipe: redirectUnauthorizedToLogin }
   },
   {
     path: 'login',
-    loadChildren: async () =>
-      await import('./pages/auth/login/login.module').then((m) => m.LoginPageModule)
+    loadChildren:  () =>
+       import('./pages/auth/login/login.module').then((m) => m.LoginPageModule)
   },
   {
     path: 'logout',
-    loadChildren: async () =>
-      await import('./pages/auth/logout/logout.module').then(
+    loadChildren:  () =>
+       import('./pages/auth/logout/logout.module').then(
         (m) => m.LogoutPageModule
       )
   },
   {
     path: 'signup',
-    loadChildren: async () =>
-      await import('./pages/auth/signup/signup.module').then(
+    loadChildren:  () =>
+       import('./pages/auth/signup/signup.module').then(
         (m) => m.SignupPageModule
       )
   },
 
   {
     path: 'follow',
-    loadChildren: async () =>
-      await import('./pages/follow/follow.module').then((m) => m.FollowPageModule)
+    loadChildren:  () =>
+       import('./pages/follow/follow.module').then((m) => m.FollowPageModule)
   },
   {
     path: 'club-list',
-    loadChildren: async () =>
-      await import('./pages/club-list/club-list.module').then(
+    loadChildren: 
+     () =>
+       import('./pages/club-list/club-list.module').then(
         (m) => m.ClubListPageModule
       )
   },
   {
     path: 'team-list',
-    loadChildren: async () =>
-      await import('./pages/team-list/team-list.module').then(
+    loadChildren:  () =>
+       import('./pages/team-list/team-list.module').then(
         (m) => m.TeamListPageModule
       )
   },
   {
     path: 'news',
-    loadChildren: async () =>
-      await import('./pages/news/news/news.module').then((m) => m.NewsPageModule)
+    loadChildren:  () =>
+       import('./pages/news/news/news.module').then((m) => m.NewsPageModule)
   },
   {
     path: 'reset-password',
-    loadChildren: async () =>
-      await import('./pages/auth/reset-password/reset-password.module').then(
+    loadChildren:  () =>
+       import('./pages/auth/reset-password/reset-password.module').then(
         (m) => m.ResetPasswordPageModule
       )
   },
   {
     path: 'profile',
-    loadChildren: async () =>
-      await import('./pages/profile/profile.module').then((m) => m.ProfilePageModule)
+    loadChildren:  () =>
+       import('./pages/profile/profile.module').then((m) => m.ProfilePageModule)
   },
   {
     path: 'trainings',
-    loadChildren: async () =>
-      await import('./pages/training/trainings/trainings.module').then(
+    loadChildren:  () =>
+       import('./pages/training/trainings/trainings.module').then(
         (m) => m.TrainingsPageModule
       )
   },
   {
     path: 'events',
-    loadChildren: async () =>
-      await import('./pages/event/events/events.module').then(
+    loadChildren:  () =>
+       import('./pages/event/events/events.module').then(
         (m) => m.EventsPageModule
       )
   },
   {
     path: 'championship',
-    loadChildren: async () =>
-      await import('./pages/championship/championship/championship.module').then(
+    loadChildren:  () =>
+       import('./pages/championship/championship/championship.module').then(
         (m) => m.ChampionshipPageModule
       )
   },
   {
     path: 'onboarding',
-    loadChildren: async () =>
-      await import('./pages/onboarding/onboarding.module').then(
+    loadChildren:  () =>
+       import('./pages/onboarding/onboarding.module').then(
         (m) => m.OnboardingPageModule
       )
   },
 
   {
     path: '**',
-    loadChildren: async () =>
-      await import('./pages/not-found/not-found.module').then(
+    loadChildren:  () =>
+       import('./pages/not-found/not-found.module').then(
         (m) => m.NotFoundPageModule
       )
   }
