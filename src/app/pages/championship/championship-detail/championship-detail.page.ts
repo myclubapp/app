@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ModalController, NavParams, ToastController } from '@ionic/angular';
 import { Game } from 'src/app/models/game';
-import { GoogleMap } from '@capacitor/google-maps';
+// import { GoogleMap } from '@capacitor/google-maps';
 import { Geolocation, PermissionStatus } from '@capacitor/geolocation';
 import { ChampionshipService } from 'src/app/services/firebase/championship.service';
 import { combineLatest, Observable, of } from 'rxjs';
@@ -17,9 +17,9 @@ import { UserProfileService } from 'src/app/services/firebase/user-profile.servi
 })
 export class ChampionshipDetailPage implements OnInit {
   @Input('data') game: Game;
-  @ViewChild('map')
+  /* @ViewChild('map')
     mapRef: ElementRef<HTMLElement>;
-  newMap: GoogleMap;
+  newMap: GoogleMap; */
   // game$: Observable <Game>;
   user: User;
   attendeeList: any[] = [];
@@ -39,7 +39,7 @@ export class ChampionshipDetailPage implements OnInit {
     this.getUser();
     // GET DATA
     this.game = this.navParams.get('data');
-    this.setMap();
+    // this.setMap();
 
     // GET GAME
     this.championshipService
@@ -143,7 +143,7 @@ export class ChampionshipDetailPage implements OnInit {
     return await this.modalCtrl.dismiss(this.game, 'confirm');
   }
 
-  async setMap () {
+  /* async setMap () {
     const apiKey = 'AIzaSyAM5x9P0syj9qtxUmFs98nW0B967xo52Fw';
 
     const mapRef = document.getElementById('map');
@@ -198,9 +198,9 @@ export class ChampionshipDetailPage implements OnInit {
     } catch (e) {
       console.log('no coordinates on map');
     }
-  }
+  }*/ 
 
   ngOnDestroy () {
-    this.newMap.destroy();
+    // this.newMap.destroy();
   }
 }

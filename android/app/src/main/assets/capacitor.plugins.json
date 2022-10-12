@@ -1,18 +1,34 @@
 [
-  {
-    "pkg": "@capacitor/app",
-    "classpath": "com.capacitorjs.plugins.app.AppPlugin"
-  },
-  {
-    "pkg": "@capacitor/haptics",
-    "classpath": "com.capacitorjs.plugins.haptics.HapticsPlugin"
-  },
-  {
-    "pkg": "@capacitor/keyboard",
-    "classpath": "com.capacitorjs.plugins.keyboard.KeyboardPlugin"
-  },
-  {
-    "pkg": "@capacitor/status-bar",
-    "classpath": "com.capacitorjs.plugins.statusbar.StatusBarPlugin"
-  }
+	{
+		"pkg": "@capacitor/browser",
+		"classpath": "com.capacitorjs.plugins.browser.BrowserPlugin"
+	},
+	{
+		"pkg": "@capacitor/camera",
+		"classpath": "com.capacitorjs.plugins.camera.CameraPlugin"
+	},
+	{
+		"pkg": "@capacitor/device",
+		"classpath": "com.capacitorjs.plugins.device.DevicePlugin"
+	},
+	{
+		"pkg": "@capacitor/geolocation",
+		"classpath": "com.capacitorjs.plugins.geolocation.GeolocationPlugin"
+	},
+	{
+		"pkg": "@capacitor/haptics",
+		"classpath": "com.capacitorjs.plugins.haptics.HapticsPlugin"
+	},
+	{
+		"pkg": "@capacitor/keyboard",
+		"classpath": "com.capacitorjs.plugins.keyboard.KeyboardPlugin"
+	},
+	{
+		"pkg": "@capacitor/share",
+		"classpath": "com.capacitorjs.plugins.share.SharePlugin"
+	},
+	{
+		"pkg": "@capacitor/status-bar",
+		"classpath": "com.capacitorjs.plugins.statusbar.StatusBarPlugin"
+	}
 ]

@@ -15,7 +15,6 @@ def capacitor_pods
   pod 'CapacitorCamera', :path => '../../node_modules/@capacitor/camera'
   pod 'CapacitorDevice', :path => '../../node_modules/@capacitor/device'
   pod 'CapacitorGeolocation', :path => '../../node_modules/@capacitor/geolocation'
-  pod 'CapacitorGoogleMaps', :path => '../../node_modules/@capacitor/google-maps'
   pod 'CapacitorHaptics', :path => '../../node_modules/@capacitor/haptics'
   pod 'CapacitorKeyboard', :path => '../../node_modules/@capacitor/keyboard'
   pod 'CapacitorShare', :path => '../../node_modules/@capacitor/share'
@@ -26,7 +25,6 @@ target 'App' do
   capacitor_pods
   # Add your Pods here
 end
-
 
 post_install do |installer|
   assertDeploymentTarget(installer)
