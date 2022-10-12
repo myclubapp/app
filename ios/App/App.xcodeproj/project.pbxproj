@@ -92,7 +92,6 @@
 				C67E645E7A99B26D5518B0E9 /* Pods-App.release.xcconfig */,
 			);
 			name = Pods;
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
