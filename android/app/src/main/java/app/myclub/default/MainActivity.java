@@ -1,4 +1,4 @@
-package app.myclub.app;
+package app.myclub.default;
 
 import com.getcapacitor.BridgeActivity;
 
