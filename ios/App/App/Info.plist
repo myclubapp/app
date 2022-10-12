@@ -2,6 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>IonMaxVersions</key>
+	<string>$MAX_STORE</string>
+	<key>IonApi</key>
+	<string>$UPDATE_API</string>
+	<key>IonAppId</key>
+	<string>$APP_ID</string>
+	<key>IonUpdateMethod</key>
+	<string>$UPDATE_METHOD</string>
+	<key>IonMinBackgroundDuration</key>
+	<string>$MIN_BACKGROUND_DURATION</string>
+	<key>IonChannelName</key>
+	<string>$CHANNEL_NAME</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
