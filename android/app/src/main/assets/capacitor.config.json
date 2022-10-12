@@ -1,6 +1,6 @@
 {
 	"appId": "app.myclub.default",
-	"appName": "myclubdefault",
+	"appName": "myclub",
 	"webDir": "www",
 	"bundledWebRuntime": false
 }
