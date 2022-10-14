@@ -1,0 +1,22 @@
+name: Build myclub App and Deploy on Firebase Hosting
+on:
+  push:
+    branches:
+      - beta
+jobs:
+  build_beta:
+    name: Build & Deploy BETA
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+      - name: Build (BETA)
+        run: npm run build:prod
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting:app-beta
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
