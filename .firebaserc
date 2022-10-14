@@ -1,0 +1,32 @@
+{
+  "projects": {
+    "default": "myclubmanagement"
+  },
+  "targets": {
+    "myclubmanagement": {
+      "hosting": {
+        "app-turnverein": [
+          "turnverein"
+        ],
+        "app-volleyball": [
+          "volleyballclubapp"
+        ],
+        "app-kadetten-unihockey": [
+          "kadetten-unihockey"
+        ],
+        "app-handball": [
+          "handballclub"
+        ],
+        "app-fussball": [
+          "fussballclub"
+        ],
+        "app-unihockey": [
+          "unihockey"
+        ],
+        "app-uhc-win-u": [
+          "uhc-win-u"
+        ]
+      }
+    }
+  }
+}

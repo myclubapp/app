@@ -1,0 +1,239 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Veranstaltungen</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Veranstaltungen</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ng-container *ngIf="eventsList; else loading">
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Kommende Veranstaltungen</ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <ion-label slot="start">
+          <p>Status</p>
+        </ion-label>
+        <ion-label slot="end">
+          <p>Teilnehmer</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item-sliding #item *ngFor="let event of eventsList">
+        <ion-item>
+          <ion-icon
+            *ngIf="event.status === null"
+            slot="icon-only"
+            color="warning"
+            slot="start"
+            name="help-circle"
+            (click)="toggle(true, event)"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="event.status === false"
+            slot="icon-only"
+            color="danger"
+            slot="start"
+            name="close-circle"
+            (click)="toggle( true, event)"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="event.status === true"
+            slot="icon-only"
+            color="success"
+            slot="start"
+            name="checkmark-circle"
+            (click)="toggle(false, event)"
+          ></ion-icon>
+          <ion-label>
+            <h3>
+              <ion-icon slot="icon-only" name="home"></ion-icon>:
+              {{event.location}} {{event.city}}
+            </h3>
+            <h3>
+              <ion-icon slot="icon-only" name="time"></ion-icon> {{event.date}}
+              {{event.time}}
+            </h3>
+          </ion-label>
+          <ion-note slot="end">
+            <ion-badge color="primary">{{event.attendees}}</ion-badge>
+          </ion-note>
+        </ion-item>
+
+        <ion-item-options side="start">
+          <ion-item-option
+            color="success"
+            *ngIf="event.status === false || event.status === null"
+            (click)="toggleItem(item, true, event)"
+          >
+            <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+          </ion-item-option>
+          <ion-item-option
+            color="danger"
+            *ngIf="event.status === true || event.status === null"
+            (click)="toggleItem(item, false, event)"
+          >
+            <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+
+        <!--<ion-item-options side="end" *ngIf="user && user.">
+          <ion-item-option>
+            <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>-->
+      </ion-item-sliding>
+    </ion-list>
+  </ng-container>
+
+  <ng-container *ngIf="eventsListPast">
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Vergangene Veranstaltungen</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-label slot="start">
+          <p>Status</p>
+        </ion-label>
+        <ion-label slot="end">
+          <p>Teilnehmer</p>
+        </ion-label>
+      </ion-item>
+      <ion-item-sliding #item *ngFor="let event of eventsListPast">
+        <ion-item>
+          <ion-icon
+            *ngIf="event.status === null"
+            slot="icon-only"
+            color="warning"
+            slot="start"
+            name="help-circle"
+            (click)="toggle(true, event)"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="event.status === false"
+            slot="icon-only"
+            color="danger"
+            slot="start"
+            name="close-circle"
+            (click)="toggle( true, event)"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="event.status === true"
+            slot="icon-only"
+            color="success"
+            slot="start"
+            name="checkmark-circle"
+            (click)="toggle(false, event)"
+          ></ion-icon>
+          <ion-label>
+            <h3>
+              <ion-icon slot="icon-only" name="home"></ion-icon>:
+              {{event.location}} {{event.city}}
+            </h3>
+            <h3>
+              <ion-icon slot="icon-only" name="time"></ion-icon> {{event.date}}
+              {{event.time}}
+            </h3>
+          </ion-label>
+          <ion-note slot="end">
+            <ion-badge color="primary">{{event.attendees}}</ion-badge>
+          </ion-note>
+        </ion-item>
+
+        <ion-item-options side="start">
+          <ion-item-option
+            color="success"
+            *ngIf="event.status === false || event.status === null"
+            (click)="toggleItem(item, true, event)"
+          >
+            <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+          </ion-item-option>
+          <ion-item-option
+            color="danger"
+            *ngIf="event.status === true || event.status === null"
+            (click)="toggleItem(item, false, event)"
+          >
+            <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+
+        <!--<ion-item-options side="end" *ngIf="user && user.isAdmin">
+        <ion-item-option>
+          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>-->
+      </ion-item-sliding>
+    </ion-list>
+  </ng-container>
+</ion-content>
+<ng-template #loading>
+  <ion-list *ngIf="loading">
+    <ion-grid>
+      <ion-row>
+        <ion-col
+          size-lg="4"
+          size-md="6"
+          size-sm="6"
+          size="12"
+          *ngFor="let item of skeleton"
+        >
+          <ion-card>
+            <ion-card-header>
+              <ion-card-subtitle>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%"
+                ></ion-skeleton-text>
+              </ion-card-subtitle>
+              <ion-card-title>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%"
+                ></ion-skeleton-text>
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-list>
+</ng-template>

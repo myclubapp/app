@@ -1,0 +1,8 @@
+{
+  "name": "myclub",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "1d37124e"
+}

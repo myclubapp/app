@@ -1,0 +1,120 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Profil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Profil</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ng-container *ngIf="userProfile$ | async as userProfile; else loading">
+    <ion-list>
+      <ion-list-header>
+        <ion-label> Öffentliches Profil </ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <ion-avatar slot="start">
+          <img src="{{userProfile.profilePicture}}" />
+        </ion-avatar>
+        <ion-label>Item Avatar</ion-label>
+        <ion-button slot="end" (click)="takePicture()">
+          <ion-icon slot="icon-only" name="camera"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked"> Vorname </ion-label>
+        <ion-input
+          readonly
+          [(ngModel)]="userProfile.firstName"
+          value="{{userProfile.firstName}}"
+        >
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked"> Nachname </ion-label>
+        <ion-input
+          readonly
+          [(ngModel)]="userProfile.lastName"
+          value="{{userProfile.lastName}}"
+        >
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked"> E-Mail </ion-label>
+        <ion-input
+          readonly
+          [(ngModel)]="userProfile.email"
+          value="{{userProfile.email}}"
+        >
+        </ion-input>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+  <!-- 
+  <ng-container *ngIf="clubList$ | async as clubList; else loadingClub">
+    <ion-list>
+      <ion-list-header>
+        <ion-label>
+          Meine Clubs
+        </ion-label>
+        <ion-button>
+          <ion-icon slot="icon-only" name="add"></ion-icon>
+        </ion-button>
+      </ion-list-header>
+      <ion-item *ngFor="let club of clubList">
+        <ion-label>
+          {{club.id}}
+        </ion-label>
+        <ion-button slot="end">
+          <ion-icon slot="icon-only"  color="danger" name="remove-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+  <ng-container *ngIf="teamList$ | async as teamList; else loadingTeams">
+    <ion-list>
+      <ion-list-header>
+        <ion-label>
+          Meine Teams
+        </ion-label>
+        <ion-button >
+          <ion-icon slot="icon-only" name="add"></ion-icon>
+        </ion-button>
+      </ion-list-header>
+      <ion-item *ngFor="let team of teamList">
+        <ion-label>
+         {{team.id}}
+        </ion-label>
+        <ion-button slot="end">
+          <ion-icon slot="icon-only"   color="danger" name="remove-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+-->
+</ion-content>
+<ng-template #loading>
+  <!-- Bubbles -->
+  <ion-spinner name="bubbles"></ion-spinner>
+</ng-template>
+
+<ng-template #loadingClub>
+  <ion-text> loading </ion-text>
+</ng-template>
+
+<ng-template #loadingTeams>
+  <ion-text> loading </ion-text>
+</ng-template>
