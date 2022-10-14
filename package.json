@@ -10,6 +10,8 @@
     "test": "ng test",
     "e2e": "ng e2e",
     "deploy": "firebase deploy --only hosting",
+    "build:beta": "ng build --configuration beta",
+    "build-deploy:beta": "ng build --configuration beta && firebase deploy --only hosting:beta",
     "build:prod": "ng build --configuration production",
     "build-deploy:prod": "npm run build:prod && npm run deploy",
     "build:app-kadetten-unihockey": "ng build --configuration app-kadetten-unihockey",

@@ -5,6 +5,9 @@
   "targets": {
     "myclubmanagement": {
       "hosting": {
+        "beta": [
+          "beta-myclub"
+        ],
         "app-turnverein": [
           "turnverein"
         ],
