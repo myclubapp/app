@@ -1,4 +1,4 @@
-name: Build myclub App and Deploy on Firebase Hosting
+name: BETA - Build myclub App and Deploy on Firebase Hosting
 on:
   push:
     branches:
