@@ -67,10 +67,6 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
-                },
-                {
-                  "replace": "./tailwind.config.js",
-                  "with": "src/custom-themes/default/tailwind.config.js"
                 }
               ],
               "styles": [
@@ -116,10 +112,6 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
-                },
-                {
-                  "replace": "./tailwind.config.js",
-                  "with": "src/custom-themes/default/tailwind.config.js"
                 }
               ],
               "styles": [
@@ -165,10 +157,6 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
-                },
-                {
-                  "replace": "./tailwind.config.js",
-                  "with": "src/custom-themes/app-kadetten-unihockey/tailwind.config.js"
                 }
               ],
               "styles": [
@@ -214,10 +202,6 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
-                },
-                {
-                  "replace": "./tailwind.config.js",
-                  "with": "src/custom-themes/app-uhc-win-u/tailwind.config.js"
                 }
               ],
               "styles": [
