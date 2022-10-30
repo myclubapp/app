@@ -20,6 +20,7 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 
 ## Prettier Setup
 
+`npm i husky-init`
 `npx husky-init; npm install --save-dev pretty-quick; npx husky set .husky/pre-commit "npx pretty-quick --staged";`
 
 ## Create App Icon & Splash Screen
