@@ -1,7 +1,9 @@
-// @config "./tailwind.config.js";
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@config "../tailwind.config.js";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /*
  * App Global CSS
  * ----------------------------------------------------------------------------
