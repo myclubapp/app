@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
-      - name: Config NPM
+      - name: Config Node Version because of npm login issues.
         uses: actions/setup-node@master
         with:
           node-version: 14
@@ -31,8 +31,12 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 14
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install
       - name: Build app-kadetten-unihockey
         run: npm run build:app-kadetten-unihockey
       - name: Deploy to Firebase
@@ -48,8 +52,12 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 14
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install
       - name: Build app-uhc-win-u
         run: npm run build:app-uhc-win-u
       - name: Deploy to Firebase

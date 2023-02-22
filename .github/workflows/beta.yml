@@ -10,8 +10,12 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 14
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install
       - name: Build (BETA)
         run: npm run build:beta
       - name: Deploy to Firebase
