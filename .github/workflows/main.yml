@@ -9,10 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-      - uses: actions/checkout@master
-      - uses: actions/setup@master
+        uses: actions/checkout@master
+      - name: Config NPM
+        uses: actions/setup@master
         with:
-          node-version: 14
+          node-version: 16
       - name: Install Dependencies
         run: npm install
       - name: Build (Default Unihockey)
