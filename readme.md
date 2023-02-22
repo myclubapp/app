@@ -42,6 +42,7 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 
 ## Installed packages
 
+- Trapeze for native configuration
 - Tailwind CSS (`npm install -D tailwindcss@latest postcss autoprefixer`)
 - Capacitor JS (V3)
 - Ionicframework (V6)
