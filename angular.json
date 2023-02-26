@@ -233,7 +233,7 @@
                 },
                 {
                   "glob": "**/*",
-                  "input": "src/custom-themesapp-stv-spreitenbach/assets",
+                  "input": "src/custom-themes/app-stv-spreitenbach/assets",
                   "output": "./assets"
                 },
                 {
