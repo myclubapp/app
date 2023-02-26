@@ -1,53 +1,53 @@
-import { Component, OnInit } from '@angular/core';
-import { Team } from 'src/app/models/team';
-import { AuthService } from 'src/app/services/auth.service';
-import { FirebaseService } from 'src/app/services/firebase.service';
-import { switchMap, map } from 'rxjs/operators';
-import { of, combineLatest } from 'rxjs';
-import { User } from 'firebase/auth';
-import { IonRouterOutlet, ModalController } from '@ionic/angular';
-import { TeamPage } from '../team/team.page';
+import { Component, OnInit } from "@angular/core";
+import { Team } from "src/app/models/team";
+import { AuthService } from "src/app/services/auth.service";
+import { FirebaseService } from "src/app/services/firebase.service";
+import { switchMap, map } from "rxjs/operators";
+import { of, combineLatest } from "rxjs";
+import { User } from "firebase/auth";
+import { IonRouterOutlet, ModalController } from "@ionic/angular";
+import { TeamPage } from "../team/team.page";
 
 @Component({
-  selector: 'app-team-list',
-  templateUrl: './team-list.page.html',
-  styleUrls: ['./team-list.page.scss'],
+  selector: "app-team-list",
+  templateUrl: "./team-list.page.html",
+  styleUrls: ["./team-list.page.scss"],
 })
 export class TeamListPage implements OnInit {
   teamList: Team[];
   skeleton = new Array(12);
 
-  constructor (
+  constructor(
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController
   ) {}
 
-  ngOnInit () {
+  ngOnInit() {
     this.getTeamList();
   }
 
-  async openModal (team: Team) {
+  async openModal(team: Team) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: TeamPage,
       presentingElement: this.routerOutlet.nativeEl,
-      swipeToClose: true,
+      canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        data: team
-      }
+        data: team,
+      },
     });
     modal.present();
 
     const { data, role } = await modal.onWillDismiss();
 
-    if (role === 'confirm') {
+    if (role === "confirm") {
     }
   }
 
-  getTeamList () {
+  getTeamList() {
     this.authService
       .getUser$()
       .pipe(
@@ -65,17 +65,17 @@ export class TeamListPage implements OnInit {
       .subscribe(async (data: any) => {
         console.log(data);
 
-        const teamListNew = []
+        const teamListNew = [];
         for (const team of data) {
           // loop over teams
 
-          const teamDetails = team[1]
+          const teamDetails = team[1];
           teamListNew.push(teamDetails);
         }
         this.teamList = [...new Set([].concat(...teamListNew))];
         this.teamList = this.teamList.sort(
           (a, b) => Number(a.id) - Number(b.id)
         );
-      })
+      });
   }
 }

@@ -1,23 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
 import {
   IonItemSliding,
   IonRouterOutlet,
   ModalController,
-  ToastController
-} from '@ionic/angular';
-import { User } from 'firebase/auth';
-import { of, combineLatest } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
-import { Game } from 'src/app/models/game';
-import { AuthService } from 'src/app/services/auth.service';
-import { FirebaseService } from 'src/app/services/firebase.service';
-import { ChampionshipService } from 'src/app/services/firebase/championship.service';
-import { ChampionshipDetailPage } from '../championship-detail/championship-detail.page';
+  ToastController,
+} from "@ionic/angular";
+import { User } from "firebase/auth";
+import { of, combineLatest } from "rxjs";
+import { switchMap, map } from "rxjs/operators";
+import { Game } from "src/app/models/game";
+import { AuthService } from "src/app/services/auth.service";
+import { FirebaseService } from "src/app/services/firebase.service";
+import { ChampionshipService } from "src/app/services/firebase/championship.service";
+import { ChampionshipDetailPage } from "../championship-detail/championship-detail.page";
 
 @Component({
-  selector: 'app-championship',
-  templateUrl: './championship.page.html',
-  styleUrls: ['./championship.page.scss'],
+  selector: "app-championship",
+  templateUrl: "./championship.page.html",
+  styleUrls: ["./championship.page.scss"],
 })
 export class ChampionshipPage implements OnInit {
   skeleton = new Array(12);
@@ -25,7 +25,7 @@ export class ChampionshipPage implements OnInit {
 
   gamesList: Game[] = [];
   gamesListPast: Game[] = [];
-  constructor (
+  constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
@@ -34,36 +34,36 @@ export class ChampionshipPage implements OnInit {
     private readonly championshipService: ChampionshipService
   ) {}
 
-  ngOnInit () {
+  ngOnInit() {
     this.getUser();
     this.getGamesList();
     this.getGamesListPast();
   }
 
-  async getUser () {
+  async getUser() {
     this.user = await this.authService.getUser();
   }
 
-  async openModal (game: Game) {
+  async openModal(game: Game) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: ChampionshipDetailPage,
       presentingElement: this.routerOutlet.nativeEl,
-      swipeToClose: true,
+      canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        data: game
-      }
+        data: game,
+      },
     });
     modal.present();
 
     const { data, role } = await modal.onWillDismiss();
 
-    if (role === 'confirm') {
+    if (role === "confirm") {
     }
   }
 
-  async toggle (status: boolean, game: Game) {
+  async toggle(status: boolean, game: Game) {
     // console.log(`Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}` );
     await this.championshipService.setTeamGameAttendeeStatus(
       this.user.uid,
@@ -74,7 +74,7 @@ export class ChampionshipPage implements OnInit {
     this.presentToast();
   }
 
-  async toggleItem (slidingItem: IonItemSliding, status: boolean, game: Game) {
+  async toggleItem(slidingItem: IonItemSliding, status: boolean, game: Game) {
     slidingItem.closeOpened();
 
     console.log(
@@ -89,17 +89,17 @@ export class ChampionshipPage implements OnInit {
     this.presentToast();
   }
 
-  async presentToast () {
+  async presentToast() {
     const toast = await this.toastController.create({
-      message: 'Änderungen gespeichert',
-      color: 'primary',
+      message: "Änderungen gespeichert",
+      color: "primary",
       duration: 2000,
-      position: 'top',
+      position: "top",
     });
     toast.present();
   }
 
-  getGamesList () {
+  getGamesList() {
     this.authService
       .getUser$()
       .pipe(
@@ -137,15 +137,15 @@ export class ChampionshipPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        const gamesListNew = []
+        const gamesListNew = [];
         for (const team of data) {
           // loop over teams
 
-          const games = team[1]
-          const teamDetails = team[2]
+          const games = team[1];
+          const teamDetails = team[2];
           for (const gameObject of games) {
-            const game = gameObject[0]
-            const attendees = gameObject[1]
+            const game = gameObject[0];
+            const attendees = gameObject[1];
 
             game.teamName = teamDetails.name;
             game.teamId = teamDetails.id;
@@ -172,10 +172,10 @@ export class ChampionshipPage implements OnInit {
         this.gamesList = this.gamesList.sort(
           (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis()
         );
-      })
+      });
   }
 
-  getGamesListPast () {
+  getGamesListPast() {
     this.authService
       .getUser$()
       .pipe(
@@ -213,15 +213,15 @@ export class ChampionshipPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        const gamesListNew = []
+        const gamesListNew = [];
         for (const team of data) {
           // loop over teams
 
-          const games = team[1]
-          const teamDetails = team[2]
+          const games = team[1];
+          const teamDetails = team[2];
           for (const gameObject of games) {
-            const game = gameObject[0]
-            const attendees = gameObject[1]
+            const game = gameObject[0];
+            const attendees = gameObject[1];
 
             game.teamName = teamDetails.name;
             game.teamId = teamDetails.id;
@@ -242,11 +242,11 @@ export class ChampionshipPage implements OnInit {
           }
         }
         this.gamesListPast = [
-          ...new Set(this.gamesListPast.concat(...gamesListNew))
-        ]
+          ...new Set(this.gamesListPast.concat(...gamesListNew)),
+        ];
         this.gamesListPast = this.gamesListPast.sort(
           (a, b) => b.dateTime.toMillis() - a.dateTime.toMillis()
         );
-      })
+      });
   }
 }
