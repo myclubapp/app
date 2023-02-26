@@ -66,3 +66,24 @@ jobs:
           args: deploy --only hosting:app-uhc-win-u
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  build_stv_spreitenach:
+    needs: [build_default, build_kadetten]
+    name: Build & Deploy STV Spreitenbach App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 14
+      - name: Install Dependencies
+        run: npm install
+      - name: Build app-stv-spreitenach
+        run: npm run build:app-stv-spreitenach
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting:app-stv-spreitenach
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
