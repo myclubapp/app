@@ -67,7 +67,7 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
   build_stv_spreitenach:
-    needs: [build_default, build_kadetten]
+    needs: [build_default, build_kadetten, build_uhc_winu]
     name: Build & Deploy STV Spreitenbach App
     runs-on: ubuntu-latest
     steps:
