@@ -18,6 +18,7 @@ import { environment } from "src/environments/environment";
 })
 export class ChampionshipDetailPage implements OnInit {
   @Input("data") game: Game;
+
   @ViewChild("map")
   mapRef: ElementRef<HTMLElement>;
   newMap: GoogleMap;
