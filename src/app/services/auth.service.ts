@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { first } from 'rxjs/operators';
+import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
+import { first } from "rxjs/operators";
 // import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 import {
@@ -14,9 +14,9 @@ import {
   signOut,
   UserCredential,
   RecaptchaVerifier,
-  User
-} from '@angular/fire/auth';
-import { Observable } from 'rxjs';
+  User,
+} from "@angular/fire/auth";
+import { Observable } from "rxjs";
 
 // import firebase from 'firebase/compat/app';
 import {
@@ -29,19 +29,19 @@ import {
   deleteDoc,
   updateDoc,
   DocumentReference,
-  setDoc
-} from '@angular/fire/firestore';
+  setDoc,
+} from "@angular/fire/firestore";
 
 /******************************************************************************************
  *  DOCS https://github.com/angular/angularfire/blob/master/docs/auth/getting-started.md
  *******************************************************************************************/
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class AuthService {
   user$: Observable<User | null>;
-  constructor (
+  constructor(
     private readonly firestore: Firestore,
     private readonly auth: Auth,
     private readonly router: Router
@@ -53,26 +53,26 @@ export class AuthService {
   /* getUser(): Promise<User> {
     return authState(this.auth).pipe(first()).toPromise();
   } */
-  async getUser (): Promise<User | null> {
+  async getUser(): Promise<User | null> {
     // console.log("getUser auth service");
     return await this.user$.pipe(first()).toPromise();
   }
 
-  getUser$ () {
+  getUser$() {
     // console.log("getUser auth service");
     return this.user$.pipe(first());
   }
 
-  async login (email: string, password: string) {
+  async login(email: string, password: string) {
     return await signInWithEmailAndPassword(this.auth, email, password);
   }
 
-  async sendVerifyEmail () {
+  async sendVerifyEmail() {
     const auth = getAuth();
     return await sendEmailVerification(auth.currentUser);
   }
 
-  async signup (
+  async signup(
     email: string,
     password: string,
     firstName: string,
@@ -81,7 +81,7 @@ export class AuthService {
     try {
       const newUserCredential: UserCredential =
         await createUserWithEmailAndPassword(this.auth, email, password);
-
+      console.log(newUserCredential);
       // const userProfileRef = collection(this.firestore, 'userProfile');
       const userProfileDocRef = doc(
         this.firestore,
@@ -90,8 +90,8 @@ export class AuthService {
       setDoc(userProfileDocRef, {
         firstName,
         lastName,
-        email: newUserCredential.user.email
-      })
+        email: newUserCredential.user.email,
+      });
 
       /* addDoc(userProfileRef, {
         firstName: firstName,
@@ -105,13 +105,13 @@ export class AuthService {
     }
   }
 
-  async resetPassword (email: string): Promise<void> {
+  async resetPassword(email: string): Promise<void> {
     return await sendPasswordResetEmail(this.auth, email);
   }
 
-  async logout (): Promise<void> {
+  async logout(): Promise<void> {
     await signOut(this.auth);
     // firebase.firestore().clearPersistence();
-    await this.router.navigateByUrl('/logout');
+    await this.router.navigateByUrl("/logout");
   }
 }

@@ -1,8 +1,9 @@
 export interface Club {
-  id: string
-  name: string
-  logo: string
-  type: string
+  id: string;
+  name: string;
+  logo: string;
+  type: string;
+  active: boolean;
 }
 export interface SwissUnihockeyClub extends Club {}
 

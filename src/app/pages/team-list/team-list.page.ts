@@ -72,10 +72,10 @@ export class TeamListPage implements OnInit {
           const teamDetails = team[1];
           teamListNew.push(teamDetails);
         }
-        this.teamList = [...new Set([].concat(...teamListNew))];
         this.teamList = this.teamList.sort(
           (a, b) => Number(a.id) - Number(b.id)
         );
+        this.teamList = [...new Set([].concat(...teamListNew))];
       });
   }
 }

@@ -71,10 +71,10 @@ export class ClubListPage implements OnInit {
           const clubDetails = club[1];
           clubListNew.push(clubDetails);
         }
-        this.clubList = [...new Set([].concat(...clubListNew))];
         this.clubList = this.clubList.sort(
           (a, b) => Number(a.id) - Number(b.id)
         );
+        this.clubList = [...new Set([].concat(...clubListNew))];
       });
   }
 }

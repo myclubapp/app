@@ -1,22 +1,26 @@
-import { Component } from '@angular/core';
-import { SwUpdate, VersionEvent } from '@angular/service-worker';
-import { AlertController, ModalController } from '@ionic/angular';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { AuthService } from './services/auth.service';
-import packagejson from './../../package.json';
+import { Component } from "@angular/core";
+import { SwUpdate, VersionEvent } from "@angular/service-worker";
+import { AlertController, ModalController } from "@ionic/angular";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { AuthService } from "./services/auth.service";
+import packagejson from "./../../package.json";
+import { FirebaseService } from "./services/firebase.service";
+import { Router } from "@angular/router";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss'],
+  selector: "app-root",
+  templateUrl: "app.component.html",
+  styleUrls: ["app.component.scss"],
 })
 export class AppComponent {
   public email: string;
   public appVersion: string = packagejson.version;
-  constructor (
+  constructor(
     private readonly swUpdate: SwUpdate,
     private readonly alertController: AlertController,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly fbService: FirebaseService,
+    private readonly router: Router
   ) {
     this.initializeApp();
     // this.initializeFirebase();
@@ -29,6 +33,16 @@ export class AppComponent {
         if (!user.emailVerified) {
           this.presentAlertEmailNotVerified();
         }
+
+        this.fbService.getUserClubRefs(user).subscribe((data: any) => {
+          // console.log(data);
+          if (data.length === 0) {
+            console.log("NO club assigned");
+
+            this.router.navigateByUrl("onboarding", {});
+          }
+        });
+
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
         // const uid = user.uid;
@@ -40,15 +54,15 @@ export class AppComponent {
     });
   }
 
-  initializeApp (): void {
+  initializeApp(): void {
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
-      if (event.type === 'VERSION_READY') {
-        this.presentAlert();
+      if (event.type === "VERSION_READY") {
+        this.presentAlertUpdateVersion();
       }
     });
   }
 
-  initializeFirebase () {
+  initializeFirebase() {
     // https://cloud.google.com/firestore/docs/manage-data/enable-offline
     // The default cache size threshold is 40 MB. Configure "cacheSizeBytes"
     // for a different threshold (minimum 1 MB) or set to "CACHE_SIZE_UNLIMITED"
@@ -74,73 +88,73 @@ export class AppComponent {
     */
   }
 
-  async presentAlertEmailNotVerified () {
+  async presentAlertEmailNotVerified() {
     const alert = await this.alertController.create({
-      cssClass: 'my-custom-class',
-      header: 'E-Mail Adresse ist nicht verifiziert',
-      subHeader: '',
+      cssClass: "my-custom-class",
+      header: "E-Mail Adresse ist nicht verifiziert",
+      subHeader: "",
       message:
-        'Bitte prüfen Sie ihr E-Mail Postfach oder den Spam Ordner und aktivieren sie ihren my-club Account um fortzufahren. Sollen wir nochmals eine E-Mail senden?',
+        "Bitte prüfen Sie ihr E-Mail Postfach oder den Spam Ordner und aktivieren sie ihren my-club Account um fortzufahren. Sollen wir nochmals eine E-Mail senden?",
       buttons: [
         {
-          text: 'Nein',
-          role: 'cancel',
+          text: "Nein",
+          role: "cancel",
           handler: () => {
-            console.log('Nein');
+            console.log("Nein");
             this.authService.logout();
-          }
+          },
         },
         {
-          text: 'Ja',
+          text: "Ja",
           handler: () => {
-            console.log('Email nochmals senden');
+            console.log("Email nochmals senden");
             this.authService.sendVerifyEmail();
             this.authService.logout();
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
     await alert.present();
 
     const { role } = await alert.onDidDismiss();
-    console.log('onDidDismiss resolved with role', role);
+    console.log("onDidDismiss resolved with role", role);
   }
 
-  async presentAlert () {
+  async presentAlertUpdateVersion() {
     const alert = await this.alertController.create({
       // cssClass: 'my-custom-class',
-      header: 'App Update verfügbar',
+      header: "App Update verfügbar",
       message: `Eine neue Version ${this.appVersion} ist verfügbar. Neue Version laden?`,
       backdropDismiss: false,
       buttons: [
         {
-          text: 'Abbrechen',
-          role: 'cancel',
-          cssClass: 'secondary',
+          text: "Abbrechen",
+          role: "cancel",
+          cssClass: "secondary",
           handler: (data) => {
             // console.log('Confirm Cancel: data');
-          }
+          },
         },
         {
-          text: 'Laden',
+          text: "Laden",
           handler: async () => {
             const resolver = await this.swUpdate.activateUpdate();
             if (resolver) {
               window.location.reload();
             } else {
-              console.log('Already on latest version');
+              console.log("Already on latest version");
             }
-          }
-        }
-      ]
-    })
+          },
+        },
+      ],
+    });
 
     await alert.present();
   }
 
-  async logout () {
-    console.log('logout');
+  async logout() {
+    console.log("logout");
     await this.authService.logout();
   }
 }
