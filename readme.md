@@ -77,6 +77,8 @@ Go to CUSTOM_THEMES and copy default folder. Then create icons and the following
 - tailwind.config.js [This is still an issue]
 - webmanifest.manifest
 
+adjust theme color, names and path accordingly app-FIREBASE_SITE_MYAP
+
 ### Add Default Sites
 
 firebase target:apply hosting app-unihockey unihockey
@@ -92,11 +94,13 @@ firebase target:remove hosting FIREBASE_SITE_MYAPP
 ### Icon
 
 Run commands to generate custom icons:
+
 pwa-asset-generator ./resources/app-CUSTOM_icon.png --splash-only --dark-mode -p 0%
 pwa-asset-generator ./resources/app-CUSTOM_icon.png --splash-only -p 0%
 pwa-asset-generator ./resources/app-CUSTOM_icon.png --icon-only --dark-mode -p 0%
+pwa-asset-generator ./resources/app-CUSTOM_icon.png --icon-only -p 0%
 
-then, copy icons to src/custom_themes/app-CUSTOM/assets
+then, have a look in the directory or copy icons to src/custom_themes/app-CUSTOM/assets
 
 - /icons
 - /splash
