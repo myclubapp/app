@@ -19,7 +19,7 @@
     "build:app-uhc-win-u": "ng build --configuration app-uhc-win-u",
     "build:app-stv-spreitenbach": "ng build --configuration app-stv-spreitenbach",
     "build-deploy:app-uhc-win-u": "ng build --configuration app-uhc-win-u && firebase deploy --only hosting:app-uhc-win-u",
-    "build-deploy:app-stv-spreitenach": "ng build --configuration app-stv-spreitenbach && firebase deploy --only hosting:app-stv-spreitenbach",
+    "build-deploy:app-stv-spreitenbach": "ng build --configuration app-stv-spreitenbach && firebase deploy --only hosting:app-stv-spreitenbach",
     "prepare": "husky install"
   },
   "private": true,
