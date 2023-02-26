@@ -224,7 +224,7 @@
               ]
             },
             "app-stv-spreitenbach": {
-              "index": "src/custom-themes/app-uhc-win-u/index.html",
+              "index": "src/custom-themes/app-stv-spreitenbach/index.html",
               "assets": [
                 {
                   "glob": "**/*.svg",
@@ -233,12 +233,12 @@
                 },
                 {
                   "glob": "**/*",
-                  "input": "src/custom-themes/app-uhc-win-u/assets",
+                  "input": "src/custom-themesapp-stv-spreitenbach/assets",
                   "output": "./assets"
                 },
                 {
                   "glob": "manifest.webmanifest",
-                  "input": "src/custom-themes/app-uhc-win-u",
+                  "input": "src/custom-themes/app-stv-spreitenbach",
                   "output": "./"
                 }
               ],
@@ -249,8 +249,8 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/app-uhc-win-u/variables.scss",
-                "src/custom-themes/app-uhc-win-u/global.scss"
+                "src/custom-themes/app-stv-spreitenbach/variables.scss",
+                "src/custom-themes/app-stv-spreitenbach/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
