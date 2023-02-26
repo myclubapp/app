@@ -1,26 +1,27 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>{{news?.title}}</ion-title>
+    <ion-title>{{news.title}}</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="close()">schliessen</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-  <!--
-  
-     <ion-card button="true">
-       <ion-fab *ngIf="news.url" vertical="top" horizontal="end">
-         <ion-fab-button size="small" (click)="share(news)">
+  <h1 class="text-xl">{{news.title}}</h1>
+  <h2 class="text-sm">{{news.date | date:'dd.MM.YYYY HH:mm'}}</h2>
+  <img class="py-4" src="{{news.image}}" />
+  <p>{{news.text}}</p>
+
+  <!--<ion-card button="true">
+    <ion-fab *ngIf="news.url" vertical="top" horizontal="end">
+      <ion-fab-button size="small" (click)="share(news)">
         <ion-icon name="share" size="small"></ion-icon>
       </ion-fab-button>
     </ion-fab>
 
     <img src="{{news.image}}" />
     <ion-card-header>
-      <ion-card-subtitle
-        >{{news.date | date:'dd.MM.YYYY HH:mm'}}</ion-card-subtitle
-      >
+      <ion-card-subtitle>{{news.date | date:'dd.MM.YYYY HH:mm'}}</ion-card-subtitle>
       <ion-card-title>{{news.title}}</ion-card-title>
     </ion-card-header>
 
@@ -38,6 +39,5 @@
         <ion-label></ion-label>
       </ion-col>
     </ion-row>
-  </ion-card>
--->
+  </ion-card>-->
 </ion-content>
