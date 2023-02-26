@@ -66,6 +66,9 @@ Run my-club within your own domain and use your own design(css)
 - Kadetten Unihockey Schaffhausen [Link](https://kadetten-unihockey.web.app)
 - UHC Winterthur United [Link](https://uhc-win-u.web.app)
 - STV Spreitenbach [Link](https://stv-spreitenbach.web.app)
+
+- VBC Schaffhausen [Link](https://vbc-schaffhausen.web.app)
+
 - swissunihockey [Link](https://my-unihockey.web.app)
 - swissvolley [Link](https://my-swissvolley.web.app)
 

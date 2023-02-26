@@ -87,3 +87,24 @@ jobs:
           args: deploy --only hosting:app-stv-spreitenbach
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  build_vbc_schaffhausen:
+    needs: [build_default]
+    name: Build & Deploy VBC Schaffhausen App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 14
+      - name: Install Dependencies
+        run: npm install
+      - name: Build app-vbc-schaffhausen
+        run: npm run build:app-vbc-schaffhausen
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting:app-vbc-schaffhausen
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

@@ -31,6 +31,9 @@
         ],
         "app-stv-spreitenbach": [
           "stv-spreitenbach"
+        ],
+        "app-vbc-schaffhausen": [
+          "vbc-schaffhausen"
         ]
       }
     }
