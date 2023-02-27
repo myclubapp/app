@@ -7,6 +7,7 @@ import { FirebaseService } from 'src/app/services/firebase.service'; */
 // import firebase from 'firebase/compat/app';
 import { FirebaseService } from "src/app/services/firebase.service";
 import { Club } from "src/app/models/club";
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: "app-onboarding",
@@ -25,7 +26,8 @@ export class OnboardingPage implements OnInit {
     // private fbService: FirebaseService,
     private readonly fbService: FirebaseService,
     public menuCtrl: MenuController,
-    private readonly alertCtrl: AlertController
+    private readonly alertCtrl: AlertController,
+    private readonly authService: AuthService
   ) {
     this.menuCtrl.enable(false, 'menu');
   }
@@ -74,8 +76,38 @@ export class OnboardingPage implements OnInit {
         buttons: [{
           text: "JA",
           handler: () =>{
-            console.log("Ja" );
+            this.emailCheck(club);
+          }
+        },
+        {
+          text: "Nein",
+          role: 'cancel',
+          handler: () =>{
+            console.log("nein");
+          }
+        }]
+      });
+  
+      await alert.present();
+  }
 
+  async emailCheck(club:Club){
+    // console.log(club);
+    const user = await this.authService.getUser();
+    // Does e-mail exist in contacts? --> Should not be the case, because user was added automatically during activation of email.
+    
+
+    const alert = await this.alertCtrl.create({
+        header: 'Bitte bestätige deine E-Mail-Adresse',
+        inputs:[{
+          name: "Email",
+          type: "email",
+          value: user.email
+        }],        
+        buttons: [{
+          text: "JA",
+          handler: () =>{
+            console.log("Ja" );
           }
         },
         {
