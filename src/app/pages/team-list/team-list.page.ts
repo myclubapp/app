@@ -14,7 +14,7 @@ import { TeamPage } from "../team/team.page";
   styleUrls: ["./team-list.page.scss"],
 })
 export class TeamListPage implements OnInit {
-  teamList: Team[];
+  teamList: Team[] = [];
   skeleton = new Array(12);
 
   constructor(

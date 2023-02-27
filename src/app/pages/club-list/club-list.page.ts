@@ -14,7 +14,7 @@ import { IonRouterOutlet, ModalController } from "@ionic/angular";
   styleUrls: ["./club-list.page.scss"],
 })
 export class ClubListPage implements OnInit {
-  clubList: Club[];
+  clubList: Club[] = [];
   skeleton = new Array(12);
   constructor(
     private readonly fbService: FirebaseService,
