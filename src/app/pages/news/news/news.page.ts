@@ -128,7 +128,7 @@ export class NewsPage implements OnInit {
 
           for (const news of club[1]) {
             // Club News
-            console.log(news);
+            // console.log(news);
             newsListNew.push(news);
           }
         }
