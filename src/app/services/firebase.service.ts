@@ -61,6 +61,15 @@ export class FirebaseService {
     >;
   }
 
+  getActiveClubList(): Observable<Club[]> {
+    const clubRefList = collection(this.firestore, `club/`);
+
+    const q = query(clubRefList, where("active", "==", true)); // heute - 1 Woche
+    return collectionData(q, { idField: "id" }) as unknown as Observable<
+      Club[]
+    >;
+  }
+
   getUserClubRefs(user: User): Observable<Club> {
     const clubRefList = collection(
       this.firestore,

@@ -17,6 +17,8 @@ export class OnboardingPage implements OnInit {
   // imageUrl: any;
   // public code: string;
   clubList: Club[];
+  activeClubList: Club[];
+  activeClubListBackup: Club[];
   // inviteList: Array<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>>
   constructor(
     // private readonly qrservice: QrcodeService,
@@ -35,21 +37,33 @@ export class OnboardingPage implements OnInit {
       //console.log(snapshot.docs);
       this.inviteList = snapshot.docs;
     }) */
+    this.fbService
+        .getActiveClubList()
+        .subscribe((data: any) => {
+          // console.log(data);
+          this.activeClubList = data;
+          this.activeClubListBackup = data;
+        });
   }
 
   handleChange(event: any) {
     console.log(event.detail.value);
 
     if (event.detail.value) {
-      console.log("before search");
+      console.log("before club search");
+      // Search
       this.fbService
         .searchClubListRef(event.detail.value)
         .subscribe((data: any) => {
           console.log(data);
           this.clubList = data;
         });
+        // My-Club Clubs Search
+        this.activeClubList = this.activeClubListBackup.filter((club, index) => club.name.search(event.detail.value) >= 0);
+
     } else {
       this.clubList = [];
+      this.activeClubList = this.activeClubListBackup;
     }
   }
 
@@ -61,10 +75,12 @@ export class OnboardingPage implements OnInit {
           text: "JA",
           handler: () =>{
             console.log("Ja" );
+
           }
         },
         {
           text: "Nein",
+          role: 'cancel',
           handler: () =>{
             console.log("nein");
           }
