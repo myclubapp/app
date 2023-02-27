@@ -21,9 +21,9 @@ export class OnboardingPage implements OnInit {
   constructor(
     // private readonly qrservice: QrcodeService,
     // private fbService: FirebaseService,
-    public alertController: AlertController,
     private readonly fbService: FirebaseService,
-    public menuCtrl: MenuController
+    public menuCtrl: MenuController,
+    private readonly alertCtrl: AlertController
   ) {
     this.menuCtrl.enable(false, 'menu');
   }
@@ -53,8 +53,25 @@ export class OnboardingPage implements OnInit {
     }
   }
 
-  joinClub(club:Club){
+  async joinClub(club:Club){
     console.log(club);
+      const alert = await this.alertCtrl.create({
+        header: 'Möchtest du dem Verein auf my-club beitreten?',
+        buttons: [{
+          text: "JA",
+          handler: () =>{
+            console.log("Ja" );
+          }
+        },
+        {
+          text: "Nein",
+          handler: () =>{
+            console.log("nein");
+          }
+        }]
+      });
+  
+      await alert.present();
   }
 
   /*
