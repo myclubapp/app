@@ -13,9 +13,11 @@ jobs:
       - name: Config Node Version because of npm login issues.
         uses: actions/setup-node@master
         with:
-          node-version: 14
+          node-version: 16
       - name: Install Dependencies
-        run: npm install
+        run: |
+          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
+          npm ci
       - name: Build (BETA)
         run: npm run build:beta
       - name: Deploy to Firebase
