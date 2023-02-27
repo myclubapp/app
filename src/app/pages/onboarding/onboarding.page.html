@@ -20,9 +20,10 @@
     placeholder="Nach Club suchen"
   ></ion-searchbar>
   <ion-list>
-    <ion-item *ngFor="let club of clubList">
-      {{club.name}} <ion-badge *ngIf="club.active">ACTIVE</ion-badge>
+    <ion-item *ngFor="let club of clubList" (click)="joinClub(club)" button>
+      <ion-label>{{club.name}} <ion-badge *ngIf="club.active">ACTIVE</ion-badge></ion-label>
     </ion-item>
+
   </ion-list>
 
   <!--

@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { AlertController, SearchbarChangeEventDetail } from "@ionic/angular";
+import { AlertController, MenuController } from "@ionic/angular";
 // import { Camera, CameraResultType } from '@capacitor/camera';
 /* import { Observable } from 'rxjs';
 import { FirebaseService } from 'src/app/services/firebase.service'; */
@@ -22,10 +22,14 @@ export class OnboardingPage implements OnInit {
     // private readonly qrservice: QrcodeService,
     // private fbService: FirebaseService,
     public alertController: AlertController,
-    private readonly fbService: FirebaseService
-  ) {}
+    private readonly fbService: FirebaseService,
+    public menuCtrl: MenuController
+  ) {
+    this.menuCtrl.enable(false, 'menu');
+  }
 
   async ngOnInit() {
+    this.menuCtrl.enable(false, 'menu');
     /* const inviteRef = await this.fbService.getInvites();
     inviteRef.subscribe(snapshot=>{
       //console.log(snapshot.docs);
@@ -47,6 +51,10 @@ export class OnboardingPage implements OnInit {
     } else {
       this.clubList = [];
     }
+  }
+
+  joinClub(club:Club){
+    console.log(club);
   }
 
   /*

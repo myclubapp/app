@@ -55,7 +55,7 @@ export class FirebaseService {
   searchClubListRef(searchString: string): Observable<Club[]> {
     const clubRefList = collection(this.firestore, `club/`);
 
-    const q = query(clubRefList, where("name", "==", "*" + searchString + "*")); // heute - 1 Woche
+    const q = query(clubRefList, where("name", "==", searchString)); // heute - 1 Woche
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       Club[]
     >;
