@@ -120,7 +120,7 @@ export class NewsPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        console.log(data);
+        // console.log(data);
 
         const newsListNew = [];
         for (const club of data) {
