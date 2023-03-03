@@ -6,6 +6,7 @@ import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
 import { Router } from "@angular/router";
+import { SplashScreen } from '@capacitor/splash-screen';
 
 @Component({
   selector: "app-root",
@@ -22,6 +23,7 @@ export class AppComponent {
     private readonly fbService: FirebaseService,
     private readonly router: Router
   ) {
+    
     this.initializeApp();
     // this.initializeFirebase();
 
@@ -54,7 +56,11 @@ export class AppComponent {
     });
   }
 
+
+
   initializeApp(): void {
+    this.hideSplashScreen();
+
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
       if (event.type === "VERSION_READY") {
         this.presentAlertUpdateVersion();
@@ -88,6 +94,15 @@ export class AppComponent {
     */
   }
 
+  async hideSplashScreen () {
+    // await SplashScreen.hide();
+    // Show the splash for two seconds and then automatically hide it:
+    await SplashScreen.show({
+      showDuration: 2000,
+      autoHide: true,
+    });
+
+  }
   async presentAlertEmailNotVerified() {
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
