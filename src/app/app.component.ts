@@ -29,19 +29,20 @@ export class AppComponent {
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        // 0. LOGIN
         this.email = user.email;
 
+        // 1. EMAIL VERIFIED?
         if (!user.emailVerified) {
           this.presentAlertEmailNotVerified();
         } else {
-          // Email verified
+          // 2. CLUB ASSIGNED
           const userClubRefs = this.fbService
             .getUserClubRefs(user)
             .subscribe((data: any) => {
               // console.log(data);
               if (data.length === 0) {
                 console.log("NO club assigned");
-
                 this.router.navigateByUrl("onboarding", {});
               }
             });

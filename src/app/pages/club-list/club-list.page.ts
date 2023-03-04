@@ -7,6 +7,7 @@ import { of, combineLatest } from "rxjs";
 import { User } from "firebase/auth";
 import { ClubPage } from "../club/club.page";
 import { IonRouterOutlet, ModalController } from "@ionic/angular";
+import { AlertController } from "@ionic/angular";
 
 @Component({
   selector: "app-club-list",
@@ -15,16 +16,23 @@ import { IonRouterOutlet, ModalController } from "@ionic/angular";
 })
 export class ClubListPage implements OnInit {
   clubList: Club[] = [];
+  activeClubList: Club[] = [];
   skeleton = new Array(12);
   constructor(
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
     private readonly routerOutlet: IonRouterOutlet,
-    private readonly modalCtrl: ModalController
+    private readonly modalCtrl: ModalController,
+    private alertController: AlertController
   ) {}
 
   ngOnInit() {
     this.getClubList();
+
+    this.fbService.getActiveClubList().subscribe((data: any) => {
+      // console.log(data);
+      this.activeClubList = data;
+    });
   }
 
   async openModal(club: Club) {
@@ -76,5 +84,45 @@ export class ClubListPage implements OnInit {
         );
         this.clubList = [...new Set([].concat(...clubListNew))];
       });
+  }
+
+  async joinClubAlert() {
+    let _inputs = [];
+    for (let club of this.activeClubList) {
+      for (let myClub of this.clubList) {
+        if (myClub.id === club.id) {
+          // club nicht adden
+        } else {
+          _inputs.push({
+            label: club.name,
+            type: "radio",
+            value: club.id,
+          });
+        }
+      }
+    }
+
+    const alert = await this.alertController.create({
+      header: "Select your favorite color",
+      buttons: [
+        {
+          text: "auswählen",
+          role: "confirm",
+          handler: (data) => {
+            console.log(data);
+          },
+        },
+        {
+          text: "abbrechen",
+          role: "cancel",
+          handler: () => {
+            console.log("abbrechen");
+          },
+        },
+      ],
+      inputs: _inputs,
+    });
+
+    await alert.present();
   }
 }
