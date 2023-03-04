@@ -6,7 +6,7 @@ import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
 import { Router } from "@angular/router";
-import { SplashScreen } from '@capacitor/splash-screen';
+import { SplashScreen } from "@capacitor/splash-screen";
 
 @Component({
   selector: "app-root",
@@ -23,7 +23,6 @@ export class AppComponent {
     private readonly fbService: FirebaseService,
     private readonly router: Router
   ) {
-    
     this.initializeApp();
     // this.initializeFirebase();
 
@@ -34,16 +33,20 @@ export class AppComponent {
 
         if (!user.emailVerified) {
           this.presentAlertEmailNotVerified();
+        } else {
+          // Email verified
+          const userClubRefs = this.fbService
+            .getUserClubRefs(user)
+            .subscribe((data: any) => {
+              // console.log(data);
+              if (data.length === 0) {
+                console.log("NO club assigned");
+
+                this.router.navigateByUrl("onboarding", {});
+              }
+            });
+          userClubRefs.unsubscribe();
         }
-
-        this.fbService.getUserClubRefs(user).subscribe((data: any) => {
-          // console.log(data);
-          if (data.length === 0) {
-            console.log("NO club assigned");
-
-            this.router.navigateByUrl("onboarding", {});
-          }
-        });
 
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
@@ -55,8 +58,6 @@ export class AppComponent {
       }
     });
   }
-
-
 
   initializeApp(): void {
     this.hideSplashScreen();
@@ -94,14 +95,13 @@ export class AppComponent {
     */
   }
 
-  async hideSplashScreen () {
+  async hideSplashScreen() {
     // await SplashScreen.hide();
     // Show the splash for two seconds and then automatically hide it:
     await SplashScreen.show({
       showDuration: 2000,
       autoHide: true,
     });
-
   }
   async presentAlertEmailNotVerified() {
     const alert = await this.alertController.create({
