@@ -136,4 +136,16 @@ export class FirebaseService {
       idField: "id",
     }) as unknown as Observable<any>;
   }
+
+  async setClubRequest(clubId: string) {
+    const user = await this.authService.getUser();
+    const clubRef = doc(this.firestore, `/club/${clubId}`);
+    // Add a new document in collection "cities"
+    return setDoc(
+      doc(this.firestore, `userProfile/${user.uid}/requests`, clubId),
+      {
+        clubRef: clubRef,
+      }
+    );
+  }
 }

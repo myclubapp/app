@@ -6,7 +6,11 @@ import { switchMap, map } from "rxjs/operators";
 import { of, combineLatest } from "rxjs";
 import { User } from "firebase/auth";
 import { ClubPage } from "../club/club.page";
-import { IonRouterOutlet, ModalController } from "@ionic/angular";
+import {
+  IonRouterOutlet,
+  ModalController,
+  ToastController,
+} from "@ionic/angular";
 import { AlertController } from "@ionic/angular";
 
 @Component({
@@ -23,7 +27,8 @@ export class ClubListPage implements OnInit {
     private readonly authService: AuthService,
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
-    private alertController: AlertController
+    private readonly alertController: AlertController,
+    private readonly toastController: ToastController
   ) {}
 
   ngOnInit() {
@@ -103,13 +108,25 @@ export class ClubListPage implements OnInit {
     }
 
     const alert = await this.alertController.create({
-      header: "Select your favorite color",
+      header: "Wähle deinen Club aus:",
       buttons: [
         {
           text: "auswählen",
           role: "confirm",
           handler: (data) => {
             console.log(data);
+            this.fbService
+              .setClubRequest(data)
+              .then(async (result) => {
+                const toast = await this.toastController.create({
+                  message: "Request an Club gesendet",
+                  duration: 1500,
+                  position: "bottom",
+                });
+
+                await toast.present();
+              })
+              .catch((err) => {});
           },
         },
         {
