@@ -189,7 +189,7 @@ export class TeamListPage implements OnInit {
           this.availableTeamList.push(teamDetail);
         }
         // console.log(this.availableTeamList);
+        teamList$.unsubscribe();
       });
-    // teamList$.unsubscribe();
   }
 }

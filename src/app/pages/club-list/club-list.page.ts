@@ -60,7 +60,7 @@ export class ClubListPage implements OnInit {
   }
 
   getClubList() {
-    this.authService
+    const clubList$ = this.authService
       .getUser$()
       .pipe(
         // GET TEAMS
@@ -75,8 +75,6 @@ export class ClubListPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        console.log(data);
-
         const clubListNew = [];
         for (const club of data) {
           // loop over clubs
@@ -88,6 +86,7 @@ export class ClubListPage implements OnInit {
           (a, b) => Number(a.id) - Number(b.id)
         );
         this.clubList = [...new Set([].concat(...clubListNew))];
+        clubList$.unsubscribe();
       });
   }
 
