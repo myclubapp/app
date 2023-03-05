@@ -128,19 +128,36 @@ export class FirebaseService {
     }) as unknown as Observable<Team>;
   }
 
-  getUserRequestRefs(user: User): Observable<any> {
+  getUserClubRequestRefs(user: User): Observable<any> {
     const requestRefList = collection(
       this.firestore,
-      `userProfile/${user.uid}/requests`
+      `userProfile/${user.uid}/clubRequests`
     );
     return collectionData(requestRefList, {
       idField: "id",
     }) as unknown as Observable<any>;
   }
-  getUserRequestRef(userId: string, requestId: string): Observable<any> {
+  getUserClubRequestRef(userId: string, requestId: string): Observable<any> {
     const requestRef = doc(
       this.firestore,
-      `/userProfile/${userId}/requests/${requestId}`
+      `/userProfile/${userId}/clubRequests/${requestId}`
+    );
+    return docData(requestRef, { idField: "id" }) as Observable<any>;
+  }
+
+  getUserTeamRequestRefs(user: User): Observable<any> {
+    const requestRefList = collection(
+      this.firestore,
+      `userProfile/${user.uid}/teamRequests`
+    );
+    return collectionData(requestRefList, {
+      idField: "id",
+    }) as unknown as Observable<any>;
+  }
+  getUserTeamRequestRef(userId: string, requestId: string): Observable<any> {
+    const requestRef = doc(
+      this.firestore,
+      `/userProfile/${userId}/teamRequests/${requestId}`
     );
     return docData(requestRef, { idField: "id" }) as Observable<any>;
   }
@@ -175,11 +192,20 @@ export class FirebaseService {
   async setClubRequest(clubId: string) {
     const user = await this.authService.getUser();
     const clubRef = doc(this.firestore, `/club/${clubId}`);
-    // Add a new document in collection "cities"
     return setDoc(
-      doc(this.firestore, `userProfile/${user.uid}/requests`, clubId),
+      doc(this.firestore, `userProfile/${user.uid}/clubRequests`, clubId),
       {
         clubRef: clubRef,
+      }
+    );
+  }
+  async setTeamRequest(teamId: string) {
+    const user = await this.authService.getUser();
+    const teamRef = doc(this.firestore, `/team/${teamId}`);
+    return setDoc(
+      doc(this.firestore, `userProfile/${user.uid}/teamRequests`, teamId),
+      {
+        teamRef: teamRef,
       }
     );
   }

@@ -13,11 +13,8 @@ import { Profile } from "src/app/models/user";
 
 // Capacitor
 import { Camera, CameraResultType, Photo } from "@capacitor/camera";
-import { Club } from "src/app/models/club";
-import { Team } from "src/app/models/team";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { switchMap } from "rxjs/operators";
-import { DocumentReference } from "firebase/firestore";
 
 @Component({
   selector: "app-profile",
@@ -27,8 +24,7 @@ import { DocumentReference } from "firebase/firestore";
 export class ProfilePage implements OnInit, AfterViewInit {
   userProfile$: Observable<Profile>;
   requestList: any[] = [];
-  // clubList$: Observable < Club > ;
-  // teamList$: Observable < Team > ;
+
   constructor(
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -49,7 +45,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
       .getUser$()
       .pipe(
         // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserRequestRefs(user)),
+        switchMap((user: User) => this.fbService.getUserClubRequestRefs(user)),
         // Loop Over Teams
         switchMap((allRequests: any) =>
           combineLatest(

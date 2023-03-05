@@ -89,7 +89,8 @@ export class TeamListPage implements OnInit {
           text: "auswählen",
           role: "confirm",
           handler: async (data) => {
-            console.log(data);
+            // console.log(data);
+            this.fbService.setTeamRequest(data);
             const toast = await this.toastController.create({
               message: "Request an Club gesendet",
               duration: 1500,
@@ -97,12 +98,6 @@ export class TeamListPage implements OnInit {
             });
 
             await toast.present();
-            /* this.fbService
-              .setClubRequest(data)
-              .then(async (result) => {
-              })
-              .catch((err) => {});
-              */
           },
         },
         {
@@ -189,7 +184,7 @@ export class TeamListPage implements OnInit {
         for (const team of data[0][1]) {
           // loop over teams
           const teamDetail = team[1];
-          console.log(teamDetail);
+          // console.log(teamDetail);
           this.availableTeamList.push(teamDetail);
         }
         // console.log(this.availableTeamList);
