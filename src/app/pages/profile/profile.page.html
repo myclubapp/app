@@ -60,11 +60,18 @@
         </ion-input>
       </ion-item>
 
-      <ion-list-header *ngIf="requestList.length > 0">
-        Offene Requests
+      <ion-list-header *ngIf="clubRequestList.length > 0">
+        Offene Club Requests
       </ion-list-header>
-      <ion-item *ngFor="let request of requestList">
+      <ion-item *ngFor="let request of clubRequestList">
         {{request.name}}
+      </ion-item>
+
+      <ion-list-header *ngIf="teamRequestList.length > 0">
+        Offene Team Requests
+      </ion-list-header>
+      <ion-item *ngFor="let request of teamRequestList">
+        {{request.liga}} {{request.name}}
       </ion-item>
     </ion-list>
   </ng-container>

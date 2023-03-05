@@ -23,7 +23,8 @@ import { switchMap } from "rxjs/operators";
 })
 export class ProfilePage implements OnInit, AfterViewInit {
   userProfile$: Observable<Profile>;
-  requestList: any[] = [];
+  clubRequestList: any[] = [];
+  teamRequestList: any[] = [];
 
   constructor(
     private readonly authService: AuthService,
@@ -32,7 +33,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
   ) {}
 
   async ngOnInit() {
-    this.getRequestList();
+    this.getClubRequestList();
+    this.getTeamRequestList();
   }
 
   ngAfterViewInit(): void {
@@ -40,7 +42,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     // this.getClubList();
     // this.getTeamList();
   }
-  getRequestList() {
+  getClubRequestList() {
     const request$ = this.authService
       .getUser$()
       .pipe(
@@ -66,10 +68,43 @@ export class ProfilePage implements OnInit, AfterViewInit {
           // const clubData = await this.fbService.getClubRef(requestDetail.id).toPromise();
           requestListNew.push(requestDetail);
         }
-        this.requestList = this.requestList.sort(
+        this.clubRequestList = this.clubRequestList.sort(
           (a, b) => Number(a.id) - Number(b.id)
         );
-        this.requestList = [...new Set([].concat(...requestListNew))];
+        this.clubRequestList = [...new Set([].concat(...requestListNew))];
+        request$.unsubscribe();
+      });
+  }
+  getTeamRequestList() {
+    const request$ = this.authService
+      .getUser$()
+      .pipe(
+        // GET TEAMS
+        switchMap((user: User) => this.fbService.getUserTeamRequestRefs(user)),
+        // Loop Over Teams
+        switchMap((allRequests: any) =>
+          combineLatest(
+            allRequests.map((request) =>
+              combineLatest(of(request), this.fbService.getTeamRef(request.id))
+            )
+          )
+        )
+      )
+      .subscribe(async (data: any) => {
+        console.log(data);
+
+        const requestListNew = [];
+        for (const request of data) {
+          const requestDetail = request[1];
+
+          // const detailRef: DocumentReference = request[0].clubRef;
+          // const clubData = await this.fbService.getClubRef(requestDetail.id).toPromise();
+          requestListNew.push(requestDetail);
+        }
+        this.teamRequestList = this.teamRequestList.sort(
+          (a, b) => Number(a.id) - Number(b.id)
+        );
+        this.teamRequestList = [...new Set([].concat(...requestListNew))];
         request$.unsubscribe();
       });
   }
