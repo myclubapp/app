@@ -111,6 +111,16 @@ export class FirebaseService {
     }) as unknown as Observable<any>;
   }
 
+  getTeamRequestRefs(teamId: string): Observable<any> {
+    const teamRequestRefList = collection(
+      this.firestore,
+      `team/${teamId}/requests`
+    );
+    return collectionData(teamRequestRefList, {
+      idField: "id",
+    }) as unknown as Observable<any>;
+  }
+
   /* TEAMS */
   getTeamRef(teamId) {
     // console.log(`Read team ${teamId}`);

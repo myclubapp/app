@@ -1,31 +1,32 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ModalController, NavParams } from '@ionic/angular';
-import { combineLatest, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { Team } from 'src/app/models/team';
-import { FirebaseService } from 'src/app/services/firebase.service';
-import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
+import { Component, Input, OnInit } from "@angular/core";
+import { ModalController, NavParams } from "@ionic/angular";
+import { combineLatest, of } from "rxjs";
+import { switchMap } from "rxjs/operators";
+import { Team } from "src/app/models/team";
+import { FirebaseService } from "src/app/services/firebase.service";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 
 @Component({
-  selector: 'app-team',
-  templateUrl: './team.page.html',
-  styleUrls: ['./team.page.scss'],
+  selector: "app-team",
+  templateUrl: "./team.page.html",
+  styleUrls: ["./team.page.scss"],
 })
 export class TeamPage implements OnInit {
-  @Input('data') team: Team;
+  @Input("data") team: Team;
 
   memberList: any[] = [];
   adminList: any[] = [];
+  requestList: any[] = [];
 
-  constructor (
+  constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
     private readonly userProfileService: UserProfileService,
     private readonly fbService: FirebaseService
   ) {}
 
-  ngOnInit () {
-    this.team = this.navParams.get('data');
+  ngOnInit() {
+    this.team = this.navParams.get("data");
 
     this.fbService
       .getTeamMemberRefs(this.team.id)
@@ -49,6 +50,7 @@ export class TeamPage implements OnInit {
           this.memberList.push(member[1]);
         }
       });
+
     this.fbService
       .getTeamAdminRefs(this.team.id)
       .pipe(
@@ -71,13 +73,34 @@ export class TeamPage implements OnInit {
           this.adminList.push(member[1]);
         }
       });
+
+    this.fbService
+      .getTeamRequestRefs(this.team.id)
+      .pipe(
+        switchMap((allTeamMembers: any) =>
+          combineLatest(
+            allTeamMembers.map((member) =>
+              combineLatest(
+                of(member),
+                this.userProfileService.getUserProfileById(member.id)
+              )
+            )
+          )
+        )
+      )
+      .subscribe((data) => {
+        this.requestList = [];
+        for (const member of data) {
+          this.requestList.push(member[1]);
+        }
+      });
   }
 
-  async close () {
-    return await this.modalCtrl.dismiss(null, 'close');
+  async close() {
+    return await this.modalCtrl.dismiss(null, "close");
   }
 
-  async confirm () {
-    return await this.modalCtrl.dismiss(this.team, 'confirm');
+  async confirm() {
+    return await this.modalCtrl.dismiss(this.team, "confirm");
   }
 }
