@@ -33,4 +33,14 @@
       <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
     </ion-item>
   </ion-list>
+
+  <ion-list *ngIf="requestList.length > 0">
+    <ion-list-header> Requests </ion-list-header>
+    <ion-item *ngFor="let member of requestList">
+      <ion-avatar slot="start">
+        <img src="{{member?.profilePicture}}" />
+      </ion-avatar>
+      <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>
