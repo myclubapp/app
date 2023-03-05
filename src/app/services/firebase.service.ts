@@ -114,7 +114,7 @@ export class FirebaseService {
   getTeamRequestRefs(teamId: string): Observable<any> {
     const teamRequestRefList = collection(
       this.firestore,
-      `team/${teamId}/requests`
+      `teams/${teamId}/requests`
     );
     return collectionData(teamRequestRefList, {
       idField: "id",
