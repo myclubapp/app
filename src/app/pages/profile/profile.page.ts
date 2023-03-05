@@ -1,45 +1,82 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit, AfterViewInit } from "@angular/core";
+import { combineLatest, Observable, of } from "rxjs";
 
 // import firebase from 'firebase/compat/app';
-import { User } from '@angular/fire/auth';
+import { User } from "@angular/fire/auth";
 
 // Services
-import { FirebaseService } from 'src/app/services/firebase.service';
-import { AuthService } from 'src/app/services/auth.service';
+import { FirebaseService } from "src/app/services/firebase.service";
+import { AuthService } from "src/app/services/auth.service";
 
 // models
-import { Profile } from 'src/app/models/user';
+import { Profile } from "src/app/models/user";
 
 // Capacitor
-import { Camera, CameraResultType, Photo } from '@capacitor/camera';
-import { Club } from 'src/app/models/club';
-import { Team } from 'src/app/models/team';
-import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
+import { Camera, CameraResultType, Photo } from "@capacitor/camera";
+import { Club } from "src/app/models/club";
+import { Team } from "src/app/models/team";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { switchMap } from "rxjs/operators";
+import { DocumentReference } from "firebase/firestore";
 
 @Component({
-  selector: 'app-profile',
-  templateUrl: './profile.page.html',
-  styleUrls: ['./profile.page.scss'],
+  selector: "app-profile",
+  templateUrl: "./profile.page.html",
+  styleUrls: ["./profile.page.scss"],
 })
 export class ProfilePage implements OnInit, AfterViewInit {
   userProfile$: Observable<Profile>;
+  requestList: any[] = [];
   // clubList$: Observable < Club > ;
   // teamList$: Observable < Team > ;
-  constructor (
+  constructor(
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly profileService: UserProfileService
   ) {}
 
-  async ngOnInit () {}
+  async ngOnInit() {
+    this.getRequestList();
+  }
 
-  ngAfterViewInit (): void {
+  ngAfterViewInit(): void {
     this.getUser();
     // this.getClubList();
     // this.getTeamList();
   }
+  getRequestList() {
+    const request$ = this.authService
+      .getUser$()
+      .pipe(
+        // GET TEAMS
+        switchMap((user: User) => this.fbService.getUserRequestRefs(user)),
+        // Loop Over Teams
+        switchMap((allRequests: any) =>
+          combineLatest(
+            allRequests.map((request) =>
+              combineLatest(of(request), this.fbService.getClubRef(request.id))
+            )
+          )
+        )
+      )
+      .subscribe(async (data: any) => {
+        console.log(data);
 
+        const requestListNew = [];
+        for (const request of data) {
+          const requestDetail = request[1];
+
+          // const detailRef: DocumentReference = request[0].clubRef;
+          // const clubData = await this.fbService.getClubRef(requestDetail.id).toPromise();
+          requestListNew.push(requestDetail);
+        }
+        this.requestList = this.requestList.sort(
+          (a, b) => Number(a.id) - Number(b.id)
+        );
+        this.requestList = [...new Set([].concat(...requestListNew))];
+        request$.unsubscribe();
+      });
+  }
   /*
   async getClubList(){
     const user: User = await this.authService.getUser();
@@ -52,23 +89,23 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.teamList$ = this.fbService.getTeamRefs(user);
   }
 */
-  async getUser () {
+  async getUser() {
     const user: User = await this.authService.getUser();
     this.userProfile$ = this.profileService.getUserProfile(user);
   }
 
-  async takePicture () {
+  async takePicture() {
     const image: Photo = await Camera.getPhoto({
       quality: 90,
       allowEditing: true,
-      resultType: CameraResultType.Base64
-    })
+      resultType: CameraResultType.Base64,
+    });
 
     // image.webPath will contain a path that can be set as an image src.
     // You can access the original file using image.path, which can be
     // passed to the Filesystem API to read the raw data of the image,
     // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-    const imageUrl = image.base64String
+    const imageUrl = image.base64String;
 
     // Can be set to the src of an image now
     // imageElement.src = imageUrl;

@@ -59,6 +59,13 @@
         >
         </ion-input>
       </ion-item>
+
+      <ion-list-header *ngIf="requestList.length > 0">
+        Offene Requests
+      </ion-list-header>
+      <ion-item *ngFor="let request of requestList">
+        {{request.name}}
+      </ion-item>
     </ion-list>
   </ng-container>
 
