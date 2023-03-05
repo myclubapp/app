@@ -201,7 +201,7 @@ export class FirebaseService {
   }
   async setTeamRequest(teamId: string) {
     const user = await this.authService.getUser();
-    const teamRef = doc(this.firestore, `/team/${teamId}`);
+    const teamRef = doc(this.firestore, `/teams/${teamId}`);
     return setDoc(
       doc(this.firestore, `userProfile/${user.uid}/teamRequests`, teamId),
       {
