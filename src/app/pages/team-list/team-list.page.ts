@@ -181,6 +181,7 @@ export class TeamListPage implements OnInit {
       )
       .subscribe(async (data: any) => {
         // const availableTeamListNew = [];
+        this.availableTeamList = [];
         for (const team of data[0][1]) {
           // loop over teams
           const teamDetail = team[1];
