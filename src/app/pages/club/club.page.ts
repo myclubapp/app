@@ -91,6 +91,12 @@ export class ClubPage implements OnInit {
         }
       });
   }
+  deleteClubRequest(member) {
+    this.fbService.deleteUserClubRequest(member.id);
+  }
+  approveClubRequest(member) {
+    this.fbService.setApproveUserClubRequest(this.club.id, member.id);
+  }
 
   async close() {
     return await this.modalCtrl.dismiss(null, "close");
