@@ -12,7 +12,12 @@ import { AuthService } from "src/app/services/auth.service";
 import { Profile } from "src/app/models/user";
 
 // Capacitor
-import { Camera, CameraResultType, Photo } from "@capacitor/camera";
+import {
+  Camera,
+  CameraDirection,
+  CameraResultType,
+  Photo,
+} from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { switchMap } from "rxjs/operators";
 
@@ -126,21 +131,21 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   async takePicture() {
-    const image: Photo = await Camera.getPhoto({
+    const image = await Camera.getPhoto({
       quality: 90,
       allowEditing: true,
       resultType: CameraResultType.Base64,
+      correctOrientation: true,
+      height: 400,
+      width: 400,
+      direction: CameraDirection.Front,
     });
 
     // image.webPath will contain a path that can be set as an image src.
     // You can access the original file using image.path, which can be
     // passed to the Filesystem API to read the raw data of the image,
     // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-    const imageUrl = image.base64String;
-
-    // Can be set to the src of an image now
-    // imageElement.src = imageUrl;
-
+    var imageUrl = image.base64String;
     console.log(image);
 
     const user: User = await this.authService.getUser();
