@@ -41,12 +41,12 @@
         <img src="{{member?.profilePicture}}" />
       </ion-avatar>
       <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
-      <ion-button color="danger" (click)="deleteTeamRequest(member)" slot="end">
+      <ion-button color="danger" (click)="deleteClubRequest(member)" slot="end">
         <ion-icon icon-only name="trash"></ion-icon>
       </ion-button>
       <ion-button
         color="success"
-        (click)="approveTeamRequest(member)"
+        (click)="approveClubRequest(member)"
         slot="end"
       >
         <ion-icon icon-only name="trash"></ion-icon>
