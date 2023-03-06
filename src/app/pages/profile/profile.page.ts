@@ -155,7 +155,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   async deleteClubRequest(request) {
-    await this.fbService.deleteUserClubRequest(request.id);
+    const user: User = await this.authService.getUser();
+    await this.fbService.deleteUserClubRequest(request.id, user.uid);
     await this.presentToast();
   }
   async deleteTeamRequest(request) {
