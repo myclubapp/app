@@ -151,7 +151,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
     console.log(image);
 
     const user: User = await this.authService.getUser();
-    this.profileService.setUserProfilePicture(user, image);
+    await this.profileService.setUserProfilePicture(user, image);
+    await this.presentToastTakePicture();
   }
 
   async deleteClubRequest(request) {
@@ -168,6 +169,16 @@ export class ProfilePage implements OnInit, AfterViewInit {
   async presentToast() {
     const toast = await this.toastController.create({
       message: "Anfrage erfolgreich gelöscht",
+      duration: 1500,
+      position: "bottom",
+      color: "success",
+    });
+
+    await toast.present();
+  }
+  async presentToastTakePicture() {
+    const toast = await this.toastController.create({
+      message: "Profilbild erfolgreich geändert",
       duration: 1500,
       position: "bottom",
       color: "success",
