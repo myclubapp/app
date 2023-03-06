@@ -1,5 +1,9 @@
 import { Component, OnInit } from "@angular/core";
-import { AlertController, MenuController } from "@ionic/angular";
+import {
+  AlertController,
+  MenuController,
+  ToastController,
+} from "@ionic/angular";
 // import { Camera, CameraResultType } from '@capacitor/camera';
 /* import { Observable } from 'rxjs';
 import { FirebaseService } from 'src/app/services/firebase.service'; */
@@ -7,7 +11,8 @@ import { FirebaseService } from 'src/app/services/firebase.service'; */
 // import firebase from 'firebase/compat/app';
 import { FirebaseService } from "src/app/services/firebase.service";
 import { Club } from "src/app/models/club";
-import { AuthService } from 'src/app/services/auth.service';
+import { AuthService } from "src/app/services/auth.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-onboarding",
@@ -27,25 +32,25 @@ export class OnboardingPage implements OnInit {
     private readonly fbService: FirebaseService,
     public menuCtrl: MenuController,
     private readonly alertCtrl: AlertController,
-    private readonly authService: AuthService
+    private readonly toastController: ToastController,
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {
-    this.menuCtrl.enable(false, 'menu');
+    this.menuCtrl.enable(false, "menu");
   }
 
   async ngOnInit() {
-    this.menuCtrl.enable(false, 'menu');
+    this.menuCtrl.enable(false, "menu");
     /* const inviteRef = await this.fbService.getInvites();
     inviteRef.subscribe(snapshot=>{
       //console.log(snapshot.docs);
       this.inviteList = snapshot.docs;
     }) */
-    this.fbService
-        .getActiveClubList()
-        .subscribe((data: any) => {
-          // console.log(data);
-          this.activeClubList = data;
-          this.activeClubListBackup = data;
-        });
+    this.fbService.getActiveClubList().subscribe((data: any) => {
+      // console.log(data);
+      this.activeClubList = data;
+      this.activeClubListBackup = data;
+    });
   }
 
   handleChange(event: any) {
@@ -60,68 +65,63 @@ export class OnboardingPage implements OnInit {
           console.log(data);
           this.clubList = data;
         });
-        // My-Club Clubs Search
-        this.activeClubList = this.activeClubListBackup.filter((club, index) => club.name.search(event.detail.value) >= 0);
-
+      // My-Club Clubs Search
+      this.activeClubList = this.activeClubListBackup.filter(
+        (club, index) => club.name.search(event.detail.value) >= 0
+      );
     } else {
       this.clubList = [];
       this.activeClubList = this.activeClubListBackup;
     }
   }
 
-  async joinClub(club:Club){
+  async joinClub(club: Club) {
     console.log(club);
-      const alert = await this.alertCtrl.create({
-        header: 'Möchtest du dem Verein auf my-club beitreten?',
-        buttons: [{
-          text: "JA",
-          handler: () =>{
-            this.emailCheck(club);
-          }
-        },
-        {
-          text: "Nein",
-          role: 'cancel',
-          handler: () =>{
-            console.log("nein");
-          }
-        }]
-      });
-  
-      await alert.present();
-  }
-
-  async emailCheck(club:Club){
-    // console.log(club);
-    const user = await this.authService.getUser();
-    // Does e-mail exist in contacts? --> Should not be the case, because user was added automatically during activation of email.
-    
-
     const alert = await this.alertCtrl.create({
-        header: 'Bitte bestätige deine E-Mail-Adresse',
-        inputs:[{
-          name: "Email",
-          type: "email",
-          value: user.email
-        }],        
-        buttons: [{
+      header: "Möchtest du dem Verein auf my-club beitreten?",
+      buttons: [
+        {
           text: "JA",
-          handler: () =>{
-            console.log("Ja" );
-          }
+          handler: async (data) => {
+            await this.fbService.setClubRequest(club.id);
+            await this.presentRequestToast();
+            await this.router.navigateByUrl("logout", {});
+          },
         },
         {
           text: "Nein",
-          role: 'cancel',
-          handler: () =>{
+          role: "cancel",
+          handler: () => {
             console.log("nein");
-          }
-        }]
-      });
-  
-      await alert.present();
+            this.presentCancelToast();
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 
+  async presentRequestToast() {
+    const toast = await this.toastController.create({
+      message: "Anfrage erfolgreich gesendet",
+      duration: 1500,
+      position: "bottom",
+      color: "success",
+    });
+
+    await toast.present();
+  }
+  async presentCancelToast() {
+    const toast = await this.toastController.create({
+      message: "Anfrage abgebrochen",
+      duration: 1500,
+      position: "bottom",
+      color: "error",
+    });
+
+    await toast.present();
+  }
   /*
     async scanCode () {
       const image: any = await this.takePicture();

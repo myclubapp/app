@@ -42,11 +42,11 @@ export class AppComponent {
             .subscribe((data: any) => {
               // console.log(data);
               if (data.length === 0) {
-                console.log("NO club assigned");
+                console.log("NO club assigned, start onboarding flow");
                 this.router.navigateByUrl("onboarding", {});
               }
+              userClubRefs.unsubscribe();
             });
-          userClubRefs.unsubscribe();
         }
 
         // User is signed in, see docs for a list of available properties

@@ -68,8 +68,12 @@
       </ion-list-header>
       <ion-item *ngFor="let request of clubRequestList">
         {{request.name}}
-        <ion-button (click)="deleteClubRequest(request)" slot="end">
-          <ion-icon color="danger" icon-only name="trash"></ion-icon>
+        <ion-button
+          color="danger"
+          (click)="deleteClubRequest(request)"
+          slot="end"
+        >
+          <ion-icon icon-only name="trash"></ion-icon>
         </ion-button>
       </ion-item>
 

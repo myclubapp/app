@@ -1,0 +1,114 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="secondary">
+      <ion-button (click)="close()">schliessen</ion-button>
+    </ion-buttons>
+    <ion-title>Training erstellen</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="createTraining()">erstellen</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item>
+      <ion-label position="stacked"> Name </ion-label>
+      <ion-input [(ngModel)]="training.name" value="{{training.name}}">
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked"> Beschreibung </ion-label>
+      <ion-input
+        [(ngModel)]="training.description"
+        value="{{training.description}}"
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked"> Strasse & Hausnummer </ion-label>
+      <ion-input
+        [(ngModel)]="training.streetAndNumber"
+        value="{{training.streetAndNumber}}"
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked"> Postleitzahl </ion-label>
+      <ion-input
+        [(ngModel)]="training.postalCode"
+        value="{{training.postalCode}}"
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked"> Ortschaft </ion-label>
+      <ion-input [(ngModel)]="training.city" value="{{training.city}}">
+      </ion-input>
+    </ion-item>
+
+    <ion-item id="timeFrom">
+      <ion-label position="stacked"> Uhrzeit von: </ion-label>
+      <ion-input value="{{ training.timeFrom | date: 'HH:mm' }}"></ion-input>
+      <ion-modal trigger="timeFrom" [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            id="timeFrom"
+            presentation="time"
+            value="training.timeFrom"
+          ></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+
+    <ion-item id="timeTo">
+      <ion-label position="stacked"> Uhrzeit bis: </ion-label>
+      <ion-input value="{{ training.timeTo | date: 'HH:mm' }}"></ion-input>
+      <ion-modal trigger="timeTo" [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            id="timeTo"
+            presentation="time"
+            value="training.timeTo"
+          ></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+
+    <ion-item id="startDate">
+      <ion-label position="stacked"> Erstes Training: </ion-label>
+      <ion-input
+        value="{{ training.startDate | date: 'dd.MM.yyyy' }}"
+      ></ion-input>
+      <ion-modal trigger="startDate" [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            id="startDate"
+            presentation="date"
+            value="training.startDate"
+          ></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+
+    <ion-item id="endDate">
+      <ion-label position="stacked"> Letztes Training: </ion-label>
+      <ion-input
+        value="{{ training.endDate | date: 'dd.MM.yyyy' }}"
+      ></ion-input>
+      <ion-modal trigger="endDate" [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            id="endDate"
+            presentation="date"
+            value="training.endDate"
+          ></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ng-template #loading>
+  <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>
+  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+</ng-template>

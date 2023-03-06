@@ -1,22 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
 import {
   IonItemSliding,
   IonRouterOutlet,
   ModalController,
-  ToastController
-} from '@ionic/angular';
-import { User } from 'firebase/auth';
-import { of, combineLatest } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
-import { Training } from 'src/app/models/training';
-import { AuthService } from 'src/app/services/auth.service';
-import { FirebaseService } from 'src/app/services/firebase.service';
-import { TrainingService } from 'src/app/services/firebase/training.service';
+  ToastController,
+} from "@ionic/angular";
+import { User } from "firebase/auth";
+import { of, combineLatest } from "rxjs";
+import { switchMap, map } from "rxjs/operators";
+import { Training } from "src/app/models/training";
+import { AuthService } from "src/app/services/auth.service";
+import { FirebaseService } from "src/app/services/firebase.service";
+import { TrainingService } from "src/app/services/firebase/training.service";
+import { TrainingCreatePage } from "../training-create/training-create.page";
 
 @Component({
-  selector: 'app-trainings',
-  templateUrl: './trainings.page.html',
-  styleUrls: ['./trainings.page.scss'],
+  selector: "app-trainings",
+  templateUrl: "./trainings.page.html",
+  styleUrls: ["./trainings.page.scss"],
 })
 export class TrainingsPage implements OnInit {
   skeleton = new Array(12);
@@ -24,7 +25,7 @@ export class TrainingsPage implements OnInit {
 
   trainingList: Training[];
   trainingListPast: Training[];
-  constructor (
+  constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalController: ModalController,
@@ -33,17 +34,36 @@ export class TrainingsPage implements OnInit {
     private readonly trainingService: TrainingService
   ) {}
 
-  ngOnInit () {
+  ngOnInit() {
     this.getUser();
     this.getTrainingsList();
     this.getTrainingsListPast();
   }
 
-  async getUser () {
+  async openTrainingCreateModal() {
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalController.create({
+      component: TrainingCreatePage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: "",
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+  async getUser() {
     this.user = await this.authService.getUser();
   }
 
-  async toggle (status: boolean, training: Training) {
+  async toggle(status: boolean, training: Training) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
     );
@@ -56,7 +76,7 @@ export class TrainingsPage implements OnInit {
     this.presentToast();
   }
 
-  async toggleItem (
+  async toggleItem(
     slidingItem: IonItemSliding,
     status: boolean,
     training: Training
@@ -75,17 +95,17 @@ export class TrainingsPage implements OnInit {
     this.presentToast();
   }
 
-  async presentToast () {
+  async presentToast() {
     const toast = await this.toastController.create({
-      message: 'changes has been saved',
-      color: 'primary',
+      message: "changes has been saved",
+      color: "primary",
       duration: 2000,
-      position: 'top',
+      position: "top",
     });
     toast.present();
   }
 
-  getTrainingsList () {
+  getTrainingsList() {
     this.authService
       .getUser$()
       .pipe(
@@ -123,15 +143,15 @@ export class TrainingsPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        const trainingListNew = []
+        const trainingListNew = [];
         for (const team of data) {
           // loop over teams
 
-          const trainings = team[1]
-          const teamDetails = team[2]
+          const trainings = team[1];
+          const teamDetails = team[2];
           for (const trainingObject of trainings) {
-            const training = trainingObject[0]
-            const attendees = trainingObject[1]
+            const training = trainingObject[0];
+            const attendees = trainingObject[1];
 
             training.teamName = teamDetails.name;
             training.teamId = teamDetails.id;
@@ -155,12 +175,12 @@ export class TrainingsPage implements OnInit {
         }
         this.trainingList = [...new Set([].concat(...trainingListNew))];
         this.trainingList = this.trainingList.sort(
-          (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis()
+          (a, b) => a.date.getMilliseconds() - b.date.getMilliseconds()
         );
-      })
+      });
   }
 
-  getTrainingsListPast () {
+  getTrainingsListPast() {
     this.authService
       .getUser$()
       .pipe(
@@ -198,15 +218,15 @@ export class TrainingsPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        const trainingListNew = []
+        const trainingListNew = [];
         for (const team of data) {
           // loop over teams
 
-          const trainings = team[1]
-          const teamDetails = team[2]
+          const trainings = team[1];
+          const teamDetails = team[2];
           for (const trainingObject of trainings) {
-            const training = trainingObject[0]
-            const attendees = trainingObject[1]
+            const training = trainingObject[0];
+            const attendees = trainingObject[1];
 
             training.teamName = teamDetails.name;
             training.teamId = teamDetails.id;
@@ -230,8 +250,8 @@ export class TrainingsPage implements OnInit {
         }
         this.trainingListPast = [...new Set([].concat(...trainingListNew))];
         this.trainingListPast = this.trainingListPast.sort(
-          (a, b) => b.dateTime.toMillis() - a.dateTime.toMillis()
+          (a, b) => b.date.getMilliseconds() - a.date.getMilliseconds()
         );
-      })
+      });
   }
 }
