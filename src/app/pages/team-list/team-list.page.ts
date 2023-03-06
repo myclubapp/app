@@ -92,7 +92,8 @@ export class TeamListPage implements OnInit {
             // console.log(data);
             this.fbService.setTeamRequest(data);
             const toast = await this.toastController.create({
-              message: "Request an Club gesendet",
+              message: "Anfrage an Team gesendet",
+              color: "primary",
               duration: 1500,
               position: "bottom",
             });

@@ -61,14 +61,14 @@
       </ion-item>
 
       <ion-list-header *ngIf="clubRequestList.length > 0">
-        Offene Club Requests
+        Offene Club-Anfragen
       </ion-list-header>
       <ion-item *ngFor="let request of clubRequestList">
         {{request.name}}
       </ion-item>
 
       <ion-list-header *ngIf="teamRequestList.length > 0">
-        Offene Team Requests
+        Offene Team-Anfragen
       </ion-list-header>
       <ion-item *ngFor="let request of teamRequestList">
         {{request.liga}} {{request.name}}

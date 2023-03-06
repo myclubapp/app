@@ -118,7 +118,8 @@ export class ClubListPage implements OnInit {
               .setClubRequest(data)
               .then(async (result) => {
                 const toast = await this.toastController.create({
-                  message: "Request an Club gesendet",
+                  message: "Anfrage an Club gesendet",
+                  color: "primary",
                   duration: 1500,
                   position: "bottom",
                 });

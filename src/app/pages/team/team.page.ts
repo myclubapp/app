@@ -89,7 +89,7 @@ export class TeamPage implements OnInit {
         )
       )
       .subscribe((data) => {
-        console.log(data);
+        //console.log(data);
         this.requestList = [];
         for (const member of data) {
           this.requestList.push(member[1]);
