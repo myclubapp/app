@@ -28,6 +28,12 @@ export class TeamPage implements OnInit {
   ngOnInit() {
     this.team = this.navParams.get("data");
 
+    this.getTeamMembers();
+    this.getTeamAdmins();
+    this.getTeamRequests();
+  }
+
+  getTeamMembers() {
     this.fbService
       .getTeamMemberRefs(this.team.id)
       .pipe(
@@ -50,7 +56,8 @@ export class TeamPage implements OnInit {
           this.memberList.push(member[1]);
         }
       });
-
+  }
+  getTeamAdmins() {
     this.fbService
       .getTeamAdminRefs(this.team.id)
       .pipe(
@@ -73,7 +80,9 @@ export class TeamPage implements OnInit {
           this.adminList.push(member[1]);
         }
       });
+  }
 
+  getTeamRequests() {
     this.fbService
       .getTeamRequestRefs(this.team.id)
       .pipe(
@@ -97,11 +106,13 @@ export class TeamPage implements OnInit {
       });
   }
 
-  deleteTeamRequest(member) {
-    this.fbService.deleteUserTeamRequest(member.id);
+  async deleteTeamRequest(request) {
+    await this.fbService.deleteUserTeamRequest(this.team.id, request.id);
+    this.getTeamRequests();
   }
-  approveTeamRequest(member) {
-    this.fbService.setApproveUserTeamRequest(this.team.id, member.id);
+  async approveTeamRequest(request) {
+    await this.fbService.setApproveUserTeamRequest(this.team.id, request.id);
+    this.getTeamRequests();
   }
 
   async close() {

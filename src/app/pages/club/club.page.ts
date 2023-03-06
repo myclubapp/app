@@ -28,6 +28,11 @@ export class ClubPage implements OnInit {
   ngOnInit() {
     this.club = this.navParams.get("data");
 
+    this.getClubMembers();
+    this.getClubAdmins();
+    this.getClubRequests();
+  }
+  getClubMembers() {
     this.fbService
       .getClubMemberRefs(this.club.id)
       .pipe(
@@ -48,7 +53,8 @@ export class ClubPage implements OnInit {
           this.memberList.push(member[1]);
         }
       });
-
+  }
+  getClubAdmins() {
     this.fbService
       .getClubAdminRefs(this.club.id)
       .pipe(
@@ -69,7 +75,9 @@ export class ClubPage implements OnInit {
           this.adminList.push(member[1]);
         }
       });
+  }
 
+  getClubRequests() {
     this.fbService
       .getClubRequestRefs(this.club.id)
       .pipe(
@@ -91,11 +99,14 @@ export class ClubPage implements OnInit {
         }
       });
   }
-  deleteClubRequest(member) {
-    this.fbService.deleteUserClubRequest(member.id);
+
+  async deleteClubRequest(request) {
+    await this.fbService.deleteUserClubRequest(this.club.id, request.id);
+    this.getClubRequests();
   }
-  approveClubRequest(member) {
-    this.fbService.setApproveUserClubRequest(this.club.id, member.id);
+  async approveClubRequest(request) {
+    await this.fbService.setApproveUserClubRequest(this.club.id, request.id);
+    this.getClubRequests();
   }
 
   async close() {

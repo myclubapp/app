@@ -184,20 +184,18 @@ export class FirebaseService {
     });
   }
 
-  async deleteUserClubRequest(requestId: string) {
-    const user = await this.authService.getUser();
+  async deleteUserClubRequest(clubId: string, requestId: string) {
     const requestRef = doc(
       this.firestore,
-      `/userProfile/${user.uid}/clubRequests/${requestId}`
+      `/userProfile/${requestId}/clubRequests/${clubId}`
     );
     return deleteDoc(requestRef);
   }
 
-  async deleteUserTeamRequest(requestId: string) {
-    const user = await this.authService.getUser();
+  async deleteUserTeamRequest(teamId: string, requestId: string) {
     const requestRef = doc(
       this.firestore,
-      `/userProfile/${user.uid}/teamRequests/${requestId}`
+      `/userProfile/${requestId}/teamRequests/${teamId}`
     );
     return deleteDoc(requestRef);
   }
