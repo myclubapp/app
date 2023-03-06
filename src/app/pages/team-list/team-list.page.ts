@@ -82,6 +82,9 @@ export class TeamListPage implements OnInit {
         });
       }
     }
+    _inputs = _inputs.sort((a, b) => Number(a.id) - Number(b.id));
+    _inputs = [...new Set(_inputs)];
+
     const alert = await this.alertController.create({
       header: "Wähle dein Team aus:",
       buttons: [
@@ -116,7 +119,7 @@ export class TeamListPage implements OnInit {
   }
 
   getTeamList() {
-    this.authService
+    const teamList$ = this.authService
       .getUser$()
       .pipe(
         // GET TEAMS
@@ -141,13 +144,15 @@ export class TeamListPage implements OnInit {
         this.teamList = this.teamList.sort(
           (a, b) => Number(a.id) - Number(b.id)
         );
-        this.teamList = [...new Set([].concat(...teamListNew))];
+
+        this.teamList = [...new Set(teamListNew)];
+        teamList$.unsubscribe();
       });
   }
 
   getAvailableTeamList() {
     // console.log("getAvailableTeamList");
-    const teamList$ = this.authService
+    const availableTeamList$ = this.authService
       .getUser$()
       .pipe(
         // GET TEAMS
@@ -181,16 +186,22 @@ export class TeamListPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        // const availableTeamListNew = [];
-        this.availableTeamList = [];
+        const availableTeamListNew = [];
+
         for (const team of data[0][1]) {
           // loop over teams
           const teamDetail = team[1];
           // console.log(teamDetail);
-          this.availableTeamList.push(teamDetail);
+          availableTeamListNew.push(teamDetail);
         }
+        this.availableTeamList = this.availableTeamList.sort(
+          (a, b) => Number(a.id) - Number(b.id)
+        );
+        this.availableTeamList = [...new Set(availableTeamListNew)];
+        // this.availableTeamList = [...new Set([].concat(...availableTeamListNew))];
+
         // console.log(this.availableTeamList);
-        teamList$.unsubscribe();
+        availableTeamList$.unsubscribe();
       });
   }
 }
