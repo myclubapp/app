@@ -97,6 +97,13 @@ export class TeamPage implements OnInit {
       });
   }
 
+  deleteTeamRequest(member) {
+    this.fbService.deleteUserTeamRequest(member.id);
+  }
+  approveTeamRequest(member) {
+    this.fbService.setApproveUserTeamRequest(this.team.id, member.id);
+  }
+
   async close() {
     return await this.modalCtrl.dismiss(null, "close");
   }

@@ -20,6 +20,7 @@ import {
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { switchMap } from "rxjs/operators";
+import { ToastController } from "@ionic/angular";
 
 @Component({
   selector: "app-profile",
@@ -34,7 +35,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
   constructor(
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
-    private readonly profileService: UserProfileService
+    private readonly profileService: UserProfileService,
+    private readonly toastController: ToastController
   ) {}
 
   async ngOnInit() {
@@ -150,5 +152,25 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
     const user: User = await this.authService.getUser();
     this.profileService.setUserProfilePicture(user, image);
+  }
+
+  async deleteClubRequest(request) {
+    await this.fbService.deleteUserClubRequest(request.id);
+    await this.presentToast();
+  }
+  async deleteTeamRequest(request) {
+    await this.fbService.deleteUserTeamRequest(request.id);
+    await this.presentToast();
+  }
+
+  async presentToast() {
+    const toast = await this.toastController.create({
+      message: "Anfrage erfolgreich gelöscht",
+      duration: 1500,
+      position: "bottom",
+      color: "success",
+    });
+
+    await toast.present();
   }
 }

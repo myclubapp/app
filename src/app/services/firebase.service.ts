@@ -172,6 +172,36 @@ export class FirebaseService {
     return docData(requestRef, { idField: "id" }) as Observable<any>;
   }
 
+  setApproveUserClubRequest(clubId: string, requestId: string): Promise<any> {
+    return setDoc(doc(this.firestore, `club/${clubId}/requests`, requestId), {
+      approve: true,
+    });
+  }
+
+  setApproveUserTeamRequest(teamId: string, requestId: string): Promise<any> {
+    return setDoc(doc(this.firestore, `teams/${teamId}/requests`, requestId), {
+      approve: true,
+    });
+  }
+
+  async deleteUserClubRequest(requestId: string) {
+    const user = await this.authService.getUser();
+    const requestRef = doc(
+      this.firestore,
+      `/userProfile/${user.uid}/clubRequests/${requestId}`
+    );
+    return deleteDoc(requestRef);
+  }
+
+  async deleteUserTeamRequest(requestId: string) {
+    const user = await this.authService.getUser();
+    const requestRef = doc(
+      this.firestore,
+      `/userProfile/${user.uid}/teamRequests/${requestId}`
+    );
+    return deleteDoc(requestRef);
+  }
+
   getClubTeamRefs(clubId: string): Observable<Team> {
     const teamRefLIst = collection(this.firestore, `club/${clubId}/teams`);
     return collectionData(teamRefLIst, {
