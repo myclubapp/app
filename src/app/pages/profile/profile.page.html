@@ -22,7 +22,10 @@
 
       <ion-item>
         <ion-avatar slot="start">
-          <img src="{{userProfile.profilePicture}}" />
+          <img
+            alt="{{userProfile.firstName}}"
+            src="{{userProfile.profilePicture}}"
+          />
         </ion-avatar>
         <ion-label></ion-label>
         <ion-button slot="end" (click)="takePicture()">
