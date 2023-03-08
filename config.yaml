@@ -2,4 +2,4 @@ platforms:
   android:
     versionName: 5.2.1
   ios:
-    version: 16.4
+    version: 13.0
