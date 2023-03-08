@@ -6,6 +6,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "firebase/auth";
+import { onSnapshot } from "firebase/firestore";
 import { of, combineLatest } from "rxjs";
 import { switchMap, map } from "rxjs/operators";
 import { Game } from "src/app/models/game";
@@ -100,41 +101,83 @@ export class ChampionshipPage implements OnInit {
   }
 
   getGamesList() {
-    this.authService
+    let gamesListNew = [];
+    this.authService.getUser$().subscribe((user: User) => {
+      this.fbService.getUserTeamRefs(user).subscribe((teamList) => {
+        for (const team of teamList) {
+          this.championshipService
+            .getTeamGamesRef(team.id)
+            .subscribe((teamGamesList) => {
+              for (const gameDetail of teamGamesList) {
+                this.championshipService
+                  .getTeamGameAttendeesRef(team.id, gameDetail.id)
+                  .subscribe((attendeeList) => {
+                    let newGame = gameDetail;
+                    newGame.attendees = attendeeList;
+                    newGame.teamName = gameDetail.name;
+                    newGame.teamId = gameDetail.id;
+                    newGame.countAttendees = attendeeList.filter(
+                      (e) => e.status === true
+                    ).length;
+
+                    if (
+                      attendeeList &&
+                      attendeeList.filter((e) => e.id === this.user.uid)
+                        .length === 1
+                    ) {
+                      newGame.status = attendeeList.filter(
+                        (e) => e.id === this.user.uid
+                      )[0].status;
+                    } else {
+                      newGame.status = null;
+                    }
+
+                    gamesListNew.push(newGame);
+                    gamesListNew = gamesListNew.sort(
+                      (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis()
+                    );
+                    this.gamesList = [...new Set(gamesListNew)];
+                  });
+              }
+            });
+        }
+      });
+    });
+
+    /*    const unsubscribe = this.authService
       .getUser$()
       .pipe(
         // GET TEAMS
         switchMap((user: User) => this.fbService.getUserTeamRefs(user)),
         // Loop Over Teams
         switchMap((allTeams: any) =>
-          combineLatest(
-            allTeams.map((team) =>
-              combineLatest(
+          combineLatest([
+            allTeams.map((team) => {
+              combineLatest([
                 of(team),
-                // Loop over Games
-                // this.championshipService.getTeamGamesRef(team.id),
                 this.championshipService
                   .getTeamGamesRef(team.id)
                   .pipe(
                     switchMap((allGames: any) =>
-                      combineLatest(
-                        allGames.map((game) =>
-                          combineLatest(
+                      combineLatest([
+                        allGames.map((game) => {
+                          combineLatest([
                             of(game),
                             this.championshipService.getTeamGameAttendeesRef(
                               team.id,
                               game.id
                             )
-                          )
-                        )
+                          ]) 
+                        })
+                      ]
                       )
                     )
                   ),
                 this.fbService.getTeamRef(team.id)
-              )
-            )
-          )
-        )
+              ])
+          })
+        ])
+      )
       )
       .subscribe(async (data: any) => {
         const gamesListNew = [];
@@ -168,14 +211,58 @@ export class ChampionshipPage implements OnInit {
             gamesListNew.push(game);
           }
         }
-        this.gamesList = [...new Set(this.gamesList.concat(...gamesListNew))];
         this.gamesList = this.gamesList.sort(
           (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis()
-        );
-      });
+          );
+        // this.gamesList = [...new Set(this.gamesList.concat(...gamesListNew))];
+        this.gamesList = [...new Set(gamesListNew)];
+      });*/
   }
 
   getGamesListPast() {
+    let gamesListNew = [];
+    this.authService.getUser$().subscribe((user: User) => {
+      this.fbService.getUserTeamRefs(user).subscribe((teamList) => {
+        for (const team of teamList) {
+          this.championshipService
+            .getTeamGamesRefPast(team.id)
+            .subscribe((teamGamesList) => {
+              for (const gameDetail of teamGamesList) {
+                this.championshipService
+                  .getTeamGameAttendeesRef(team.id, gameDetail.id)
+                  .subscribe((attendeeList) => {
+                    let newGame = gameDetail;
+                    newGame.attendees = attendeeList;
+                    newGame.teamName = gameDetail.name;
+                    newGame.teamId = gameDetail.id;
+                    newGame.countAttendees = attendeeList.filter(
+                      (e) => e.status === true
+                    ).length;
+
+                    if (
+                      attendeeList &&
+                      attendeeList.filter((e) => e.id === this.user.uid)
+                        .length === 1
+                    ) {
+                      newGame.status = attendeeList.filter(
+                        (e) => e.id === this.user.uid
+                      )[0].status;
+                    } else {
+                      newGame.status = null;
+                    }
+
+                    gamesListNew.push(newGame);
+                    gamesListNew = gamesListNew.sort(
+                      (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis()
+                    );
+                    this.gamesListPast = [...new Set(gamesListNew)];
+                  });
+              }
+            });
+        }
+      });
+    });
+    /*
     this.authService
       .getUser$()
       .pipe(
@@ -183,9 +270,9 @@ export class ChampionshipPage implements OnInit {
         switchMap((user: User) => this.fbService.getUserTeamRefs(user)),
         // Loop Over Teams
         switchMap((allTeams: any) =>
-          combineLatest(
+          combineLatest([
             allTeams.map((team) =>
-              combineLatest(
+              combineLatest([
                 of(team),
                 // Loop over Games
                 // this.championshipService.getTeamGamesRef(team.id),
@@ -193,23 +280,24 @@ export class ChampionshipPage implements OnInit {
                   .getTeamGamesRefPast(team.id)
                   .pipe(
                     switchMap((allGames: any) =>
-                      combineLatest(
+                      combineLatest([
                         allGames.map((game) =>
-                          combineLatest(
+                          combineLatest([
                             of(game),
                             this.championshipService.getTeamGameAttendeesRef(
                               team.id,
                               game.id
                             )
-                          )
+                          ])
                         )
+                      ]
                       )
                     )
-                  ),
+                ),
                 this.fbService.getTeamRef(team.id)
-              )
+              ])
             )
-          )
+          ])
         )
       )
       .subscribe(async (data: any) => {
@@ -241,12 +329,10 @@ export class ChampionshipPage implements OnInit {
             gamesListNew.push(game);
           }
         }
-        this.gamesListPast = [
-          ...new Set(this.gamesListPast.concat(...gamesListNew)),
-        ];
         this.gamesListPast = this.gamesListPast.sort(
           (a, b) => b.dateTime.toMillis() - a.dateTime.toMillis()
-        );
-      });
+          );
+        this.gamesListPast = [...new Set(gamesListNew)];
+      });*/
   }
 }

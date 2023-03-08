@@ -14,26 +14,6 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-list *ngIf="memberList.length > 0">
-    <ion-list-header> Mitglieder </ion-list-header>
-    <ion-item *ngFor="let member of memberList">
-      <ion-avatar slot="start">
-        <img src="{{member?.profilePicture}}" />
-      </ion-avatar>
-      <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
-    </ion-item>
-  </ion-list>
-
-  <ion-list *ngIf="adminList.length > 0">
-    <ion-list-header> Administratoren </ion-list-header>
-    <ion-item *ngFor="let member of adminList">
-      <ion-avatar slot="start">
-        <img src="{{member?.profilePicture}}" />
-      </ion-avatar>
-      <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
-    </ion-item>
-  </ion-list>
-
   <ion-list *ngIf="requestList.length > 0">
     <ion-list-header> Anfragen </ion-list-header>
     <ion-item *ngFor="let member of requestList">
@@ -51,6 +31,26 @@
       >
         <ion-icon icon-only name="checkmark-outline"></ion-icon>
       </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <ion-list *ngIf="memberList.length > 0">
+    <ion-list-header> Mitglieder </ion-list-header>
+    <ion-item *ngFor="let member of memberList">
+      <ion-avatar slot="start">
+        <img src="{{member?.profilePicture}}" />
+      </ion-avatar>
+      <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-list *ngIf="adminList.length > 0">
+    <ion-list-header> Administratoren </ion-list-header>
+    <ion-item *ngFor="let member of adminList">
+      <ion-avatar slot="start">
+        <img src="{{member?.profilePicture}}" />
+      </ion-avatar>
+      <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
     </ion-item>
   </ion-list>
 </ion-content>

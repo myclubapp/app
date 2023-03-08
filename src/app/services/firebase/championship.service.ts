@@ -88,7 +88,7 @@ export class ChampionshipService {
   }
 
   /* SET TEAM GAMES ATTENDEE Status */
-  async setTeamGameAttendeeStatus(
+  setTeamGameAttendeeStatus(
     userId: string,
     status: boolean,
     teamId: string,
