@@ -134,6 +134,8 @@ export class TeamListPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
+        console.log("get user team list");
+        console.log(data);
         const teamListNew = [];
         for (const team of data) {
           // loop over teams
@@ -201,6 +203,7 @@ export class TeamListPage implements OnInit {
         // this.availableTeamList = [...new Set([].concat(...availableTeamListNew))];
 
         // console.log(this.availableTeamList);
+
         availableTeamList$.unsubscribe();
       });
   }

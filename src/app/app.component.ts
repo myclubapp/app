@@ -45,6 +45,18 @@ export class AppComponent {
               if (data.length === 0) {
                 console.log("NO club assigned, start onboarding flow");
                 this.router.navigateByUrl("onboarding", {});
+              } else {
+                // 3. TEAM ASSIGNED
+                const userTeamRefs = this.fbService
+                  .getUserTeamRefs(user)
+                  .subscribe((data: any) => {
+                    // console.log(data);
+                    if (data.length === 0) {
+                      console.log("NO TEAM assigned, start onboarding flow");
+                      this.router.navigateByUrl("team-list", {});
+                    }
+                    userTeamRefs.unsubscribe();
+                  });
               }
               userClubRefs.unsubscribe();
             });
