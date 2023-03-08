@@ -116,6 +116,13 @@ const routes: Routes = [
         (m) => m.TrainingCreatePageModule
       ),
   },
+  {
+    path: "onboarding-team",
+    loadChildren: () =>
+      import("./pages/onboarding-team/onboarding-team.module").then(
+        (m) => m.OnboardingTeamPageModule
+      ),
+  },
 ];
 
 @NgModule({

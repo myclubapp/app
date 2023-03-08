@@ -98,6 +98,9 @@ export class ChampionshipService {
       this.firestore,
       `teams/${teamId}/games/${gameId}/attendees/${userId}`
     );
-    return await setDoc(statusRef, { status });
+    return setDoc(statusRef, {
+      id: userId,
+      status: status,
+    });
   }
 }
