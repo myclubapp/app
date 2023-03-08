@@ -55,6 +55,8 @@ export class AppComponent {
         // ...
       } else {
         // User is signed out
+        this.authService.logout();
+        this.router.navigateByUrl("logout", {});
         // ...
       }
     });
