@@ -12,6 +12,7 @@ import {
   sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile,
   UserCredential,
   RecaptchaVerifier,
   User,
@@ -31,6 +32,7 @@ import {
   DocumentReference,
   setDoc,
 } from "@angular/fire/firestore";
+import { deleteUser } from "firebase/auth";
 
 /******************************************************************************************
  *  DOCS https://github.com/angular/angularfire/blob/master/docs/auth/getting-started.md
@@ -87,17 +89,17 @@ export class AuthService {
         this.firestore,
         `userProfile/${newUserCredential.user.uid}`
       );
-      setDoc(userProfileDocRef, {
+      await setDoc(userProfileDocRef, {
         firstName,
         lastName,
         email: newUserCredential.user.email,
       });
 
-      /* addDoc(userProfileRef, {
-        firstName: firstName,
-        lastName: lastName,
-        email: newUserCredential.user.email
-      }); */
+      const auth = getAuth();
+      await updateProfile(auth.currentUser, {
+        displayName: `${firstName} ${lastName}`,
+        photoURL: "https://randomuser.me/api/portraits/lego/1.jpg",
+      });
 
       return newUserCredential;
     } catch (error) {
@@ -113,5 +115,19 @@ export class AuthService {
     await signOut(this.auth);
     // firebase.firestore().clearPersistence();
     await this.router.navigateByUrl("/logout");
+  }
+
+  async deleteProfile() {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    deleteUser(user)
+      .then(() => {
+        // User deleted.
+      })
+      .catch((error) => {
+        // An error ocurred
+        // ...
+      });
   }
 }

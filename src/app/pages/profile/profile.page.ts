@@ -20,7 +20,8 @@ import {
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { switchMap } from "rxjs/operators";
-import { ToastController } from "@ionic/angular";
+import { AlertController, ToastController } from "@ionic/angular";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-profile",
@@ -36,7 +37,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly profileService: UserProfileService,
-    private readonly toastController: ToastController
+    private readonly toastController: ToastController,
+    private readonly alertController: AlertController,
+    private readonly router: Router
   ) {}
 
   async ngOnInit() {
@@ -165,6 +168,25 @@ export class ProfilePage implements OnInit, AfterViewInit {
     await this.fbService.deleteUserTeamRequest(request.id, user.uid);
     await this.presentToast();
   }
+  async deleteProfile() {
+    const alert = await this.alertController.create({
+      message: "Möchtest du das Profil wirklich löschen?",
+      buttons: [
+        {
+          text: "Ja",
+          handler: async () => {
+            await this.authService.deleteProfile();
+            await this.presentDeleteProfile();
+            await this.router.navigateByUrl("/logout");
+          },
+        },
+        {
+          text: "Nein",
+        },
+      ],
+    });
+    alert.present();
+  }
 
   async presentToast() {
     const toast = await this.toastController.create({
@@ -179,6 +201,17 @@ export class ProfilePage implements OnInit, AfterViewInit {
   async presentToastTakePicture() {
     const toast = await this.toastController.create({
       message: "Profilbild erfolgreich geändert",
+      duration: 1500,
+      position: "bottom",
+      color: "success",
+    });
+
+    await toast.present();
+  }
+
+  async presentDeleteProfile() {
+    const toast = await this.toastController.create({
+      message: "Profil erfolgreich gelöscht",
       duration: 1500,
       position: "bottom",
       color: "success",

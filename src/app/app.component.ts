@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { SwUpdate, VersionEvent } from "@angular/service-worker";
 import { AlertController, ModalController } from "@ionic/angular";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, getIdToken } from "firebase/auth";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
@@ -27,6 +27,7 @@ export class AppComponent {
     // this.initializeFirebase();
 
     const auth = getAuth();
+
     onAuthStateChanged(auth, (user) => {
       if (user) {
         // 0. LOGIN
@@ -54,9 +55,8 @@ export class AppComponent {
         // const uid = user.uid;
         // ...
       } else {
+        console.log("User is signed out");
         // User is signed out
-        this.authService.logout();
-        this.router.navigateByUrl("logout", {});
         // ...
       }
     });
