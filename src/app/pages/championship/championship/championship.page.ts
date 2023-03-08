@@ -112,26 +112,23 @@ export class ChampionshipPage implements OnInit {
                 this.championshipService
                   .getTeamGameAttendeesRef(team.id, gameDetail.id)
                   .subscribe((attendeeList) => {
-                    let newGame = gameDetail;
-                    newGame.attendees = attendeeList;
-                    newGame.teamName = gameDetail.name;
-                    newGame.teamId = gameDetail.id;
-                    newGame.countAttendees = attendeeList.filter(
-                      (e) => e.status === true
-                    ).length;
-
-                    if (
-                      attendeeList &&
-                      attendeeList.filter((e) => e.id === this.user.uid)
-                        .length === 1
-                    ) {
-                      newGame.status = attendeeList.filter(
-                        (e) => e.id === this.user.uid
-                      )[0].status;
-                    } else {
-                      newGame.status = null;
-                    }
-
+                    let newGame = {
+                      ...gameDetail,
+                      attendees: attendeeList,
+                      teamName: gameDetail.name,
+                      teamId: gameDetail.id,
+                      countAttendees: attendeeList.filter(
+                        (e) => e.status === true
+                      ).length,
+                      status:
+                        attendeeList &&
+                        attendeeList.filter((e) => e.id === this.user.uid)
+                          .length === 1
+                          ? attendeeList.filter(
+                              (e) => e.id === this.user.uid
+                            )[0].status
+                          : null,
+                    };
                     gamesListNew.push(newGame);
                     gamesListNew = gamesListNew.sort(
                       (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis()
@@ -231,26 +228,23 @@ export class ChampionshipPage implements OnInit {
                 this.championshipService
                   .getTeamGameAttendeesRef(team.id, gameDetail.id)
                   .subscribe((attendeeList) => {
-                    let newGame = gameDetail;
-                    newGame.attendees = attendeeList;
-                    newGame.teamName = gameDetail.name;
-                    newGame.teamId = gameDetail.id;
-                    newGame.countAttendees = attendeeList.filter(
-                      (e) => e.status === true
-                    ).length;
-
-                    if (
-                      attendeeList &&
-                      attendeeList.filter((e) => e.id === this.user.uid)
-                        .length === 1
-                    ) {
-                      newGame.status = attendeeList.filter(
-                        (e) => e.id === this.user.uid
-                      )[0].status;
-                    } else {
-                      newGame.status = null;
-                    }
-
+                    let newGame = {
+                      ...gameDetail,
+                      attendees: attendeeList,
+                      teamName: gameDetail.name,
+                      teamId: gameDetail.id,
+                      countAttendees: attendeeList.filter(
+                        (e) => e.status === true
+                      ).length,
+                      status:
+                        attendeeList &&
+                        attendeeList.filter((e) => e.id === this.user.uid)
+                          .length === 1
+                          ? attendeeList.filter(
+                              (e) => e.id === this.user.uid
+                            )[0].status
+                          : null,
+                    };
                     gamesListNew.push(newGame);
                     gamesListNew = gamesListNew.sort(
                       (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis()
