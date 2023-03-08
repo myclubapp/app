@@ -43,11 +43,7 @@ export class UserProfileService {
 
   getUserProfileById (userId: string): Observable<Profile> {
     const userProfileRef = doc(this.firestore, `userProfile/${userId}`);
-    if (userProfileRef && userProfileRef.id){
-      return docData(userProfileRef, { idField: 'id' }) as Observable<Profile>;
-    }else{
-      return docData() as Observable<Profile>;
-    }
+    return docData(userProfileRef, { idField: 'id' }) as Observable<Profile>;
   }
 
   async setUserProfilePicture (user: User, photo: Photo) {
