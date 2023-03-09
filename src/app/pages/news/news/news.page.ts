@@ -69,7 +69,7 @@ export class NewsPage implements OnInit {
 
   ngOnInit() {
     // this.getUser();
-    
+
     this.getNews();
     this.getClubNews();
     this.getTeamNews();
@@ -107,7 +107,8 @@ export class NewsPage implements OnInit {
           return combineLatest(
             allClubIds.map(clubId=>{
               return this.fbService.getClubRef(clubId)
-          }))
+            })
+          )
         }),
         switchMap((allClubDetails)=>{
           return combineLatest(
