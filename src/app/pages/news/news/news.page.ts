@@ -126,6 +126,29 @@ export class NewsPage implements OnInit {
 */
 
   learnRXJS() {
+
+    this.authService.getUser$().pipe(
+    /*
+      mergeMap - creates an Observable immediately for any source item, all previous Observables are kept alive. (this was formerly known as flatMap).
+      concatMap - waits for the previous Observable to complete before creating the next one
+      switchMap - for any source item, completes the previous Observable and immediately creates the next one
+      exhaustMap - map to inner observable, ignore other values until that observable completes
+    */
+      switchMap((user)=> {
+        return this.fbService.getUserClubRefs(user).pipe(
+          map((result:any)=>{
+            return result.map(club=>{
+              console.log(`>> ${club.id}`);
+              return club.id;
+            })
+          })
+        )
+      }),
+    ).subscribe(data=>{
+      console.log(data);
+    });
+
+    
     let newsListNew = [];
     this.authService.getUser$().subscribe((user: User) => {
       this.fbService.getUserClubRefs(user).subscribe((clubs) => {
