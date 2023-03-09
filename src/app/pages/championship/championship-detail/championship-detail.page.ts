@@ -65,15 +65,14 @@ export class ChampionshipDetailPage implements OnInit {
             this.game.id
           )
         ),
-        switchMap((allAttendees: any) =>
-          combineLatest(
-            allAttendees.map((member) =>
-              combineLatest(
-                of(member),
-                this.userProfileService.getUserProfileById(member.id)
+        switchMap((allAttendees: any) => {
+          return combineLatest(allAttendees.map((member) => {
+              combineLatest(of(member), this.userProfileService.getUserProfileById(member.id)
               )
-            )
+            })
           )
+        }
+          
         )
       )
       .subscribe((data: any) => {
