@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-  <capacitor-google-map *ngIf="game.longitude" id="map"></capacitor-google-map>
+  <capacitor-google-map id="map"></capacitor-google-map>
   <ion-list>
     <ion-item>
       <ng-container *ngIf="game.hasOwnProperty('status'); else loading">

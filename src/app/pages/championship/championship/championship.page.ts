@@ -119,7 +119,7 @@ export class ChampionshipPage implements OnInit {
           return this.fbService.getUserTeamRefs(user).pipe(
             map((result:any)=>{
               return result.map(team=>{
-                console.log(`Read Games for Team > ${team.id}`);
+                console.log(`Read Upcomming Games for Team > ${team.id}`);
                 return team.id;
               })
             })
@@ -146,6 +146,7 @@ export class ChampionshipPage implements OnInit {
         })
       ).subscribe((games:any)=>{
         console.log(games);
+        gamesListNew = [];
         for (const game of games){
           let gameDetail = game[0];
           let attendeeList = game[1];
@@ -172,9 +173,7 @@ export class ChampionshipPage implements OnInit {
           (a, b) =>
             new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.gamesList = [
-          ...new Set(gamesListNew.concat(...this.gamesList)),
-        ];
+        this.gamesList =  [...new Set([...gamesListNew, ...this.gamesList])];
       });
   }
 /*

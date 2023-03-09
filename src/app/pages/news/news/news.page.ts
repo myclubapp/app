@@ -126,9 +126,7 @@ export class NewsPage implements OnInit {
           (a, b) =>
             new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.newsList = [
-          ...new Set(newsListNew.concat(...this.newsList)),
-        ];
+        this.newsList = [...new Set(newsListNew.concat(...this.newsList)),];
       });
   }
 
