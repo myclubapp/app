@@ -7,7 +7,7 @@ import {
 } from "@ionic/angular";
 import { User } from "firebase/auth";
 import { onSnapshot } from "firebase/firestore";
-import { of, combineLatest } from "rxjs";
+import { of, combineLatest, Subscription } from "rxjs";
 import { switchMap, map } from "rxjs/operators";
 import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
@@ -26,6 +26,9 @@ export class ChampionshipPage implements OnInit {
 
   gamesList: Game[] = [];
   gamesListPast: Game[] = [];
+
+  teamSubscription: Subscription;
+
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
@@ -33,12 +36,21 @@ export class ChampionshipPage implements OnInit {
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly championshipService: ChampionshipService
-  ) {}
+  ) {
+
+  }
 
   ngOnInit() {
     this.getUser();
-    this.getGamesList();
+
+    this.gameListTeam();
+
+    // this.getGamesList();
     this.getGamesListPast();
+  }
+
+  ngOnDestroy(): void {
+    this.teamSubscription.unsubscribe();
   }
 
   async getUser() {
@@ -100,6 +112,72 @@ export class ChampionshipPage implements OnInit {
     toast.present();
   }
 
+  gameListTeam(){
+    let gamesListNew = [];
+    this.teamSubscription = this.authService.getUser$().pipe(
+        switchMap((user)=> {
+          return this.fbService.getUserTeamRefs(user).pipe(
+            map((result:any)=>{
+              return result.map(team=>{
+                console.log(`Read Games for Team > ${team.id}`);
+                return team.id;
+              })
+            })
+          )
+        }),
+        switchMap((allTeamIds)=>{
+          return combineLatest(
+            allTeamIds.map((teamId)=>{
+              return this.championshipService.getTeamGamesRef(teamId)
+          }))
+        }),
+        map(([allTeamGames])=>{
+          return allTeamGames;
+        }),
+        switchMap((allTeamGames:any)=>{
+          return combineLatest(
+            allTeamGames.map((gamesId)=>{
+              return combineLatest([
+                this.championshipService.getTeamGameRef(gamesId.teamRef.id, gamesId.id),
+                this.championshipService.getTeamGameAttendeesRef(gamesId.teamRef.id, gamesId.id),
+              ]) 
+            }),
+          )
+        })
+      ).subscribe((games:any)=>{
+        console.log(games);
+        for (const game of games){
+          let gameDetail = game[0];
+          let attendeeList = game[1];
+          let newGame = {
+          ...gameDetail,
+          attendees: attendeeList,
+          teamName: gameDetail.name,
+          teamId: gameDetail.id,
+          countAttendees: attendeeList.filter(
+            (e) => e.status === true
+          ).length,
+          status:
+            attendeeList &&
+            attendeeList.filter((e) => e.id === this.user.uid)
+              .length === 1
+              ? attendeeList.filter(
+                  (e) => e.id === this.user.uid
+                )[0].status
+              : null,
+          };
+          gamesListNew.push(newGame);
+        }
+        gamesListNew = gamesListNew.sort(
+          (a, b) =>
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        this.gamesList = [
+          ...new Set(gamesListNew.concat(...this.gamesList)),
+        ];
+      });
+  }
+/*
   getGamesList() {
     let gamesListNew = [];
     this.authService.getUser$().subscribe((user: User) => {
@@ -213,8 +291,8 @@ export class ChampionshipPage implements OnInit {
           );
         // this.gamesList = [...new Set(this.gamesList.concat(...gamesListNew))];
         this.gamesList = [...new Set(gamesListNew)];
-      });*/
-  }
+      });
+  }*/
 
   getGamesListPast() {
     let gamesListNew = [];
