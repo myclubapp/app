@@ -7,8 +7,8 @@ import {
 } from "@ionic/angular";
 import { User } from "firebase/auth";
 import { onSnapshot } from "firebase/firestore";
-import { of, combineLatest, Subscription } from "rxjs";
-import { switchMap, map } from "rxjs/operators";
+import { of, combineLatest, Subscription, from, Observable } from "rxjs";
+import { switchMap, map, flatMap, tap, mapTo } from "rxjs/operators";
 import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -128,24 +128,27 @@ export class ChampionshipPage implements OnInit {
         switchMap((allTeamIds)=>{
           return combineLatest(
             allTeamIds.map((teamId)=>{
-              return this.championshipService.getTeamGamesRef(teamId)
-          }))
-        }),
-        map(([allTeamGames])=>{
-          return allTeamGames;
+              return combineLatest([
+                this.championshipService.getTeamGamesRef(teamId)
+              ])
+            }),
+          )
         }),
         switchMap((allTeamGames:any)=>{
           return combineLatest(
-            allTeamGames.map((gamesId)=>{
-              return combineLatest([
-                this.championshipService.getTeamGameRef(gamesId.teamRef.id, gamesId.id),
-                this.championshipService.getTeamGameAttendeesRef(gamesId.teamRef.id, gamesId.id),
-              ]) 
+            allTeamGames.map((gameList:any)=>{
+              console.log(gameList);
+
+              
+                    // this.championshipService.getTeamGameAttendeesRef(teamRef.id, game.id)
+                    // this.championshipService.getTeamGameRef(teamRef.id, game.id);
+          
+          
             }),
           )
         })
       ).subscribe((games:any)=>{
-        console.log(games);
+        // console.log(games);
         gamesListNew = [];
         for (const game of games){
           let gameDetail = game[0];

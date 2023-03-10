@@ -130,7 +130,6 @@ export class NewsPage implements OnInit {
       });
   }
 
-
   learnRXJS() {
     let newsListNew = [];
     /*
