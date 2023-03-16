@@ -24,11 +24,10 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { User } from "firebase/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
-import { Observable, of, combineLatest, forkJoin, Subscription } from "rxjs";
+import { Observable, of, combineLatest, Subscription } from "rxjs";
 
 import { switchMap, map, tap } from "rxjs/operators";
 import { Club } from "src/app/models/club";
-import { DocumentData } from "firebase/firestore";
 
 @Component({
   selector: "app-news",
@@ -122,11 +121,13 @@ export class NewsPage implements OnInit {
       ).subscribe(data=>{
         // console.log(data);
         newsListNew = data;
+        
+//         this.newsList = [...new Set(newsListNew.concat(...this.newsList)),];
+        this.newsList =  [...new Set([...newsListNew, ...this.newsList])];
         newsListNew = newsListNew.sort(
           (a, b) =>
             new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.newsList = [...new Set(newsListNew.concat(...this.newsList)),];
       });
   }
 
@@ -248,13 +249,15 @@ export class NewsPage implements OnInit {
       ).subscribe((data:any)=>{
         // console.log(data);
         newsListNew = data;
+
+        /*this.newsList = [
+         ...new Set(newsListNew.concat(...this.newsList)),
+        ];*/
+        this.newsList =  [...new Set([...newsListNew, ...this.newsList])];
         newsListNew = newsListNew.sort(
           (a, b) =>
             new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.newsList = [
-          ...new Set(newsListNew.concat(...this.newsList)),
-        ];
       });
     /*
     this.authService
