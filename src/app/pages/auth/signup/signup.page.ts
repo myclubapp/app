@@ -99,7 +99,7 @@ export class SignupPage implements OnInit {
         userData.lastName
       );
 
-      await this.router.navigateByUrl("tabs");
+      await this.router.navigateByUrl("login");
     } catch (err) {
       this.alertCtrl
         .create({

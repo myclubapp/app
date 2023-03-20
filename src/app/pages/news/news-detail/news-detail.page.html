@@ -1,16 +1,16 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>{{news.title}}</ion-title>
+    <ion-title>{{news?.title}}</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="close()">schliessen</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-  <h1 class="text-xl">{{news.title}}</h1>
-  <h2 class="text-sm">{{news.date | date:'dd.MM.YYYY HH:mm'}}</h2>
-  <img class="py-4" src="{{news.image}}" />
-  <p>{{news.text}}</p>
+  <h1 class="text-xl">{{news?.title}}</h1>
+  <h2 class="text-sm">{{news?.date | date:'dd.MM.YYYY HH:mm'}}</h2>
+  <img class="py-4" src="{{news?.image}}" />
+  <p>{{news?.text}}</p>
 
   <!--<ion-card button="true">
     <ion-fab *ngIf="news.url" vertical="top" horizontal="end">

@@ -55,6 +55,7 @@ export class NewsPage implements OnInit {
 
   clubSubscription: Subscription;
   teamSubscription: Subscription;
+  gameReportSubscription: Subscription;
   verbandSubscription: Subscription;
 
   constructor(
@@ -73,60 +74,65 @@ export class NewsPage implements OnInit {
     this.getNews();
     this.getClubNews();
     this.getTeamNews();
+    this.getGameReports();
 
     //this.learnRXJS();
   }
 
-  ngAfterViewInit(): void {
-
-  }
+  ngAfterViewInit(): void {}
   ngOnDestroy(): void {
     this.clubSubscription.unsubscribe();
-    this.teamSubscription.unsubscribe()
-    this.verbandSubscription.unsubscribe()
+    this.teamSubscription.unsubscribe();
+    this.verbandSubscription.unsubscribe();
+    this.gameReportSubscription.unsubscribe();
   }
 
- /* async getUser() {
+  /* async getUser() {
     this.user = await this.authService.getUser();
   } */
 
   async getNews() {
     let newsListNew = [];
-    this.verbandSubscription = this.authService.getUser$().pipe(
-        switchMap((user)=> {
+    this.verbandSubscription = this.authService
+      .getUser$()
+      .pipe(
+        switchMap((user) => {
           return this.fbService.getUserClubRefs(user).pipe(
-            map((result:any)=>{
-              return result.map(club=>{
-                console.log(`Read assigned clubs for emitting type > ${club.id}`);
+            map((result: any) => {
+              return result.map((club) => {
+                console.log(
+                  `Read assigned clubs for emitting type > ${club.id}`
+                );
                 return club.id;
-              })
+              });
             })
-          )
+          );
         }),
-        switchMap((allClubIds)=>{
+        switchMap((allClubIds) => {
           return combineLatest(
-            allClubIds.map(clubId=>{
-              return this.fbService.getClubRef(clubId)
+            allClubIds.map((clubId) => {
+              return this.fbService.getClubRef(clubId);
             })
-          )
+          );
         }),
-        switchMap((allClubDetails)=>{
+        switchMap((allClubDetails) => {
           return combineLatest(
-            allClubDetails.map((clubDetail:Club)=>{
-              return this.newsService.getNewsRef(clubDetail.type)
-          }))
+            allClubDetails.map((clubDetail: Club) => {
+              return this.newsService.getNewsRef(clubDetail.type);
+            })
+          );
         }),
-        map(([allClubNews])=>{
+        map(([allClubNews]) => {
           return allClubNews;
         })
-      ).subscribe(data=>{
+      )
+      .subscribe((data) => {
         // console.log(data);
         newsListNew = data;
-        newsListNew = newsListNew.sort(
-          (a, b) =>
-            new Date(b.date).getTime() - new Date(a.date).getTime()
+        this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
+        this.newsList = this.newsList.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.newsList = [...new Set(newsListNew.concat(...this.newsList)),];
       });
   }
 
@@ -176,8 +182,7 @@ export class NewsPage implements OnInit {
       ];
     });*/
 
-
-   /*
+    /*
     this.authService.getUser$().subscribe((user: User) => {
       this.fbService.getUserClubRefs(user).subscribe((clubs) => {
         for (let club of clubs) {
@@ -225,36 +230,37 @@ export class NewsPage implements OnInit {
 
   getClubNews() {
     let newsListNew = [];
-    this.clubSubscription = this.authService.getUser$().pipe(
-        switchMap((user)=> {
+    this.clubSubscription = this.authService
+      .getUser$()
+      .pipe(
+        switchMap((user) => {
           return this.fbService.getUserClubRefs(user).pipe(
-            map((result:any)=>{
-              return result.map(club=>{
+            map((result: any) => {
+              return result.map((club) => {
                 console.log(`Read News for Club > ${club.id}`);
                 return club.id;
-              })
+              });
             })
-          )
+          );
         }),
-        switchMap((allClubIds)=>{
+        switchMap((allClubIds) => {
           return combineLatest(
-            allClubIds.map((clubIds)=>{
-              return this.newsService.getClubNewsRef(clubIds)
-          }))
+            allClubIds.map((clubIds) => {
+              return this.newsService.getClubNewsRef(clubIds);
+            })
+          );
         }),
-        map(([allClubNews])=>{
+        map(([allClubNews]) => {
           return allClubNews;
         })
-      ).subscribe((data:any)=>{
+      )
+      .subscribe((data: any) => {
         // console.log(data);
         newsListNew = data;
-        newsListNew = newsListNew.sort(
-          (a, b) =>
-            new Date(b.date).getTime() - new Date(a.date).getTime()
+        this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
+        this.newsList = this.newsList.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.newsList = [
-          ...new Set(newsListNew.concat(...this.newsList)),
-        ];
       });
     /*
     this.authService
@@ -294,38 +300,39 @@ export class NewsPage implements OnInit {
   }
 
   getTeamNews() {
-      let newsListNew = [];
-      this.teamSubscription = this.authService.getUser$().pipe(
-          switchMap((user)=> {
-            return this.fbService.getUserTeamRefs(user).pipe(
-              map((result:any)=>{
-                return result.map(team=>{
-                  console.log(`Read News for Team > ${team.id}`);
-                  return team.id;
-                })
-              })
-            )
-          }),
-          switchMap((allTeamIds)=>{
-            return combineLatest(
-              allTeamIds.map((teamId)=>{
-                return this.newsService.getTeamNewsRef(teamId)
-            }))
-          }),
-          map(([allClubNews])=>{
-            return allClubNews;
-          })
-        ).subscribe((data:any)=>{
-          // console.log(data);
-          newsListNew = data;
-          newsListNew = newsListNew.sort(
-            (a, b) =>
-              new Date(b.date).getTime() - new Date(a.date).getTime()
+    let newsListNew = [];
+    this.teamSubscription = this.authService
+      .getUser$()
+      .pipe(
+        switchMap((user) => {
+          return this.fbService.getUserTeamRefs(user).pipe(
+            map((result: any) => {
+              return result.map((team) => {
+                console.log(`Read News for Team > ${team.id}`);
+                return team.id;
+              });
+            })
           );
-          this.newsList = [
-            ...new Set(newsListNew.concat(...this.newsList)),
-          ];
-        });
+        }),
+        switchMap((allTeamIds) => {
+          return combineLatest(
+            allTeamIds.map((teamId) => {
+              return this.newsService.getTeamNewsRef(teamId);
+            })
+          );
+        }),
+        map(([allClubNews]) => {
+          return allClubNews;
+        })
+      )
+      .subscribe((data: any) => {
+        // console.log(data);
+        newsListNew = data;
+        this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
+        this.newsList = this.newsList.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+      });
     /*
     this.authService
       .getUser$()
@@ -362,6 +369,42 @@ export class NewsPage implements OnInit {
         this.newsList = [...new Set(this.newsList.concat(...newsListNew))];
       });
       */
+  }
+
+  getGameReports() {
+    let reportListNew = [];
+    this.teamSubscription = this.authService
+      .getUser$()
+      .pipe(
+        switchMap((user) => {
+          return this.fbService.getUserTeamRefs(user).pipe(
+            map((result: any) => {
+              return result.map((team) => {
+                console.log(`Read News for Team > ${team.id}`);
+                return team.id;
+              });
+            })
+          );
+        }),
+        switchMap((allTeamIds) => {
+          return combineLatest(
+            allTeamIds.map((teamId) => {
+              return this.newsService.getGameReports(teamId);
+            })
+          );
+        }),
+        map(([allGameReports]) => {
+          return allGameReports;
+        })
+      )
+      .subscribe((data: any) => {
+        // console.log(data);
+        reportListNew = data;
+        this.newsList = [...new Set(reportListNew.concat(...this.newsList))];
+        this.newsList = this.newsList.sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+      });
   }
 
   async openModal(news: News) {

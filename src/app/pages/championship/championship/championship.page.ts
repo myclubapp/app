@@ -36,9 +36,7 @@ export class ChampionshipPage implements OnInit {
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly championshipService: ChampionshipService
-  ) {
-
-  }
+  ) {}
 
   ngOnInit() {
     this.getUser();
@@ -112,74 +110,67 @@ export class ChampionshipPage implements OnInit {
     toast.present();
   }
 
-  gameListTeam(){
+  gameListTeam() {
     let gamesListNew = [];
-    this.teamSubscription = this.authService.getUser$().pipe(
-        switchMap((user)=> {
+    this.teamSubscription = this.authService
+      .getUser$()
+      .pipe(
+        switchMap((user) => {
           return this.fbService.getUserTeamRefs(user).pipe(
-            map((result:any)=>{
-              return result.map(team=>{
+            map((result: any) => {
+              return result.map((team) => {
                 console.log(`Read Upcomming Games for Team > ${team.id}`);
                 return team.id;
-              })
+              });
             })
-          )
+          );
         }),
-        switchMap((allTeamIds)=>{
-          return combineLatest(
-            allTeamIds.map((teamId)=>{
-              return combineLatest([
-                this.championshipService.getTeamGamesRef(teamId)
-              ])
+        switchMap((allTeamIds) => {
+          return combineLatest([
+            allTeamIds.map((teamId) => {
+              combineLatest([this.championshipService.getTeamGamesRef(teamId)]);
             }),
-          )
+          ]);
         }),
-        switchMap((allTeamGames:any)=>{
+        switchMap((allTeamGames: any) => {
           return combineLatest(
-            allTeamGames.map((gameList:any)=>{
+            allTeamGames.map((gameList: any) => {
               console.log(gameList);
 
-              
-                    // this.championshipService.getTeamGameAttendeesRef(teamRef.id, game.id)
-                    // this.championshipService.getTeamGameRef(teamRef.id, game.id);
-          
-          
-            }),
-          )
+              // this.championshipService.getTeamGameAttendeesRef(teamRef.id, game.id)
+              // this.championshipService.getTeamGameRef(teamRef.id, game.id);
+            })
+          );
         })
-      ).subscribe((games:any)=>{
+      )
+      .subscribe((games: any) => {
         // console.log(games);
         gamesListNew = [];
-        for (const game of games){
+        for (const game of games) {
           let gameDetail = game[0];
           let attendeeList = game[1];
           let newGame = {
-          ...gameDetail,
-          attendees: attendeeList,
-          teamName: gameDetail.name,
-          teamId: gameDetail.id,
-          countAttendees: attendeeList.filter(
-            (e) => e.status === true
-          ).length,
-          status:
-            attendeeList &&
-            attendeeList.filter((e) => e.id === this.user.uid)
-              .length === 1
-              ? attendeeList.filter(
-                  (e) => e.id === this.user.uid
-                )[0].status
-              : null,
+            ...gameDetail,
+            attendees: attendeeList,
+            teamName: gameDetail.name,
+            teamId: gameDetail.id,
+            countAttendees: attendeeList.filter((e) => e.status === true)
+              .length,
+            status:
+              attendeeList &&
+              attendeeList.filter((e) => e.id === this.user.uid).length === 1
+                ? attendeeList.filter((e) => e.id === this.user.uid)[0].status
+                : null,
           };
           gamesListNew.push(newGame);
         }
         gamesListNew = gamesListNew.sort(
-          (a, b) =>
-            new Date(b.date).getTime() - new Date(a.date).getTime()
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.gamesList =  [...new Set([...gamesListNew, ...this.gamesList])];
+        this.gamesList = [...new Set([...gamesListNew, ...this.gamesList])];
       });
   }
-/*
+  /*
   getGamesList() {
     let gamesListNew = [];
     this.authService.getUser$().subscribe((user: User) => {

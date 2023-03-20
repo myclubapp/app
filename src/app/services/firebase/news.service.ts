@@ -70,6 +70,19 @@ export class NewsService {
     >;
   }
 
+  getGameReports(teamId: string): Observable<News[]> {
+    // console.log(`Read Team Events List Ref ${teamId}`)
+    const newssRefList = collection(this.firestore, `teams/${teamId}/reports`);
+    const q = query(
+      newssRefList,
+      orderBy("date", "desc"),
+      where("date", ">=", this.twentyDaysAgo.toISOString())
+    ); // heute - 20 Tage
+    return collectionData(q, { idField: "id" }) as unknown as Observable<
+      News[]
+    >;
+  }
+
   private getDocData<T>(path: string, idField = "id"): Observable<T> {
     const reference = doc(this.firestore, path);
     return docData(reference, { idField }) as Observable<T>;

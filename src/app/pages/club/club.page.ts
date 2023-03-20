@@ -85,7 +85,7 @@ export class ClubPage implements OnInit {
           combineLatest(
             allClubMembers.map((member) =>
               combineLatest(
-                of(member),
+                // of(member),
                 this.userProfileService.getUserProfileById(member.id)
               )
             )
@@ -95,18 +95,18 @@ export class ClubPage implements OnInit {
       .subscribe((data) => {
         this.requestList = [];
         for (const member of data) {
-          this.requestList.push(member[1]);
+          this.requestList.push(member);
         }
       });
   }
 
   async deleteClubRequest(request) {
     await this.fbService.deleteUserClubRequest(this.club.id, request.id);
-    this.getClubRequests();
+    // this.getClubRequests();
   }
   async approveClubRequest(request) {
     await this.fbService.setApproveUserClubRequest(this.club.id, request.id);
-    this.getClubRequests();
+    // this.getClubRequests();
   }
 
   async close() {
