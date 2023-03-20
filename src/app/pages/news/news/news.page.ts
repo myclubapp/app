@@ -24,11 +24,10 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { User } from "firebase/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
-import { Observable, of, combineLatest, forkJoin, Subscription } from "rxjs";
+import { Observable, of, combineLatest, Subscription } from "rxjs";
 
 import { switchMap, map, tap } from "rxjs/operators";
 import { Club } from "src/app/models/club";
-import { DocumentData } from "firebase/firestore";
 
 @Component({
   selector: "app-news",
