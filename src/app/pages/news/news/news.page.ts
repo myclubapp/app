@@ -3,6 +3,7 @@ import {
   IonRouterOutlet,
   LoadingController,
   ModalController,
+  MenuController,
   ToastController,
 } from "@ionic/angular";
 import { News } from "src/app/models/news";
@@ -61,11 +62,14 @@ export class NewsPage implements OnInit {
     private readonly newsService: NewsService,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
-    public loadingController: LoadingController,
-    public toastController: ToastController,
+    private loadingController: LoadingController,
+    private toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
-    private readonly modalCtrl: ModalController
-  ) {}
+    private readonly modalCtrl: ModalController,
+    private readonly menuCtrl: MenuController
+  ) {
+    this.menuCtrl.enable(true, "menu");
+  }
 
   ngOnInit() {
     // this.getUser();

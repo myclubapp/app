@@ -1,23 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
 import {
   IonItemSliding,
   IonRouterOutlet,
   ModalController,
-  ToastController
-} from '@ionic/angular';
-import { User } from 'firebase/auth';
-import { of, combineLatest } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
-import { Event } from 'src/app/models/event';
-import { AuthService } from 'src/app/services/auth.service';
-import { FirebaseService } from 'src/app/services/firebase.service';
-import { ChampionshipService } from 'src/app/services/firebase/championship.service';
-import { EventService } from 'src/app/services/firebase/event.service';
+  MenuController,
+  ToastController,
+} from "@ionic/angular";
+import { User } from "firebase/auth";
+import { of, combineLatest } from "rxjs";
+import { switchMap, map } from "rxjs/operators";
+import { Event } from "src/app/models/event";
+import { AuthService } from "src/app/services/auth.service";
+import { FirebaseService } from "src/app/services/firebase.service";
+import { ChampionshipService } from "src/app/services/firebase/championship.service";
+import { EventService } from "src/app/services/firebase/event.service";
 
 @Component({
-  selector: 'app-events',
-  templateUrl: './events.page.html',
-  styleUrls: ['./events.page.scss'],
+  selector: "app-events",
+  templateUrl: "./events.page.html",
+  styleUrls: ["./events.page.scss"],
 })
 export class EventsPage implements OnInit {
   skeleton = new Array(12);
@@ -26,26 +27,29 @@ export class EventsPage implements OnInit {
 
   eventsList: Event[];
   eventsListPast: Event[];
-  constructor (
+  constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalController: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
-    private readonly eventService: EventService
-  ) {}
+    private readonly eventService: EventService,
+    private readonly menuCtrl: MenuController
+  ) {
+    this.menuCtrl.enable(true, "menu");
+  }
 
-  ngOnInit () {
+  ngOnInit() {
     this.getUser();
     this.getEventsList();
     this.getEventsListPast();
   }
 
-  async getUser () {
+  async getUser() {
     this.user = await this.authService.getUser();
   }
 
-  async toggle (status: boolean, event: Event) {
+  async toggle(status: boolean, event: Event) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${event.teamId} and event ${event.id}`
     );
@@ -58,7 +62,7 @@ export class EventsPage implements OnInit {
     this.presentToast();
   }
 
-  async toggleItem (slidingItem: IonItemSliding, status: boolean, event: Event) {
+  async toggleItem(slidingItem: IonItemSliding, status: boolean, event: Event) {
     slidingItem.closeOpened();
 
     console.log(
@@ -73,17 +77,17 @@ export class EventsPage implements OnInit {
     this.presentToast();
   }
 
-  async presentToast () {
+  async presentToast() {
     const toast = await this.toastController.create({
-      message: 'changes has been saved',
-      color: 'primary',
+      message: "changes has been saved",
+      color: "primary",
       duration: 2000,
-      position: 'top',
+      position: "top",
     });
     toast.present();
   }
 
-  getEventsList () {
+  getEventsList() {
     this.authService
       .getUser$()
       .pipe(
@@ -121,15 +125,15 @@ export class EventsPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        const eventsListNew = []
+        const eventsListNew = [];
         for (const team of data) {
           // loop over teams
 
-          const events = team[1]
-          const teamDetails = team[2]
+          const events = team[1];
+          const teamDetails = team[2];
           for (const eventObject of events) {
-            const event = eventObject[0]
-            const attendees = eventObject[1]
+            const event = eventObject[0];
+            const attendees = eventObject[1];
 
             event.teamName = teamDetails.name;
             event.teamId = teamDetails.id;
@@ -153,10 +157,10 @@ export class EventsPage implements OnInit {
         this.eventsList = this.eventsList.sort(
           (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis()
         );
-      })
+      });
   }
 
-  getEventsListPast () {
+  getEventsListPast() {
     this.authService
       .getUser$()
       .pipe(
@@ -194,15 +198,15 @@ export class EventsPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        const eventsListNew = []
+        const eventsListNew = [];
         for (const team of data) {
           // loop over teams
 
-          const events = team[1]
-          const teamDetails = team[2]
+          const events = team[1];
+          const teamDetails = team[2];
           for (const eventObject of events) {
-            const event = eventObject[0]
-            const attendees = eventObject[1]
+            const event = eventObject[0];
+            const attendees = eventObject[1];
 
             event.teamName = teamDetails.name;
             event.teamId = teamDetails.id;
@@ -226,6 +230,6 @@ export class EventsPage implements OnInit {
         this.eventsListPast = this.eventsListPast.sort(
           (a, b) => b.dateTime.toMillis() - a.dateTime.toMillis()
         );
-      })
+      });
   }
 }

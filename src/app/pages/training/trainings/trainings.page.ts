@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import {
   IonItemSliding,
   IonRouterOutlet,
+  MenuController,
   ModalController,
   ToastController,
 } from "@ionic/angular";
@@ -31,8 +32,11 @@ export class TrainingsPage implements OnInit {
     private readonly modalController: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
-    private readonly trainingService: TrainingService
-  ) {}
+    private readonly trainingService: TrainingService,
+    private readonly menuCtrl: MenuController
+  ) {
+    this.menuCtrl.enable(true, "menu");
+  }
 
   ngOnInit() {
     this.getUser();
