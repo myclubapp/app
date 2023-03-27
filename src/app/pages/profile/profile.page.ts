@@ -20,7 +20,11 @@ import {
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { switchMap } from "rxjs/operators";
-import { AlertController, ToastController } from "@ionic/angular";
+import {
+  AlertController,
+  MenuController,
+  ToastController,
+} from "@ionic/angular";
 import { Router } from "@angular/router";
 
 @Component({
@@ -39,8 +43,11 @@ export class ProfilePage implements OnInit, AfterViewInit {
     private readonly profileService: UserProfileService,
     private readonly toastController: ToastController,
     private readonly alertController: AlertController,
-    private readonly router: Router
-  ) {}
+    private readonly router: Router,
+    private readonly menuCtrl: MenuController
+  ) {
+    this.menuCtrl.enable(true, "menu");
+  }
 
   async ngOnInit() {
     this.getClubRequestList();

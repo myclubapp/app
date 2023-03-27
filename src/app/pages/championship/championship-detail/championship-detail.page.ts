@@ -4,7 +4,7 @@ import { Game } from "src/app/models/game";
 import { GoogleMap } from "@capacitor/google-maps";
 import { Geolocation, PermissionStatus } from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import { combineLatest, Observable, of } from "rxjs";
+import { combineLatest, Observable, of, Subscriber, Subscription } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "firebase/auth";
 import { switchMap } from "rxjs/operators";
@@ -28,6 +28,8 @@ export class ChampionshipDetailPage implements OnInit {
   attendeeListTrue: any[] = [];
   attendeeListFalse: any[] = [];
 
+  gameRef: Subscription;
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -44,19 +46,18 @@ export class ChampionshipDetailPage implements OnInit {
     this.setMap();
 
     // GET GAME
-    this.championshipService
+    /* const gameRef = this.championshipService
       .getTeamGameRef(this.game.teamId, this.game.id)
       .subscribe((game) => {
-        game.teamName = this.game.teamName;
+        // game.teamName = this.game.name;
         game.teamId = this.game.teamId;
         this.game = game;
 
         this.game.status = null;
-      });
+      });*/
 
     // GET ATTENDEE LIST
-
-    this.championshipService
+    this.gameRef = this.championshipService
       .getTeamGameRef(this.game.teamId, this.game.id)
       .pipe(
         switchMap((game) =>
@@ -66,24 +67,26 @@ export class ChampionshipDetailPage implements OnInit {
           )
         ),
         switchMap((allAttendees: any) => {
-          return combineLatest(allAttendees.map((member) => {
-              combineLatest(of(member), this.userProfileService.getUserProfileById(member.id)
-              )
-            })
-          )
-        }
-          
-        )
+          return combineLatest([
+            allAttendees.map((member) => {
+              return combineLatest([
+                of(member),
+                this.userProfileService.getUserProfileById(member.id),
+              ]);
+            }),
+          ]);
+        })
       )
       .subscribe((data: any) => {
         const attendeeListNew = [];
 
         // User ist im Falle keiner Antwort nicht in attendee Liste
         this.game.status = null;
-        for (const attendee of data) {
+        for (const gameData of data) {
           // loop over teams
-          const status = attendee[0];
-          const user = attendee[1];
+          console.log(gameData);
+          const status = gameData[0];
+          const user = gameData[1];
 
           user.status = status.status;
           attendeeListNew.push(user);
@@ -197,7 +200,8 @@ export class ChampionshipDetailPage implements OnInit {
       console.log("no coordinates on map");
     }
   }
-  *ngOnDestroy() {
+  ngOnDestroy() {
+    this.gameRef.unsubscribe();
     this.newMap.destroy();
   }
 }

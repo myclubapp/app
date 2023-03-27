@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { SwUpdate } from "@angular/service-worker";
 import {
   IonItemSliding,
   IonRouterOutlet,
@@ -128,19 +129,21 @@ export class ChampionshipPage implements OnInit {
         switchMap((allTeamIds) => {
           return combineLatest([
             allTeamIds.map((teamId) => {
-              combineLatest([this.championshipService.getTeamGamesRef(teamId)]);
+              return combineLatest([
+                this.championshipService.getTeamGamesRef(teamId),
+              ]);
             }),
           ]);
         }),
-        switchMap((allTeamGames: any) => {
-          return combineLatest(
-            allTeamGames.map((gameList: any) => {
-              console.log(gameList);
-
-              // this.championshipService.getTeamGameAttendeesRef(teamRef.id, game.id)
-              // this.championshipService.getTeamGameRef(teamRef.id, game.id);
-            })
-          );
+        switchMap((allTeamGames) => {
+          return combineLatest([
+            allTeamGames.map((game: any) => {
+              return this.championshipService.getTeamGameAttendeesRef(
+                game.teamId,
+                game.id
+              );
+            }),
+          ]);
         })
       )
       .subscribe((games: any) => {

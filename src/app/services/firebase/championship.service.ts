@@ -41,7 +41,7 @@ export class ChampionshipService {
       where(
         "dateTime",
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 40))
       )
     ); // heute - 1 Tag
     return collectionData(q, { idField: "id" }) as unknown as Observable<
