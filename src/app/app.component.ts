@@ -94,7 +94,7 @@ export class AppComponent {
   }
 
   async alertAskForPush() {
-    const alert = this.alertController.create({
+    const alert = await this.alertController.create({
       header: "Push?",
       message: "activate push?",
       buttons: [
@@ -107,6 +107,7 @@ export class AppComponent {
         { text: "Nein" },
       ],
     });
+    alert.present();
   }
 
   async subscribeToNotifications() {
