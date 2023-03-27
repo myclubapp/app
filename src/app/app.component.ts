@@ -31,7 +31,7 @@ export class AppComponent {
     private readonly userProfileService: UserProfileService
   ) {
     this.initializeApp();
-    this.subscribeToNotifications();
+    this.alertAskForPush();
     this.receivePushMessage();
     // this.initializeFirebase();
 
@@ -90,6 +90,22 @@ export class AppComponent {
       if (event.type === "VERSION_READY") {
         this.presentAlertUpdateVersion();
       }
+    });
+  }
+
+  async alertAskForPush() {
+    const alert = this.alertController.create({
+      header: "Push?",
+      message: "activate push?",
+      buttons: [
+        {
+          text: "JA",
+          handler: () => {
+            this.subscribeToNotifications();
+          },
+        },
+        { text: "Nein" },
+      ],
     });
   }
 
