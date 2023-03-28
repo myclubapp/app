@@ -74,4 +74,18 @@ export class UserProfileService {
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return await updateDoc(userProfileRef, { pushSub: sub });
   }
+
+  async changeSettingsPush(state: boolean) {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return await updateDoc(userProfileRef, { settingsPush: state });
+  }
+
+  async changeSettingsEmail(state: boolean) {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return await updateDoc(userProfileRef, { settingsEmail: state });
+  }
 }
