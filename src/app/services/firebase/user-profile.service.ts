@@ -22,7 +22,7 @@ import {
 
 import { getAuth } from "@angular/fire/auth";
 
-import { Observable, Observer } from "rxjs";
+import { Observable } from "rxjs";
 import { Profile } from "../../models/user";
 import { Photo } from "@capacitor/camera";
 
@@ -35,8 +35,10 @@ export class UserProfileService {
   constructor(
     private readonly firestore: Firestore,
     private readonly storage: Storage,
-    private readonly authService: AuthService
-  ) {}
+    // private readonly authService: AuthService
+  ) {
+
+  }
 
   getUserProfile(user: User): Observable<Profile> {
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
@@ -71,8 +73,9 @@ export class UserProfileService {
   async addPushSubscriber(sub: PushSubscription) {
     const auth = getAuth();
     const user = auth.currentUser;
+    const pushObject = JSON.stringify(sub);
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return await updateDoc(userProfileRef, { pushSub: sub });
+    return await updateDoc(userProfileRef, { pushObject : pushObject });
   }
 
   async changeSettingsPush(state: boolean) {
