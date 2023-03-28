@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { SwUpdate, VersionEvent, SwPush } from "@angular/service-worker";
+import { SwUpdate, VersionEvent } from "@angular/service-worker";
 import { AlertController, ModalController } from "@ionic/angular";
 import { getAuth, onAuthStateChanged, getIdToken } from "firebase/auth";
 import { AuthService } from "./services/auth.service";
@@ -18,20 +18,16 @@ import { getMessaging, onMessage } from "firebase/messaging";
 export class AppComponent {
   public email: string;
   public appVersion: string = packagejson.version;
-  readonly VAPID_PUBLIC_KEY =
-    "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
 
   constructor(
     private readonly swUpdate: SwUpdate,
-    private readonly swPush: SwPush,
+
     private readonly alertController: AlertController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly router: Router,
-    private readonly userProfileService: UserProfileService
   ) {
     this.initializeApp();
-    this.alertAskForPush();
     this.receivePushMessage();
     // this.initializeFirebase();
 
@@ -91,34 +87,6 @@ export class AppComponent {
         this.presentAlertUpdateVersion();
       }
     });
-  }
-
-  async alertAskForPush() {
-    const alert = await this.alertController.create({
-      header: "Push?",
-      message: "activate push?",
-      buttons: [
-        {
-          text: "JA",
-          handler: () => {
-            this.subscribeToNotifications();
-          },
-        },
-        { text: "Nein" },
-      ],
-    });
-    alert.present();
-  }
-
-  async subscribeToNotifications() {
-    const sub = await this.swPush.requestSubscription({
-      serverPublicKey: this.VAPID_PUBLIC_KEY,
-    });
-    await this.userProfileService
-      .addPushSubscriber(sub)
-      .catch((err) =>
-        console.error("Could not subscribe to notifications", err)
-      );
   }
 
   async receivePushMessage() {

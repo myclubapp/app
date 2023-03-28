@@ -8,6 +8,9 @@ import { User } from "@angular/fire/auth";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { AuthService } from "src/app/services/auth.service";
 
+// Push 
+import { SwPush } from "@angular/service-worker";
+
 // models
 import { Profile } from "src/app/models/user";
 
@@ -36,8 +39,11 @@ export class ProfilePage implements OnInit, AfterViewInit {
   userProfile$: Observable<Profile>;
   clubRequestList: any[] = [];
   teamRequestList: any[] = [];
+  readonly VAPID_PUBLIC_KEY =
+    "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
 
   constructor(
+    private readonly swPush: SwPush,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly profileService: UserProfileService,
@@ -215,6 +221,59 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
     await toast.present();
   }
+
+  async togglePush(event) {
+    console.log(event);
+    await this.profileService
+    .changeSettingsPush(event.detail.checked);
+    if (event.detail.checked){
+      this.alertAskForPush();
+    } else {
+      console.log("disable push");
+    }
+  }
+
+  async toggleEmail(event) {
+    await this.profileService
+    .changeSettingsEmail(event.detail.checked);
+    console.log("email");
+  }
+
+  async alertAskForPush() {
+    const alert = await this.alertController.create({
+      header: "Push?",
+      message: "activate push?",
+      buttons: [
+        {
+          text: "JA",
+          handler: () => {
+            this.subscribeToNotifications();
+          },
+        },
+        { text: "Nein" },
+      ],
+    });
+    alert.present();
+  }
+
+  async subscribeToNotifications() {
+    const sub = await this.swPush.requestSubscription({
+      serverPublicKey: this.VAPID_PUBLIC_KEY,
+    });
+    console.log(sub);
+    if (sub){
+      await this.profileService
+      .addPushSubscriber(sub)
+      .catch((err) =>
+        console.error("Could not subscribe to notifications", err)
+      );
+    } else {
+      console.log("error push token register");
+    }
+
+  }
+
+
 
   async presentDeleteProfile() {
     const toast = await this.toastController.create({

@@ -90,6 +90,18 @@
           <ion-icon icon-only name="trash"></ion-icon>
         </ion-button>
       </ion-item>
+
+      <ion-list-header>
+        <ion-label> Einstellungen </ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-label position="stacked"> Push-Nachrichten </ion-label>
+        <ion-toggle value="{{userProfile.settingsPush}}" slot="end" [checked]="true" [enableOnOffLabels]="true" (ionChange)="togglePush($event)"></ion-toggle>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked"> E-Mail-Nachrichten </ion-label>
+        <ion-toggle value="{{userProfile.settingsEmail}}" slot="end" [checked]="true" [enableOnOffLabels]="true" (ionChange)="toggleEmail($event)"></ion-toggle>
+      </ion-item>
     </ion-list>
   </ng-container>
 
