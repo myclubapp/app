@@ -229,9 +229,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     if (event.detail.checked){
       this.alertAskForPush();
     } else {
-      let sub: PushSubscription;
-      await this.profileService
-      .addPushSubscriber(sub)
+      console.log("disable push");
     }
   }
 
@@ -263,11 +261,16 @@ export class ProfilePage implements OnInit, AfterViewInit {
       serverPublicKey: this.VAPID_PUBLIC_KEY,
     });
     console.log(sub);
-    await this.profileService
+    if (sub){
+      await this.profileService
       .addPushSubscriber(sub)
       .catch((err) =>
         console.error("Could not subscribe to notifications", err)
       );
+    } else {
+      console.log("error push token register");
+    }
+
   }
 
 
