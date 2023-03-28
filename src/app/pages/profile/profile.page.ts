@@ -257,10 +257,10 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   async subscribeToNotifications() {
-    const sub = await this.swPush.requestSubscription({
+    const sub: PushSubscription = await this.swPush.requestSubscription({
       serverPublicKey: this.VAPID_PUBLIC_KEY,
     });
-    console.log(sub);
+    console.log(sub.toJSON());
     if (sub){
       await this.profileService
       .addPushSubscriber(sub)

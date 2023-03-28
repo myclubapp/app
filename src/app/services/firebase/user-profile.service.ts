@@ -71,8 +71,9 @@ export class UserProfileService {
   async addPushSubscriber(sub: PushSubscription) {
     const auth = getAuth();
     const user = auth.currentUser;
+    const pushObject = JSON.stringify(sub);
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return await updateDoc(userProfileRef, { pushSub: sub });
+    return await updateDoc(userProfileRef, { pushObject : pushObject });
   }
 
   async changeSettingsPush(state: boolean) {
