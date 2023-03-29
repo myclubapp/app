@@ -94,9 +94,9 @@ export class AppComponent {
 
   async receivePushMessage() {
 
-    const pushReqSubscription = await this.swPush.requestSubscription({"serverPublicKey": "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY"});
-    console.log(">>" , pushReqSubscription);
+    if (this.swPush.isEnabled) {
 
+    }
     this.pushNotificationClickSubscription = this.swPush.notificationClicks.subscribe(
       ({action, notification}) => {
         this.alertPushMessage(notification);
@@ -232,5 +232,6 @@ export class AppComponent {
   ngOnDestroy() {
     this.pushNotificationClickSubscription.unsubscribe();
     this.pushMessageSubscription.unsubscribe();
+    this.swPush.unsubscribe();
   }
 }
