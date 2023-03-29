@@ -237,47 +237,95 @@ export class ProfilePage implements OnInit, AfterViewInit {
     await this.profileService
     .changeSettingsEmail(event.detail.checked);
     console.log("email");
+    this.toastActionSaved();
   }
 
-  async alertAskForPush() {
+  async askForPush() {
+    if (this.swPush.isEnabled) {     // Push is available
+      this.alertAskForPush();
+    } else {
+      this.alertPushNotSupported();
+    }
+  }
+
+  async alertPushNotSupported() {
     const alert = await this.alertController.create({
-      header: "Push?",
-      message: "activate push?",
+      header: "Push-Benachrichtugung nicht verfügbar",
+      message: "Leider unterstützt ihr Gerät/Browser keine Push-Benachrichtugen.",
       buttons: [
-        {
-          text: "JA",
-          handler: () => {
-            this.subscribeToNotifications();
-          },
-        },
-        { text: "Nein" },
+ 
+        { text: "OK" },
       ],
     });
     alert.present();
   }
 
+  async errorPushMessageEnable(error) {
+    const alert = await this.alertController.create({
+      header: "Push-Benachrichtugung nicht verfügbar",
+      message: "Leider ist ein Fehler aufgetreten: " + error,
+      buttons: [
+ 
+        { text: "OK" },
+      ],
+    });
+    alert.present();
+  }
+
+
+async alertAskForPush() {
+  const alert = await this.alertController.create({
+    header: "Push-Benachrichtugung",
+    message: "Sollen Push-Benachrichtigungen für dieses Gerät aktiviert werden?",
+    buttons: [
+      {
+        text: "Ja",
+        handler: () => {
+          this.subscribeToNotifications();
+        },
+      },
+      { text: "Nein" },
+    ],
+  });
+  alert.present();
+}
+
+
   async subscribeToNotifications() {
     const sub: PushSubscription = await this.swPush.requestSubscription({
       serverPublicKey: this.VAPID_PUBLIC_KEY,
     });
+
     console.log(sub.toJSON());
     if (sub){
-      await this.profileService
+      const profileUpdate = await this.profileService
       .addPushSubscriber(sub)
-      .catch((err) =>
-        console.error("Could not subscribe to notifications", err)
+      .catch((err) => {
+        console.error("Could not subscribe to notifications", err);
+        this.errorPushMessageEnable("Could not subscribe to notifications");
+      }
       );
+      this.toastActionSaved();
     } else {
       console.log("error push token register");
+      this.errorPushMessageEnable("Error push token register");
     }
 
   }
-
-
-
   async presentDeleteProfile() {
     const toast = await this.toastController.create({
       message: "Profil erfolgreich gelöscht",
+      duration: 1500,
+      position: "bottom",
+      color: "success",
+    });
+
+    await toast.present();
+  }
+
+  async toastActionSaved() {
+    const toast = await this.toastController.create({
+      message: "Änderungen erfolgreich gespeichert",
       duration: 1500,
       position: "bottom",
       color: "success",

@@ -102,6 +102,12 @@
         <ion-label position="stacked"> E-Mail-Nachrichten </ion-label>
         <ion-toggle value="{{userProfile.settingsEmail}}" slot="end" [checked]="true" [enableOnOffLabels]="true" (ionChange)="toggleEmail($event)"></ion-toggle>
       </ion-item>
+      <ion-item>
+        <ion-label color="danger">Danger Zone: Profil löschen</ion-label>
+        <ion-button  slot="end" color="danger" (click)="deleteProfile()">
+          <ion-icon slot="icon-only" name="trash"> </ion-icon>
+        </ion-button>
+      </ion-item>
     </ion-list>
   </ng-container>
 
@@ -148,10 +154,7 @@
     </ion-list>
   </ng-container>
 -->
-  <ion-button color="danger" (click)="deleteProfile()">
-    Delete Profile
-    <ion-icon name="trash"> </ion-icon>
-  </ion-button>
+ 
 </ion-content>
 <ng-template #loading>
   <!-- Bubbles -->
