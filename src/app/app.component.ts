@@ -225,6 +225,6 @@ export class AppComponent {
   }
 
   ngOnDestroy() {
-    this.pushMessage.unsubscribe();
+    this.pushMessageSubscription.unsubscribe();
   }
 }
