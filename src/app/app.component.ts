@@ -20,6 +20,7 @@ export class AppComponent {
   public email: string;
   public appVersion: string = packagejson.version;
   pushMessageSubscription: Subscription;
+  pushNotificationClickSubscription: Subscription;
 
   constructor(
     private readonly swUpdate: SwUpdate,
@@ -96,7 +97,11 @@ export class AppComponent {
     const pushReqSubscription = await this.swPush.requestSubscription({"serverPublicKey": "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY"});
     console.log(">>" , pushReqSubscription);
 
-    // this.swPush.isEnabled
+    this.pushNotificationClickSubscription = this.swPush.notificationClicks.subscribe(
+      ({action, notification}) => {
+        this.alertPushMessage(notification);
+          // TODO: Do something in response to notification click.
+      });
 
     this.pushMessageSubscription = this.swPush.messages.subscribe(message=>{
       console.log(message);
@@ -225,6 +230,7 @@ export class AppComponent {
   }
 
   ngOnDestroy() {
+    this.pushNotificationClickSubscription.unsubscribe();
     this.pushMessageSubscription.unsubscribe();
   }
 }
