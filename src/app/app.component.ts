@@ -99,12 +99,13 @@ export class AppComponent {
     }
     this.pushNotificationClickSubscription = this.swPush.notificationClicks.subscribe(
       ({action, notification}) => {
+        console.log("notificationClicks", action, notification);
         this.alertPushMessage(notification);
           // TODO: Do something in response to notification click.
       });
 
     this.pushMessageSubscription = this.swPush.messages.subscribe(message=>{
-      console.log(message);
+      console.log("swPush.messages.subscribe", message);
       this.alertPushMessage(message);
     })
 
