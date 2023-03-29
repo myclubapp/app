@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { SwUpdate, VersionEvent } from "@angular/service-worker";
+import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
 import { AlertController, ModalController } from "@ionic/angular";
 import { getAuth, onAuthStateChanged, getIdToken } from "firebase/auth";
 import { AuthService } from "./services/auth.service";
@@ -7,8 +7,9 @@ import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
 import { Router } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { UserProfileService } from "./services/firebase/user-profile.service";
-import { getMessaging, onMessage } from "firebase/messaging";
+import { Subscription } from "rxjs";
+// import { UserProfileService } from "./services/firebase/user-profile.service";
+// import { getMessaging, onMessage } from "firebase/messaging";
 
 @Component({
   selector: "app-root",
@@ -18,10 +19,11 @@ import { getMessaging, onMessage } from "firebase/messaging";
 export class AppComponent {
   public email: string;
   public appVersion: string = packagejson.version;
+  pushMessageSubscription: Subscription;
 
   constructor(
     private readonly swUpdate: SwUpdate,
-
+    private readonly swPush: SwPush,
     private readonly alertController: AlertController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -90,18 +92,29 @@ export class AppComponent {
   }
 
   async receivePushMessage() {
-    const messaging = getMessaging();
+
+    const pushReqSubscription = await this.swPush.requestSubscription({"serverPublicKey": "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY"});
+    console.log(">>" , pushReqSubscription);
+
+    // this.swPush.isEnabled
+
+    this.pushMessageSubscription = this.swPush.messages.subscribe(message=>{
+      console.log(message);
+      this.alertPushMessage(message);
+    })
+
+    /* const messaging = getMessaging();
     onMessage(messaging, (payload) => {
       console.log("Message received. ", payload);
       this.alertPushMessage(payload);
       // ...
-    });
+    });*/
   }
 
-  async alertPushMessage(payload) {
+  async alertPushMessage(message) {
     const alert = await this.alertController.create({
       header: "push message",
-      message: payload,
+      message: message,
       buttons: ["OK"],
     });
     alert.present();
@@ -209,5 +222,9 @@ export class AppComponent {
   async logout() {
     console.log("logout");
     await this.authService.logout();
+  }
+
+  ngOnDestroy() {
+    this.pushMessageSubscription.unsubscribe();
   }
 }
