@@ -118,8 +118,8 @@ export class AppComponent {
 
   async alertPushMessage(message) {
     const alert = await this.alertController.create({
-      header: "push message",
-      message: message,
+      header: message.title,
+      message: message.message,
       buttons: ["OK"],
     });
     alert.present();
