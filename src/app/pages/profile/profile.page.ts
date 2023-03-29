@@ -237,6 +237,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     await this.profileService
     .changeSettingsEmail(event.detail.checked);
     console.log("email");
+    this.toastActionSaved();
   }
 
   async askForPush() {
@@ -297,14 +298,14 @@ async alertAskForPush() {
 
     console.log(sub.toJSON());
     if (sub){
-      await this.profileService
+      const profileUpdate = await this.profileService
       .addPushSubscriber(sub)
       .catch((err) => {
         console.error("Could not subscribe to notifications", err);
         this.errorPushMessageEnable("Could not subscribe to notifications");
       }
-        
       );
+      this.toastActionSaved();
     } else {
       console.log("error push token register");
       this.errorPushMessageEnable("Error push token register");
@@ -314,6 +315,17 @@ async alertAskForPush() {
   async presentDeleteProfile() {
     const toast = await this.toastController.create({
       message: "Profil erfolgreich gelöscht",
+      duration: 1500,
+      position: "bottom",
+      color: "success",
+    });
+
+    await toast.present();
+  }
+
+  async toastActionSaved() {
+    const toast = await this.toastController.create({
+      message: "Änderungen erfolgreich gespeichert",
       duration: 1500,
       position: "bottom",
       color: "success",
