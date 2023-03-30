@@ -204,7 +204,7 @@ export class AppComponent {
           text: "Abbrechen",
           role: "cancel",
           cssClass: "secondary",
-          handler: (data) => {
+          handler: (data:any) => {
             // console.log('Confirm Cancel: data');
           },
         },

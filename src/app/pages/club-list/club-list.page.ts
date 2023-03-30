@@ -112,7 +112,7 @@ export class ClubListPage implements OnInit {
         {
           text: "auswählen",
           role: "confirm",
-          handler: (data) => {
+          handler: (data:any) => {
             console.log(data);
             this.fbService
               .setClubRequest(data)

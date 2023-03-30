@@ -47,7 +47,7 @@ export class ClubPage implements OnInit {
           )
         )
       )
-      .subscribe((data) => {
+      .subscribe((data:any) => {
         this.memberList = [];
         for (const member of data) {
           this.memberList.push(member[1]);
@@ -69,7 +69,7 @@ export class ClubPage implements OnInit {
           )
         )
       )
-      .subscribe((data) => {
+      .subscribe((data:any) => {
         this.adminList = [];
         for (const member of data) {
           this.adminList.push(member[1]);
@@ -92,7 +92,7 @@ export class ClubPage implements OnInit {
           )
         )
       )
-      .subscribe((data) => {
+      .subscribe((data:any) => {
         this.requestList = [];
         for (const member of data) {
           this.requestList.push(member);

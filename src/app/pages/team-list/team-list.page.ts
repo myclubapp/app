@@ -91,7 +91,7 @@ export class TeamListPage implements OnInit {
         {
           text: "auswählen",
           role: "confirm",
-          handler: async (data) => {
+          handler: async (data:any) => {
             // console.log(data);
             this.fbService.setTeamRequest(data);
             const toast = await this.toastController.create({

@@ -118,7 +118,7 @@ export class NewsPage implements OnInit {
             })
           );
         }),
-        switchMap((allClubDetails) => {
+        switchMap((allClubDetails:any) => {
           return combineLatest(
             allClubDetails.map((clubDetail: Club) => {
               return this.newsService.getNewsRef(clubDetail.type);
@@ -129,7 +129,7 @@ export class NewsPage implements OnInit {
           return allClubNews;
         })
       )
-      .subscribe((data) => {
+      .subscribe((data:any) => {
         // console.log(data);
         newsListNew = data;
         this.newsList = [...new Set(newsListNew.concat(...this.newsList))];

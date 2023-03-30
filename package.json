@@ -52,7 +52,7 @@
     "@fortawesome/fontawesome-svg-core": "6.3.0",
     "@fortawesome/free-brands-svg-icons": "6.3.0",
     "@fortawesome/free-solid-svg-icons": "6.3.0",
-    "@ionic/angular": "6.7.1",
+    "@ionic/angular": "^7.0.0-rc.5",
     "@ionic/pwa-elements": "^3.1.1",
     "@tailwindcss/forms": "0.5.3",
     "@tailwindcss/typography": "0.5.9",
@@ -64,7 +64,7 @@
     "husky-init": "^8.0.0",
     "jsqr": "^1.4.0",
     "rxfire": "^6.0.3",
-    "rxjs": "~6.6.0",
+    "rxjs": "^7.5.0",
     "upng-js": "^2.1.0",
     "web-social-share": "9.1.0",
     "zone.js": "^0.11.6"
