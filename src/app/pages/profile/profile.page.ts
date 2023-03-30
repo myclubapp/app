@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit } from "@angular/core";
 import { combineLatest, Observable, of } from "rxjs";
+import { Device, DeviceId, DeviceInfo } from '@capacitor/device';
 
 // import firebase from 'firebase/compat/app';
 import { User } from "@angular/fire/auth";
@@ -39,9 +40,11 @@ export class ProfilePage implements OnInit, AfterViewInit {
   userProfile$: Observable<Profile>;
   clubRequestList: any[] = [];
   teamRequestList: any[] = [];
-  readonly VAPID_PUBLIC_KEY =
+  pushDeviceList: any[] = [];
+  private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
-
+  deviceId: DeviceId;
+  deviceInfo: DeviceInfo;
   constructor(
     private readonly swPush: SwPush,
     private readonly authService: AuthService,
@@ -53,11 +56,16 @@ export class ProfilePage implements OnInit, AfterViewInit {
     private readonly menuCtrl: MenuController
   ) {
     this.menuCtrl.enable(true, "menu");
+   
   }
 
   async ngOnInit() {
     this.getClubRequestList();
     this.getTeamRequestList();
+    this.getPushDeviceList();
+    this.deviceId = await Device.getId();
+    this.deviceInfo = await Device.getInfo();
+    console.log(this.deviceInfo);
   }
 
   ngAfterViewInit(): void {
@@ -130,6 +138,15 @@ export class ProfilePage implements OnInit, AfterViewInit {
         this.teamRequestList = [...new Set([].concat(...requestListNew))];
         request$.unsubscribe();
       });
+  }
+
+  async getPushDeviceList() {
+    this.profileService.getPushDeviceList().subscribe(pushDeviceData=>{
+
+      pushDeviceData.map(element=>{
+        this.pushDeviceList.push(element);
+      })
+    });
   }
   /*
   async getClubList(){
@@ -223,7 +240,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   async togglePush(event) {
-    console.log(event);
+    // console.log(event);
     await this.profileService
     .changeSettingsPush(event.detail.checked);
     if (event.detail.checked){
@@ -292,26 +309,28 @@ async alertAskForPush() {
 
 
   async subscribeToNotifications() {
-    const sub: PushSubscription = await this.swPush.requestSubscription({
-      serverPublicKey: this.VAPID_PUBLIC_KEY,
-    });
-
-    console.log(sub.toJSON());
-    if (sub){
-      const profileUpdate = await this.profileService
-      .addPushSubscriber(sub)
-      .catch((err) => {
-        console.error("Could not subscribe to notifications", err);
-        this.errorPushMessageEnable("Could not subscribe to notifications");
+      try{
+        const sub: PushSubscription = await this.swPush.requestSubscription({
+          serverPublicKey: this.VAPID_PUBLIC_KEY,
+        })
+        console.log(sub.toJSON());
+        if (sub && this.deviceId){
+          const profileUpdate = await this.profileService
+          .addPushSubscriber(sub, this.deviceId, this.deviceInfo)
+          .catch((err) => {
+            console.error("Could not subscribe to notifications", err);
+            this.errorPushMessageEnable("Could not subscribe to notifications");
+          }
+          );
+          this.toastActionSaved();
+        } else {
+          console.log("error push token register");
+          this.errorPushMessageEnable("Error push token register");
+        }
+      } catch(err){
+        this.alertPushNotSupported();
       }
-      );
-      this.toastActionSaved();
-    } else {
-      console.log("error push token register");
-      this.errorPushMessageEnable("Error push token register");
-    }
-
-  }
+    };
   async presentDeleteProfile() {
     const toast = await this.toastController.create({
       message: "Profil erfolgreich gelöscht",
@@ -333,4 +352,10 @@ async alertAskForPush() {
 
     await toast.present();
   }
+
+  ngOnDestroy() {
+
+    this.swPush.unsubscribe();
+  }
+
 }
