@@ -75,8 +75,8 @@ export class UserProfileService {
     const auth = getAuth();
     const user = auth.currentUser;
     const pushObject = JSON.stringify(sub);
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}/push/${deviceId}`);
-    return await updateDoc(userProfileRef, { pushObject : pushObject, updated: new Date() });
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}/push/${deviceId.uuid}`);
+    return await setDoc(userProfileRef, { pushObject : pushObject, updated: new Date() });
   }
 
   async changeSettingsPush(state: boolean) {
