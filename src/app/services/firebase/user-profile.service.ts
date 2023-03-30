@@ -27,6 +27,7 @@ import { Profile } from "../../models/user";
 import { Photo } from "@capacitor/camera";
 
 import { AuthService } from "../auth.service";
+import { DeviceId } from "@capacitor/device";
 
 @Injectable({
   providedIn: "root",
@@ -70,12 +71,12 @@ export class UserProfileService {
     return await updateDoc(userProfileRef, { userProfile });
   }
 
-  async addPushSubscriber(sub: PushSubscription) {
+  async addPushSubscriber(sub: PushSubscription, deviceId: DeviceId) {
     const auth = getAuth();
     const user = auth.currentUser;
     const pushObject = JSON.stringify(sub);
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return await updateDoc(userProfileRef, { pushObject : pushObject });
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}/push/${deviceId}`);
+    return await updateDoc(userProfileRef, { pushObject : pushObject, updated: new Date() });
   }
 
   async changeSettingsPush(state: boolean) {

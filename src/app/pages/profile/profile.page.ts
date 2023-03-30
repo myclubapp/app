@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit } from "@angular/core";
 import { combineLatest, Observable, of } from "rxjs";
+import { Device, DeviceId } from '@capacitor/device';
 
 // import firebase from 'firebase/compat/app';
 import { User } from "@angular/fire/auth";
@@ -223,7 +224,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   async togglePush(event) {
-    console.log(event);
+    // console.log(event);
     await this.profileService
     .changeSettingsPush(event.detail.checked);
     if (event.detail.checked){
@@ -292,14 +293,18 @@ async alertAskForPush() {
 
 
   async subscribeToNotifications() {
+    const deviceId: DeviceId = await Device.getId();
     const sub: PushSubscription = await this.swPush.requestSubscription({
       serverPublicKey: this.VAPID_PUBLIC_KEY,
+    }).catch(err=>{
+      console.error("Could not subscribe to notifications", err);
+      this.errorPushMessageEnable("Could not subscribe to notifications");
     });
 
     console.log(sub.toJSON());
-    if (sub){
+    if (sub && deviceId){
       const profileUpdate = await this.profileService
-      .addPushSubscriber(sub)
+      .addPushSubscriber(sub, deviceId)
       .catch((err) => {
         console.error("Could not subscribe to notifications", err);
         this.errorPushMessageEnable("Could not subscribe to notifications");
