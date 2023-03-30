@@ -12,6 +12,7 @@ import {
   updateDoc,
   DocumentReference,
   setDoc,
+  DocumentData,
 } from "@angular/fire/firestore";
 import {
   Storage,
@@ -67,8 +68,22 @@ export class UserProfileService {
   }
 
   async setUserProfile(userProfile: Profile) {
-    const userProfileRef = doc(this.firestore, `userProfile/${userProfile.id}`);
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return await updateDoc(userProfileRef, { userProfile });
+  }
+
+  getPushDeviceList(): Observable<DocumentData[]> {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const pushDeviceListRef = collection(
+      this.firestore,
+      `userProfile/${user.uid}/push`
+    );
+    return collectionData(pushDeviceListRef, {
+      idField: "id",
+    });
   }
 
   async addPushSubscriber(sub: PushSubscription, deviceId: DeviceId) {

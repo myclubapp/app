@@ -40,9 +40,10 @@ export class ProfilePage implements OnInit, AfterViewInit {
   userProfile$: Observable<Profile>;
   clubRequestList: any[] = [];
   teamRequestList: any[] = [];
-  readonly VAPID_PUBLIC_KEY =
+  pushDeviceList: any[] = [];
+  private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
-
+  deviceId: DeviceId;
   constructor(
     private readonly swPush: SwPush,
     private readonly authService: AuthService,
@@ -54,11 +55,14 @@ export class ProfilePage implements OnInit, AfterViewInit {
     private readonly menuCtrl: MenuController
   ) {
     this.menuCtrl.enable(true, "menu");
+   
   }
 
   async ngOnInit() {
     this.getClubRequestList();
     this.getTeamRequestList();
+    this.getPushDeviceList();
+    this.deviceId = await Device.getId();
   }
 
   ngAfterViewInit(): void {
@@ -131,6 +135,15 @@ export class ProfilePage implements OnInit, AfterViewInit {
         this.teamRequestList = [...new Set([].concat(...requestListNew))];
         request$.unsubscribe();
       });
+  }
+
+  async getPushDeviceList() {
+    this.profileService.getPushDeviceList().subscribe(pushDeviceData=>{
+
+      pushDeviceData.map(element=>{
+        this.pushDeviceList.push(element);
+      })
+    });
   }
   /*
   async getClubList(){
@@ -293,15 +306,14 @@ async alertAskForPush() {
 
 
   async subscribeToNotifications() {
-    const deviceId: DeviceId = await Device.getId();
       try{
         const sub: PushSubscription = await this.swPush.requestSubscription({
           serverPublicKey: this.VAPID_PUBLIC_KEY,
         })
         console.log(sub.toJSON());
-        if (sub && deviceId){
+        if (sub && this.deviceId){
           const profileUpdate = await this.profileService
-          .addPushSubscriber(sub, deviceId)
+          .addPushSubscriber(sub, this.deviceId)
           .catch((err) => {
             console.error("Could not subscribe to notifications", err);
             this.errorPushMessageEnable("Could not subscribe to notifications");
@@ -337,4 +349,10 @@ async alertAskForPush() {
 
     await toast.present();
   }
+
+  ngOnDestroy() {
+
+    this.swPush.unsubscribe();
+  }
+
 }

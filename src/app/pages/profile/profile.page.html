@@ -95,9 +95,21 @@
         <ion-label> Einstellungen </ion-label>
       </ion-list-header>
       <ion-item>
+        <ion-label position="stacked"> Meine Geräte Id </ion-label>
+        <ion-input readonly value="{{deviceId.uuid}}"></ion-input>
+      </ion-item>
+      <ion-item>
         <ion-label position="stacked"> Push-Nachrichten </ion-label>
         <ion-toggle value="{{userProfile.settingsPush}}" slot="end" [checked]="true" [enableOnOffLabels]="true" (ionChange)="togglePush($event)"></ion-toggle>
       </ion-item>
+
+      <ion-list>
+        <ion-item *ngFor="let device of pushDeviceList">
+          <ion-label position="stacked"> {{device?.id}} </ion-label>
+          <ion-input readonly value="{{device?.id}}"></ion-input>
+        </ion-item>
+      </ion-list>
+
       <ion-item>
         <ion-label position="stacked"> E-Mail-Nachrichten </ion-label>
         <ion-toggle value="{{userProfile.settingsEmail}}" slot="end" [checked]="true" [enableOnOffLabels]="true" (ionChange)="toggleEmail($event)"></ion-toggle>
@@ -109,6 +121,9 @@
         </ion-button>
       </ion-item>
     </ion-list>
+
+
+
   </ng-container>
 
   <!-- 
