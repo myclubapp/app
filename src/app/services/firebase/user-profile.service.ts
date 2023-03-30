@@ -28,7 +28,7 @@ import { Profile } from "../../models/user";
 import { Photo } from "@capacitor/camera";
 
 import { AuthService } from "../auth.service";
-import { DeviceId } from "@capacitor/device";
+import { DeviceId, DeviceInfo } from "@capacitor/device";
 
 @Injectable({
   providedIn: "root",
@@ -86,12 +86,19 @@ export class UserProfileService {
     });
   }
 
-  async addPushSubscriber(sub: PushSubscription, deviceId: DeviceId) {
+  async addPushSubscriber(sub: PushSubscription, deviceId: DeviceId, deviceInfo: DeviceInfo) {
     const auth = getAuth();
     const user = auth.currentUser;
     const pushObject = JSON.stringify(sub);
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}/push/${deviceId.uuid}`);
-    return await setDoc(userProfileRef, { pushObject : pushObject, updated: new Date() });
+    return await setDoc(userProfileRef, 
+      { pushObject : pushObject, 
+        updated: new Date(), 
+        model: deviceInfo.model  || "", 
+        operatingSystem: deviceInfo.operatingSystem  || "", 
+        osVersion: deviceInfo.osVersion || "", 
+        platform: deviceInfo.platform || ""
+      });
   }
 
   async changeSettingsPush(state: boolean) {

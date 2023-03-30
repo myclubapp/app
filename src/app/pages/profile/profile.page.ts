@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit } from "@angular/core";
 import { combineLatest, Observable, of } from "rxjs";
-import { Device, DeviceId } from '@capacitor/device';
+import { Device, DeviceId, DeviceInfo } from '@capacitor/device';
 
 // import firebase from 'firebase/compat/app';
 import { User } from "@angular/fire/auth";
@@ -44,6 +44,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
   deviceId: DeviceId;
+  deviceInfo: DeviceInfo;
   constructor(
     private readonly swPush: SwPush,
     private readonly authService: AuthService,
@@ -63,6 +64,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.getTeamRequestList();
     this.getPushDeviceList();
     this.deviceId = await Device.getId();
+    this.deviceInfo = await Device.getInfo();
+    console.log(this.deviceInfo);
   }
 
   ngAfterViewInit(): void {
@@ -313,7 +316,7 @@ async alertAskForPush() {
         console.log(sub.toJSON());
         if (sub && this.deviceId){
           const profileUpdate = await this.profileService
-          .addPushSubscriber(sub, this.deviceId)
+          .addPushSubscriber(sub, this.deviceId, this.deviceInfo)
           .catch((err) => {
             console.error("Could not subscribe to notifications", err);
             this.errorPushMessageEnable("Could not subscribe to notifications");

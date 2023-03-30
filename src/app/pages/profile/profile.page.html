@@ -104,6 +104,9 @@
       </ion-item>
 
       <ion-list>
+        <ion-list-header>
+          Registrierte Push Geräte
+        </ion-list-header>
         <ion-item *ngFor="let device of pushDeviceList">
           <ion-label position="stacked"> {{device?.id}} </ion-label>
           <ion-input readonly value="{{device?.id}}"></ion-input>
