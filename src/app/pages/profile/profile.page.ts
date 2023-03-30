@@ -294,29 +294,28 @@ async alertAskForPush() {
 
   async subscribeToNotifications() {
     const deviceId: DeviceId = await Device.getId();
-    if (this.swPush.isEnabled) {
-      const sub: PushSubscription = await this.swPush.requestSubscription({
-        serverPublicKey: this.VAPID_PUBLIC_KEY,
-      })
-      console.log(sub.toJSON());
-      if (sub && deviceId){
-        const profileUpdate = await this.profileService
-        .addPushSubscriber(sub, deviceId)
-        .catch((err) => {
-          console.error("Could not subscribe to notifications", err);
-          this.errorPushMessageEnable("Could not subscribe to notifications");
+      try{
+        const sub: PushSubscription = await this.swPush.requestSubscription({
+          serverPublicKey: this.VAPID_PUBLIC_KEY,
+        })
+        console.log(sub.toJSON());
+        if (sub && deviceId){
+          const profileUpdate = await this.profileService
+          .addPushSubscriber(sub, deviceId)
+          .catch((err) => {
+            console.error("Could not subscribe to notifications", err);
+            this.errorPushMessageEnable("Could not subscribe to notifications");
+          }
+          );
+          this.toastActionSaved();
+        } else {
+          console.log("error push token register");
+          this.errorPushMessageEnable("Error push token register");
         }
-        );
-        this.toastActionSaved();
-      } else {
-        console.log("error push token register");
-        this.errorPushMessageEnable("Error push token register");
+      } catch(err){
+        this.alertPushNotSupported();
       }
-    } else {
-
-    }
-
-  }
+    };
   async presentDeleteProfile() {
     const toast = await this.toastController.create({
       message: "Profil erfolgreich gelöscht",
