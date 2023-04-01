@@ -6,7 +6,7 @@ import {
   MenuController,
   ToastController,
 } from "@ionic/angular";
-import { User } from "firebase/auth";
+import { User } from "@angular/fire/auth";
 import { of, combineLatest } from "rxjs";
 import { switchMap, map } from "rxjs/operators";
 import { Event } from "src/app/models/event";

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 
-import { limit, Timestamp } from "firebase/firestore";
 import {
+  limit, Timestamp,
   Firestore,
   addDoc,
   collection,

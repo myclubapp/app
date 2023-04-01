@@ -4,7 +4,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { switchMap, map } from "rxjs/operators";
 import { of, combineLatest } from "rxjs";
-import { User } from "firebase/auth";
+import { User } from "@angular/fire/auth";
 import { ClubPage } from "../club/club.page";
 import {
   IonRouterOutlet,
@@ -112,7 +112,7 @@ export class ClubListPage implements OnInit {
         {
           text: "auswählen",
           role: "confirm",
-          handler: (data) => {
+          handler: (data:any) => {
             console.log(data);
             this.fbService
               .setClubRequest(data)

@@ -183,8 +183,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
     var imageUrl = image.base64String;
     console.log(image);
 
-    const user: User = await this.authService.getUser();
-    await this.profileService.setUserProfilePicture(user, image);
+    // const user: User = await this.authService.getUser();
+    await this.profileService.setUserProfilePicture(image);
     await this.presentToastTakePicture();
   }
 
@@ -253,6 +253,13 @@ export class ProfilePage implements OnInit, AfterViewInit {
   async toggleEmail(event) {
     await this.profileService
     .changeSettingsEmail(event.detail.checked);
+    console.log("email");
+    this.toastActionSaved();
+  }
+
+  async toggleEmailReporting(event) {
+    await this.profileService
+    .changeSettingsEmailReporting(event.detail.checked);
     console.log("email");
     this.toastActionSaved();
   }

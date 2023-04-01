@@ -11,6 +11,7 @@ export interface Profile {
   phone: number
   settingsPush: boolean
   settingsEmail: boolean
+  settingsEmailReporting: boolean
 
   // Business Logic Fields
   isAdmin: boolean

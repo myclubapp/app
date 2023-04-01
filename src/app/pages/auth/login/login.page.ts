@@ -11,7 +11,6 @@ import {
 } from "@angular/forms";
 import { AlertController, MenuController } from "@ionic/angular";
 import { AuthService } from "src/app/services/auth.service";
-import firebase from "firebase/compat/app";
 
 @Component({
   selector: "app-login",
@@ -67,6 +66,7 @@ export class LoginPage implements OnInit {
           alert.present();
         });
       console.error(err.message);
+      console.log(err);
     }
   }
 }

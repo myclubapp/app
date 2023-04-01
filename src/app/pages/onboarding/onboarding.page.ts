@@ -82,7 +82,7 @@ export class OnboardingPage implements OnInit {
       buttons: [
         {
           text: "JA",
-          handler: async (data) => {
+          handler: async (data:any) => {
             await this.fbService.setClubRequest(club.id);
             await this.presentRequestToast();
             await this.router.navigateByUrl("logout", {});

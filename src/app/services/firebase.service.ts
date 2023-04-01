@@ -19,9 +19,8 @@ import {
   getDownloadURL,
 } from "@angular/fire/storage";
 
-// import firebase from 'firebase/compat/app';
-import { Observable, Observer } from "rxjs";
 
+import { Observable, Observer } from "rxjs";
 import {
   Club,
   SwissHandballClub,
@@ -33,7 +32,7 @@ import { Team } from "../models/team";
 import { User, UserProfile } from "@angular/fire/auth";
 
 import { AuthService } from "src/app/services/auth.service";
-import { DocumentData, query, where } from "firebase/firestore";
+import { DocumentData, query, where } from "@angular/fire/firestore";
 
 @Injectable({
   providedIn: "root",

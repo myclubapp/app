@@ -18,11 +18,10 @@ import {
   faLinkedin,
 } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faCopy } from "@fortawesome/free-solid-svg-icons";
-// import { SwissunihockeyService } from 'src/app/services/backend/swissunihockey.service';
 
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { User } from "firebase/auth";
+import { User } from "@angular/fire/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
 import { Observable, of, combineLatest, Subscription } from "rxjs";
@@ -118,7 +117,7 @@ export class NewsPage implements OnInit {
             })
           );
         }),
-        switchMap((allClubDetails) => {
+        switchMap((allClubDetails:any) => {
           return combineLatest(
             allClubDetails.map((clubDetail: Club) => {
               return this.newsService.getNewsRef(clubDetail.type);
@@ -129,7 +128,7 @@ export class NewsPage implements OnInit {
           return allClubNews;
         })
       )
-      .subscribe((data) => {
+      .subscribe((data:any) => {
         // console.log(data);
         newsListNew = data;
         this.newsList = [...new Set(newsListNew.concat(...this.newsList))];

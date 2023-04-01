@@ -48,7 +48,7 @@ export class TeamPage implements OnInit {
           )
         )
       )
-      .subscribe((data) => {
+      .subscribe((data:any) => {
         // console.log(data);
 
         this.memberList = [];
@@ -72,7 +72,7 @@ export class TeamPage implements OnInit {
           )
         )
       )
-      .subscribe((data) => {
+      .subscribe((data:any) => {
         // console.log(data);
 
         this.adminList = [];
@@ -97,7 +97,7 @@ export class TeamPage implements OnInit {
           )
         )
       )
-      .subscribe((data) => {
+      .subscribe((data:any) => {
         //console.log(data);
         this.requestList = [];
         for (const member of data) {

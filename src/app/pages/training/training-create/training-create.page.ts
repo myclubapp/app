@@ -1,6 +1,5 @@
 import { Component, OnInit } from "@angular/core";
 import { ModalController, NavParams } from "@ionic/angular";
-import { Timestamp } from "firebase/firestore";
 import { Training } from "src/app/models/training";
 import { TrainingService } from "src/app/services/firebase/training.service";
 

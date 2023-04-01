@@ -6,8 +6,7 @@ import {
   ModalController,
   ToastController,
 } from "@ionic/angular";
-import { User } from "firebase/auth";
-import { onSnapshot } from "firebase/firestore";
+  import { User } from "@angular/fire/auth";
 import { of, combineLatest, Subscription, from, Observable } from "rxjs";
 import { switchMap, map, flatMap, tap, mapTo } from "rxjs/operators";
 import { Game } from "src/app/models/game";
