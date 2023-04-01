@@ -31,6 +31,7 @@ import { TrainingDetailPage } from './pages/training/training-detail/training-de
 import { EventDetailPage } from './pages/event/event-detail/event-detail.page';
 import { ClubPage } from './pages/club/club.page';
 import { TeamPage } from './pages/team/team.page';
+import { provideMessaging,getMessaging } from '@angular/fire/messaging';
 
 @NgModule({
   declarations: [
@@ -58,23 +59,11 @@ import { TeamPage } from './pages/team/team.page';
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),
     provideAuth(() => getAuth()),
-    provideStorage(() => getStorage())
-    /* provideAuth(() => {
-           const auth =  getAuth();
-           setPersistence(auth, inMemoryPersistence);
-           // setPersistence(auth, inMemoryPersistence);
-           // setPersistence(auth,browserLocalPersistence)
-           // setPersistence(auth, indexedDBLocalPersistence);
-           // setPersistence(auth, browserSessionPersistence);
-           return auth;
-         }), */
+    provideStorage(() => getStorage()),
+    provideMessaging(() => getMessaging())
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
-    // { provide: PERSISTENCE, useValue: 'local' }, // https://firebase.google.com/docs/auth/web/auth-state-persistence
-    // { provide: LANGUAGE_CODE, useValue: 'de' },
-    // { provide: USE_DEVICE_LANGUAGE, useValue: true },
-    // { provide: TENANT_ID, useValue: 'tenant-id-app-one' },
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

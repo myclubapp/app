@@ -21,8 +21,6 @@ import {
   getDownloadURL,
 } from "@angular/fire/storage";
 
-import { getAuth } from "@angular/fire/auth";
-
 import { Observable } from "rxjs";
 import { Profile } from "../../models/user";
 import { Photo } from "@capacitor/camera";

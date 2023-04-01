@@ -6,7 +6,7 @@ import { Geolocation, PermissionStatus } from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { combineLatest, Observable, of, Subscriber, Subscription } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
-import { User } from "firebase/auth";
+import { User } from "@angular/fire/auth";
 import { switchMap } from "rxjs/operators";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { environment } from "src/environments/environment";

@@ -22,7 +22,7 @@ import { faEnvelope, faCopy } from "@fortawesome/free-solid-svg-icons";
 
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { User } from "firebase/auth";
+import { User } from "@angular/fire/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
 import { Observable, of, combineLatest, Subscription } from "rxjs";

@@ -4,7 +4,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { switchMap, map } from "rxjs/operators";
 import { of, combineLatest } from "rxjs";
-import { User } from "firebase/auth";
+import { User } from "@angular/fire/auth";
 import {
   AlertController,
   IonRouterOutlet,

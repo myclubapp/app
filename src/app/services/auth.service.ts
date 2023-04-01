@@ -15,7 +15,7 @@ import {
   signOut,
   updateProfile,
   UserCredential,
-  RecaptchaVerifier,
+  deleteUser,
   User,
 } from "@angular/fire/auth";
 import { Observable } from "rxjs";
@@ -23,17 +23,9 @@ import { Observable } from "rxjs";
 // import firebase from 'firebase/compat/app';
 import {
   Firestore,
-  addDoc,
-  collection,
-  collectionData,
   doc,
-  docData,
-  deleteDoc,
-  updateDoc,
-  DocumentReference,
   setDoc,
 } from "@angular/fire/firestore";
-import { deleteUser } from "firebase/auth";
 
 /******************************************************************************************
  *  DOCS https://github.com/angular/angularfire/blob/master/docs/auth/getting-started.md

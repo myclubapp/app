@@ -1,15 +1,13 @@
 import { Component } from "@angular/core";
 import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
-import { AlertController, ModalController } from "@ionic/angular";
-import { getAuth, onAuthStateChanged, getIdToken, connectAuthEmulator } from "firebase/auth";
+import { AlertController } from "@ionic/angular";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
 import { Router } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { Subscription } from "rxjs";
-// import { UserProfileService } from "./services/firebase/user-profile.service";
-// import { getMessaging, onMessage } from "firebase/messaging";
+import { onAuthStateChanged } from "@angular/fire/auth";
 
 @Component({
   selector: "app-root",
