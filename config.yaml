@@ -1,0 +1,5 @@
+platforms:
+  android:
+    versionName: 5.2.1
+  ios:
+    version: 13.0

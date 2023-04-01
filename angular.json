@@ -33,7 +33,6 @@
             ],
             "styles": ["src/theme/variables.scss", "src/global.scss"],
             "scripts": [],
-            "aot": false,
             "vendorChunk": true,
             "extractLicenses": false,
             "buildOptimizer": false,
@@ -61,26 +60,17 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/default",
                   "output": "./"
-                },
-                {
-                  "glob": "tailwind.config.js",
-                  "input": "src/custom-themes/default",
-                  "output": "./"
                 }
               ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
-                },
-                {
-                  "replace": "./tailwind.config.js",
-                  "with": "src/custom-themes/default/tailwind.config.js"
                 }
               ],
               "styles": [
                 "src/custom-themes/default/variables.scss",
-                "src/global.scss"
+                "src/custom-themes/default/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -115,26 +105,17 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/default",
                   "output": "./"
-                },
-                {
-                  "glob": "tailwind.config.js",
-                  "input": "src/custom-themes/default",
-                  "output": "./"
                 }
               ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
-                },
-                {
-                  "replace": "./tailwind.config.js",
-                  "with": "src/custom-themes/default/tailwind.config.js"
                 }
               ],
               "styles": [
                 "src/custom-themes/default/variables.scss",
-                "src/global.scss"
+                "src/custom-themes/default/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -169,26 +150,17 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/app-kadetten-unihockey",
                   "output": "./"
-                },
-                {
-                  "glob": "tailwind.config.js",
-                  "input": "src/custom-themes/app-kadetten-unihockey",
-                  "output": "./"
                 }
               ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
-                },
-                {
-                  "replace": "./tailwind.config.js",
-                  "with": "src/custom-themes/app-kadetten-unihockey/tailwind.config.js"
                 }
               ],
               "styles": [
                 "src/custom-themes/app-kadetten-unihockey/variables.scss",
-                "src/global.scss"
+                "src/custom-themes/app-kadetten-unihockey/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -223,10 +195,50 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/app-uhc-win-u",
                   "output": "./"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "styles": [
+                "src/custom-themes/app-uhc-win-u/variables.scss",
+                "src/custom-themes/app-uhc-win-u/global.scss"
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            },
+            "app-stv-spreitenbach": {
+              "index": "src/custom-themes/app-stv-spreitenbach/index.html",
+              "assets": [
+                {
+                  "glob": "**/*.svg",
+                  "input": "node_modules/ionicons/dist/ionicons/svg",
+                  "output": "./svg"
                 },
                 {
-                  "glob": "tailwind.config.js",
-                  "input": "src/custom-themes/app-uhc-win-u",
+                  "glob": "**/*",
+                  "input": "src/custom-themes/app-stv-spreitenbach/assets",
+                  "output": "./assets"
+                },
+                {
+                  "glob": "manifest.webmanifest",
+                  "input": "src/custom-themes/app-stv-spreitenbach",
                   "output": "./"
                 }
               ],
@@ -234,15 +246,56 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
-                },
-                {
-                  "replace": "./tailwind.config.js",
-                  "with": "src/custom-themes/app-uhc-win-u/tailwind.config.js"
                 }
               ],
               "styles": [
-                "src/custom-themes/app-uhc-win-u/variables.scss",
-                "src/global.scss"
+                "src/custom-themes/app-stv-spreitenbach/variables.scss",
+                "src/custom-themes/app-stv-spreitenbach/global.scss"
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            },
+            "app-vbc-schaffhausen": {
+              "index": "src/custom-themes/app-vbc-schaffhausen/index.html",
+              "assets": [
+                {
+                  "glob": "**/*.svg",
+                  "input": "node_modules/ionicons/dist/ionicons/svg",
+                  "output": "./svg"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "src/custom-themes/app-vbc-schaffhausen/assets",
+                  "output": "./assets"
+                },
+                {
+                  "glob": "manifest.webmanifest",
+                  "input": "src/custom-themes/app-vbc-schaffhausen",
+                  "output": "./"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "styles": [
+                "src/custom-themes/app-vbc-schaffhausen/variables.scss",
+                "src/custom-themes/app-vbc-schaffhausen/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -265,6 +318,7 @@
             }
           }
         },
+
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {

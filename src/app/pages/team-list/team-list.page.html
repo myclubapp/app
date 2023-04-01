@@ -28,8 +28,8 @@
             <ion-card (click)="openModal(team)">
               <img src="{{team.logo}}" />
               <ion-card-header>
-                <ion-card-subtitle> {{team.liga}} </ion-card-subtitle>
-                <ion-card-title> {{team.name}} </ion-card-title>
+                <ion-card-subtitle> {{team.name}} </ion-card-subtitle>
+                <ion-card-title> {{team.liga}} </ion-card-title>
               </ion-card-header>
 
               <ion-card-content>
@@ -44,7 +44,7 @@
 
   <!-- fab placed to the bottom end -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button>
+    <ion-fab-button (click)="joinTeamAlert()">
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>

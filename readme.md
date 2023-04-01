@@ -20,6 +20,7 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 
 ## Prettier Setup
 
+`npm i husky-init`
 `npx husky-init; npm install --save-dev pretty-quick; npx husky set .husky/pre-commit "npx pretty-quick --staged";`
 
 ## Create App Icon & Splash Screen
@@ -41,6 +42,7 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 
 ## Installed packages
 
+- Trapeze for native configuration
 - Tailwind CSS (`npm install -D tailwindcss@latest postcss autoprefixer`)
 - Capacitor JS (V3)
 - Ionicframework (V6)
@@ -63,6 +65,12 @@ Run my-club within your own domain and use your own design(css)
 
 - Kadetten Unihockey Schaffhausen [Link](https://kadetten-unihockey.web.app)
 - UHC Winterthur United [Link](https://uhc-win-u.web.app)
+- STV Spreitenbach [Link](https://stv-spreitenbach.web.app)
+
+- VBC Schaffhausen [Link](https://vbc-schaffhausen.web.app)
+
+- swissunihockey [Link](https://my-unihockey.web.app)
+- swissvolley [Link](https://my-swissvolley.web.app)
 
 ## General new custom app
 
@@ -71,6 +79,8 @@ Go to CUSTOM_THEMES and copy default folder. Then create icons and the following
 - index.html
 - tailwind.config.js [This is still an issue]
 - webmanifest.manifest
+
+adjust theme color, names and path accordingly app-FIREBASE_SITE_MYAP
 
 ### Add Default Sites
 
@@ -87,13 +97,17 @@ firebase target:remove hosting FIREBASE_SITE_MYAPP
 ### Icon
 
 Run commands to generate custom icons:
+
 pwa-asset-generator ./resources/app-CUSTOM_icon.png --splash-only --dark-mode -p 0%
 pwa-asset-generator ./resources/app-CUSTOM_icon.png --splash-only -p 0%
 pwa-asset-generator ./resources/app-CUSTOM_icon.png --icon-only --dark-mode -p 0%
+pwa-asset-generator ./resources/app-CUSTOM_icon.png --icon-only -p 0%
 
-then, copy icons to src/custom_themes/app-CUSTOM/assets
+then, have a look in the directory or copy icons to src/custom_themes/app-CUSTOM/assets
 
 - /icons
 - /splash
 
 Also upload login.jpg to /bg and create favicon.
+
+https://favicon.io/favicon-converter/

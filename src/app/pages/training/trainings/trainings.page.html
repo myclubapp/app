@@ -58,11 +58,15 @@
           <ion-label>
             <h3>
               <ion-icon slot="icon-only" name="home"></ion-icon>:
-              {{training.location}} {{training.city}}
+              {{training.streetAndNumber}} {{training.city}}
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="time"></ion-icon>
-              {{training.date}} {{training.time}}
+              {{training.date}} {{training.timeFrom}}
+            </h3>
+            <h3>
+              <ion-icon slot="icon-only" name="time"></ion-icon>
+              {{training.date}} {{training.timeTo}}
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="trophy"></ion-icon>
@@ -145,12 +149,17 @@
           <ion-label>
             <h3>
               <ion-icon slot="icon-only" name="home"></ion-icon>:
-              {{training.location}} {{training.city}}
+              {{training.streetAndNumber}} {{training.city}}
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="time"></ion-icon>
-              {{training.date}} {{training.time}}
+              {{training.date}} {{training.timeFrom}}
             </h3>
+            <h3>
+              <ion-icon slot="icon-only" name="time"></ion-icon>
+              {{training.date}} {{training.timeTo}}
+            </h3>
+
             <h3>
               <ion-icon slot="icon-only" name="trophy"></ion-icon>
               {{training.liga}} {{training.teamName}}
@@ -189,6 +198,12 @@
       </ion-item-sliding>
     </ion-list>
   </ng-container>
+  <!-- fab placed to the bottom end -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openTrainingCreateModal()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
 <ng-template #loading>
   <ion-list>

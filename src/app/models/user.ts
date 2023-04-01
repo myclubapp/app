@@ -9,6 +9,8 @@ export interface Profile {
   lastName: string
   profilePicture: string
   phone: number
+  settingsPush: boolean
+  settingsEmail: boolean
 
   // Business Logic Fields
   isAdmin: boolean

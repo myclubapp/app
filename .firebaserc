@@ -28,6 +28,12 @@
         ],
         "app-uhc-win-u": [
           "uhc-win-u"
+        ],
+        "app-stv-spreitenbach": [
+          "stv-spreitenbach"
+        ],
+        "app-vbc-schaffhausen": [
+          "vbc-schaffhausen"
         ]
       }
     }

@@ -1,4 +1,4 @@
-name: Build myclub App and Deploy on Firebase Hosting
+name: PROD - Build myclub App and Deploy on Firebase Hosting
 on:
   push:
     branches:
@@ -10,8 +10,14 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 16
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
+          npm ci
       - name: Build (Default Unihockey)
         run: npm run build:prod
       - name: Deploy to Firebase
@@ -27,8 +33,14 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 16
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
+          npm ci
       - name: Build app-kadetten-unihockey
         run: npm run build:app-kadetten-unihockey
       - name: Deploy to Firebase
@@ -38,19 +50,71 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
   build_uhc_winu:
-    needs: [build_default, build_kadetten]
+    needs: [build_default]
     name: Build & Deploy UHC Winterthur United App
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 16
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
+          npm ci
       - name: Build app-uhc-win-u
         run: npm run build:app-uhc-win-u
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting:app-uhc-win-u
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  build_stv_spreitenbach:
+    needs: [build_default]
+    name: Build & Deploy STV Spreitenbach App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 16
+      - name: Install Dependencies
+        run: |
+          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
+          npm ci
+      - name: Build app-stv-spreitenbach
+        run: npm run build:app-stv-spreitenbach
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting:app-stv-spreitenbach
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  build_vbc_schaffhausen:
+    needs: [build_default]
+    name: Build & Deploy VBC Schaffhausen App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 16
+      - name: Install Dependencies
+        run: |
+          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
+          npm ci
+      - name: Build app-vbc-schaffhausen
+        run: npm run build:app-vbc-schaffhausen
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting:app-vbc-schaffhausen
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

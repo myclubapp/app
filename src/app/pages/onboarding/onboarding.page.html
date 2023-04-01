@@ -1,18 +1,78 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>Club beitreten</ion-title>
+    <ion-buttons slot="start"> </ion-buttons>
+    <ion-title>Profil einrichten</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Club beitreten</ion-title>
+      <ion-title size="large">Profil einrichten</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <ion-searchbar
+    [debounce]="1000"
+    (ionChange)="handleChange($event)"
+    animated="true"
+    search-icon="search-circle"
+    placeholder="Nach Club suchen"
+  ></ion-searchbar>
+  <ion-list>
+    <ion-item *ngFor="let club of clubList" (click)="joinClub(club)" button>
+      <ion-avatar slot="start">
+        <img alt="{{club.name}}" src="{{club.logo}}" />
+      </ion-avatar>
+      <ion-label>{{club.name}} </ion-label
+      ><ion-badge slot="end" *ngIf="club.active">my club</ion-badge>
+    </ion-item>
+
+    <ion-item
+      *ngFor="let club of activeClubList"
+      (click)="joinClub(club)"
+      button
+    >
+      <ion-avatar slot="start">
+        <img alt="{{club.name}}" src="{{club.logo}}" />
+      </ion-avatar>
+      <ion-label>{{club.name}} </ion-label
+      ><ion-badge slot="end" *ngIf="club.active">my club</ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <!--
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Club beitreten</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-select placeholder="Club beitreten">
+        <ion-select-option value="apples">Apples</ion-select-option>
+        <ion-select-option value="oranges">Oranges</ion-select-option>
+        <ion-select-option value="bananas">Bananas</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+  </ion-list>
+
+
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Neuen Club</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-select placeholder="Club beitreten">
+        <ion-select-option value="apples">Apples</ion-select-option>
+        <ion-select-option value="oranges">Oranges</ion-select-option>
+        <ion-select-option value="bananas">Bananas</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+  </ion-list>
+
+  
+
 
   <ion-list>
     <ion-list-header>
@@ -47,4 +107,5 @@
       <ion-icon name="barcode"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+  -->
 </ion-content>

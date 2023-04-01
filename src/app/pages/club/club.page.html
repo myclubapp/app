@@ -14,8 +14,28 @@
     </ion-toolbar>
   </ion-header>
 
+  <ion-list *ngIf="requestList.length > 0">
+    <ion-list-header> Anfragen </ion-list-header>
+    <ion-item *ngFor="let member of requestList">
+      <ion-avatar slot="start">
+        <img src="{{member?.profilePicture}}" />
+      </ion-avatar>
+      <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
+      <ion-button color="danger" (click)="deleteClubRequest(member)" slot="end">
+        <ion-icon icon-only name="trash"></ion-icon>
+      </ion-button>
+      <ion-button
+        color="success"
+        (click)="approveClubRequest(member)"
+        slot="end"
+      >
+        <ion-icon icon-only name="checkmark-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
   <ion-list *ngIf="memberList.length > 0">
-    <ion-list-header> Members </ion-list-header>
+    <ion-list-header> Mitglieder </ion-list-header>
     <ion-item *ngFor="let member of memberList">
       <ion-avatar slot="start">
         <img src="{{member?.profilePicture}}" />
@@ -25,7 +45,7 @@
   </ion-list>
 
   <ion-list *ngIf="adminList.length > 0">
-    <ion-list-header> Administrators </ion-list-header>
+    <ion-list-header> Administratoren </ion-list-header>
     <ion-item *ngFor="let member of adminList">
       <ion-avatar slot="start">
         <img src="{{member?.profilePicture}}" />

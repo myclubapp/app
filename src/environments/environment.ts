@@ -13,8 +13,9 @@ export const environment = {
     authDomain: 'myclubmanagement.firebaseapp.com',
     messagingSenderId: '631527568360',
   },
-  production: false
-}
+  production: false,
+  googleMapsApiKey: "AIzaSyAM5x9P0syj9qtxUmFs98nW0B967xo52Fw",
+};
 
 /*
  * For easier debugging in development mode, you can import the following file

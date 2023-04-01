@@ -1,32 +1,36 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { ModalController, NavParams, ToastController } from '@ionic/angular';
-import { Game } from 'src/app/models/game';
-// import { GoogleMap } from '@capacitor/google-maps';
-import { Geolocation, PermissionStatus } from '@capacitor/geolocation';
-import { ChampionshipService } from 'src/app/services/firebase/championship.service';
-import { combineLatest, Observable, of } from 'rxjs';
-import { AuthService } from 'src/app/services/auth.service';
-import { User } from 'firebase/auth';
-import { switchMap } from 'rxjs/operators';
-import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
+import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
+import { ModalController, NavParams, ToastController } from "@ionic/angular";
+import { Game } from "src/app/models/game";
+import { GoogleMap } from "@capacitor/google-maps";
+import { Geolocation, PermissionStatus } from "@capacitor/geolocation";
+import { ChampionshipService } from "src/app/services/firebase/championship.service";
+import { combineLatest, Observable, of, Subscriber, Subscription } from "rxjs";
+import { AuthService } from "src/app/services/auth.service";
+import { User } from "@angular/fire/auth";
+import { switchMap } from "rxjs/operators";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { environment } from "src/environments/environment";
 
 @Component({
-  selector: 'app-championship-detail',
-  templateUrl: './championship-detail.page.html',
-  styleUrls: ['./championship-detail.page.scss'],
+  selector: "app-championship-detail",
+  templateUrl: "./championship-detail.page.html",
+  styleUrls: ["./championship-detail.page.scss"],
 })
 export class ChampionshipDetailPage implements OnInit {
-  @Input('data') game: Game;
-  /* @ViewChild('map')
-    mapRef: ElementRef<HTMLElement>;
-  newMap: GoogleMap; */
+  @Input("data") game: Game;
+
+  @ViewChild("map")
+  mapRef: ElementRef<HTMLElement>;
+  newMap: GoogleMap;
   // game$: Observable <Game>;
   user: User;
   attendeeList: any[] = [];
   attendeeListTrue: any[] = [];
   attendeeListFalse: any[] = [];
 
-  constructor (
+  gameRef: Subscription;
+
+  constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
     private readonly championshipService: ChampionshipService,
@@ -35,26 +39,25 @@ export class ChampionshipDetailPage implements OnInit {
     private readonly userProfileService: UserProfileService
   ) {}
 
-  ngOnInit () {
+  ngOnInit() {
     this.getUser();
     // GET DATA
-    this.game = this.navParams.get('data');
-    // this.setMap();
+    this.game = this.navParams.get("data");
+    this.setMap();
 
     // GET GAME
-    this.championshipService
+    /* const gameRef = this.championshipService
       .getTeamGameRef(this.game.teamId, this.game.id)
       .subscribe((game) => {
-        game.teamName = this.game.teamName;
+        // game.teamName = this.game.name;
         game.teamId = this.game.teamId;
         this.game = game;
 
         this.game.status = null;
-      })
+      });*/
 
     // GET ATTENDEE LIST
-
-    this.championshipService
+    this.gameRef = this.championshipService
       .getTeamGameRef(this.game.teamId, this.game.id)
       .pipe(
         switchMap((game) =>
@@ -63,26 +66,27 @@ export class ChampionshipDetailPage implements OnInit {
             this.game.id
           )
         ),
-        switchMap((allAttendees: any) =>
-          combineLatest(
-            allAttendees.map((member) =>
-              combineLatest(
+        switchMap((allAttendees: any) => {
+          return combineLatest([
+            allAttendees.map((member) => {
+              return combineLatest([
                 of(member),
-                this.userProfileService.getUserProfileById(member.id)
-              )
-            )
-          )
-        )
+                this.userProfileService.getUserProfileById(member.id),
+              ]);
+            }),
+          ]);
+        })
       )
       .subscribe((data: any) => {
-        const attendeeListNew = []
+        const attendeeListNew = [];
 
         // User ist im Falle keiner Antwort nicht in attendee Liste
         this.game.status = null;
-        for (const attendee of data) {
+        for (const gameData of data) {
           // loop over teams
-          const status = attendee[0]
-          const user = attendee[1]
+          console.log(gameData);
+          const status = gameData[0];
+          const user = gameData[1];
 
           user.status = status.status;
           attendeeListNew.push(user);
@@ -105,10 +109,10 @@ export class ChampionshipDetailPage implements OnInit {
         this.attendeeListFalse = this.attendeeList.filter(
           (element) => element.status === false
         );
-      })
+      });
   }
 
-  async toggle (status: boolean, game: Game) {
+  async toggle(status: boolean, game: Game) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
     );
@@ -121,86 +125,83 @@ export class ChampionshipDetailPage implements OnInit {
     this.presentToast();
   }
 
-  async presentToast () {
+  async presentToast() {
     const toast = await this.toastController.create({
-      message: 'Änderungen gespeichert',
-      color: 'primary',
+      message: "Änderungen gespeichert",
+      color: "primary",
       duration: 2000,
-      position: 'top',
+      position: "top",
     });
     toast.present();
   }
 
-  async getUser () {
+  async getUser() {
     this.user = await this.authService.getUser();
   }
 
-  async close () {
-    return await this.modalCtrl.dismiss(null, 'close');
+  async close() {
+    return await this.modalCtrl.dismiss(null, "close");
   }
 
-  async confirm () {
-    return await this.modalCtrl.dismiss(this.game, 'confirm');
+  async confirm() {
+    return await this.modalCtrl.dismiss(this.game, "confirm");
   }
 
-  /* async setMap () {
-    const apiKey = 'AIzaSyAM5x9P0syj9qtxUmFs98nW0B967xo52Fw';
-
-    const mapRef = document.getElementById('map');
-
+  async setMap() {
+    const mapRef = document.getElementById("map");
     this.newMap = await GoogleMap.create({
-      id: 'my-map-' + this.game.id, // Unique identifier for this map instance
-      element: mapRef, // reference to the capacitor-google-map element
-      apiKey, // Your Google Maps API Key
+      id: "my-map-" + this.game.id, // Unique identifier for this map instance
+      element: mapRef, // mapRef, // reference to the capacitor-google-map element
+      apiKey: environment.googleMapsApiKey, // Your Google Maps API Key
       config: {
         center: {
           // The initial position to be rendered by the map
           lat: Number(this.game.latitude),
-          lng: Number(this.game.longitude)
+          lng: Number(this.game.longitude),
         },
-        zoom: 8 // The initial zoom level to be rendered by the map
-      }
+        zoom: 8, // The initial zoom level to be rendered by the map
+      },
     });
     this.newMap.addMarker({
       title: `${this.game.location} in ${this.game.city}`,
       coordinate: {
         lat: Number(this.game.latitude),
-        lng: Number(this.game.longitude)
+        lng: Number(this.game.longitude),
       },
-      snippet: `${this.game.location} in ${this.game.city}`
-    })
+      snippet: `${this.game.location} in ${this.game.city}`,
+    });
 
     const permission: PermissionStatus = await Geolocation.checkPermissions();
     try {
       if (
-        permission.location === 'denied' ||
-        permission.coarseLocation === 'denied'
+        permission.location === "denied" ||
+        permission.coarseLocation === "denied"
       ) {
-        console.log('no permission');
+        console.log("no permission");
         await Geolocation.requestPermissions();
       }
     } catch (e) {
-      console.log('No Permission Request possible');
+      console.log("No Permission Request possible");
     }
     try {
       const coordinates = await Geolocation.getCurrentPosition();
       if (coordinates.coords.latitude && coordinates.coords.longitude) {
         this.newMap.addMarker({
-          title: 'Meine Position',
+          title: "Meine Position",
           coordinate: {
             lat: coordinates.coords.latitude,
-            lng: coordinates.coords.longitude
+            lng: coordinates.coords.longitude,
           },
           isFlat: true,
-          snippet: 'Meine Position',
+          snippet: "Meine Position",
         });
       }
     } catch (e) {
-      console.log('no coordinates on map');
+      console.log("no coordinates on map");
     }
-  }*/ 
-
-  ngOnDestroy () {
-    // this.newMap.destroy();
+  }
+  ngOnDestroy() {
+    this.gameRef.unsubscribe();
+    this.newMap.destroy();
   }
 }

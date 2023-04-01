@@ -1,54 +1,125 @@
-import { Component, OnInit } from '@angular/core';
-import { Team } from 'src/app/models/team';
-import { AuthService } from 'src/app/services/auth.service';
-import { FirebaseService } from 'src/app/services/firebase.service';
-import { switchMap, map } from 'rxjs/operators';
-import { of, combineLatest } from 'rxjs';
-import { User } from 'firebase/auth';
-import { IonRouterOutlet, ModalController } from '@ionic/angular';
-import { TeamPage } from '../team/team.page';
+import { Component, OnInit } from "@angular/core";
+import { Team } from "src/app/models/team";
+import { AuthService } from "src/app/services/auth.service";
+import { FirebaseService } from "src/app/services/firebase.service";
+import { switchMap, map } from "rxjs/operators";
+import { of, combineLatest } from "rxjs";
+import { User } from "@angular/fire/auth";
+import {
+  AlertController,
+  IonRouterOutlet,
+  ModalController,
+  ToastController,
+} from "@ionic/angular";
+import { TeamPage } from "../team/team.page";
 
 @Component({
-  selector: 'app-team-list',
-  templateUrl: './team-list.page.html',
-  styleUrls: ['./team-list.page.scss'],
+  selector: "app-team-list",
+  templateUrl: "./team-list.page.html",
+  styleUrls: ["./team-list.page.scss"],
 })
 export class TeamListPage implements OnInit {
-  teamList: Team[];
+  teamList: Team[] = [];
+  availableTeamList: Team[] = [];
   skeleton = new Array(12);
 
-  constructor (
+  constructor(
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
     private readonly routerOutlet: IonRouterOutlet,
-    private readonly modalCtrl: ModalController
+    private readonly modalCtrl: ModalController,
+    private readonly alertController: AlertController,
+    private readonly toastController: ToastController
   ) {}
 
-  ngOnInit () {
+  ngOnInit() {
     this.getTeamList();
+    this.getAvailableTeamList();
   }
 
-  async openModal (team: Team) {
+  async openModal(team: Team) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: TeamPage,
       presentingElement: this.routerOutlet.nativeEl,
-      swipeToClose: true,
+      canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        data: team
-      }
+        data: team,
+      },
     });
     modal.present();
 
     const { data, role } = await modal.onWillDismiss();
 
-    if (role === 'confirm') {
+    if (role === "confirm") {
     }
   }
 
-  getTeamList () {
-    this.authService
+  async joinTeamAlert() {
+    let _inputs = [];
+
+    if (this.teamList.length > 0) {
+      for (let team of this.availableTeamList) {
+        for (let myTeam of this.teamList) {
+          if (myTeam.id === team.id) {
+            // club nicht adden
+          } else {
+            _inputs.push({
+              label: team.liga + " " + team.name,
+              type: "radio",
+              value: team.id,
+            });
+          }
+        }
+      }
+    } else {
+      for (let team of this.availableTeamList) {
+        _inputs.push({
+          label: team.liga + " " + team.name,
+          type: "radio",
+          value: team.id,
+        });
+      }
+    }
+    _inputs = _inputs.sort((a, b) => Number(a.id) - Number(b.id));
+    _inputs = [...new Set(_inputs)];
+
+    const alert = await this.alertController.create({
+      header: "Wähle dein Team aus:",
+      buttons: [
+        {
+          text: "auswählen",
+          role: "confirm",
+          handler: async (data:any) => {
+            // console.log(data);
+            this.fbService.setTeamRequest(data);
+            const toast = await this.toastController.create({
+              message: "Anfrage an Team gesendet",
+              color: "primary",
+              duration: 1500,
+              position: "bottom",
+            });
+
+            await toast.present();
+          },
+        },
+        {
+          text: "abbrechen",
+          role: "cancel",
+          handler: () => {
+            console.log("abbrechen");
+          },
+        },
+      ],
+      inputs: _inputs,
+    });
+
+    await alert.present();
+  }
+
+  getTeamList() {
+    const teamList$ = this.authService
       .getUser$()
       .pipe(
         // GET TEAMS
@@ -63,19 +134,77 @@ export class TeamListPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
+        console.log("get user team list");
         console.log(data);
-
-        const teamListNew = []
+        const teamListNew = [];
         for (const team of data) {
           // loop over teams
 
-          const teamDetails = team[1]
+          const teamDetails = team[1];
           teamListNew.push(teamDetails);
         }
-        this.teamList = [...new Set([].concat(...teamListNew))];
         this.teamList = this.teamList.sort(
           (a, b) => Number(a.id) - Number(b.id)
         );
-      })
+
+        this.teamList = [...new Set(teamListNew)];
+        teamList$.unsubscribe();
+      });
+  }
+
+  getAvailableTeamList() {
+    // console.log("getAvailableTeamList");
+    const availableTeamList$ = this.authService
+      .getUser$()
+      .pipe(
+        // GET TEAMS
+        switchMap((user: User) => this.fbService.getUserClubRefs(user)),
+        // Loop Over Teams
+        switchMap((allClubs: any) =>
+          combineLatest(
+            allClubs.map((club) =>
+              combineLatest(
+                of(club),
+                // Loop over Games
+                // this.championshipService.getTeamGamesRef(team.id),
+                this.fbService
+                  .getClubTeamRefs(club.id)
+                  .pipe(
+                    switchMap((allTeams: any) =>
+                      combineLatest(
+                        allTeams.map((team) =>
+                          combineLatest(
+                            of(team),
+                            this.fbService.getTeamRef(team.id)
+                          )
+                        )
+                      )
+                    )
+                  ),
+                this.fbService.getClubRef(club.id)
+              )
+            )
+          )
+        )
+      )
+      .subscribe(async (data: any) => {
+        const availableTeamListNew = [];
+
+        for (const team of data[0][1]) {
+          // loop over teams
+          const teamDetail = team[1];
+          // console.log(teamDetail);
+          availableTeamListNew.push(teamDetail);
+        }
+        this.availableTeamList = this.availableTeamList.sort(
+          (a, b) => Number(a.id) - Number(b.id)
+        );
+        this.availableTeamList = [...new Set(availableTeamListNew)];
+        // this.availableTeamList = [...new Set([].concat(...availableTeamListNew))];
+
+        // console.log(this.availableTeamList);
+
+        availableTeamList$.unsubscribe();
+      });
   }
 }

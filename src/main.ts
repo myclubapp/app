@@ -1,12 +1,12 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { enableProdMode } from "@angular/core";
+import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
 
-import { AppModule } from './app/app.module';
-import { environment } from './environments/environment';
+import { AppModule } from "./app/app.module";
+import { environment } from "./environments/environment";
 
-import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import { defineCustomElements } from "@ionic/pwa-elements/loader";
 // import { defineCustomElements as defineCustomElementsGoogleMaps } from 'web-google-maps/dist/loader';
-import { defineCustomElements as defineCustomElementsSocialShare } from 'web-social-share/dist/loader';
+import { defineCustomElements as defineCustomElementsSocialShare } from "web-social-share/dist/loader";
 
 if (environment.production) {
   enableProdMode();
@@ -19,3 +19,4 @@ platformBrowserDynamic()
 // Call the element loader after the platform has been bootstrapped
 defineCustomElements(window);
 defineCustomElementsSocialShare(window);
+// defineCustomElementsGoogleMaps(window);

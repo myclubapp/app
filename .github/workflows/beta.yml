@@ -1,4 +1,4 @@
-name: Build myclub App and Deploy on Firebase Hosting
+name: BETA - Build myclub App and Deploy on Firebase Hosting
 on:
   push:
     branches:
@@ -10,8 +10,14 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 16
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
+          npm ci
       - name: Build (BETA)
         run: npm run build:beta
       - name: Deploy to Firebase

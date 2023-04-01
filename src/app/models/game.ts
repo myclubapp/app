@@ -36,6 +36,7 @@ export interface Game {
   type: string
   updated: Date
   clubRef: any
+  teamRef: any
 
   // Business Logic Fields
   status: boolean

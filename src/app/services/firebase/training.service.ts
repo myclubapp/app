@@ -1,35 +1,42 @@
-import { Injectable } from '@angular/core';
-
-import { limit, Timestamp } from 'firebase/firestore';
+import { Injectable } from "@angular/core";
 import {
+  limit, Timestamp ,
   Firestore,
   addDoc,
   collection,
   collectionData,
   doc,
-  docData,
-  deleteDoc,
-  updateDoc,
-  DocumentReference,
   setDoc,
   query,
-  where
-} from '@angular/fire/firestore';
+  where,
+} from "@angular/fire/firestore";
 
 // import firebase from 'firebase/compat/app';
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer } from "rxjs";
 
-import { AuthService } from 'src/app/services/auth.service';
-import { Training } from 'src/app/models/training';
+import { AuthService } from "src/app/services/auth.service";
+import { Training } from "src/app/models/training";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class TrainingService {
-  constructor (private readonly firestore: Firestore) {}
+  constructor(
+    private readonly firestore: Firestore,
+    private readonly authService: AuthService
+  ) {}
+
+  async setCreateTraining(training: Training) {
+    console.log("training");
+    const user = await this.authService.getUser();
+    return addDoc(
+      collection(this.firestore, `userProfile/${user.uid}/trainings`),
+      training
+    );
+  }
 
   /* TEAM TrainingS */
-  getTeamTrainingsRef (teamId: string): Observable<Training[]> {
+  getTeamTrainingsRef(teamId: string): Observable<Training[]> {
     // console.log(`Read Team Trainings List Ref ${teamId}`)
     const trainingsRefList = collection(
       this.firestore,
@@ -38,18 +45,18 @@ export class TrainingService {
     const q = query(
       trainingsRefList,
       where(
-        'dateTime',
-        '>=',
+        "date",
+        ">=",
         Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 7))
       )
     ); // heute - 1 Woche
-    return collectionData(q, { idField: 'id' }) as unknown as Observable<
-    Training[]
+    return collectionData(q, { idField: "id" }) as unknown as Observable<
+      Training[]
     >;
   }
 
   // PAST 20 Entries
-  getTeamTrainingsRefPast (teamId: string): Observable<Training[]> {
+  getTeamTrainingsRefPast(teamId: string): Observable<Training[]> {
     // console.log(`Read Team Trainings List Ref ${teamId}`)
     const trainingsRefList = collection(
       this.firestore,
@@ -58,30 +65,30 @@ export class TrainingService {
     const q = query(
       trainingsRefList,
       where(
-        'dateTime',
-        '<',
+        "date",
+        "<",
         Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 7))
       ),
       limit(20)
     ); // heute - 1 Woche
-    return collectionData(q, { idField: 'id' }) as unknown as Observable<
-    Training[]
+    return collectionData(q, { idField: "id" }) as unknown as Observable<
+      Training[]
     >;
   }
 
   /* CLUB TrainingS */
-  getClubTrainingsRef (clubId: string): Observable<Training> {
+  getClubTrainingsRef(clubId: string): Observable<Training> {
     const trainingsRefList = collection(
       this.firestore,
       `club/${clubId}/trainings`
     );
     return collectionData(trainingsRefList, {
-      idField: 'id',
+      idField: "id",
     }) as unknown as Observable<Training>;
   }
 
   /* TEAM TrainingS ATTENDEES */
-  getTeamTrainingsAttendeesRef (
+  getTeamTrainingsAttendeesRef(
     teamId: string,
     trainingId: string
   ): Observable<any[]> {
@@ -91,12 +98,12 @@ export class TrainingService {
       `teams/${teamId}/trainings/${trainingId}/attendees`
     );
     return collectionData(attendeesRefList, {
-      idField: 'id',
+      idField: "id",
     }) as unknown as Observable<any[]>;
   }
 
   /* TEAM TrainingS ATTENDEE Status */
-  async setTeamTrainingAttendeeStatus (
+  async setTeamTrainingAttendeeStatus(
     userId: string,
     status: boolean,
     teamId: string,

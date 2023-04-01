@@ -22,9 +22,12 @@
 
       <ion-item>
         <ion-avatar slot="start">
-          <img src="{{userProfile.profilePicture}}" />
+          <img
+            alt="{{userProfile.firstName}}"
+            src="{{userProfile.profilePicture}}"
+          />
         </ion-avatar>
-        <ion-label>Item Avatar</ion-label>
+        <ion-label></ion-label>
         <ion-button slot="end" (click)="takePicture()">
           <ion-icon slot="icon-only" name="camera"></ion-icon>
         </ion-button>
@@ -59,7 +62,71 @@
         >
         </ion-input>
       </ion-item>
+
+      <ion-list-header *ngIf="clubRequestList.length > 0">
+        Offene Club-Anfragen
+      </ion-list-header>
+      <ion-item *ngFor="let request of clubRequestList">
+        {{request.name}}
+        <ion-button
+          color="danger"
+          (click)="deleteClubRequest(request)"
+          slot="end"
+        >
+          <ion-icon icon-only name="trash"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ion-list-header *ngIf="teamRequestList.length > 0">
+        Offene Team-Anfragen
+      </ion-list-header>
+      <ion-item *ngFor="let request of teamRequestList">
+        {{request.liga}} {{request.name}}
+        <ion-button
+          color="danger"
+          (click)="deleteTeamRequest(request)"
+          slot="end"
+        >
+          <ion-icon icon-only name="trash"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ion-list-header>
+        <ion-label> Einstellungen </ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-label position="stacked"> Meine Geräte Id </ion-label>
+        <ion-input readonly value="{{deviceId.uuid}}"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked"> Push-Nachrichten </ion-label>
+        <ion-toggle value="{{userProfile.settingsPush}}" slot="end" [checked]="true" [enableOnOffLabels]="true" (ionChange)="togglePush($event)"></ion-toggle>
+      </ion-item>
+
+      <ion-list>
+        <ion-list-header>
+          Registrierte Push Geräte
+        </ion-list-header>
+        <ion-item *ngFor="let device of pushDeviceList">
+          <ion-label position="stacked"> {{device?.id}} </ion-label>
+          <ion-input readonly value="{{device?.id}}"></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-item>
+        <ion-label position="stacked"> E-Mail-Nachrichten </ion-label>
+        <ion-toggle value="{{userProfile.settingsEmail}}" slot="end" [checked]="true" [enableOnOffLabels]="true" (ionChange)="toggleEmail($event)"></ion-toggle>
+      </ion-item>
+      <ion-item>
+        <ion-label color="danger">Danger Zone: Profil löschen</ion-label>
+        <ion-button  slot="end" color="danger" (click)="deleteProfile()">
+          <ion-icon slot="icon-only" name="trash"> </ion-icon>
+        </ion-button>
+      </ion-item>
     </ion-list>
+
+
+
   </ng-container>
 
   <!-- 
@@ -105,6 +172,7 @@
     </ion-list>
   </ng-container>
 -->
+ 
 </ion-content>
 <ng-template #loading>
   <!-- Bubbles -->
