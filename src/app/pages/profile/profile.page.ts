@@ -257,6 +257,13 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.toastActionSaved();
   }
 
+  async toggleEmailReporting(event) {
+    await this.profileService
+    .changeSettingsEmailReporting(event.detail.checked);
+    console.log("email");
+    this.toastActionSaved();
+  }
+
   async askForPush() {
     if (this.swPush.isEnabled) {     // Push is available
       this.alertAskForPush();

@@ -9,7 +9,7 @@ import {
   faTwitter,
   faFacebook,
   faWhatsapp,
-  faLinkedin
+  faLinkedin,
 } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faCopy } from '@fortawesome/free-solid-svg-icons';
 
