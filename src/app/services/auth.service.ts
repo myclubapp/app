@@ -44,7 +44,7 @@ export class AuthService {
     // or use this version...
     this.user$ = authState(auth);
     this.auth = getAuth();
-    connectAuthEmulator(this.auth, 'http://localhost:8100')
+    // connectAuthEmulator(this.auth, 'http://localhost:8100')
   }
 
   /* getUser(): Promise<User> {
