@@ -37,7 +37,7 @@ export class UserProfileService {
   constructor(
     private readonly firestore: Firestore,
     private readonly storage: Storage,
-    // private readonly authService: AuthService
+    private readonly authService: AuthService
   ) {
 
   }
@@ -56,7 +56,8 @@ export class UserProfileService {
     return docData(userProfileRef, { idField: "id" }) as Observable<Profile>;
   }
 
-  async setUserProfilePicture(user: User, photo: Photo) {
+  async setUserProfilePicture(photo: Photo) {
+    const user = this.authService.auth.currentUser;
     const storageRef = ref(
       this.storage,
       `userProfile/${user.uid}/profilePicture/picture.${photo.format}`
@@ -64,19 +65,17 @@ export class UserProfileService {
     await uploadString(storageRef, photo.base64String, "base64", {});
     const url = await getDownloadURL(storageRef);
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return await updateDoc(userProfileRef, { profilePicture: url });
+    return updateDoc(userProfileRef, { profilePicture: url });
   }
 
-  async setUserProfile(userProfile: Profile) {
-    const auth = getAuth();
-    const user = auth.currentUser;
+  setUserProfile(userProfile: Profile) {
+    const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return await updateDoc(userProfileRef, { userProfile });
+    return updateDoc(userProfileRef, { userProfile });
   }
 
   getPushDeviceList(): Observable<DocumentData[]> {
-    const auth = getAuth();
-    const user = auth.currentUser;
+    const user = this.authService.auth.currentUser;
     const pushDeviceListRef = collection(
       this.firestore,
       `userProfile/${user.uid}/push`
@@ -87,11 +86,10 @@ export class UserProfileService {
   }
 
   async addPushSubscriber(sub: PushSubscription, deviceId: DeviceId, deviceInfo: DeviceInfo) {
-    const auth = getAuth();
-    const user = auth.currentUser;
+    const user = this.authService.auth.currentUser;
     const pushObject = JSON.stringify(sub);
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}/push/${deviceId.uuid}`);
-    return await setDoc(userProfileRef, 
+    return setDoc(userProfileRef, 
       { pushObject : pushObject, 
         updated: new Date(), 
         model: deviceInfo.model  || "", 
@@ -102,16 +100,14 @@ export class UserProfileService {
   }
 
   async changeSettingsPush(state: boolean) {
-    const auth = getAuth();
-    const user = auth.currentUser;
+    const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return await updateDoc(userProfileRef, { settingsPush: state });
+    return updateDoc(userProfileRef, { settingsPush: state });
   }
 
   async changeSettingsEmail(state: boolean) {
-    const auth = getAuth();
-    const user = auth.currentUser;
+    const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return await updateDoc(userProfileRef, { settingsEmail: state });
+    return updateDoc(userProfileRef, { settingsEmail: state });
   }
 }

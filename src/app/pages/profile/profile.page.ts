@@ -183,8 +183,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
     var imageUrl = image.base64String;
     console.log(image);
 
-    const user: User = await this.authService.getUser();
-    await this.profileService.setUserProfilePicture(user, image);
+    // const user: User = await this.authService.getUser();
+    await this.profileService.setUserProfilePicture(image);
     await this.presentToastTakePicture();
   }
 

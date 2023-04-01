@@ -7,6 +7,7 @@ import {
   Auth,
   getAuth,
   authState,
+  connectAuthEmulator,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   sendEmailVerification,
@@ -45,11 +46,13 @@ export class AuthService {
   user$: Observable<User | null>;
   constructor(
     private readonly firestore: Firestore,
-    private readonly auth: Auth,
+    public readonly auth: Auth,
     private readonly router: Router
   ) {
     // or use this version...
     this.user$ = authState(auth);
+    this.auth = getAuth();
+    connectAuthEmulator(this.auth, 'http://localhost:8100')
   }
 
   /* getUser(): Promise<User> {
@@ -70,8 +73,7 @@ export class AuthService {
   }
 
   async sendVerifyEmail() {
-    const auth = getAuth();
-    return await sendEmailVerification(auth.currentUser);
+    return await sendEmailVerification(this.auth.currentUser);
   }
 
   async signup(
@@ -94,9 +96,7 @@ export class AuthService {
         lastName,
         email: newUserCredential.user.email,
       });
-
-      const auth = getAuth();
-      await updateProfile(auth.currentUser, {
+      await updateProfile(this.auth.currentUser, {
         displayName: `${firstName} ${lastName}`,
         photoURL: "https://randomuser.me/api/portraits/lego/1.jpg",
       });
@@ -118,8 +118,7 @@ export class AuthService {
   }
 
   async deleteProfile() {
-    const auth = getAuth();
-    const user = auth.currentUser;
+    const user = this.auth.currentUser;
 
     deleteUser(user)
       .then(() => {

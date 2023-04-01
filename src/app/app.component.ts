@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
 import { AlertController, ModalController } from "@ionic/angular";
-import { getAuth, onAuthStateChanged, getIdToken } from "firebase/auth";
+import { getAuth, onAuthStateChanged, getIdToken, connectAuthEmulator } from "firebase/auth";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
@@ -34,9 +34,7 @@ export class AppComponent {
     this.receivePushMessage();
     // this.initializeFirebase();
 
-    const auth = getAuth();
-
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(this.authService.auth, (user) => {
       if (user) {
         // 0. LOGIN
         this.email = user.email;
