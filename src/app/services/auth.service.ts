@@ -38,7 +38,7 @@ export class AuthService {
   user$: Observable<User | null>;
   constructor(
     private readonly firestore: Firestore,
-    public readonly auth: Auth,
+    public auth: Auth,
     private readonly router: Router
   ) {
     // or use this version...

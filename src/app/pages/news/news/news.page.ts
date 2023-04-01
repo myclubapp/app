@@ -378,7 +378,7 @@ export class NewsPage implements OnInit {
 
   getGameReports() {
     let reportListNew = [];
-    this.teamSubscription = this.authService
+    this.gameReportSubscription = this.authService
       .getUser$()
       .pipe(
         switchMap((user) => {

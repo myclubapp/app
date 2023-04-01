@@ -46,6 +46,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
   pushDeviceList: any[] = [];
   pushDeviceListSub: Subscription;
 
+  user: User;
+  
   private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
   deviceId: DeviceId;
@@ -65,6 +67,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
+  await this.getUser();
     this.getClubRequestList();
     this.getTeamRequestList();
     this.getPushDeviceList();
@@ -74,7 +77,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.getUser();
+
     // this.getClubList();
     // this.getTeamList();
   }
@@ -144,7 +147,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   async getPushDeviceList() {
-    this. pushDeviceListSub = this.profileService.getPushDeviceList().subscribe(pushDeviceData=>{
+    this.pushDeviceListSub = this.profileService.getPushDeviceList().subscribe(pushDeviceData=>{
       this.pushDeviceList = [];
       pushDeviceData.map(element=>{
         this.pushDeviceList.push(element);
@@ -164,8 +167,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 */
   async getUser() {
-    const user: User = await this.authService.getUser();
-    this.userProfile$ = this.profileService.getUserProfile(user);
+    this.user = await this.authService.getUser();
+    this.userProfile$ = this.profileService.getUserProfile(this.user);
   }
 
   async takePicture() {
