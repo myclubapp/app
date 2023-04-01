@@ -7,7 +7,7 @@ import {
   Auth,
   getAuth,
   authState,
-  connectAuthEmulator,
+  // connectAuthEmulator,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   sendEmailVerification,

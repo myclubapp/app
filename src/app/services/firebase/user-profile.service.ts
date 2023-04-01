@@ -108,4 +108,10 @@ export class UserProfileService {
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { settingsEmail: state });
   }
+
+  async changeSettingsEmailReporting(state: boolean) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { settingsEmailReporting: state });
+  }
 }
