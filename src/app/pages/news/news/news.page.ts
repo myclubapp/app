@@ -135,7 +135,7 @@ export class NewsPage implements OnInit {
         this.newsList = this.newsList.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
+        //this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
       });
   }
 
@@ -264,7 +264,7 @@ export class NewsPage implements OnInit {
         this.newsList = this.newsList.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
+        // this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
       });
     /*
     this.authService
@@ -336,7 +336,7 @@ export class NewsPage implements OnInit {
         this.newsList = this.newsList.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
+        //this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
       });
     /*
     this.authService
@@ -409,7 +409,7 @@ export class NewsPage implements OnInit {
         this.newsList = this.newsList.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.newsList = [...new Set(reportListNew.concat(...this.newsList))];
+        // this.newsList = [...new Set(reportListNew.concat(...this.newsList))];
       });
   }
 

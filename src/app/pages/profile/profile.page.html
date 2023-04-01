@@ -103,17 +103,17 @@
 
       <ion-item>
         <ion-label position="stacked"> Push-Nachrichten </ion-label>
-        <ion-toggle value="{{userProfile?.settingsPush}}" slot="end" [checked]="true" [enableOnOffLabels]="true" (ionChange)="togglePush($event)"></ion-toggle>
+        <ion-toggle value="{{userProfile?.settingsPush}}" slot="end" [checked]="userProfile.settingsPush" [enableOnOffLabels]="true" (ionChange)="togglePush($event)"></ion-toggle>
       </ion-item>
       
       <ion-item>
         <ion-label position="stacked"> E-Mail-Nachrichten </ion-label>
-        <ion-toggle value="{{userProfile?.settingsEmail}}" slot="end" [checked]="true" [enableOnOffLabels]="true" (ionChange)="toggleEmail($event)"></ion-toggle>
+        <ion-toggle value="{{userProfile?.settingsEmail}}" slot="end" [checked]="userProfile.settingsEmail" [enableOnOffLabels]="true" (ionChange)="toggleEmail($event)"></ion-toggle>
       </ion-item>
 
       <ion-item>
         <ion-label position="stacked"> E-Mail-Nachrichten Reporting</ion-label>
-        <ion-toggle value="{{userProfile?.settingsEmailReporting}}" slot="end" [checked]="true" [enableOnOffLabels]="true" (ionChange)="toggleEmailReporting($event)"></ion-toggle>
+        <ion-toggle value="{{userProfile?.settingsEmailReporting}}" slot="end" [checked]="userProfile.settingsEmailReporting" [enableOnOffLabels]="true" (ionChange)="toggleEmailReporting($event)"></ion-toggle>
       </ion-item>
 
       <ion-accordion-group>
