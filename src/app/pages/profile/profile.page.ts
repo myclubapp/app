@@ -1,8 +1,6 @@
 import { Component, OnInit, AfterViewInit } from "@angular/core";
-import { combineLatest, Observable, of } from "rxjs";
+import { combineLatest, Observable, of, Subscription } from "rxjs";
 import { Device, DeviceId, DeviceInfo } from '@capacitor/device';
-
-// import firebase from 'firebase/compat/app';
 import { User } from "@angular/fire/auth";
 
 // Services
@@ -38,9 +36,16 @@ import { Router } from "@angular/router";
 })
 export class ProfilePage implements OnInit, AfterViewInit {
   userProfile$: Observable<Profile>;
+  
   clubRequestList: any[] = [];
+  clubRequestListSub: Subscription;
+
   teamRequestList: any[] = [];
+  teamRequestListSub: Subscription;
+
   pushDeviceList: any[] = [];
+  pushDeviceListSub: Subscription;
+
   private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
   deviceId: DeviceId;
@@ -74,7 +79,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     // this.getTeamList();
   }
   getClubRequestList() {
-    const request$ = this.authService
+    this.clubRequestListSub =  this.authService
       .getUser$()
       .pipe(
         // GET TEAMS
@@ -103,11 +108,10 @@ export class ProfilePage implements OnInit, AfterViewInit {
           (a, b) => Number(a.id) - Number(b.id)
         );
         this.clubRequestList = [...new Set([].concat(...requestListNew))];
-        request$.unsubscribe();
       });
   }
   getTeamRequestList() {
-    const request$ = this.authService
+    this.teamRequestListSub = this.authService
       .getUser$()
       .pipe(
         // GET TEAMS
@@ -136,13 +140,12 @@ export class ProfilePage implements OnInit, AfterViewInit {
           (a, b) => Number(a.id) - Number(b.id)
         );
         this.teamRequestList = [...new Set([].concat(...requestListNew))];
-        request$.unsubscribe();
       });
   }
 
   async getPushDeviceList() {
-    this.profileService.getPushDeviceList().subscribe(pushDeviceData=>{
-
+    this. pushDeviceListSub = this.profileService.getPushDeviceList().subscribe(pushDeviceData=>{
+      this.pushDeviceList = [];
       pushDeviceData.map(element=>{
         this.pushDeviceList.push(element);
       })
@@ -361,7 +364,9 @@ async alertAskForPush() {
   }
 
   ngOnDestroy() {
-
+    this.pushDeviceListSub.unsubscribe();
+    this.clubRequestListSub.unsubscribe();
+    this.teamRequestListSub.unsubscribe();
     this.swPush.unsubscribe();
   }
 
