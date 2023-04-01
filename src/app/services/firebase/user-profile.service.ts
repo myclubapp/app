@@ -97,6 +97,12 @@ export class UserProfileService {
       });
   }
 
+  async deletePushDevice(deviceId) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}/push/${deviceId}`);
+    return deleteDoc(userProfileRef);
+  }
+
   async changeSettingsPush(state: boolean) {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);

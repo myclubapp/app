@@ -47,7 +47,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   pushDeviceListSub: Subscription;
 
   user: User;
-  
+
   private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
   deviceId: DeviceId;
@@ -73,7 +73,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.getPushDeviceList();
     this.deviceId = await Device.getId();
     this.deviceInfo = await Device.getInfo();
-    console.log(this.deviceInfo);
+    // console.log(this.deviceInfo);
   }
 
   ngAfterViewInit(): void {
@@ -318,6 +318,10 @@ async alertAskForPush() {
     ],
   });
   alert.present();
+}
+
+async deletePushDevice(id){
+  await this.profileService.deletePushDevice(id);
 }
 
 

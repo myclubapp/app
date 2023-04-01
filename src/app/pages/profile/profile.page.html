@@ -132,21 +132,24 @@
         E-Mail-Nachrichten Reporting
       </ion-item>
 
-      <ion-accordion-group>
-        <ion-accordion value="first">
+      <ion-accordion-group *ngIf="pushDeviceList.length > 0">
+        <ion-accordion value="pushDeviceList">
           <ion-item slot="header" color="light">
             <ion-label>Registrierte Push Geräte</ion-label>
           </ion-item>
           <div class="ion-padding" slot="content">
         
-            <ion-list>
+            <ion-list >
               <ion-item *ngFor="let device of pushDeviceList">
                 <ion-input
                 labelPlacement="stacked"
-                label="{{device?.model}}"
+                label="Model {{device?.model}}"
                 aria-label="device?.model"
                
-                readonly value="{{device?.id}}"></ion-input>
+                readonly value="Id: {{device?.id}}"></ion-input>
+                <ion-button color="danger" (click)="deletePushDevice(device.id)">
+                  <ion-icon slot="icon-only" name="trash"> </ion-icon>
+                </ion-button>
                 <ion-badge slot="end" *ngIf="device.id==deviceId.uuid">aktuelles Gerät</ion-badge>
               </ion-item>    
             </ion-list>
