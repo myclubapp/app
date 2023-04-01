@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { ModalController, NavParams } from "@ionic/angular";
-import { combineLatest, of } from "rxjs";
+import { combineLatest, of, Subscription } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -18,6 +18,10 @@ export class ClubPage implements OnInit {
   adminList: any[] = [];
   requestList: any[] = [];
 
+  clubAdminSub: Subscription;
+  clubMemberSub: Subscription;
+
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -32,8 +36,14 @@ export class ClubPage implements OnInit {
     this.getClubAdmins();
     this.getClubRequests();
   }
+
+  ngOnDestroy() {
+    this.clubAdminSub.unsubscribe();
+    this.clubMemberSub.unsubscribe();
+  }
+
   getClubMembers() {
-    this.fbService
+    this.clubAdminSub = this.fbService
       .getClubMemberRefs(this.club.id)
       .pipe(
         switchMap((allClubMembers: any) =>
@@ -55,7 +65,7 @@ export class ClubPage implements OnInit {
       });
   }
   getClubAdmins() {
-    this.fbService
+    this.clubMemberSub = this.fbService
       .getClubAdminRefs(this.club.id)
       .pipe(
         switchMap((allClubMembers: any) =>

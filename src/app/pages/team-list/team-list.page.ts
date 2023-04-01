@@ -3,7 +3,7 @@ import { Team } from "src/app/models/team";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { switchMap, map } from "rxjs/operators";
-import { of, combineLatest } from "rxjs";
+import { of, combineLatest, Subscription } from "rxjs";
 import { User } from "@angular/fire/auth";
 import {
   AlertController,
@@ -23,6 +23,9 @@ export class TeamListPage implements OnInit {
   availableTeamList: Team[] = [];
   skeleton = new Array(12);
 
+  availableTeamListSub: Subscription;
+  teamListSub:Subscription;
+
   constructor(
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
@@ -35,6 +38,11 @@ export class TeamListPage implements OnInit {
   ngOnInit() {
     this.getTeamList();
     this.getAvailableTeamList();
+  }
+
+  ngOnDestroy () {
+    this.availableTeamListSub.unsubscribe();
+    this.teamListSub.unsubscribe();
   }
 
   async openModal(team: Team) {
@@ -61,17 +69,11 @@ export class TeamListPage implements OnInit {
 
     if (this.teamList.length > 0) {
       for (let team of this.availableTeamList) {
-        for (let myTeam of this.teamList) {
-          if (myTeam.id === team.id) {
-            // club nicht adden
-          } else {
             _inputs.push({
               label: team.liga + " " + team.name,
               type: "radio",
               value: team.id,
             });
-          }
-        }
       }
     } else {
       for (let team of this.availableTeamList) {
@@ -119,7 +121,7 @@ export class TeamListPage implements OnInit {
   }
 
   getTeamList() {
-    const teamList$ = this.authService
+    this.teamListSub= this.authService
       .getUser$()
       .pipe(
         // GET TEAMS
@@ -136,6 +138,7 @@ export class TeamListPage implements OnInit {
       .subscribe(async (data: any) => {
         console.log("get user team list");
         console.log(data);
+        this.teamList = [];
         const teamListNew = [];
         for (const team of data) {
           // loop over teams
@@ -146,15 +149,13 @@ export class TeamListPage implements OnInit {
         this.teamList = this.teamList.sort(
           (a, b) => Number(a.id) - Number(b.id)
         );
-
-        this.teamList = [...new Set(teamListNew)];
-        teamList$.unsubscribe();
+        this.teamList = [...new Set(teamListNew.concat(...this.teamList))];
       });
   }
 
   getAvailableTeamList() {
     // console.log("getAvailableTeamList");
-    const availableTeamList$ = this.authService
+    this.availableTeamListSub= this.authService
       .getUser$()
       .pipe(
         // GET TEAMS
@@ -188,23 +189,20 @@ export class TeamListPage implements OnInit {
         )
       )
       .subscribe(async (data: any) => {
-        const availableTeamListNew = [];
+        let availableTeamListNew = [];
+        this.availableTeamList = [];
 
         for (const team of data[0][1]) {
           // loop over teams
           const teamDetail = team[1];
-          // console.log(teamDetail);
+          console.log(teamDetail.id);
           availableTeamListNew.push(teamDetail);
         }
-        this.availableTeamList = this.availableTeamList.sort(
+        availableTeamListNew = availableTeamListNew.sort(
           (a, b) => Number(a.id) - Number(b.id)
         );
-        this.availableTeamList = [...new Set(availableTeamListNew)];
-        // this.availableTeamList = [...new Set([].concat(...availableTeamListNew))];
 
-        // console.log(this.availableTeamList);
-
-        availableTeamList$.unsubscribe();
+        this.availableTeamList = [...new Set(availableTeamListNew.concat(...this.availableTeamList))];
       });
   }
 }

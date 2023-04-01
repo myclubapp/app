@@ -81,6 +81,13 @@ export class ProfilePage implements OnInit, AfterViewInit {
     // this.getClubList();
     // this.getTeamList();
   }
+  ngOnDestroy() {
+    this.pushDeviceListSub.unsubscribe();
+    this.clubRequestListSub.unsubscribe();
+    this.teamRequestListSub.unsubscribe();
+    this.swPush.unsubscribe();
+  }
+
   getClubRequestList() {
     this.clubRequestListSub =  this.authService
       .getUser$()
@@ -370,11 +377,6 @@ async deletePushDevice(id){
     await toast.present();
   }
 
-  ngOnDestroy() {
-    this.pushDeviceListSub.unsubscribe();
-    this.clubRequestListSub.unsubscribe();
-    this.teamRequestListSub.unsubscribe();
-    this.swPush.unsubscribe();
-  }
+
 
 }

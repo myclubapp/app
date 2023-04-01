@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { ModalController, NavParams } from "@ionic/angular";
-import { combineLatest, of } from "rxjs";
+import { combineLatest, of, Subscription } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { Team } from "src/app/models/team";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -18,6 +18,9 @@ export class TeamPage implements OnInit {
   adminList: any[] = [];
   requestList: any[] = [];
 
+  teamAdminSub: Subscription;
+  teamMemberSub: Subscription;
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -33,8 +36,12 @@ export class TeamPage implements OnInit {
     this.getTeamRequests();
   }
 
+  ngOnDestroy() {
+    this.teamAdminSub.unsubscribe();
+    this.teamMemberSub.unsubscribe();
+  }
   getTeamMembers() {
-    this.fbService
+    this.teamMemberSub =  this.fbService
       .getTeamMemberRefs(this.team.id)
       .pipe(
         switchMap((allTeamMembers: any) =>
@@ -58,7 +65,7 @@ export class TeamPage implements OnInit {
       });
   }
   getTeamAdmins() {
-    this.fbService
+    this.teamAdminSub = this.fbService
       .getTeamAdminRefs(this.team.id)
       .pipe(
         switchMap((allTeamAdmins: any) =>
