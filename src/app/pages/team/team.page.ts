@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { ModalController, NavParams } from "@ionic/angular";
+import { ModalController, NavParams, ToastController } from "@ionic/angular";
 import { combineLatest, of, Subscription } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { Team } from "src/app/models/team";
@@ -20,10 +20,12 @@ export class TeamPage implements OnInit {
 
   teamAdminSub: Subscription;
   teamMemberSub: Subscription;
+  teamRequestSub: Subscription;
 
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
+    private readonly toastController: ToastController,
     private readonly userProfileService: UserProfileService,
     private readonly fbService: FirebaseService
   ) {}
@@ -39,6 +41,7 @@ export class TeamPage implements OnInit {
   ngOnDestroy() {
     this.teamAdminSub.unsubscribe();
     this.teamMemberSub.unsubscribe();
+    this.teamRequestSub.unsubscribe();
   }
   getTeamMembers() {
     this.teamMemberSub =  this.fbService
@@ -90,7 +93,7 @@ export class TeamPage implements OnInit {
   }
 
   getTeamRequests() {
-    this.fbService
+    this.teamRequestSub = this.fbService
       .getTeamRequestRefs(this.team.id)
       .pipe(
         switchMap((allTeamMembers: any) =>
@@ -115,12 +118,24 @@ export class TeamPage implements OnInit {
 
   async deleteTeamRequest(request) {
     await this.fbService.deleteUserTeamRequest(this.team.id, request.id);
-    this.getTeamRequests();
+    await this.toastActionSaved();
   }
   async approveTeamRequest(request) {
     await this.fbService.setApproveUserTeamRequest(this.team.id, request.id);
-    this.getTeamRequests();
+    await this.toastActionSaved();
   }
+
+  async toastActionSaved() {
+    const toast = await this.toastController.create({
+      message: "Änderungen erfolgreich gespeichert",
+      duration: 1500,
+      position: "bottom",
+      color: "success",
+    });
+
+    await toast.present();
+  }
+
 
   async close() {
     return await this.modalCtrl.dismiss(null, "close");

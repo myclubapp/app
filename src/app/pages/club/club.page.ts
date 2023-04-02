@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { ModalController, NavParams } from "@ionic/angular";
+import { ModalController, NavParams, ToastController } from "@ionic/angular";
 import { combineLatest, of, Subscription } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { Club } from "src/app/models/club";
@@ -20,11 +20,12 @@ export class ClubPage implements OnInit {
 
   clubAdminSub: Subscription;
   clubMemberSub: Subscription;
-
+  clubRequestSub: Subscription;
 
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
+    private readonly toastController: ToastController,
     private readonly userProfileService: UserProfileService,
     private readonly fbService: FirebaseService
   ) {}
@@ -40,10 +41,11 @@ export class ClubPage implements OnInit {
   ngOnDestroy() {
     this.clubAdminSub.unsubscribe();
     this.clubMemberSub.unsubscribe();
+    this.clubRequestSub.unsubscribe();
   }
 
   getClubMembers() {
-    this.clubAdminSub = this.fbService
+    this.clubMemberSub = this.fbService
       .getClubMemberRefs(this.club.id)
       .pipe(
         switchMap((allClubMembers: any) =>
@@ -65,7 +67,7 @@ export class ClubPage implements OnInit {
       });
   }
   getClubAdmins() {
-    this.clubMemberSub = this.fbService
+   this.clubAdminSub = this.fbService
       .getClubAdminRefs(this.club.id)
       .pipe(
         switchMap((allClubMembers: any) =>
@@ -88,7 +90,7 @@ export class ClubPage implements OnInit {
   }
 
   getClubRequests() {
-    this.fbService
+   this.clubRequestSub =  this.fbService
       .getClubRequestRefs(this.club.id)
       .pipe(
         switchMap((allClubMembers: any) =>
@@ -112,11 +114,22 @@ export class ClubPage implements OnInit {
 
   async deleteClubRequest(request) {
     await this.fbService.deleteUserClubRequest(this.club.id, request.id);
-    // this.getClubRequests();
+    await this.toastActionSaved();
   }
   async approveClubRequest(request) {
     await this.fbService.setApproveUserClubRequest(this.club.id, request.id);
-    // this.getClubRequests();
+    await this.toastActionSaved();
+  }
+
+  async toastActionSaved() {
+    const toast = await this.toastController.create({
+      message: "Änderungen erfolgreich gespeichert",
+      duration: 1500,
+      position: "bottom",
+      color: "success",
+    });
+
+    await toast.present();
   }
 
   async close() {
@@ -126,4 +139,5 @@ export class ClubPage implements OnInit {
   async confirm() {
     return await this.modalCtrl.dismiss(this.club, "confirm");
   }
+
 }
