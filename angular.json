@@ -7,9 +7,18 @@
       "i18n":{
         "sourceLocale": "de-CH",
         "locales": {
-          "fr-CH":"src/locale/messages.fr.xlf",
-          "it-CH":"src/locale/messages.it.xlf",
-          "en-US":"src/locale/messages.en.xlf"
+          "fr-CH": {
+            "translation": "src/locale/messages.fr.xlf",
+            "baseHref": "fr"
+          },
+          "it-CH":  {
+            "translation": "src/locale/messages.it.xlf",
+            "baseHref": "it"
+          },
+          "en-US":  {
+            "translation": "src/locale/messages.en.xlf",
+            "baseHref": "en"
+          }
         }
       },
       "root": "",
@@ -21,9 +30,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "localize": [
-              "en-US"
-            ],
+            
             "outputPath": "www",
             "index": "src/index.html",
             "main": "src/main.ts",
