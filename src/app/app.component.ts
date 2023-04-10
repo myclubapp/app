@@ -2,12 +2,15 @@ import { Component } from "@angular/core";
 import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
 import { AlertController, ModalController } from "@ionic/angular";
 import { getAuth, onAuthStateChanged, getIdToken } from "firebase/auth";
+import { initializeFirestore, CACHE_SIZE_UNLIMITED } from "firebase/firestore";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
 import { Router } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { Subscription } from "rxjs";
+import { getApp } from "firebase/app";
+
 // import { UserProfileService } from "./services/firebase/user-profile.service";
 // import { getMessaging, onMessage } from "firebase/messaging";
 
@@ -28,11 +31,11 @@ export class AppComponent {
     private readonly alertController: AlertController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
-    private readonly router: Router,
+    private readonly router: Router
   ) {
     this.initializeApp();
     this.receivePushMessage();
-    // this.initializeFirebase();
+    this.initializeFirebase();
 
     const auth = getAuth();
 
@@ -93,21 +96,19 @@ export class AppComponent {
   }
 
   async receivePushMessage() {
-
     if (this.swPush.isEnabled) {
-
     }
-    this.pushNotificationClickSubscription = this.swPush.notificationClicks.subscribe(
-      ({action, notification}) => {
+    this.pushNotificationClickSubscription =
+      this.swPush.notificationClicks.subscribe(({ action, notification }) => {
         console.log("notificationClicks", action, notification);
         this.alertPushMessage(notification);
-          // TODO: Do something in response to notification click.
+        // TODO: Do something in response to notification click.
       });
 
-    this.pushMessageSubscription = this.swPush.messages.subscribe(message=>{
+    this.pushMessageSubscription = this.swPush.messages.subscribe((message) => {
       console.log("swPush.messages.subscribe", message);
       this.alertPushMessage(message);
-    })
+    });
 
     /* const messaging = getMessaging();
     onMessage(messaging, (payload) => {
@@ -127,6 +128,11 @@ export class AppComponent {
   }
 
   initializeFirebase() {
+    // This is the default behavior if no persistence is specified.
+    initializeFirestore(getApp(), {
+      cacheSizeBytes: CACHE_SIZE_UNLIMITED,
+    });
+
     // https://cloud.google.com/firestore/docs/manage-data/enable-offline
     // The default cache size threshold is 40 MB. Configure "cacheSizeBytes"
     // for a different threshold (minimum 1 MB) or set to "CACHE_SIZE_UNLIMITED"
