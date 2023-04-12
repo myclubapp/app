@@ -96,15 +96,13 @@ export class ClubPage implements OnInit {
         switchMap((allClubMembers: any) =>
           combineLatest(
             allClubMembers.map((member) =>
-              combineLatest(
-                // of(member),
-                this.userProfileService.getUserProfileById(member.id)
-              )
+              this.userProfileService.getUserProfileById(member.id)
             )
           )
         )
       )
       .subscribe((data:any) => {
+        console.log(data);
         this.requestList = [];
         for (const member of data) {
           this.requestList.push(member);
