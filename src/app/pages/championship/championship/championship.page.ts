@@ -99,7 +99,6 @@ export class ChampionshipPage implements OnInit {
     );
     this.presentToast();
   }
-
   async presentToast() {
     const toast = await this.toastController.create({
       message: "Änderungen gespeichert",
@@ -119,7 +118,7 @@ export class ChampionshipPage implements OnInit {
           return this.fbService.getUserTeamRefs(user).pipe(
             map((result: any) => {
               return result.map((team) => {
-                console.log(`Read Upcomming Games for Team > ${team.id}`);
+                // console.log(`Read Upcomming Games for Team > ${team.id}`);
                 return team.id;
               });
             })

@@ -4,6 +4,23 @@
   "newProjectRoot": "projects",
   "projects": {
     "app": {
+      "i18n":{
+        "sourceLocale": "de-CH",
+        "locales": {
+          "fr-CH": {
+            "translation": "src/locale/messages.fr.xlf",
+            "baseHref": "fr"
+          },
+          "it-CH":  {
+            "translation": "src/locale/messages.it.xlf",
+            "baseHref": "it"
+          },
+          "en-US":  {
+            "translation": "src/locale/messages.en.xlf",
+            "baseHref": "en"
+          }
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -13,6 +30,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            
             "outputPath": "www",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -400,9 +418,6 @@
             "firebaseHostingSite": "unihockey"
           }
         }
-      },
-      "i18n": {
-        "sourceLocale": "de-CH"
       }
     }
   },

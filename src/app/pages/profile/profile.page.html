@@ -34,8 +34,10 @@
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked"> Vorname </ion-label>
         <ion-input
+          labelPlacement="stacked"
+          label="Vorname"
+          aria-label="Vorname"
           readonly
           [(ngModel)]="userProfile.firstName"
           value="{{userProfile.firstName}}"
@@ -44,8 +46,10 @@
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked"> Nachname </ion-label>
         <ion-input
+          labelPlacement="stacked"
+          label="Nachname"
+          aria-label="Nachname"
           readonly
           [(ngModel)]="userProfile.lastName"
           value="{{userProfile.lastName}}"
@@ -54,8 +58,10 @@
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked"> E-Mail </ion-label>
         <ion-input
+          labelPlacement="stacked"
+          label="E-Mail"
+          aria-label="E-Mail"
           readonly
           [(ngModel)]="userProfile.email"
           value="{{userProfile.email}}"
@@ -94,55 +100,93 @@
       <ion-list-header>
         <ion-label> Einstellungen </ion-label>
       </ion-list-header>
-   <!--
+      <!--
      <ion-item>
        <ion-label position="stacked"> Meine Geräte Id </ion-label>
        <ion-input readonly value="{{deviceId.uuid}}"></ion-input>
       </ion-item>
-    --> 
+    -->
 
       <ion-item>
-        <ion-label position="stacked"> Push-Nachrichten </ion-label>
-        <ion-toggle value="{{userProfile?.settingsPush}}" slot="end" [checked]="true" [enableOnOffLabels]="true" (ionChange)="togglePush($event)"></ion-toggle>
+        <ion-toggle
+          labelPlacement="stacked"
+          aria-label="Push-Nachrichten"
+          value="{{userProfile?.settingsPush}}"
+          slot="end"
+          [checked]="userProfile.settingsPush"
+          [enableOnOffLabels]="true"
+          (ionChange)="togglePush($event)"
+        ></ion-toggle>
+        Push-Nachrichten
       </ion-item>
-      
+
       <ion-item>
-        <ion-label position="stacked"> E-Mail-Nachrichten </ion-label>
-        <ion-toggle value="{{userProfile?.settingsEmail}}" slot="end" [checked]="true" [enableOnOffLabels]="true" (ionChange)="toggleEmail($event)"></ion-toggle>
+        <ion-toggle
+          labelPlacement="stacked"
+          aria-label="E-Mail-Nachrichten"
+          value="{{userProfile?.settingsEmail}}"
+          slot="end"
+          [checked]="userProfile.settingsEmail"
+          [enableOnOffLabels]="true"
+          (ionChange)="toggleEmail($event)"
+        ></ion-toggle>
+        E-Mail-Nachrichten
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked"> E-Mail-Nachrichten Reporting</ion-label>
-        <ion-toggle value="{{userProfile?.settingsEmailReporting}}" slot="end" [checked]="true" [enableOnOffLabels]="true" (ionChange)="toggleEmailReporting($event)"></ion-toggle>
+        <ion-toggle
+          labelPlacement="stacked"
+          aria-label="E-Mail-Nachrichten Reporting"
+          value="{{userProfile?.settingsEmailReporting}}"
+          slot="end"
+          [checked]="userProfile.settingsEmailReporting"
+          [enableOnOffLabels]="true"
+          (ionChange)="toggleEmailReporting($event)"
+        ></ion-toggle>
+        E-Mail-Nachrichten Reporting
       </ion-item>
 
-      <ion-accordion-group>
-        <ion-accordion value="first">
+      <ion-accordion-group *ngIf="pushDeviceList.length > 0">
+        <ion-accordion value="pushDeviceList">
           <ion-item slot="header" color="light">
             <ion-label>Registrierte Push Geräte</ion-label>
           </ion-item>
           <div class="ion-padding" slot="content">
-        
             <ion-list>
               <ion-item *ngFor="let device of pushDeviceList">
-                <ion-label position="stacked"> {{device?.model}} </ion-label>
-                <ion-input readonly value="{{device?.id}}"></ion-input>
-                <ion-badge slot="end" *ngIf="device.id==deviceId.uuid">aktuelles Gerät</ion-badge>
-              </ion-item>    
+                <ion-input
+                  labelPlacement="stacked"
+                  label="Model {{device?.model}}"
+                  aria-label="device?.model"
+                  readonly
+                  value="Id: {{device?.id}}"
+                ></ion-input>
+                <ion-button
+                  color="danger"
+                  (click)="deletePushDevice(device.id)"
+                >
+                  <ion-icon slot="icon-only" name="trash"> </ion-icon>
+                </ion-button>
+                <ion-badge slot="end" *ngIf="device.id==deviceId.uuid"
+                  >aktuelles Gerät</ion-badge
+                >
+              </ion-item>
             </ion-list>
           </div>
         </ion-accordion>
       </ion-accordion-group>
+
+      <ion-item>
+        <ion-button (click)="registerDevice()"> Push Registrierung </ion-button>
+      </ion-item>
+
       <ion-item>
         <ion-label color="danger">Danger Zone: Profil löschen</ion-label>
-        <ion-button  slot="end" color="danger" (click)="deleteProfile()">
+        <ion-button slot="end" color="danger" (click)="deleteProfile()">
           <ion-icon slot="icon-only" name="trash"> </ion-icon>
         </ion-button>
       </ion-item>
     </ion-list>
-
-
-
   </ng-container>
 
   <!-- 
@@ -188,7 +232,6 @@
     </ion-list>
   </ng-container>
 -->
- 
 </ion-content>
 <ng-template #loading>
   <!-- Bubbles -->

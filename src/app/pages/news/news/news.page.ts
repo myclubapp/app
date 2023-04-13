@@ -102,9 +102,7 @@ export class NewsPage implements OnInit {
           return this.fbService.getUserClubRefs(user).pipe(
             map((result: any) => {
               return result.map((club) => {
-                console.log(
-                  `Read assigned clubs for emitting type > ${club.id}`
-                );
+                // console.log( `Read assigned clubs for emitting type > ${club.id}`);
                 return club.id;
               });
             })
@@ -135,7 +133,7 @@ export class NewsPage implements OnInit {
         this.newsList = this.newsList.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
+        //this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
       });
   }
 
@@ -240,7 +238,7 @@ export class NewsPage implements OnInit {
           return this.fbService.getUserClubRefs(user).pipe(
             map((result: any) => {
               return result.map((club) => {
-                console.log(`Read News for Club > ${club.id}`);
+                // console.log(`Read News for Club > ${club.id}`);
                 return club.id;
               });
             })
@@ -264,7 +262,7 @@ export class NewsPage implements OnInit {
         this.newsList = this.newsList.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
+        // this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
       });
     /*
     this.authService
@@ -312,7 +310,7 @@ export class NewsPage implements OnInit {
           return this.fbService.getUserTeamRefs(user).pipe(
             map((result: any) => {
               return result.map((team) => {
-                console.log(`Read News for Team > ${team.id}`);
+                // console.log(`Read News for Team > ${team.id}`);
                 return team.id;
               });
             })
@@ -336,7 +334,7 @@ export class NewsPage implements OnInit {
         this.newsList = this.newsList.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
+        //this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
       });
     /*
     this.authService
@@ -378,14 +376,14 @@ export class NewsPage implements OnInit {
 
   getGameReports() {
     let reportListNew = [];
-    this.teamSubscription = this.authService
+    this.gameReportSubscription = this.authService
       .getUser$()
       .pipe(
         switchMap((user) => {
           return this.fbService.getUserTeamRefs(user).pipe(
             map((result: any) => {
               return result.map((team) => {
-                console.log(`Read News for Team > ${team.id}`);
+                // console.log(`Read News for Team > ${team.id}`);
                 return team.id;
               });
             })
@@ -409,7 +407,7 @@ export class NewsPage implements OnInit {
         this.newsList = this.newsList.sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        this.newsList = [...new Set(reportListNew.concat(...this.newsList))];
+        // this.newsList = [...new Set(reportListNew.concat(...this.newsList))];
       });
   }
 
