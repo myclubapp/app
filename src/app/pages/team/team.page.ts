@@ -119,10 +119,12 @@ export class TeamPage implements OnInit {
   async deleteTeamRequest(request) {
     await this.fbService.deleteUserTeamRequest(this.team.id, request.id);
     await this.toastActionSaved();
+    this.getTeamRequests();
   }
   async approveTeamRequest(request) {
     await this.fbService.setApproveUserTeamRequest(this.team.id, request.id);
     await this.toastActionSaved();
+    this.getTeamRequests();
   }
 
   async toastActionSaved() {

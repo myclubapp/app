@@ -113,10 +113,12 @@ export class ClubPage implements OnInit {
   async deleteClubRequest(request) {
     await this.fbService.deleteUserClubRequest(this.club.id, request.id);
     await this.toastActionSaved();
+    this.getClubRequests();
   }
   async approveClubRequest(request) {
     await this.fbService.setApproveUserClubRequest(this.club.id, request.id);
     await this.toastActionSaved();
+    this.getClubRequests();
   }
 
   async toastActionSaved() {
