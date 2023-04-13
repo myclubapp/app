@@ -34,7 +34,8 @@ export class OnboardingPage implements OnInit {
     private readonly alertCtrl: AlertController,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly alertController: AlertController
   ) {
     this.menuCtrl.enable(false, "menu");
   }
@@ -78,14 +79,16 @@ export class OnboardingPage implements OnInit {
   async joinClub(club: Club) {
     console.log(club);
     const alert = await this.alertCtrl.create({
-      header: "Möchtest du dem Verein auf my-club beitreten?",
+      header: `Möchtest du dem Verein ${club.name} beitreten?`,
       buttons: [
         {
-          text: "JA",
+          text: "Ja",
           handler: async (data:any) => {
             await this.fbService.setClubRequest(club.id);
             await this.presentRequestToast();
-            await this.router.navigateByUrl("logout", {});
+            await this.presentRequestSentAlert();
+
+            // await this.router.navigateByUrl("logout", {});
           },
         },
         {
@@ -122,6 +125,31 @@ export class OnboardingPage implements OnInit {
 
     await toast.present();
   }
+
+  async presentRequestSentAlert() {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Dein Antrag wurde versendet',
+      subHeader: '',
+      message: "Sobald dein Antrag genehmigt wurde, schicken wir dir eine E-Mail",
+      buttons: [{
+        text: "Logout",
+        handler: async () => {
+          await this.authService.logout();
+        },
+     }],
+    });
+
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+    console.log('onDidDismiss resolved with role', role);
+
+  }
+
+ 
+
+
   /*
     async scanCode () {
       const image: any = await this.takePicture();

@@ -93,6 +93,7 @@ export class TeamPage implements OnInit {
   }
 
   getTeamRequests() {
+    this.requestList = [];
     this.teamRequestSub = this.fbService
       .getTeamRequestRefs(this.team.id)
       .pipe(

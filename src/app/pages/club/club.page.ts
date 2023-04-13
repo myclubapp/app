@@ -90,7 +90,8 @@ export class ClubPage implements OnInit {
   }
 
   getClubRequests() {
-   this.clubRequestSub =  this.fbService
+    this.requestList = [];
+    this.clubRequestSub =  this.fbService
       .getClubRequestRefs(this.club.id)
       .pipe(
         switchMap((allClubMembers: any) =>

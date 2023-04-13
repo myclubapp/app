@@ -87,6 +87,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   getClubRequestList() {
+    this.clubRequestList = [];
     this.clubRequestListSub = this.authService
       .getUser$()
       .pipe(
@@ -103,7 +104,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
       )
       .subscribe(async (data: any) => {
         console.log(data);
-
+        this.clubRequestList = [];
         const requestListNew = [];
         for (const request of data) {
           const requestDetail = request[1];
@@ -119,6 +120,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
       });
   }
   getTeamRequestList() {
+    this.teamRequestList = [];
     this.teamRequestListSub = this.authService
       .getUser$()
       .pipe(
@@ -135,7 +137,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
       )
       .subscribe(async (data: any) => {
         console.log(data);
-
+        this.teamRequestList = [];
         const requestListNew = [];
         for (const request of data) {
           const requestDetail = request[1];
@@ -205,11 +207,13 @@ export class ProfilePage implements OnInit, AfterViewInit {
     const user: User = await this.authService.getUser();
     await this.fbService.deleteUserClubRequest(request.id, user.uid);
     await this.presentToast();
+    this.getClubRequestList();
   }
   async deleteTeamRequest(request) {
     const user: User = await this.authService.getUser();
     await this.fbService.deleteUserTeamRequest(request.id, user.uid);
     await this.presentToast();
+    this.getTeamRequestList();
   }
   async deleteProfile() {
     const alert = await this.alertController.create({
