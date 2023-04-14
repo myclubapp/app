@@ -174,10 +174,10 @@ export class AppComponent {
   async presentAlertNoClub() {
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
-      header: "Kein Club zugewiesen",
+      header: "Kein Club gefunden",
       subHeader: "",
       message:
-        "Deinem Profil ist noch kein Club zugewiesen",
+        "Damit du myclub nutzen kannst, musst du zuerst einem Club beitreten. Möchtest du einem Club beitreten?",
       buttons: [
         {
           text: "Ja",
@@ -186,10 +186,10 @@ export class AppComponent {
           },
         },
         {
-          text: "Nein",
+          text: "Logout",
           role: "cancel",
           handler: () => {
-           
+            this.authService.logout();
           },
         },
       ],
@@ -236,10 +236,10 @@ export class AppComponent {
   async presentAlertNoTeam() {
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
-      header: "Kein Team zugewiesen",
+      header: "Kein Team gefunden",
       subHeader: "",
       message:
-        "Deinem Profil ist noch kein Team zugewiesen. Möchtest du einem Team beitreten?",
+        "Du wurdest noch keinem Team zugeteilt aber das ist kein Problem. Du kannst ganz einfach einem Team beitreten oder deinen Club Antrag im Profil wieder löschen.",
       buttons: [
         {
           text: "Team beitreten",
@@ -249,7 +249,6 @@ export class AppComponent {
         },
         {
           text: "Profil anzeigen",
-          role: "cancel",
           handler: () => {
             this.router.navigateByUrl("profile", {});
           },

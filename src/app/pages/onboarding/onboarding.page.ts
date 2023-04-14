@@ -79,14 +79,15 @@ export class OnboardingPage implements OnInit {
   async joinClub(club: Club) {
     console.log(club);
     const alert = await this.alertCtrl.create({
-      header: `Möchtest du dem Verein ${club.name} beitreten?`,
+      message: `Möchtest du dem Verein "${club.name}" beitreten?`, 
+      header: "Club beitreten",
       buttons: [
         {
           text: "Ja",
           handler: async (data:any) => {
             await this.fbService.setClubRequest(club.id);
             await this.presentRequestToast();
-            await this.presentRequestSentAlert();
+            await this.presentRequestSentAlert(club.name);
 
             // await this.router.navigateByUrl("logout", {});
           },
@@ -101,8 +102,11 @@ export class OnboardingPage implements OnInit {
         },
       ],
     });
-
-    await alert.present();
+    if (club) {
+      await alert.present();
+    } else {
+      console.log("No club"); 
+    }
   }
 
   async presentRequestToast() {
@@ -126,12 +130,12 @@ export class OnboardingPage implements OnInit {
     await toast.present();
   }
 
-  async presentRequestSentAlert() {
+  async presentRequestSentAlert(clubName: string) {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
-      header: 'Dein Antrag wurde versendet',
+      header: 'Antrag erfolgreich versendet',
       subHeader: '',
-      message: "Sobald dein Antrag genehmigt wurde, schicken wir dir eine E-Mail",
+      message: `Dein Antrag wurde erfolgreich an den Club "${clubName}" gesendet. Sobald dein Antrag genehmigt wurde, informieren wir dich wieder.`,
       buttons: [{
         text: "Logout",
         handler: async () => {
