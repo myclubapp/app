@@ -42,20 +42,19 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 
 ## Installed packages
 
+- Ionicframework (v 7)
+- Capacitor JS (v 4)
 - Trapeze for native configuration
-- Tailwind CSS (`npm install -D tailwindcss@latest postcss autoprefixer`)
-- Capacitor JS (V3)
-- Ionicframework (V6)
-- Angular PWA (`ng add @angular/pwa --project _project-name_`)
-- Apollo Angular (`ng add apollo-angular`)
+- Angular v 15.2 & Angular PWA (`ng add @angular/pwa --project _project-name_`)
+- Angular Fire v 7.5 `ng add @angular/fire`
 - [Angular Localize](https://angular.io/guide/i18n-common-locale-id)
   -- de-CH German (Switzerland)
   -- fr-CH French (Switzerland)
   -- it-CH Italian (Switzerland)
   -- en-US English
-- Angular Fire `ng add @angular/fire`
+- Tailwind CSS (`npm install -D tailwindcss@latest postcss autoprefixer`)
 - Fontawesome Icons
-- Ionicons
+- Ionicons v 5
 
 # MY-CLUB-PREMIUM
 
