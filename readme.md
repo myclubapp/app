@@ -60,16 +60,24 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 
 Run my-club within your own domain and use your own design(css)
 
-## Custom Apps:
+## Website
+- my-club [Link](https://my-club.web.app) [Link](https://my-club.app)
 
+## Custom Apps:
+- General [Link](https://my-swissvolley.web.app)
+- Unihockey [Link](https://unihockey.web.app)
+
+### Unihockey
 - Kadetten Unihockey Schaffhausen [Link](https://kadetten-unihockey.web.app)
 - UHC Winterthur United [Link](https://uhc-win-u.web.app)
 - STV Spreitenbach [Link](https://stv-spreitenbach.web.app)
 
+### Volleyball
 - VBC Schaffhausen [Link](https://vbc-schaffhausen.web.app)
 
-- swissunihockey [Link](https://my-unihockey.web.app)
-- swissvolley [Link](https://my-swissvolley.web.app)
+### Associations
+- swissunihockey [Link](https://my-swissunihockey.web.app) [Link](https://my-swiss-unihockey.web.app) [Link](https://my-suhv.web.app)
+- swissvolley [Link](https://my-swissvolley.web.app) [Link](https://my-volleyball.web.app)
 
 ## General new custom app
 
