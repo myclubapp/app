@@ -57,7 +57,6 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 - Ionicons v 5
 
 # MY-CLUB-PREMIUM
-
 Run my-club within your own domain and use your own design(css)
 
 ## Website
@@ -78,6 +77,7 @@ Run my-club within your own domain and use your own design(css)
 ### Associations
 - swissunihockey [Link](https://my-swissunihockey.web.app) [Link](https://my-swiss-unihockey.web.app) [Link](https://my-suhv.web.app)
 - swissvolley [Link](https://my-swissvolley.web.app) [Link](https://my-volleyball.web.app)
+- swisshandball [Link](https://shv.web.app)
 
 ## General new custom app
 
