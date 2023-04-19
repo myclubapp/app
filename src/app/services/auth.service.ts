@@ -112,13 +112,7 @@ export class AuthService {
   async deleteProfile() {
     const user = this.auth.currentUser;
 
-    deleteUser(user)
-      .then(() => {
-        // User deleted.
-      })
-      .catch((error) => {
-        // An error ocurred
-        // ...
-      });
+    return deleteUser(user);
+
   }
 }

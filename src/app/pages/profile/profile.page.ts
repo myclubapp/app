@@ -222,7 +222,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
         {
           text: "Ja",
           handler: async () => {
-            await this.authService.deleteProfile();
+            await this.authService.deleteProfile().catch((error) => {
+              this.presentErrorDeleteProfile();
+            });;
             await this.presentDeleteProfile();
             await this.router.navigateByUrl("/logout");
           },
@@ -363,6 +365,17 @@ export class ProfilePage implements OnInit, AfterViewInit {
       duration: 1500,
       position: "bottom",
       color: "success",
+    });
+
+    await toast.present();
+  }
+
+  async presentErrorDeleteProfile() {
+    const toast = await this.toastController.create({
+      message: "Fehler beim löschen des Profils",
+      duration: 1500,
+      position: "bottom",
+      color: "error",
     });
 
     await toast.present();
