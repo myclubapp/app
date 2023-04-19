@@ -101,21 +101,6 @@ const routes: Routes = [
         (m) => m.OnboardingPageModule
       ),
   },
-
-  {
-    path: "**",
-    loadChildren: () =>
-      import("./pages/not-found/not-found.module").then(
-        (m) => m.NotFoundPageModule
-      ),
-  },
-  {
-    path: "training-create",
-    loadChildren: () =>
-      import("./pages/training/training-create/training-create.module").then(
-        (m) => m.TrainingCreatePageModule
-      ),
-  },
   {
     path: "onboarding-team",
     loadChildren: () =>
@@ -123,6 +108,18 @@ const routes: Routes = [
         (m) => m.OnboardingTeamPageModule
       ),
   },
+  {
+    path: 'info',
+    loadChildren: () => import('./pages/info/info.module').then( m => m.InfoPageModule)
+  },
+  {
+    path: "**",
+    loadChildren: () =>
+      import("./pages/not-found/not-found.module").then(
+        (m) => m.NotFoundPageModule
+      ),
+  },
+
 ];
 
 @NgModule({

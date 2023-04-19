@@ -23,15 +23,17 @@ import {
   inMemoryPersistence
 } from '@angular/fire/auth';
 import { provideStorage, getStorage } from '@angular/fire/storage';
+import { provideMessaging,getMessaging } from '@angular/fire/messaging';
 
 // MODALs
 import { NewsDetailPage } from './pages/news/news-detail/news-detail.page';
 import { ChampionshipDetailPage } from './pages/championship/championship-detail/championship-detail.page';
 import { TrainingDetailPage } from './pages/training/training-detail/training-detail.page';
+import { TrainingCreatePage } from './pages/training/training-create/training-create.page';
 import { EventDetailPage } from './pages/event/event-detail/event-detail.page';
 import { ClubPage } from './pages/club/club.page';
 import { TeamPage } from './pages/team/team.page';
-import { provideMessaging,getMessaging } from '@angular/fire/messaging';
+
 
 @NgModule({
   declarations: [
@@ -39,6 +41,7 @@ import { provideMessaging,getMessaging } from '@angular/fire/messaging';
     NewsDetailPage,
     ChampionshipDetailPage,
     TrainingDetailPage,
+    TrainingCreatePage,
     EventDetailPage,
     ClubPage,
     TeamPage
