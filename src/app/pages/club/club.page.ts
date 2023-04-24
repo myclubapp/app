@@ -155,7 +155,7 @@ export class ClubPage implements OnInit {
     let _inputs = [];
 
     if (this.teamList.length > 0) {
-      for (let team of this.availableTeamList) {
+      for (const team of this.availableTeamList) {
             _inputs.push({
               label: team.liga + " " + team.name,
               type: "radio",
@@ -163,7 +163,7 @@ export class ClubPage implements OnInit {
             });
       }
     } else {
-      for (let team of this.availableTeamList) {
+      for (const team of this.availableTeamList) {
         _inputs.push({
           label: team.liga + " " + team.name,
           type: "radio",
