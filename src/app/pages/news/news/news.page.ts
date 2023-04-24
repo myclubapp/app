@@ -70,11 +70,6 @@ export class NewsPage implements OnInit {
     public animationCtrl: AnimationController
   ) {
     this.menuCtrl.enable(true, "menu");
-
-
-
-
-
   }
 
   ngOnInit() {
@@ -122,7 +117,7 @@ export class NewsPage implements OnInit {
             })
           );
         }),
-        switchMap((allClubDetails:any) => {
+        switchMap((allClubDetails: any) => {
           return combineLatest(
             allClubDetails.map((clubDetail: Club) => {
               return this.newsService.getNewsRef(clubDetail.type);
@@ -133,7 +128,7 @@ export class NewsPage implements OnInit {
           return allClubNews;
         })
       )
-      .subscribe((data:any) => {
+      .subscribe((data: any) => {
         // console.log(data);
         newsListNew = data;
         this.newsList = [...new Set(newsListNew.concat(...this.newsList))];
@@ -424,27 +419,30 @@ export class NewsPage implements OnInit {
     const enterAnimation = (baseEl: any) => {
       const root = baseEl.shadowRoot;
 
-      const backdropAnimation = this.animationCtrl.create()
-        .addElement(root.querySelector('ion-backdrop')!)
-        .fromTo('opacity', '0.01', 'var(--backdrop-opacity)');
+      const backdropAnimation = this.animationCtrl
+        .create()
+        .addElement(root.querySelector("ion-backdrop")!)
+        .fromTo("opacity", "0.01", "var(--backdrop-opacity)");
 
-      const wrapperAnimation = this.animationCtrl.create()
-        .addElement(root.querySelector('.modal-wrapper')!)
+      const wrapperAnimation = this.animationCtrl
+        .create()
+        .addElement(root.querySelector(".modal-wrapper")!)
         .keyframes([
-          { offset: 0, opacity: '0', transform: 'scale(0)' },
-          { offset: 1, opacity: '0.99', transform: 'scale(1)' }
+          { offset: 0, opacity: "0", transform: "scale(0)" },
+          { offset: 1, opacity: "0.99", transform: "scale(1)" },
         ]);
 
-      return this.animationCtrl.create()
+      return this.animationCtrl
+        .create()
         .addElement(baseEl)
-        .easing('ease-out')
-        .duration(500)
+        .easing("ease-out")
+        .duration(150)
         .addAnimation([backdropAnimation, wrapperAnimation]);
-    }
+    };
 
     const leaveAnimation = (baseEl: any) => {
-      return enterAnimation(baseEl).direction('reverse');
-    }
+      return enterAnimation(baseEl).direction("reverse");
+    };
 
     const modal = await this.modalCtrl.create({
       component: NewsDetailPage,
@@ -455,7 +453,7 @@ export class NewsPage implements OnInit {
         data: news,
       },
       enterAnimation,
-      leaveAnimation
+      leaveAnimation,
     });
     modal.present();
 
