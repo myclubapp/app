@@ -452,8 +452,8 @@ export class NewsPage implements OnInit {
       componentProps: {
         data: news,
       },
-      /* enterAnimation,
-      leaveAnimation*/
+      enterAnimation,
+      leaveAnimation,
     });
     modal.present();
 
