@@ -155,15 +155,15 @@ export class ClubPage implements OnInit {
     let _inputs = [];
 
     if (this.teamList.length > 0) {
-      for (let team of this.availableTeamList) {
+      for (const team of this.availableTeamList) {
             _inputs.push({
               label: team.liga + " " + team.name,
               type: "radio",
               value: team.id,
             });
       }
-    } else {<
-      for (let team of this.availableTeamList) {
+    } else {
+      for (const team of this.availableTeamList) {
         _inputs.push({
           label: team.liga + " " + team.name,
           type: "radio",
