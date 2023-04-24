@@ -6,7 +6,7 @@ import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
 import { Router } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { Subscription } from "rxjs";
+import { Subscription, take } from "rxjs";
 import { onAuthStateChanged } from "@angular/fire/auth";
 
 @Component({
@@ -19,6 +19,8 @@ export class AppComponent {
   public appVersion: string = packagejson.version;
   pushMessageSubscription: Subscription;
   pushNotificationClickSubscription: Subscription;
+  userClubRefs: Subscription;
+  userTeamRefs: Subscription;
 
   constructor(
     private readonly swUpdate: SwUpdate,
@@ -42,27 +44,31 @@ export class AppComponent {
           this.presentAlertEmailNotVerified();
         } else {
           // 2. CLUB ASSIGNED
-          const userClubRefs = this.fbService
-            .getUserClubRefs(user)
-            .subscribe((data: any) => {
-              // console.log(data);
-              if (data.length === 0) {
-                console.log("NO club assigned, start onboarding flow");
-                this.router.navigateByUrl("onboarding", {});
+          this.fbService.getUserClubRefs(user).pipe(take(1)).subscribe(async (clubData: any) => {
+              if (clubData.length === 0) {
+                this.fbService.getUserClubRequestRefs(user).pipe(take(1)).subscribe(async (clubRequestData: any) => {
+                  console.log("clubRequestData " + clubRequestData.length);
+                  if (clubRequestData.length === 0) {
+                    console.log("NO club assigned, start onboarding flow");
+                    await this.presentAlertNoClub();
+                  } else {
+                    console.log("open request available > OPEN Profile");
+                    this.presentClubRequstOpen();
+                  }
+                });
               } else {
                 // 3. TEAM ASSIGNED
-                const userTeamRefs = this.fbService
+                this.fbService.getUserTeamRefs(user).pipe(take(1)).subscribe(async (teamData: any) => {
+                /*this.userTeamRefs = this.fbService
                   .getUserTeamRefs(user)
-                  .subscribe((data: any) => {
+                  .subscribe(async (teamData: any) => { */
                     // console.log(data);
-                    if (data.length === 0) {
+                    if (teamData.length === 0) {
                       console.log("NO TEAM assigned, start onboarding flow");
-                      this.router.navigateByUrl("team-list", {});
+                      await this.presentAlertNoTeam();                      
                     }
-                    userTeamRefs.unsubscribe();
                   });
               }
-              userClubRefs.unsubscribe();
             });
         }
 
@@ -76,6 +82,14 @@ export class AppComponent {
         // ...
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.pushNotificationClickSubscription.unsubscribe();
+    this.pushMessageSubscription.unsubscribe();
+    this.swPush.unsubscribe();
+    // this.userClubRefs.unsubscribe();
+    // this.userTeamRefs.unsubscribe();
   }
 
   initializeApp(): void {
@@ -156,6 +170,98 @@ export class AppComponent {
       autoHide: true,
     });
   }
+
+  async presentAlertNoClub() {
+    const alert = await this.alertController.create({
+      cssClass: "my-custom-class",
+      header: "Kein Club gefunden",
+      subHeader: "",
+      message:
+        "Damit du myclub nutzen kannst, musst du zuerst einem Club beitreten. Möchtest du einem Club beitreten?",
+      buttons: [
+        {
+          text: "Ja",
+          handler: () => {
+            this.router.navigateByUrl("onboarding", {});
+          },
+        },
+        {
+          text: "Logout",
+          role: "cancel",
+          handler: () => {
+            this.authService.logout();
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+    console.log("onDidDismiss resolved with role", role);
+  }
+
+  async presentClubRequstOpen() {
+    const alert = await this.alertController.create({
+      cssClass: "my-custom-class",
+      header: "Offene Club-Anfragen vorhanden",
+      subHeader: "",
+      message:
+        "Du hast berets offene Club anfragen.",
+      buttons: [
+        {
+          text: "Neuen Club beitreten",
+          handler: () => {
+            this.router.navigateByUrl("onboarding", {});
+          },
+        },
+        {
+          text: "Profil verwalten",
+          role: "cancel",
+          handler: () => {
+            this.router.navigateByUrl("profile", {});
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+    console.log("onDidDismiss resolved with role", role);
+  }
+
+
+
+  async presentAlertNoTeam() {
+    const alert = await this.alertController.create({
+      cssClass: "my-custom-class",
+      header: "Kein Team gefunden",
+      subHeader: "",
+      message:
+        "Du wurdest noch keinem Team zugeteilt aber das ist kein Problem. Du kannst ganz einfach einem Team beitreten oder deinen Club Antrag im Profil wieder löschen.",
+      buttons: [
+        {
+          text: "Team beitreten",
+          handler: () => {
+            this.router.navigateByUrl("team-list", {});
+          },
+        },
+        {
+          text: "Profil anzeigen",
+          handler: () => {
+            this.router.navigateByUrl("profile", {});
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+    console.log("onDidDismiss resolved with role", role);
+  }
+
   async presentAlertEmailNotVerified() {
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
@@ -226,9 +332,5 @@ export class AppComponent {
     await this.authService.logout();
   }
 
-  ngOnDestroy() {
-    this.pushNotificationClickSubscription.unsubscribe();
-    this.pushMessageSubscription.unsubscribe();
-    this.swPush.unsubscribe();
-  }
+
 }

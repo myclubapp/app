@@ -13,13 +13,12 @@
   <ion-list>
     <ion-item>
       <ion-label position="stacked"> Name </ion-label>
-      <ion-input [(ngModel)]="training.name" value="{{training.name}}">
+      <ion-input value="{{training.name}}">
       </ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked"> Beschreibung </ion-label>
       <ion-input
-        [(ngModel)]="training.description"
         value="{{training.description}}"
       >
       </ion-input>
@@ -27,7 +26,6 @@
     <ion-item>
       <ion-label position="stacked"> Strasse & Hausnummer </ion-label>
       <ion-input
-        [(ngModel)]="training.streetAndNumber"
         value="{{training.streetAndNumber}}"
       >
       </ion-input>
@@ -35,14 +33,13 @@
     <ion-item>
       <ion-label position="stacked"> Postleitzahl </ion-label>
       <ion-input
-        [(ngModel)]="training.postalCode"
         value="{{training.postalCode}}"
       >
       </ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked"> Ortschaft </ion-label>
-      <ion-input [(ngModel)]="training.city" value="{{training.city}}">
+      <ion-input value="{{training.city}}">
       </ion-input>
     </ion-item>
 

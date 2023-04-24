@@ -5,6 +5,7 @@ import {
   ModalController,
   MenuController,
   ToastController,
+  AnimationController,
 } from "@ionic/angular";
 import { News } from "src/app/models/news";
 
@@ -65,9 +66,15 @@ export class NewsPage implements OnInit {
     private toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
-    private readonly menuCtrl: MenuController
+    private readonly menuCtrl: MenuController,
+    public animationCtrl: AnimationController
   ) {
     this.menuCtrl.enable(true, "menu");
+
+
+
+
+
   }
 
   ngOnInit() {
@@ -413,6 +420,32 @@ export class NewsPage implements OnInit {
 
   async openModal(news: News) {
     // const presentingElement = await this.modalCtrl.getTop();
+
+    const enterAnimation = (baseEl: any) => {
+      const root = baseEl.shadowRoot;
+
+      const backdropAnimation = this.animationCtrl.create()
+        .addElement(root.querySelector('ion-backdrop')!)
+        .fromTo('opacity', '0.01', 'var(--backdrop-opacity)');
+
+      const wrapperAnimation = this.animationCtrl.create()
+        .addElement(root.querySelector('.modal-wrapper')!)
+        .keyframes([
+          { offset: 0, opacity: '0', transform: 'scale(0)' },
+          { offset: 1, opacity: '0.99', transform: 'scale(1)' }
+        ]);
+
+      return this.animationCtrl.create()
+        .addElement(baseEl)
+        .easing('ease-out')
+        .duration(500)
+        .addAnimation([backdropAnimation, wrapperAnimation]);
+    }
+
+    const leaveAnimation = (baseEl: any) => {
+      return enterAnimation(baseEl).direction('reverse');
+    }
+
     const modal = await this.modalCtrl.create({
       component: NewsDetailPage,
       presentingElement: this.routerOutlet.nativeEl,
@@ -421,6 +454,8 @@ export class NewsPage implements OnInit {
       componentProps: {
         data: news,
       },
+      enterAnimation,
+      leaveAnimation
     });
     modal.present();
 

@@ -93,6 +93,7 @@ export class TeamPage implements OnInit {
   }
 
   getTeamRequests() {
+    this.requestList = [];
     this.teamRequestSub = this.fbService
       .getTeamRequestRefs(this.team.id)
       .pipe(
@@ -119,10 +120,12 @@ export class TeamPage implements OnInit {
   async deleteTeamRequest(request) {
     await this.fbService.deleteUserTeamRequest(this.team.id, request.id);
     await this.toastActionSaved();
+    this.getTeamRequests();
   }
   async approveTeamRequest(request) {
     await this.fbService.setApproveUserTeamRequest(this.team.id, request.id);
     await this.toastActionSaved();
+    this.getTeamRequests();
   }
 
   async toastActionSaved() {

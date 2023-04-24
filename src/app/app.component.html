@@ -69,6 +69,19 @@
                   ></ion-icon>
                   <ion-label>Profil</ion-label>
                 </ion-item>
+                <ion-item
+                routerDirection="root"
+                [routerLink]="['/info']"
+                lines="none"
+                detail="true"
+                routerLinkActive="selected"
+              >
+                <ion-icon
+                  slot="start"
+                  name="information-circle-outline"
+                ></ion-icon>
+                <ion-label>Infos & Hilfe</ion-label>
+              </ion-item>
               </ion-menu-toggle>
             </ion-list>
           </ion-accordion>

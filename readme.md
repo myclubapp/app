@@ -18,6 +18,8 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 
 # Developers (You?)
 
+use [conventionalcommits](https://www.conventionalcommits.org/en/)
+
 ## Prettier Setup
 
 `npm i husky-init`
@@ -42,35 +44,48 @@ We use a GraphQL API for Sports Data. Check this [repository](https://github.com
 
 ## Installed packages
 
+- Ionicframework (v 7)
+- Capacitor JS (v 4)
 - Trapeze for native configuration
-- Tailwind CSS (`npm install -D tailwindcss@latest postcss autoprefixer`)
-- Capacitor JS (V3)
-- Ionicframework (V6)
-- Angular PWA (`ng add @angular/pwa --project _project-name_`)
-- Apollo Angular (`ng add apollo-angular`)
+- Angular v 15.2 & Angular PWA (`ng add @angular/pwa --project _project-name_`)
+- Angular Fire v 7.5 `ng add @angular/fire`
 - [Angular Localize](https://angular.io/guide/i18n-common-locale-id)
   -- de-CH German (Switzerland)
   -- fr-CH French (Switzerland)
   -- it-CH Italian (Switzerland)
   -- en-US English
-- Angular Fire `ng add @angular/fire`
+- Tailwind CSS (`npm install -D tailwindcss@latest postcss autoprefixer`)
 - Fontawesome Icons
-- Ionicons
+- Ionicons v 5
 
 # MY-CLUB-PREMIUM
 
 Run my-club within your own domain and use your own design(css)
 
+## Website
+
+- my-club [Link](https://my-club.web.app) [Link](https://my-club.app)
+
 ## Custom Apps:
+
+- General [Link](https://my-swissvolley.web.app)
+- Unihockey [Link](https://unihockey.web.app)
+
+### Unihockey
 
 - Kadetten Unihockey Schaffhausen [Link](https://kadetten-unihockey.web.app)
 - UHC Winterthur United [Link](https://uhc-win-u.web.app)
 - STV Spreitenbach [Link](https://stv-spreitenbach.web.app)
 
+### Volleyball
+
 - VBC Schaffhausen [Link](https://vbc-schaffhausen.web.app)
 
-- swissunihockey [Link](https://my-unihockey.web.app)
-- swissvolley [Link](https://my-swissvolley.web.app)
+### Associations
+
+- swissunihockey [Link](https://my-swissunihockey.web.app) [Link](https://my-swiss-unihockey.web.app) [Link](https://my-suhv.web.app)
+- swissvolley [Link](https://my-swissvolley.web.app) [Link](https://my-volleyball.web.app)
+- swisshandball [Link](https://shv.web.app)
 
 ## General new custom app
 

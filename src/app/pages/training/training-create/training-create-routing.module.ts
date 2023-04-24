@@ -5,7 +5,7 @@ import { TrainingCreatePage } from "./training-create.page";
 
 const routes: Routes = [
   {
-    path: "",
+    path: '',
     component: TrainingCreatePage,
   },
 ];
