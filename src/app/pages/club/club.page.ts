@@ -162,7 +162,7 @@ export class ClubPage implements OnInit {
               value: team.id,
             });
       }
-    } else {
+    } else {<
       for (let team of this.availableTeamList) {
         _inputs.push({
           label: team.liga + " " + team.name,
