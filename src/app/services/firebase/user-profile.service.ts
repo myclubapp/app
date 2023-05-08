@@ -86,7 +86,7 @@ export class UserProfileService {
   async addPushSubscriber(sub: PushSubscription, deviceId: DeviceId, deviceInfo: DeviceInfo) {
     const user = this.authService.auth.currentUser;
     const pushObject = JSON.stringify(sub);
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}/push/${deviceId.uuid}`);
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}/push/${deviceId.identifier}`);
     return setDoc(userProfileRef, 
       { pushObject : pushObject, 
         updated: new Date(), 
