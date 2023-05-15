@@ -59,7 +59,7 @@
     "@tailwindcss/typography": "0.5.9",
     "@trapezedev/configure": "^7.0.8",
     "cordova-plugin-ionic": "5.5.3",
-    "firebase": "9.19.1",
+    "firebase": "9.22.0",
     "graphql": "^16.5.0",
     "husky": "^7.0.4",
     "husky-init": "^8.0.0",
