@@ -5,7 +5,6 @@ const config: CapacitorConfig = {
   appName: 'myclub',
   webDir: 'www',
   bundledWebRuntime: false,
-,
     android: {
        buildOptions: {
           keystorePath: 'undefined',

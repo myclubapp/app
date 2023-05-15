@@ -2,5 +2,6 @@
 	"appId": "app.myclub.default",
 	"appName": "myclub",
 	"webDir": "www",
-	"bundledWebRuntime": false
+	"bundledWebRuntime": false,
+	"android": {}
 }
