@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>myclub</string>
+        <string>myclub</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,17 +45,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>IonAppId</key>
-	<string>$APP_ID</string>
-	<key>IonChannelName</key>
-	<string>$CHANNEL_NAME</string>
-	<key>IonApi</key>
-	<string>$UPDATE_API</string>
-	<key>IonMaxVersions</key>
-	<string>$MAX_STORE</string>
-	<key>IonUpdateMethod</key>
-	<string>$UPDATE_METHOD</string>
-	<key>IonMinBackgroundDuration</key>
-	<string>$MIN_BACKGROUND_DURATION</string>
 </dict>
 </plist>
