@@ -25,9 +25,16 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { User } from "@angular/fire/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
-import { Observable, of, combineLatest, Subscription } from "rxjs";
+import {
+  Observable,
+  of,
+  combineLatest,
+  Subscription,
+  merge,
+  concat,
+} from "rxjs";
 
-import { switchMap, map, tap } from "rxjs/operators";
+import { switchMap, map, tap, combineLatestAll, first } from "rxjs/operators";
 import { Club } from "src/app/models/club";
 
 @Component({
@@ -53,10 +60,10 @@ export class NewsPage implements OnInit {
   faEnvelope: any = faEnvelope;
   faCopy: any = faCopy;
 
-  clubSubscription: Subscription;
+  /*clubSubscription: Subscription;
   teamSubscription: Subscription;
   gameReportSubscription: Subscription;
-  verbandSubscription: Subscription;
+  verbandSubscription: Subscription;*/
 
   constructor(
     private readonly newsService: NewsService,
@@ -73,28 +80,71 @@ export class NewsPage implements OnInit {
   }
 
   ngOnInit() {
-    // this.getUser();
+    this.newsList$ = this.newsService.getNewsRef("swissunihockey");
+    this.authService.getUser$().subscribe((user) => {
+      console.log(user.displayName);
 
-    this.getNews();
-    this.getClubNews();
-    this.getTeamNews();
-    this.getGameReports();
+      //CLUBS
+      this.fbService.getUserClubRefs(user).subscribe((userClubs) => {
+        const clubNewsObservables = [];
+        for (let userClub of userClubs) {
+          console.log("Club: " + userClub.id);
+
+          this.fbService.getClubRef(userClub.id).subscribe((clubData$) => {
+            console.log("TYPE: " + clubData$.type);
+            clubNewsObservables.push(
+              this.newsService.getNewsRef(clubData$.type)
+            );
+          });
+
+          // Push each club news observable into an array
+          clubNewsObservables.push(
+            this.newsService.getClubNewsRef(userClub.id)
+          );
+        }
+        this.newsList$ = concat(
+          this.newsList$,
+          ...clubNewsObservables
+        ) as Observable<News[]>;
+      });
+
+      //TEAMS
+      this.fbService.getUserTeamRefs(user).subscribe((userTeams) => {
+        const teamNewsObservables = [];
+        for (let userTeam of userTeams) {
+          console.log("Team: " + userTeam.id);
+          // Push each team news observable into an array
+          teamNewsObservables.push(
+            this.newsService.getTeamNewsRef(userTeam.id)
+          );
+        }
+        this.newsList$ = concat(
+          this.newsList$,
+          ...teamNewsObservables
+        ) as Observable<News[]>;
+      });
+    });
+
+    // this.getNews();
+    // this.getClubNews();
+    // this.getTeamNews();
+    // this.getGameReports();
 
     //this.learnRXJS();
   }
 
   ngAfterViewInit(): void {}
   ngOnDestroy(): void {
-    this.clubSubscription.unsubscribe();
+    /*this.clubSubscription.unsubscribe();
     this.teamSubscription.unsubscribe();
     this.verbandSubscription.unsubscribe();
-    this.gameReportSubscription.unsubscribe();
+    this.gameReportSubscription.unsubscribe();*/
   }
 
   /* async getUser() {
     this.user = await this.authService.getUser();
   } */
-
+  /*
   async getNews() {
     let newsListNew = [];
     this.verbandSubscription = this.authService
@@ -147,7 +197,7 @@ export class NewsPage implements OnInit {
       switchMap - for any source item, completes the previous Observable and immediately creates the next one
       exhaustMap - map to inner observable, ignore other values until that observable completes
     */
-    /*this.authService.getUser$().pipe(
+  /*this.authService.getUser$().pipe(
       switchMap((user)=> {
         return this.fbService.getUserClubRefs(user).pipe(
           map((result:any)=>{
@@ -185,7 +235,7 @@ export class NewsPage implements OnInit {
       ];
     });*/
 
-    /*
+  /*
     this.authService.getUser$().subscribe((user: User) => {
       this.fbService.getUserClubRefs(user).subscribe((clubs) => {
         for (let club of clubs) {
@@ -228,7 +278,7 @@ export class NewsPage implements OnInit {
       })
     })
   }
-*/
+
   }
 
   getClubNews() {
@@ -300,7 +350,7 @@ export class NewsPage implements OnInit {
         );
         this.newsList = [...new Set(this.newsList.concat(...newsListNew))];
       });
-      */
+      
   }
 
   getTeamNews() {
@@ -373,8 +423,8 @@ export class NewsPage implements OnInit {
         );
         this.newsList = [...new Set(this.newsList.concat(...newsListNew))];
       });
-      */
-  }
+    
+  } 
 
   getGameReports() {
     let reportListNew = [];
@@ -412,7 +462,7 @@ export class NewsPage implements OnInit {
         // this.newsList = [...new Set(reportListNew.concat(...this.newsList))];
       });
   }
-
+ */
   async openModal(news: News) {
     // const presentingElement = await this.modalCtrl.getTop();
 
@@ -452,8 +502,8 @@ export class NewsPage implements OnInit {
       componentProps: {
         data: news,
       },
-    //   enterAnimation,
-    //   leaveAnimation,
+      //   enterAnimation,
+      //   leaveAnimation,
     });
     modal.present();
 

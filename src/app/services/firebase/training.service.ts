@@ -1,6 +1,7 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import {
-  limit, Timestamp ,
+  limit,
+  Timestamp,
   Firestore,
   addDoc,
   collection,
@@ -22,7 +23,7 @@ import { Training } from "src/app/models/training";
 })
 export class TrainingService {
   constructor(
-    private readonly firestore: Firestore,
+    private firestore: Firestore = inject(Firestore),
     private readonly authService: AuthService
   ) {}
 

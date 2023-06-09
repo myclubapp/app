@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 
 import { User } from "@angular/fire/auth";
 import {
@@ -33,12 +33,10 @@ import { DeviceId, DeviceInfo } from "@capacitor/device";
 })
 export class UserProfileService {
   constructor(
-    private readonly firestore: Firestore,
+    private firestore: Firestore = inject(Firestore),
     private readonly storage: Storage,
     private readonly authService: AuthService
-  ) {
-
-  }
+  ) {}
 
   getUserProfile(user: User): Observable<Profile> {
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
@@ -83,23 +81,33 @@ export class UserProfileService {
     });
   }
 
-  async addPushSubscriber(sub: PushSubscription, deviceId: DeviceId, deviceInfo: DeviceInfo) {
+  async addPushSubscriber(
+    sub: PushSubscription,
+    deviceId: DeviceId,
+    deviceInfo: DeviceInfo
+  ) {
     const user = this.authService.auth.currentUser;
     const pushObject = JSON.stringify(sub);
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}/push/${deviceId.identifier}`);
-    return setDoc(userProfileRef, 
-      { pushObject : pushObject, 
-        updated: new Date(), 
-        model: deviceInfo.model  || "", 
-        operatingSystem: deviceInfo.operatingSystem  || "", 
-        osVersion: deviceInfo.osVersion || "", 
-        platform: deviceInfo.platform || ""
-      });
+    const userProfileRef = doc(
+      this.firestore,
+      `userProfile/${user.uid}/push/${deviceId.identifier}`
+    );
+    return setDoc(userProfileRef, {
+      pushObject: pushObject,
+      updated: new Date(),
+      model: deviceInfo.model || "",
+      operatingSystem: deviceInfo.operatingSystem || "",
+      osVersion: deviceInfo.osVersion || "",
+      platform: deviceInfo.platform || "",
+    });
   }
 
   async deletePushDevice(deviceId) {
     const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}/push/${deviceId}`);
+    const userProfileRef = doc(
+      this.firestore,
+      `userProfile/${user.uid}/push/${deviceId}`
+    );
     return deleteDoc(userProfileRef);
   }
 

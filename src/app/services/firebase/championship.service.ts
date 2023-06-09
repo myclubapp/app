@@ -1,7 +1,8 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 
 import {
-  limit, Timestamp,
+  limit,
+  Timestamp,
   Firestore,
   addDoc,
   collection,
@@ -22,7 +23,7 @@ import { Game } from "src/app/models/game";
   providedIn: "root",
 })
 export class ChampionshipService {
-  constructor(private readonly firestore: Firestore) {}
+  constructor(private firestore: Firestore = inject(Firestore)) {}
 
   /* TEAM GAME */
 
