@@ -416,7 +416,7 @@ export class NewsPage implements OnInit {
   async openModal(news: News) {
     // const presentingElement = await this.modalCtrl.getTop();
 
-    const enterAnimation = (baseEl: any) => {
+    /*const enterAnimation = (baseEl: any) => {
       const root = baseEl.shadowRoot;
 
       const backdropAnimation = this.animationCtrl
@@ -442,7 +442,7 @@ export class NewsPage implements OnInit {
 
     const leaveAnimation = (baseEl: any) => {
       return enterAnimation(baseEl).direction("reverse");
-    };
+    };*/
 
     const modal = await this.modalCtrl.create({
       component: NewsDetailPage,
