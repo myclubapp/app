@@ -43,14 +43,6 @@ export class AuthService {
     // connectAuthEmulator(this.auth, 'http://localhost:8100')
   }
 
-  /* getUser(): Promise<User> {
-    return authState(this.auth).pipe(first()).toPromise();
-  } 
-  async getUser(): Promise<User | null> {
-    // console.log("getUser auth service");
-    return await this.user$.pipe(first()).toPromise();
-  }*/
-
   getUser$() {
     // console.log("getUser auth service");
     return this.user$.pipe(first());
