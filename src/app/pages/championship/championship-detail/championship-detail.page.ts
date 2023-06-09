@@ -24,6 +24,7 @@ export class ChampionshipDetailPage implements OnInit {
   newMap: GoogleMap;
   // game$: Observable <Game>;
   user: User;
+  user$: Observable<User>;
   attendeeList: any[] = [];
   attendeeListTrue: any[] = [];
   attendeeListFalse: any[] = [];
@@ -136,7 +137,10 @@ export class ChampionshipDetailPage implements OnInit {
   }
 
   async getUser() {
-    this.user = await this.authService.getUser();
+    this.user$ = this.authService.getUser$();
+    this.user$.subscribe((user) => {
+      this.user = user;
+    });
   }
 
   async close() {

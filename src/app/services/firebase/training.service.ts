@@ -17,6 +17,7 @@ import { Observable, Observer } from "rxjs";
 
 import { AuthService } from "src/app/services/auth.service";
 import { Training } from "src/app/models/training";
+import { User } from "firebase/auth";
 
 @Injectable({
   providedIn: "root",
@@ -27,9 +28,9 @@ export class TrainingService {
     private readonly authService: AuthService
   ) {}
 
-  async setCreateTraining(training: Training) {
+  async setCreateTraining(training: Training, user: User) {
     console.log("training");
-    const user = await this.authService.getUser();
+    // const user = await this.authService.getUser();
     return addDoc(
       collection(this.firestore, `userProfile/${user.uid}/trainings`),
       training

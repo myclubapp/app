@@ -1,13 +1,20 @@
 import { Component, OnInit } from "@angular/core";
-import { SwUpdate } from "@angular/service-worker";
+
 import {
   IonItemSliding,
   IonRouterOutlet,
   ModalController,
   ToastController,
 } from "@ionic/angular";
-  import { User } from "@angular/fire/auth";
-import { of, combineLatest, Subscription, from, Observable } from "rxjs";
+import { User } from "@angular/fire/auth";
+import {
+  of,
+  combineLatest,
+  Subscription,
+  from,
+  Observable,
+  Observer,
+} from "rxjs";
 import { switchMap, map, flatMap, tap, mapTo } from "rxjs/operators";
 import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
@@ -22,6 +29,7 @@ import { ChampionshipDetailPage } from "../championship-detail/championship-deta
 })
 export class ChampionshipPage implements OnInit {
   skeleton = new Array(12);
+  user$: Observable<User>;
   user: User;
 
   gamesList: Game[] = [];
@@ -51,8 +59,11 @@ export class ChampionshipPage implements OnInit {
     this.teamSubscription.unsubscribe();
   }
 
-  async getUser() {
-    this.user = await this.authService.getUser();
+  getUser() {
+    this.user$ = this.authService.getUser$();
+    this.user$.subscribe((user) => {
+      this.user = user;
+    });
   }
 
   async openModal(game: Game) {

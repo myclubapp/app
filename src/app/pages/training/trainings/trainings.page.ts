@@ -7,7 +7,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { of, combineLatest } from "rxjs";
+import { of, combineLatest, Observable } from "rxjs";
 import { switchMap, map } from "rxjs/operators";
 import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
@@ -23,6 +23,7 @@ import { TrainingCreatePage } from "../training-create/training-create.page";
 export class TrainingsPage implements OnInit {
   skeleton = new Array(12);
   user: User;
+  user$: Observable<User>;
 
   trainingList: Training[];
   trainingListPast: Training[];
@@ -64,7 +65,10 @@ export class TrainingsPage implements OnInit {
   }
 
   async getUser() {
-    this.user = await this.authService.getUser();
+    this.user$ = await this.authService.getUser$();
+    this.user$.subscribe((user) => {
+      this.user = user;
+    });
   }
 
   async toggle(status: boolean, training: Training) {

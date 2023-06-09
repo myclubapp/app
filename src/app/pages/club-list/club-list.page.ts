@@ -3,7 +3,7 @@ import { Club } from "src/app/models/club";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { switchMap, map } from "rxjs/operators";
-import { of, combineLatest } from "rxjs";
+import { of, combineLatest, Observable } from "rxjs";
 import { User } from "@angular/fire/auth";
 import { ClubPage } from "../club/club.page";
 import {
@@ -22,6 +22,9 @@ export class ClubListPage implements OnInit {
   clubList: Club[] = [];
   activeClubList: Club[] = [];
   skeleton = new Array(12);
+  user$: Observable<User>;
+  user: User;
+
   constructor(
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
@@ -32,6 +35,7 @@ export class ClubListPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.getUser();
     this.getClubList();
 
     this.fbService.getActiveClubList().subscribe((data: any) => {
@@ -39,7 +43,12 @@ export class ClubListPage implements OnInit {
       this.activeClubList = data;
     });
   }
-
+  getUser() {
+    this.user$ = this.authService.getUser$();
+    this.user$.subscribe((user) => {
+      this.user = user;
+    });
+  }
   async openModal(club: Club) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
@@ -112,10 +121,10 @@ export class ClubListPage implements OnInit {
         {
           text: "auswählen",
           role: "confirm",
-          handler: (data:any) => {
+          handler: (data: any) => {
             console.log(data);
             this.fbService
-              .setClubRequest(data)
+              .setClubRequest(data, this.user)
               .then(async (result) => {
                 const toast = await this.toastController.create({
                   message: "Anfrage an Club gesendet",

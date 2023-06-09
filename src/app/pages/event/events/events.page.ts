@@ -7,7 +7,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { of, combineLatest } from "rxjs";
+import { of, combineLatest, Observable } from "rxjs";
 import { switchMap, map } from "rxjs/operators";
 import { Event } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
@@ -23,6 +23,7 @@ import { EventService } from "src/app/services/firebase/event.service";
 export class EventsPage implements OnInit {
   skeleton = new Array(12);
 
+  user$: Observable<User>;
   user: User;
 
   eventsList: Event[];
@@ -45,14 +46,15 @@ export class EventsPage implements OnInit {
     this.getEventsListPast();
   }
 
-  async getUser() {
-    this.user = await this.authService.getUser();
+  getUser() {
+    this.user$ = this.authService.getUser$();
   }
 
   async toggle(status: boolean, event: Event) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${event.teamId} and event ${event.id}`
     );
+
     await this.eventService.setTeamEventAttendeeStatus(
       this.user.uid,
       status,

@@ -1,9 +1,16 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { AlertController, ModalController, NavParams, ToastController } from "@ionic/angular";
-import { combineLatest, of, Subscription } from "rxjs";
+import {
+  AlertController,
+  ModalController,
+  NavParams,
+  ToastController,
+} from "@ionic/angular";
+import { User } from "firebase/auth";
+import { combineLatest, Observable, of, Subscription } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { Club } from "src/app/models/club";
 import { Team } from "src/app/models/team";
+import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 
@@ -27,9 +34,13 @@ export class ClubPage implements OnInit {
   clubRequestSub: Subscription;
   clubTeamListSub: Subscription;
 
+  user$: Observable<User>;
+  user: User;
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
+    private readonly authService: AuthService,
     private readonly alertController: AlertController,
     private readonly toastController: ToastController,
     private readonly userProfileService: UserProfileService,
@@ -51,7 +62,12 @@ export class ClubPage implements OnInit {
     this.clubRequestSub.unsubscribe();
     this.clubTeamListSub.unsubscribe();
   }
-
+  getUser() {
+    this.user$ = this.authService.getUser$();
+    this.user$.subscribe((user) => {
+      this.user = user;
+    });
+  }
   getClubMembers() {
     this.clubMemberSub = this.fbService
       .getClubMemberRefs(this.club.id)
@@ -67,7 +83,7 @@ export class ClubPage implements OnInit {
           )
         )
       )
-      .subscribe((data:any) => {
+      .subscribe((data: any) => {
         this.memberList = [];
         for (const member of data) {
           this.memberList.push(member[1]);
@@ -75,7 +91,7 @@ export class ClubPage implements OnInit {
       });
   }
   getClubAdmins() {
-   this.clubAdminSub = this.fbService
+    this.clubAdminSub = this.fbService
       .getClubAdminRefs(this.club.id)
       .pipe(
         switchMap((allClubMembers: any) =>
@@ -89,7 +105,7 @@ export class ClubPage implements OnInit {
           )
         )
       )
-      .subscribe((data:any) => {
+      .subscribe((data: any) => {
         this.adminList = [];
         for (const member of data) {
           this.adminList.push(member[1]);
@@ -99,7 +115,7 @@ export class ClubPage implements OnInit {
 
   getClubRequests() {
     this.requestList = [];
-    this.clubRequestSub =  this.fbService
+    this.clubRequestSub = this.fbService
       .getClubRequestRefs(this.club.id)
       .pipe(
         switchMap((allClubMembers: any) =>
@@ -110,7 +126,7 @@ export class ClubPage implements OnInit {
           )
         )
       )
-      .subscribe((data:any) => {
+      .subscribe((data: any) => {
         console.log(data);
         this.requestList = [];
         for (const member of data) {
@@ -150,17 +166,16 @@ export class ClubPage implements OnInit {
     return await this.modalCtrl.dismiss(this.club, "confirm");
   }
 
-
   async joinTeamAlert() {
     let _inputs = [];
 
     if (this.teamList.length > 0) {
       for (const team of this.availableTeamList) {
-            _inputs.push({
-              label: team.liga + " " + team.name,
-              type: "radio",
-              value: team.id,
-            });
+        _inputs.push({
+          label: team.liga + " " + team.name,
+          type: "radio",
+          value: team.id,
+        });
       }
     } else {
       for (const team of this.availableTeamList) {
@@ -180,9 +195,9 @@ export class ClubPage implements OnInit {
         {
           text: "auswählen",
           role: "confirm",
-          handler: async (data:any) => {
+          handler: async (data: any) => {
             // console.log(data);
-            this.fbService.setTeamRequest(data);
+            this.fbService.setTeamRequest(data, this.user);
             const toast = await this.toastController.create({
               message: "Anfrage an Team gesendet",
               color: "primary",
@@ -207,25 +222,20 @@ export class ClubPage implements OnInit {
     await alert.present();
   }
 
-
-
   getAvailableTeamList() {
     // console.log("getAvailableTeamList");
     this.clubTeamListSub = this.fbService
-                  .getClubTeamRefs(this.club.id)
-                  .pipe(
-                    switchMap((allTeams: any) =>
-                      combineLatest(
-                        allTeams.map((team) =>
-                          combineLatest(
-                            of(team),
-                            this.fbService.getTeamRef(team.id)
-                          )
-                        )
-                      )
-                    )
-                  ).subscribe
-             (async (data: any) => {
+      .getClubTeamRefs(this.club.id)
+      .pipe(
+        switchMap((allTeams: any) =>
+          combineLatest(
+            allTeams.map((team) =>
+              combineLatest(of(team), this.fbService.getTeamRef(team.id))
+            )
+          )
+        )
+      )
+      .subscribe(async (data: any) => {
         let availableTeamListNew = [];
         this.availableTeamList = [];
 
@@ -239,8 +249,9 @@ export class ClubPage implements OnInit {
           (a, b) => Number(a.id) - Number(b.id)
         );
 
-        this.availableTeamList = [...new Set(availableTeamListNew.concat(...this.availableTeamList))];
+        this.availableTeamList = [
+          ...new Set(availableTeamListNew.concat(...this.availableTeamList)),
+        ];
       });
   }
-
 }

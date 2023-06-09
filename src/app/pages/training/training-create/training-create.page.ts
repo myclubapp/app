@@ -1,6 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { ModalController, NavParams } from "@ionic/angular";
+import { User } from "firebase/auth";
+import { Observable } from "rxjs";
 import { Training } from "src/app/models/training";
+import { AuthService } from "src/app/services/auth.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
 
 @Component({
@@ -10,9 +13,12 @@ import { TrainingService } from "src/app/services/firebase/training.service";
 })
 export class TrainingCreatePage implements OnInit {
   training: Training;
+  user$: Observable<User>;
+  user: User;
   constructor(
     private readonly modalCtrl: ModalController,
     private trainingService: TrainingService,
+    private readonly authService: AuthService,
     public navParams: NavParams
   ) {
     this.training = {
@@ -36,14 +42,21 @@ export class TrainingCreatePage implements OnInit {
     };
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.getUser();
+  }
 
   async close() {
     return this.modalCtrl.dismiss(null, "close");
   }
-
+  getUser() {
+    this.user$ = this.authService.getUser$();
+    this.user$.subscribe((user) => {
+      this.user = user;
+    });
+  }
   async createTraining() {
-    this.trainingService.setCreateTraining(this.training);
+    this.trainingService.setCreateTraining(this.training, this.user);
     return this.modalCtrl.dismiss({}, "confirm");
   }
 }

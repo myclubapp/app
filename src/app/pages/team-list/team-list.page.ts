@@ -3,7 +3,7 @@ import { Team } from "src/app/models/team";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { switchMap, map } from "rxjs/operators";
-import { of, combineLatest, Subscription } from "rxjs";
+import { of, combineLatest, Subscription, Observable } from "rxjs";
 import { User } from "@angular/fire/auth";
 import {
   AlertController,
@@ -22,9 +22,10 @@ export class TeamListPage implements OnInit {
   teamList: Team[] = [];
   availableTeamList: Team[] = [];
   skeleton = new Array(12);
-
+  user$: Observable<User>;
+  user: User;
   availableTeamListSub: Subscription;
-  teamListSub:Subscription;
+  teamListSub: Subscription;
 
   constructor(
     private readonly fbService: FirebaseService,
@@ -36,15 +37,21 @@ export class TeamListPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.getUser();
     this.getTeamList();
     this.getAvailableTeamList();
   }
 
-  ngOnDestroy () {
+  ngOnDestroy() {
     this.availableTeamListSub.unsubscribe();
     this.teamListSub.unsubscribe();
   }
-
+  getUser() {
+    this.user$ = this.authService.getUser$();
+    this.user$.subscribe((user) => {
+      this.user = user;
+    });
+  }
   async openModal(team: Team) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
@@ -69,11 +76,11 @@ export class TeamListPage implements OnInit {
 
     if (this.teamList.length > 0) {
       for (let team of this.availableTeamList) {
-            _inputs.push({
-              label: team.liga + " " + team.name,
-              type: "radio",
-              value: team.id,
-            });
+        _inputs.push({
+          label: team.liga + " " + team.name,
+          type: "radio",
+          value: team.id,
+        });
       }
     } else {
       for (let team of this.availableTeamList) {
@@ -93,9 +100,9 @@ export class TeamListPage implements OnInit {
         {
           text: "auswählen",
           role: "confirm",
-          handler: async (data:any) => {
+          handler: async (data: any) => {
             // console.log(data);
-            this.fbService.setTeamRequest(data);
+            this.fbService.setTeamRequest(data, this.user);
             const toast = await this.toastController.create({
               message: "Anfrage an Team gesendet",
               color: "primary",
@@ -121,7 +128,7 @@ export class TeamListPage implements OnInit {
   }
 
   getTeamList() {
-    this.teamListSub= this.authService
+    this.teamListSub = this.authService
       .getUser$()
       .pipe(
         // GET TEAMS
@@ -155,7 +162,7 @@ export class TeamListPage implements OnInit {
 
   getAvailableTeamList() {
     // console.log("getAvailableTeamList");
-    this.availableTeamListSub= this.authService
+    this.availableTeamListSub = this.authService
       .getUser$()
       .pipe(
         // GET TEAMS
@@ -202,7 +209,9 @@ export class TeamListPage implements OnInit {
           (a, b) => Number(a.id) - Number(b.id)
         );
 
-        this.availableTeamList = [...new Set(availableTeamListNew.concat(...this.availableTeamList))];
+        this.availableTeamList = [
+          ...new Set(availableTeamListNew.concat(...this.availableTeamList)),
+        ];
       });
   }
 }

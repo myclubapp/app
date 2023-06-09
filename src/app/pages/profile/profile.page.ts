@@ -46,6 +46,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   pushDeviceList: any[] = [];
   pushDeviceListSub: Subscription;
 
+  user$: Observable<User>;
   user: User;
 
   private readonly VAPID_PUBLIC_KEY =
@@ -176,8 +177,11 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 */
   async getUser() {
-    this.user = await this.authService.getUser();
-    this.userProfile$ = this.profileService.getUserProfile(this.user);
+    this.user$ = this.authService.getUser$();
+    this.user$.subscribe((user) => {
+      this.user = user;
+      this.userProfile$ = this.profileService.getUserProfile(user);
+    });
   }
 
   async takePicture() {
@@ -204,14 +208,12 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   async deleteClubRequest(request) {
-    const user: User = await this.authService.getUser();
-    await this.fbService.deleteUserClubRequest(request.id, user.uid);
+    await this.fbService.deleteUserClubRequest(request.id, this.user.uid);
     await this.presentToast();
     this.getClubRequestList();
   }
   async deleteTeamRequest(request) {
-    const user: User = await this.authService.getUser();
-    await this.fbService.deleteUserTeamRequest(request.id, user.uid);
+    await this.fbService.deleteUserTeamRequest(request.id, this.user.uid);
     await this.presentToast();
     this.getTeamRequestList();
   }
@@ -224,7 +226,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
           handler: async () => {
             await this.authService.deleteProfile().catch((error) => {
               this.presentErrorDeleteProfile();
-            });;
+            });
             await this.presentDeleteProfile();
             await this.router.navigateByUrl("/logout");
           },

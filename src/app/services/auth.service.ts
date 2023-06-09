@@ -21,11 +21,7 @@ import {
 import { Observable } from "rxjs";
 
 // import firebase from 'firebase/compat/app';
-import {
-  Firestore,
-  doc,
-  setDoc,
-} from "@angular/fire/firestore";
+import { Firestore, doc, setDoc } from "@angular/fire/firestore";
 
 /******************************************************************************************
  *  DOCS https://github.com/angular/angularfire/blob/master/docs/auth/getting-started.md
@@ -49,11 +45,11 @@ export class AuthService {
 
   /* getUser(): Promise<User> {
     return authState(this.auth).pipe(first()).toPromise();
-  } */
+  } 
   async getUser(): Promise<User | null> {
     // console.log("getUser auth service");
     return await this.user$.pipe(first()).toPromise();
-  }
+  }*/
 
   getUser$() {
     // console.log("getUser auth service");
@@ -113,6 +109,5 @@ export class AuthService {
     const user = this.auth.currentUser;
 
     return deleteUser(user);
-
   }
 }

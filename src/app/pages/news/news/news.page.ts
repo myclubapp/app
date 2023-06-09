@@ -25,17 +25,7 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { User } from "@angular/fire/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
-import {
-  Observable,
-  of,
-  combineLatest,
-  Subscription,
-  merge,
-  concat,
-} from "rxjs";
-
-import { switchMap, map, tap, combineLatestAll, first } from "rxjs/operators";
-import { Club } from "src/app/models/club";
+import { Observable, concat } from "rxjs";
 
 @Component({
   selector: "app-news",

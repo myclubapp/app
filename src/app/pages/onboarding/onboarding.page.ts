@@ -13,6 +13,8 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { Club } from "src/app/models/club";
 import { AuthService } from "src/app/services/auth.service";
 import { Router } from "@angular/router";
+import { Observable } from "rxjs";
+import { User } from "firebase/auth";
 
 @Component({
   selector: "app-onboarding",
@@ -25,6 +27,10 @@ export class OnboardingPage implements OnInit {
   clubList: Club[];
   activeClubList: Club[];
   activeClubListBackup: Club[];
+
+  user$: Observable<User>;
+  user: User;
+
   // inviteList: Array<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>>
   constructor(
     // private readonly qrservice: QrcodeService,
@@ -41,6 +47,7 @@ export class OnboardingPage implements OnInit {
   }
 
   async ngOnInit() {
+    this.getUser();
     this.menuCtrl.enable(false, "menu");
     /* const inviteRef = await this.fbService.getInvites();
     inviteRef.subscribe(snapshot=>{
@@ -53,7 +60,12 @@ export class OnboardingPage implements OnInit {
       this.activeClubListBackup = data;
     });
   }
-
+  getUser() {
+    this.user$ = this.authService.getUser$();
+    this.user$.subscribe((user) => {
+      this.user = user;
+    });
+  }
   handleChange(event: any) {
     console.log(event.detail.value);
 
@@ -79,13 +91,13 @@ export class OnboardingPage implements OnInit {
   async joinClub(club: Club) {
     console.log(club);
     const alert = await this.alertCtrl.create({
-      message: `Möchtest du dem Verein "${club.name}" beitreten?`, 
+      message: `Möchtest du dem Verein "${club.name}" beitreten?`,
       header: "Club beitreten",
       buttons: [
         {
           text: "Ja",
-          handler: async (data:any) => {
-            await this.fbService.setClubRequest(club.id);
+          handler: async (data: any) => {
+            await this.fbService.setClubRequest(club.id, this.user);
             await this.presentRequestToast();
             await this.presentRequestSentAlert(club.name);
 
@@ -105,7 +117,7 @@ export class OnboardingPage implements OnInit {
     if (club) {
       await alert.present();
     } else {
-      console.log("No club"); 
+      console.log("No club");
     }
   }
 
@@ -132,27 +144,25 @@ export class OnboardingPage implements OnInit {
 
   async presentRequestSentAlert(clubName: string) {
     const alert = await this.alertController.create({
-      cssClass: 'my-custom-class',
-      header: 'Antrag erfolgreich versendet',
-      subHeader: '',
+      cssClass: "my-custom-class",
+      header: "Antrag erfolgreich versendet",
+      subHeader: "",
       message: `Dein Antrag wurde erfolgreich an den Club "${clubName}" gesendet. Sobald dein Antrag genehmigt wurde, informieren wir dich wieder.`,
-      buttons: [{
-        text: "Logout",
-        handler: async () => {
-          await this.authService.logout();
+      buttons: [
+        {
+          text: "Logout",
+          handler: async () => {
+            await this.authService.logout();
+          },
         },
-     }],
+      ],
     });
 
     await alert.present();
 
     const { role } = await alert.onDidDismiss();
-    console.log('onDidDismiss resolved with role', role);
-
+    console.log("onDidDismiss resolved with role", role);
   }
-
- 
-
 
   /*
     async scanCode () {

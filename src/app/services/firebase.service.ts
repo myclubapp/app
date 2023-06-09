@@ -19,7 +19,6 @@ import {
   getDownloadURL,
 } from "@angular/fire/storage";
 
-
 import { Observable, Observer } from "rxjs";
 import {
   Club,
@@ -183,18 +182,18 @@ export class FirebaseService {
     });
   }
 
-  async deleteUserClubRequest(clubId: string, requestId: string) {
+  async deleteUserClubRequest(clubId: string, userId: string) {
     const requestRef = doc(
       this.firestore,
-      `/userProfile/${requestId}/clubRequests/${clubId}`
+      `/userProfile/${userId}/clubRequests/${clubId}`
     );
     return deleteDoc(requestRef);
   }
 
-  async deleteUserTeamRequest(teamId: string, requestId: string) {
+  async deleteUserTeamRequest(teamId: string, userId: string) {
     const requestRef = doc(
       this.firestore,
-      `/userProfile/${requestId}/teamRequests/${teamId}`
+      `/userProfile/${userId}/teamRequests/${teamId}`
     );
     return deleteDoc(requestRef);
   }
@@ -226,8 +225,8 @@ export class FirebaseService {
     }) as unknown as Observable<any>;
   }
 
-  async setClubRequest(clubId: string) {
-    const user = await this.authService.getUser();
+  async setClubRequest(clubId: string, user: User) {
+    // const user = await this.authService.getUser();
     const clubRef = doc(this.firestore, `/club/${clubId}`);
     return setDoc(
       doc(this.firestore, `userProfile/${user.uid}/clubRequests`, clubId),
@@ -236,8 +235,8 @@ export class FirebaseService {
       }
     );
   }
-  async setTeamRequest(teamId: string) {
-    const user = await this.authService.getUser();
+  async setTeamRequest(teamId: string, user: User) {
+    // const user = await this.authService.getUser();
     const teamRef = doc(this.firestore, `/teams/${teamId}`);
     return setDoc(
       doc(this.firestore, `userProfile/${user.uid}/teamRequests`, teamId),
