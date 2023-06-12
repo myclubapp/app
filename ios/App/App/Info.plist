@@ -34,6 +34,12 @@
 	<string>Für Hallensuche</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Für Hallensuche</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Für Profilfoto</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Für Profilfoto</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Für Profilfoto</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
