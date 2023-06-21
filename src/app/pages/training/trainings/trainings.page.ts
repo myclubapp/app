@@ -7,7 +7,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { of, combineLatest, Observable } from "rxjs";
+import { of, combineLatest, Observable, concat } from "rxjs";
 import { switchMap, map } from "rxjs/operators";
 import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
@@ -25,6 +25,9 @@ export class TrainingsPage implements OnInit {
   user: User;
   user$: Observable<User>;
 
+  trainingList$: Observable<Training[]>;
+  trainingListPast$: Observable<Training[]>;
+
   trainingList: Training[];
   trainingListPast: Training[];
   constructor(
@@ -40,9 +43,49 @@ export class TrainingsPage implements OnInit {
   }
 
   ngOnInit() {
-    this.getUser();
+   /* this.getUser();
     this.getTrainingsList();
     this.getTrainingsListPast();
+    */
+
+    this.authService.getUser$().subscribe((user) => {
+      console.log(user.displayName);
+
+      //TEAMS
+      this.fbService.getUserTeamRefs(user).subscribe((userTeams) => {
+        const teamTrainingObservables = [];
+        for (let userTeam of userTeams) {
+          console.log("Team: " + userTeam.id);
+          // Push each team news observable into an array
+          teamTrainingObservables.push(
+            this.trainingService.getTeamTrainingsRef(userTeam.id)
+          );
+        }
+        this.trainingList$ = concat(
+          this.trainingList$,
+          ...teamTrainingObservables
+        ) as Observable<Training[]>;
+      });
+   
+
+// PAST
+      //TEAMS
+      this.fbService.getUserTeamRefs(user).subscribe((userTeams) => {
+        const teamTrainingPastObservables = [];
+        for (let userTeam of userTeams) {
+          console.log("Team: " + userTeam.id);
+          // Push each team news observable into an array
+          teamTrainingPastObservables.push(
+            this.trainingService.getTeamTrainingsRef(userTeam.id)
+          );
+        }
+        this.trainingListPast$ = concat(
+          this.trainingListPast$,
+          ...teamTrainingPastObservables
+        ) as Observable<Training[]>;
+      });
+    });
+
   }
 
   async openTrainingCreateModal() {
@@ -112,7 +155,7 @@ export class TrainingsPage implements OnInit {
     });
     toast.present();
   }
-
+/*
   getTrainingsList() {
     this.authService
       .getUser$()
@@ -261,5 +304,5 @@ export class TrainingsPage implements OnInit {
           (a, b) => b.date.getMilliseconds() - a.date.getMilliseconds()
         );
       });
-  }
+  }*/
 }

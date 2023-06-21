@@ -58,7 +58,7 @@ export class TrainingService {
   }
 
   // PAST 20 Entries
-  getTeamTrainingsRefPast(teamId: string): Observable<Training[]> {
+  getTeamTrainingsPastRef(teamId: string): Observable<Training[]> {
     // console.log(`Read Team Trainings List Ref ${teamId}`)
     const trainingsRefList = collection(
       this.firestore,
@@ -78,7 +78,7 @@ export class TrainingService {
     >;
   }
 
-  /* CLUB TrainingS */
+  /* CLUB TrainingS
   getClubTrainingsRef(clubId: string): Observable<Training> {
     const trainingsRefList = collection(
       this.firestore,
@@ -87,7 +87,7 @@ export class TrainingService {
     return collectionData(trainingsRefList, {
       idField: "id",
     }) as unknown as Observable<Training>;
-  }
+  } */
 
   /* TEAM TrainingS ATTENDEES */
   getTeamTrainingsAttendeesRef(

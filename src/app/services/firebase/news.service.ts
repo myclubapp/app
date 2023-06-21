@@ -15,7 +15,7 @@ import { News } from "src/app/models/news";
   providedIn: "root",
 })
 export class NewsService {
-  twentyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 40);
+  twentyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 365);
 
   constructor(private firestore: Firestore = inject(Firestore)) {}
 

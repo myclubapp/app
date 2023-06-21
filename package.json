@@ -53,7 +53,7 @@
     "@fortawesome/fontawesome-svg-core": "6.4.0",
     "@fortawesome/free-brands-svg-icons": "6.4.0",
     "@fortawesome/free-solid-svg-icons": "6.4.0",
-    "@ionic/angular": "7.0.11",
+    "@ionic/angular": "7.1.0",
     "@ionic/pwa-elements": "^3.1.1",
     "@tailwindcss/forms": "0.5.3",
     "@tailwindcss/typography": "0.5.9",
