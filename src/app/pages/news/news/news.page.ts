@@ -25,7 +25,8 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { User } from "@angular/fire/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
-import { Observable, concat, forkJoin, map, mergeMap, of, switchMap, toArray } from "rxjs";
+import { Observable, concat, concatAll, concatMap, forkJoin, from, map, merge, mergeMap, of, switchMap, toArray } from "rxjs";
+import { Club } from "src/app/models/club";
 
 @Component({
   selector: "app-news",
@@ -64,41 +65,40 @@ export class NewsPage implements OnInit {
 
   ngOnInit() {
    
-
     this.authService.getUser$().pipe(
       switchMap(user => {
-        console.log(user.displayName);
-    
+        console.log("User: " + user.displayName);
         // Retrieve user clubs
         return this.fbService.getUserClubRefs(user);
       }),
-      switchMap(userClubs => {
-        const clubNewsObservables = [];
-    
-        for (let userClub of userClubs) {
-          console.log("Club: " + userClub.id);
-    
-        // Retrieve club data
-        const clubData$ = this.fbService.getClubRef(userClub.id);
-
-        // Push each club news observable into an array
-        clubNewsObservables.push(clubData$.pipe(
-          switchMap(clubData => {
-            console.log("TYPE: " + clubData.type);
-            return this.newsService.getNewsRef(clubData.type);
-          })
-        ));
-    
-          clubNewsObservables.push(this.newsService.getClubNewsRef(userClub.id));
-        }
+      mergeMap(userClubs => {
+        const clubNewsObservables = userClubs.map(userClub => {
+          console.log("Club ID: " + userClub.id);
+          const clubRef$ = this.fbService.getClubRef(userClub.id).pipe(
+            mergeMap((clubData) => {
+              console.log("Club Name: " + clubData.name);
+              const newsRef$ = this.newsService.getNewsRef(clubData.type);
+              const clubNewsRef$ = this.newsService.getClubNewsRef(userClub.id);
+              return forkJoin([newsRef$, clubNewsRef$]);
+            })
+          );
+          return clubRef$;
+        });
     
         // Combine all club news observables using forkJoin
-        return forkJoin([clubNewsObservables]);
-      }),
+        return forkJoin(clubNewsObservables).pipe(
+          concatAll()
+        );
+      })
     ).subscribe(mergedNews => {
-      // Concatenate the initial news observable with the merged club news observables
-      this.newsList$ = concat(of(this.newsList$), ...mergedNews) as Observable<News[]>;
+      console.log(mergedNews);
+      const flattenedNews = [].concat(...mergedNews);
+      this.newsList$ = concat(of(this.newsList$), ...flattenedNews) as Observable<News[]>;
+    },
+    error => {
+      console.error(error);
     });
+    
   }
 
   ngAfterViewInit(): void {}
