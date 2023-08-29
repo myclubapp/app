@@ -76,7 +76,7 @@
     "@angular/localize": "^16.0.3",
     "@capacitor/cli": "5.0.4",
     "@ionic/angular-toolkit": "9.0.0",
-    "@ionic/cli": "^6.18.0",
+    "@ionic/cli": "^6.20.9",
     "@types/jasmine": "4.3.1",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "18.8.5",
