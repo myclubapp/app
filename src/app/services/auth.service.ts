@@ -38,7 +38,7 @@ export class AuthService {
     private readonly router: Router
   ) {
     // or use this version...
-    this.user$ = authState(auth);
+    this.user$ = authState(this.auth);
     this.auth = getAuth();
     // connectAuthEmulator(this.auth, 'http://localhost:8100')
   }
