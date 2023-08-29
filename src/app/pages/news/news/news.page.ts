@@ -25,7 +25,7 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { User } from "@angular/fire/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
-import { Observable, concat, concatAll, concatMap, forkJoin, from, map, merge, mergeMap, of, switchMap, toArray } from "rxjs";
+import { Observable, concat, concatAll, concatMap, forkJoin, from, map, merge, mergeMap, of, switchMap, tap, toArray } from "rxjs";
 import { Club } from "src/app/models/club";
 
 @Component({
@@ -65,6 +65,7 @@ export class NewsPage implements OnInit {
 
   ngOnInit() {
    
+
     this.authService.getUser$().pipe(
       switchMap(user => {
         console.log("User: " + user.displayName);
@@ -98,8 +99,36 @@ export class NewsPage implements OnInit {
     error => {
       console.error(error);
     });
-    
   }
+
+// Helper method to get club news observables
+getClubNewsObservables(user) {
+  return this.fbService.getUserClubRefs(user).pipe(
+    mergeMap(userClubs => {
+      const clubDataObservables = userClubs.map(userClub => 
+        this.fbService.getClubRef(userClub.id).pipe(
+          tap(clubData$ => {
+            console.log("Club: " + userClub.id);
+            console.log("TYPE: " + clubData$.type);
+          }),
+          map(clubData$ => this.newsService.getNewsRef(clubData$.type))
+        )
+      );
+      const clubNewsObservables = userClubs.map(userClub => this.newsService.getClubNewsRef(userClub.id));
+      return [...clubDataObservables, ...clubNewsObservables];
+    }),
+    toArray()
+  );
+}
+
+// Helper method to get team news observables
+getTeamNewsObservables(user) {
+  return this.fbService.getUserTeamRefs(user).pipe(
+    tap((userTeam:any) => console.log("Team: " + userTeam.id)),
+    mergeMap(userTeams => userTeams.map(userTeam => this.newsService.getTeamNewsRef(userTeam.id))),
+    toArray()
+  );
+}
 
   ngAfterViewInit(): void {}
   ngOnDestroy(): void {
