@@ -65,8 +65,9 @@ export class NewsPage implements OnInit {
   
   ngOnInit() {
    
-    const clubNewsList: News[] = [];
-const teamNewsList: News[] = [];
+  const clubNewsList: News[] = [];
+  const teamNewsList: News[] = [];
+  const verbandNewsList: News[] = [];
 
 // Club observable
 const clubNews$ = this.authService.getUser$().pipe(
@@ -82,6 +83,23 @@ const clubNews$ = this.authService.getUser$().pipe(
     ),
     tap(news => news.forEach(n => clubNewsList.push(n))),
     finalize(() => console.log("Club news fetching completed"))
+);
+
+// Verband observable
+const verbandNews$ = this.authService.getUser$().pipe(
+  switchMap(user => this.fbService.getUserClubRefs(user)),
+  concatMap(clubsArray => from(clubsArray)),
+  switchMap(club => this.fbService.getClubRef(club.id)),
+  concatMap(clubDetail => 
+      this.newsService.getNewsRef(clubDetail.type).pipe(
+          catchError(error => {
+              console.error('Error fetching verband news:', error);
+              return of([]);
+          })
+      )
+  ),
+  tap(news => news.forEach(n => verbandNewsList.push(n))),
+  finalize(() => console.log("Verband news fetching completed"))
 );
 
 // Team observable
@@ -101,11 +119,15 @@ const teamNews$ = this.authService.getUser$().pipe(
 );
 
 // Use combineLatest to get results when both observables have emitted
-combineLatest([clubNews$, teamNews$]).subscribe({
+combineLatest([clubNews$, teamNews$, verbandNews$]).subscribe({
     next: () => {
-        this.newsList = [...clubNewsList, ...teamNewsList];
-        this.newsList$ = of(this.newsList);
-        console.log("Combined news list created");
+        this.newsList = [...clubNewsList, ...teamNewsList, ...verbandNewsList].sort((a, b) => {
+          // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
+          return new Date(a.date) < new Date(b.date) ? 1 : new Date(a.date) < new Date(b.date) ? -1 : 0;
+      });
+    
+      this.newsList$ = of(this.newsList);
+      console.log("Combined news list created");
     },
     error: err => console.error('Error in the observable chain:', err)
 });
