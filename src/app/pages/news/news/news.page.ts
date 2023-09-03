@@ -25,7 +25,7 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { User } from "@angular/fire/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
-import { Observable, concat, concatAll, concatMap, forkJoin, from, map, merge, mergeMap, of, switchMap, tap, toArray } from "rxjs";
+import { Observable, catchError, combineLatest, concat, concatAll, concatMap, finalize, forkJoin, from, map, merge, mergeMap, of, switchMap, take, tap, timeout, toArray } from "rxjs";
 import { Club } from "src/app/models/club";
 
 @Component({
@@ -62,73 +62,56 @@ export class NewsPage implements OnInit {
   ) {
     this.menuCtrl.enable(true, "menu");
   }
-
+  
   ngOnInit() {
    
+    const clubNewsList: News[] = [];
+const teamNewsList: News[] = [];
 
-    this.authService.getUser$().pipe(
-      switchMap(user => {
-        console.log("User: " + user.displayName);
-        // Retrieve user clubs
-        return this.fbService.getUserClubRefs(user);
-      }),
-      mergeMap(userClubs => {
-        const clubNewsObservables = userClubs.map(userClub => {
-          console.log("Club ID: " + userClub.id);
-          const clubRef$ = this.fbService.getClubRef(userClub.id).pipe(
-            mergeMap((clubData) => {
-              console.log("Club Name: " + clubData.name);
-              const newsRef$ = this.newsService.getNewsRef(clubData.type);
-              const clubNewsRef$ = this.newsService.getClubNewsRef(userClub.id);
-              return forkJoin([newsRef$, clubNewsRef$]);
+// Club observable
+const clubNews$ = this.authService.getUser$().pipe(
+    switchMap(user => this.fbService.getUserClubRefs(user)),
+    concatMap(clubsArray => from(clubsArray)),
+    concatMap(club => 
+        this.newsService.getClubNewsRef(club.id).pipe(
+            catchError(error => {
+                console.error('Error fetching club news:', error);
+                return of([]);
             })
-          );
-          return clubRef$;
-        });
-    
-        // Combine all club news observables using forkJoin
-        return forkJoin(clubNewsObservables).pipe(
-          concatAll()
-        );
-      })
-    ).subscribe(mergedNews => {
-      console.log(mergedNews);
-      const flattenedNews = [].concat(...mergedNews);
-      this.newsList$ = concat(of(this.newsList$), ...flattenedNews) as Observable<News[]>;
-    },
-    error => {
-      console.error(error);
-    });
-  }
-
-// Helper method to get club news observables
-getClubNewsObservables(user) {
-  return this.fbService.getUserClubRefs(user).pipe(
-    mergeMap(userClubs => {
-      const clubDataObservables = userClubs.map(userClub => 
-        this.fbService.getClubRef(userClub.id).pipe(
-          tap(clubData$ => {
-            console.log("Club: " + userClub.id);
-            console.log("TYPE: " + clubData$.type);
-          }),
-          map(clubData$ => this.newsService.getNewsRef(clubData$.type))
         )
-      );
-      const clubNewsObservables = userClubs.map(userClub => this.newsService.getClubNewsRef(userClub.id));
-      return [...clubDataObservables, ...clubNewsObservables];
-    }),
-    toArray()
-  );
-}
+    ),
+    tap(news => news.forEach(n => clubNewsList.push(n))),
+    finalize(() => console.log("Club news fetching completed"))
+);
 
-// Helper method to get team news observables
-getTeamNewsObservables(user) {
-  return this.fbService.getUserTeamRefs(user).pipe(
-    tap((userTeam:any) => console.log("Team: " + userTeam.id)),
-    mergeMap(userTeams => userTeams.map(userTeam => this.newsService.getTeamNewsRef(userTeam.id))),
-    toArray()
-  );
-}
+// Team observable
+const teamNews$ = this.authService.getUser$().pipe(
+    switchMap(user => this.fbService.getUserTeamRefs(user)),
+    concatMap(teamsArray => from(teamsArray)),
+    concatMap(team => 
+        this.newsService.getTeamNewsRef(team.id).pipe(
+            catchError(error => {
+                console.error('Error fetching team news:', error);
+                return of([]);
+            })
+        )
+    ),
+    tap(news => news.forEach(n => teamNewsList.push(n))),
+    finalize(() => console.log("Team news fetching completed"))
+);
+
+// Use combineLatest to get results when both observables have emitted
+combineLatest([clubNews$, teamNews$]).subscribe({
+    next: () => {
+        this.newsList = [...clubNewsList, ...teamNewsList];
+        this.newsList$ = of(this.newsList);
+        console.log("Combined news list created");
+    },
+    error: err => console.error('Error in the observable chain:', err)
+});
+
+
+  }
 
   ngAfterViewInit(): void {}
   ngOnDestroy(): void {
