@@ -127,8 +127,7 @@ export class AppComponent implements OnInit {
       serverPublicKey: 'BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY'
     });
 
-    this.profileService
-      .addPushSubscriber(pushSubscription, this.deviceId, this.deviceInfo);
+    await this.profileService.addPushSubscriber(pushSubscription, this.deviceId, this.deviceInfo);
 
   };
 
