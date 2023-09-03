@@ -8,6 +8,8 @@ import { Router } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { Subscription, take } from "rxjs";
 import { onAuthStateChanged } from "@angular/fire/auth";
+import { UserProfileService } from "./services/firebase/user-profile.service";
+import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
 
 @Component({
   selector: "app-root",
@@ -20,12 +22,16 @@ export class AppComponent implements OnInit {
   userClubRefs: Subscription;
   userTeamRefs: Subscription;
 
+  deviceId: DeviceId;
+  deviceInfo: DeviceInfo;
+
   constructor(
     private readonly swUpdate: SwUpdate,
     private readonly swPush: SwPush,
     private readonly alertController: AlertController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
+    private readonly profileService: UserProfileService,
     private readonly router: Router,
   ) {
     this.initializeApp();
@@ -82,6 +88,12 @@ export class AppComponent implements OnInit {
   }
   ngOnInit(): void {
     this.requestSubscription();
+    this.swPush.messages.subscribe( message =>{
+      console.log(message);
+
+      this.alertPushMessage(message);
+
+    })
   }
 
   ngOnDestroy() {
@@ -102,19 +114,22 @@ export class AppComponent implements OnInit {
     });
   }
 
-  requestSubscription = () => {
+  async requestSubscription() {
     if (!this.swPush.isEnabled) {
       console.log("Notification is not enabled.");
       return;
     }
 
-    this.swPush.requestSubscription({
-      serverPublicKey: 'BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY'
-    }).then((message) => {
-      console.log(JSON.stringify(message));
+    this.deviceId = await Device.getId();
+    this.deviceInfo = await Device.getInfo();
 
-     this.alertPushMessage(message);
-    }).catch((_) => console.log);
+    const pushSubscription = await this.swPush.requestSubscription({
+      serverPublicKey: 'BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY'
+    });
+
+    this.profileService
+      .addPushSubscriber(pushSubscription, this.deviceId, this.deviceInfo);
+
   };
 
   async alertPushMessage(message) {
