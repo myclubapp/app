@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
 import { AlertController } from "@ionic/angular";
 import { AuthService } from "./services/auth.service";
@@ -14,11 +14,9 @@ import { onAuthStateChanged } from "@angular/fire/auth";
   templateUrl: "app.component.html",
   styleUrls: ["app.component.scss"],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   public email: string;
   public appVersion: string = packagejson.version;
-  pushMessageSubscription: Subscription;
-  pushNotificationClickSubscription: Subscription;
   userClubRefs: Subscription;
   userTeamRefs: Subscription;
 
@@ -31,7 +29,6 @@ export class AppComponent {
     private readonly router: Router,
   ) {
     this.initializeApp();
-    this.receivePushMessage();
     // this.initializeFirebase();
 
     onAuthStateChanged(this.authService.auth, (user) => {
@@ -83,11 +80,14 @@ export class AppComponent {
       }
     });
   }
+  ngOnInit(): void {
+    this.requestSubscription();
+  }
 
   ngOnDestroy() {
-    this.pushNotificationClickSubscription.unsubscribe();
-    this.pushMessageSubscription.unsubscribe();
-    this.swPush.unsubscribe();
+//     this.pushNotificationClickSubscription.unsubscribe();
+//    this.pushMessageSubscription.unsubscribe();
+//    this.swPush.unsubscribe();
     // this.userClubRefs.unsubscribe();
     // this.userTeamRefs.unsubscribe();
   }
@@ -102,30 +102,20 @@ export class AppComponent {
     });
   }
 
-  async receivePushMessage() {
-
-    if (this.swPush.isEnabled) {
-
+  requestSubscription = () => {
+    if (!this.swPush.isEnabled) {
+      console.log("Notification is not enabled.");
+      return;
     }
-    this.pushNotificationClickSubscription = this.swPush.notificationClicks.subscribe(
-      ({action, notification}) => {
-        console.log("notificationClicks", action, notification);
-        this.alertPushMessage(notification);
-          // TODO: Do something in response to notification click.
-      });
 
-    this.pushMessageSubscription = this.swPush.messages.subscribe(message=>{
-      console.log("swPush.messages.subscribe", message);
-      this.alertPushMessage(message);
-    })
+    this.swPush.requestSubscription({
+      serverPublicKey: 'BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY'
+    }).then((message) => {
+      console.log(JSON.stringify(message));
 
-    /* const messaging = getMessaging();
-    onMessage(messaging, (payload) => {
-      console.log("Message received. ", payload);
-      this.alertPushMessage(payload);
-      // ...
-    });*/
-  }
+     this.alertPushMessage(message);
+    }).catch((_) => console.log);
+  };
 
   async alertPushMessage(message) {
     const alert = await this.alertController.create({
