@@ -121,9 +121,9 @@ const teamNews$ = this.authService.getUser$().pipe(
 // Use combineLatest to get results when both observables have emitted
 combineLatest([clubNews$, teamNews$, verbandNews$]).subscribe({
     next: () => {
-        this.newsList = [...clubNewsList, ...teamNewsList, ...verbandNewsList].sort((a, b) => {
+      this.newsList = [...clubNewsList, ...teamNewsList, ...verbandNewsList].sort((a, b):any => {
           // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
-          return new Date(a.date) < new Date(b.date) ? 1 : new Date(a.date) < new Date(b.date) ? -1 : 0;
+          return new Date(a.date).getTime() < new Date(b.date).getTime();
       });
     
       this.newsList$ = of(this.newsList);
