@@ -68,7 +68,7 @@ export class FirebaseService {
     >;
   }
 
-  getUserClubRefs(user: User): Observable<any[]> {
+  getUserClubRefs(user: User): Observable<Club[]> {
     //console.log(user);
     const clubRefList = collection(
       this.firestore,
@@ -76,7 +76,7 @@ export class FirebaseService {
     );
     return collectionData(clubRefList, {
       idField: "id",
-    });
+    }) as Observable<Club[]>;
   }
 
   getClubMemberRefs(clubId: string): Observable<any> {

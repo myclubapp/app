@@ -23,11 +23,13 @@ import { faEnvelope, faCopy } from "@fortawesome/free-solid-svg-icons";
 
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { User } from "@angular/fire/auth";
+import { User, user } from "@angular/fire/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
-import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, finalize, forkJoin, from, map, merge, mergeMap, of, switchMap, take, tap, timeout, toArray } from "rxjs";
+import { filter } from 'rxjs/operators';
+import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, merge, mergeMap, of, shareReplay, switchMap, take, tap, timeout, toArray } from "rxjs";
 import { Club } from "src/app/models/club";
+import { Team } from "src/app/models/team";
 
 @Component({
   selector: "app-news",
@@ -40,7 +42,7 @@ export class NewsPage implements OnInit {
 
 
 
-  filterList: [] = [];
+  filterList: any[] = [];
 
   // Social Share
   shareSocialShareOptions: any;
@@ -54,6 +56,7 @@ export class NewsPage implements OnInit {
   faCopy: any = faCopy;
 
   private subscription: Subscription;
+  private subscriptionFilter: Subscription;
   
   newsList: News[] = [];
   newsList$: Observable<News[]>;
@@ -89,6 +92,10 @@ export class NewsPage implements OnInit {
       concatMap(club => 
           this.newsService.getClubNewsRef(club.id).pipe(
             take(1), 
+            map(newsArray => newsArray.map(newsItem => ({ 
+              ...newsItem, 
+              filterable: club.id 
+            }))),
               catchError(error => {
                   console.error('Error fetching club news:', error);
                   return of([]);
@@ -108,6 +115,10 @@ export class NewsPage implements OnInit {
     concatMap(clubDetail => 
         this.newsService.getNewsRef(clubDetail.type).pipe(
           take(1), 
+          map(newsArray => newsArray.map(newsItem => ({ 
+            ...newsItem, 
+            filterable: clubDetail.type 
+          }))),
             catchError(error => {
                 console.error('Error fetching verband news:', error);
                 return of([]);
@@ -126,6 +137,10 @@ export class NewsPage implements OnInit {
       concatMap(team => 
           this.newsService.getTeamNewsRef(team.id).pipe(
             take(1), 
+            map(newsArray => newsArray.map(newsItem => ({ 
+              ...newsItem, 
+              filterable: team.id 
+            }))),
               catchError(error => {
                   console.error('Error fetching team news:', error);
                   return of([]);
@@ -137,7 +152,7 @@ export class NewsPage implements OnInit {
   );
 
     // Use combineLatest to get results when both observables have emitted
-    this.subscription = combineLatest([clubNews$, teamNews$, verbandNews$]).subscribe({
+    this.subscriptionFilter = combineLatest([clubNews$, teamNews$, verbandNews$]).subscribe({
         next: () => {
           this.newsList = [...this.newsList, ...clubNewsList, ...teamNewsList, ...verbandNewsList].sort((a, b):any => {
               // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
@@ -257,22 +272,220 @@ export class NewsPage implements OnInit {
   }
 
   async openFilter(ev: Event){
-    // console.log(ev);
+    let filterList = [];
 
-    const alert = await this.alertCtrl.create({
-      message: 'This is an alert with custom aria attributes.',
-      inputs: [
-        {
-          label: 'swissunihockey',
+    const clubs$ = this.authService.getUser$().pipe(
+      switchMap(user => this.fbService.getUserClubRefs(user).pipe(take(1))),  
+      concatMap(clubArray => from(clubArray)),
+      tap((club:Club)=>console.log(club.id)),
+      concatMap(club => 
+        this.fbService.getClubRef(club.id).pipe(
+          take(1),
+          defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
+          map(result => [result]),
+          catchError(error => {
+            console.error('Error fetching ClubDetail:', error);
+            return of([]);
+          })
+        )
+      ),
+      tap(clubList => clubList.forEach(club => {
+        filterList.push({id: club.type, name: club.type}); // Verband Infos
+        return filterList.push(club);
+      })),
+      finalize(() => console.log("Get Club completed"))
+  );
+
+  const teams$ = this.authService.getUser$().pipe(
+    switchMap(user => this.fbService.getUserTeamRefs(user).pipe(take(1))),
+    concatMap(teamsArray =>  from(teamsArray)),
+    tap((team:Team)=>console.log(team.id)),
+    concatMap(team => 
+      this.fbService.getTeamRef(team.id).pipe(
+        take(1),
+        defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
+        map(result => [result]),
+        catchError(error => {
+          console.error('Error fetching TeamDetail:', error);
+          return of([]);
+      })
+    )
+    ),
+    tap(teamList => teamList.forEach(team => filterList.push(team))),
+    finalize(() => console.log("Get Teams completed"))
+  );
+
+  this.subscription = forkJoin([teams$, clubs$]).subscribe({
+    next: () => {
+
+
+      const alertInputs = [];
+      for (const item of filterList){
+        // console.log(item)
+        alertInputs.push({
+          label: item.name,
           type: 'radio',
-          value: 'swissunihockey',
+          value: item.id,
+        });
+      }
+    
+      this.alertCtrl.create({
+        message: 'Anzeige filtern:',
+        subHeader: 'Nach Verein oder Teams filtern.',
+        inputs: alertInputs,
+        buttons: [
+          { text: "OK",
+        handler: (value)=>{
+          console.log(value)
+
+          this.newsList$ = of(this.newsList.filter((news: any) => news.filterable == value));
+
+        } },
+          { text: "abbrechen" }
+        ],
+        htmlAttributes: { 'aria-label': 'alert dialog' },
+      }).then(alert => {
+        alert.present();
+      });
+    },
+    error: err => console.error('Error in the observable chain:', err)
+  });
+
+/*
+  this.subscriptionFilter = forkJoin([teams$, clubs$]).pipe(
+    map(([teams, clubs]) => [...teams, ...clubs]),
+    map(filterList => {
+      filterList.sort((a, b) => a.name < b.name ? -1 : 1);
+      return filterList.filter((item, index, self) => 
+        index === self.findIndex(t => t.id === item.id)
+      );
+    }),
+    tap(filteredList => {
+      const alertInputs = [];
+      for (const item of filteredList){
+        alertInputs.push({
+          label: item.name,
+          type: 'radio',
+          value: item.id,
+        });
+      }
+    
+      this.alertCtrl.create({
+        message: 'News Filtern.',
+        inputs: alertInputs,
+        buttons: [
+          { text: "OK" },
+          { text: "abbrechen" }
+        ],
+        htmlAttributes: { 'aria-label': 'alert dialog' },
+      }).then(alert => {
+        alert.present();
+      });
+    })
+  ).subscribe({
+    error: err => console.error('Error in the observable chain:', err)
+  });
+*/
+  /*
+
+
+  // Use forkJoin to get results when both observables have completed
+  this.subscriptionFilter = combineLatest([teams$, clubs$]).subscribe({
+    next: () => {
+      console.log("ONLY 1 TIME")
+      
+      filterList = filterList.sort((a, b):any => {
+        return a.name < b.name;
+      });    
+      
+      filterList = filterList.filter((item, index, self) => 
+      index === self.findIndex((t) => (t.id === item.id))
+      );
+      console.log(filterList);
+
+      const alertInputs = [];
+      for (const item of filterList){
+        console.log(item)
+        alertInputs.push(
+          {
+            label: item.name,
+            type: 'radio',
+            value: item.id,
+          }
+        )
+      }
+  
+      this.alertCtrl.create({
+        message: 'News Filtern.',
+        inputs: alertInputs,
+        buttons: [
+          {
+            text: "OK"
+          },
+          {
+            text: "abbrechen"
+          }
+        ],
+        htmlAttributes: {
+          'aria-label': 'alert dialog',
         },
+      }).then(alert=>{
+        alert.present();
+      });
+  
+      
+    },
+    error: err => console.error('Error in the observable chain:', err)
+  });
+*/
+/*
+    // console.log(ev);
+    const filterList = [];
+
+    const clubs$ =  this.authService.getUser$().pipe(
+      switchMap(user => this.fbService.getUserClubRefs(user)),
+      concatMap(clubsArray => from(clubsArray)),
+      switchMap(club => this.fbService.getClubRef(club.id).pipe(take(1))),
+      tap(clubDetail=>{
+        filterList.push(clubDetail)
+      }),
+    finalize(() => console.log("Get clubs completed")));
+    const teams$ =  this.authService.getUser$().pipe(
+      switchMap(user => this.fbService.getUserTeamRefs(user)),
+      concatMap(teamArray => from(teamArray)),
+      concatMap(team => this.fbService.getTeamRef(team.id).pipe(take(1))),
+      tap(teamDetail=>{
+        filterList.push(teamDetail)
+      }),
+      finalize(() => console.log("Get clubs completed")));
+
+// Use combineLatest to get results when both observables have emitted
+this.subscriptionFilter = combineLatest([teams$, clubs$]).subscribe({
+  next: () => {
+    this.filterList = [...this.filterList, ...filterList].sort((a, b):any => {
+        // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
+        return a.name < b.name;
+    });    
+    this.filterList = this.filterList.filter((item, index, self) => 
+    index === self.findIndex((t) => (t.id === item.id))
+);
+console.log(this.filterList)
+   
+    const alertInputs = [];
+    for (const item of this.filterList){
+      console.log(item)
+      alertInputs.push(
         {
-          label: 'Kadetten Unihockey',
+          label: item.name,
           type: 'radio',
-          value: 'su-',
+          value: item.id,
         }
-      ],
+      )
+    }
+
+    this.alertCtrl.create({
+      message: 'This is an alert with custom aria attributes.',
+      inputs: alertInputs,
       buttons: [
         {
           text: "OK"
@@ -284,9 +497,17 @@ export class NewsPage implements OnInit {
       htmlAttributes: {
         'aria-label': 'alert dialog',
       },
+    }).then(alert=>{
+      alert.present();
     });
 
-    alert.present();
+    //alert.present();
+   
+  },
+  error: err => console.error('Error in the observable chain:', err)
+});
+*/
+  
 
   }
 

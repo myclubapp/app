@@ -59,10 +59,10 @@ export class TrainingsPage implements OnInit {
       concatMap(team => 
           this.trainingService.getTeamTrainingsRefs(team.id).pipe(
             take(1), 
-              catchError(error => {
-                  console.error('Error fetching team training:', error);
-                  return of([]);
-              })
+            catchError(error => {
+                console.error('Error fetching team training:', error);
+                return of([]);
+            })
           )
       ),
       tap(training => training.forEach(n => teamtrainingList.push(n))),
