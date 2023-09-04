@@ -6,6 +6,7 @@ import {
   MenuController,
   ToastController,
   AnimationController,
+  AlertController,
 } from "@ionic/angular";
 import { News } from "src/app/models/news";
 
@@ -40,6 +41,8 @@ export class NewsPage implements OnInit {
   newsList: News[] = [];
   newsList$: Observable<News[]>;
 
+  filterList: [] = [];
+
   // Social Share
   shareSocialShareOptions: any;
   showSocialShare = false;
@@ -57,6 +60,7 @@ export class NewsPage implements OnInit {
     private readonly fbService: FirebaseService,
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
+    private readonly alertCtrl: AlertController,
     private readonly menuCtrl: MenuController,
     public animationCtrl: AnimationController
   ) {
@@ -69,59 +73,62 @@ export class NewsPage implements OnInit {
   const teamNewsList: News[] = [];
   const verbandNewsList: News[] = [];
 
-// Club observable
-const clubNews$ = this.authService.getUser$().pipe(
+  // Club observable
+  const clubNews$ = this.authService.getUser$().pipe(
+      switchMap(user => this.fbService.getUserClubRefs(user)),
+      concatMap(clubsArray => from(clubsArray)),
+      tap(club=>console.log(club.id)),
+      concatMap(club => 
+          this.newsService.getClubNewsRef(club.id).pipe(
+              catchError(error => {
+                  console.error('Error fetching club news:', error);
+                  return of([]);
+              })
+          )
+      ),
+      tap(news => news.forEach(n => clubNewsList.push(n))),
+      finalize(() => console.log("Club news fetching completed"))
+  );
+
+  // Verband observable
+  const verbandNews$ = this.authService.getUser$().pipe(
     switchMap(user => this.fbService.getUserClubRefs(user)),
     concatMap(clubsArray => from(clubsArray)),
-    concatMap(club => 
-        this.newsService.getClubNewsRef(club.id).pipe(
+    switchMap(club => this.fbService.getClubRef(club.id)),
+    tap(clubDetail=>console.log(clubDetail.type)),
+    concatMap(clubDetail => 
+        this.newsService.getNewsRef(clubDetail.type).pipe(
             catchError(error => {
-                console.error('Error fetching club news:', error);
+                console.error('Error fetching verband news:', error);
                 return of([]);
             })
         )
     ),
-    tap(news => news.forEach(n => clubNewsList.push(n))),
-    finalize(() => console.log("Club news fetching completed"))
-);
+    tap(news => news.forEach(n => verbandNewsList.push(n))),
+    finalize(() => console.log("Verband news fetching completed"))
+  );
 
-// Verband observable
-const verbandNews$ = this.authService.getUser$().pipe(
-  switchMap(user => this.fbService.getUserClubRefs(user)),
-  concatMap(clubsArray => from(clubsArray)),
-  switchMap(club => this.fbService.getClubRef(club.id)),
-  concatMap(clubDetail => 
-      this.newsService.getNewsRef(clubDetail.type).pipe(
-          catchError(error => {
-              console.error('Error fetching verband news:', error);
-              return of([]);
-          })
-      )
-  ),
-  tap(news => news.forEach(n => verbandNewsList.push(n))),
-  finalize(() => console.log("Verband news fetching completed"))
-);
-
-// Team observable
-const teamNews$ = this.authService.getUser$().pipe(
-    switchMap(user => this.fbService.getUserTeamRefs(user)),
-    concatMap(teamsArray => from(teamsArray)),
-    concatMap(team => 
-        this.newsService.getTeamNewsRef(team.id).pipe(
-            catchError(error => {
-                console.error('Error fetching team news:', error);
-                return of([]);
-            })
-        )
-    ),
-    tap(news => news.forEach(n => teamNewsList.push(n))),
-    finalize(() => console.log("Team news fetching completed"))
-);
+  // Team observable
+  const teamNews$ = this.authService.getUser$().pipe(
+      switchMap(user => this.fbService.getUserTeamRefs(user)),
+      concatMap(teamsArray => from(teamsArray)),
+      tap(team=>console.log(team.id)),
+      concatMap(team => 
+          this.newsService.getTeamNewsRef(team.id).pipe(
+              catchError(error => {
+                  console.error('Error fetching team news:', error);
+                  return of([]);
+              })
+          )
+      ),
+      tap(news => news.forEach(n => teamNewsList.push(n))),
+      finalize(() => console.log("Team news fetching completed"))
+  );
 
 // Use combineLatest to get results when both observables have emitted
 combineLatest([clubNews$, teamNews$, verbandNews$]).subscribe({
     next: () => {
-      this.newsList = [...clubNewsList, ...teamNewsList, ...verbandNewsList].sort((a, b):any => {
+      this.newsList = [...this.newsList, ...clubNewsList, ...teamNewsList, ...verbandNewsList].sort((a, b):any => {
           // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
           return new Date(a.date).getTime() < new Date(b.date).getTime();
       });
@@ -227,6 +234,40 @@ combineLatest([clubNews$, teamNews$, verbandNews$]).subscribe({
   }
 
   async openAddNews() {
+
+  }
+
+  async openFilter(ev: Event){
+    // console.log(ev);
+
+    const alert = await this.alertCtrl.create({
+      message: 'This is an alert with custom aria attributes.',
+      inputs: [
+        {
+          label: 'swissunihockey',
+          type: 'radio',
+          value: 'swissunihockey',
+        },
+        {
+          label: 'Kadetten Unihockey',
+          type: 'radio',
+          value: 'su-',
+        }
+      ],
+      buttons: [
+        {
+          text: "OK"
+        },
+        {
+          text: "abbrechen"
+        }
+      ],
+      htmlAttributes: {
+        'aria-label': 'alert dialog',
+      },
+    });
+
+    alert.present();
 
   }
 

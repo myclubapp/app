@@ -38,7 +38,7 @@ export class TrainingService {
   }
 
   /* TEAM TrainingS */
-  getTeamTrainingsRef(teamId: string): Observable<Training[]> {
+  getTeamTrainingsRefs(teamId: string): Observable<Training[]> {
     // console.log(`Read Team Trainings List Ref ${teamId}`)
     const trainingsRefList = collection(
       this.firestore,
@@ -58,7 +58,7 @@ export class TrainingService {
   }
 
   // PAST 20 Entries
-  getTeamTrainingsPastRef(teamId: string): Observable<Training[]> {
+  getTeamTrainingsPastRefs(teamId: string): Observable<Training[]> {
     // console.log(`Read Team Trainings List Ref ${teamId}`)
     const trainingsRefList = collection(
       this.firestore,

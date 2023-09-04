@@ -7,8 +7,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { of, combineLatest, Observable, concat } from "rxjs";
-import { switchMap, map } from "rxjs/operators";
+import { Observable, catchError, combineLatest, concatMap, finalize, from,  of, switchMap, tap} from "rxjs";
 import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -28,8 +27,9 @@ export class TrainingsPage implements OnInit {
   trainingList$: Observable<Training[]>;
   trainingListPast$: Observable<Training[]>;
 
-  trainingList: Training[];
-  trainingListPast: Training[];
+  trainingList: Training[] = [];
+  trainingListPast: Training[] = [];
+
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
@@ -43,47 +43,69 @@ export class TrainingsPage implements OnInit {
   }
 
   ngOnInit() {
-   /* this.getUser();
-    this.getTrainingsList();
-    this.getTrainingsListPast();
-    */
+      
+  
+  const teamtrainingList: Training[] = [];
+  const teamtrainingPastList: Training[] = [];
 
-    this.authService.getUser$().subscribe((user) => {
-      console.log(user.displayName);
+  // Team observable
+  const teamtraining$ = this.authService.getUser$().pipe(
+      switchMap(user => this.fbService.getUserTeamRefs(user)),
+      concatMap(teamsArray => from(teamsArray)),
+      tap(team=>console.log(team.id)),
+      concatMap(team => 
+          this.trainingService.getTeamTrainingsRefs(team.id).pipe(
+              catchError(error => {
+                  console.error('Error fetching team training:', error);
+                  return of([]);
+              })
+          )
+      ),
+      tap(training => training.forEach(n => teamtrainingList.push(n))),
+      finalize(() => console.log("Team training fetching completed"))
+  );
 
-      //TEAMS
-      this.fbService.getUserTeamRefs(user).subscribe((userTeams) => {
-        const teamTrainingObservables = [];
-        for (let userTeam of userTeams) {
-          console.log("Team: " + userTeam.id);
-          // Push each team news observable into an array
-          teamTrainingObservables.push(
-            this.trainingService.getTeamTrainingsRef(userTeam.id)
-          );
-        }
-        this.trainingList$ = concat(
-          this.trainingList$,
-          ...teamTrainingObservables
-        ) as Observable<Training[]>;
-      });
-   
+    // Team observable
+  const teamtrainingPast$ = this.authService.getUser$().pipe(
+      switchMap(user => this.fbService.getUserTeamRefs(user)),
+      concatMap(teamsArray => from(teamsArray)),
+      tap(team=>console.log(team.id)),
+      concatMap(team => 
+          this.trainingService.getTeamTrainingsPastRefs(team.id).pipe(
+              catchError(error => {
+                  console.error('Error fetching team training:', error);
+                  return of([]);
+              })
+          )
+      ),
+      tap(training => training.forEach(n => teamtrainingList.push(n))),
+      finalize(() => console.log("Team training fetching completed"))
+  );
 
-// PAST
-      //TEAMS
-      this.fbService.getUserTeamRefs(user).subscribe((userTeams) => {
-        const teamTrainingPastObservables = [];
-        for (let userTeam of userTeams) {
-          console.log("Team: " + userTeam.id);
-          // Push each team news observable into an array
-          teamTrainingPastObservables.push(
-            this.trainingService.getTeamTrainingsRef(userTeam.id)
-          );
-        }
-        this.trainingListPast$ = concat(
-          this.trainingListPast$,
-          ...teamTrainingPastObservables
-        ) as Observable<Training[]>;
-      });
+    // Use combineLatest to get results when both observables have emitted
+    combineLatest([teamtraining$]).subscribe({
+        next: () => {
+          this.trainingList = [...this.trainingList, ...teamtrainingList].sort((a, b):any => {
+            // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
+            return new Date(a.date).getTime() < new Date(b.date).getTime();
+        });
+          this.trainingList$ = of(this.trainingList);
+          console.log("Combined training list created");
+        },
+        error: err => console.error('Error in the observable chain:', err)
+    });
+
+      // Use combineLatest to get results when both observables have emitted
+    combineLatest([teamtrainingPast$]).subscribe({
+        next: () => {
+          this.trainingListPast = [...this.trainingListPast, ...teamtrainingPastList].sort((a, b):any => {
+            // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
+            return new Date(a.date).getTime() > new Date(b.date).getTime();
+        });
+          this.trainingListPast$ = of(this.trainingListPast);
+          console.log("Combined training list created");
+        },
+        error: err => console.error('Error in the observable chain:', err)
     });
 
   }

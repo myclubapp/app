@@ -34,7 +34,7 @@ export class ChampionshipService {
   }
 
   /* TEAM GAMES */
-  getTeamGamesRef(teamId: string): Observable<Game[]> {
+  getTeamGamesRefs(teamId: string): Observable<Game[]> {
     // console.log(`Read Team Games List Ref ${teamId}`)
     const gamesRefList = collection(this.firestore, `teams/${teamId}/games`);
     const q = query(
@@ -45,13 +45,13 @@ export class ChampionshipService {
         Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 40))
       )
     ); // heute - 1 Tag
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
+    return collectionData(q, { idField: "id" }) as Observable<
       Game[]
     >;
   }
 
   // PAST 20 Entries
-  getTeamGamesRefPast(teamId: string): Observable<Game[]> {
+  getTeamGamesPastRefs(teamId: string): Observable<Game[]> {
     // console.log(`Read Team Games List Ref ${teamId}`)
     const gamesRefList = collection(this.firestore, `teams/${teamId}/games`);
     const q = query(
