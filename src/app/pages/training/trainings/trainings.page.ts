@@ -7,7 +7,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, catchError, combineLatest, concatMap, finalize, from,  of, switchMap, tap} from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concatMap, finalize, from,  of, switchMap, take, tap} from "rxjs";
 import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -29,6 +29,9 @@ export class TrainingsPage implements OnInit {
 
   trainingList: Training[] = [];
   trainingListPast: Training[] = [];
+
+  private subscription: Subscription;
+  private subscriptionPast: Subscription;
 
   constructor(
     public toastController: ToastController,
@@ -55,6 +58,7 @@ export class TrainingsPage implements OnInit {
       tap(team=>console.log(team.id)),
       concatMap(team => 
           this.trainingService.getTeamTrainingsRefs(team.id).pipe(
+            take(1), 
               catchError(error => {
                   console.error('Error fetching team training:', error);
                   return of([]);
@@ -72,6 +76,7 @@ export class TrainingsPage implements OnInit {
       tap(team=>console.log(team.id)),
       concatMap(team => 
           this.trainingService.getTeamTrainingsPastRefs(team.id).pipe(
+            take(1), 
               catchError(error => {
                   console.error('Error fetching team training:', error);
                   return of([]);
@@ -83,12 +88,15 @@ export class TrainingsPage implements OnInit {
   );
 
     // Use combineLatest to get results when both observables have emitted
-    combineLatest([teamtraining$]).subscribe({
+    this.subscription = combineLatest([teamtraining$]).subscribe({
         next: () => {
           this.trainingList = [...this.trainingList, ...teamtrainingList].sort((a, b):any => {
             // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
             return new Date(a.date).getTime() < new Date(b.date).getTime();
-        });
+          });
+          this.trainingList = this.trainingList.filter((news, index, self) => 
+              index === self.findIndex((t) => (t.id === news.id))
+          );
           this.trainingList$ = of(this.trainingList);
           console.log("Combined training list created");
         },
@@ -96,12 +104,15 @@ export class TrainingsPage implements OnInit {
     });
 
       // Use combineLatest to get results when both observables have emitted
-    combineLatest([teamtrainingPast$]).subscribe({
+      this.subscriptionPast = combineLatest([teamtrainingPast$]).subscribe({
         next: () => {
           this.trainingListPast = [...this.trainingListPast, ...teamtrainingPastList].sort((a, b):any => {
             // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
             return new Date(a.date).getTime() > new Date(b.date).getTime();
-        });
+          });
+          this.trainingListPast = this.trainingListPast.filter((news, index, self) => 
+              index === self.findIndex((t) => (t.id === news.id))
+          );
           this.trainingListPast$ = of(this.trainingListPast);
           console.log("Combined training list created");
         },
@@ -110,6 +121,14 @@ export class TrainingsPage implements OnInit {
 
   }
 
+  ngOnDestroy(): void {
+    if (this.subscription) {
+        this.subscription.unsubscribe();
+    }
+    if (this.subscriptionPast) {
+      this.subscriptionPast.unsubscribe();
+    }
+  }
   async openTrainingCreateModal() {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalController.create({

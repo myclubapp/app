@@ -7,7 +7,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, catchError, combineLatest, concatMap, finalize, from,  of, switchMap, tap} from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concatMap, finalize, from,  of, switchMap, take, tap, timeout} from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -28,7 +28,10 @@ export class ChampionshipPage implements OnInit {
   gameListPast$: Observable<Game[]>;
 
   gameList: Game[] = [];
-//   gameListPast: Game[] = [];
+  gameListPast: Game[] = [];
+
+  private subscription: Subscription;
+  private subscriptionPast: Subscription;
 
   constructor(
     public toastController: ToastController,
@@ -41,77 +44,91 @@ export class ChampionshipPage implements OnInit {
 
   ngOnInit() {
     const teamGameList: Game[] = [];
-    //const teamGamePastList: Game[] = [];
+    const teamGamePastList: Game[] = [];
 
     // Team observable
     const teamGame$ = this.authService.getUser$().pipe(
-      switchMap(user => this.fbService.getUserTeamRefs(user)),
+      tap(() => console.log("Fetching user...")),
+      switchMap(user => {
+        console.log("Got user:", user);
+        return this.fbService.getUserTeamRefs(user);
+      }),
+      tap(teams => console.log("Fetched teams:", teams)),
       concatMap(teamsArray => from(teamsArray)),
-      tap(team=>console.log(team.id)),
-      switchMap(team => this.fbService.getTeamRef(team.id)),
-      tap(team=>console.log(team.name, team.id)),
-      concatMap(teamDetail => 
-          this.championshipService.getTeamGamesRefs(teamDetail.id).pipe(
-              catchError(error => {
-                  console.error('Error fetching team game:', error);
-                  return of([]);
-              })
-          )
-      ),
+      tap(team => console.log("Processing team:", team.id)),
+      concatMap(team => this.championshipService.getTeamGamesRefs(team.id).pipe(
+        take(1), 
+        tap(games => console.log(`Fetched games for team ${team.id}:`, games)),
+        catchError(error => {
+          console.error(`Error fetching games for team ${team.id}:`, error);
+          return of([]);
+        })
+      )),
       tap(games => games.forEach(game => teamGameList.push(game))),
       finalize(() => console.log("Team Game fetching completed"))
-  );
+    );
 
-  /*
     // Team observable
   const teamGamePast$ = this.authService.getUser$().pipe(
-      switchMap(user => this.fbService.getUserTeamRefs(user)),
+      tap(() => console.log("Fetching user...")),
+      switchMap(user => {
+        console.log("Got user:", user);
+        return this.fbService.getUserTeamRefs(user);
+      }),
+      tap(teams => console.log("Fetched teams:", teams)),
       concatMap(teamsArray => from(teamsArray)),
-      tap(team=>console.log(team.id)),
-      concatMap(team => 
-        this.championshipService.getTeamGamesPastRefs(team.id).pipe(
-              catchError(error => {
-                  console.error('Error fetching team game:', error);
-                  return of([]);
-              })
-          )
-      ),
-      tap(game => game.forEach(n => teamGamePastList.push(n))),
-      finalize(() => console.log("Team Game Past fetching completed"))
-  );
-*/
+      tap(team => console.log("Processing team:", team.id)),
+      concatMap(team => this.championshipService.getTeamGamesPastRefs(team.id).pipe(
+        take(1), 
+        tap(games => console.log(`Fetched games for team ${team.id}:`, games)),
+        catchError(error => {
+          console.error(`Error fetching games for team ${team.id}:`, error);
+          return of([]);
+        })
+      )),
+      tap(games => games.forEach(game => teamGamePastList.push(game))),
+      finalize(() => console.log("Team Game fetching completed"))
+    );
 
     // Use combineLatest to get results when both observables have emitted
-    combineLatest([teamGame$]).subscribe({
-        next: () => {
-          this.gameList = [...this.gameList, ...teamGameList].sort((a, b):any => {
-            // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
-            return new Date(a.date).getTime() < new Date(b.date).getTime();
+   this.subscription = combineLatest([teamGame$]).subscribe({
+      next: () => {
+        this.gameList = [...teamGameList].sort((a, b):any => {
+          return a.dateTime.seconds > b.dateTime.seconds;
         });
-          this.gameList$ = of(this.gameList);
-          console.log("Combined Game list created");
-        },
-        error: err => console.error('Error in the observable chain:', err)
+        this.gameList = this.gameList.filter((news, index, self) => 
+        index === self.findIndex((t) => (t.id === news.id))
+    );
+        this.gameList$ = of(this.gameList);
+        console.log("Combined Game list created");
+      },
+      error: err => console.error('Error in the observable chain:', err)
     });
 
-    /*  // Use combineLatest to get results when both observables have emitted
-    combineLatest([teamGamePast$]).subscribe({
-        next: () => {
-          this.gameListPast = [...this.gameListPast, ...teamGamePastList].sort((a, b):any => {
-            // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
-            return new Date(a.date).getTime() < new Date(b.date).getTime();
+    this.subscriptionPast = combineLatest([teamGamePast$]).subscribe({
+      next: () => {
+        this.gameListPast = [...teamGamePastList].sort((a, b):any => {
+          return a.dateTime.seconds < b.dateTime.seconds;
         });
-          this.gameListPast$ = of(this.gameListPast);
-          console.log("Combined Game list Past created");
-        },
-        error: err => console.error('Error in the observable chain:', err)
-    });*/
+        this.gameListPast = this.gameListPast.filter((news, index, self) => 
+        index === self.findIndex((t) => (t.id === news.id))
+    );
+        this.gameListPast$ = of(this.gameListPast);
+        console.log("Combined Game list created");
+      },
+      error: err => console.error('Error in the observable chain:', err)
+    });
 
   }
 
 
   ngOnDestroy(): void {
-    
+    if (this.subscription) {
+        this.subscription.unsubscribe();
+    }
+    if (this.subscriptionPast) {
+      this.subscriptionPast.unsubscribe();
+    }
   }
 
   async openModal(game: Game) {

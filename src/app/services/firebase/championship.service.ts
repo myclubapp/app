@@ -30,7 +30,7 @@ export class ChampionshipService {
   getTeamGameRef(teamId: string, gameId: string): Observable<Game> {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const gameRef = doc(this.firestore, `teams/${teamId}/games/${gameId}`);
-    return docData(gameRef, { idField: "id" }) as unknown as Observable<Game>;
+    return docData(gameRef, { idField: "id" }) as Observable<Game>;
   }
 
   /* TEAM GAMES */
@@ -42,7 +42,7 @@ export class ChampionshipService {
       where(
         "dateTime",
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 40))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
       )
     ); // heute - 1 Tag
     return collectionData(q, { idField: "id" }) as Observable<
@@ -63,17 +63,17 @@ export class ChampionshipService {
       ),
       limit(20)
     ); // heute - 1 Tag
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
+    return collectionData(q, { idField: "id" }) as Observable<
       Game[]
     >;
   }
 
   /* CLUB GAMES */
-  getClubGamesRef(clubId: string): Observable<Game> {
+  getClubGamesRef(clubId: string): Observable<Game[]> {
     const gamesRefList = collection(this.firestore, `club/${clubId}/games`);
     return collectionData(gamesRefList, {
       idField: "id",
-    }) as unknown as Observable<Game>;
+    }) as Observable<Game[]>;
   }
 
   /* TEAM GAMES ATTENDEES */
@@ -85,7 +85,7 @@ export class ChampionshipService {
     );
     return collectionData(attendeesRefList, {
       idField: "id",
-    }) as unknown as Observable<any[]>;
+    }) as Observable<any[]>;
   }
 
   /* SET TEAM GAMES ATTENDEE Status */

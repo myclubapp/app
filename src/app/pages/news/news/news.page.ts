@@ -26,7 +26,7 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { User } from "@angular/fire/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
-import { Observable, catchError, combineLatest, concat, concatAll, concatMap, finalize, forkJoin, from, map, merge, mergeMap, of, switchMap, take, tap, timeout, toArray } from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, finalize, forkJoin, from, map, merge, mergeMap, of, switchMap, take, tap, timeout, toArray } from "rxjs";
 import { Club } from "src/app/models/club";
 
 @Component({
@@ -38,8 +38,7 @@ export class NewsPage implements OnInit {
   skeleton = new Array(12);
   user: User;
 
-  newsList: News[] = [];
-  newsList$: Observable<News[]>;
+
 
   filterList: [] = [];
 
@@ -53,6 +52,11 @@ export class NewsPage implements OnInit {
   faLinkedin: any = faLinkedin;
   faEnvelope: any = faEnvelope;
   faCopy: any = faCopy;
+
+  private subscription: Subscription;
+  
+  newsList: News[] = [];
+  newsList$: Observable<News[]>;
 
   constructor(
     private readonly newsService: NewsService,
@@ -73,6 +77,10 @@ export class NewsPage implements OnInit {
   const teamNewsList: News[] = [];
   const verbandNewsList: News[] = [];
 
+  clubNewsList.length = 0;
+  teamNewsList.length = 0;
+  verbandNewsList.length = 0;
+
   // Club observable
   const clubNews$ = this.authService.getUser$().pipe(
       switchMap(user => this.fbService.getUserClubRefs(user)),
@@ -80,6 +88,7 @@ export class NewsPage implements OnInit {
       tap(club=>console.log(club.id)),
       concatMap(club => 
           this.newsService.getClubNewsRef(club.id).pipe(
+            take(1), 
               catchError(error => {
                   console.error('Error fetching club news:', error);
                   return of([]);
@@ -98,6 +107,7 @@ export class NewsPage implements OnInit {
     tap(clubDetail=>console.log(clubDetail.type)),
     concatMap(clubDetail => 
         this.newsService.getNewsRef(clubDetail.type).pipe(
+          take(1), 
             catchError(error => {
                 console.error('Error fetching verband news:', error);
                 return of([]);
@@ -115,6 +125,7 @@ export class NewsPage implements OnInit {
       tap(team=>console.log(team.id)),
       concatMap(team => 
           this.newsService.getTeamNewsRef(team.id).pipe(
+            take(1), 
               catchError(error => {
                   console.error('Error fetching team news:', error);
                   return of([]);
@@ -125,27 +136,35 @@ export class NewsPage implements OnInit {
       finalize(() => console.log("Team news fetching completed"))
   );
 
-// Use combineLatest to get results when both observables have emitted
-combineLatest([clubNews$, teamNews$, verbandNews$]).subscribe({
-    next: () => {
-      this.newsList = [...this.newsList, ...clubNewsList, ...teamNewsList, ...verbandNewsList].sort((a, b):any => {
-          // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
-          return new Date(a.date).getTime() < new Date(b.date).getTime();
-      });
-    
-      this.newsList$ = of(this.newsList);
-      console.log("Combined news list created");
-    },
-    error: err => console.error('Error in the observable chain:', err)
-});
+    // Use combineLatest to get results when both observables have emitted
+    this.subscription = combineLatest([clubNews$, teamNews$, verbandNews$]).subscribe({
+        next: () => {
+          this.newsList = [...this.newsList, ...clubNewsList, ...teamNewsList, ...verbandNewsList].sort((a, b):any => {
+              // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
+              return new Date(a.date).getTime() < new Date(b.date).getTime();
+          });
+
+          this.newsList = this.newsList.filter((news, index, self) => 
+              index === self.findIndex((t) => (t.id === news.id))
+          );
+        
+          this.newsList$ = of(this.newsList);
+          console.log("Combined news list created");
+        },
+        error: err => console.error('Error in the observable chain:', err)
+    });
 
 
   }
 
   ngAfterViewInit(): void {}
+
   ngOnDestroy(): void {
+    if (this.subscription) {
+        this.subscription.unsubscribe();
+    }
   }
-  /*
+/*
   getGameReports() {
     let reportListNew = [];
     this.gameReportSubscription = this.authService
