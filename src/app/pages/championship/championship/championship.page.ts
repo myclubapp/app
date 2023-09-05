@@ -7,7 +7,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, Subscription, catchError, combineLatest, concatMap, finalize, from,  of, switchMap, take, tap, timeout} from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concatMap, finalize, forkJoin, from,  map,  of, switchMap, take, tap, timeout} from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -51,6 +51,7 @@ export class ChampionshipPage implements OnInit {
       tap(() => console.log("Fetching user...")),
       switchMap(user => {
         console.log("Got user:", user);
+        this.user = user;
         return this.fbService.getUserTeamRefs(user);
       }),
       tap(teams => console.log("Fetched teams:", teams)),
@@ -59,6 +60,26 @@ export class ChampionshipPage implements OnInit {
       concatMap(team => this.championshipService.getTeamGamesRefs(team.id).pipe(
         take(1), 
         tap(games => console.log(`Fetched games for team ${team.id}:`, games)),
+        switchMap(games => {
+          // Fetch attendees for each game and combine the results
+          const gameWithAttendees$ = games.map(game => 
+            this.championshipService.getTeamGameAttendeesRef(team.id, game.id).pipe(
+              take(1),
+              map(attendees => {
+                const userAttendee = attendees.find(att => att.id == this.user.uid);
+                const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
+                return {
+                  ...game,
+                  teamId: team.id,
+                  status: status,
+                  countAttendees: attendees.length,
+                  attendees: attendees
+                };
+              })
+            )
+          );
+          return forkJoin(gameWithAttendees$);
+        }),
         catchError(error => {
           console.error(`Error fetching games for team ${team.id}:`, error);
           return of([]);
@@ -151,7 +172,7 @@ export class ChampionshipPage implements OnInit {
   }
 
   async toggle(status: boolean, game: Game) {
-    // console.log(`Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}` );
+    //console.log(`Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}` );
     await this.championshipService.setTeamGameAttendeeStatus(
       this.user.uid,
       status,
@@ -164,9 +185,9 @@ export class ChampionshipPage implements OnInit {
   async toggleItem(slidingItem: IonItemSliding, status: boolean, game: Game) {
     slidingItem.closeOpened();
 
-    console.log(
+    /*console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
-    );
+    );*/
     await this.championshipService.setTeamGameAttendeeStatus(
       this.user.uid,
       status,
