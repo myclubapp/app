@@ -72,7 +72,7 @@ export class ChampionshipPage implements OnInit {
                   ...game,
                   teamId: team.id,
                   status: status,
-                  countAttendees: attendees.length,
+                  countAttendees: attendees.filter(att => att.status == true).length,
                   attendees: attendees
                 };
               })
