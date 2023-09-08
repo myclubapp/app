@@ -43,10 +43,12 @@ export class ChampionshipPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    const TIMEOUT_DURATION = 1000; // 5 seconds, adjust as needed
+
     const teamGameList: Game[] = [];
     const teamGamePastList: Game[] = [];
 
-    // Team observable
+    // CURRENT GAMES
     const teamGame$ = this.authService.getUser$().pipe(
       tap(() => console.log("Fetching user...")),
       switchMap(user => {
@@ -58,7 +60,8 @@ export class ChampionshipPage implements OnInit {
       concatMap(teamsArray => from(teamsArray)),
       tap(team => console.log("Processing team:", team.id)),
       concatMap(team => this.championshipService.getTeamGamesRefs(team.id).pipe(
-        take(1), 
+        timeout(TIMEOUT_DURATION), // Adding timeout here 
+        // take(1),
         tap(games => console.log(`Fetched games for team ${team.id}:`, games)),
         switchMap(games => {
           // Fetch attendees for each game and combine the results
@@ -81,35 +84,47 @@ export class ChampionshipPage implements OnInit {
           return forkJoin(gameWithAttendees$);
         }),
         catchError(error => {
-          console.error(`Error fetching games for team ${team.id}:`, error);
-          return of([]);
+          if (error.name === 'TimeoutError') {
+            console.error(`Error fetching games for team ${team.id}:`);
+            return of([]);
+          } else {
+          // Handle other errors, maybe rethrow or return a default object
+            throw error;
+          }
         })
       )),
       tap(games => games.forEach(game => teamGameList.push(game))),
       finalize(() => console.log("Team Game fetching completed"))
     );
 
-    // Team observable
+/*
+  // PAST GAMES
   const teamGamePast$ = this.authService.getUser$().pipe(
-      tap(() => console.log("Fetching user...")),
+      tap(() => console.log("Fetching user PAST...")),
       switchMap(user => {
-        console.log("Got user:", user);
+        console.log("Got user PAST:", user);
         return this.fbService.getUserTeamRefs(user);
       }),
-      tap(teams => console.log("Fetched teams:", teams)),
+      tap(teams => console.log("Fetched teams PAST:", teams)),
       concatMap(teamsArray => from(teamsArray)),
-      tap(team => console.log("Processing team:", team.id)),
+      tap(team => console.log("Processing team PAST:", team.id)),
       concatMap(team => this.championshipService.getTeamGamesPastRefs(team.id).pipe(
         take(1), 
-        tap(games => console.log(`Fetched games for team ${team.id}:`, games)),
+        tap(games => console.log(`Fetched PAST games for team ${team.id}:`, games)),
         catchError(error => {
-          console.error(`Error fetching games for team ${team.id}:`, error);
-          return of([]);
+          if (error.name === 'TimeoutError') {
+            console.error(`Error fetching PAST games for team ${team.id}:`);
+            return of([]);
+          } else {
+          // Handle other errors, maybe rethrow or return a default object
+            throw error;
+          }
         })
       )),
       tap(games => games.forEach(game => teamGamePastList.push(game))),
       finalize(() => console.log("Team Game fetching completed"))
     );
+  */
 
     // Use combineLatest to get results when both observables have emitted
    this.subscription = combineLatest([teamGame$]).subscribe({
@@ -118,14 +133,15 @@ export class ChampionshipPage implements OnInit {
           return a.dateTime.seconds > b.dateTime.seconds;
         });
         this.gameList = this.gameList.filter((news, index, self) => 
-        index === self.findIndex((t) => (t.id === news.id))
-    );
+          index === self.findIndex((t) => (t.id === news.id))
+        );
         this.gameList$ = of(this.gameList);
         console.log("Combined Game list created");
       },
       error: err => console.error('Error in the observable chain:', err)
     });
 
+    /*
     this.subscriptionPast = combineLatest([teamGamePast$]).subscribe({
       next: () => {
         this.gameListPast = [...teamGamePastList].sort((a, b):any => {
@@ -135,11 +151,11 @@ export class ChampionshipPage implements OnInit {
         index === self.findIndex((t) => (t.id === news.id))
     );
         this.gameListPast$ = of(this.gameListPast);
-        console.log("Combined Game list created");
+        console.log("Combined Game list PAST created");
       },
       error: err => console.error('Error in the observable chain:', err)
     });
-
+    */
   }
 
 
