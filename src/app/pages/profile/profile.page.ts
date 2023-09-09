@@ -21,7 +21,7 @@ import {
   Photo,
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { switchMap, take } from "rxjs/operators";
+import { switchMap, take, tap } from "rxjs/operators";
 import {
   AlertController,
   MenuController,
@@ -48,6 +48,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   user$: Observable<User>;
   user: User;
+  private subscription: Subscription;
+
 
   private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
@@ -67,9 +69,17 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
+
+    this.subscription = this.authService.getUser$().pipe(
+      tap(user => this.user = user),
+      switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
+  ).subscribe(profile => {
+      this.userProfile$ = of(profile);
+  })
+
     // await this.getUser();
-    this.getClubRequestList();
-    this.getTeamRequestList();
+    // this.getClubRequestList();
+    // this.getTeamRequestList();
     this.getPushDeviceList();
     this.deviceId = await Device.getId();
     this.deviceInfo = await Device.getInfo();
@@ -81,6 +91,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
     // this.getTeamList();
   }
   ngOnDestroy() {
+    this.subscription.unsubscribe();
+    
     this.pushDeviceListSub.unsubscribe();
     this.clubRequestListSub.unsubscribe();
     this.teamRequestListSub.unsubscribe();
@@ -178,13 +190,6 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.teamList$ = this.fbService.getTeamRefs(user);
   }
 */
-  async getUser() {
-    this.user$ = this.authService.getUser$();
-    this.user$.subscribe((user) => {
-      this.user = user;
-      this.userProfile$ = this.profileService.getUserProfile(user);
-    });
-  }
 
   async takePicture() {
     const image = await Camera.getPhoto({
