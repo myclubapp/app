@@ -43,7 +43,7 @@ export class TrainingCreatePage implements OnInit {
   }
 
   ngOnInit() {
-    this.getUser();
+   // this.getUser();
   }
 
   async close() {

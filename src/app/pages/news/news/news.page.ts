@@ -40,8 +40,6 @@ export class NewsPage implements OnInit {
   skeleton = new Array(12);
   user: User;
 
-
-
   filterList: any[] = [];
 
   // Social Share
@@ -86,6 +84,7 @@ export class NewsPage implements OnInit {
 
   // Club observable
   const clubNews$ = this.authService.getUser$().pipe(
+      take(1),
       switchMap(user => this.fbService.getUserClubRefs(user)),
       concatMap(clubsArray => from(clubsArray)),
       tap(club=>console.log(club.id)),
@@ -108,6 +107,7 @@ export class NewsPage implements OnInit {
 
   // Verband observable
   const verbandNews$ = this.authService.getUser$().pipe(
+    take(1),
     switchMap(user => this.fbService.getUserClubRefs(user)),
     concatMap(clubsArray => from(clubsArray)),
     switchMap(club => this.fbService.getClubRef(club.id)),
@@ -131,6 +131,7 @@ export class NewsPage implements OnInit {
 
   // Team observable
   const teamNews$ = this.authService.getUser$().pipe(
+      take(1),
       switchMap(user => this.fbService.getUserTeamRefs(user)),
       concatMap(teamsArray => from(teamsArray)),
       tap(team=>console.log(team.id)),
@@ -141,10 +142,10 @@ export class NewsPage implements OnInit {
               ...newsItem, 
               filterable: team.id 
             }))),
-              catchError(error => {
-                  console.error('Error fetching team news:', error);
-                  return of([]);
-              })
+            catchError(error => {
+                console.error('Error fetching team news:', error);
+                return of([]);
+            })
           )
       ),
       tap(news => news.forEach(n => teamNewsList.push(n))),
@@ -275,6 +276,7 @@ export class NewsPage implements OnInit {
     let filterList = [];
 
     const clubs$ = this.authService.getUser$().pipe(
+      take(1),
       switchMap(user => this.fbService.getUserClubRefs(user).pipe(take(1))),  
       concatMap(clubArray => from(clubArray)),
       tap((club:Club)=>console.log(club.id)),
@@ -297,6 +299,7 @@ export class NewsPage implements OnInit {
   );
 
   const teams$ = this.authService.getUser$().pipe(
+    take(1),
     switchMap(user => this.fbService.getUserTeamRefs(user).pipe(take(1))),
     concatMap(teamsArray =>  from(teamsArray)),
     tap((team:Team)=>console.log(team.id)),

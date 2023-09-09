@@ -7,7 +7,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, Subscription, catchError, combineLatest, concatMap, finalize, from,  of, switchMap, take, tap} from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concatMap, finalize, forkJoin, from,  map,  of, switchMap, take, tap, timeout} from "rxjs";
 import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -48,75 +48,138 @@ export class TrainingsPage implements OnInit {
   ngOnInit() {
       
   
-  const teamtrainingList: Training[] = [];
-  const teamtrainingPastList: Training[] = [];
+    const TIMEOUT_DURATION = 1000; // 5 seconds, adjust as needed
 
-  // Team observable
-  const teamtraining$ = this.authService.getUser$().pipe(
-      switchMap(user => this.fbService.getUserTeamRefs(user)),
-      concatMap(teamsArray => from(teamsArray)),
-      tap(team=>console.log(team.id)),
-      concatMap(team => 
-          this.trainingService.getTeamTrainingsRefs(team.id).pipe(
-            take(1), 
-            catchError(error => {
-                console.error('Error fetching team training:', error);
-                return of([]);
-            })
-          )
-      ),
-      tap(training => training.forEach(n => teamtrainingList.push(n))),
-      finalize(() => console.log("Team training fetching completed"))
-  );
+    const teamtrainingList: Training[] = [];
+    const teamtrainingPastList: Training[] = [];
 
-    // Team observable
-  const teamtrainingPast$ = this.authService.getUser$().pipe(
-      switchMap(user => this.fbService.getUserTeamRefs(user)),
+    // CURRENT trainingS
+    const teamtraining$ = this.authService.getUser$().pipe(
+      take(1),
+      tap(() => console.log("Fetching user...")),
+      switchMap(user => {
+        console.log("Got user:", user);
+        this.user = user;
+        return this.fbService.getUserTeamRefs(user);
+      }),
+      tap(teams => console.log("Fetched teams:", teams)),
       concatMap(teamsArray => from(teamsArray)),
-      tap(team=>console.log(team.id)),
-      concatMap(team => 
-          this.trainingService.getTeamTrainingsPastRefs(team.id).pipe(
-            take(1), 
-              catchError(error => {
-                  console.error('Error fetching team training:', error);
-                  return of([]);
+      tap(team => console.log("Processing team:", team.id)),
+      concatMap(team => this.trainingService.getTeamTrainingsRefs(team.id).pipe(
+        timeout(TIMEOUT_DURATION), // Adding timeout here 
+        take(1),
+        tap(trainings => console.log(`Fetched trainings for team ${team.id}:`, trainings)),
+        switchMap(trainings => {
+          // Fetch attendees for each training and combine the results
+          const trainingWithAttendees$ = trainings.map(training => 
+            this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id).pipe(
+              take(1),
+              map(attendees => {
+                const userAttendee = attendees.find(att => att.id == this.user.uid);
+                const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
+                return {
+                  ...training,
+                  teamId: team.id,
+                  status: status,
+                  countAttendees: attendees.filter(att => att.status == true).length,
+                  attendees: attendees
+                };
               })
-          )
-      ),
-      tap(training => training.forEach(n => teamtrainingList.push(n))),
+            )
+          );
+          return forkJoin(trainingWithAttendees$);
+        }),
+        catchError(error => {
+          if (error.name === 'TimeoutError') {
+            console.error(`Error fetching trainings for team ${team.id}:`);
+            return of([]);
+          } else {
+          // Handle other errors, maybe rethrow or return a default object
+            throw error;
+          }
+        })
+      )),
+      tap(trainings => trainings.forEach(training => teamtrainingList.push(training))),
       finalize(() => console.log("Team training fetching completed"))
-  );
+    );
+
+    // CURRENT trainingS
+    const teamtrainingPast$ = this.authService.getUser$().pipe(
+      take(1),
+      tap(() => console.log("Fetching user...")),
+      switchMap(user => {
+        console.log("Got user:", user);
+        this.user = user;
+        return this.fbService.getUserTeamRefs(user);
+      }),
+      tap(teams => console.log("Fetched teams:", teams)),
+      concatMap(teamsArray => from(teamsArray)),
+      tap(team => console.log("Processing team:", team.id)),
+      concatMap(team => this.trainingService.getTeamTrainingsPastRefs(team.id).pipe(
+        timeout(TIMEOUT_DURATION), // Adding timeout here 
+        take(1),
+        tap(trainings => console.log(`Fetched trainings for team ${team.id}:`, trainings)),
+        switchMap(trainings => {
+          // Fetch attendees for each training and combine the results
+          const trainingWithAttendees$ = trainings.map(training => 
+            this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id).pipe(
+              take(1),
+              map(attendees => {
+                const userAttendee = attendees.find(att => att.id == this.user.uid);
+                const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
+                return {
+                  ...training,
+                  teamId: team.id,
+                  status: status,
+                  countAttendees: attendees.filter(att => att.status == true).length,
+                  attendees: attendees
+                };
+              })
+            )
+          );
+          return forkJoin(trainingWithAttendees$);
+        }),
+        catchError(error => {
+          if (error.name === 'TimeoutError') {
+            console.error(`Error fetching trainings for team ${team.id}:`);
+            return of([]);
+          } else {
+          // Handle other errors, maybe rethrow or return a default object
+            throw error;
+          }
+        })
+      )),
+      tap(trainings => trainings.forEach(training => teamtrainingPastList.push(training))),
+      finalize(() => console.log("Team training fetching completed"))
+    );
 
     // Use combineLatest to get results when both observables have emitted
-    this.subscription = combineLatest([teamtraining$]).subscribe({
-        next: () => {
-          this.trainingList = [...this.trainingList, ...teamtrainingList].sort((a, b):any => {
-            // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
-            return new Date(a.date).getTime() < new Date(b.date).getTime();
-          });
-          this.trainingList = this.trainingList.filter((news, index, self) => 
-              index === self.findIndex((t) => (t.id === news.id))
-          );
-          this.trainingList$ = of(this.trainingList);
-          console.log("Combined training list created");
-        },
-        error: err => console.error('Error in the observable chain:', err)
+   this.subscription = combineLatest([teamtraining$]).subscribe({
+      next: () => {
+        this.trainingList = [...teamtrainingList].sort((a, b):any => {
+          return a.date.getTime() > b.date.getTime();
+        });
+        this.trainingList = this.trainingList.filter((training, index, self) => 
+          index === self.findIndex((t) => (t.id === training.id))
+        );
+        this.trainingList$ = of(this.trainingList);
+        console.log("Combined training list created");
+      },
+      error: err => console.error('Error in the observable chain:', err)
     });
 
-      // Use combineLatest to get results when both observables have emitted
-      this.subscriptionPast = combineLatest([teamtrainingPast$]).subscribe({
-        next: () => {
-          this.trainingListPast = [...this.trainingListPast, ...teamtrainingPastList].sort((a, b):any => {
-            // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
-            return new Date(a.date).getTime() > new Date(b.date).getTime();
-          });
-          this.trainingListPast = this.trainingListPast.filter((news, index, self) => 
-              index === self.findIndex((t) => (t.id === news.id))
-          );
-          this.trainingListPast$ = of(this.trainingListPast);
-          console.log("Combined training list created");
-        },
-        error: err => console.error('Error in the observable chain:', err)
+    this.subscriptionPast = combineLatest([teamtrainingPast$]).subscribe({
+      next: () => {
+        this.trainingListPast = [...teamtrainingPastList].sort((a, b):any => {
+          return a.date.getTime() > b.date.getTime();
+        });
+        this.trainingListPast = this.trainingListPast.filter((training, index, self) => 
+          index === self.findIndex((t) => (t.id === training.id))
+        );
+        this.trainingListPast$ = of(this.trainingListPast);
+        console.log("Combined training list PAST created");
+      },
+      error: err => console.error('Error in the observable chain:', err)
     });
 
   }
@@ -148,12 +211,12 @@ export class TrainingsPage implements OnInit {
     }
   }
 
-  async getUser() {
+  /*async getUser() {
     this.user$ = await this.authService.getUser$();
     this.user$.subscribe((user) => {
       this.user = user;
     });
-  }
+  }*/
 
   async toggle(status: boolean, training: Training) {
     console.log(

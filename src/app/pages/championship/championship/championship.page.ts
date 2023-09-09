@@ -50,6 +50,7 @@ export class ChampionshipPage implements OnInit {
 
     // CURRENT GAMES
     const teamGame$ = this.authService.getUser$().pipe(
+      take(1),
       tap(() => console.log("Fetching user...")),
       switchMap(user => {
         console.log("Got user:", user);
@@ -61,7 +62,7 @@ export class ChampionshipPage implements OnInit {
       tap(team => console.log("Processing team:", team.id)),
       concatMap(team => this.championshipService.getTeamGamesRefs(team.id).pipe(
         timeout(TIMEOUT_DURATION), // Adding timeout here 
-        // take(1),
+        take(1),
         tap(games => console.log(`Fetched games for team ${team.id}:`, games)),
         switchMap(games => {
           // Fetch attendees for each game and combine the results
@@ -97,23 +98,45 @@ export class ChampionshipPage implements OnInit {
       finalize(() => console.log("Team Game fetching completed"))
     );
 
-/*
-  // PAST GAMES
-  const teamGamePast$ = this.authService.getUser$().pipe(
-      tap(() => console.log("Fetching user PAST...")),
+    // CURRENT GAMES
+    const teamGamePast$ = this.authService.getUser$().pipe(
+      take(1),
+      tap(() => console.log("Fetching user...")),
       switchMap(user => {
-        console.log("Got user PAST:", user);
+        console.log("Got user:", user);
+        this.user = user;
         return this.fbService.getUserTeamRefs(user);
       }),
-      tap(teams => console.log("Fetched teams PAST:", teams)),
+      tap(teams => console.log("Fetched teams:", teams)),
       concatMap(teamsArray => from(teamsArray)),
-      tap(team => console.log("Processing team PAST:", team.id)),
+      tap(team => console.log("Processing team:", team.id)),
       concatMap(team => this.championshipService.getTeamGamesPastRefs(team.id).pipe(
-        take(1), 
-        tap(games => console.log(`Fetched PAST games for team ${team.id}:`, games)),
+        timeout(TIMEOUT_DURATION), // Adding timeout here 
+        take(1),
+        tap(games => console.log(`Fetched games for team ${team.id}:`, games)),
+        switchMap(games => {
+          // Fetch attendees for each game and combine the results
+          const gameWithAttendees$ = games.map(game => 
+            this.championshipService.getTeamGameAttendeesRef(team.id, game.id).pipe(
+              take(1),
+              map(attendees => {
+                const userAttendee = attendees.find(att => att.id == this.user.uid);
+                const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
+                return {
+                  ...game,
+                  teamId: team.id,
+                  status: status,
+                  countAttendees: attendees.filter(att => att.status == true).length,
+                  attendees: attendees
+                };
+              })
+            )
+          );
+          return forkJoin(gameWithAttendees$);
+        }),
         catchError(error => {
           if (error.name === 'TimeoutError') {
-            console.error(`Error fetching PAST games for team ${team.id}:`);
+            console.error(`Error fetching games for team ${team.id}:`);
             return of([]);
           } else {
           // Handle other errors, maybe rethrow or return a default object
@@ -124,7 +147,6 @@ export class ChampionshipPage implements OnInit {
       tap(games => games.forEach(game => teamGamePastList.push(game))),
       finalize(() => console.log("Team Game fetching completed"))
     );
-  */
 
     // Use combineLatest to get results when both observables have emitted
    this.subscription = combineLatest([teamGame$]).subscribe({
@@ -132,8 +154,8 @@ export class ChampionshipPage implements OnInit {
         this.gameList = [...teamGameList].sort((a, b):any => {
           return a.dateTime.seconds > b.dateTime.seconds;
         });
-        this.gameList = this.gameList.filter((news, index, self) => 
-          index === self.findIndex((t) => (t.id === news.id))
+        this.gameList = this.gameList.filter((game, index, self) => 
+          index === self.findIndex((t) => (t.id === game.id))
         );
         this.gameList$ = of(this.gameList);
         console.log("Combined Game list created");
@@ -141,21 +163,19 @@ export class ChampionshipPage implements OnInit {
       error: err => console.error('Error in the observable chain:', err)
     });
 
-    /*
     this.subscriptionPast = combineLatest([teamGamePast$]).subscribe({
       next: () => {
         this.gameListPast = [...teamGamePastList].sort((a, b):any => {
-          return a.dateTime.seconds < b.dateTime.seconds;
+          return a.dateTime.seconds > b.dateTime.seconds;
         });
-        this.gameListPast = this.gameListPast.filter((news, index, self) => 
-        index === self.findIndex((t) => (t.id === news.id))
-    );
+        this.gameListPast = this.gameListPast.filter((game, index, self) => 
+          index === self.findIndex((t) => (t.id === game.id))
+        );
         this.gameListPast$ = of(this.gameListPast);
         console.log("Combined Game list PAST created");
       },
       error: err => console.error('Error in the observable chain:', err)
     });
-    */
   }
 
 

@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { ModalController, NavParams, ToastController } from "@ionic/angular";
-import { combineLatest, of, Subscription } from "rxjs";
-import { switchMap } from "rxjs/operators";
+import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, merge, mergeMap, of, shareReplay, switchMap, take, tap, timeout, toArray } from "rxjs";
 import { Team } from "src/app/models/team";
+import { Profile } from "src/app/models/user";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 
@@ -14,13 +14,12 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 export class TeamPage implements OnInit {
   @Input("data") team: Team;
 
-  memberList: any[] = [];
-  adminList: any[] = [];
-  requestList: any[] = [];
+  memberList$: Observable<Profile[]>;
+  adminList$: Observable<Profile[]>;
+  requestList$: Observable<Profile[]>;
 
-  teamAdminSub: Subscription;
-  teamMemberSub: Subscription;
-  teamRequestSub: Subscription;
+  private subscription: Subscription;
+
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -33,99 +32,101 @@ export class TeamPage implements OnInit {
   ngOnInit() {
     this.team = this.navParams.get("data");
 
-    this.getTeamMembers();
-    this.getTeamAdmins();
-    this.getTeamRequests();
+    const memberList: Profile[] = [];
+    const adminList: Profile[] = [];
+    const requestList: any[] = [];
+
+    const member$ = this.fbService.getTeamRef(this.team.id).pipe( 
+      take(1), 
+      switchMap(team => this.fbService.getTeamMemberRefs(team.id)),
+      concatMap((teamMemberArray:any) => from(teamMemberArray)),
+      tap((member:any)=>console.log(member.id)),
+      concatMap(user => 
+          this.userProfileService.getUserProfileById(user.id).pipe(
+            take(1), 
+            map(user=>[user]),
+            catchError(error => {
+              console.error('Error fetching team member:', error);
+              return of([]);
+            })
+          )
+      ),
+      tap(user => user.forEach(n => memberList.push(n))),
+      finalize(() => console.log("Team Member"))
+    )
+
+    const admin$ = this.fbService.getTeamRef(this.team.id).pipe( 
+      take(1), 
+      switchMap(team => this.fbService.getTeamAdminRefs(team.id)),
+      concatMap((teamAdminArray:any) => from(teamAdminArray)),
+      tap((admin:any)=>console.log(admin.id)),
+      concatMap(user => 
+          this.userProfileService.getUserProfileById(user.id).pipe(
+            take(1), 
+            map(user=>[user]),
+            catchError(error => {
+              console.error('Error fetching teamadmin:', error);
+              return of([]);
+            })
+          )
+      ),
+      tap(user => user.forEach(n => adminList.push(n))),
+      finalize(() => console.log("Team Admin"))
+    )
+
+    const requests$ = this.fbService.getTeamRef(this.team.id).pipe( 
+      take(1), 
+      switchMap(team => this.fbService.getTeamRequestRefs(team.id)),
+      concatMap((teamRequestsArray:any) => from(teamRequestsArray)),
+      tap((request:any)=>console.log(request.id)),
+      concatMap(user => 
+          this.userProfileService.getUserProfileById(user.id).pipe(
+            take(1), 
+            map(user=>{
+              return [{...user, teamId: this.team.id}]
+            }),
+            catchError(error => {
+              console.error('Error fetching teamadmin:', error);
+              return of([]);
+            })
+          )
+      ),
+      tap(user => user.forEach(n => requestList.push(n))),
+      finalize(() => console.log("Team Admin"))
+    )
+
+    // Use combineLatest to get results when both observables have emitted
+    this.subscription = combineLatest([member$, admin$]).subscribe({
+      next: () => {
+
+              
+        this.adminList$ = of(adminList);
+        this.memberList$ = of(memberList);
+        this.requestList$ = of(requestList);
+
+      },
+      error: err => console.error('Error in the observable chain:', err)
+  });
+
   }
 
   ngOnDestroy() {
-    this.teamAdminSub.unsubscribe();
-    this.teamMemberSub.unsubscribe();
-    this.teamRequestSub.unsubscribe();
-  }
-  getTeamMembers() {
-    this.teamMemberSub =  this.fbService
-      .getTeamMemberRefs(this.team.id)
-      .pipe(
-        switchMap((allTeamMembers: any) =>
-          combineLatest(
-            allTeamMembers.map((member) =>
-              combineLatest(
-                of(member),
-                this.userProfileService.getUserProfileById(member.id)
-              )
-            )
-          )
-        )
-      )
-      .subscribe((data:any) => {
-        // console.log(data);
 
-        this.memberList = [];
-        for (const member of data) {
-          this.memberList.push(member[1]);
-        }
-      });
+    if (this.subscription) {
+      this.subscription.unsubscribe();
   }
-  getTeamAdmins() {
-    this.teamAdminSub = this.fbService
-      .getTeamAdminRefs(this.team.id)
-      .pipe(
-        switchMap((allTeamAdmins: any) =>
-          combineLatest(
-            allTeamAdmins.map((member) =>
-              combineLatest(
-                of(member),
-                this.userProfileService.getUserProfileById(member.id)
-              )
-            )
-          )
-        )
-      )
-      .subscribe((data:any) => {
-        // console.log(data);
-
-        this.adminList = [];
-        for (const member of data) {
-          this.adminList.push(member[1]);
-        }
-      });
-  }
-
-  getTeamRequests() {
-    this.requestList = [];
-    this.teamRequestSub = this.fbService
-      .getTeamRequestRefs(this.team.id)
-      .pipe(
-        switchMap((allTeamMembers: any) =>
-          combineLatest(
-            allTeamMembers.map((member) =>
-              combineLatest(
-                of(member),
-                this.userProfileService.getUserProfileById(member.id)
-              )
-            )
-          )
-        )
-      )
-      .subscribe((data:any) => {
-        //console.log(data);
-        this.requestList = [];
-        for (const member of data) {
-          this.requestList.push(member[1]);
-        }
-      });
+  
   }
 
   async deleteTeamRequest(request) {
-    await this.fbService.deleteUserTeamRequest(this.team.id, request.id);
+    await this.fbService.deleteUserTeamRequest(request.teamId, request.id);
     await this.toastActionSaved();
-    this.getTeamRequests();
+
   }
   async approveTeamRequest(request) {
-    await this.fbService.setApproveUserTeamRequest(this.team.id, request.id);
+    await this.fbService.setApproveUserTeamRequest(request.teamId, request.id);
     await this.toastActionSaved();
-    this.getTeamRequests();
+
   }
 
   async toastActionSaved() {

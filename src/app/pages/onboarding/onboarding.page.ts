@@ -47,7 +47,7 @@ export class OnboardingPage implements OnInit {
   }
 
   async ngOnInit() {
-    this.getUser();
+    // this.getUser();
     this.menuCtrl.enable(false, "menu");
     /* const inviteRef = await this.fbService.getInvites();
     inviteRef.subscribe(snapshot=>{

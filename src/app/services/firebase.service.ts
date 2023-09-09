@@ -32,6 +32,7 @@ import { User, UserProfile } from "@angular/fire/auth";
 
 import { AuthService } from "src/app/services/auth.service";
 import { DocumentData, query, where } from "@angular/fire/firestore";
+import { Profile } from "../models/user";
 
 @Injectable({
   providedIn: "root",
@@ -79,24 +80,24 @@ export class FirebaseService {
     }) as Observable<Club[]>;
   }
 
-  getClubMemberRefs(clubId: string): Observable<any> {
+  getClubMemberRefs(clubId: string): Observable<Profile> {
     const clubMemberRefList = collection(
       this.firestore,
       `club/${clubId}/members`
     );
     return collectionData(clubMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<any>;
+    }) as unknown as Observable<Profile>;
   }
 
-  getClubAdminRefs(clubId: string): Observable<any> {
+  getClubAdminRefs(clubId: string): Observable<Profile> {
     const clubMemberRefList = collection(
       this.firestore,
       `club/${clubId}/admins`
     );
     return collectionData(clubMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<any>;
+    }) as unknown as Observable<Profile>;
   }
 
   getClubRequestRefs(clubId: string): Observable<any> {

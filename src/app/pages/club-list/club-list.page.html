@@ -14,17 +14,16 @@
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="clubList; else loading">
-    <ion-list>
-      <ion-grid>
-        <ion-row>
-          <ion-col
-            size-lg="4"
-            size-md="6"
-            size-sm="6"
-            size="12"
-            *ngFor="let club of clubList"
-          >
+  <ion-list>
+    <ion-grid>
+      <ion-row>
+        <ion-col
+          size-lg="4"
+          size-md="6"
+          size-sm="6"
+          size="12"
+          *ngFor="let club of clubList$ | async"
+        >
             <ion-card (click)="openModal(club)">
               <img src="{{club.logo}}" />
               <ion-card-header>
@@ -40,7 +39,7 @@
         </ion-row>
       </ion-grid>
     </ion-list>
-  </ng-container>
+
 
   <!-- fab placed to the bottom end -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">

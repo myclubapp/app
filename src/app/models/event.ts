@@ -7,7 +7,7 @@ export interface Event {
   dateTime: Timestamp
   location: string
   city: string
-  date: string
+  date: Date
   time: string
   teamId: string
 

@@ -41,7 +41,7 @@ export class ChampionshipDetailPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.getUser();
+    // this.getUser();
     // GET DATA
     this.game = this.navParams.get("data");
     this.setMap();

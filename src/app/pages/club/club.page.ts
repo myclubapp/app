@@ -6,10 +6,10 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "firebase/auth";
-import { combineLatest, Observable, of, Subscription } from "rxjs";
-import { switchMap } from "rxjs/operators";
+import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, filter, finalize, forkJoin, from, map, merge, mergeMap, of, shareReplay, startWith, switchMap, take, tap, timeout, toArray } from "rxjs";
 import { Club } from "src/app/models/club";
 import { Team } from "src/app/models/team";
+import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
@@ -22,20 +22,11 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 export class ClubPage implements OnInit {
   @Input("data") club: Club;
 
-  memberList: any[] = [];
-  adminList: any[] = [];
-  requestList: any[] = [];
+  memberList$: Observable<Profile[]>;
+  adminList$: Observable<Profile[]>;
+  requestList$: Observable<Profile[]>;
 
-  teamList: Team[] = [];
-  availableTeamList: Team[] = [];
-
-  clubAdminSub: Subscription;
-  clubMemberSub: Subscription;
-  clubRequestSub: Subscription;
-  clubTeamListSub: Subscription;
-
-  user$: Observable<User>;
-  user: User;
+  private subscription: Subscription;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -50,103 +41,131 @@ export class ClubPage implements OnInit {
   ngOnInit() {
     this.club = this.navParams.get("data");
 
-    this.getClubMembers();
-    this.getClubAdmins();
-    this.getClubRequests();
-    this.getAvailableTeamList();
+    const TIMEOUT_DURATION = 1000; // 5 seconds, adjust as needed
+
+    const memberList: Profile[] = [];
+    const adminList: Profile[] = [];
+    const requestList: any[] = [];
+
+    const member$ = this.fbService.getClubRef(this.club.id).pipe( 
+      take(1), 
+      switchMap(club => this.fbService.getClubMemberRefs(club.id).pipe(
+        take(1),
+        defaultIfEmpty([]), 
+        startWith([]), // <-- Add this line
+      )),
+      concatMap((clubMemberArray:any) => from(clubMemberArray)),
+      tap((member:any)=>console.log(member.id)),
+      filter(member => member !== undefined),
+      concatMap(user => 
+          this.userProfileService.getUserProfileById(user.id).pipe(
+            take(1), 
+            map(user=>[user]),
+            filter(member => member !== undefined),
+            catchError(error => {
+              console.error('Error fetching club member:', error);
+              return of([]);
+          })
+          )
+      ),
+      tap(user => user.forEach(n => memberList.push(n))),
+      finalize(() => console.log("Club Member"))
+    )
+
+    const admin$ = this.fbService.getClubRef(this.club.id).pipe( 
+      take(1), 
+      switchMap(club => this.fbService.getClubAdminRefs(club.id).pipe(
+        take(1),
+        defaultIfEmpty([]), // <-- Add this line
+        startWith([]), // <-- Add this line
+      )),
+
+      concatMap((clubAdminArray:any) => from(clubAdminArray)),
+      tap((admin:any)=>console.log(admin.id)),
+      filter(member => member !== undefined),
+      concatMap(user => 
+          this.userProfileService.getUserProfileById(user.id).pipe(
+            take(1), 
+            map(user=>[user]),
+            filter(member => member !== undefined),
+            catchError(error => {
+              console.error('Error fetching club admin:', error);
+              return of([]);
+          })
+          )
+      ),
+      tap(user => user.forEach(n => adminList.push(n))),
+      finalize(() => console.log("Club Admin"))
+    )
+
+    const requests$ = this.fbService.getClubRef(this.club.id).pipe( 
+      take(1), 
+      switchMap(club => this.fbService.getClubRequestRefs(club.id).pipe(
+        take(1),
+        defaultIfEmpty([]), // <-- Add this line
+        startWith([]), // <-- Add this line
+      )),
+ 
+      concatMap((clubRequestsArray:any) => from(clubRequestsArray)),
+      tap((request:any)=>console.log("Request: " + request.id)),
+      filter(request => request !== undefined),
+      concatMap(request => 
+          this.userProfileService.getUserProfileById(request.id).pipe(
+            take(1), 
+            map(profile => {
+              console.log("userprofile" + profile);
+              return [{...request, ...profile, clubId: this.club.id}]
+            }),
+            filter(member => member !== undefined),
+            catchError(error => {
+              console.error('Error fetching club request:', error);
+              return of([]);
+          })
+          )
+      ),
+      tap(user => user.forEach(n => requestList.push(n))),
+      finalize(() => console.log("Club Requests"))
+    )
+
+    member$.subscribe(data => console.log('Member data:', data));
+    admin$.subscribe(data => console.log('Admin data:', data));
+    requests$.subscribe(data => console.log('Requests data:', data));
+
+    // Use combineLatest to get results when both observables have emitted
+    // this.subscription = combineLatest([member$, admin$, requests$]).subscribe({
+      this.subscription = forkJoin([member$, admin$, requests$]).subscribe({ next: () => {
+        console.log("subs")
+        this.adminList$ = of(adminList);
+        this.memberList$ = of(memberList);
+        this.requestList$ = of(requestList);
+
+      },
+      error: err => console.error('Error in the observable chain:', err)
+  });
+
   }
 
   ngOnDestroy() {
-    this.clubAdminSub.unsubscribe();
-    this.clubMemberSub.unsubscribe();
-    this.clubRequestSub.unsubscribe();
-    this.clubTeamListSub.unsubscribe();
-  }
-  getUser() {
-    this.user$ = this.authService.getUser$();
-    this.user$.subscribe((user) => {
-      this.user = user;
-    });
-  }
-  getClubMembers() {
-    this.clubMemberSub = this.fbService
-      .getClubMemberRefs(this.club.id)
-      .pipe(
-        switchMap((allClubMembers: any) =>
-          combineLatest(
-            allClubMembers.map((member) =>
-              combineLatest(
-                of(member),
-                this.userProfileService.getUserProfileById(member.id)
-              )
-            )
-          )
-        )
-      )
-      .subscribe((data: any) => {
-        this.memberList = [];
-        for (const member of data) {
-          this.memberList.push(member[1]);
-        }
-      });
-  }
-  getClubAdmins() {
-    this.clubAdminSub = this.fbService
-      .getClubAdminRefs(this.club.id)
-      .pipe(
-        switchMap((allClubMembers: any) =>
-          combineLatest(
-            allClubMembers.map((member) =>
-              combineLatest(
-                of(member),
-                this.userProfileService.getUserProfileById(member.id)
-              )
-            )
-          )
-        )
-      )
-      .subscribe((data: any) => {
-        this.adminList = [];
-        for (const member of data) {
-          this.adminList.push(member[1]);
-        }
-      });
-  }
 
-  getClubRequests() {
-    this.requestList = [];
-    this.clubRequestSub = this.fbService
-      .getClubRequestRefs(this.club.id)
-      .pipe(
-        switchMap((allClubMembers: any) =>
-          combineLatest(
-            allClubMembers.map((member) =>
-              this.userProfileService.getUserProfileById(member.id)
-            )
-          )
-        )
-      )
-      .subscribe((data: any) => {
-        console.log(data);
-        this.requestList = [];
-        for (const member of data) {
-          this.requestList.push(member);
-        }
-      });
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+  }
+  
   }
 
   async deleteClubRequest(request) {
-    await this.fbService.deleteUserClubRequest(this.club.id, request.id);
+    console.log(request);
+    await this.fbService.deleteUserClubRequest(request.clubId, request.id);
     await this.toastActionSaved();
-    this.getClubRequests();
+
   }
   async approveClubRequest(request) {
-    await this.fbService.setApproveUserClubRequest(this.club.id, request.id);
+    console.log(request);
+    await this.fbService.setApproveUserClubRequest(request.clubId, request.id);
     await this.toastActionSaved();
     await this.joinTeamAlert();
-    this.getClubRequests();
-  }
 
+  }
   async toastActionSaved() {
     const toast = await this.toastController.create({
       message: "Änderungen erfolgreich gespeichert",
@@ -166,9 +185,10 @@ export class ClubPage implements OnInit {
     return await this.modalCtrl.dismiss(this.club, "confirm");
   }
 
+
   async joinTeamAlert() {
     let _inputs = [];
-
+/*
     if (this.teamList.length > 0) {
       for (const team of this.availableTeamList) {
         _inputs.push({
@@ -220,9 +240,11 @@ export class ClubPage implements OnInit {
     });
 
     await alert.present();
+    */
   }
 
   getAvailableTeamList() {
+    /*
     // console.log("getAvailableTeamList");
     this.clubTeamListSub = this.fbService
       .getClubTeamRefs(this.club.id)
@@ -253,5 +275,6 @@ export class ClubPage implements OnInit {
           ...new Set(availableTeamListNew.concat(...this.availableTeamList)),
         ];
       });
+      */
   }
 }

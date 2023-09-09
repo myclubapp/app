@@ -13,6 +13,7 @@
       <ion-title size="large">{{club.name}}</ion-title>
     </ion-toolbar>
   </ion-header>
+<!--
 
   <ion-list *ngIf="requestList.length > 0">
     <ion-list-header> Anfragen </ion-list-header>
@@ -25,18 +26,39 @@
         <ion-icon icon-only name="trash"></ion-icon>
       </ion-button>
       <ion-button
-        color="success"
-        (click)="approveClubRequest(member)"
-        slot="end"
+      color="success"
+      (click)="approveClubRequest(member)"
+      slot="end"
       >
-        <ion-icon icon-only name="checkmark-outline"></ion-icon>
-      </ion-button>
-    </ion-item>
-  </ion-list>
+      <ion-icon icon-only name="checkmark-outline"></ion-icon>
+    </ion-button>
+  </ion-item>
+</ion-list>
+-->
 
-  <ion-list *ngIf="memberList.length > 0">
+<ion-list >
+  <ion-list-header> Anfragen </ion-list-header>
+  <ion-item *ngFor="let request of requestList$ | async">
+    <ion-avatar slot="start">
+      <img src="{{request?.profilePicture}}" />
+    </ion-avatar>
+    <ion-label> {{request?.firstName}} {{request?.lastName}} </ion-label>
+    <ion-button color="danger" (click)="deleteClubRequest(request)" slot="end">
+      <ion-icon icon-only name="trash"></ion-icon>
+    </ion-button>
+    <ion-button
+    color="success"
+    (click)="approveClubRequest(request)"
+    slot="end"
+    >
+    <ion-icon icon-only name="checkmark-outline"></ion-icon>
+  </ion-button>
+  </ion-item>
+</ion-list>
+
+  <ion-list >
     <ion-list-header> Mitglieder </ion-list-header>
-    <ion-item *ngFor="let member of memberList">
+    <ion-item *ngFor="let member of memberList$ | async">
       <ion-avatar slot="start">
         <img src="{{member?.profilePicture}}" />
       </ion-avatar>
@@ -44,13 +66,13 @@
     </ion-item>
   </ion-list>
 
-  <ion-list *ngIf="adminList.length > 0">
+  <ion-list >
     <ion-list-header> Administratoren </ion-list-header>
-    <ion-item *ngFor="let member of adminList">
+    <ion-item *ngFor="let admin of adminList$ | async">
       <ion-avatar slot="start">
-        <img src="{{member?.profilePicture}}" />
+        <img src="{{admin?.profilePicture}}" />
       </ion-avatar>
-      <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
+      <ion-label> {{admin?.firstName}} {{admin?.lastName}} </ion-label>
     </ion-item>
   </ion-list>
 </ion-content>

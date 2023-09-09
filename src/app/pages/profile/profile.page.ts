@@ -21,7 +21,7 @@ import {
   Photo,
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { switchMap } from "rxjs/operators";
+import { switchMap, take } from "rxjs/operators";
 import {
   AlertController,
   MenuController,
@@ -67,7 +67,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
-    await this.getUser();
+    // await this.getUser();
     this.getClubRequestList();
     this.getTeamRequestList();
     this.getPushDeviceList();
@@ -92,6 +92,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.clubRequestListSub = this.authService
       .getUser$()
       .pipe(
+        take(1),
         // GET TEAMS
         switchMap((user: User) => this.fbService.getUserClubRequestRefs(user)),
         // Loop Over Teams
@@ -125,6 +126,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.teamRequestListSub = this.authService
       .getUser$()
       .pipe(
+        take(1),
         // GET TEAMS
         switchMap((user: User) => this.fbService.getUserTeamRequestRefs(user)),
         // Loop Over Teams

@@ -2,8 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Club } from "src/app/models/club";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { switchMap, map } from "rxjs/operators";
-import { of, combineLatest, Observable } from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, merge, mergeMap, of, shareReplay, switchMap, take, tap, timeout, toArray } from "rxjs";
 import { User } from "@angular/fire/auth";
 import { ClubPage } from "../club/club.page";
 import {
@@ -19,11 +18,14 @@ import { AlertController } from "@ionic/angular";
   styleUrls: ["./club-list.page.scss"],
 })
 export class ClubListPage implements OnInit {
-  clubList: Club[] = [];
-  activeClubList: Club[] = [];
+
   skeleton = new Array(12);
-  user$: Observable<User>;
+
   user: User;
+  private subscription: Subscription;
+
+  clubList: Club[] = [];
+  clubList$: Observable<Club[]>;
 
   constructor(
     private readonly fbService: FirebaseService,
@@ -35,19 +37,43 @@ export class ClubListPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.getUser();
-    this.getClubList();
 
-    this.fbService.getActiveClubList().subscribe((data: any) => {
-      // console.log(data);
-      this.activeClubList = data;
-    });
+    const clubList: Club[] = [];
+    clubList.length = 0;
+
+    const clubs$ = this.authService.getUser$().pipe(
+      take(1),
+      switchMap(user => this.fbService.getUserClubRefs(user).pipe(take(1))),  
+      concatMap(clubArray => from(clubArray)),
+      tap((club:Club)=>console.log(club.id)),
+      concatMap(club => 
+        this.fbService.getClubRef(club.id).pipe(
+          take(1),
+          defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
+          map(result => [result]),
+          catchError(error => {
+            console.error('Error fetching ClubDetail:', error);
+            return of([]);
+          })
+        )
+      ),
+      tap(clubs => clubs.forEach(club => {
+        return clubList.push(club);
+      })),
+      finalize(() => console.log("Get Club completed"))
+  );
+
+  this.subscription = forkJoin([clubs$]).subscribe({
+    next: () => {    
+          this.clubList$ = of(clubList);
+    },
+    error: err => console.error('Error in the observable chain:', err)
+  });
   }
-  getUser() {
-    this.user$ = this.authService.getUser$();
-    this.user$.subscribe((user) => {
-      this.user = user;
-    });
+  ngOnDestroy(): void {
+    if (this.subscription) {
+        this.subscription.unsubscribe();
+    }
   }
   async openModal(club: Club) {
     // const presentingElement = await this.modalCtrl.getTop();
@@ -68,38 +94,9 @@ export class ClubListPage implements OnInit {
     }
   }
 
-  getClubList() {
-    const clubList$ = this.authService
-      .getUser$()
-      .pipe(
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserClubRefs(user)),
-        // Loop Over Clubs
-        switchMap((allClubs: any) =>
-          combineLatest(
-            allClubs.map((club) =>
-              combineLatest(of(club), this.fbService.getClubRef(club.id))
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        const clubListNew = [];
-        for (const club of data) {
-          // loop over clubs
-
-          const clubDetails = club[1];
-          clubListNew.push(clubDetails);
-        }
-        this.clubList = this.clubList.sort(
-          (a, b) => Number(a.id) - Number(b.id)
-        );
-        this.clubList = [...new Set([].concat(...clubListNew))];
-        clubList$.unsubscribe();
-      });
-  }
 
   async joinClubAlert() {
+    /*
     let _inputs = [];
     for (let club of this.activeClubList) {
       for (let myClub of this.clubList) {
@@ -149,6 +146,6 @@ export class ClubListPage implements OnInit {
       inputs: _inputs,
     });
 
-    await alert.present();
+    await alert.present();*/
   }
 }

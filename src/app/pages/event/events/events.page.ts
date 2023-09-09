@@ -7,12 +7,10 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { of, combineLatest, Observable } from "rxjs";
-import { switchMap, map } from "rxjs/operators";
+import { Observable, Subscription, catchError, combineLatest, concatMap, finalize, forkJoin, from,  map,  of, switchMap, take, tap, timeout} from "rxjs";
 import { Event } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { EventService } from "src/app/services/firebase/event.service";
 
 @Component({
@@ -26,8 +24,16 @@ export class EventsPage implements OnInit {
   user$: Observable<User>;
   user: User;
 
+  eventsList$: Observable<Event[]>;
+  eventsListPast$: Observable<Event[]>;
+
   eventsList: Event[];
   eventsListPast: Event[];
+
+  private subscription: Subscription;
+  private subscriptionPast: Subscription;
+
+
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
@@ -41,13 +47,141 @@ export class EventsPage implements OnInit {
   }
 
   ngOnInit() {
-    this.getUser();
-    this.getEventsList();
-    this.getEventsListPast();
-  }
+  
+    const TIMEOUT_DURATION = 1000; // 5 seconds, adjust as needed
 
-  getUser() {
-    this.user$ = this.authService.getUser$();
+    const teamEventList: Event[] = [];
+    const teamEventPastList: Event[] = [];
+
+    // CURRENT EventS
+    const teamEvent$ = this.authService.getUser$().pipe(
+      take(1),
+      tap(() => console.log("Fetching user...")),
+      switchMap(user => {
+        console.log("Got user:", user);
+        this.user = user;
+        return this.fbService.getUserTeamRefs(user);
+      }),
+      tap(teams => console.log("Fetched teams:", teams)),
+      concatMap(teamsArray => from(teamsArray)),
+      tap(team => console.log("Processing team:", team.id)),
+      concatMap(team => this.eventService.getTeamEventsRef(team.id).pipe(
+        timeout(TIMEOUT_DURATION), // Adding timeout here 
+        take(1),
+        tap(Events => console.log(`Fetched Events for team ${team.id}:`, Events)),
+        switchMap(Events => {
+          // Fetch attendees for each Event and combine the results
+          const EventWithAttendees$ = Events.map(Event => 
+            this.eventService.getTeamEventsAttendeesRef(team.id, Event.id).pipe(
+              take(1),
+              map(attendees => {
+                const userAttendee = attendees.find(att => att.id == this.user.uid);
+                const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
+                return {
+                  ...Event,
+                  teamId: team.id,
+                  status: status,
+                  countAttendees: attendees.filter(att => att.status == true).length,
+                  attendees: attendees
+                };
+              })
+            )
+          );
+          return forkJoin(EventWithAttendees$);
+        }),
+        catchError(error => {
+          if (error.name === 'TimeoutError') {
+            console.error(`Error fetching Events for team ${team.id}:`);
+            return of([]);
+          } else {
+          // Handle other errors, maybe rethrow or return a default object
+            throw error;
+          }
+        })
+      )),
+      tap(Events => Events.forEach(Event => teamEventList.push(Event))),
+      finalize(() => console.log("Team Event fetching completed"))
+    );
+
+    // CURRENT EventS
+    const teamEventPast$ = this.authService.getUser$().pipe(
+      take(1),
+      tap(() => console.log("Fetching user...")),
+      switchMap(user => {
+        console.log("Got user:", user);
+        this.user = user;
+        return this.fbService.getUserTeamRefs(user);
+      }),
+      tap(teams => console.log("Fetched teams:", teams)),
+      concatMap(teamsArray => from(teamsArray)),
+      tap(team => console.log("Processing team:", team.id)),
+      concatMap(team => this.eventService.getTeamEventsRefPast(team.id).pipe(
+        timeout(TIMEOUT_DURATION), // Adding timeout here 
+        take(1),
+        tap(events => console.log(`Fetched Events for team ${team.id}:`, events)),
+        switchMap(events => {
+          // Fetch attendees for each Event and combine the results
+          const EventWithAttendees$ = events.map(Event => 
+            this.eventService.getTeamEventsAttendeesRef(team.id, Event.id).pipe(
+              take(1),
+              map(attendees => {
+                const userAttendee = attendees.find(att => att.id == this.user.uid);
+                const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
+                return {
+                  ...Event,
+                  teamId: team.id,
+                  status: status,
+                  countAttendees: attendees.filter(att => att.status == true).length,
+                  attendees: attendees
+                };
+              })
+            )
+          );
+          return forkJoin(EventWithAttendees$);
+        }),
+        catchError(error => {
+          if (error.name === 'TimeoutError') {
+            console.error(`Error fetching Events for team ${team.id}:`);
+            return of([]);
+          } else {
+          // Handle other errors, maybe rethrow or return a default object
+            throw error;
+          }
+        })
+      )),
+      tap(Events => Events.forEach(Event => teamEventPastList.push(Event))),
+      finalize(() => console.log("Team Event fetching completed"))
+    );
+
+    // Use combineLatest to get results when both observables have emitted
+   this.subscription = combineLatest([teamEvent$]).subscribe({
+      next: () => {
+        this.eventsList = [...teamEventList].sort((a, b):any => {
+          return a.date.getTime() > b.date.getTime();
+        });
+        this.eventsList = this.eventsList.filter((Event, index, self) => 
+          index === self.findIndex((t) => (t.id === Event.id))
+        );
+        this.eventsList$ = of(this.eventsList);
+        console.log("Combined Event list created");
+      },
+      error: err => console.error('Error in the observable chain:', err)
+    });
+
+    this.subscriptionPast = combineLatest([teamEventPast$]).subscribe({
+      next: () => {
+        this.eventsListPast = [...teamEventPastList].sort((a, b):any => {
+          return a.date.getTime() > b.date.getTime();
+        });
+        this.eventsListPast = this.eventsListPast.filter((Event, index, self) => 
+          index === self.findIndex((t) => (t.id === Event.id))
+        );
+        this.eventsListPast$ = of(this.eventsListPast);
+        console.log("Combined Event list PAST created");
+      },
+      error: err => console.error('Error in the observable chain:', err)
+    });
+
   }
 
   async toggle(status: boolean, event: Event) {
@@ -87,151 +221,5 @@ export class EventsPage implements OnInit {
       position: "top",
     });
     toast.present();
-  }
-
-  getEventsList() {
-    this.authService
-      .getUser$()
-      .pipe(
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserTeamRefs(user)),
-        // Loop Over Teams
-        switchMap((allTeams: any) =>
-          combineLatest(
-            allTeams.map((team) =>
-              combineLatest(
-                of(team),
-                // Loop over Events
-                // this.eventService.getTeamEventsRef(team.id),
-                this.eventService
-                  .getTeamEventsRef(team.id)
-                  .pipe(
-                    switchMap((allEvents: any) =>
-                      combineLatest(
-                        allEvents.map((event) =>
-                          combineLatest(
-                            of(event),
-                            this.eventService.getTeamEventsAttendeesRef(
-                              team.id,
-                              event.id
-                            )
-                          )
-                        )
-                      )
-                    )
-                  ),
-                this.fbService.getTeamRef(team.id)
-              )
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        const eventsListNew = [];
-        for (const team of data) {
-          // loop over teams
-
-          const events = team[1];
-          const teamDetails = team[2];
-          for (const eventObject of events) {
-            const event = eventObject[0];
-            const attendees = eventObject[1];
-
-            event.teamName = teamDetails.name;
-            event.teamId = teamDetails.id;
-            event.attendees = attendees.filter((e) => e.status === true).length;
-
-            if (
-              attendees &&
-              attendees.filter((e) => e.id === this.user.uid).length === 1
-            ) {
-              event.status = attendees.filter(
-                (e) => e.id === this.user.uid
-              )[0].status;
-            } else {
-              event.status = null;
-            }
-
-            eventsListNew.push(event);
-          }
-        }
-        this.eventsList = [...new Set([].concat(...eventsListNew))];
-        this.eventsList = this.eventsList.sort(
-          (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis()
-        );
-      });
-  }
-
-  getEventsListPast() {
-    this.authService
-      .getUser$()
-      .pipe(
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserTeamRefs(user)),
-        // Loop Over Teams
-        switchMap((allTeams: any) =>
-          combineLatest(
-            allTeams.map((team) =>
-              combineLatest(
-                of(team),
-                // Loop over Events
-                // this.eventService.getTeamEventsRef(team.id),
-                this.eventService
-                  .getTeamEventsRefPast(team.id)
-                  .pipe(
-                    switchMap((allEvents: any) =>
-                      combineLatest(
-                        allEvents.map((event) =>
-                          combineLatest(
-                            of(event),
-                            this.eventService.getTeamEventsAttendeesRef(
-                              team.id,
-                              event.id
-                            )
-                          )
-                        )
-                      )
-                    )
-                  ),
-                this.fbService.getTeamRef(team.id)
-              )
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        const eventsListNew = [];
-        for (const team of data) {
-          // loop over teams
-
-          const events = team[1];
-          const teamDetails = team[2];
-          for (const eventObject of events) {
-            const event = eventObject[0];
-            const attendees = eventObject[1];
-
-            event.teamName = teamDetails.name;
-            event.teamId = teamDetails.id;
-            event.attendees = attendees.filter((e) => e.status === true).length;
-
-            if (
-              attendees &&
-              attendees.filter((e) => e.id === this.user.uid).length === 1
-            ) {
-              event.status = attendees.filter(
-                (e) => e.id === this.user.uid
-              )[0].status;
-            } else {
-              event.status = null;
-            }
-
-            eventsListNew.push(event);
-          }
-        }
-        this.eventsListPast = [...new Set([].concat(...eventsListNew))];
-        this.eventsListPast = this.eventsListPast.sort(
-          (a, b) => b.dateTime.toMillis() - a.dateTime.toMillis()
-        );
-      });
   }
 }

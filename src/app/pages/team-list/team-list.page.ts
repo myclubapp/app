@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Team } from "src/app/models/team";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { switchMap, map } from "rxjs/operators";
+import { switchMap, map, take } from "rxjs/operators";
 import { of, combineLatest, Subscription, Observable } from "rxjs";
 import { User } from "@angular/fire/auth";
 import {
@@ -37,7 +37,7 @@ export class TeamListPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.getUser();
+    // this.getUser();
     this.getTeamList();
     this.getAvailableTeamList();
   }
@@ -131,6 +131,7 @@ export class TeamListPage implements OnInit {
     this.teamListSub = this.authService
       .getUser$()
       .pipe(
+        take(1),
         // GET TEAMS
         switchMap((user: User) => this.fbService.getUserTeamRefs(user)),
         // Loop Over Teams
@@ -165,6 +166,7 @@ export class TeamListPage implements OnInit {
     this.availableTeamListSub = this.authService
       .getUser$()
       .pipe(
+        take(1),
         // GET TEAMS
         switchMap((user: User) => this.fbService.getUserClubRefs(user)),
         // Loop Over Teams
