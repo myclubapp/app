@@ -171,14 +171,14 @@ export class FirebaseService {
     return docData(requestRef, { idField: "id" }) as Observable<any>;
   }
 
-  setApproveUserClubRequest(clubId: string, requestId: string): Promise<any> {
-    return setDoc(doc(this.firestore, `club/${clubId}/requests`, requestId), {
+  approveUserClubRequest(clubId: string, requestId: string): Promise<any> {
+    return setDoc(doc(this.firestore, `/userProfile/${requestId}/clubRequests/${clubId}`), {
       approve: true,
     });
   }
 
-  setApproveUserTeamRequest(teamId: string, requestId: string): Promise<any> {
-    return setDoc(doc(this.firestore, `teams/${teamId}/requests`, requestId), {
+  approveUserTeamRequest(teamId: string, requestId: string): Promise<any> {
+    return setDoc(doc(this.firestore, `userProfile/${requestId}/teamRequests`, teamId), {
       approve: true,
     });
   }

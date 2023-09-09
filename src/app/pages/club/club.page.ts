@@ -51,24 +51,24 @@ export class ClubPage implements OnInit {
       take(1), 
       switchMap(club => this.fbService.getClubMemberRefs(club.id).pipe(
         take(1),
-        defaultIfEmpty([]), 
-        startWith([]), // <-- Add this line
+        defaultIfEmpty([{}]),
+        startWith([{}]),
       )),
       concatMap((clubMemberArray:any) => from(clubMemberArray)),
       tap((member:any)=>console.log(member.id)),
-      filter(member => member !== undefined),
       concatMap(user => 
           this.userProfileService.getUserProfileById(user.id).pipe(
             take(1), 
-            map(user=>[user]),
-            filter(member => member !== undefined),
+            map(user=>{
+              return [{...user, clubId: this.club.id}]
+            }),
             catchError(error => {
-              console.error('Error fetching club member:', error);
+              console.error('Error fetching team member:', error);
               return of([]);
-          })
+            })
           )
       ),
-      tap(user => user.forEach(n => memberList.push(n))),
+      tap(users => users.forEach(n => memberList.push(n))),
       finalize(() => console.log("Club Member"))
     )
 
@@ -76,25 +76,24 @@ export class ClubPage implements OnInit {
       take(1), 
       switchMap(club => this.fbService.getClubAdminRefs(club.id).pipe(
         take(1),
-        defaultIfEmpty([]), // <-- Add this line
-        startWith([]), // <-- Add this line
+        defaultIfEmpty([{}]),
+        startWith([{}]),
       )),
-
       concatMap((clubAdminArray:any) => from(clubAdminArray)),
       tap((admin:any)=>console.log(admin.id)),
-      filter(member => member !== undefined),
       concatMap(user => 
           this.userProfileService.getUserProfileById(user.id).pipe(
             take(1), 
-            map(user=>[user]),
-            filter(member => member !== undefined),
+            map(user=>{
+              return [{...user, clubId: this.club.id}]
+            }),
             catchError(error => {
-              console.error('Error fetching club admin:', error);
+              console.error('Error fetching teamadmin:', error);
               return of([]);
-          })
+            })
           )
       ),
-      tap(user => user.forEach(n => adminList.push(n))),
+      tap(users => users.forEach(n => adminList.push(n))),
       finalize(() => console.log("Club Admin"))
     )
 
@@ -102,43 +101,33 @@ export class ClubPage implements OnInit {
       take(1), 
       switchMap(club => this.fbService.getClubRequestRefs(club.id).pipe(
         take(1),
-        defaultIfEmpty([]), // <-- Add this line
-        startWith([]), // <-- Add this line
+        defaultIfEmpty([{}]),
+        startWith([{}]),
       )),
- 
-      concatMap((clubRequestsArray:any) => from(clubRequestsArray)),
-      tap((request:any)=>console.log("Request: " + request.id)),
-      filter(request => request !== undefined),
-      concatMap(request => 
-          this.userProfileService.getUserProfileById(request.id).pipe(
+      concatMap((clubRequestArray:any) => from(clubRequestArray)),
+      tap((request:any)=>console.log(request.id)),
+      concatMap(user => 
+          this.userProfileService.getUserProfileById(user.id).pipe(
             take(1), 
-            map(profile => {
-              console.log("userprofile" + profile);
-              return [{...request, ...profile, clubId: this.club.id}]
+            map(user=>{
+              return [{...user, clubId: this.club.id}]
             }),
-            filter(member => member !== undefined),
             catchError(error => {
-              console.error('Error fetching club request:', error);
+              console.error('Error fetching teamadmin:', error);
               return of([]);
-          })
+            })
           )
       ),
-      tap(user => user.forEach(n => requestList.push(n))),
+      tap(users => users.forEach(n => requestList.push(n))),
       finalize(() => console.log("Club Requests"))
     )
 
-    member$.subscribe(data => console.log('Member data:', data));
-    admin$.subscribe(data => console.log('Admin data:', data));
-    requests$.subscribe(data => console.log('Requests data:', data));
-
     // Use combineLatest to get results when both observables have emitted
-    // this.subscription = combineLatest([member$, admin$, requests$]).subscribe({
-      this.subscription = forkJoin([member$, admin$, requests$]).subscribe({ next: () => {
-        console.log("subs")
-        this.adminList$ = of(adminList);
-        this.memberList$ = of(memberList);
-        this.requestList$ = of(requestList);
-
+    this.subscription = combineLatest([member$, admin$, requests$]).subscribe({
+      next: () => {
+        this.adminList$ = of(adminList.filter(obj => Object.keys(obj).length > 1))
+        this.memberList$ = of(memberList.filter(obj => Object.keys(obj).length > 1))
+        this.requestList$ = of(requestList.filter(obj => Object.keys(obj).length > 1));
       },
       error: err => console.error('Error in the observable chain:', err)
   });
@@ -161,7 +150,7 @@ export class ClubPage implements OnInit {
   }
   async approveClubRequest(request) {
     console.log(request);
-    await this.fbService.setApproveUserClubRequest(request.clubId, request.id);
+    await this.fbService.approveUserClubRequest(request.clubId, request.id);
     await this.toastActionSaved();
     await this.joinTeamAlert();
 
