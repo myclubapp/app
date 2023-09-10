@@ -13,8 +13,10 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { Club } from "src/app/models/club";
 import { AuthService } from "src/app/services/auth.service";
 import { Router } from "@angular/router";
-import { Observable } from "rxjs";
+import { Observable, Subscription, of, switchMap, take, tap } from "rxjs";
 import { User } from "firebase/auth";
+import { Profile } from "src/app/models/user";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 
 @Component({
   selector: "app-onboarding",
@@ -28,8 +30,17 @@ export class OnboardingPage implements OnInit {
   activeClubList: Club[];
   activeClubListBackup: Club[];
 
-  user$: Observable<User>;
+  //Auth
+  //user$: Observable<User>;
   user: User;
+
+  //myClub User Profile
+  // userProfile: Profile;
+  userProfile$: Observable<Profile>;
+
+  private subscription: Subscription;
+  private subscriptionActiveClubList: Subscription;
+
 
   // inviteList: Array<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>>
   constructor(
@@ -40,31 +51,44 @@ export class OnboardingPage implements OnInit {
     private readonly alertCtrl: AlertController,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
+    private readonly profileService: UserProfileService,
     private readonly router: Router,
     private readonly alertController: AlertController
   ) {
     this.menuCtrl.enable(false, "menu");
   }
 
-  async ngOnInit() {
-    // this.getUser();
+  ngOnInit() {
     this.menuCtrl.enable(false, "menu");
-    /* const inviteRef = await this.fbService.getInvites();
-    inviteRef.subscribe(snapshot=>{
-      //console.log(snapshot.docs);
-      this.inviteList = snapshot.docs;
-    }) */
-    this.fbService.getActiveClubList().subscribe((data: any) => {
-      // console.log(data);
-      this.activeClubList = data;
-      this.activeClubListBackup = data;
-    });
+
+    this.subscription = this.authService.getUser$().pipe(
+      take(1),
+      tap(user => this.user = user),
+      switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
+      ).subscribe(profile => {
+          this.userProfile$ = of(profile);
+      })
+
+
+      this.subscriptionActiveClubList = this.fbService.getActiveClubList().pipe(
+      take(1),
+      tap(activeClubList => {
+        console.log("clubs");
+        this.activeClubList = activeClubList;
+        this.activeClubListBackup = activeClubList;
+      })
+    ).subscribe();
+
   }
-  getUser() {
-    this.user$ = this.authService.getUser$();
-    this.user$.subscribe((user) => {
-      this.user = user;
-    });
+  ngOnDestroy() {
+
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+    if (this.subscriptionActiveClubList) {
+      this.subscriptionActiveClubList.unsubscribe();
+    }
+  
   }
   handleChange(event: any) {
     console.log(event.detail.value);
@@ -97,7 +121,7 @@ export class OnboardingPage implements OnInit {
         {
           text: "Ja",
           handler: async (data: any) => {
-            await this.fbService.setClubRequest(club.id, this.user);
+            await this.fbService.setClubRequest(club.id, this.user.uid);
             await this.presentRequestToast();
             await this.presentRequestSentAlert(club.name);
 

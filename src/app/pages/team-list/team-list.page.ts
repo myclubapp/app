@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { Team } from "src/app/models/team";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { switchMap, map, take } from "rxjs/operators";
+import { switchMap, map, take, tap } from "rxjs/operators";
 import { of, combineLatest, Subscription, Observable } from "rxjs";
 import { User } from "@angular/fire/auth";
 import {
@@ -12,6 +12,8 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { TeamPage } from "../team/team.page";
+import { Profile } from "src/app/models/user";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 
 @Component({
   selector: "app-team-list",
@@ -22,8 +24,10 @@ export class TeamListPage implements OnInit {
   teamList: Team[] = [];
   availableTeamList: Team[] = [];
   skeleton = new Array(12);
-  user$: Observable<User>;
+  userProfile$: Observable<Profile>;
   user: User;
+
+  private subscription: Subscription;
   availableTeamListSub: Subscription;
   teamListSub: Subscription;
 
@@ -33,25 +37,35 @@ export class TeamListPage implements OnInit {
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
     private readonly alertController: AlertController,
+    private readonly profileService: UserProfileService,
     private readonly toastController: ToastController
   ) {}
 
   ngOnInit() {
-    // this.getUser();
+    this.subscription = this.authService.getUser$().pipe(
+      take(1),
+      tap(user => this.user = user),
+      switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
+      ).subscribe(profile => {
+          this.userProfile$ = of(profile);
+      })
+
     this.getTeamList();
     this.getAvailableTeamList();
   }
 
   ngOnDestroy() {
-    this.availableTeamListSub.unsubscribe();
+
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+    if (this.availableTeamListSub) {
+      this.availableTeamListSub.unsubscribe();
+    }
+
     this.teamListSub.unsubscribe();
   }
-  getUser() {
-    this.user$ = this.authService.getUser$();
-    this.user$.subscribe((user) => {
-      this.user = user;
-    });
-  }
+
   async openModal(team: Team) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
@@ -102,7 +116,7 @@ export class TeamListPage implements OnInit {
           role: "confirm",
           handler: async (data: any) => {
             // console.log(data);
-            this.fbService.setTeamRequest(data, this.user);
+            this.fbService.setTeamRequest(data, this.user.uid);
             const toast = await this.toastController.create({
               message: "Anfrage an Team gesendet",
               color: "primary",

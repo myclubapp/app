@@ -171,39 +171,34 @@ export class FirebaseService {
     return docData(requestRef, { idField: "id" }) as Observable<any>;
   }
 
-  approveUserClubRequest(clubId: string, requestId: string): Promise<any> {
-    return setDoc(doc(this.firestore, `/userProfile/${requestId}/clubRequests/${clubId}`), {
+  approveUserClubRequest(clubId: string, userId: string): Promise<any> {
+    return setDoc(doc(this.firestore, `/club/${clubId}/requests/${userId}`), {
       approve: true,
     });
   }
-
-  approveUserTeamRequest(teamId: string, requestId: string): Promise<any> {
-    return setDoc(doc(this.firestore, `userProfile/${requestId}/teamRequests`, teamId), {
+  approveUserTeamRequest(teamId: string, userId: string): Promise<any> {
+    return setDoc(doc(this.firestore, `teams/${teamId}/requests/${userId}` ), {
       approve: true,
     });
   }
 
   async deleteUserClubRequest(clubId: string, userId: string) {
-    const requestRef = doc(
-      this.firestore,
-      `/userProfile/${userId}/clubRequests/${clubId}`
-    );
-    return deleteDoc(requestRef);
+    return setDoc(doc(this.firestore, `club/${clubId}/requests/${userId}` ), {
+      approve: false,
+    });
   }
 
   async deleteUserTeamRequest(teamId: string, userId: string) {
-    const requestRef = doc(
-      this.firestore,
-      `/userProfile/${userId}/teamRequests/${teamId}`
-    );
-    return deleteDoc(requestRef);
+    return setDoc(doc(this.firestore, `teams/${teamId}/requests/${userId}` ), {
+      approve: false,
+    });
   }
 
-  getClubTeamRefs(clubId: string): Observable<Team> {
+  getClubTeamRefs(clubId: string): Observable<Team[]> {
     const teamRefLIst = collection(this.firestore, `club/${clubId}/teams`);
     return collectionData(teamRefLIst, {
       idField: "id",
-    }) as unknown as Observable<Team>;
+    }) as unknown as Observable<Team[]>;
   }
 
   getTeamMemberRefs(teamId: string): Observable<any> {
@@ -226,21 +221,21 @@ export class FirebaseService {
     }) as unknown as Observable<any>;
   }
 
-  async setClubRequest(clubId: string, user: User) {
+  async setClubRequest(clubId: string, userId: string) {
     // const user = await this.authService.getUser();
     const clubRef = doc(this.firestore, `/club/${clubId}`);
     return setDoc(
-      doc(this.firestore, `userProfile/${user.uid}/clubRequests`, clubId),
+      doc(this.firestore, `userProfile/${userId}/clubRequests`, clubId),
       {
         clubRef: clubRef,
       }
     );
   }
-  async setTeamRequest(teamId: string, user: User) {
+  async setTeamRequest(teamId: string, userId: string) {
     // const user = await this.authService.getUser();
     const teamRef = doc(this.firestore, `/teams/${teamId}`);
     return setDoc(
-      doc(this.firestore, `userProfile/${user.uid}/teamRequests`, teamId),
+      doc(this.firestore, `userProfile/${userId}/teamRequests`, teamId),
       {
         teamRef: teamRef,
       }

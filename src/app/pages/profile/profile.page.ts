@@ -71,11 +71,12 @@ export class ProfilePage implements OnInit, AfterViewInit {
   async ngOnInit() {
 
     this.subscription = this.authService.getUser$().pipe(
+      take(1),
       tap(user => this.user = user),
       switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
-  ).subscribe(profile => {
-      this.userProfile$ = of(profile);
-  })
+      ).subscribe(profile => {
+          this.userProfile$ = of(profile);
+      })
 
     // await this.getUser();
     // this.getClubRequestList();
@@ -91,8 +92,10 @@ export class ProfilePage implements OnInit, AfterViewInit {
     // this.getTeamList();
   }
   ngOnDestroy() {
-    this.subscription.unsubscribe();
-    
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+  }
+
     this.pushDeviceListSub.unsubscribe();
     this.clubRequestListSub.unsubscribe();
     this.teamRequestListSub.unsubscribe();
