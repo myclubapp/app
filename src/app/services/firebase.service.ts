@@ -174,23 +174,31 @@ export class FirebaseService {
   approveUserClubRequest(clubId: string, userId: string): Promise<any> {
     return setDoc(doc(this.firestore, `/club/${clubId}/requests/${userId}`), {
       approve: true,
+    },{
+      merge: true
     });
   }
   approveUserTeamRequest(teamId: string, userId: string): Promise<any> {
     return setDoc(doc(this.firestore, `teams/${teamId}/requests/${userId}` ), {
       approve: true,
+    },{
+      merge: true
     });
   }
 
   async deleteUserClubRequest(clubId: string, userId: string) {
     return setDoc(doc(this.firestore, `club/${clubId}/requests/${userId}` ), {
       approve: false,
+    },{
+      merge: true
     });
   }
 
   async deleteUserTeamRequest(teamId: string, userId: string) {
     return setDoc(doc(this.firestore, `teams/${teamId}/requests/${userId}` ), {
       approve: false,
+    },{
+      merge: true
     });
   }
 
