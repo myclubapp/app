@@ -20,6 +20,9 @@ export class TeamPage implements OnInit {
 
   private subscription: Subscription;
 
+  private subscriptionRequest: Subscription;
+  private subscriptionAdmin: Subscription;
+  private subscriptionMember: Subscription;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -36,45 +39,59 @@ export class TeamPage implements OnInit {
     const adminList: Profile[] = [];
     const requestList: any[] = [];
 
+
     const member$ = this.fbService.getTeamRef(this.team.id).pipe( 
       take(1), 
-      switchMap(team => this.fbService.getTeamMemberRefs(team.id).pipe(
-        take(1),
+      switchMap(club => this.fbService.getTeamMemberRefs(club.id).pipe(
         defaultIfEmpty([{}]),
-        startWith([{}]),
+        startWith([{}])
       )),
-      concatMap((teamMemberArray:any) => from(teamMemberArray)),
-      tap((member:any)=>console.log(member.id)),
+      switchMap((clubMemberArray:any) => {
+        // Clear out the requestList when new data comes in
+        memberList.length = 0;
+        return from(clubMemberArray);
+      }),
+      tap((member:any) => console.log(member.id)),
       concatMap(user => 
           this.userProfileService.getUserProfileById(user.id).pipe(
             take(1), 
-            map(user=>{
-              return [{...user, teamId: this.team.id}]
+            map(user => {
+              return [{...user, clubId: this.team.id}]
             }),
             catchError(error => {
-              console.error('Error fetching team member:', error);
+              console.error('Error fetching member:', error);
               return of([]);
             })
           )
       ),
-      tap(user => user.forEach(n => memberList.push(n))),
+      tap(users => users.forEach(n => memberList.push(n))),
       finalize(() => console.log("Team Member"))
     )
 
+    this.subscriptionMember = member$.subscribe({
+      next: () => {
+        this.memberList$ = of(memberList.filter(obj => Object.keys(obj).length > 1));
+      },
+      error: err => console.error('Error in the observable chain:', err)
+    });
+
     const admin$ = this.fbService.getTeamRef(this.team.id).pipe( 
       take(1), 
-      switchMap(team => this.fbService.getTeamAdminRefs(team.id).pipe(
-        take(1),
+      switchMap(club => this.fbService.getTeamAdminRefs(club.id).pipe(
         defaultIfEmpty([{}]),
-        startWith([{}]),
+        startWith([{}])
       )),
-      concatMap((teamAdminArray:any) => from(teamAdminArray)),
-      tap((admin:any)=>console.log(admin.id)),
+      switchMap((clubAdminArray:any) => {
+        // Clear out the requestList when new data comes in
+        adminList.length = 0;
+        return from(clubAdminArray);
+      }),
+      tap((admin:any) => console.log(admin.id)),
       concatMap(user => 
           this.userProfileService.getUserProfileById(user.id).pipe(
             take(1), 
-            map(user=>{
-              return [{...user, teamId: this.team.id}]
+            map(user => {
+              return [{...user, clubId: this.team.id}]
             }),
             catchError(error => {
               console.error('Error fetching teamadmin:', error);
@@ -82,24 +99,35 @@ export class TeamPage implements OnInit {
             })
           )
       ),
-      tap(user => user.forEach(n => adminList.push(n))),
+      tap(users => users.forEach(n => adminList.push(n))),
       finalize(() => console.log("Team Admin"))
     )
+
+    this.subscriptionAdmin = admin$.subscribe({
+      next: () => {
+        this.adminList$ = of(adminList.filter(obj => Object.keys(obj).length > 1));
+      },
+      error: err => console.error('Error in the observable chain:', err)
+    });
+
 
     const requests$ = this.fbService.getTeamRef(this.team.id).pipe( 
       take(1), 
-      switchMap(team => this.fbService.getTeamRequestRefs(team.id).pipe(
-        take(1),
+      switchMap(club => this.fbService.getTeamRequestRefs(club.id).pipe(
         defaultIfEmpty([{}]),
-        startWith([{}]),
+        startWith([{}])
       )),
-      concatMap((teamRequestsArray:any) => from(teamRequestsArray)),
-      tap((request:any)=>console.log(request.id)),
+      switchMap((clubRequestArray:any) => {
+        // Clear out the requestList when new data comes in
+        requestList.length = 0;
+        return from(clubRequestArray);
+      }),
+      tap((request:any) => console.log(request.id)),
       concatMap(user => 
           this.userProfileService.getUserProfileById(user.id).pipe(
             take(1), 
-            map(user=>{
-              return [{...user, teamId: this.team.id}]
+            map(user => {
+              return [{...user, clubId: this.team.id}]
             }),
             catchError(error => {
               console.error('Error fetching teamadmin:', error);
@@ -107,35 +135,38 @@ export class TeamPage implements OnInit {
             })
           )
       ),
-      tap(user => user.forEach(n => requestList.push(n))),
-      finalize(() => console.log("Team Admin"))
+      tap(users => users.forEach(n => requestList.push(n))),
+      finalize(() => console.log("Team Requests"))
     )
 
-    // Use combineLatest to get results when both observables have emitted
-    this.subscription = combineLatest([member$, admin$, requests$]).subscribe({
+    this.subscriptionRequest = requests$.subscribe({
       next: () => {
-        this.adminList$ = of(adminList.filter(obj => Object.keys(obj).length > 1))
-        this.memberList$ = of(memberList.filter(obj => Object.keys(obj).length > 1))
         this.requestList$ = of(requestList.filter(obj => Object.keys(obj).length > 1));
       },
       error: err => console.error('Error in the observable chain:', err)
-  });
+    });
 
   }
 
   ngOnDestroy() {
 
-    if (this.subscription) {
+    if (this.subscriptionAdmin) {
       this.subscription.unsubscribe();
-  }
-  
+    }
+    if (this.subscriptionMember) {
+      this.subscription.unsubscribe();
+    }
+    if (this.subscriptionRequest) {
+      this.subscription.unsubscribe();
+    }
+
   }
 
   async deleteTeamRequest(request) {
     await this.fbService.deleteUserTeamRequest(request.teamId, request.id);
     await this.toastActionSaved();
-
   }
+
   async approveTeamRequest(request) {
     await this.fbService.approveUserTeamRequest(request.teamId, request.id);
     await this.toastActionSaved();

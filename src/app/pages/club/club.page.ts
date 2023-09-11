@@ -374,8 +374,6 @@ export class ClubPage implements OnInit {
       await this.toastActionCanceled();
     }
 
-    
-
   }
 
   async deleteClubRequest(user) {

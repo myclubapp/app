@@ -36,25 +36,23 @@
 </ion-list>
 -->
 
-<ion-list >
-  <ion-list-header> Anfragen </ion-list-header>
-  <ion-item *ngFor="let request of requestList$ | async">
-    <ion-avatar slot="start">
-      <img src="{{request?.profilePicture}}" />
-    </ion-avatar>
-    <ion-label> {{request?.firstName}} {{request?.lastName}} </ion-label>
-    <ion-button color="danger" (click)="deleteClubRequest(request)" slot="end">
-      <ion-icon icon-only name="trash"></ion-icon>
-    </ion-button>
-    <ion-button
-    color="success"
-    (click)="approveClubRequest(request)"
-    slot="end"
-    >
-    <ion-icon icon-only name="checkmark-outline"></ion-icon>
-  </ion-button>
-  </ion-item>
-</ion-list>
+<ng-container *ngIf="requestList$ | async as requests; else noRequests">
+  <ion-list *ngIf="requests.length > 0">
+    <ion-list-header> Anfragen </ion-list-header>
+    <ion-item *ngFor="let request of requests">
+      <ion-avatar slot="start">
+        <img [src]="request?.profilePicture" />
+      </ion-avatar>
+      <ion-label> {{request?.firstName}} {{request?.lastName}} </ion-label>
+      <ion-button color="danger" (click)="deleteClubRequest(request)" slot="end">
+        <ion-icon icon-only name="trash"></ion-icon>
+      </ion-button>
+      <ion-button color="success" (click)="approveClubRequest(request)" slot="end">
+        <ion-icon icon-only name="checkmark-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ng-container>
 
   <ion-list >
     <ion-list-header> Mitglieder </ion-list-header>
@@ -76,3 +74,8 @@
     </ion-item>
   </ion-list>
 </ion-content>
+
+
+<ng-template #noRequests>
+  <!-- You can put any placeholder or message here if needed when there are no requests -->
+</ng-template>
