@@ -178,7 +178,12 @@ export class FirebaseService {
       merge: true
     });
   }
-  approveUserTeamRequest(teamId: string, userId: string): Promise<any> {
+  async approveUserTeamRequest(teamId: string, userId: string): Promise<any> {
+    await setDoc(doc(this.firestore, `teams/${teamId}/requests/${userId}` ), {
+
+    },{
+      merge: true
+    });
     return setDoc(doc(this.firestore, `teams/${teamId}/requests/${userId}` ), {
       approve: true,
     },{

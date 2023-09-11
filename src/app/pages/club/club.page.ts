@@ -190,9 +190,9 @@ export class ClubPage implements OnInit {
               role: "confirm",
               handler: async (data: any) => {
                 // console.log(data);
-                data.forEach(teamId=>{
-                  this.fbService.approveUserTeamRequest(teamId, request.id)
-                })
+                for (const teamId of data){
+                  await this.fbService.approveUserTeamRequest(teamId, request.id)
+                }
                 const toast = await this.toastCtrl.create({
                   message: "Mitglied hinzugefügt",
                   color: "primary",
