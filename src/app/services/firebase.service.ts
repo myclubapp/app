@@ -181,7 +181,6 @@ export class FirebaseService {
   async approveUserTeamRequest(teamId: string, userId: string): Promise<any> {
     // trigger create event on backend -> not handled
     await setDoc(doc(this.firestore, `teams/${teamId}/requests/${userId}` ), {
-
     },{
       merge: true
     });

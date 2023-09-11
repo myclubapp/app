@@ -279,13 +279,13 @@ export class ClubPage implements OnInit {
   ngOnDestroy() {
 
     if (this.subscriptionAdmin) {
-      this.subscription.unsubscribe();
+      this.subscriptionAdmin.unsubscribe();
     }
     if (this.subscriptionMember) {
-      this.subscription.unsubscribe();
+      this.subscriptionMember.unsubscribe();
     }
     if (this.subscriptionRequest) {
-      this.subscription.unsubscribe();
+      this.subscriptionRequest.unsubscribe();
     }
     if (this.subscriptionTeamList) {
       this.subscriptionTeamList.unsubscribe();

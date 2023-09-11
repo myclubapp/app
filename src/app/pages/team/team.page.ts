@@ -56,7 +56,7 @@ export class TeamPage implements OnInit {
           this.userProfileService.getUserProfileById(user.id).pipe(
             take(1), 
             map(user => {
-              return [{...user, clubId: this.team.id}]
+              return [{...user, teamId: this.team.id}]
             }),
             catchError(error => {
               console.error('Error fetching member:', error);
@@ -91,7 +91,7 @@ export class TeamPage implements OnInit {
           this.userProfileService.getUserProfileById(user.id).pipe(
             take(1), 
             map(user => {
-              return [{...user, clubId: this.team.id}]
+              return [{...user, teamId: this.team.id}]
             }),
             catchError(error => {
               console.error('Error fetching teamadmin:', error);
@@ -127,7 +127,7 @@ export class TeamPage implements OnInit {
           this.userProfileService.getUserProfileById(user.id).pipe(
             take(1), 
             map(user => {
-              return [{...user, clubId: this.team.id}]
+              return [{...user, teamId: this.team.id}]
             }),
             catchError(error => {
               console.error('Error fetching teamadmin:', error);
@@ -151,13 +151,13 @@ export class TeamPage implements OnInit {
   ngOnDestroy() {
 
     if (this.subscriptionAdmin) {
-      this.subscription.unsubscribe();
+      this.subscriptionAdmin.unsubscribe();
     }
     if (this.subscriptionMember) {
-      this.subscription.unsubscribe();
+      this.subscriptionMember.unsubscribe();
     }
     if (this.subscriptionRequest) {
-      this.subscription.unsubscribe();
+      this.subscriptionRequest.unsubscribe();
     }
 
   }
@@ -168,6 +168,7 @@ export class TeamPage implements OnInit {
   }
 
   async approveTeamRequest(request) {
+    console.log(request);
     await this.fbService.approveUserTeamRequest(request.teamId, request.id);
     await this.toastActionSaved();
   }
