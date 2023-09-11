@@ -104,9 +104,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     if (this.teamRequestListSub) {
       this.teamRequestListSub.unsubscribe();
     }
-    if (this.swPush) {
-      this.swPush.unsubscribe();
-    }
+  
    
   }
 
