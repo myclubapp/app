@@ -121,6 +121,7 @@ export class ChampionshipPage implements OnInit {
               take(1),
               map(attendees => {
                 const userAttendee = attendees.find(att => att.id == this.user.uid);
+                console.log(">>>>" + JSON.stringify(userAttendee))
                 const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
                 return {
                   ...game,
