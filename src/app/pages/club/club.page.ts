@@ -31,6 +31,12 @@ export class ClubPage implements OnInit {
   alertTeamSelection = [];
 
   private subscription: Subscription;
+
+  private subscriptionRequest: Subscription;
+  private subscriptionAdmin: Subscription;
+  private subscriptionMember: Subscription;
+
+
   private subscriptionTeamList: Subscription;
   constructor(
     private readonly modalCtrl: ModalController,
@@ -81,6 +87,7 @@ export class ClubPage implements OnInit {
     const adminList: Profile[] = [];
     const requestList: any[] = [];
 
+    /*
     const member$ = this.fbService.getClubRef(this.club.id).pipe( 
       take(1), 
       switchMap(club => this.fbService.getClubMemberRefs(club.id).pipe(
@@ -106,7 +113,7 @@ export class ClubPage implements OnInit {
       finalize(() => console.log("Club Member"))
     )
 
-    const admin$ = this.fbService.getClubRef(this.club.id).pipe( 
+   const admin$ = this.fbService.getClubRef(this.club.id).pipe( 
       take(1), 
       switchMap(club => this.fbService.getClubAdminRefs(club.id).pipe(
         take(1),
@@ -129,9 +136,115 @@ export class ClubPage implements OnInit {
       ),
       tap(users => users.forEach(n => adminList.push(n))),
       finalize(() => console.log("Club Admin"))
+    )*/
+
+    const member$ = this.fbService.getClubRef(this.club.id).pipe( 
+      take(1), 
+      switchMap(club => this.fbService.getClubMemberRefs(club.id).pipe(
+        defaultIfEmpty([{}]),
+        startWith([{}])
+      )),
+      switchMap((clubRequestArray:any) => {
+        // Clear out the requestList when new data comes in
+        requestList.length = 0;
+        return from(clubRequestArray);
+      }),
+      tap((request:any) => console.log(request.id)),
+      concatMap(user => 
+          this.userProfileService.getUserProfileById(user.id).pipe(
+            take(1), 
+            map(user => {
+              return [{...user, clubId: this.club.id}]
+            }),
+            catchError(error => {
+              console.error('Error fetching teamadmin:', error);
+              return of([]);
+            })
+          )
+      ),
+      tap(users => users.forEach(n => requestList.push(n))),
+      finalize(() => console.log("Club Member"))
     )
 
+    this.subscriptionMember = member$.subscribe({
+      next: () => {
+        this.memberList$ = of(memberList.filter(obj => Object.keys(obj).length > 1));
+      },
+      error: err => console.error('Error in the observable chain:', err)
+    });
+
+    const admin$ = this.fbService.getClubRef(this.club.id).pipe( 
+      take(1), 
+      switchMap(club => this.fbService.getClubAdminRefs(club.id).pipe(
+        defaultIfEmpty([{}]),
+        startWith([{}])
+      )),
+      switchMap((clubRequestArray:any) => {
+        // Clear out the requestList when new data comes in
+        requestList.length = 0;
+        return from(clubRequestArray);
+      }),
+      tap((request:any) => console.log(request.id)),
+      concatMap(user => 
+          this.userProfileService.getUserProfileById(user.id).pipe(
+            take(1), 
+            map(user => {
+              return [{...user, clubId: this.club.id}]
+            }),
+            catchError(error => {
+              console.error('Error fetching teamadmin:', error);
+              return of([]);
+            })
+          )
+      ),
+      tap(users => users.forEach(n => requestList.push(n))),
+      finalize(() => console.log("Club Admin"))
+    )
+
+    this.subscriptionAdmin = admin$.subscribe({
+      next: () => {
+        this.adminList$ = of(adminList.filter(obj => Object.keys(obj).length > 1));
+      },
+      error: err => console.error('Error in the observable chain:', err)
+    });
+
+
     const requests$ = this.fbService.getClubRef(this.club.id).pipe( 
+      take(1), 
+      switchMap(club => this.fbService.getClubRequestRefs(club.id).pipe(
+        defaultIfEmpty([{}]),
+        startWith([{}])
+      )),
+      switchMap((clubRequestArray:any) => {
+        // Clear out the requestList when new data comes in
+        requestList.length = 0;
+        return from(clubRequestArray);
+      }),
+      tap((request:any) => console.log(request.id)),
+      concatMap(user => 
+          this.userProfileService.getUserProfileById(user.id).pipe(
+            take(1), 
+            map(user => {
+              return [{...user, clubId: this.club.id}]
+            }),
+            catchError(error => {
+              console.error('Error fetching teamadmin:', error);
+              return of([]);
+            })
+          )
+      ),
+      tap(users => users.forEach(n => requestList.push(n))),
+      finalize(() => console.log("Club Requests"))
+    )
+
+    this.subscriptionRequest = requests$.subscribe({
+      next: () => {
+        this.requestList$ = of(requestList.filter(obj => Object.keys(obj).length > 1));
+      },
+      error: err => console.error('Error in the observable chain:', err)
+    });
+
+    /*const requests$ = this.fbService.getClubRef(this.club.id).pipe( 
       take(1), 
       switchMap(club => this.fbService.getClubRequestRefs(club.id).pipe(
         take(1),
@@ -157,18 +270,25 @@ export class ClubPage implements OnInit {
     )
 
     // Use combineLatest to get results when both observables have emitted
-    this.subscription = combineLatest([member$, admin$, requests$]).subscribe({
+    this.subscription = combineLatest([member$, admin$]).subscribe({
       next: () => {
         this.adminList$ = of(adminList.filter(obj => Object.keys(obj).length > 1))
         this.memberList$ = of(memberList.filter(obj => Object.keys(obj).length > 1))
         this.requestList$ = of(requestList.filter(obj => Object.keys(obj).length > 1));
       },
       error: err => console.error('Error in the observable chain:', err)
-    });
+    });*/
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
+
+    if (this.subscriptionAdmin) {
+      this.subscription.unsubscribe();
+    }
+    if (this.subscriptionMember) {
+      this.subscription.unsubscribe();
+    }
+    if (this.subscriptionRequest) {
       this.subscription.unsubscribe();
     }
     if (this.subscriptionTeamList) {
