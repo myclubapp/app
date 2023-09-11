@@ -94,12 +94,20 @@ export class ProfilePage implements OnInit, AfterViewInit {
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe();
-  }
-
-    this.pushDeviceListSub.unsubscribe();
-    this.clubRequestListSub.unsubscribe();
-    this.teamRequestListSub.unsubscribe();
-    this.swPush.unsubscribe();
+    }
+    if (this.pushDeviceListSub) {
+      this.pushDeviceListSub.unsubscribe();
+    }
+    if (this.clubRequestListSub) {
+      this.clubRequestListSub.unsubscribe();
+    }
+    if (this.teamRequestListSub) {
+      this.teamRequestListSub.unsubscribe();
+    }
+    if (this.swPush) {
+      this.swPush.unsubscribe();
+    }
+   
   }
 
   getClubRequestList() {
@@ -376,7 +384,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
       message: "Profil erfolgreich gelöscht",
       duration: 1500,
       position: "bottom",
-      color: "success",
+      color: "danger",
     });
 
     await toast.present();
@@ -387,7 +395,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
       message: "Fehler beim löschen des Profils",
       duration: 1500,
       position: "bottom",
-      color: "error",
+      color: "danger",
     });
 
     await toast.present();

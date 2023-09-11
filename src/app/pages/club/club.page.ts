@@ -28,8 +28,10 @@ export class ClubPage implements OnInit {
 
   user: User;
 
-  private subscription: Subscription;
+  alertTeamSelection = [];
 
+  private subscription: Subscription;
+  private subscriptionTeamList: Subscription;
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -42,6 +44,36 @@ export class ClubPage implements OnInit {
 
   ngOnInit() {
     this.club = this.navParams.get("data");
+
+    const teamList: any[] = [];
+
+    const teams$ = this.fbService.getClubTeamRefs(this.club.id).pipe(
+      take(1),
+      concatMap((teamArray:any) => from(teamArray)),
+      tap((team:any)=>console.log(team.id)),
+      concatMap((team:any) => 
+        this.fbService.getTeamRef(team.id).pipe(
+          take(1),
+          tap(team=>teamList.push(team)),
+        )),
+      finalize(()=>console.log("teams done"))
+    );
+
+    this.subscriptionTeamList = forkJoin([teams$]).subscribe({
+      next: () => {
+        console.log("teams");
+        this.alertTeamSelection = [];
+        for (const item of teamList){
+          // console.log(item)
+          this.alertTeamSelection.push({
+            label: item.name,
+            type: 'checkbox',
+            value: item.id,
+          });
+        }
+      },
+      error: err => console.error('Error in the observable chain:', err)
+    });
 
     const TIMEOUT_DURATION = 1000; // 5 seconds, adjust as needed
 
@@ -139,87 +171,100 @@ export class ClubPage implements OnInit {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+    if (this.subscriptionTeamList) {
+      this.subscriptionTeamList.unsubscribe();
+    }
   }
 
-  async deleteClubRequest(request) {
-    console.log(request);
-    await this.fbService.deleteUserClubRequest(request.clubId, request.id);
-    await this.toastActionSaved();
-  }
-  async approveClubRequest(request) {
-    console.log(request);
-    await this.fbService.approveUserClubRequest(request.clubId, request.id);
-    await this.toastActionSaved();
-    this.joinTeamAlert(request);
-  }
-
-  joinTeamAlert(request) {
-    let teamList = [];
-    const teams$ = this.fbService.getClubTeamRefs(request.clubId).pipe(
-      take(1),
-      concatMap((teamArray:any) => from(teamArray)),
-      tap((team:any)=>console.log(team.id)),
-      concatMap((team:any) => 
-        this.fbService.getTeamRef(team.id).pipe(
-          take(1),
-          tap(team=>teamList.push(team)),
-        )),
-      finalize(()=>console.log("teams done"))
-    );
-
-    this.subscription = forkJoin([teams$]).subscribe({
-      next: () => {
-        console.log("teams");
-        const alertInputs = [];
-        for (const item of teamList){
-          // console.log(item)
-          alertInputs.push({
-            label: item.name,
-            type: 'checkbox',
-            value: item.id,
-          });
-        }
-      
-        this.alertCtrl.create({
-          message: 'Wähle ein Team aus:',
-          subHeader: 'Füge das Mitglied den Teams hinzu',
-          inputs: alertInputs,
-          buttons: [
-            {
-              text: "auswählen",
-              role: "confirm",
-              handler: async (data: any) => {
-                // console.log(data);
-                for (const teamId of data){
-                  await this.fbService.approveUserTeamRequest(teamId, request.id)
-                }
-                const toast = await this.toastCtrl.create({
-                  message: "Mitglied hinzugefügt",
-                  color: "primary",
-                  duration: 1500,
-                  position: "bottom",
-                });
-                await toast.present();
-              },
-            },
-            {
-              text: "abbrechen",
-              role: "cancel",
-              handler: () => {
-                console.log("abbrechen");
-              },
-            },
-          ],
-          htmlAttributes: { 'aria-label': 'alert dialog' },
-           
-        }).then(alert => {
-          alert.present();
-        });
-      },
-      error: err => console.error('Error in the observable chain:', err)
+  async approveClubRequest(user){
+    console.log(user);
+    const alert = await this.alertCtrl.create({
+      message: `Möchtest du ${user.firstName} ${user.lastName} deinem Club hinzufügen?`,
+      subHeader: '',
+      buttons: [
+        {
+          text: "Ja!",
+          role: "confirm",
+        },
+        {
+          text: "abbrechen",
+          role: "cancel",
+        
+        },
+      ],
+      htmlAttributes: { 'aria-label': 'alert dialog' },
+        
     });
+    await alert.present();
+    const { role, data } = await alert.onDidDismiss();
+
+    if (role == "confirm") {
+      await this.fbService.approveUserClubRequest(user.clubId, user.id);
+      const toast = await this.toastCtrl.create({
+        message: `${user.firstName} ${user.lastName} wurde erfolgreich dem Club hinzugefügt`,
+        color: "primary",
+        duration: 1500,
+        position: "bottom",
+      });
+      await toast.present(); 
+
+      await this.assignTeamAlert(user);
+    } else {
+      await this.toastActionCanceled();
+    }
+    
   }
 
+
+  async assignTeamAlert(user) {
+    console.log(user);
+    const alert = await this.alertCtrl.create({
+      header: `Team auswählen`,
+      message: `Möchtest du ${user.firstName} ${user.lastName} einem Team hinzufügen?`,
+      inputs: this.alertTeamSelection,
+      buttons: [
+        {
+          text: "hinzufügen",
+          role: "confirm",
+        },
+        {
+          text: "Abbrechen",
+          role: "cancel",
+        
+        },
+      ],
+      htmlAttributes: { 'aria-label': 'alert dialog selcting teams' },
+        
+    });
+    await alert.present();
+    const { role, data } = await alert.onDidDismiss();
+    console.log(data);
+
+    if (role == "confirm") {
+      for (const teamId of data.values){
+        await this.fbService.approveUserTeamRequest(teamId, user.id)
+      }
+      const toast = await this.toastCtrl.create({
+        message: `${user.firstName} ${user.lastName} wurde erfolgreich ${data.values.length} Team(s) hinzugefügt`,
+        color: "primary",
+        duration: 1500,
+        position: "bottom",
+      });
+      await toast.present(); 
+      
+    } else {
+      await this.toastActionCanceled();
+    }
+
+    
+
+  }
+
+  async deleteClubRequest(user) {
+    console.log(user);
+    await this.fbService.deleteUserClubRequest(user.clubId, user.id);
+    await this.toastActionSaved();
+  }
 
   async toastActionSaved() {
     const toast = await this.toastCtrl.create({
@@ -229,6 +274,16 @@ export class ClubPage implements OnInit {
       color: "success",
     });
 
+    await toast.present();
+  }
+
+  async toastActionCanceled() {
+    const toast = await this.toastCtrl.create({
+      message: "Aktion wurde abgebrochen",
+      duration: 1500,
+      position: "bottom",
+      color: "danger",
+    });
     await toast.present();
   }
 

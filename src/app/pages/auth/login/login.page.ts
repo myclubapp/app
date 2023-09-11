@@ -26,7 +26,7 @@ export class LoginPage implements OnInit {
     private readonly authService: AuthService,
     private readonly router: Router,
     private readonly formBuilder: UntypedFormBuilder,
-    public readonly menuCtrl: MenuController // private loadingCtrl: LoadingController, // private alertCtrl: AlertController
+    public readonly menuCtrl: MenuController 
   ) {
     this.authForm = this.formBuilder.group({
       email: ["", Validators.compose([Validators.required, Validators.email])],

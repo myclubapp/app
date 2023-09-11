@@ -157,10 +157,10 @@ export class OnboardingPage implements OnInit {
   }
   async presentCancelToast() {
     const toast = await this.toastController.create({
-      message: "Anfrage abgebrochen",
+      message: "Aktion wurde abgebrochen",
       duration: 1500,
       position: "bottom",
-      color: "error",
+      color: "danger",
     });
 
     await toast.present();
