@@ -177,6 +177,7 @@ export class OnboardingPage implements OnInit {
           text: "Logout",
           handler: async () => {
             await this.authService.logout();
+            this.router.navigateByUrl("login");
           },
         },
       ],

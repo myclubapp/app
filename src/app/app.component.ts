@@ -279,7 +279,7 @@ export class AppComponent implements OnInit {
           role: "cancel",
           handler: () => {
             console.log("Nein");
-            this.authService.logout();
+            this.router.navigateByUrl("news", {});
           },
         },
         {

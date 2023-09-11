@@ -79,8 +79,6 @@ export class ClubPage implements OnInit {
       error: err => console.error('Error in the observable chain:', err)
     });
 
-    const TIMEOUT_DURATION = 1000; // 5 seconds, adjust as needed
-
     const memberList: Profile[] = [];
     const adminList: Profile[] = [];
     const requestList: any[] = [];
