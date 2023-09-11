@@ -8,7 +8,6 @@ import {
 import { User } from "firebase/auth";
 import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, filter, finalize, forkJoin, from, map, merge, mergeMap, of, pipe, shareReplay, startWith, switchMap, take, tap, timeout, toArray } from "rxjs";
 import { Club } from "src/app/models/club";
-import { Team } from "src/app/models/team";
 import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -41,7 +40,6 @@ export class ClubPage implements OnInit {
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
-    private readonly authService: AuthService,
     private readonly alertCtrl: AlertController,
     private readonly toastCtrl: ToastController,
     private readonly userProfileService: UserProfileService,
@@ -144,12 +142,12 @@ export class ClubPage implements OnInit {
         defaultIfEmpty([{}]),
         startWith([{}])
       )),
-      switchMap((clubRequestArray:any) => {
+      switchMap((clubMemberArray:any) => {
         // Clear out the requestList when new data comes in
-        requestList.length = 0;
-        return from(clubRequestArray);
+        memberList.length = 0;
+        return from(clubMemberArray);
       }),
-      tap((request:any) => console.log(request.id)),
+      tap((member:any) => console.log(member.id)),
       concatMap(user => 
           this.userProfileService.getUserProfileById(user.id).pipe(
             take(1), 
@@ -157,12 +155,12 @@ export class ClubPage implements OnInit {
               return [{...user, clubId: this.club.id}]
             }),
             catchError(error => {
-              console.error('Error fetching teamadmin:', error);
+              console.error('Error fetching member:', error);
               return of([]);
             })
           )
       ),
-      tap(users => users.forEach(n => requestList.push(n))),
+      tap(users => users.forEach(n => memberList.push(n))),
       finalize(() => console.log("Club Member"))
     )
 
@@ -179,12 +177,12 @@ export class ClubPage implements OnInit {
         defaultIfEmpty([{}]),
         startWith([{}])
       )),
-      switchMap((clubRequestArray:any) => {
+      switchMap((clubAdminArray:any) => {
         // Clear out the requestList when new data comes in
-        requestList.length = 0;
-        return from(clubRequestArray);
+        adminList.length = 0;
+        return from(clubAdminArray);
       }),
-      tap((request:any) => console.log(request.id)),
+      tap((admin:any) => console.log(admin.id)),
       concatMap(user => 
           this.userProfileService.getUserProfileById(user.id).pipe(
             take(1), 
@@ -197,7 +195,7 @@ export class ClubPage implements OnInit {
             })
           )
       ),
-      tap(users => users.forEach(n => requestList.push(n))),
+      tap(users => users.forEach(n => adminList.push(n))),
       finalize(() => console.log("Club Admin"))
     )
 
