@@ -57,26 +57,22 @@ export class LoginPage implements OnInit {
         this.router.navigateByUrl("");
       });
     } catch (err) {
-      let message = '';
+      let message = "Es ist ein allgemeiner Fehler aufgetreten: " + err.code + " / " + err.message;
+      console.error(err.code);
 
       if (err.code == "auth/user-not-found") {
         message = "Kein Account mit dieser E-Mail-Adresse gefunden."
       } else if (err.code == "auth/wrong-password") {
         message = "Die Kombination aus Benutzername und Passwort ist falsch."
       } else {
-        message = "Es ist ein allgemeiner Fehler aufgetreten: " + err.code + " / " + err.message;
-        console.error(err.code);
+        
       }
 
-      this.alertCtrl
-        .create({
+      const alert = await this.alertCtrl.create({
           message: message,
-          buttons: [{ text: "Ok", role: "cancel" }],
-        })
-        .then((alert) => {
-          alert.present();
+          buttons: [{ text: "OK", role: "cancel" }],
         });
-      
+      alert.present();      
     }
   }
 }
