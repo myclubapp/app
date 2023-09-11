@@ -12,96 +12,83 @@
 <ion-content class="ion-padding">
   <ion-list>
     <ion-item>
-      <ion-label position="stacked"> Name </ion-label>
-      <ion-input value="{{training.name}}">
+     
+      <ion-input label="Name" value="{{training.name}}">
       </ion-input>
     </ion-item>
     <ion-item>
-      <ion-label position="stacked"> Beschreibung </ion-label>
+     
       <ion-input
+      label="Beschreibung"
         value="{{training.description}}"
       >
       </ion-input>
     </ion-item>
     <ion-item>
-      <ion-label position="stacked"> Strasse & Hausnummer </ion-label>
+    
       <ion-input
+      label="Strasse & Hausnummer"
         value="{{training.streetAndNumber}}"
       >
       </ion-input>
     </ion-item>
     <ion-item>
-      <ion-label position="stacked"> Postleitzahl </ion-label>
       <ion-input
+      label="Postleitzahl"
         value="{{training.postalCode}}"
       >
       </ion-input>
     </ion-item>
     <ion-item>
-      <ion-label position="stacked"> Ortschaft </ion-label>
-      <ion-input value="{{training.city}}">
+      
+      <ion-input label="Ortschaft" value="{{training.city}}">
       </ion-input>
     </ion-item>
 
-    <ion-item id="timeFrom">
-      <ion-label position="stacked"> Uhrzeit von: </ion-label>
-      <ion-input value="{{ training.timeFrom | date: 'HH:mm' }}"></ion-input>
-      <ion-modal trigger="timeFrom" [keepContentsMounted]="true">
+    <ion-item id="timeFromItem">
+      <ion-label position="default"> Uhrzeit von: </ion-label>
+      <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
+
+      <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime
-            id="timeFrom"
-            presentation="time"
-            value="training.timeFrom"
-          ></ion-datetime>
+          <ion-datetime presentation="time" id="timeFrom"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
 
-    <ion-item id="timeTo">
-      <ion-label position="stacked"> Uhrzeit bis: </ion-label>
-      <ion-input value="{{ training.timeTo | date: 'HH:mm' }}"></ion-input>
-      <ion-modal trigger="timeTo" [keepContentsMounted]="true">
+    <ion-item id="timeToItem">
+      <ion-label position="default"> Uhrzeit bis: </ion-label>
+      <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
+
+      <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime
-            id="timeTo"
-            presentation="time"
-            value="training.timeTo"
-          ></ion-datetime>
+          <ion-datetime presentation="time" id="timeTo"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
 
-    <ion-item id="startDate">
-      <ion-label position="stacked"> Erstes Training: </ion-label>
-      <ion-input
-        value="{{ training.startDate | date: 'dd.MM.yyyy' }}"
-      ></ion-input>
-      <ion-modal trigger="startDate" [keepContentsMounted]="true">
+    <ion-item id="startDateItem">
+      <ion-label position="default"> Erstes Training: </ion-label>
+      <ion-datetime-button slot="end" datetime="startDate"></ion-datetime-button>
+
+      <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime
-            id="startDate"
-            presentation="date"
-            value="training.startDate"
-          ></ion-datetime>
+          <ion-datetime presentation="date" id="startDate"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
 
-    <ion-item id="endDate">
-      <ion-label position="stacked"> Letztes Training: </ion-label>
-      <ion-input
-        value="{{ training.endDate | date: 'dd.MM.yyyy' }}"
-      ></ion-input>
-      <ion-modal trigger="endDate" [keepContentsMounted]="true">
+    <ion-item id="endDateItem">
+      <ion-label position="default"> Erstes Training: </ion-label>
+      <ion-datetime-button slot="end" datetime="endDate"></ion-datetime-button>
+
+      <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime
-            id="endDate"
-            presentation="date"
-            value="training.endDate"
-          ></ion-datetime>
+          <ion-datetime presentation="date" id="endDate"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
+
   </ion-list>
 </ion-content>
 

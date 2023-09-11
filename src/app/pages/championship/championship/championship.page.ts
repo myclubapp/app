@@ -98,7 +98,7 @@ export class ChampionshipPage implements OnInit {
       finalize(() => console.log("Team Game fetching completed"))
     );
 
-    // CURRENT GAMES
+    // PAST GAMES
     const teamGamePast$ = this.authService.getUser$().pipe(
       take(1),
       tap(() => console.log("Fetching user...")),
@@ -166,7 +166,7 @@ export class ChampionshipPage implements OnInit {
     this.subscriptionPast = combineLatest([teamGamePast$]).subscribe({
       next: () => {
         this.gameListPast = [...teamGamePastList].sort((a, b):any => {
-          return a.dateTime.seconds > b.dateTime.seconds;
+          return a.dateTime.seconds < b.dateTime.seconds;
         });
         this.gameListPast = this.gameListPast.filter((game, index, self) => 
           index === self.findIndex((t) => (t.id === game.id))
