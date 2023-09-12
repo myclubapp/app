@@ -61,9 +61,11 @@ export class LoginPage implements OnInit {
       console.error(err.code);
 
       if (err.code == "auth/user-not-found") {
-        message = "Kein Account mit dieser E-Mail-Adresse gefunden."
+        message = "Kein Account mit dieser E-Mail-Adresse gefunden.";
       } else if (err.code == "auth/wrong-password") {
-        message = "Die Kombination aus Benutzername und Passwort ist falsch."
+        message = "Die Kombination aus Benutzername und Passwort ist falsch.";
+      } else if (err.code == "auth/network-request-failed") {
+        message = "Es gibt ein Problem mit der Netzwerkverbindung.";
       } else {
         
       }

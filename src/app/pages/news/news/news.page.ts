@@ -41,6 +41,7 @@ export class NewsPage implements OnInit {
   user: User;
 
   filterList: any[] = [];
+  filterValue: string = "";
 
   // Social Share
   shareSocialShareOptions: any;
@@ -320,31 +321,38 @@ export class NewsPage implements OnInit {
 
   this.subscription = forkJoin([teams$, clubs$]).subscribe({
     next: () => {
-
-
       const alertInputs = [];
       for (const item of filterList){
-        // console.log(item)
         alertInputs.push({
           label: item.name,
           type: 'radio',
+          checked: item.id == this.filterValue,
           value: item.id,
         });
       }
     
       this.alertCtrl.create({
-        message: 'Anzeige filtern:',
-        subHeader: 'Nach Verein oder Teams filtern.',
+        header: 'News filtern',
+        message: 'Nach Verein oder Teams filtern.',
+       // subHeader: 'Nach Verein oder Teams filtern.',
         inputs: alertInputs,
         buttons: [
           { text: "OK",
-        handler: (value)=>{
-          console.log(value)
-
-          this.newsList$ = of(this.newsList.filter((news: any) => news.filterable == value));
-
-        } },
-          { text: "abbrechen" }
+            role: "confirm",
+            handler: (value)=>{
+              console.log(value)
+              this.filterValue = value;
+              this.newsList$ = of(this.newsList.filter((news: any) => news.filterable == value));
+            } 
+          },
+          { text: "abbrechen",
+            role: "cancel",
+            handler: (value)=>{
+              console.log(value);
+              this.filterValue = "";
+              this.newsList$ = of(this.newsList);
+            } 
+          }
         ],
         htmlAttributes: { 'aria-label': 'alert dialog' },
       }).then(alert => {

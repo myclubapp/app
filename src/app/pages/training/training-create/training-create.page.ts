@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ModalController, NavParams } from "@ionic/angular";
 import { User } from "firebase/auth";
-import { Observable } from "rxjs";
+import { Observable, Subscription, take, tap } from "rxjs";
 import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
@@ -15,6 +15,7 @@ export class TrainingCreatePage implements OnInit {
   training: Training;
   user$: Observable<User>;
   user: User;
+  private subscription: Subscription;
   constructor(
     private readonly modalCtrl: ModalController,
     private trainingService: TrainingService,
@@ -43,18 +44,22 @@ export class TrainingCreatePage implements OnInit {
   }
 
   ngOnInit() {
-   // this.getUser();
+    this.subscription = this.authService.getUser$().pipe(
+      take(1),
+      tap(user=>this.user = user)
+    ).subscribe();
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+        this.subscription.unsubscribe();
+    }
   }
 
   async close() {
     return this.modalCtrl.dismiss(null, "close");
   }
-  getUser() {
-    this.user$ = this.authService.getUser$();
-    this.user$.subscribe((user) => {
-      this.user = user;
-    });
-  }
+ 
   async createTraining() {
     this.trainingService.setCreateTraining(this.training, this.user);
     return this.modalCtrl.dismiss({}, "confirm");
