@@ -31,18 +31,26 @@ export class TrainingCreatePage implements OnInit {
       id: "",
       name: "",
       description: "",
+
       streetAndNumber: "",
       postalCode: "",
       city: "",
-      timeFrom: new Date().toISOString(),
-      timeTo: new Date().toISOString(),
-
-      startDate: new Date().toISOString(),
-      endDate: new Date().toISOString(),
+      
       date: new Date(),
+      
+      timeFrom: new Date(),
+      timeTo: new Date(),
+      
+      startDate: new Date(),
+      endDate: new Date(),
+
+      repeatFrequency: "W",
+      repeatAmount: "1",
+      
       teamId: "",
       teamName: "",
       liga: "",
+      
       status: true,
       attendees: [],
     };
@@ -50,7 +58,7 @@ export class TrainingCreatePage implements OnInit {
 
   ngOnInit() {
 
-    let  teamList: any[] = [];
+    let  teamsList: any[] = [];
     const teams$ = this.authService.getUser$().pipe(
       take(1),
       tap(user=>this.user = user),
@@ -68,14 +76,15 @@ export class TrainingCreatePage implements OnInit {
           })
         )
       ),
-      tap(teamList => teamList.forEach(team => teamList.push(team))),
+      tap(teamList => teamList.forEach(team => teamsList.push(team))),
       finalize(() => console.log("Get Teams completed"))
     );
 
     this.subscription = forkJoin([teams$]).subscribe({
       next: () => {
-        console.log(teamList);
-        this.teamList = teamList;
+        // console.log(">>>" + teamsList);
+        this.teamList = teamsList;
+        this.training.teamId = this.teamList[0].id;
       },
       error: err => console.error('Error in the observable chain:', err)
     });

@@ -3,22 +3,27 @@ export interface Training {
   name: string;
   description: string;
 
+  // Location
   streetAndNumber: string;
   postalCode: string;
   city: string;
 
+  // actual date of training
   date: Date;
 
-  timeFrom: string;
-  timeTo: string;
+  timeFrom: Date;
+  timeTo: Date;
 
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
 
-  teamName: string;
-  liga: string;
+  repeatAmount: string,
+  repeatFrequency: string,
 
   teamId: string;
+  // read from teamID
+  teamName: string;
+  liga: string;
 
   // Business Logic Fields
   status: boolean;

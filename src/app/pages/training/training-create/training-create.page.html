@@ -13,21 +13,19 @@
   <ion-list>
 
     <ion-item>
-      <ion-select label="Team" label-placement="stacked">
+      <ion-select label="Team" label-placement="stacked" value="{{training.teamId}}" >
         <ion-select-option *ngFor="let team of teamList" value="{{team.id}}">{{team.name}}</ion-select-option>
       </ion-select>
     </ion-item>
 
-
     <ion-item>
-     
-      <ion-input label="Name" value="{{training.name}}">
+      <ion-input label="Name" label-placement="stacked" value="{{training.name}}">
       </ion-input>
     </ion-item>
     <ion-item>
      
       <ion-textarea
-      label="Beschreibung"
+      label="Beschreibung" label-placement="stacked"
         value="{{training.description}}"
       >
       </ion-textarea>
@@ -35,26 +33,27 @@
     <ion-item>
     
       <ion-input
-      label="Strasse & Hausnummer"
+      label="Strasse & Hausnummer" label-placement="stacked"
         value="{{training.streetAndNumber}}"
       >
       </ion-input>
     </ion-item>
     <ion-item>
       <ion-input
-      label="Postleitzahl"
+      label="Postleitzahl" label-placement="stacked"
         value="{{training.postalCode}}"
       >
       </ion-input>
     </ion-item>
     <ion-item>
       
-      <ion-input label="Ortschaft" value="{{training.city}}">
+      <ion-input label="Ortschaft" label-placement="stacked" value="{{training.city}}">
       </ion-input>
     </ion-item>
 
+
     <ion-item id="timeFromItem">
-      <ion-label position="default"> Uhrzeit von: </ion-label>
+      <ion-label position=""> Start Training: </ion-label>
       <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -65,7 +64,7 @@
     </ion-item>
 
     <ion-item id="timeToItem">
-      <ion-label position="default"> Uhrzeit bis: </ion-label>
+      <ion-label position=""> Ende Training: </ion-label>
       <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -75,6 +74,20 @@
       </ion-modal>
     </ion-item>
 
+    <ion-list-header>Serien Einstellungen</ion-list-header>
+    <ion-item>
+
+      <ion-select label="Wiederholen" label-placement="stacked" value="{{training.repeatFrequency}}" >
+        <ion-select-option value="D">Täglich</ion-select-option>
+        <ion-select-option value="W">Wöchentlich</ion-select-option>
+      </ion-select>
+      <ion-select label="Alle" label-placement="stacked" value="{{training.repeatAmount}}" >
+        <ion-select-option value="1">1</ion-select-option>
+        <ion-select-option value="2">2</ion-select-option>
+        <ion-select-option value="3">3</ion-select-option>
+        <ion-select-option value="4">4</ion-select-option>
+      </ion-select> 
+    </ion-item>
     <ion-item id="startDateItem">
       <ion-label position="default"> Erstes Training: </ion-label>
       <ion-datetime-button slot="end" datetime="startDate"></ion-datetime-button>
@@ -87,7 +100,7 @@
     </ion-item>
 
     <ion-item id="endDateItem">
-      <ion-label position="default"> Erstes Training: </ion-label>
+      <ion-label position="default"> Letztes Training: </ion-label>
       <ion-datetime-button slot="end" datetime="endDate"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
