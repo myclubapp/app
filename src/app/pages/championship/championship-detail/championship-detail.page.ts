@@ -4,10 +4,10 @@ import { Game } from "src/app/models/game";
 import { GoogleMap } from "@capacitor/google-maps";
 import { Geolocation, PermissionStatus } from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import { combineLatest, Observable, of, Subscriber, Subscription } from "rxjs";
+import { combineLatest, forkJoin, Observable, of, Subscriber, Subscription } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "@angular/fire/auth";
-import { switchMap } from "rxjs/operators";
+import { concatMap, finalize, map, switchMap, take, tap } from "rxjs/operators";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { environment } from "src/environments/environment";
 
@@ -24,12 +24,12 @@ export class ChampionshipDetailPage implements OnInit {
   newMap: GoogleMap;
   // game$: Observable <Game>;
   user: User;
-  user$: Observable<User>;
+ 
   attendeeList: any[] = [];
   attendeeListTrue: any[] = [];
   attendeeListFalse: any[] = [];
 
-  gameRef: Subscription;
+  subscription: Subscription;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -41,78 +41,45 @@ export class ChampionshipDetailPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.getUser();
-    // GET DATA
+
     this.game = this.navParams.get("data");
     this.setMap();
 
-    // GET GAME
-    /* const gameRef = this.championshipService
-      .getTeamGameRef(this.game.teamId, this.game.id)
-      .subscribe((game) => {
-        // game.teamName = this.game.name;
-        game.teamId = this.game.teamId;
-        this.game = game;
+    const game$ = this.authService.getUser$().pipe(
+      take(1),
+      tap(user => this.user = user),
+      //tap(user => console.log(user)),
+      switchMap(user=>this.championshipService.getTeamGameRef(this.game.teamId, this.game.id).pipe(
+        tap(game=>console.log(game)),
+        concatMap((game:Game) => this.championshipService.getTeamGameAttendeesRef(game.teamId, game.id).pipe(
+          map(attendees => {
+            const userAttendee = attendees.find(att => att.id == this.user.uid);
+            const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
+            return {
+              ...game,
+              status: status,
+              countAttendees: attendees.filter(att => att.status == true).length,
+              attendees: attendees
+            };
+          }))),
+          tap(game=>this.game),
+          finalize(()=>console.log("done")),
+      )));
 
-        this.game.status = null;
-      });*/
-
-    // GET ATTENDEE LIST
-    this.gameRef = this.championshipService
-      .getTeamGameRef(this.game.teamId, this.game.id)
-      .pipe(
-        switchMap((game) =>
-          this.championshipService.getTeamGameAttendeesRef(
-            this.game.teamId,
-            this.game.id
-          )
-        ),
-        switchMap((allAttendees: any) => {
-          return combineLatest([
-            allAttendees.map((member) => {
-              return combineLatest([
-                of(member),
-                this.userProfileService.getUserProfileById(member.id),
-              ]);
-            }),
-          ]);
-        })
-      )
-      .subscribe((data: any) => {
-        const attendeeListNew = [];
-
-        // User ist im Falle keiner Antwort nicht in attendee Liste
-        this.game.status = null;
-        for (const gameData of data) {
-          // loop over teams
-          console.log(gameData);
-          const status = gameData[0];
-          const user = gameData[1];
-
-          user.status = status.status;
-          attendeeListNew.push(user);
-
-          // update game user status
-          if (user.id === this.user.uid) {
-            this.game.status = status.status;
-          } else {
-            this.game.status = null;
-          }
-        }
-
-        this.attendeeList = [...new Set([].concat(...attendeeListNew))];
-        this.attendeeList = this.attendeeList.sort(
-          (a, b) => b.firstName - a.firstName
-        );
-        this.attendeeListTrue = this.attendeeList.filter(
-          (element) => element.status === true
-        );
-        this.attendeeListFalse = this.attendeeList.filter(
-          (element) => element.status === false
-        );
+      this.subscription = forkJoin([game$]).subscribe({
+        next: () => {
+          console.log(this.game);
+        },
+        error: err => console.error('Error in the observable chain:', err)
       });
   }
-
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+  }    if (this.newMap) {
+    this.newMap.destroy();
+}
+  }
   async toggle(status: boolean, game: Game) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
@@ -134,13 +101,6 @@ export class ChampionshipDetailPage implements OnInit {
       position: "top",
     });
     toast.present();
-  }
-
-  async getUser() {
-    this.user$ = this.authService.getUser$();
-    this.user$.subscribe((user) => {
-      this.user = user;
-    });
   }
 
   async close() {
@@ -204,8 +164,5 @@ export class ChampionshipDetailPage implements OnInit {
       console.log("no coordinates on map");
     }
   }
-  ngOnDestroy() {
-    this.gameRef.unsubscribe();
-    this.newMap.destroy();
-  }
+
 }

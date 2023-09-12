@@ -90,11 +90,11 @@
     </ion-item>
   </ion-list>
 
-  <ion-list *ngIf="attendeeListTrue.length>0">
+  <ion-list *ngIf="game.attendees">
     <ion-list-header>
-      Anmeldungen: {{attendeeListTrue.length}}
+      Anmeldungen: {{game.countAttendees}}
     </ion-list-header>
-    <ion-item *ngFor="let member of attendeeListTrue">
+    <ion-item *ngFor="let member of game.attendees">
       <ion-icon
         color="warning"
         slot="start"
@@ -121,11 +121,11 @@
     </ion-item>
   </ion-list>
 
-  <ion-list *ngIf="attendeeListFalse.length>0">
+  <ion-list *ngIf="game.attendees">
     <ion-list-header>
-      Abmeldungen: {{attendeeListFalse.length}}
+      Abmeldungen: {{game.countAttendees}}
     </ion-list-header>
-    <ion-item *ngFor="let member of attendeeListFalse">
+    <ion-item *ngFor="let member of game.attendees">
       <ion-icon
         color="warning"
         slot="start"
