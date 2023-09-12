@@ -11,6 +11,14 @@
 </ion-header>
 <ion-content class="ion-padding">
   <ion-list>
+
+    <ion-item>
+      <ion-select label="Team" label-placement="stacked">
+        <ion-select-option *ngFor="let team of teamList" value="{{team.id}}">{{team.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+
     <ion-item>
      
       <ion-input label="Name" value="{{training.name}}">

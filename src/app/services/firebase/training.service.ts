@@ -35,42 +35,6 @@ export class TrainingService {
   ) {
 
   }
-  ngOnInit() {
-    let  teamList: any[] = [];
-  const teams$ = this.authService.getUser$().pipe(
-    take(1),
-    switchMap(user => this.fbService.getUserTeamRefs(user).pipe(take(1))),
-    concatMap(teamsArray =>  from(teamsArray)),
-    tap((team:Team)=>console.log(team.id)),
-    concatMap(team => 
-      this.fbService.getTeamRef(team.id).pipe(
-        take(1),
-        defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
-        map(result => [result]),
-        catchError(error => {
-          console.error('Error fetching TeamDetail:', error);
-          return of([]);
-      })
-    )
-    ),
-    tap(teamList => teamList.forEach(team => teamList.push(team))),
-    finalize(() => console.log("Get Teams completed"))
-  );
-
-  this.subscription = forkJoin([teams$]).subscribe({
-    next: () => {
-      console.log(this.teamList);
-    },
-    error: err => console.error('Error in the observable chain:', err)
-  });
-
-  }
-
-  ngOnDestroy(): void {
-    if (this.subscription) {
-        this.subscription.unsubscribe();
-    }
-  }
 
 
 

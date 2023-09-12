@@ -19,7 +19,8 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-list>
+  <ng-container *ngIf="newsList$ | async as newsList; else loading">
+    <ion-list *ngIf="newsList.length > 0">
     <ion-grid>
       <ion-row>
         <ion-col
@@ -27,7 +28,7 @@
           size-md="6"
           size-sm="6"
           size="12"
-          *ngFor="let news of newsList$ | async"
+          *ngFor="let news of newsList"
         >
           <ion-card button="true">
             <ion-fab *ngIf="news.url" vertical="top" horizontal="end">
@@ -65,7 +66,7 @@
       </ion-row>
     </ion-grid>
   </ion-list>
-
+  </ng-container>
   <!--
 
   <ion-list *ngIf="loading">
