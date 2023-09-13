@@ -111,6 +111,13 @@ export class TrainingCreatePage implements OnInit {
     calculatedDate.setMilliseconds(0);
     this.training.endDate = calculatedDate.toISOString();
 
+    const calculatedStartDate = new Date(this.training.startDate);
+    calculatedDate.setHours(new Date(this.training.timeFrom).getHours());
+    calculatedDate.setMinutes(new Date(this.training.timeFrom).getMinutes());
+    calculatedDate.setSeconds(0);
+    calculatedDate.setMilliseconds(0);
+    this.training.startDate = calculatedStartDate.toISOString();
+
     this.trainingService.setCreateTraining(this.training, this.user);
     return this.modalCtrl.dismiss({}, "confirm");
   }
