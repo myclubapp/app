@@ -4,10 +4,10 @@ import { Game } from "src/app/models/game";
 import { GoogleMap } from "@capacitor/google-maps";
 import { Geolocation, PermissionStatus } from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import { combineLatest, forkJoin, Observable, of, Subscriber, Subscription } from "rxjs";
+import { combineLatest, forkJoin, from, Observable, of, Subscriber, Subscription } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "@angular/fire/auth";
-import { concatMap, finalize, map, switchMap, take, tap } from "rxjs/operators";
+import { catchError, concatMap, finalize, map, switchMap, take, tap } from "rxjs/operators";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { environment } from "src/environments/environment";
 
@@ -53,6 +53,20 @@ export class ChampionshipDetailPage implements OnInit {
         tap(game=>console.log(game)),
         concatMap((game:Game) => this.championshipService.getTeamGameAttendeesRef(game.teamId, game.id).pipe(
           map(attendees => {
+
+           /* //How to read additional userdate for each attendee in atendees?
+            this.userProfileService.getUserProfileById(attendee.id).pipe(
+              take(1), 
+              map(attendee => {
+                return [{...attendee}]
+              }),
+              catchError(error => {
+                console.error('Error fetching member:', error);
+                return of([]);
+              })
+            )*/
+
+
             const userAttendee = attendees.find(att => att.id == this.user.uid);
             const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
             return {
