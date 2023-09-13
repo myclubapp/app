@@ -11,12 +11,12 @@ export interface Training {
   // actual date of training
   date: Date;
 
-  timeFrom: Date;
-  timeTo: Date;
+  timeFrom: string;
+  timeTo: string;
 
   // Fields for calculation
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
 
   repeatAmount: string,
   repeatFrequency: string,

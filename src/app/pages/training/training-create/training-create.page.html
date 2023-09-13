@@ -13,20 +13,20 @@
   <ion-list>
 
     <ion-item>
-      <ion-select label="Team" label-placement="stacked" value="{{training.teamId}}" >
+      <ion-select label="Team" label-placement="stacked" [(ngModel)]="training.teamId" value="{{training.teamId}}" >
         <ion-select-option *ngFor="let team of teamList" value="{{team.id}}">{{team.name}}</ion-select-option>
       </ion-select>
     </ion-item>
 
     <ion-item>
-      <ion-input label="Name" label-placement="stacked" value="{{training.name}}">
+      <ion-input label="Name" label-placement="stacked" [(ngModel)]="training.name" value="{{training.name}}">
       </ion-input>
     </ion-item>
     <ion-item>
      
       <ion-textarea
       label="Beschreibung" label-placement="stacked"
-        value="{{training.description}}"
+        value="{{training.description}}" [(ngModel)]="training.description"
       >
       </ion-textarea>
     </ion-item>
@@ -34,20 +34,20 @@
     
       <ion-input
       label="Strasse & Hausnummer" label-placement="stacked"
-        value="{{training.streetAndNumber}}"
+        value="{{training.streetAndNumber}}" [(ngModel)]="training.streetAndNumber"
       >
       </ion-input>
     </ion-item>
     <ion-item>
       <ion-input
       label="Postleitzahl" label-placement="stacked"
-        value="{{training.postalCode}}"
+        value="{{training.postalCode}}" [(ngModel)]="training.postalCode"
       >
       </ion-input>
     </ion-item>
     <ion-item>
       
-      <ion-input label="Ortschaft" label-placement="stacked" value="{{training.city}}">
+      <ion-input label="Ortschaft" label-placement="stacked" value="{{training.city}}" [(ngModel)]="training.city">
       </ion-input>
     </ion-item>
 
@@ -58,7 +58,7 @@
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime presentation="time" id="timeFrom"></ion-datetime>
+          <ion-datetime presentation="time" id="timeFrom" value="{{training.timeFrom}}" [(ngModel)]="training.timeFrom"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
@@ -69,7 +69,7 @@
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime presentation="time" id="timeTo"></ion-datetime>
+          <ion-datetime presentation="time" id="timeTo" value="{{training.timeTo}}" [(ngModel)]="training.timeTo"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
@@ -77,11 +77,11 @@
     <ion-list-header>Serien Einstellungen</ion-list-header>
     <ion-item>
 
-      <ion-select label="Wiederholen" label-placement="stacked" value="{{training.repeatFrequency}}" >
+      <ion-select label="Wiederholen" label-placement="stacked" value="{{training.repeatFrequency}}" [(ngModel)]="training.repeatFrequency" >
         <ion-select-option value="D">Täglich</ion-select-option>
         <ion-select-option value="W">Wöchentlich</ion-select-option>
       </ion-select>
-      <ion-select label="Alle" label-placement="stacked" value="{{training.repeatAmount}}" >
+      <ion-select label="Alle" label-placement="stacked" value="{{training.repeatAmount}}" [(ngModel)]="training.repeatAmount" >
         <ion-select-option value="1">1</ion-select-option>
         <ion-select-option value="2">2</ion-select-option>
         <ion-select-option value="3">3</ion-select-option>
@@ -94,7 +94,8 @@
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime presentation="date" id="startDate"></ion-datetime>
+          <ion-datetime [firstDayOfWeek]="1" presentation="date" id="startDate"
+          value="{{training.startDate}}" [(ngModel)]="training.startDate"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
@@ -105,7 +106,9 @@
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime presentation="date" id="endDate"></ion-datetime>
+          <ion-datetime [firstDayOfWeek]="1" presentation="date" id="endDate" 
+          value="{{training.endDate}}" [(ngModel)]="training.endDate">
+          </ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>

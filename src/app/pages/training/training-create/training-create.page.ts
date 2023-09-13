@@ -38,11 +38,11 @@ export class TrainingCreatePage implements OnInit {
       
       date: new Date(),
       
-      timeFrom: new Date(),
-      timeTo: new Date(),
+      timeFrom: new Date().toISOString(),
+      timeTo: new Date().toISOString(),
       
-      startDate: new Date(),
-      endDate: new Date(),
+      startDate: new Date().toISOString(),
+      endDate: new Date().toISOString(),
 
       repeatFrequency: "W",
       repeatAmount: "1",
@@ -103,6 +103,14 @@ export class TrainingCreatePage implements OnInit {
   }
  
   async createTraining() {
+    //Set Hours/Minutes of endDate to TimeFrom of training
+    const calculatedDate = new Date(this.training.endDate);
+    calculatedDate.setHours(new Date(this.training.timeFrom).getHours());
+    calculatedDate.setMinutes(new Date(this.training.timeFrom).getMinutes());
+    calculatedDate.setSeconds(0);
+    calculatedDate.setMilliseconds(0);
+    this.training.endDate = calculatedDate.toISOString();
+
     this.trainingService.setCreateTraining(this.training, this.user);
     return this.modalCtrl.dismiss({}, "confirm");
   }

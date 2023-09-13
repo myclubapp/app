@@ -40,6 +40,7 @@ export class TrainingService {
 
   async setCreateTraining(training: Training, user: User) {
     console.log("training");
+    console.log(training);
     return addDoc(
       collection(this.firestore, `userProfile/${user.uid}/trainings`),
       training
