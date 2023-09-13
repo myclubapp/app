@@ -14,14 +14,15 @@ export interface Training {
   timeFrom: Date;
   timeTo: Date;
 
+  // Fields for calculation
   startDate: Date;
   endDate: Date;
 
   repeatAmount: string,
   repeatFrequency: string,
 
+   // TEAM FIELDS based on TeamID
   teamId: string;
-  // read from teamID
   teamName: string;
   liga: string;
 
