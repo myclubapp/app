@@ -62,7 +62,7 @@ export class TrainingCreatePage implements OnInit {
     const teams$ = this.authService.getUser$().pipe(
       take(1),
       tap(user=>this.user = user),
-      switchMap(user => this.fbService.getUserTeamRefs(user).pipe(take(1))),
+      switchMap(user => this.fbService.getAdminTeamRefs(user).pipe(take(1))),
       concatMap(teamsArray =>  from(teamsArray)),
       tap((team:Team)=>console.log(team.id)),
       concatMap(team => 

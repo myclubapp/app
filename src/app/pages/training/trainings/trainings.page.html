@@ -62,11 +62,11 @@
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="time"></ion-icon>
-              {{training.date}} {{training.timeFrom}}
+              {{training.date | date:'dd.MM.YYYY '}} {{training.timeFrom | date:'HH:mm'}}
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="time"></ion-icon>
-              {{training.date}} {{training.timeTo}}
+              {{training.date | date:'dd.MM.YYYY'}} {{training.timeTo | date:'HH:mm'}}
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="trophy"></ion-icon>

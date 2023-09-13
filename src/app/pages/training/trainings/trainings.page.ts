@@ -13,6 +13,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
 import { TrainingCreatePage } from "../training-create/training-create.page";
+import { Timestamp } from "firebase/firestore";
 
 @Component({
   selector: "app-trainings",
@@ -77,8 +78,10 @@ export class TrainingsPage implements OnInit {
               map(attendees => {
                 const userAttendee = attendees.find(att => att.id == this.user.uid);
                 const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
+                console.log(training.date);
                 return {
                   ...training,
+                  date: new Date(training.date.seconds),
                   teamId: team.id,
                   status: status,
                   countAttendees: attendees.filter(att => att.status == true).length,
@@ -134,7 +137,8 @@ export class TrainingsPage implements OnInit {
                   countAttendees: attendees.filter(att => att.status == true).length,
                   attendees: attendees
                 };
-              })
+              }),
+   
             )
           );
           return forkJoin(trainingWithAttendees$);
@@ -165,7 +169,7 @@ export class TrainingsPage implements OnInit {
         this.trainingList$ = of(this.trainingList);
         console.log("Combined training list created");
       },
-      error: err => console.error('Error in the observable chain:', err)
+      error: err => console.error('Error in the observable chain:', err.message)
     });
 
     this.subscriptionPast = combineLatest([teamtrainingPast$]).subscribe({
@@ -179,7 +183,7 @@ export class TrainingsPage implements OnInit {
         this.trainingListPast$ = of(this.trainingListPast);
         console.log("Combined training list PAST created");
       },
-      error: err => console.error('Error in the observable chain:', err)
+      error: err => console.error('Error in the observable chain:', err.message)
     });
 
   }

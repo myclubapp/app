@@ -9,7 +9,7 @@ export interface Training {
   city: string;
 
   // actual date of training
-  date: Date;
+  date: any;
 
   timeFrom: string;
   timeTo: string;
