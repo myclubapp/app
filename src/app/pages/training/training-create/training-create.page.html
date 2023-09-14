@@ -58,7 +58,7 @@
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime presentation="time" id="timeFrom" value="{{training.timeFrom}}" [(ngModel)]="training.timeFrom"></ion-datetime>
+          <ion-datetime presentation="time" id="timeFrom" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" value="{{training.timeFrom}}" [(ngModel)]="training.timeFrom"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
@@ -69,7 +69,7 @@
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime presentation="time" id="timeTo" value="{{training.timeTo}}" [(ngModel)]="training.timeTo"></ion-datetime>
+          <ion-datetime presentation="time" id="timeTo" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" value="{{training.timeTo}}" [(ngModel)]="training.timeTo"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>

@@ -104,19 +104,41 @@ export class TrainingCreatePage implements OnInit {
  
   async createTraining() {
     //Set Hours/Minutes of endDate to TimeFrom of training
-    const calculatedDate = new Date(this.training.endDate);
-    calculatedDate.setHours(new Date(this.training.timeFrom).getHours());
-    calculatedDate.setMinutes(new Date(this.training.timeFrom).getMinutes());
-    calculatedDate.setSeconds(0);
-    calculatedDate.setMilliseconds(0);
-    this.training.endDate = calculatedDate.toISOString();
-
+    console.log(`Start Date before calculation: ${this.training.startDate}`);
     const calculatedStartDate = new Date(this.training.startDate);
-    calculatedDate.setHours(new Date(this.training.timeFrom).getHours());
-    calculatedDate.setMinutes(new Date(this.training.timeFrom).getMinutes());
-    calculatedDate.setSeconds(0);
-    calculatedDate.setMilliseconds(0);
+    calculatedStartDate.setHours(new Date(this.training.timeFrom).getHours());
+    calculatedStartDate.setMinutes(new Date(this.training.timeFrom).getMinutes());
+    calculatedStartDate.setSeconds(0);
+    calculatedStartDate.setMilliseconds(0);
     this.training.startDate = calculatedStartDate.toISOString();
+    console.log(`Start Date after calculation: ${this.training.startDate}`);
+
+    console.log(`End Date before calculation: ${this.training.endDate}`);
+    const calcualtedEndDate = new Date(this.training.endDate);
+    calcualtedEndDate.setHours(new Date(this.training.timeFrom).getHours());
+    calcualtedEndDate.setMinutes(new Date(this.training.timeFrom).getMinutes());
+    calcualtedEndDate.setSeconds(0);
+    calcualtedEndDate.setMilliseconds(0);
+    this.training.endDate = calcualtedEndDate.toISOString();
+    console.log(`End Date after calculation: ${this.training.endDate}`);
+
+    const calculatedTimeFrom = new Date(this.training.timeFrom);
+    calculatedTimeFrom.setDate(new Date(this.training.startDate).getDate());
+    calculatedTimeFrom.setMonth(new Date(this.training.startDate).getMonth());
+    calculatedTimeFrom.setFullYear(new Date(this.training.startDate).getFullYear());
+    calculatedTimeFrom.setSeconds(0);
+    calculatedTimeFrom.setMilliseconds(0);
+    this.training.timeFrom = calculatedTimeFrom.toISOString();
+
+    const calculatedTimeTo = new Date(this.training.timeTo);
+    calculatedTimeTo.setDate(new Date(this.training.startDate).getDate());
+    calculatedTimeTo.setMonth(new Date(this.training.startDate).getMonth());
+    calculatedTimeTo.setFullYear(new Date(this.training.startDate).getFullYear());
+    calculatedTimeTo.setSeconds(0);
+    calculatedTimeTo.setMilliseconds(0);
+    this.training.timeTo = calculatedTimeTo.toISOString();
+
+    delete this.training.attendees;
 
     this.trainingService.setCreateTraining(this.training, this.user);
     return this.modalCtrl.dismiss({}, "confirm");
