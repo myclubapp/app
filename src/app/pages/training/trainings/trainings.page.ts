@@ -81,7 +81,7 @@ export class TrainingsPage implements OnInit {
                 console.log(training.date);
                 return {
                   ...training,
-                  date: new Date(training.date.seconds),
+                  date: training.date.seconds * 1000,
                   teamId: team.id,
                   status: status,
                   countAttendees: attendees.filter(att => att.status == true).length,
@@ -132,6 +132,7 @@ export class TrainingsPage implements OnInit {
                 const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
                 return {
                   ...training,
+                  date: training.date.seconds * 1000,
                   teamId: team.id,
                   status: status,
                   countAttendees: attendees.filter(att => att.status == true).length,
@@ -161,7 +162,7 @@ export class TrainingsPage implements OnInit {
    this.subscription = combineLatest([teamtraining$]).subscribe({
       next: () => {
         this.trainingList = [...teamtrainingList].sort((a, b):any => {
-          return new Date(a.date).getTime() < new Date(b.date).getTime();
+          return a.date.seconds < b.date.seconds ;
         });
         this.trainingList = this.trainingList.filter((training, index, self) => 
           index === self.findIndex((t) => (t.id === training.id))
@@ -175,7 +176,7 @@ export class TrainingsPage implements OnInit {
     this.subscriptionPast = combineLatest([teamtrainingPast$]).subscribe({
       next: () => {
         this.trainingListPast = [...teamtrainingPastList].sort((a, b):any => {
-          return new Date(a.date).getTime() > new Date(b.date).getTime();
+          return a.date.seconds > b.date.seconds ;
         });
         this.trainingListPast = this.trainingListPast.filter((training, index, self) => 
           index === self.findIndex((t) => (t.id === training.id))

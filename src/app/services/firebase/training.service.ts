@@ -36,8 +36,6 @@ export class TrainingService {
 
   }
 
-
-
   async setCreateTraining(training: Training, user: User) {
     console.log("training");
     console.log(training);
