@@ -28,5 +28,6 @@ export interface Training {
 
   // Business Logic Fields
   status: boolean;
+  countAttendees: number;
   attendees: any;
 }

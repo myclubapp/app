@@ -59,16 +59,16 @@
             <h2>{{game.teamHome}} vs.</h2>
             <h2>{{game.teamAway}}</h2>
             <h3>
-              <ion-icon slot="icon-only" name="time"></ion-icon> {{game.date}}
-              {{game.time}}
-            </h3>
-            <h3>
-              <ion-icon slot="icon-only" name="home"></ion-icon>:
+              <ion-icon slot="icon-only" name="location-outline"></ion-icon>
               {{game.location}} {{game.city}}
             </h3>
             <h3>
-              <ion-icon slot="icon-only" name="trophy"></ion-icon> {{game.liga}}
-              {{game.teamName}}
+              <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+              {{game.date}} {{game.time}} Uhr
+            </h3>
+            <h3>
+              <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
+              {{game.liga}} {{game.teamName}}
             </h3>
           </ion-label>
           <ion-note slot="end" (click)="openModal(game)">
@@ -162,7 +162,7 @@
             </h3>
           </ion-label>
           <ion-note slot="end" (click)="openModal(game)">
-            <ion-badge color="primary">{{game.attendees}}</ion-badge>
+            <ion-badge color="primary">{{game.countAttendees}}</ion-badge>
           </ion-note>
         </ion-item>
 

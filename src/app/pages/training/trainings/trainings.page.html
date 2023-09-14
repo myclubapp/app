@@ -56,25 +56,24 @@
             (click)="toggle(false, training)"
           ></ion-icon>
           <ion-label>
+            <h2>
+              {{training.name}}
+            </h2>
             <h3>
-              <ion-icon slot="icon-only" name="home"></ion-icon>:
+              <ion-icon slot="icon-only" name="location-outline"></ion-icon>
               {{training.streetAndNumber}} {{training.city}}
             </h3>
             <h3>
-              <ion-icon slot="icon-only" name="time"></ion-icon>
-              {{training.date | date:'dd.MM.YYYY '}} {{training.timeFrom | date:'HH:mm'}}
+              <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+              {{training.date | date:'dd.MM.YYYY '}} {{training.timeFrom | date:'HH:mm'}} Uhr - {{training.timeTo | date:'HH:mm'}} Uhr
             </h3>
             <h3>
-              <ion-icon slot="icon-only" name="time"></ion-icon>
-              {{training.date | date:'dd.MM.YYYY'}} {{training.timeTo | date:'HH:mm'}}
-            </h3>
-            <h3>
-              <ion-icon slot="icon-only" name="trophy"></ion-icon>
+              <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
               {{training.liga}} {{training.teamName}}
             </h3>
           </ion-label>
           <ion-note slot="end">
-            <ion-badge color="primary">{{training.attendees}}</ion-badge>
+            <ion-badge color="primary">{{training.countAttendees}}</ion-badge>
           </ion-note>
         </ion-item>
 
