@@ -69,16 +69,16 @@
     </ion-item>
 
     <ion-item>
-      <ion-icon slot="start" name="time-outline"></ion-icon>
-      <ion-label>
-        <h2>{{game.date}} {{game.time}}</h2>
+      <ion-icon slot="start" name="location-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.location}} {{game.city}}</h2>
       </ion-label>
     </ion-item>
 
     <ion-item>
-      <ion-icon slot="start" name="location-outline"></ion-icon>
-      <ion-label class="ion-text-wrap">
-        <h2>{{game.location}} {{game.city}}</h2>
+      <ion-icon slot="start" name="calendar-outline"></ion-icon>
+      <ion-label>
+        <h2>{{game.date}} {{game.time}}</h2>
       </ion-label>
     </ion-item>
 
@@ -90,11 +90,20 @@
     </ion-item>
   </ion-list>
 
-  <ion-list *ngIf="game.attendees">
-    <ion-list-header>
-      Anmeldungen: {{game.countAttendees}}
-    </ion-list-header>
-    <ion-item *ngFor="let member of game.attendees">
+  <ion-segment [(ngModel)]="segmentMode" value="segmentMode">
+    <ion-segment-button value="true">
+      <ion-label>Anmeldungen: {{attendeeListTrue.length}}</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="false">
+      <ion-label>Abmeldungen: {{attendeeListFalse.length}}</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="undefined">
+      <ion-label>Keine Antwort {{attendeeListUndefined.length}}</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-list *ngIf="segmentMode==true">
+    <ion-item *ngFor="let member of attendeeListTrue">
       <ion-icon
         color="warning"
         slot="start"
@@ -121,11 +130,8 @@
     </ion-item>
   </ion-list>
 
-  <ion-list *ngIf="game.attendees">
-    <ion-list-header>
-      Abmeldungen: {{game.countAttendees}}
-    </ion-list-header>
-    <ion-item *ngFor="let member of game.attendees">
+  <ion-list *ngIf="segmentMode==false">
+    <ion-item *ngFor="let member of attendeeListFalse">
       <ion-icon
         color="warning"
         slot="start"

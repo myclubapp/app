@@ -7,7 +7,7 @@ import { ChampionshipService } from "src/app/services/firebase/championship.serv
 import { combineLatest, forkJoin, from, Observable, of, Subscriber, Subscription } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "@angular/fire/auth";
-import { catchError, concatMap, finalize, map, switchMap, take, tap } from "rxjs/operators";
+import { catchError, concatMap, defaultIfEmpty, finalize, map, startWith, switchMap, take, tap } from "rxjs/operators";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { environment } from "src/environments/environment";
 
@@ -25,11 +25,12 @@ export class ChampionshipDetailPage implements OnInit {
   // game$: Observable <Game>;
   user: User;
  
-  attendeeList: any[] = [];
   attendeeListTrue: any[] = [];
   attendeeListFalse: any[] = [];
-
+  attendeeListUndefined: any[] = [];
   subscription: Subscription;
+
+  segmentMode = true;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -50,43 +51,41 @@ export class ChampionshipDetailPage implements OnInit {
       tap(user => this.user = user),
       //tap(user => console.log(user)),
       switchMap(user=>this.championshipService.getTeamGameRef(this.game.teamId, this.game.id).pipe(
-        tap(game=>console.log(game)),
+        // tap(game=>console.log(game)),
         concatMap((game:Game) => this.championshipService.getTeamGameAttendeesRef(game.teamId, game.id).pipe(
           map(attendees => {
 
            /* //How to read additional userdate for each attendee in atendees?
-            this.userProfileService.getUserProfileById(attendee.id).pipe(
-              take(1), 
-              map(attendee => {
-                return [{...attendee}]
-              }),
-              catchError(error => {
-                console.error('Error fetching member:', error);
-                return of([]);
-              })
-            )*/
-
+            this.userProfileService.getUserProfileById(attendee.id)
+            */
 
             const userAttendee = attendees.find(att => att.id == this.user.uid);
             const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
             return {
               ...game,
               status: status,
-              countAttendees: attendees.filter(att => att.status == true).length,
+              // countAttendees: attendees.filter(att => att.status == true).length,
               attendees: attendees
             };
           }))),
           tap(game=>this.game),
+          tap(game=>{
+            this.attendeeListTrue = this.game.attendees.filter(member=>member.status === true);
+            this.attendeeListFalse = this.game.attendees.filter(member=>member.status === false);
+           // this.attendeeListUndefined = [];
+          }),
           finalize(()=>console.log("done")),
       )));
 
-      this.subscription = forkJoin([game$]).subscribe({
+      this.subscription = combineLatest([game$]).subscribe({
         next: () => {
-          console.log(this.game);
+          // console.log(this.game);
         },
-        error: err => console.error('Error in the observable chain:', err)
+        error: err => console.error('Error in the observable chain:', err.name, err.message, err.code)
       });
   }
+  
+
   ngOnDestroy() {
     if (this.subscription) {
       this.subscription.unsubscribe();
