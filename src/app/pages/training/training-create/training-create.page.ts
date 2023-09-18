@@ -100,6 +100,22 @@ export class TrainingCreatePage implements OnInit {
     
   }
 
+  changeTimeFrom(ev){
+    console.log(ev.detail.value)
+    if (this.training.timeFrom > this.training.timeTo) {
+      this.training.timeTo = this.training.timeFrom;
+    }
+
+  }
+
+  changeStartDate(ev){
+    console.log(ev.detail.value)
+    if (this.training.startDate > this.training.endDate) {
+      this.training.endDate = this.training.startDate;
+    }
+
+  }
+
   async close() {
     return this.modalCtrl.dismiss(null, "close");
   }

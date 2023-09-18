@@ -17,12 +17,6 @@
     </ion-item>
 
     <ion-item>
-      <ion-select label="Team" label-placement="stacked" [(ngModel)]="event.teamId" value="{{event.teamId}}" >
-        <ion-select-option *ngFor="let team of teamList" value="{{team.id}}">{{team.name}}</ion-select-option>
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
       <ion-input label="Name" label-placement="stacked" [(ngModel)]="event.name" value="{{event.name}}">
       </ion-input>
     </ion-item>
