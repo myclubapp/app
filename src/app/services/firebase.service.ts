@@ -147,6 +147,16 @@ export class FirebaseService {
     }) as Observable<Team[]>;
   }
 
+  getAdminClubRefs(user: User): Observable<Club[]> {
+    const clubRefList = collection(
+      this.firestore,
+      `userProfile/${user.uid}/clubAdmin`
+    );
+    return collectionData(clubRefList, {
+      idField: "id",
+    }) as Observable<Club[]>;
+  }
+
   getUserClubRequestRefs(user: User): Observable<any> {
     const requestRefList = collection(
       this.firestore,

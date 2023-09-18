@@ -17,6 +17,7 @@ import {
 } from "@angular/fire/firestore";
 import { Observable, Observer } from "rxjs";
 import { Event } from "src/app/models/event";
+import { User } from "firebase/auth";
 
 @Injectable({
   providedIn: "root",
@@ -80,6 +81,23 @@ export class EventService {
     return collectionData(attendeesRefList, {
       idField: "id",
     }) as unknown as Observable<any[]>;
+  }
+
+  async setCreateTeamEvent(event: Event, user: User) {
+    console.log("event");
+    console.log(event);
+    return addDoc(
+      collection(this.firestore, `userProfile/${user.uid}/teamEvent`),
+      event
+    );
+  }
+  async setCreateClubEvent(event: Event, user: User) {
+    console.log("event");
+    console.log(event);
+    return addDoc(
+      collection(this.firestore, `userProfile/${user.uid}/clubEvent`),
+      event
+    );
   }
 
   /* TEAM EventS ATTENDEE Status */

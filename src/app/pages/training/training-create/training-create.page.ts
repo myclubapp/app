@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ModalController, NavParams } from "@ionic/angular";
 import { User } from "firebase/auth";
+import { Timestamp } from "firebase/firestore";
 import { Observable, Subscription, catchError, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, of, switchMap, take, tap } from "rxjs";
 import { Team } from "src/app/models/team";
 import { Training } from "src/app/models/training";
@@ -36,7 +37,7 @@ export class TrainingCreatePage implements OnInit {
       postalCode: "",
       city: "",
       
-      date: new Date(),
+      date: Timestamp.fromDate(new Date()),
       
       timeFrom: new Date().toISOString(),
       timeTo: new Date().toISOString(),

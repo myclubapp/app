@@ -157,7 +157,8 @@ export class EventsPage implements OnInit {
    this.subscription = combineLatest([teamEvent$]).subscribe({
       next: () => {
         this.eventsList = [...teamEventList].sort((a, b):any => {
-          return a.date.getTime() > b.date.getTime();
+          // return a.date.getTime() > b.date.getTime();
+          return a.date.seconds < b.date.seconds ;
         });
         this.eventsList = this.eventsList.filter((Event, index, self) => 
           index === self.findIndex((t) => (t.id === Event.id))
@@ -171,7 +172,8 @@ export class EventsPage implements OnInit {
     this.subscriptionPast = combineLatest([teamEventPast$]).subscribe({
       next: () => {
         this.eventsListPast = [...teamEventPastList].sort((a, b):any => {
-          return a.date.getTime() > b.date.getTime();
+          // return a.date.getTime() > b.date.getTime();
+          return a.date.seconds > b.date.seconds ;
         });
         this.eventsListPast = this.eventsListPast.filter((Event, index, self) => 
           index === self.findIndex((t) => (t.id === Event.id))

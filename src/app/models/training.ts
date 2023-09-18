@@ -1,3 +1,5 @@
+import { Timestamp } from 'firebase/firestore';
+
 export interface Training {
   id: string;
   name: string;
@@ -9,7 +11,7 @@ export interface Training {
   city: string;
 
   // actual date of training
-  date: any;
+  date: Timestamp;
 
   timeFrom: string;
   timeTo: string;

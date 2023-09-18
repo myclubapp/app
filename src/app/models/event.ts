@@ -4,16 +4,30 @@ export interface Event {
   id: string
   name: string
   description: string
-  dateTime: Timestamp
-  location: string
-  city: string
-  date: Date
-  time: string
-  teamId: string
 
+  location: string
+  streetAndNumber: string
+  postalCode: string
+  city: string
+  
+  date: Timestamp,
+
+  startDate: string
+  endDate: string
+
+  timeFrom: string
+  timeTo: string
+  
+  teamId: string
+  teamName: string
+  liga: string
+
+  clubId: string
+  clubName: string
   // Business Logic Fields
   status: boolean
   attendees: any
+  countAttendees: number
 }
 export interface HelferEvent extends Event {
   schichten: [Schicht]
