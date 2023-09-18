@@ -33,6 +33,12 @@ const routes: Routes = [
            import('../event/events/events.module').then(
             (m) => m.EventsPageModule
           )
+      },      {
+        path: 'helfer',
+        loadChildren:  () =>
+           import('../helfer/helfer/helfer.module').then(
+            (m) => m.HelferPageModule
+          )
       },
       {
         path: '',

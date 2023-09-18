@@ -16,7 +16,7 @@ import {
   where,
 } from "@angular/fire/firestore";
 import { Observable, Observer } from "rxjs";
-import { Veranstaltung } from "src/app/models/event";
+import { HelferEvent, Veranstaltung } from "src/app/models/event";
 import { User } from "firebase/auth";
 
 @Injectable({
@@ -61,11 +61,27 @@ export class EventService {
   }
 
   /* CLUB EventS */
-  getClubEventsRef(clubId: string): Observable<Veranstaltung> {
+  getClubEventsRef(clubId: string): Observable<Veranstaltung[]> {
     const eventsRefList = collection(this.firestore, `club/${clubId}/events`);
     return collectionData(eventsRefList, {
       idField: "id",
-    }) as unknown as Observable<Veranstaltung>;
+    }) as unknown as Observable<Veranstaltung[]>;
+  }
+
+
+  /* HELFER EventS */
+  getClubHelferEventRefs(clubId: string): Observable<HelferEvent[]>{
+    const eventsRefList = collection(this.firestore, `club/${clubId}/helferevents`);
+    return collectionData(eventsRefList, {
+      idField: "id",
+    }) as unknown as Observable<HelferEvent[]>;
+  }
+
+  getClubHelferEventAttendeesRef(clubId: string,  eventId: string): Observable<any[]>  {
+    const attendeesRefList = collection(this.firestore, `club/${clubId}/helferevents/${eventId}/attendees`);
+    return collectionData(attendeesRefList, {
+      idField: "id",
+    }) as unknown as Observable<any[]>;
   }
 
   /* TEAM EventS ATTENDEES */

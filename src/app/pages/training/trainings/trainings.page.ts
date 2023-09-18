@@ -14,8 +14,6 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
 import { TrainingCreatePage } from "../training-create/training-create.page";
-import { Timestamp } from "firebase/firestore";
-import { Club } from "src/app/models/club";
 import { Team } from "src/app/models/team";
 
 @Component({
@@ -320,7 +318,7 @@ export class TrainingsPage implements OnInit {
             handler: (value)=>{
               console.log(value)
               this.filterValue = value;
-              this.trainingList$ = of(this.trainingList.filter((news: any) => news.filterable == value));
+              this.trainingList$ = of(this.trainingList.filter((training: any) => training.teamId == value));
             } 
           },
           { text: "abbrechen",

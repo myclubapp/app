@@ -119,6 +119,14 @@ const routes: Routes = [
         (m) => m.NotFoundPageModule
       ),
   },
+  {
+    path: 'helfer',
+    loadChildren: () => import('./pages/helfer/helfer/helfer.module').then( m => m.HelferPageModule)
+  },
+  {
+    path: 'helfer-add',
+    loadChildren: () => import('./pages/helfer/helfer-add/helfer-add.module').then( m => m.HelferAddPageModule)
+  },
 
 ];
 

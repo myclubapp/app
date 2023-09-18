@@ -299,7 +299,7 @@ export class ChampionshipPage implements OnInit {
             handler: (value)=>{
               console.log(value)
               this.filterValue = value;
-              this.gameList$ = of(this.gameList.filter((news: any) => news.filterable == value));
+              this.gameList$ = of(this.gameList.filter((game: any) => game.teamId == value));
             } 
           },
           { text: "abbrechen",
