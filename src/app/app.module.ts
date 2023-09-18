@@ -31,6 +31,7 @@ import { NewsDetailPage } from './pages/news/news-detail/news-detail.page';
 import { ChampionshipDetailPage } from './pages/championship/championship-detail/championship-detail.page';
 import { TrainingDetailPage } from './pages/training/training-detail/training-detail.page';
 import { TrainingCreatePage } from './pages/training/training-create/training-create.page';
+import { EventAddPage } from './pages/event/event-add/event-add.page';
 import { EventDetailPage } from './pages/event/event-detail/event-detail.page';
 import { ClubPage } from './pages/club/club.page';
 import { TeamPage } from './pages/team/team.page';
@@ -43,6 +44,7 @@ import { TeamPage } from './pages/team/team.page';
     ChampionshipDetailPage,
     TrainingDetailPage,
     TrainingCreatePage,
+    EventAddPage,
     EventDetailPage,
     ClubPage,
     TeamPage

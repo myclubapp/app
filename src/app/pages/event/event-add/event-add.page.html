@@ -34,8 +34,15 @@
       >
       </ion-textarea>
     </ion-item>
+
     <ion-item>
-    
+      <ion-input label="Location" label-placement="stacked"
+        value="{{event.location}}" [(ngModel)]="event.location">
+      </ion-input>
+
+    </ion-item>
+
+    <ion-item>
       <ion-input
       label="Strasse & Hausnummer" label-placement="stacked"
         value="{{event.streetAndNumber}}" [(ngModel)]="event.streetAndNumber"

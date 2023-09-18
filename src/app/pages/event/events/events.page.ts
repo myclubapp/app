@@ -15,6 +15,7 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
 import { Club } from "src/app/models/club";
 import { Team } from "src/app/models/team";
+import { EventAddPage } from "../event-add/event-add.page";
 
 @Component({
   selector: "app-events",
@@ -251,7 +252,7 @@ export class EventsPage implements OnInit {
         )
       ),
       tap(clubList => clubList.forEach(club => {
-        filterList.push({id: club.type, name: club.type}); // Verband Infos
+        // filterList.push({id: club.type, name: club.type}); // Verband Infos
         return filterList.push(club);
       })),
       finalize(() => console.log("Get Club completed"))
@@ -319,6 +320,26 @@ export class EventsPage implements OnInit {
     },
     error: err => console.error('Error in the observable chain:', err)
   });
-  
+   
+}
+
+  async openEventCreateModal() {
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalController.create({
+      component: EventAddPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: "",
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
   }
+ 
 }

@@ -129,4 +129,7 @@ export class EventService {
     );
     return await setDoc(statusRef, { status });
   }
+
+  
+
 }
