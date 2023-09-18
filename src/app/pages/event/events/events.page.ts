@@ -258,7 +258,7 @@ export class EventsPage implements OnInit {
       finalize(() => console.log("Get Club completed"))
   );
 
-  const teams$ = this.authService.getUser$().pipe(
+ /* const teams$ = this.authService.getUser$().pipe(
     take(1),
     switchMap(user => this.fbService.getUserTeamRefs(user).pipe(take(1))),
     concatMap(teamsArray =>  from(teamsArray)),
@@ -276,9 +276,9 @@ export class EventsPage implements OnInit {
     ),
     tap(teamList => teamList.forEach(team => filterList.push(team))),
     finalize(() => console.log("Get Teams completed"))
-  );
+  );*/
 
-  this.subscription = forkJoin([teams$, clubs$]).subscribe({
+  this.subscription = forkJoin([clubs$]).subscribe({
     next: () => {
       const alertInputs = [];
       for (const item of filterList){
@@ -291,8 +291,8 @@ export class EventsPage implements OnInit {
       }
     
       this.alertCtrl.create({
-        header: 'News filtern',
-        message: 'Nach Verein oder Teams filtern.',
+        header: 'Veranstaltungen filtern',
+        message: 'Nach Verein filtern.',
        // subHeader: 'Nach Verein oder Teams filtern.',
         inputs: alertInputs,
         buttons: [

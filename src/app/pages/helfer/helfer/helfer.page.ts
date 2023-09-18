@@ -184,13 +184,11 @@ export class HelferPage implements OnInit {
         )
       ),
       tap(clubList => clubList.forEach(club => {
-        filterList.push({id: club.type, name: club.type}); // Verband Infos
+        //filterList.push({id: club.type, name: club.type}); // Verband Infos
         return filterList.push(club);
       })),
       finalize(() => console.log("Get Club completed"))
   );
-
-
 
   this.subscription = forkJoin([clubs$]).subscribe({
     next: () => {
@@ -205,8 +203,8 @@ export class HelferPage implements OnInit {
       }
     
       this.alertCtrl.create({
-        header: 'News filtern',
-        message: 'Nach Verein oder Teams filtern.',
+        header: 'Helferevents filtern',
+        message: 'Nach Verein filtern.',
        // subHeader: 'Nach Verein oder Teams filtern.',
         inputs: alertInputs,
         buttons: [

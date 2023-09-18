@@ -62,39 +62,7 @@ export class EventAddPage implements OnInit {
   }
 
   ngOnInit () {
-    let  teamsList: any[] = [];
-    const teams$ = this.authService.getUser$().pipe(
-      take(1),
-      tap(user=>this.user = user),
-      switchMap(user => this.fbService.getAdminTeamRefs(user).pipe(take(1))),
-      concatMap(teamsArray =>  from(teamsArray)),
-      tap((team:Team)=>console.log(team.id)),
-      concatMap(team => 
-        this.fbService.getTeamRef(team.id).pipe(
-          take(1),
-          defaultIfEmpty({}),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
-          map(result => [result]),
-          catchError(error => {
-            console.error('Error fetching TeamDetail:', error);
-            return of([]);
-          })
-        )
-      ),
-      tap(teamList => teamList.forEach(team => teamsList.push(team))),
-      finalize(() => {
-        teamsList.push({"name": "Kein Team", "id": undefined})
-        console.log("Get Teams completed")
-      })
-    );
-
-    this.subscription = forkJoin([teams$]).subscribe({
-      next: () => {
-        // console.log(">>>" + teamsList);
-        this.teamList = teamsList;
-        this.event.teamId = this.teamList[0].id;
-      },
-      error: err => console.error('Error in the observable chain:', err)
-    });
+    
 
     let  clubList: any[] = [];
     const clubs$ = this.authService.getUser$().pipe(
@@ -116,14 +84,14 @@ export class EventAddPage implements OnInit {
       ),
       tap(clubList => clubList.forEach(club => clubList.push(club))),
       finalize(() => {
-        clubList.push({"name": "Kein Club", "id": undefined})
+        clubList.push({"name": "Kein Club", "id": "undefined"})
         console.log("Get Club completed")
       })
     );
 
     this.subscription = forkJoin([clubs$]).subscribe({
       next: () => {
-        // console.log(">>>" + teamsList);
+        console.log(">>>" + JSON.stringify(clubList));
         this.clubList = clubList;
         this.event.clubId = this.clubList[0].id;
       },
