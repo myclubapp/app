@@ -16,7 +16,7 @@ import {
   where,
 } from "@angular/fire/firestore";
 import { Observable, Observer } from "rxjs";
-import { Event } from "src/app/models/event";
+import { Veranstaltung } from "src/app/models/event";
 import { User } from "firebase/auth";
 
 @Injectable({
@@ -26,7 +26,7 @@ export class EventService {
   constructor(private firestore: Firestore = inject(Firestore)) {}
 
   /* TEAM EventS */
-  getTeamEventsRef(teamId: string): Observable<Event[]> {
+  getTeamEventsRef(teamId: string): Observable<Veranstaltung[]> {
     // console.log(`Read Team Events List Ref ${teamId}`)
     const eventsRefList = collection(this.firestore, `teams/${teamId}/events`);
     const q = query(
@@ -38,12 +38,12 @@ export class EventService {
       )
     ); // heute - 7 Tage
     return collectionData(q, { idField: "id" }) as unknown as Observable<
-      Event[]
+    Veranstaltung[]
     >;
   }
 
   // PAST 20 Entries
-  getTeamEventsRefPast(teamId: string): Observable<Event[]> {
+  getTeamEventsRefPast(teamId: string): Observable<Veranstaltung[]> {
     // console.log(`Read Team Events List Ref ${teamId}`)
     const eventsRefList = collection(this.firestore, `teams/${teamId}/events`);
     const q = query(
@@ -56,16 +56,16 @@ export class EventService {
       limit(20)
     ); // heute - 7 Tage
     return collectionData(q, { idField: "id" }) as unknown as Observable<
-      Event[]
+    Veranstaltung[]
     >;
   }
 
   /* CLUB EventS */
-  getClubEventsRef(clubId: string): Observable<Event> {
+  getClubEventsRef(clubId: string): Observable<Veranstaltung> {
     const eventsRefList = collection(this.firestore, `club/${clubId}/events`);
     return collectionData(eventsRefList, {
       idField: "id",
-    }) as unknown as Observable<Event>;
+    }) as unknown as Observable<Veranstaltung>;
   }
 
   /* TEAM EventS ATTENDEES */
@@ -83,7 +83,7 @@ export class EventService {
     }) as unknown as Observable<any[]>;
   }
 
-  async setCreateTeamEvent(event: Event, user: User) {
+  async setCreateTeamEvent(event: Veranstaltung, user: User) {
     console.log("event");
     console.log(event);
     return addDoc(
@@ -91,7 +91,7 @@ export class EventService {
       event
     );
   }
-  async setCreateClubEvent(event: Event, user: User) {
+  async setCreateClubEvent(event: Veranstaltung, user: User) {
     console.log("event");
     console.log(event);
     return addDoc(

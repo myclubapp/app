@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore';
 
-export interface Event {
+export interface Veranstaltung {
   id: string
   name: string
   description: string
@@ -29,7 +29,7 @@ export interface Event {
   attendees: any
   countAttendees: number
 }
-export interface HelferEvent extends Event {
+export interface HelferEvent extends Veranstaltung {
   schichten: [Schicht]
 }
 

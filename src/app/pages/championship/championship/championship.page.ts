@@ -1,18 +1,21 @@
 import { Component, OnInit } from "@angular/core";
 
 import {
+  AlertController,
   IonItemSliding,
   IonRouterOutlet,
+  MenuController,
   ModalController,
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, Subscription, catchError, combineLatest, concatMap, finalize, forkJoin, from,  map,  of, switchMap, take, tap, timeout} from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concatMap, defaultIfEmpty, finalize, forkJoin, from,  map,  of, switchMap, take, tap, timeout} from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { ChampionshipDetailPage } from "../championship-detail/championship-detail.page";
+import { Team } from "src/app/models/team";
 
 @Component({
   selector: "app-championship",
@@ -33,14 +36,21 @@ export class ChampionshipPage implements OnInit {
   private subscription: Subscription;
   private subscriptionPast: Subscription;
 
+  filterList: any[] = [];
+  filterValue: string = "";
+
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
-    private readonly championshipService: ChampionshipService
-  ) {}
+    private readonly championshipService: ChampionshipService,
+    private readonly alertCtrl: AlertController,
+    private readonly menuCtrl: MenuController
+  ) {
+    this.menuCtrl.enable(true, "menu");
+  }
 
   ngOnInit() {
     const TIMEOUT_DURATION = 1000; // 5 seconds, adjust as needed
@@ -241,6 +251,74 @@ export class ChampionshipPage implements OnInit {
       position: "top",
     });
     toast.present();
+  }
+  async openFilter(ev: Event){
+    let filterList = [];
+
+   
+  const teams$ = this.authService.getUser$().pipe(
+    take(1),
+    switchMap(user => this.fbService.getUserTeamRefs(user).pipe(take(1))),
+    concatMap(teamsArray =>  from(teamsArray)),
+    tap((team:Team)=>console.log(team.id)),
+    concatMap(team => 
+      this.fbService.getTeamRef(team.id).pipe(
+        take(1),
+        defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
+        map(result => [result]),
+        catchError(error => {
+          console.error('Error fetching TeamDetail:', error);
+          return of([]);
+      })
+    )
+    ),
+    tap(teamList => teamList.forEach(team => filterList.push(team))),
+    finalize(() => console.log("Get Teams completed"))
+  );
+
+  this.subscription = forkJoin([teams$]).subscribe({
+    next: () => {
+      const alertInputs = [];
+      for (const item of filterList){
+        alertInputs.push({
+          label: item.name,
+          type: 'radio',
+          checked: item.id == this.filterValue,
+          value: item.id,
+        });
+      }
+    
+      this.alertCtrl.create({
+        header: 'News filtern',
+        message: 'Nach Verein oder Teams filtern.',
+       // subHeader: 'Nach Verein oder Teams filtern.',
+        inputs: alertInputs,
+        buttons: [
+          { text: "OK",
+            role: "confirm",
+            handler: (value)=>{
+              console.log(value)
+              this.filterValue = value;
+              this.gameList$ = of(this.gameList.filter((news: any) => news.filterable == value));
+            } 
+          },
+          { text: "abbrechen",
+            role: "cancel",
+            handler: (value)=>{
+              console.log(value);
+              this.filterValue = "";
+              this.gameList$ = of(this.gameList);
+            } 
+          }
+        ],
+        htmlAttributes: { 'aria-label': 'alert dialog' },
+      }).then(alert => {
+        alert.present();
+      });
+    },
+    error: err => console.error('Error in the observable chain:', err)
+  });
+  
   }
 
   }

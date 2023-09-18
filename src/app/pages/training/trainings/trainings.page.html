@@ -4,6 +4,11 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Training</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openFilter($event)">
+        <ion-icon slot="icon-only" name="filter"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -11,6 +16,7 @@
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Training</ion-title>
+
     </ion-toolbar>
   </ion-header>
 
@@ -65,7 +71,7 @@
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
-              {{training.startDate | date:'dd.MM.YYYY '}} {{training.timeFrom | date:'HH:mm'}} Uhr - {{training.timeTo | date:'HH:mm'}} Uhr
+              {{training.date.toDate() | date:'dd.MM.YYYY '}} {{training.timeFrom | date:'HH:mm'}} Uhr - {{training.timeTo | date:'HH:mm'}} Uhr
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
@@ -146,21 +152,19 @@
             (click)="toggle(false, training)"
           ></ion-icon>
           <ion-label>
+            <h2>
+              {{training.name}}
+            </h2>
             <h3>
-              <ion-icon slot="icon-only" name="home"></ion-icon>:
+              <ion-icon slot="icon-only" name="location-outline"></ion-icon>
               {{training.streetAndNumber}} {{training.city}}
             </h3>
             <h3>
-              <ion-icon slot="icon-only" name="time"></ion-icon>
-              {{training.date}} {{training.timeFrom}}
+              <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+              {{training.date.toDate() | date:'dd.MM.YYYY '}} {{training.timeFrom | date:'HH:mm'}} Uhr - {{training.timeTo | date:'HH:mm'}} Uhr
             </h3>
             <h3>
-              <ion-icon slot="icon-only" name="time"></ion-icon>
-              {{training.date}} {{training.timeTo}}
-            </h3>
-
-            <h3>
-              <ion-icon slot="icon-only" name="trophy"></ion-icon>
+              <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
               {{training.liga}} {{training.teamName}}
             </h3>
           </ion-label>

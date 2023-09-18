@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import {
+  AlertController,
   IonItemSliding,
   IonRouterOutlet,
   MenuController,
@@ -7,13 +8,15 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, Subscription, catchError, combineLatest, concatMap, finalize, forkJoin, from,  map,  of, switchMap, take, tap, timeout} from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concatMap, defaultIfEmpty, finalize, forkJoin, from,  map,  of, switchMap, take, tap, timeout} from "rxjs";
 import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
 import { TrainingCreatePage } from "../training-create/training-create.page";
 import { Timestamp } from "firebase/firestore";
+import { Club } from "src/app/models/club";
+import { Team } from "src/app/models/team";
 
 @Component({
   selector: "app-trainings",
@@ -34,6 +37,9 @@ export class TrainingsPage implements OnInit {
   private subscription: Subscription;
   private subscriptionPast: Subscription;
 
+  filterList: any[] = [];
+  filterValue: string = "";
+
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
@@ -41,7 +47,8 @@ export class TrainingsPage implements OnInit {
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly trainingService: TrainingService,
-    private readonly menuCtrl: MenuController
+    private readonly menuCtrl: MenuController,
+    private readonly alertCtrl: AlertController
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -81,7 +88,7 @@ export class TrainingsPage implements OnInit {
                 console.log(training.date);
                 return {
                   ...training,
-                  date: training.date.seconds * 1000,
+                  date: training.date,
                   teamId: team.id,
                   status: status,
                   countAttendees: attendees.filter(att => att.status == true).length,
@@ -132,7 +139,7 @@ export class TrainingsPage implements OnInit {
                 const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
                 return {
                   ...training,
-                  date: training.date.seconds * 1000,
+                  date: training.date,
                   teamId: team.id,
                   status: status,
                   countAttendees: attendees.filter(att => att.status == true).length,
@@ -162,7 +169,7 @@ export class TrainingsPage implements OnInit {
    this.subscription = combineLatest([teamtraining$]).subscribe({
       next: () => {
         this.trainingList = [...teamtrainingList].sort((a, b):any => {
-          return a.date.seconds < b.date.seconds ;
+          return a.date.toMillis() > b.date.toMillis() ;
         });
         this.trainingList = this.trainingList.filter((training, index, self) => 
           index === self.findIndex((t) => (t.id === training.id))
@@ -176,7 +183,7 @@ export class TrainingsPage implements OnInit {
     this.subscriptionPast = combineLatest([teamtrainingPast$]).subscribe({
       next: () => {
         this.trainingListPast = [...teamtrainingPastList].sort((a, b):any => {
-          return a.date.seconds > b.date.seconds ;
+          return a.date.toMillis() < b.date.toMillis() ;
         });
         this.trainingListPast = this.trainingListPast.filter((training, index, self) => 
           index === self.findIndex((t) => (t.id === training.id))
@@ -264,154 +271,75 @@ export class TrainingsPage implements OnInit {
     });
     toast.present();
   }
-/*
-  getTrainingsList() {
-    this.authService
-      .getUser$()
-      .pipe(
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserTeamRefs(user)),
-        // Loop Over Teams
-        switchMap((allTeams: any) =>
-          combineLatest(
-            allTeams.map((team) =>
-              combineLatest(
-                of(team),
-                // Loop over Trainings
-                // this.trainingService.getTeamTrainingsRef(team.id),
-                this.trainingService
-                  .getTeamTrainingsRef(team.id)
-                  .pipe(
-                    switchMap((allTrainings: any) =>
-                      combineLatest(
-                        allTrainings.map((training) =>
-                          combineLatest(
-                            of(training),
-                            this.trainingService.getTeamTrainingsAttendeesRef(
-                              team.id,
-                              training.id
-                            )
-                          )
-                        )
-                      )
-                    )
-                  ),
-                this.fbService.getTeamRef(team.id)
-              )
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        const trainingListNew = [];
-        for (const team of data) {
-          // loop over teams
 
-          const trainings = team[1];
-          const teamDetails = team[2];
-          for (const trainingObject of trainings) {
-            const training = trainingObject[0];
-            const attendees = trainingObject[1];
 
-            training.teamName = teamDetails.name;
-            training.teamId = teamDetails.id;
-            training.attendees = attendees.filter(
-              (e) => e.status === true
-            ).length;
+  async openFilter(ev: Event){
+    let filterList = [];
 
-            if (
-              attendees &&
-              attendees.filter((e) => e.id === this.user.uid).length === 1
-            ) {
-              training.status = attendees.filter(
-                (e) => e.id === this.user.uid
-              )[0].status;
-            } else {
-              training.status = null;
-            }
+   
+  const teams$ = this.authService.getUser$().pipe(
+    take(1),
+    switchMap(user => this.fbService.getUserTeamRefs(user).pipe(take(1))),
+    concatMap(teamsArray =>  from(teamsArray)),
+    tap((team:Team)=>console.log(team.id)),
+    concatMap(team => 
+      this.fbService.getTeamRef(team.id).pipe(
+        take(1),
+        defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
+        map(result => [result]),
+        catchError(error => {
+          console.error('Error fetching TeamDetail:', error);
+          return of([]);
+      })
+    )
+    ),
+    tap(teamList => teamList.forEach(team => filterList.push(team))),
+    finalize(() => console.log("Get Teams completed"))
+  );
 
-            trainingListNew.push(training);
+  this.subscription = forkJoin([teams$]).subscribe({
+    next: () => {
+      const alertInputs = [];
+      for (const item of filterList){
+        alertInputs.push({
+          label: item.name,
+          type: 'radio',
+          checked: item.id == this.filterValue,
+          value: item.id,
+        });
+      }
+    
+      this.alertCtrl.create({
+        header: 'News filtern',
+        message: 'Nach Verein oder Teams filtern.',
+       // subHeader: 'Nach Verein oder Teams filtern.',
+        inputs: alertInputs,
+        buttons: [
+          { text: "OK",
+            role: "confirm",
+            handler: (value)=>{
+              console.log(value)
+              this.filterValue = value;
+              this.trainingList$ = of(this.trainingList.filter((news: any) => news.filterable == value));
+            } 
+          },
+          { text: "abbrechen",
+            role: "cancel",
+            handler: (value)=>{
+              console.log(value);
+              this.filterValue = "";
+              this.trainingList$ = of(this.trainingList);
+            } 
           }
-        }
-        this.trainingList = [...new Set([].concat(...trainingListNew))];
-        this.trainingList = this.trainingList.sort(
-          (a, b) => a.date.getMilliseconds() - b.date.getMilliseconds()
-        );
+        ],
+        htmlAttributes: { 'aria-label': 'alert dialog' },
+      }).then(alert => {
+        alert.present();
       });
+    },
+    error: err => console.error('Error in the observable chain:', err)
+  });
+  
   }
 
-  getTrainingsListPast() {
-    this.authService
-      .getUser$()
-      .pipe(
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserTeamRefs(user)),
-        // Loop Over Teams
-        switchMap((allTeams: any) =>
-          combineLatest(
-            allTeams.map((team) =>
-              combineLatest(
-                of(team),
-                // Loop over Trainings
-                // this.trainingService.getTeamTrainingsRef(team.id),
-                this.trainingService
-                  .getTeamTrainingsRefPast(team.id)
-                  .pipe(
-                    switchMap((allTrainings: any) =>
-                      combineLatest(
-                        allTrainings.map((training) =>
-                          combineLatest(
-                            of(training),
-                            this.trainingService.getTeamTrainingsAttendeesRef(
-                              team.id,
-                              training.id
-                            )
-                          )
-                        )
-                      )
-                    )
-                  ),
-                this.fbService.getTeamRef(team.id)
-              )
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        const trainingListNew = [];
-        for (const team of data) {
-          // loop over teams
-
-          const trainings = team[1];
-          const teamDetails = team[2];
-          for (const trainingObject of trainings) {
-            const training = trainingObject[0];
-            const attendees = trainingObject[1];
-
-            training.teamName = teamDetails.name;
-            training.teamId = teamDetails.id;
-            training.attendees = attendees.filter(
-              (e) => e.status === true
-            ).length;
-
-            if (
-              attendees &&
-              attendees.filter((e) => e.id === this.user.uid).length === 1
-            ) {
-              training.status = attendees.filter(
-                (e) => e.id === this.user.uid
-              )[0].status;
-            } else {
-              training.status = null;
-            }
-
-            trainingListNew.push(training);
-          }
-        }
-        this.trainingListPast = [...new Set([].concat(...trainingListNew))];
-        this.trainingListPast = this.trainingListPast.sort(
-          (a, b) => b.date.getMilliseconds() - a.date.getMilliseconds()
-        );
-      });
-  }*/
 }

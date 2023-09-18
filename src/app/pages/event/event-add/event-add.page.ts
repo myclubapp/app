@@ -221,4 +221,5 @@ export class EventAddPage implements OnInit {
     this.eventService.setCreateClubEvent(this.event, this.user);
     return this.modalCtrl.dismiss({}, "confirm");
   }
+  
 }

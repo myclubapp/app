@@ -4,6 +4,11 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Meisterschaft</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openFilter($event)">
+        <ion-icon slot="icon-only" name="filter"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -11,6 +16,7 @@
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Meisterschaft</ion-title>
+
     </ion-toolbar>
   </ion-header>
 
