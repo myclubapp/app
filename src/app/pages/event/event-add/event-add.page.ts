@@ -111,7 +111,7 @@ export class EventAddPage implements OnInit {
           })
         )
       ),
-      tap(clubList => clubList.forEach(club => clubList.push(team))),
+      tap(clubList => clubList.forEach(club => clubList.push(club))),
       finalize(() => console.log("Get Club completed"))
     );
 
