@@ -4,8 +4,7 @@ import { User } from 'firebase/auth';
 import { Timestamp } from 'firebase/firestore';
 import { Observable, Subscription, catchError, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, of, switchMap, take, tap } from "rxjs";
 import { Club } from 'src/app/models/club';
-import { HelferEvent, Veranstaltung } from 'src/app/models/event';
-import { Team } from 'src/app/models/team';
+import { HelferEvent } from 'src/app/models/event';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { EventService } from 'src/app/services/firebase/event.service';
@@ -44,9 +43,9 @@ export class HelferAddPage implements OnInit {
       startDate: new Date().toISOString(),
       endDate: new Date().toISOString(),
 
-      teamId: "",
+      /*teamId: "",
       teamName: "",
-      liga: "",
+      liga: "",*/
 
       clubId: "",
       clubName: "",
@@ -97,6 +96,7 @@ export class HelferAddPage implements OnInit {
         console.log(">>>" + JSON.stringify(clubList));
         this.clubList = clubList;
         this.event.clubId = this.clubList[0].id;
+        this.event.clubName = this.clubList[0].name;
       },
       error: err => console.error('Error in the observable chain:', err)
     });

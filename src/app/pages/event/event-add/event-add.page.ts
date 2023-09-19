@@ -48,9 +48,9 @@ export class EventAddPage implements OnInit {
       startDate: new Date().toISOString(),
       endDate: new Date().toISOString(),
 
-      teamId: "",
+      /*teamId: "",
       teamName: "",
-      liga: "",
+      liga: "",*/
 
       clubId: "",
       clubName: "",
@@ -97,6 +97,7 @@ export class EventAddPage implements OnInit {
         console.log(">>>" + JSON.stringify(clubList));
         this.clubList = clubList;
         this.event.clubId = this.clubList[0].id;
+        this.event.clubName = this.clubList[0].name;
       },
       error: err => console.error('Error in the observable chain:', err)
     });
@@ -154,7 +155,7 @@ export class EventAddPage implements OnInit {
 
     delete this.event.attendees;
 
-    this.eventService.setCreateTeamEvent(this.event, this.user);
+    this.eventService.setCreateClubEvent(this.event, this.user);
     return this.modalCtrl.dismiss({}, "confirm");
   }
  

@@ -18,9 +18,9 @@ export interface Veranstaltung {
   timeFrom: string
   timeTo: string
   
-  teamId: string
+  /*teamId: string
   teamName: string
-  liga: string
+  liga: string*/
 
   clubId: string
   clubName: string

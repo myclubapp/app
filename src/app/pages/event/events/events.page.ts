@@ -61,7 +61,7 @@ export class EventsPage implements OnInit {
     const teamEventPastList: Veranstaltung[] = [];
 
     // CURRENT EventS
-    const teamEvent$ = this.authService.getUser$().pipe(
+    /*const teamEvent$ = this.authService.getUser$().pipe(
       take(1),
       tap(() => console.log("Fetching user...")),
       switchMap(user => {
@@ -108,10 +108,10 @@ export class EventsPage implements OnInit {
       )),
       tap(events => events.forEach(event => teamEventList.push(event))),
       finalize(() => console.log("Team Event fetching completed"))
-    );
+    );*/
 
     // PAST EventS
-    const teamEventPast$ = this.authService.getUser$().pipe(
+    /*const teamEventPast$ = this.authService.getUser$().pipe(
       take(1),
       tap(() => console.log("Fetching user...")),
       switchMap(user => {
@@ -158,10 +158,10 @@ export class EventsPage implements OnInit {
       )),
       tap(events => events.forEach(event => teamEventPastList.push(event))),
       finalize(() => console.log("Team Event fetching completed"))
-    );
+    );*/
 
     // Use combineLatest to get results when both observables have emitted
-   this.subscription = combineLatest([teamEvent$]).subscribe({
+   /*this.subscription = combineLatest([teamEvent$]).subscribe({
       next: () => {
         this.eventsList = [...teamEventList].sort((a, b):any => {
           // return a.date.getTime() > b.date.getTime();
@@ -189,21 +189,21 @@ export class EventsPage implements OnInit {
         console.log("Combined Event list PAST created");
       },
       error: err => console.error('Error in the observable chain:', err)
-    });
+    });*/
 
   }
 
   async toggle(status: boolean, event: Veranstaltung) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${event.teamId} and event ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
     );
 
-    await this.eventService.setTeamEventAttendeeStatus(
+    /*await this.eventService.setTeamEventAttendeeStatus(
       this.user.uid,
       status,
       event.teamId,
       event.id
-    );
+    );*/
     this.presentToast();
   }
 
@@ -211,14 +211,14 @@ export class EventsPage implements OnInit {
     slidingItem.closeOpened();
 
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${event.teamId} and event ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
     );
-    await this.eventService.setTeamEventAttendeeStatus(
+    /*await this.eventService.setTeamEventAttendeeStatus(
       this.user.uid,
       status,
       event.teamId,
       event.id
-    );
+    );*/
     this.presentToast();
   }
 

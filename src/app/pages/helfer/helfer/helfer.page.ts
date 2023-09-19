@@ -15,6 +15,7 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
 import { Club } from "src/app/models/club";
 import { Team } from "src/app/models/team";
+import { HelferAddPage } from '../helfer-add/helfer-add.page';
 
 @Component({
   selector: 'app-helfer',
@@ -127,15 +128,15 @@ export class HelferPage implements OnInit {
 
   async toggle(status: boolean, event: Veranstaltung) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${event.teamId} and event ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
     );
-
+/*
     await this.eventService.setTeamEventAttendeeStatus(
       this.user.uid,
       status,
       event.teamId,
       event.id
-    );
+    );*/
     this.presentToast();
   }
 
@@ -143,14 +144,14 @@ export class HelferPage implements OnInit {
     slidingItem.closeOpened();
 
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${event.teamId} and event ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
     );
-    await this.eventService.setTeamEventAttendeeStatus(
+    /*await this.eventService.setTeamEventAttendeeStatus(
       this.user.uid,
       status,
       event.teamId,
       event.id
-    );
+    );*/
     this.presentToast();
   }
 
@@ -234,4 +235,25 @@ export class HelferPage implements OnInit {
   });
   
   }
+
+
+  async openEventCreateModal() {
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalController.create({
+      component: HelferAddPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: "",
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+ 
 }
