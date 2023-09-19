@@ -74,7 +74,7 @@ export class EventAddPage implements OnInit {
       concatMap(club => 
         this.fbService.getClubRef(club.id).pipe(
           take(1),
-          defaultIfEmpty({}),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
+          defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
           map(result => [result]),
           catchError(error => {
             console.error('Error fetching ClubDetail:', error);
@@ -82,9 +82,12 @@ export class EventAddPage implements OnInit {
           })
         )
       ),
-      tap(clubList => clubList.forEach(club => clubList.push(club))),
+      tap(clubs => {
+        console.log(clubs);
+        clubs.forEach(club => clubList.push(club))
+      }),
       finalize(() => {
-        clubList.push({"name": "Kein Club", "id": "undefined"})
+        // clubList.push({"name": "Kein Club", "id": "undefined"})
         console.log("Get Club completed")
       })
     );
@@ -155,5 +158,18 @@ export class EventAddPage implements OnInit {
     return this.modalCtrl.dismiss({}, "confirm");
   }
  
- 
+  changeTimeFrom(ev){
+    console.log(ev.detail.value)
+    if (this.event.timeFrom > this.event.timeTo) {
+      this.event.timeTo = this.event.timeFrom;
+    }
+
+  }
+
+  changeStartDate(ev){
+    console.log(ev.detail.value)
+    if (this.event.startDate > this.event.endDate) {
+      this.event.endDate = this.event.startDate;
+    }
+  }
 }

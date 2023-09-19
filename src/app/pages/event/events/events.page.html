@@ -5,8 +5,11 @@
     </ion-buttons>
     <ion-title>Veranstaltungen</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="openFilter($event)">
+      <ion-button *ngIf="!filterValue" (click)="openFilter($event)">
         <ion-icon slot="icon-only" name="filter"></ion-icon>
+      </ion-button>
+      <ion-button *ngIf="filterValue" (click)="openFilter($event)">
+        <ion-icon slot="icon-only" name="filter-circle"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

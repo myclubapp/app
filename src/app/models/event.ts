@@ -33,4 +33,6 @@ export interface HelferEvent extends Veranstaltung {
   schichten: [Schicht]
 }
 
-interface Schicht {}
+interface Schicht {
+  name: string
+}

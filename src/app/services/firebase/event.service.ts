@@ -26,6 +26,7 @@ export class EventService {
   constructor(private firestore: Firestore = inject(Firestore)) {}
 
   /* TEAM EventS */
+  /*
   getTeamEventsRef(teamId: string): Observable<Veranstaltung[]> {
     // console.log(`Read Team Events List Ref ${teamId}`)
     const eventsRefList = collection(this.firestore, `teams/${teamId}/events`);
@@ -58,33 +59,16 @@ export class EventService {
     return collectionData(q, { idField: "id" }) as unknown as Observable<
     Veranstaltung[]
     >;
+  async setCreateTeamEvent(event: Veranstaltung, user: User) {
+    console.log("event");
+    console.log(event);
+    return addDoc(
+      collection(this.firestore, `userProfile/${user.uid}/teamEvent`),
+      event
+    );
+  }
   }
 
-  /* CLUB EventS */
-  getClubEventsRef(clubId: string): Observable<Veranstaltung[]> {
-    const eventsRefList = collection(this.firestore, `club/${clubId}/events`);
-    return collectionData(eventsRefList, {
-      idField: "id",
-    }) as unknown as Observable<Veranstaltung[]>;
-  }
-
-
-  /* HELFER EventS */
-  getClubHelferEventRefs(clubId: string): Observable<HelferEvent[]>{
-    const eventsRefList = collection(this.firestore, `club/${clubId}/helferevents`);
-    return collectionData(eventsRefList, {
-      idField: "id",
-    }) as unknown as Observable<HelferEvent[]>;
-  }
-
-  getClubHelferEventAttendeesRef(clubId: string,  eventId: string): Observable<any[]>  {
-    const attendeesRefList = collection(this.firestore, `club/${clubId}/helferevents/${eventId}/attendees`);
-    return collectionData(attendeesRefList, {
-      idField: "id",
-    }) as unknown as Observable<any[]>;
-  }
-
-  /* TEAM EventS ATTENDEES */
   getTeamEventsAttendeesRef(
     teamId: string,
     eventId: string
@@ -98,26 +82,7 @@ export class EventService {
       idField: "id",
     }) as unknown as Observable<any[]>;
   }
-
-  async setCreateTeamEvent(event: Veranstaltung, user: User) {
-    console.log("event");
-    console.log(event);
-    return addDoc(
-      collection(this.firestore, `userProfile/${user.uid}/teamEvent`),
-      event
-    );
-  }
-  async setCreateClubEvent(event: Veranstaltung, user: User) {
-    console.log("event");
-    console.log(event);
-    return addDoc(
-      collection(this.firestore, `userProfile/${user.uid}/clubEvent`),
-      event
-    );
-  }
-
-  /* TEAM EventS ATTENDEE Status */
-  async setTeamEventAttendeeStatus(
+    async setTeamEventAttendeeStatus(
     userId: string,
     status: boolean,
     teamId: string,
@@ -130,6 +95,48 @@ export class EventService {
     return await setDoc(statusRef, { status });
   }
 
+  */
+
+  /* CLUB EventS */
+  getClubEventsRef(clubId: string): Observable<Veranstaltung[]> {
+    const eventsRefList = collection(this.firestore, `club/${clubId}/events`);
+    return collectionData(eventsRefList, {
+      idField: "id",
+    }) as unknown as Observable<Veranstaltung[]>;
+  }
+
+  async setCreateClubEvent(event: Veranstaltung, user: User) {
+    console.log("event");
+    console.log(event);
+    return addDoc(
+      collection(this.firestore, `userProfile/${user.uid}/clubEvent`),
+      event
+    );
+  }
+
   
+  /* HELFER EVENTS */
+  getClubHelferEventRefs(clubId: string): Observable<HelferEvent[]>{
+    const eventsRefList = collection(this.firestore, `club/${clubId}/helferEvents`);
+    return collectionData(eventsRefList, {
+      idField: "id",
+    }) as unknown as Observable<HelferEvent[]>;
+  }
+
+  getClubHelferEventAttendeesRef(clubId: string,  eventId: string): Observable<any[]>  {
+    const attendeesRefList = collection(this.firestore, `club/${clubId}/helferEvents/${eventId}/attendees`);
+    return collectionData(attendeesRefList, {
+      idField: "id",
+    }) as unknown as Observable<any[]>;
+  }
+
+  async setCreateHelferEvent(event: HelferEvent, user: User) {
+    console.log("Helferevent");
+    console.log(event);
+    return addDoc(
+      collection(this.firestore, `userProfile/${user.uid}/helferEvents`),
+      event
+    );
+  }
 
 }

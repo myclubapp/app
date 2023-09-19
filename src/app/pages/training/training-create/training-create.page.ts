@@ -113,7 +113,6 @@ export class TrainingCreatePage implements OnInit {
     if (this.training.startDate > this.training.endDate) {
       this.training.endDate = this.training.startDate;
     }
-
   }
 
   async close() {

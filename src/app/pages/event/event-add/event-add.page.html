@@ -63,7 +63,7 @@
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime presentation="time" id="timeFrom" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" value="{{event.timeFrom}}" [(ngModel)]="event.timeFrom"></ion-datetime>
+          <ion-datetime presentation="time" id="timeFrom" (ionChange)="changeTimeFrom($event)" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" value="{{event.timeFrom}}" [(ngModel)]="event.timeFrom"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
@@ -85,7 +85,7 @@
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime [firstDayOfWeek]="1" presentation="date" id="startDate"
+          <ion-datetime [firstDayOfWeek]="1" (ionChange)="changeStartDate($event)"  presentation="date" id="startDate"
           value="{{event.startDate}}" [(ngModel)]="event.startDate"></ion-datetime>
         </ng-template>
       </ion-modal>
