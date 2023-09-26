@@ -60,7 +60,7 @@
     "@trapezedev/configure": "7.0.10",
     "cordova-plugin-ionic": "5.5.3",
     "firebase": "9.23.0",
-    "graphql": "^16.5.0",
+    "graphql": "^16.8.1",
     "husky": "^7.0.4",
     "husky-init": "^8.0.0",
     "rxjs": "7.8.1",
