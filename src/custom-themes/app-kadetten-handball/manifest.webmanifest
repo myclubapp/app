@@ -1,8 +1,8 @@
 {
   "name": "Kadetten App",
   "short_name": "Kadetten Handball",
-  "theme_color": "#F89828",
-  "background_color": "#F89828",
+  "theme_color": "#eb6109",
+  "background_color": "#eb6109",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
