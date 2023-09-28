@@ -118,3 +118,26 @@ jobs:
           args: deploy --only hosting:app-vbc-schaffhausen
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  build_kadetten_handball:
+    needs: [build_default]
+    name: Build & Deploy Kadetten Handball App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 16
+      - name: Install Dependencies
+        run: |
+          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
+          npm ci
+      - name: Build app-kadetten-handball
+        run: npm run build:app-kadetten-handball
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting:app-kadetten-handball
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

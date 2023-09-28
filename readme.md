@@ -110,6 +110,8 @@ firebase target:apply hosting app-FIREBASE_SITE_MYAPP FIREBASE_SITE_MYAPP
 - create styles in custom theme
 - create manifest file etc.
 - create icons (See below)
+- add build scripts in package.json
+- add build steps in yaml
 
 ### Remove
 
