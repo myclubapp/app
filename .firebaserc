@@ -34,8 +34,12 @@
         ],
         "app-vbc-schaffhausen": [
           "vbc-schaffhausen"
+        ],
+        "app-kadetten-handball": [
+          "kadetten-handball"
         ]
       }
     }
-  }
+  },
+  "etags": {}
 }

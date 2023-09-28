@@ -105,6 +105,12 @@ firebase target:apply hosting app-unihockey unihockey
 
 firebase target:apply hosting app-FIREBASE_SITE_MYAPP FIREBASE_SITE_MYAPP
 
+- go to firebase.json and copy hosting config.
+- go to angular.json and copy angular build config
+- create styles in custom theme
+- create manifest file etc.
+- create icons (See below)
+
 ### Remove
 
 firebase target:remove hosting FIREBASE_SITE_MYAPP
