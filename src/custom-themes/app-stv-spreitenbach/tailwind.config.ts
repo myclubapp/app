@@ -1,7 +1,9 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  darkMode: "media", // or 'media' or 'class'
-  content: ["./src/**/*.{html,ts}"],
+import type { Config } from 'tailwindcss'
+
+export default {
+  content: [
+    './src/app/pages/auth/**/*.{html,js}',
+  ],
   theme: {
     fontFamily: {
       sans: ["Roboto", '"Segoe UI"', "sans-serif"],
@@ -14,4 +16,5 @@ module.exports = {
     },
   },
   plugins: [require("@tailwindcss/forms"), require("@tailwindcss/typography")],
-};
+} satisfies Config
+
