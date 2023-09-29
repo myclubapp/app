@@ -10,8 +10,8 @@ export default {
     },
     extend: {
       colors: {
-        myclublight: "#EB6109",
-        myclubdark: "#EB6109",
+        myclublight: "#339bde",
+        myclubdark: "#795deb",
       },
     },
   },
