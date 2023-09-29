@@ -7,8 +7,8 @@ module.exports = {
     },
     extend: {
       colors: {
-        myclublight: "#eb6109",
-        myclubdark: "#eb6109",
+        myclublight: "#EB6109",
+        myclubdark: "#EB6109",
       },
     },
   },
