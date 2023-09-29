@@ -9,8 +9,8 @@ module.exports = {
         sans: ["Roboto", '"Segoe UI"', "sans-serif"],
       },
       colors: {
-        myclublight: "#EB1927",
-        myclubdark: "#EB1927",
+        myclublight: "#339BDE",
+        myclubdark: "#795DEB",
       },
     },
   },
