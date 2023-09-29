@@ -1,4 +1,3 @@
-/** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: "media", // or 'media' or 'class'
   content: ["./src/**/*.{html,ts}"],
@@ -8,8 +7,8 @@ module.exports = {
     },
     extend: {
       colors: {
-        myclublight: "#3677bc",
-        myclubdark: "#3677bc",
+        myclublight: "#F89828",
+        myclubdark: "#F89828",
       },
     },
   },
