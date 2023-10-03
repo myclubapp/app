@@ -275,4 +275,39 @@ export class FirebaseService {
       }
     );
   }
+
+  async deleteUserTeam(teamId: string, userId: string): Promise<any> {
+    // trigger create event on backend -> not handled
+    await setDoc(doc(this.firestore, `teams/${teamId}/members/${userId}` ), {
+      remove: true,
+    },{
+      merge: true
+    });
+  }
+  async deleteAdminTeam(teamId: string, userId: string): Promise<any> {
+    // trigger create event on backend -> not handled
+    await setDoc(doc(this.firestore, `teams/${teamId}/admins/${userId}` ), {
+      remove: true,
+    },{
+      merge: true
+    });
+  }
+
+  async deleteUserClub(clubId: string, userId: string): Promise<any> {
+    // trigger create event on backend -> not handled
+    await setDoc(doc(this.firestore, `club/${clubId}/members/${userId}` ), {
+      remove: true,
+    },{
+      merge: true
+    });
+  }
+  async deleteAdminClub(clubId: string, userId: string): Promise<any> {
+    // trigger create event on backend -> not handled
+    await setDoc(doc(this.firestore, `club/${clubId}/admins/${userId}` ), {
+      remove: true,
+    },{
+      merge: true
+    });
+  }
+
 }

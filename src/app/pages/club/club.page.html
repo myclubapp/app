@@ -37,7 +37,7 @@
 -->
 
 <ng-container *ngIf="requestList$ | async as requests; else noRequests">
-  <ion-list *ngIf="requests.length > 0">
+  <ion-list [inset]="true" *ngIf="requests.length > 0">
     <ion-list-header> Anfragen </ion-list-header>
     <ion-item *ngFor="let request of requests">
       <ion-avatar slot="start">
@@ -54,7 +54,7 @@
   </ion-list>
 </ng-container>
 
-  <ion-list >
+  <ion-list [inset]="true">
     <ion-list-header> Mitglieder </ion-list-header>
     <ion-item *ngFor="let member of memberList$ | async">
       <ion-avatar slot="start">
@@ -64,7 +64,7 @@
     </ion-item>
   </ion-list>
 
-  <ion-list >
+  <ion-list [inset]="true">
     <ion-list-header> Administratoren </ion-list-header>
     <ion-item *ngFor="let admin of adminList$ | async">
       <ion-avatar slot="start">

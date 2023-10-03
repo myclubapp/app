@@ -14,6 +14,8 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 export class TeamPage implements OnInit {
   @Input("data") team: Team;
 
+  allowEdit: boolean = false;
+
   memberList$: Observable<Profile[]>;
   adminList$: Observable<Profile[]>;
   requestList$: Observable<Profile[]>;
@@ -148,6 +150,7 @@ export class TeamPage implements OnInit {
 
   }
 
+
   ngOnDestroy() {
 
     if (this.subscriptionAdmin) {
@@ -160,6 +163,16 @@ export class TeamPage implements OnInit {
       this.subscriptionRequest.unsubscribe();
     }
 
+  }
+
+  async removeAdmin(admin) {
+    await this.fbService.deleteAdminTeam(this.team.id, admin.id);
+    await this.toastActionSaved();
+  }
+
+  async removeMember(member) {
+    await this.fbService.deleteUserTeam(this.team.id, member.id);
+    await this.toastActionSaved();
   }
 
   async deleteTeamRequest(request) {
@@ -182,6 +195,14 @@ export class TeamPage implements OnInit {
     });
 
     await toast.present();
+  }
+
+  edit() {
+    if (this.allowEdit){
+      this.allowEdit = false;
+    } else {
+      this.allowEdit = true;
+    }
   }
 
 
