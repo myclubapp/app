@@ -166,12 +166,12 @@ export class TeamPage implements OnInit {
   }
 
   async removeAdmin(admin) {
-    await this.fbService.deleteAdminTeam(this.team.id, admin.id);
+    await this.fbService.deleteTeamAdmin(this.team.id, admin.id);
     await this.toastActionSaved();
   }
 
   async removeMember(member) {
-    await this.fbService.deleteUserTeam(this.team.id, member.id);
+    await this.fbService.deleteTeamMember(this.team.id, member.id);
     await this.toastActionSaved();
   }
 

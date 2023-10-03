@@ -41,8 +41,6 @@ export class FirebaseService {
   inviteList: any = [];
   constructor(
     private readonly firestore: Firestore,
-    private readonly storage: Storage,
-    private readonly authService: AuthService
   ) {}
 
   /* CLUBS */
@@ -54,7 +52,7 @@ export class FirebaseService {
   searchClubListRef(searchString: string): Observable<Club[]> {
     const clubRefList = collection(this.firestore, `club/`);
 
-    const q = query(clubRefList, where("name", "==", searchString)); // heute - 1 Woche
+    const q = query(clubRefList, where("name", "==", searchString));
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       Club[]
     >;
@@ -63,7 +61,7 @@ export class FirebaseService {
   getActiveClubList(): Observable<Club[]> {
     const clubRefList = collection(this.firestore, `club/`);
 
-    const q = query(clubRefList, where("active", "==", true)); // heute - 1 Woche
+    const q = query(clubRefList, where("active", "==", true)); 
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       Club[]
     >;
@@ -137,7 +135,7 @@ export class FirebaseService {
     }) as Observable<Team[]>;
   }
 
-  getAdminTeamRefs(user: User): Observable<Team[]> {
+  getUserTeamAdminRefs(user: User): Observable<Team[]> {
     const teamRefLIst = collection(
       this.firestore,
       `userProfile/${user.uid}/teamAdmin`
@@ -147,7 +145,7 @@ export class FirebaseService {
     }) as Observable<Team[]>;
   }
 
-  getAdminClubRefs(user: User): Observable<Club[]> {
+  getUserClubAdminRefs(user: User): Observable<Club[]> {
     const clubRefList = collection(
       this.firestore,
       `userProfile/${user.uid}/clubAdmin`
@@ -276,7 +274,7 @@ export class FirebaseService {
     );
   }
 
-  async deleteUserTeam(teamId: string, userId: string): Promise<any> {
+  async deleteTeamMember(teamId: string, userId: string): Promise<any> {
   
     await setDoc(doc(this.firestore, `teams/${teamId}/members/${userId}` ), {
       remove: true,
@@ -284,7 +282,7 @@ export class FirebaseService {
       merge: true
     });
   }
-  async deleteAdminTeam(teamId: string, userId: string): Promise<any> {
+  async deleteTeamAdmin(teamId: string, userId: string): Promise<any> {
    
     await setDoc(doc(this.firestore, `teams/${teamId}/admins/${userId}` ), {
       remove: true,
@@ -293,7 +291,7 @@ export class FirebaseService {
     });
   }
 
-  async deleteUserClub(clubId: string, userId: string): Promise<any> {
+  async deleteClubember(clubId: string, userId: string): Promise<any> {
     
     await setDoc(doc(this.firestore, `club/${clubId}/members/${userId}` ), {
       remove: true,
@@ -301,7 +299,7 @@ export class FirebaseService {
       merge: true
     });
   }
-  async deleteAdminClub(clubId: string, userId: string): Promise<any> {
+  async deleteClubAdmin(clubId: string, userId: string): Promise<any> {
    
     await setDoc(doc(this.firestore, `club/${clubId}/admins/${userId}` ), {
       remove: true,
