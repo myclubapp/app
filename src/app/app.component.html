@@ -12,87 +12,46 @@
               <ion-label>myclub</ion-label>
             </ion-item>
 
-            <ion-list slot="content">
+            <ion-list [inset]="true" slot="content">
               <ion-note>{{ email }}</ion-note>
 
               <ion-menu-toggle auto-hide="false">
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/t/news']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
+                <ion-item routerDirection="root" [routerLink]="['/t/news']" lines="none" detail="true"
+                  routerLinkActive="selected">
                   <ion-icon slot="start" name="newspaper-outline"></ion-icon>
                   <ion-label>News</ion-label>
                 </ion-item>
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/t/training']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
+                <ion-item routerDirection="root" [routerLink]="['/t/training']" lines="none" detail="true"
+                  routerLinkActive="selected">
                   <ion-icon slot="start" name="barbell-outline"></ion-icon>
                   <ion-label>Training</ion-label>
                 </ion-item>
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/t/championship']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
+                <ion-item routerDirection="root" [routerLink]="['/t/championship']" lines="none" detail="true"
+                  routerLinkActive="selected">
                   <ion-icon slot="start" name="trophy-outline"></ion-icon>
                   <ion-label>Meisterschaft</ion-label>
                 </ion-item>
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/t/events']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
+                <ion-item routerDirection="root" [routerLink]="['/t/events']" lines="none" detail="true"
+                  routerLinkActive="selected">
                   <ion-icon slot="start" name="calendar-outline"></ion-icon>
                   <ion-label>Events</ion-label>
                 </ion-item>
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/t/helfer']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
+                <ion-item routerDirection="root" [routerLink]="['/t/helfer']" lines="none" detail="true"
+                  routerLinkActive="selected">
                   <ion-icon slot="start" name="help-buoy-outline"></ion-icon>
                   <ion-label>Helfer</ion-label>
                 </ion-item>
 
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/profile']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
-                  <ion-icon
-                    slot="start"
-                    name="person-circle-outline"
-                  ></ion-icon>
+                <ion-item routerDirection="root" [routerLink]="['/profile']" lines="none" detail="true"
+                  routerLinkActive="selected">
+                  <ion-icon slot="start" name="person-circle-outline"></ion-icon>
                   <ion-label>Profil</ion-label>
                 </ion-item>
-                <ion-item
-                routerDirection="root"
-                [routerLink]="['/info']"
-                lines="none"
-                detail="true"
-                routerLinkActive="selected"
-              >
-                <ion-icon
-                  slot="start"
-                  name="information-circle-outline"
-                ></ion-icon>
-                <ion-label>Infos & Hilfe</ion-label>
-              </ion-item>
+                <ion-item routerDirection="root" [routerLink]="['/info']" lines="none" detail="true"
+                  routerLinkActive="selected">
+                  <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+                  <ion-label>Infos & Hilfe</ion-label>
+                </ion-item>
               </ion-menu-toggle>
             </ion-list>
           </ion-accordion>
@@ -101,24 +60,14 @@
               <ion-label>Administration</ion-label>
             </ion-item>
 
-            <ion-list slot="content">
+            <ion-list [inset]="true" slot="content">
               <ion-menu-toggle auto-hide="false">
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/club-list']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
+                <ion-item routerDirection="root" [routerLink]="['/club-list']" lines="none" detail="true"
+                  routerLinkActive="selected">
                   <ion-label>Mein Club</ion-label>
                 </ion-item>
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/team-list']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
+                <ion-item routerDirection="root" [routerLink]="['/team-list']" lines="none" detail="true"
+                  routerLinkActive="selected">
                   <ion-label>Mein Team</ion-label>
                 </ion-item>
               </ion-menu-toggle>
@@ -126,7 +75,7 @@
           </ion-accordion>
         </ion-accordion-group>
 
-        <ion-list>
+        <ion-list [inset]="true">
           <ion-item (click)="logout()">
             <ion-icon slot="start" name="exit-outline"></ion-icon>
             <ion-label>Logout</ion-label>

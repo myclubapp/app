@@ -68,7 +68,7 @@ export class EventAddPage implements OnInit {
     const clubs$ = this.authService.getUser$().pipe(
       take(1),
       tap(user=>this.user = user),
-      switchMap(user => this.fbService.getAdminClubRefs(user).pipe(take(1))),
+      switchMap(user => this.fbService.getUserClubAdminRefs(user).pipe(take(1))),
       concatMap(clubsArray =>  from(clubsArray)),
       tap((club:Club)=>console.log(club.id)),
       concatMap(club => 

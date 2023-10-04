@@ -1,5 +1,9 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="secondary">
+      <ion-button *ngIf="!allowEdit" (click)="edit()">bearbeiten</ion-button>
+      <ion-button *ngIf="allowEdit" (click)="edit()">abbrechen</ion-button>
+    </ion-buttons>
     <ion-title>{{team?.name}}</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="close()">schliessen</ion-button>
@@ -14,8 +18,20 @@
     </ion-toolbar>
   </ion-header>
 
+  <ion-list [inset]="true">
+    <ion-item>
+      Anzahl Mitglieder: 
+    </ion-item>
+    <ion-item>
+      Durchschnittsalter: 
+    </ion-item>
+    <ion-item>
+      Trainingspräsenz: 
+    </ion-item>
+  </ion-list>
+
   <ng-container *ngIf="requestList$ | async as requests; else noRequests">
-    <ion-list *ngIf="requests.length > 0">
+    <ion-list [inset]="true" *ngIf="requests.length > 0">
       <ion-list-header> Anfragen </ion-list-header>
       <ion-item *ngFor="let request of requests">
         <ion-avatar slot="start">
@@ -32,9 +48,19 @@
     </ion-list>
   </ng-container>
 
-  <ion-list >
+  <ion-list [inset]="true">
     <ion-list-header> Mitglieder </ion-list-header>
     <ion-item *ngFor="let member of memberList$ | async">
+      
+      <ion-icon
+      *ngIf="allowEdit === true"
+      slot="icon-only"
+      color="danger"
+      slot="start"
+      (click)="removeMember(member)"
+      name="person-remove-outline"
+    ></ion-icon>
+      
       <ion-avatar slot="start">
         <img src="{{member?.profilePicture}}" />
       </ion-avatar>
@@ -42,9 +68,16 @@
     </ion-item>
   </ion-list>
 
-  <ion-list >
+  <ion-list [inset]="true">
     <ion-list-header> Administratoren </ion-list-header>
     <ion-item *ngFor="let admin of adminList$ | async">
+      <ion-icon
+      *ngIf="allowEdit === true"
+      slot="icon-only"
+      color="danger"
+      slot="start"
+      name="person-remove"
+    ></ion-icon>
       <ion-avatar slot="start">
         <img src="{{admin?.profilePicture}}" />
       </ion-avatar>
