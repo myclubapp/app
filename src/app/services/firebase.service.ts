@@ -275,12 +275,9 @@ export class FirebaseService {
   }
 
   async deleteTeamMember(teamId: string, userId: string): Promise<any> {
-  
     await deleteDoc(doc(this.firestore, `teams/${teamId}/members/${userId}` ));
-
   }
   async deleteTeamAdmin(teamId: string, userId: string): Promise<any> {
-   
     await deleteDoc(doc(this.firestore, `teams/${teamId}/admins/${userId}` ));
   }
 
