@@ -24,6 +24,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { switchMap, take, tap } from "rxjs/operators";
 import {
   AlertController,
+  LoadingController,
   MenuController,
   ToastController,
 } from "@ionic/angular";
@@ -61,6 +62,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     private readonly fbService: FirebaseService,
     private readonly profileService: UserProfileService,
     private readonly toastController: ToastController,
+    private readonly loadingController: LoadingController,
     private readonly alertController: AlertController,
     private readonly router: Router,
     private readonly menuCtrl: MenuController
@@ -201,6 +203,15 @@ export class ProfilePage implements OnInit, AfterViewInit {
 */
 
   async takePicture() {
+
+    const loading = await this.loadingController.create({
+      message: 'Profilbild wird hochgeladen',
+      showBackdrop: true,
+      backdropDismiss: false,
+      translucent: true,
+      spinner: "circular",
+    });
+
     const image = await Camera.getPhoto({
       quality: 90,
       allowEditing: true,
@@ -211,15 +222,17 @@ export class ProfilePage implements OnInit, AfterViewInit {
       direction: CameraDirection.Front,
     });
 
+    loading.present();
     // image.webPath will contain a path that can be set as an image src.
     // You can access the original file using image.path, which can be
     // passed to the Filesystem API to read the raw data of the image,
     // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-    var imageUrl = image.base64String;
-    console.log(image);
+    // var imageUrl = image.base64String;
+    // console.log(image);
 
     // const user: User = await this.authService.getUser();
     await this.profileService.setUserProfilePicture(image);
+    loading.dismiss();
     await this.presentToastTakePicture();
   }
 
