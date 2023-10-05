@@ -276,19 +276,12 @@ export class FirebaseService {
 
   async deleteTeamMember(teamId: string, userId: string): Promise<any> {
   
-    await setDoc(doc(this.firestore, `teams/${teamId}/members/${userId}` ), {
-      remove: true,
-    },{
-      merge: true
-    });
+    await deleteDoc(doc(this.firestore, `teams/${teamId}/members/${userId}` ));
+
   }
   async deleteTeamAdmin(teamId: string, userId: string): Promise<any> {
    
-    await setDoc(doc(this.firestore, `teams/${teamId}/admins/${userId}` ), {
-      remove: true,
-    },{
-      merge: true
-    });
+    await deleteDoc(doc(this.firestore, `teams/${teamId}/admins/${userId}` ));
   }
 
   async deleteClubember(clubId: string, userId: string): Promise<any> {
