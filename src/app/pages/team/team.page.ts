@@ -171,8 +171,11 @@ export class TeamPage implements OnInit {
   }
 
   async removeMember(member) {
-    await this.fbService.deleteTeamMember(this.team.id, member.id);
-    await this.toastActionSaved();
+    await this.fbService.deleteTeamMember(this.team.id, member.id).then(()=>{
+      this.toastActionSaved();
+    }).catch(err=>{
+      this.toastActionError(err);
+    });
   }
 
   async deleteTeamRequest(request) {
@@ -186,12 +189,35 @@ export class TeamPage implements OnInit {
     await this.toastActionSaved();
   }
 
+  addTeamMember() {
+
+    // this.fbService.getClubMemberRefs(this.team.)
+
+  }
+
+  addTeamAdmin() {
+
+
+  }
+  
+
   async toastActionSaved() {
     const toast = await this.toastController.create({
       message: "Änderungen erfolgreich gespeichert",
       duration: 1500,
       position: "bottom",
       color: "success",
+    });
+
+    await toast.present();
+  }
+
+  async toastActionError(error) {
+    const toast = await this.toastController.create({
+      message: error.message,
+      duration: 2000,
+      position: "bottom",
+      color: "danger",
     });
 
     await toast.present();
