@@ -12,7 +12,7 @@
               <ion-label>myclub</ion-label>
             </ion-item>
 
-            <ion-list [inset]="true" slot="content">
+            <ion-list slot="content">
               <ion-note>{{ email }}</ion-note>
 
               <ion-menu-toggle auto-hide="false">
@@ -60,7 +60,7 @@
               <ion-label>Administration</ion-label>
             </ion-item>
 
-            <ion-list [inset]="true" slot="content">
+            <ion-list slot="content">
               <ion-menu-toggle auto-hide="false">
                 <ion-item routerDirection="root" [routerLink]="['/club-list']" lines="none" detail="true"
                   routerLinkActive="selected">
