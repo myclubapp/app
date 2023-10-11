@@ -74,7 +74,7 @@ export class TeamPage implements OnInit {
       next: () => {
         this.memberList$ = of(memberList.filter(obj => Object.keys(obj).length > 1));
       },
-      error: err => console.error('Error in the observable chain:', err)
+      error: err => console.error('Member: Error in the observable chain:', err)
     });
 
     const admin$ = this.fbService.getTeamRef(this.team.id).pipe( 
@@ -109,7 +109,7 @@ export class TeamPage implements OnInit {
       next: () => {
         this.adminList$ = of(adminList.filter(obj => Object.keys(obj).length > 1));
       },
-      error: err => console.error('Error in the observable chain:', err)
+      error: err => console.error('Admin: Error in the observable chain:', err)
     });
 
 
@@ -145,7 +145,7 @@ export class TeamPage implements OnInit {
       next: () => {
         this.requestList$ = of(requestList.filter(obj => Object.keys(obj).length > 1));
       },
-      error: err => console.error('Error in the observable chain:', err)
+      error: err => console.error('Request: Error in the observable chain:', err)
     });
 
   }
@@ -171,8 +171,11 @@ export class TeamPage implements OnInit {
   }
 
   async removeMember(member) {
-    await this.fbService.deleteTeamMember(this.team.id, member.id);
-    await this.toastActionSaved();
+    await this.fbService.deleteTeamMember(this.team.id, member.id).then(()=>{
+      this.toastActionSaved();
+    }).catch(err=>{
+      this.toastActionError(err);
+    });
   }
 
   async deleteTeamRequest(request) {
@@ -186,12 +189,35 @@ export class TeamPage implements OnInit {
     await this.toastActionSaved();
   }
 
+  addTeamMember() {
+
+    // this.fbService.getClubMemberRefs(this.team.)
+
+  }
+
+  addTeamAdmin() {
+
+
+  }
+  
+
   async toastActionSaved() {
     const toast = await this.toastController.create({
       message: "Änderungen erfolgreich gespeichert",
       duration: 1500,
       position: "bottom",
       color: "success",
+    });
+
+    await toast.present();
+  }
+
+  async toastActionError(error) {
+    const toast = await this.toastController.create({
+      message: error.message,
+      duration: 2000,
+      position: "bottom",
+      color: "danger",
     });
 
     await toast.present();

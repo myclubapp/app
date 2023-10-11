@@ -17,7 +17,7 @@
       <ion-title size="large">{{team.name}}</ion-title>
     </ion-toolbar>
   </ion-header>
-
+  
   <ion-list [inset]="true">
     <ion-item>
       Anzahl Mitglieder: 
@@ -29,7 +29,7 @@
       Trainingspräsenz: 
     </ion-item>
   </ion-list>
-
+  
   <ng-container *ngIf="requestList$ | async as requests; else noRequests">
     <ion-list [inset]="true" *ngIf="requests.length > 0">
       <ion-list-header> Anfragen </ion-list-header>
@@ -84,6 +84,14 @@
       <ion-label> {{admin?.firstName}} {{admin?.lastName}} </ion-label>
     </ion-item>
   </ion-list>
+
+  <!-- fab placed to the bottom end -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addTeamMember()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
 </ion-content>
 
 
