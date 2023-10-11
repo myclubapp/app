@@ -74,7 +74,7 @@ export class TeamPage implements OnInit {
       next: () => {
         this.memberList$ = of(memberList.filter(obj => Object.keys(obj).length > 1));
       },
-      error: err => console.error('Error in the observable chain:', err)
+      error: err => console.error('Member: Error in the observable chain:', err)
     });
 
     const admin$ = this.fbService.getTeamRef(this.team.id).pipe( 
@@ -109,7 +109,7 @@ export class TeamPage implements OnInit {
       next: () => {
         this.adminList$ = of(adminList.filter(obj => Object.keys(obj).length > 1));
       },
-      error: err => console.error('Error in the observable chain:', err)
+      error: err => console.error('Admin: Error in the observable chain:', err)
     });
 
 
@@ -145,7 +145,7 @@ export class TeamPage implements OnInit {
       next: () => {
         this.requestList$ = of(requestList.filter(obj => Object.keys(obj).length > 1));
       },
-      error: err => console.error('Error in the observable chain:', err)
+      error: err => console.error('Request: Error in the observable chain:', err)
     });
 
   }
