@@ -12,9 +12,15 @@
 
     <ion-item>
       <ion-select label="Club" label-placement="stacked" [(ngModel)]="event.clubId" value="{{event.clubId}}" >
-        <ion-select-option *ngFor="let club of clubList" value="{{club.id}}">{{club.name}}</ion-select-option>
+        <ion-select-option  *ngFor="let club of clubList" value="{{club.id}}">{{club.name}}</ion-select-option>
       </ion-select>
     </ion-item>
+
+    <!--<ion-item *ngIf="clubList.length==0">
+      <ion-select cancel-text="Abbrechen" ok-text="Auswählen" label="Club" label-placement="stacked" [(ngModel)]="event.clubId" value="{{event.clubId}}" >
+        <ion-select-option disabled="true" *ngFor="let club of clubList" value="{{club.id}}">{{club.name}}</ion-select-option>
+      </ion-select>
+    </ion-item>-->
 
     <ion-item>
       <ion-input label="Name" label-placement="stacked" [(ngModel)]="event.name" value="{{event.name}}">

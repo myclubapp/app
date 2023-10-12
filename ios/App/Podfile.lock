@@ -1,30 +1,30 @@
 PODS:
-  - Capacitor (5.0.4):
+  - Capacitor (5.5.0):
     - CapacitorCordova
-  - CapacitorBrowser (5.0.2):
+  - CapacitorBrowser (5.0.6):
     - Capacitor
-  - CapacitorCamera (5.0.2):
+  - CapacitorCamera (5.0.7):
     - Capacitor
-  - CapacitorCordova (5.0.4)
-  - CapacitorDevice (5.0.2):
+  - CapacitorCordova (5.5.0)
+  - CapacitorDevice (5.0.6):
     - Capacitor
-  - CapacitorGeolocation (5.0.2):
+  - CapacitorGeolocation (5.0.6):
     - Capacitor
-  - CapacitorGoogleMaps (5.1.0):
+  - CapacitorGoogleMaps (5.3.1):
     - Capacitor
     - Google-Maps-iOS-Utils (~> 4.1)
     - GoogleMaps (~> 7.3)
-  - CapacitorHaptics (5.0.2):
+  - CapacitorHaptics (5.0.6):
     - Capacitor
-  - CapacitorKeyboard (5.0.2):
+  - CapacitorKeyboard (5.0.6):
     - Capacitor
-  - CapacitorShare (5.0.2):
+  - CapacitorShare (5.0.6):
     - Capacitor
-  - CapacitorSplashScreen (5.0.2):
+  - CapacitorSplashScreen (5.0.6):
     - Capacitor
-  - CapacitorStatusBar (5.0.2):
+  - CapacitorStatusBar (5.0.6):
     - Capacitor
-  - CordovaPlugins (5.0.4):
+  - CordovaPlugins (5.5.0):
     - CapacitorCordova
   - Google-Maps-iOS-Utils (4.1.0):
     - Google-Maps-iOS-Utils/Clustering (= 4.1.0)
@@ -108,19 +108,19 @@ CHECKOUT OPTIONS:
     :git: https://github.com/googlemaps/google-maps-ios-utils.git
 
 SPEC CHECKSUMS:
-  Capacitor: d3d4463573438b9fa65326d1f3549da6f4c21634
-  CapacitorBrowser: 7986ee35377383fc40f7c1a0a793e0d9a49fe527
-  CapacitorCamera: 15face5f9e030e480929a2c989deaaf3eb0d3947
-  CapacitorCordova: b1fe6bf1f36974a8e4a9044b342d22d49c0996d6
-  CapacitorDevice: 980e172f6fbfa0a945c73f908adc74b5a031e7d4
-  CapacitorGeolocation: 8532cd1585dbf0b5b721fa65ea51a36bf9a71e92
-  CapacitorGoogleMaps: 86c3038e7be992e6c001a610bfefef3190e73909
-  CapacitorHaptics: 864585542a435bd41eaabf7f30d9ff5ec03024d3
-  CapacitorKeyboard: e628d4e66d621c69e449945ebabded17c5b9c2e8
-  CapacitorShare: 931224a0e17615e799d35b26286ab1d05f37d8fb
-  CapacitorSplashScreen: bd2a056394ba0b8807e7bb3e746424f67c426e03
-  CapacitorStatusBar: 48f2899f6846cc7d8431b251ebfc58e1c10e3d58
-  CordovaPlugins: 6b563e3308b51cf0759ffbe31980db7e1e99d86b
+  Capacitor: 57890b363df14d5d2d5d8461aa23e886cb34da2a
+  CapacitorBrowser: 6192948e0ce804fd72aaf77f4114a3ad2e08c760
+  CapacitorCamera: 084b0b228bba7d00587910337b1c89e93b1d32ab
+  CapacitorCordova: 3d3908a3d208a11a75f9df3b18c4405c4de76e1d
+  CapacitorDevice: 2c968f98a1ec4d22357418c1521e7ddc46c675e6
+  CapacitorGeolocation: 7be5f77abc205c0efe319fff8587a7183e7b0240
+  CapacitorGoogleMaps: 19e631cbe16365f32a3da837f91fdb86579c2de3
+  CapacitorHaptics: 1fffc1217c7e64a472d7845be50fb0c2f7d4204c
+  CapacitorKeyboard: b978154b024a5f65e044908e37d15b7de58b9d12
+  CapacitorShare: cd41743331cb71d217c029de54b681cbd91e0fcc
+  CapacitorSplashScreen: 5fa2ab5e46cf5cc530cf16a51c80c7a986579ccd
+  CapacitorStatusBar: 565c0a1ebd79bb40d797606a8992b4a105885309
+  CordovaPlugins: 11d429fd653fe424ac24a56b8060dd5faaae2860
   Google-Maps-iOS-Utils: 9aace2c8b9a6141bc7174115954ff89b3d17102b
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
 

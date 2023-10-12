@@ -57,6 +57,7 @@
           </ion-accordion>
           <ion-accordion value="administration">
             <ion-item slot="header">
+              <ion-icon name="home" slot="start" color="primary"></ion-icon>
               <ion-label>Administration</ion-label>
             </ion-item>
 
@@ -77,7 +78,7 @@
 
         <ion-list>
           <ion-item (click)="logout()">
-            <ion-icon slot="start" name="exit-outline"></ion-icon>
+            <ion-icon slot="start" name="exit-outline" color="danger"></ion-icon>
             <ion-label>Logout</ion-label>
             <ion-button (click)="logout()">Logout</ion-button>
           </ion-item>
