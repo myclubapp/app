@@ -86,7 +86,7 @@
                   "with": "src/environments/environment.prod.ts"
                 },
                 {
-                  "replace": "./tailwind.config.ts",
+                  "replace": "tailwind.config.ts",
                   "with": "src/custom-themes/default/tailwind.config.ts"
                 }
               ],
@@ -135,7 +135,7 @@
                   "with": "src/environments/environment.prod.ts"
                 },
                 {
-                  "replace": "./tailwind.config.ts",
+                  "replace": "tailwind.config.ts",
                   "with": "src/custom-themes/default/tailwind.config.ts"
                 }
               ],
@@ -184,7 +184,7 @@
                   "with": "src/environments/environment.prod.ts"
                 },
                 {
-                  "replace": "./tailwind.config.ts",
+                  "replace": "tailwind.config.ts",
                   "with": "src/custom-themes/app-kadetten-unihockey/tailwind.config.ts"
                 }
               ],
@@ -233,7 +233,7 @@
                   "with": "src/environments/environment.prod.ts"
                 },
                 {
-                  "replace": "./tailwind.config.ts",
+                  "replace": "tailwind.config.ts",
                   "with": "src/custom-themes/app-uhc-win-u/tailwind.config.ts"
                 }
               ],
@@ -282,7 +282,7 @@
                   "with": "src/environments/environment.prod.ts"
                 },
                 {
-                  "replace": "./tailwind.config.ts",
+                  "replace": "tailwind.config.ts",
                   "with": "src/custom-themes/app-stv-spreitenbach/tailwind.config.ts"
                 }
               ],
@@ -331,7 +331,7 @@
                   "with": "src/environments/environment.prod.ts"
                 },
                 {
-                  "replace": "./tailwind.config.ts",
+                  "replace": "tailwind.config.ts",
                   "with": "src/custom-themes/app-vbc-schaffhausen/tailwind.config.ts"
                 }
               ],
@@ -380,7 +380,7 @@
                   "with": "src/environments/environment.prod.ts"
                 },
                 {
-                  "replace": "./tailwind.config.ts",
+                  "replace": "tailwind.config.ts",
                   "with": "src/custom-themes/app-kadetten-handball/tailwind.config.ts"
                 }
               ],
