@@ -271,14 +271,8 @@ export class TrainingsPage implements OnInit {
   }
 
 
-  async copyTraining(training) {
-    const toast = await this.toastController.create({
-      message: "Copy",
-      color: "primary",
-      duration: 2000,
-      position: "top",
-    });
-    toast.present();
+  async copyTraining(slidingItem: IonItemSliding, training) {
+    slidingItem.closeOpened();
 
       // const presentingElement = await this.modalCtrl.getTop();
       const modal = await this.modalController.create({
@@ -297,12 +291,11 @@ export class TrainingsPage implements OnInit {
       if (role === "confirm") {
       }
 
-
-
   }
 
 
-  async deleteTraining(training) {
+  async deleteTraining(slidingItem: IonItemSliding,training) {
+    slidingItem.closeOpened();
     const toast = await this.toastController.create({
       message: "Delete",
       color: "primary",

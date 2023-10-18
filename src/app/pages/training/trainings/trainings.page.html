@@ -107,13 +107,13 @@
         <ion-item-options side="end">
           <ion-item-option
             color="medium"
-            (click)="copyTraining(training)"
+            (click)="copyTraining(item, training)"
           >
           <ion-icon slot="icon-only"name="copy-outline"></ion-icon>
           </ion-item-option>
           <ion-item-option
             color="danger"
-            (click)="deleteTraining(training)"          >
+            (click)="deleteTraining(item, training)"          >
             <ion-icon slot="icon-only" name="trash"></ion-icon>
           </ion-item-option>
         </ion-item-options>
