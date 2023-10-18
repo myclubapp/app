@@ -63,7 +63,6 @@ export class TrainingCreatePage implements OnInit {
 
     this.trainingCopy = this.navParams.get("data");
     if (this.trainingCopy.id) {
-      console.log(this.trainingCopy.timeFrom);
       this.training = this.trainingCopy;
 
       const startDate: Timestamp = this.trainingCopy.startDate as any;
