@@ -20,6 +20,7 @@ import { AuthService } from "src/app/services/auth.service";
 export class LoginPage implements OnInit {
   public user: UserCredentialLogin;
   public authForm: UntypedFormGroup;
+  public show: boolean;
 
   constructor(
     private readonly alertCtrl: AlertController,
@@ -28,21 +29,19 @@ export class LoginPage implements OnInit {
     private readonly formBuilder: UntypedFormBuilder,
     public readonly menuCtrl: MenuController 
   ) {
+    this.menuCtrl.enable(true,"menu");
     this.authForm = this.formBuilder.group({
       email: ["", Validators.compose([Validators.required, Validators.email])],
       password: ["", Validators.minLength(6)],
     });
-
-    this.menuCtrl.enable(false, "menu");
   }
 
   ngOnInit() {
+    this.menuCtrl.enable(true,"menu");
     this.user = {
       email: "",
       password: "",
     };
-
-    this.menuCtrl.enable(false, "menu");
   }
 
   async submitCredentials(authForm: any) {

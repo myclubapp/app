@@ -271,6 +271,48 @@ export class TrainingsPage implements OnInit {
   }
 
 
+  async copyTraining(training) {
+    const toast = await this.toastController.create({
+      message: "Copy",
+      color: "primary",
+      duration: 2000,
+      position: "top",
+    });
+    toast.present();
+
+      // const presentingElement = await this.modalCtrl.getTop();
+      const modal = await this.modalController.create({
+        component: TrainingCreatePage,
+        presentingElement: this.routerOutlet.nativeEl,
+        canDismiss: true,
+        showBackdrop: true,
+        componentProps: {
+          data: training,
+        },
+      });
+      modal.present();
+  
+      const { data, role } = await modal.onWillDismiss();
+  
+      if (role === "confirm") {
+      }
+
+
+
+  }
+
+
+  async deleteTraining(training) {
+    const toast = await this.toastController.create({
+      message: "Delete",
+      color: "primary",
+      duration: 2000,
+      position: "top",
+    });
+    toast.present();
+  }
+
+
   async openFilter(ev: Event){
     let filterList = [];
 

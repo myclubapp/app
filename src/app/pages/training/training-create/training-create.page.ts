@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { ModalController, NavParams } from "@ionic/angular";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
@@ -15,12 +15,13 @@ import { TrainingService } from "src/app/services/firebase/training.service";
   styleUrls: ["./training-create.page.scss"],
 })
 export class TrainingCreatePage implements OnInit {
+  @Input("data") trainingCopy: Training;
   training: Training;
   user$: Observable<User>;
   user: User;
   private subscription: Subscription;
   teamList: Team[] = [];
- 
+
   constructor(
     private readonly modalCtrl: ModalController,
     private trainingService: TrainingService,
@@ -36,22 +37,22 @@ export class TrainingCreatePage implements OnInit {
       streetAndNumber: "",
       postalCode: "",
       city: "",
-      
+
       date: Timestamp.fromDate(new Date()),
-      
+
       timeFrom: new Date().toISOString(),
       timeTo: new Date().toISOString(),
-      
+
       startDate: new Date().toISOString(),
       endDate: new Date().toISOString(),
 
       repeatFrequency: "W",
       repeatAmount: "1",
-      
+
       teamId: "",
       teamName: "",
       liga: "",
-      
+
       status: true,
       attendees: [],
       countAttendees: 0,
@@ -60,14 +61,20 @@ export class TrainingCreatePage implements OnInit {
 
   ngOnInit() {
 
-    let  teamsList: any[] = [];
+    this.trainingCopy = this.navParams.get("data");
+    if (this.trainingCopy.id) {
+      console.log(this.trainingCopy)
+      this.training = this.trainingCopy;
+    }
+
+    let teamsList: any[] = [];
     const teams$ = this.authService.getUser$().pipe(
       take(1),
-      tap(user=>this.user = user),
+      tap(user => this.user = user),
       switchMap(user => this.fbService.getUserTeamAdminRefs(user).pipe(take(1))),
-      concatMap(teamsArray =>  from(teamsArray)),
-      tap((team:Team)=>console.log(team.id)),
-      concatMap(team => 
+      concatMap(teamsArray => from(teamsArray)),
+      tap((team: Team) => console.log(team.id)),
+      concatMap(team =>
         this.fbService.getTeamRef(team.id).pipe(
           take(1),
           defaultIfEmpty({}),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
@@ -86,21 +93,25 @@ export class TrainingCreatePage implements OnInit {
       next: () => {
         // console.log(">>>" + teamsList);
         this.teamList = teamsList;
-        this.training.teamId = this.teamList[0].id;
+        if (!this.training.teamId) {
+          this.training.teamId = this.teamList[0].id;
+        }
       },
       error: err => console.error('Error in the observable chain:', err)
     });
 
-    }
-    
-  ngOnDestroy(): void {
-    if (this.subscription) {
-        this.subscription.unsubscribe();
-    }
-    
+
+
   }
 
-  changeTimeFrom(ev){
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+
+  }
+
+  changeTimeFrom(ev) {
     console.log(ev.detail.value)
     if (this.training.timeFrom > this.training.timeTo) {
       this.training.timeTo = this.training.timeFrom;
@@ -108,7 +119,7 @@ export class TrainingCreatePage implements OnInit {
 
   }
 
-  changeStartDate(ev){
+  changeStartDate(ev) {
     console.log(ev.detail.value)
     if (this.training.startDate > this.training.endDate) {
       this.training.endDate = this.training.startDate;
@@ -118,7 +129,7 @@ export class TrainingCreatePage implements OnInit {
   async close() {
     return this.modalCtrl.dismiss(null, "close");
   }
- 
+
   async createTraining() {
     //Set Hours/Minutes of endDate to TimeFrom of training
     console.log(`Start Date before calculation: ${this.training.startDate}`);

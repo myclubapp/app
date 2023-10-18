@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
-import { AlertController } from "@ionic/angular";
+import { AlertController, MenuController } from "@ionic/angular";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
@@ -25,6 +25,8 @@ export class AppComponent implements OnInit {
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
 
+  // menuDisabled: boolean = false;
+
   constructor(
     private readonly swUpdate: SwUpdate,
     private readonly swPush: SwPush,
@@ -33,6 +35,7 @@ export class AppComponent implements OnInit {
     private readonly fbService: FirebaseService,
     private readonly profileService: UserProfileService,
     private readonly router: Router,
+    public readonly menuCtrl: MenuController
   ) {
     this.initializeApp();
     // this.initializeFirebase();
@@ -41,6 +44,8 @@ export class AppComponent implements OnInit {
       if (user) {
         // 0. LOGIN
         this.email = user.email;
+        // this.menuDisabled = false;
+        this.menuCtrl.enable(true,"menu");
 
         // 1. EMAIL VERIFIED?
         if (!user.emailVerified) {
@@ -81,6 +86,9 @@ export class AppComponent implements OnInit {
         // ...
       } else {
         console.log("User is signed out");
+        // this.menuDisabled = true;
+        this.menuCtrl.enable(false,"menu");
+        this.email = "";
         // User is signed out
         // ...
       }
