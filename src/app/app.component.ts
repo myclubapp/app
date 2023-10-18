@@ -103,8 +103,15 @@ export class AppComponent implements OnInit {
       if (!status.connected) {
         const toast = await this.toastController.create({
           message: "Du bist offline",
-          duration: 1500,
+          duration: 3000,
           position: "top",
+          buttons: [
+            {
+              // text:"Ok",
+              icon: "cloud-offline-outline"
+            }
+            
+          ],
           color: "danger",
         });
         await toast.present();
@@ -114,6 +121,13 @@ export class AppComponent implements OnInit {
           duration: 1500,
           position: "top",
           color: "success",
+          buttons: [
+            {
+              // text:"Ok",
+              icon: "wifi-outline"
+            }
+            
+          ],
         });
         await toast.present();
       }
