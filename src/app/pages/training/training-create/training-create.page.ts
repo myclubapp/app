@@ -63,8 +63,12 @@ export class TrainingCreatePage implements OnInit {
 
     this.trainingCopy = this.navParams.get("data");
     if (this.trainingCopy.id) {
-      console.log(this.trainingCopy)
+      console.log(this.trainingCopy.endDate);
+      const startDate: Timestamp = this.trainingCopy.startDate as any;
+      const endDate: Timestamp = this.trainingCopy.endDate  as any;
       this.training = this.trainingCopy;
+      this.training.startDate = startDate.toDate().toISOString();
+      this.training.endDate = endDate.toDate().toISOString();
     }
 
     let teamsList: any[] = [];

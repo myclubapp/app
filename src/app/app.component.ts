@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
-import { AlertController, MenuController } from "@ionic/angular";
+import { AlertController, MenuController, ToastController } from "@ionic/angular";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
@@ -10,6 +10,7 @@ import { Subscription, take } from "rxjs";
 import { onAuthStateChanged } from "@angular/fire/auth";
 import { UserProfileService } from "./services/firebase/user-profile.service";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
+import { Network, ConnectionStatus } from '@capacitor/network';
 
 @Component({
   selector: "app-root",
@@ -31,6 +32,7 @@ export class AppComponent implements OnInit {
     private readonly swUpdate: SwUpdate,
     private readonly swPush: SwPush,
     private readonly alertController: AlertController,
+    private readonly toastController: ToastController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly profileService: UserProfileService,
@@ -95,6 +97,31 @@ export class AppComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+
+    Network.addListener('networkStatusChange', async (status:ConnectionStatus) => {
+      
+      if (!status.connected) {
+        const toast = await this.toastController.create({
+          message: "Du bist offline",
+          duration: 1500,
+          position: "top",
+          color: "danger",
+        });
+        await toast.present();
+      } else {
+        const toast = await this.toastController.create({
+          message: "Du bist online",
+          duration: 1500,
+          position: "top",
+          color: "success",
+        });
+        await toast.present();
+      }
+
+    });
+
+
+
     this.requestSubscription();
     this.swPush.messages.subscribe( message =>{
       console.log(message);
@@ -105,6 +132,9 @@ export class AppComponent implements OnInit {
   }
 
   ngOnDestroy() {
+
+    Network.removeAllListeners();
+
 //     this.pushNotificationClickSubscription.unsubscribe();
 //    this.pushMessageSubscription.unsubscribe();
 //    this.swPush.unsubscribe();
