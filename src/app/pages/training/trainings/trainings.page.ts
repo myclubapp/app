@@ -53,54 +53,59 @@ export class TrainingsPage implements OnInit {
 
   ngOnInit() {
 
-    this.trainingList$ = this.authService.getUser$().pipe(
-      take(1),
-      tap(() => console.log("Fetching user...")),
-      tap(user => this.user = user),
-      switchMap(user => this.fbService.getUserTeamRefs(user)),
-      tap(teams => console.log("Fetched teams:", teams)),
-      concatMap(teamsArray => from(teamsArray)),
-      tap(team => console.log("Processing team:", team.id)),
-      concatMap(team => this.trainingService.getTeamTrainingsRefs(team.id).pipe(
-        // timeout(TIMEOUT_DURATION),
-        take(1),
-        tap(trainings => console.log(`Fetched trainings for team ${team.id}:`, trainings)),
-        switchMap(trainings => {
-          const trainingWithAttendees$ = trainings.map(training =>
-            this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id).pipe(
-              take(1),
-              map(attendees => {
-                const userAttendee = attendees.find(att => att.id == this.user.uid);
-                return {
-                  ...training,
-                  date: training.date,
-                  teamId: team.id,
-                  status: userAttendee ? userAttendee.status : null,
-                  countAttendees: attendees.filter(att => att.status).length,
-                  attendees: attendees
-                };
-              })
-            )
-          );
-          return forkJoin(trainingWithAttendees$);
-        }),
-        catchError(error => {
-          console.error(`Error fetching trainings for team ${team.id}:`, error);
-          return of([]); // if there's an error, emit an empty array to continue the stream
-        })
-      )),
-      map(trainings => trainings.sort((a, b) => a.date.toMillis() - b.date.toMillis())),
-      map(trainings => trainings.filter((training, index, self) =>
-        index === self.findIndex(t => t.id === training.id))),
-      tap(() => console.log("Team training fetching completed")),
-    ) as Observable<Training[]>;
+   // Assuming Training is already imported
 
-    this.subscription = this.trainingList$.subscribe({
-      next: trainings => {
-        console.log("Combined training list created", trainings);
-      },
-      error: err => console.error('Error in the observable chain:', err.message)
-    });
+this.trainingList$ = this.authService.getUser$().pipe(
+  take(1),
+  tap(() => console.log("Fetching user...")),
+  tap(user => this.user = user),
+  switchMap(user => this.fbService.getUserTeamRefs(user)),
+  tap(teams => console.log("Fetched teams:", teams)),
+  concatMap(teamsArray => from(teamsArray)),
+  tap(team => console.log("Processing team:", team.id)),
+  concatMap(team => this.trainingService.getTeamTrainingsRefs(team.id).pipe(
+    take(1),
+    tap(trainings => console.log(`Fetched trainings for team ${team.id}:`, trainings)),
+    switchMap(trainings => {
+      const trainingWithAttendees$ = trainings.map(training => 
+        this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id).pipe(
+          take(1),
+          map(attendees => {
+            const userAttendee = attendees.find(att => att.id == this.user.uid);
+            const status = userAttendee ? userAttendee.status : null; 
+            console.log(training.date);
+            return {
+              ...training,
+              date: training.date,
+              teamId: team.id,
+              status: status,
+              countAttendees: attendees.filter(att => att.status == true).length,
+              attendees: attendees
+            };
+          })
+        )
+      );
+      return forkJoin(trainingWithAttendees$);
+    }),
+    catchError(error => {
+      console.error(`Error fetching trainings for team ${team.id}:`, error);
+      return of([] as Training[]); // if there's an error, emit an empty array to continue the stream
+    })
+  )),
+  map((trainingsArray: Training[]) => trainingsArray.flat()),
+  map(trainings => trainings.sort((a, b) => a.date.toMillis() - b.date.toMillis())),
+  map(trainings => trainings.filter((training, index, self) => 
+    index === self.findIndex(t => t.id === training.id))),
+  tap(() => console.log("Team training fetching completed"))
+) as Observable<Training[]>;
+
+this.subscription = this.trainingList$.subscribe({
+  next: trainings => {
+    console.log("Combined training list created", trainings);
+  },
+  error: err => console.error('Error in the observable chain:', err.message)
+});
+
 
 
     const TIMEOUT_DURATION = 1000; // adjust as needed

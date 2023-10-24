@@ -193,6 +193,8 @@ export class AppComponent implements OnInit {
   }
 
   initializeFirebase() {
+
+    
     // https://cloud.google.com/firestore/docs/manage-data/enable-offline
     // The default cache size threshold is 40 MB. Configure "cacheSizeBytes"
     // for a different threshold (minimum 1 MB) or set to "CACHE_SIZE_UNLIMITED"

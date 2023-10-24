@@ -63,11 +63,11 @@ import { TeamPage } from './pages/team/team.page';
     }),
     // GraphQLModule,
     HttpClientModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideFirebaseApp(() => initializeApp(environment.firebase),),
     provideFirestore(() => getFirestore()),
     provideAuth(() => getAuth()),
     provideStorage(() => getStorage()),
-    provideMessaging(() => getMessaging())
+    provideMessaging(() => getMessaging()),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
