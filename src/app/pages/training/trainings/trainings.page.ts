@@ -53,12 +53,15 @@ export class TrainingsPage implements OnInit {
 
   ngOnInit() {
 
+
+
+
    // Assuming Training is already imported
 
 this.trainingList$ = this.authService.getUser$().pipe(
   take(1),
   tap(() => console.log("Fetching user...")),
-  tap(user => this.user = user),
+  tap(user => this.user = user), // set user to page
   switchMap(user => this.fbService.getUserTeamRefs(user)),
   tap(teams => console.log("Fetched teams:", teams)),
   concatMap(teamsArray => from(teamsArray)),
@@ -69,7 +72,6 @@ this.trainingList$ = this.authService.getUser$().pipe(
     switchMap(trainings => {
       const trainingWithAttendees$ = trainings.map(training => 
         this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id).pipe(
-          take(1),
           map(attendees => {
             const userAttendee = attendees.find(att => att.id == this.user.uid);
             const status = userAttendee ? userAttendee.status : null; 
@@ -82,8 +84,16 @@ this.trainingList$ = this.authService.getUser$().pipe(
               countAttendees: attendees.filter(att => att.status == true).length,
               attendees: attendees
             };
-          })
-        )
+          }),
+          catchError(error => {
+            console.error('Error fetching training attandee', error);
+            return of([]);
+        })
+        ),
+        catchError(error => {
+          console.error('Error fetching training ', error);
+          return of([]);
+      })
       );
       return forkJoin(trainingWithAttendees$);
     }),
@@ -184,7 +194,6 @@ this.subscription = this.trainingList$.subscribe({
           // Fetch attendees for each training and combine the results
           const trainingWithAttendees$ = trainings.map(training =>
             this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id).pipe(
-              take(1),
               map(attendees => {
                 const userAttendee = attendees.find(att => att.id == this.user.uid);
                 const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
@@ -197,8 +206,16 @@ this.subscription = this.trainingList$.subscribe({
                   attendees: attendees
                 };
               }),
+              catchError(error => {
+                console.error('Error fetching training attandee', error);
+                return of([]);
+            })
 
-            )
+            ),
+            catchError(error => {
+              console.error('Error fetching training attandee', error);
+              return of([]);
+          })
           );
           return forkJoin(trainingWithAttendees$);
         }),
