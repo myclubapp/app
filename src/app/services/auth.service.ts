@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { Router } from "@angular/router";
 import { first } from "rxjs/operators";
 // import { AngularFireAuth } from '@angular/fire/compat/auth';
@@ -33,8 +33,11 @@ import { Firestore, doc, setDoc } from "@angular/fire/firestore";
 export class AuthService {
   user$: Observable<User | null>;
   constructor(
-    private readonly firestore: Firestore,
-    public auth: Auth,
+    // private readonly firestore: Firestore,
+    private readonly firestore: Firestore = inject(Firestore),
+    // public auth: Auth,
+    public auth: Auth = inject(Auth),
+
     private readonly router: Router
   ) {
     // or use this version...

@@ -63,9 +63,18 @@ import { TeamPage } from './pages/team/team.page';
     }),
     // GraphQLModule,
     HttpClientModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase),),
-    provideFirestore(() => getFirestore()),
-    provideAuth(() => getAuth()),
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideFirestore(() => {
+      const firestore = getFirestore();
+      // connectFirestoreEmulator(firestore, 'localhost', 8080);
+      // enableIndexedDbPersistence(firestore);
+      return firestore;
+    }),
+    provideAuth(() => {
+      const auth = getAuth();
+      setPersistence(auth, inMemoryPersistence);
+      return auth;
+    }),
     provideStorage(() => getStorage()),
     provideMessaging(() => getMessaging()),
   ],

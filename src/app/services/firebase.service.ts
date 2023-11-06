@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import {
   Firestore,
   addDoc,
@@ -11,6 +11,7 @@ import {
   DocumentReference,
   setDoc,
 } from "@angular/fire/firestore";
+
 
 import {
   Storage,
@@ -40,7 +41,7 @@ import { Profile } from "../models/user";
 export class FirebaseService {
   inviteList: any = [];
   constructor(
-    private readonly firestore: Firestore,
+    private readonly firestore: Firestore = inject(Firestore)
   ) {}
 
   /* CLUBS */
