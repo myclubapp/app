@@ -33,6 +33,8 @@ export class ChampionshipPage implements OnInit {
   gameList: Game[] = [];
   gameListPast: Game[] = [];
 
+  mode = "games" ;
+
   private subscription: Subscription;
   private subscriptionPast: Subscription;
 

@@ -16,12 +16,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { provideFirebaseApp, getApp, initializeApp } from '@angular/fire/app';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { getFirestore, provideFirestore, persistentLocalCache } from '@angular/fire/firestore';
 import {
   provideAuth,
   getAuth,
   setPersistence,
-  inMemoryPersistence
+  browserSessionPersistence,
+  inMemoryPersistence,
+  // indexedDBLocalPersistence
 } from '@angular/fire/auth';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 import { provideMessaging,getMessaging } from '@angular/fire/messaging';
@@ -63,16 +65,17 @@ import { TeamPage } from './pages/team/team.page';
     }),
     // GraphQLModule,
     HttpClientModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideFirebaseApp(() => {
+      const init = initializeApp(environment.firebase);
+     return init;
+    }),
     provideFirestore(() => {
       const firestore = getFirestore();
-      // connectFirestoreEmulator(firestore, 'localhost', 8080);
-      // enableIndexedDbPersistence(firestore);
       return firestore;
     }),
     provideAuth(() => {
-      const auth = getAuth();
-      setPersistence(auth, inMemoryPersistence);
+      const auth = getAuth(); 
+      setPersistence(auth,browserSessionPersistence);
       return auth;
     }),
     provideStorage(() => getStorage()),
