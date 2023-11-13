@@ -188,11 +188,11 @@
         <ion-item-sliding #item *ngFor="let game of gameListPast">
           <ion-item>
             <ion-icon *ngIf="game.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
-              (click)="toggle(true, game)"></ion-icon>
+              ></ion-icon>
             <ion-icon *ngIf="game.status === false" slot="icon-only" color="danger" slot="start" name="close-circle"
-              (click)="toggle( true, game)"></ion-icon>
+              ></ion-icon>
             <ion-icon *ngIf="game.status === true" slot="icon-only" color="success" slot="start" name="checkmark-circle"
-              (click)="toggle(false, game)"></ion-icon>
+             ></ion-icon>
             <ion-label class="ion-text-wrap" (click)="openModal(game)">
               <h2>{{game.teamHome}} vs.</h2>
               <h2>{{game.teamAway}}</h2>
@@ -214,7 +214,7 @@
             </ion-note>
           </ion-item>
 
-          <ion-item-options side="start">
+          <!--<ion-item-options side="start">
             <ion-item-option color="success" *ngIf="game.status === false || game.status === null"
               (click)="toggleItem(item, true, game)">
               <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
@@ -223,16 +223,8 @@
               (click)="toggleItem(item, false, game)">
               <ion-icon slot="icon-only" name="close-circle"></ion-icon>
             </ion-item-option>
-          </ion-item-options>
+          </ion-item-options>-->
 
-          <!--<ion-item-options side="end" *ngIf="user && user.isAdmin">
-        <ion-item-option>
-          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
-        </ion-item-option>
-        <ion-item-option color="danger">
-          <ion-icon slot="icon-only" name="trash"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>-->
         </ion-item-sliding>
       </ion-list>
     </ng-container>

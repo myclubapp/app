@@ -16,6 +16,7 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { ChampionshipDetailPage } from "../championship-detail/championship-detail.page";
 import { Team } from "src/app/models/team";
+import { Timestamp } from "firebase/firestore";
 
 @Component({
   selector: "app-championship",
@@ -315,7 +316,7 @@ export class ChampionshipPage implements OnInit {
           ).pipe(
             map(teamsGames => teamsGames.flat()), // Flatten to get all games across all teams
             map(allGames => 
-              allGames.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) // Sort games by date
+              allGames.sort((a, b) => Timestamp.fromMillis(a.dateTime).seconds - Timestamp.fromMillis(b.dateTime).seconds) // Sort games by date
             )
           );
         }),
@@ -366,7 +367,7 @@ export class ChampionshipPage implements OnInit {
           ).pipe(
             map(teamsGames => teamsGames.flat()), // Flatten to get all games across all teams
             map(allGames => 
-              allGames.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Sort games by date
+              allGames.sort((b, a) => Timestamp.fromMillis(a.dateTime).seconds - Timestamp.fromMillis(b.dateTime).seconds) // Sort games by date
             )
           );
         }),
