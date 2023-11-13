@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 
 import {
   AlertController,
@@ -9,7 +9,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, Subscription, catchError, combineLatest, concatMap, defaultIfEmpty, finalize, forkJoin, from,  map,  of, switchMap, take, tap, timeout} from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concatMap, defaultIfEmpty, finalize, forkJoin, from,  map,  mergeMap,  of, switchMap, take, tap, timeout} from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -41,6 +41,8 @@ export class ChampionshipPage implements OnInit {
   filterList: any[] = [];
   filterValue: string = "";
 
+  teamRankings$: Observable<any[]>;;
+
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
@@ -49,12 +51,24 @@ export class ChampionshipPage implements OnInit {
     private readonly fbService: FirebaseService,
     private readonly championshipService: ChampionshipService,
     private readonly alertCtrl: AlertController,
-    private readonly menuCtrl: MenuController
+    private readonly menuCtrl: MenuController,
+    private cdr: ChangeDetectorRef,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
 
   ngOnInit() {
+
+    this.teamRankings$ = this.getTeamsWithRankingsForYear();
+    this.teamRankings$.subscribe({
+      next: () => {
+        console.log("RANKING Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("RANKING Error in subscription:", err),
+      complete: () => console.log("RANKING Observable completed")
+    });
+
     const TIMEOUT_DURATION = 1000; // 5 seconds, adjust as needed
 
     const teamGameList: Game[] = [];
@@ -200,6 +214,43 @@ export class ChampionshipPage implements OnInit {
       this.subscriptionPast.unsubscribe();
     }
   }
+
+  getTeamsWithRankingsForYear(year: string = '2023') {
+      return this.authService.getUser$().pipe(
+        take(1),
+        tap(user => console.log("User:", user)),
+        switchMap(user => {
+          if (!user) return of([]); // If no user, return an empty array
+          return this.fbService.getUserTeamRefs(user);
+        }),
+        tap(teams => console.log("Teams:", teams)),
+        mergeMap(teams => {
+          if (teams.length === 0) return of([]);
+          return combineLatest(
+            teams.map(team => 
+              combineLatest({
+                teamDetails: of(team),
+                rankingsTable: this.championshipService.getTeamRankingTable(team.id, year),
+                rankingDetails: this.championshipService.getTeamRanking(team.id, year)
+              }).pipe(
+                map(({ teamDetails, rankingsTable, rankingDetails }) => ({
+                  ...teamDetails,
+                  rankings: rankingsTable,
+                  details: rankingDetails
+                })),
+                tap(result => console.log("Team with rankings and details:", result))
+              )
+            )
+          );
+        }),
+        tap(results => console.log("Final results:", results)),
+        catchError(err => {
+          console.error("Error in getTeamsWithRankingsForYear:", err);
+          return of([]); // Return an empty array on error
+        })
+      );
+    }
+
 
   async openModal(game: Game) {
     // const presentingElement = await this.modalCtrl.getTop();

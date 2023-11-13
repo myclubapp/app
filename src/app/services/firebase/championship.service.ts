@@ -31,7 +31,12 @@ export class ChampionshipService {
 
   getTeamRankingTable(teamId: string, year: string): Observable<any[]> {
     const tableRef = collection(this.firestore, `teams/${teamId}/ranking/${year}/table`);
-    return collectionData(tableRef, { idField: "id" }) as Observable<any>;
+    return collectionData(tableRef, { idField: "id" }) as Observable<any[]>;
+  }
+
+  getTeamRanking(teamId: string, year: string): Observable<any> {
+    const tableRef = doc(this.firestore, `teams/${teamId}/ranking/${year}`);
+    return docData(tableRef, { idField: "id" }) as Observable<any>;
   }
 
   getTeamGameRef(teamId: string, gameId: string): Observable<Game> {

@@ -35,71 +35,85 @@
   </ion-header>
 
 
+
+
+
+
+
+
+
+
+
   <ng-container *ngIf="mode=='ranking'">
-    <ion-list>
-      <ion-list-header>
-        <ion-label>Tabelle (Herren KF 5. Liga II)</ion-label>
-      </ion-list-header>
 
-      <ion-item>
-        <ion-grid>
-          <ion-row>
-            <ion-col size="1">#</ion-col>
-            <ion-col size="5">Name</ion-col>
-            <ion-col size="3">Sp/S/N</ion-col>
-            <ion-col size="2">T</ion-col>
-            <ion-col size="1">P</ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-item>
 
-      <ion-item>
-        <ion-grid>
-          <ion-row>
-            <ion-col size="1">
-              <ion-item>
-                <ion-badge>
-                  1
-                </ion-badge>
-              </ion-item>
-            </ion-col>
-            <ion-col size="5">
-              <ion-item>
-                <ion-avatar slot="start">
-                  <img alt="Kadetten Unihockey Schaffhausen"
-                    src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-                </ion-avatar>
-                <ion-label>Kadetten Unihockey Schaffhausen</ion-label>
-              </ion-item>
-            </ion-col>
-            <ion-col size="3">
-              <ion-item>
-                <ion-label>
-                  6/2/4
-                </ion-label>
-              </ion-item>
-            </ion-col>
-            <ion-col size="2">
-              <ion-item>
-                <ion-label>
-                  40:47
-                </ion-label>
-              </ion-item>
+    <ng-container *ngIf="teamRankings$ | async as teamRankings">
+      <ion-list *ngFor="let entry of teamRankings">
+        <ion-list-header>
+          <ion-label>{{entry.details.title}}</ion-label>
+        </ion-list-header>
+  
+        <ion-item>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="1">#</ion-col>
+              <ion-col size="5">Name</ion-col>
+              <ion-col size="3">Sp/S/N</ion-col>
+              <ion-col size="2">T</ion-col>
+              <ion-col size="1">P</ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+  
+        <ion-item *ngFor="let ranking of entry.rankings">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="1">
+                <ion-item>
+                  <ion-badge>
+                    {{ranking.ranking}}
+                  </ion-badge>
+                </ion-item>
               </ion-col>
-            <ion-col size="1">
-              <ion-item>
-                <ion-label>
-                  4
-                </ion-label>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-item>
-
-    </ion-list>
-
-
+              <ion-col size="5">
+                <ion-item>
+                  <ion-avatar slot="start">
+                    <img alt="{{ranking.name}}"
+                      src="{{ranking.image}}" />
+                  </ion-avatar>
+                  <ion-label>{{ranking.name}}</ion-label>
+                </ion-item>
+              </ion-col>
+              <ion-col size="3">
+                <ion-item>
+                  <ion-label>
+                    {{ranking.games}}/{{ranking.wins}}/{{ranking.loss}}
+                  </ion-label>
+                </ion-item>
+              </ion-col>
+              <ion-col size="2">
+                <ion-item>
+                  <ion-label>
+                    {{ranking.goals}}
+                  </ion-label>
+                </ion-item>
+                </ion-col>
+              <ion-col size="1">
+                <ion-item>
+                  <ion-label>
+                    {{ranking.points}}
+                  </ion-label>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+  
+      </ion-list>
+  
+    </ng-container>
+    
+  
     <ion-text padding>
       <p><b>
           Legende:
@@ -112,16 +126,13 @@
         <li> T = Torbilanz </li>
         <li>P = Punkte</li>
       </ul>
-
+  
     </ion-text>
-
-
+  
+   
 
 
   </ng-container>
-
-
-
 
   <ng-container *ngIf="mode=='games'">
     <ng-container *ngIf="gameList$ | async as gameList; else loading">
