@@ -31,14 +31,12 @@ export class ChampionshipPage implements OnInit {
   gameList$: Observable<Game[]>;
   gameListPast$: Observable<Game[]>;
 
-  gameList: Game[] = [];
-  gameListPast: Game[] = [];
-
   mode = "games" ;
 
+  /*
   private subscription: Subscription;
   private subscriptionPast: Subscription;
-
+*/
   filterList: any[] = [];
   filterValue: string = "";
 
@@ -233,12 +231,12 @@ export class ChampionshipPage implements OnInit {
   }
 
   ngOnDestroy(): void {
-    if (this.subscription) {
+   /* if (this.subscription) {
         this.subscription.unsubscribe();
     }
     if (this.subscriptionPast) {
       this.subscriptionPast.unsubscribe();
-    }
+    }*/
   }
 
   getTeamsWithRankingsForYear(year: string = '2023') {
@@ -433,7 +431,11 @@ export class ChampionshipPage implements OnInit {
     });
     toast.present();
   }
+
+
+
   async openFilter(ev: Event){
+      /*
     let filterList = [];
 
    
@@ -499,7 +501,7 @@ export class ChampionshipPage implements OnInit {
     },
     error: err => console.error('Error in the observable chain:', err)
   });
-  
+  */
   }
 
   }
