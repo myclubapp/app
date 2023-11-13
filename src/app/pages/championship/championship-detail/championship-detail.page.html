@@ -1,14 +1,14 @@
 <ng-container *ngIf="game$ | async as game">
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>{{game?.name}}</ion-title>
+    <ion-title></ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="close()">schliessen</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-  <capacitor-google-map id="map"></capacitor-google-map>
+  <capacitor-google-map #map></capacitor-google-map>
   <ion-list>
     <ion-item>
       <ng-container *ngIf="game.hasOwnProperty('status'); else loading">
@@ -91,7 +91,7 @@
     </ion-item>
   </ion-list>
 
-<!--
+
   <ion-segment [(ngModel)]="mode">
     <ion-segment-button value="yes">
       <ion-label>Anmeldungen: {{attendeeListTrue.length}}</ion-label>
@@ -145,7 +145,7 @@
       <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>
     </ion-item>
   </ion-list>
-  -->
+
 </ion-content>
 
 </ng-container>

@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
+import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { ModalController, NavParams, ToastController } from "@ionic/angular";
 import { Game } from "src/app/models/game";
 import { GoogleMap } from "@capacitor/google-maps";
@@ -18,14 +18,13 @@ import { environment } from "src/environments/environment";
 })
 export class ChampionshipDetailPage implements OnInit {
   @Input("data") game: Game;
-
-  @ViewChild("map")
+  @ViewChild('map')
   mapRef: ElementRef<HTMLElement>;
   newMap: GoogleMap;
 
   game$: Observable<Game>;
 
-  mode = "games";
+  mode = "yes";
 
   user$: Observable<User>;
   user: User;
@@ -40,9 +39,13 @@ export class ChampionshipDetailPage implements OnInit {
     private readonly championshipService: ChampionshipService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
-    private readonly userProfileService: UserProfileService
-  ) { }
-
+    private readonly userProfileService: UserProfileService,
+    private cdr: ChangeDetectorRef,
+  ) { 
+   //  this.setMap();
+  }
+ 
+ 
   ngOnInit() {
     this.game = this.navParams.get("data");
     this.game$ = of(this.game);
@@ -58,14 +61,15 @@ export class ChampionshipDetailPage implements OnInit {
         this.game = {
           ...this.game, ...data
         };
-        //this.cdr.detectChanges();
+        this.cdr.detectChanges();
+  
+        this.setMap();
+        
       },
       error: (err) => console.error("GAMES Error in subscription:", err),
       complete: () => console.log("GAMES Observable completed")
     });
-
-    this.setMap();
-
+   
   }
 
 
@@ -75,6 +79,7 @@ export class ChampionshipDetailPage implements OnInit {
       this.newMap.destroy();
     }
   }
+
 
   getGame(teamId: string, gameId: string) {
     return this.authService.getUser$().pipe(
@@ -91,12 +96,19 @@ export class ChampionshipDetailPage implements OnInit {
         if (!game) return of(null); // If no game is found, return null
         return this.championshipService.getTeamGameAttendeesRef(teamId, gameId).pipe(
           map(attendees => {
+
+            // get firstName & lastName from userProfile Method call for each attendees element
+            // this.userProfileService.getUserProfileById(attendee.id)
+
             const userAttendee = attendees.find(att => att.id == this.user.uid);
             const status = userAttendee ? userAttendee.status : null;
-            /* this.attendeeListTrue = attendees.find(att => att.status == true) || [];
-            this.attendeeListFalse = attendees.find(att => att.status == false) || [];
+
+            //this.attendeeListUndefined
+
+            this.attendeeListTrue = attendees.filter(att => att.status == true) || [];
+            this.attendeeListFalse = attendees.filter(att => att.status == false) || [];
             this.attendeeListUndefined = [];
-     */
+
             return {
               ...game,
               attendees,
@@ -148,12 +160,12 @@ export class ChampionshipDetailPage implements OnInit {
     return await this.modalCtrl.dismiss(this.game, "confirm");
   }
 
+
   async setMap() {
-    //console.log(this.game);
-    const mapRef = document.getElementById('map');
-    const newMap = await GoogleMap.create({
-      id: "my-map", // Unique identifier for this map instance
-      element: mapRef, // mapRef, // reference to the capacitor-google-map element
+
+    this.newMap = await GoogleMap.create({
+      id: "my-map-" + this.game.id, // Unique identifier for this map instance
+      element: this.mapRef.nativeElement, // mapRef, // reference to the capacitor-google-map element
       apiKey: environment.googleMapsApiKey, // Your Google Maps API Key
       config: {
         center: {
@@ -164,17 +176,17 @@ export class ChampionshipDetailPage implements OnInit {
         zoom: 8, // The initial zoom level to be rendered by the map
       },
     });
-    /*
-    await newMap.addMarker({
+
+    // await this.newMap.enableCurrentLocation(true);
+
+    this.newMap.addMarker({
       title: `${this.game.location} in ${this.game.city}`,
       coordinate: {
         lat: Number(this.game.latitude),
         lng: Number(this.game.longitude),
       },
       snippet: `${this.game.location} in ${this.game.city}`,
-    });*/
-
-    /*
+    });
     const permission: PermissionStatus = await Geolocation.checkPermissions();
     try {
       if (
@@ -190,7 +202,7 @@ export class ChampionshipDetailPage implements OnInit {
     try {
       const coordinates = await Geolocation.getCurrentPosition();
       if (coordinates.coords.latitude && coordinates.coords.longitude) {
-        await newMap.addMarker({
+        this.newMap.addMarker({
           title: "Meine Position",
           coordinate: {
             lat: coordinates.coords.latitude,
@@ -202,7 +214,7 @@ export class ChampionshipDetailPage implements OnInit {
       }
     } catch (e) {
       console.log("no coordinates on map");
-    }*/
+    }
   }
 
 }
