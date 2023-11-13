@@ -33,26 +33,13 @@
     </ion-toolbar>
 
   </ion-header>
-
-
-
-
-
-
-
-
-
-
-
   <ng-container *ngIf="mode=='ranking'">
-
-
     <ng-container *ngIf="teamRankings$ | async as teamRankings">
       <ion-list *ngFor="let entry of teamRankings">
         <ion-list-header>
           <ion-label>{{entry.details.title}}</ion-label>
         </ion-list-header>
-  
+
         <ion-item>
           <ion-grid>
             <ion-row>
@@ -64,41 +51,38 @@
             </ion-row>
           </ion-grid>
         </ion-item>
-  
+
         <ion-item *ngFor="let ranking of entry.rankings">
           <ion-grid>
-            <ion-row>
+            <ion-row class="ion-align-items-center">
               <ion-col size="1">
-                {{ranking.ranking}}
+                <ion-badge>
+                  {{ranking.ranking}}
+                </ion-badge>
               </ion-col>
               <ion-col size="5">
-                <ion-item>
-                  <ion-avatar slot="start">
-                    <img alt="{{ranking.name}}"
-                      src="{{ranking.image}}" />
-                  </ion-avatar>
-                  <ion-label>{{ranking.name}}</ion-label>
-                </ion-item>
+
+                <ion-avatar>
+                  <img alt="{{ranking.name}}" src="{{ranking.image}}" />
+                </ion-avatar>
+                {{ranking.name}}
+
               </ion-col>
               <ion-col size="3">
                 {{ranking.games}}/{{ranking.wins}}/{{ranking.loss}}
-     
+
               </ion-col>
               <ion-col size="2">
                 {{ranking.goals}}
-                </ion-col>
+              </ion-col>
               <ion-col size="1">
                 {{ranking.points}}
               </ion-col>
             </ion-row>
           </ion-grid>
         </ion-item>
-  
       </ion-list>
-  
     </ng-container>
-    
-  
     <ion-text padding>
       <p><b>
           Legende:
@@ -111,10 +95,10 @@
         <li> T = Torbilanz </li>
         <li>P = Punkte</li>
       </ul>
-  
+
     </ion-text>
-  
-   
+
+
 
 
   </ng-container>
