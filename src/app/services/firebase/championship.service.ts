@@ -23,9 +23,16 @@ import { Game } from "src/app/models/game";
   providedIn: "root",
 })
 export class ChampionshipService {
-  constructor(private firestore: Firestore = inject(Firestore)) {}
+  constructor(private firestore: Firestore = inject(Firestore)) {
+
+  }
 
   /* TEAM GAME */
+
+  getTeamRankingTable(teamId: string, year: string): Observable<any[]> {
+    const tableRef = collection(this.firestore, `teams/${teamId}/ranking/${year}/table`);
+    return collectionData(tableRef, { idField: "id" }) as Observable<any>;
+  }
 
   getTeamGameRef(teamId: string, gameId: string): Observable<Game> {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
