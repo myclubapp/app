@@ -22,15 +22,17 @@ export class ChampionshipDetailPage implements OnInit {
   @ViewChild("map")
   mapRef: ElementRef<HTMLElement>;
   newMap: GoogleMap;
-  // game$: Observable <Game>;
+
+  game$: Observable<Game>;
+
+  mode = "games";
+
+  user$: Observable<User>;
   user: User;
- 
+
   attendeeListTrue: any[] = [];
   attendeeListFalse: any[] = [];
   attendeeListUndefined: any[] = [];
-  subscription: Subscription;
-
-  segmentMode = true;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -39,68 +41,90 @@ export class ChampionshipDetailPage implements OnInit {
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
     private readonly userProfileService: UserProfileService
-  ) {}
+  ) { }
 
   ngOnInit() {
-
     this.game = this.navParams.get("data");
+    this.game$ = of(this.game);
+
+    this.attendeeListTrue = [];
+    this.attendeeListFalse = [];
+    this.attendeeListUndefined = [];
+
+    this.game$ = this.getGame(this.game.teamId, this.game.id);
+    this.game$.subscribe({
+      next: (data) => {
+        console.log("GAMES Data received");
+        this.game = {
+          ...this.game, ...data
+        };
+        //this.cdr.detectChanges();
+      },
+      error: (err) => console.error("GAMES Error in subscription:", err),
+      complete: () => console.log("GAMES Observable completed")
+    });
+
     this.setMap();
 
-    const game$ = this.authService.getUser$().pipe(
-      take(1),
-      tap(user => this.user = user),
-      //tap(user => console.log(user)),
-      switchMap(user=>this.championshipService.getTeamGameRef(this.game.teamId, this.game.id).pipe(
-        // tap(game=>console.log(game)),
-        concatMap((game:Game) => this.championshipService.getTeamGameAttendeesRef(game.teamId, game.id).pipe(
-          map(attendees => {
-
-           /* //How to read additional userdate for each attendee in atendees?
-            this.userProfileService.getUserProfileById(attendee.id)
-            */
-
-            const userAttendee = attendees.find(att => att.id == this.user.uid);
-            const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
-            return {
-              ...game,
-              status: status,
-              // countAttendees: attendees.filter(att => att.status == true).length,
-              attendees: attendees
-            };
-          }))),
-          tap(game=>this.game),
-          tap(game=>{
-            this.attendeeListTrue = this.game.attendees.filter(member=>member.status === true);
-            this.attendeeListFalse = this.game.attendees.filter(member=>member.status === false);
-           // this.attendeeListUndefined = [];
-          }),
-          finalize(()=>console.log("done")),
-      )));
-
-      this.subscription = combineLatest([game$]).subscribe({
-        next: () => {
-          // console.log(this.game);
-        },
-        error: err => console.error('Error in the observable chain:', err.name, err.message, err.code)
-      });
   }
-  
+
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-  }    if (this.newMap) {
-    this.newMap.destroy();
-}
+
+    if (this.newMap) {
+      this.newMap.destroy();
+    }
   }
+
+  getGame(teamId: string, gameId: string) {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap(user => {
+        this.user = user;
+        if (!user) {
+          console.log("No user found");
+          throw new Error("User not found");
+        }
+      }),
+      switchMap(() => this.championshipService.getTeamGameRef(teamId, gameId)),
+      switchMap(game => {
+        if (!game) return of(null); // If no game is found, return null
+        return this.championshipService.getTeamGameAttendeesRef(teamId, gameId).pipe(
+          map(attendees => {
+            const userAttendee = attendees.find(att => att.id == this.user.uid);
+            const status = userAttendee ? userAttendee.status : null;
+            /* this.attendeeListTrue = attendees.find(att => att.status == true) || [];
+            this.attendeeListFalse = attendees.find(att => att.status == false) || [];
+            this.attendeeListUndefined = [];
+     */
+            return {
+              ...game,
+              attendees,
+              status,
+            };
+          }),
+          catchError(() => of({
+            ...game,
+            attendees: [],
+            status: null,
+          })) // If error in fetching attendees, return game with empty attendees
+        );
+      }),
+      catchError(err => {
+        console.error("Error in getSingleGameWithAttendees:", err);
+        return of(null); // Return null on error
+      })
+    );
+  }
+
   async toggle(status: boolean, game: Game) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
+      `Set Status ${status} for user ${this.user.uid} and team ${this.game.teamId} and game ${game.id}`
     );
     await this.championshipService.setTeamGameAttendeeStatus(
       this.user.uid,
       status,
-      game.teamId,
+      this.game.teamId,
       game.id
     );
     this.presentToast();
@@ -125,9 +149,10 @@ export class ChampionshipDetailPage implements OnInit {
   }
 
   async setMap() {
-    const mapRef = document.getElementById("map");
-    this.newMap = await GoogleMap.create({
-      id: "my-map-" + this.game.id, // Unique identifier for this map instance
+    //console.log(this.game);
+    const mapRef = document.getElementById('map');
+    const newMap = await GoogleMap.create({
+      id: "my-map", // Unique identifier for this map instance
       element: mapRef, // mapRef, // reference to the capacitor-google-map element
       apiKey: environment.googleMapsApiKey, // Your Google Maps API Key
       config: {
@@ -139,15 +164,17 @@ export class ChampionshipDetailPage implements OnInit {
         zoom: 8, // The initial zoom level to be rendered by the map
       },
     });
-    this.newMap.addMarker({
+    /*
+    await newMap.addMarker({
       title: `${this.game.location} in ${this.game.city}`,
       coordinate: {
         lat: Number(this.game.latitude),
         lng: Number(this.game.longitude),
       },
       snippet: `${this.game.location} in ${this.game.city}`,
-    });
+    });*/
 
+    /*
     const permission: PermissionStatus = await Geolocation.checkPermissions();
     try {
       if (
@@ -163,7 +190,7 @@ export class ChampionshipDetailPage implements OnInit {
     try {
       const coordinates = await Geolocation.getCurrentPosition();
       if (coordinates.coords.latitude && coordinates.coords.longitude) {
-        this.newMap.addMarker({
+        await newMap.addMarker({
           title: "Meine Position",
           coordinate: {
             lat: coordinates.coords.latitude,
@@ -175,7 +202,7 @@ export class ChampionshipDetailPage implements OnInit {
       }
     } catch (e) {
       console.log("no coordinates on map");
-    }
+    }*/
   }
 
 }

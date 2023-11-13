@@ -1,3 +1,4 @@
+<ng-container *ngIf="game$ | async as game">
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>{{game?.name}}</ion-title>
@@ -90,11 +91,12 @@
     </ion-item>
   </ion-list>
 
-  <ion-segment [(ngModel)]="segmentMode">
-    <ion-segment-button value="true">
+<!--
+  <ion-segment [(ngModel)]="mode">
+    <ion-segment-button value="yes">
       <ion-label>Anmeldungen: {{attendeeListTrue.length}}</ion-label>
     </ion-segment-button>
-    <ion-segment-button value="false">
+    <ion-segment-button value="no">
       <ion-label>Abmeldungen: {{attendeeListFalse.length}}</ion-label>
     </ion-segment-button>
     <ion-segment-button value="undefined">
@@ -102,62 +104,52 @@
     </ion-segment-button>
   </ion-segment>
 
-  <ion-list *ngIf="segmentMode==true">
+  <ion-list *ngIf="mode=='yes'">
     <ion-item *ngFor="let member of attendeeListTrue">
       <ion-icon
-        color="warning"
-        slot="start"
-        *ngIf="member?.status === null"
-        name="help-circle"
-      >
-      </ion-icon>
-      <ion-icon
-        color="danger"
-        slot="start"
-        *ngIf="member?.status === false"
-        name="close-circle"
-      >
-      </ion-icon>
-      <ion-icon
         color="success"
         slot="start"
-        *ngIf="member?.status === true"
         name="checkmark-circle"
       >
       </ion-icon>
 
-      <ion-label>{{member?.firstName}} {{member?.lastName}}</ion-label>
+      <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>
     </ion-item>
   </ion-list>
 
-  <ion-list *ngIf="segmentMode==false">
+  <ion-list *ngIf="mode=='no'">
     <ion-item *ngFor="let member of attendeeListFalse">
-      <ion-icon
-        color="warning"
-        slot="start"
-        *ngIf="member?.status === null"
-        name="help-circle"
-      >
-      </ion-icon>
+
       <ion-icon
         color="danger"
         slot="start"
-        *ngIf="member?.status === false"
         name="close-circle"
       >
       </ion-icon>
+     
+
+      <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-list *ngIf="mode=='undefined'">
+    <ion-item *ngFor="let member of attendeeListUndefined">
       <ion-icon
-        color="success"
+        color="warning"
         slot="start"
-        *ngIf="member?.status === true"
-        name="checkmark-circle"
+        name="help-circle"
       >
       </ion-icon>
 
-      <ion-label>{{member?.firstName}} {{member?.lastName}}</ion-label>
+
+      <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>
     </ion-item>
   </ion-list>
+  -->
 </ion-content>
+
+</ng-container>
+
 
 <ng-template #loading>
   <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>
