@@ -127,23 +127,24 @@
               (click)="toggle( true, game)"></ion-icon>
             <ion-icon *ngIf="game.status === true" slot="icon-only" color="success" slot="start" name="checkmark-circle"
               (click)="toggle(false, game)"></ion-icon>
-            <ion-label (click)="openModal(game)">
+            <ion-label (click)="openChampionshipDetailModal(game)">
               <h2>{{game.teamHome}} vs.</h2>
               <h2>{{game.teamAway}}</h2>
-              <h3>
-                <ion-icon slot="icon-only" name="location-outline"></ion-icon>
-                {{game.location}} {{game.city}}
-              </h3>
               <h3>
                 <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
                 {{game.date}} {{game.time}} Uhr
               </h3>
               <h3>
+                <ion-icon slot="icon-only" name="location-outline"></ion-icon>
+                {{game.location}} {{game.city}}
+              </h3>
+        
+              <h3>
                 <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
                 {{game.liga}} {{game.teamName}}
               </h3>
             </ion-label>
-            <ion-note slot="end" (click)="openModal(game)">
+            <ion-note slot="end" (click)="openChampionshipDetailModal(game)">
               <ion-badge color="primary">{{game.countAttendees}}</ion-badge>
             </ion-note>
           </ion-item>
@@ -193,23 +194,23 @@
               ></ion-icon>
             <ion-icon *ngIf="game.status === true" slot="icon-only" color="success" slot="start" name="checkmark-circle"
              ></ion-icon>
-            <ion-label class="ion-text-wrap" (click)="openModal(game)">
+            <ion-label class="ion-text-wrap" (click)="openChampionshipDetailModal(game)">
               <h2>{{game.teamHome}} vs.</h2>
               <h2>{{game.teamAway}}</h2>
               <h3>
-                <ion-icon slot="icon-only" name="location"></ion-icon>:
-                {{game.location}} {{game.city}}
+                <ion-icon slot="icon-only" name="time"></ion-icon> {{game.date}}
+                {{game.time}} Uhr
               </h3>
               <h3>
-                <ion-icon slot="icon-only" name="time"></ion-icon> {{game.date}}
-                {{game.time}}
+                <ion-icon slot="icon-only" name="location"></ion-icon>:
+                {{game.location}} {{game.city}}
               </h3>
               <h3>
                 <ion-icon slot="icon-only" name="trophy"></ion-icon> {{game.liga}}
                 {{game.teamName}}
               </h3>
             </ion-label>
-            <ion-note slot="end" (click)="openModal(game)">
+            <ion-note slot="end" (click)="openChampionshipDetailModal(game)">
               <ion-badge color="primary">{{game.countAttendees}}</ion-badge>
             </ion-note>
           </ion-item>

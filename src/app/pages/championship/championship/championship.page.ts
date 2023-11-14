@@ -378,7 +378,7 @@ export class ChampionshipPage implements OnInit {
     }
     
     
-  async openModal(game: Game) {
+  async openChampionshipDetailModal(game: Game) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: ChampionshipDetailPage,
@@ -397,6 +397,7 @@ export class ChampionshipPage implements OnInit {
     }
   }
 
+  // List item
   async toggle(status: boolean, game: Game) {
     console.log(`Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}` );
     await this.championshipService.setTeamGameAttendeeStatus(
@@ -408,6 +409,7 @@ export class ChampionshipPage implements OnInit {
     this.presentToast();
   }
 
+  //Sliding
   async toggleItem(slidingItem: IonItemSliding, status: boolean, game: Game) {
     slidingItem.closeOpened();
 

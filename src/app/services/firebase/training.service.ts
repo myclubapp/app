@@ -10,6 +10,7 @@ import {
   setDoc,
   query,
   where,
+  docData,
 } from "@angular/fire/firestore";
 
 // import firebase from 'firebase/compat/app';
@@ -44,6 +45,12 @@ export class TrainingService {
       training
     );
   }
+
+  getTeamTrainingRef(teamId: string, trainingId: string): Observable<Training> {
+    // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
+    const gameRef = doc(this.firestore, `teams/${teamId}/trainings/${trainingId}`);
+    return docData(gameRef, { idField: "id" }) as Observable<Training>;
+  } 
 
   /* TEAM TrainingS */
   getTeamTrainingsRefs(teamId: string): Observable<Training[]> {

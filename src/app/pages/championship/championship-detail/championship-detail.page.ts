@@ -39,7 +39,6 @@ export class ChampionshipDetailPage implements OnInit {
     private readonly championshipService: ChampionshipService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
-    private readonly userProfileService: UserProfileService,
     private cdr: ChangeDetectorRef,
   ) { 
    //  this.setMap();

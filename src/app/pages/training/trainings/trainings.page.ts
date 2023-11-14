@@ -16,6 +16,7 @@ import { TrainingService } from "src/app/services/firebase/training.service";
 import { TrainingCreatePage } from "../training-create/training-create.page";
 import { Team } from "src/app/models/team";
 import { Timestamp } from "firebase/firestore";
+import { TrainingDetailPage } from "../training-detail/training-detail.page";
 
 @Component({
   selector: "app-trainings",
@@ -390,6 +391,24 @@ this.subscription = this.trainingList$.subscribe({
     );
   }
   
+  async openTrainingDetailModal(training: Training) {
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalController.create({
+      component: TrainingDetailPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: training,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
 
 
   async openTrainingCreateModal() {
@@ -411,12 +430,41 @@ this.subscription = this.trainingList$.subscribe({
     }
   }
 
-  /*async getUser() {
-    this.user$ = await this.authService.getUser$();
-    this.user$.subscribe((user) => {
-      this.user = user;
+
+  async copyTraining(slidingItem: IonItemSliding, training) {
+    slidingItem.closeOpened();
+
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalController.create({
+      component: TrainingCreatePage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: training,
+      },
     });
-  }*/
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+
+  }
+
+
+  async deleteTraining(slidingItem: IonItemSliding, training) {
+    slidingItem.closeOpened();
+    const toast = await this.toastController.create({
+      message: "Delete",
+      color: "primary",
+      duration: 2000,
+      position: "top",
+    });
+    toast.present();
+  }
+
 
   async toggle(status: boolean, training: Training) {
     console.log(
@@ -453,41 +501,6 @@ this.subscription = this.trainingList$.subscribe({
   async presentToast() {
     const toast = await this.toastController.create({
       message: "Änderung wurde gespeichert",
-      color: "primary",
-      duration: 2000,
-      position: "top",
-    });
-    toast.present();
-  }
-
-
-  async copyTraining(slidingItem: IonItemSliding, training) {
-    slidingItem.closeOpened();
-
-    // const presentingElement = await this.modalCtrl.getTop();
-    const modal = await this.modalController.create({
-      component: TrainingCreatePage,
-      presentingElement: this.routerOutlet.nativeEl,
-      canDismiss: true,
-      showBackdrop: true,
-      componentProps: {
-        data: training,
-      },
-    });
-    modal.present();
-
-    const { data, role } = await modal.onWillDismiss();
-
-    if (role === "confirm") {
-    }
-
-  }
-
-
-  async deleteTraining(slidingItem: IonItemSliding, training) {
-    slidingItem.closeOpened();
-    const toast = await this.toastController.create({
-      message: "Delete",
       color: "primary",
       duration: 2000,
       position: "top",
