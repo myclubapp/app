@@ -7,8 +7,9 @@
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
-  <ion-content class="ion-padding">
-    <ion-list>
+    <!-- class="ion-padding" -->
+  <ion-content >
+    <ion-list [inset]="true">
       <ion-list-header>
         Details
       </ion-list-header>
@@ -60,7 +61,7 @@
       <ion-list>
 
         <ion-list-header>
-          An/Abwesenheiten
+          An-/Abwesenheiten
         </ion-list-header>
         <ion-item>
           <ng-container *ngIf="training.hasOwnProperty('status'); else loading">
@@ -106,7 +107,7 @@
         <ion-label>Abmeldungen: {{attendeeListFalse.length}}</ion-label>
       </ion-segment-button>
       <ion-segment-button value="undefined">
-        <ion-label>Keine Antwort {{attendeeListUndefined.length}}</ion-label>
+        <ion-label>Keine Antwort: {{attendeeListUndefined.length}}</ion-label>
       </ion-segment-button>
     </ion-segment>
   
