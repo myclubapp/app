@@ -172,7 +172,7 @@ export class ChampionshipDetailPage implements OnInit {
           lat: Number(this.game.latitude),
           lng: Number(this.game.longitude),
         },
-        zoom: 8, // The initial zoom level to be rendered by the map
+        zoom: 12, // The initial zoom level to be rendered by the map
       },
     });
 

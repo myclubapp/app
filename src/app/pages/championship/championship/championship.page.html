@@ -6,7 +6,7 @@
     <ion-title>Meisterschaft</ion-title>
 
     <ion-buttons slot="end">
-   <!--   <ion-button (click)="openFilter($event)">
+      <!--   <ion-button (click)="openFilter($event)">
         <ion-icon slot="icon-only" name="filter"></ion-icon>
       </ion-button>-->
     </ion-buttons>
@@ -138,7 +138,7 @@
                 <ion-icon slot="icon-only" name="location-outline"></ion-icon>
                 {{game.location}} {{game.city}}
               </h3>
-        
+
               <h3>
                 <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
                 {{game.liga}} {{game.teamName}}
@@ -188,12 +188,12 @@
 
         <ion-item-sliding #item *ngFor="let game of gameListPast">
           <ion-item>
-            <ion-icon *ngIf="game.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
-              ></ion-icon>
-            <ion-icon *ngIf="game.status === false" slot="icon-only" color="danger" slot="start" name="close-circle"
-              ></ion-icon>
-            <ion-icon *ngIf="game.status === true" slot="icon-only" color="success" slot="start" name="checkmark-circle"
-             ></ion-icon>
+            <ion-icon *ngIf="game.status === null" slot="icon-only" color="warning" slot="start"
+              name="help-circle"></ion-icon>
+            <ion-icon *ngIf="game.status === false" slot="icon-only" color="danger" slot="start"
+              name="close-circle"></ion-icon>
+            <ion-icon *ngIf="game.status === true" slot="icon-only" color="success" slot="start"
+              name="checkmark-circle"></ion-icon>
             <ion-label class="ion-text-wrap" (click)="openChampionshipDetailModal(game)">
               <h2>{{game.teamHome}} vs.</h2>
               <h2>{{game.teamAway}}</h2>
