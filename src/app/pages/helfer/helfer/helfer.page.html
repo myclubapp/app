@@ -19,7 +19,7 @@
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="eventsList$ | async as eventsList; else loading">
+  <ng-container *ngIf="helferList$ | async as eventsList; else loading">
     <ion-list *ngIf="eventsList.length > 0">
       <ion-list-header>
         <ion-label>Kommende Helferevents</ion-label>
@@ -104,7 +104,7 @@
     </ion-list>
   </ng-container>
 
-  <ng-container *ngIf="eventsListPast$ | async as eventsListPast; else loading">
+  <ng-container *ngIf="helferListPast$ | async as eventsListPast; else loading">
     <ion-list *ngIf="eventsListPast.length > 0">
       <ion-list-header>
         <ion-label>Vergangene Helferevents</ion-label>

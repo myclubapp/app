@@ -118,7 +118,31 @@ export class EventService {
   /* HELFER EVENTS */
   getClubHelferEventRefs(clubId: string): Observable<HelferEvent[]>{
     const eventsRefList = collection(this.firestore, `club/${clubId}/helferEvents`);
-    return collectionData(eventsRefList, {
+    const q = query(
+      eventsRefList,
+      where(
+        "date",
+        ">=",
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+      )
+    ); // heute - 1 Tag
+    return collectionData(q, {
+      idField: "id",
+    }) as unknown as Observable<HelferEvent[]>;
+  }
+  getClubHelferEventPastRefs(clubId: string): Observable<HelferEvent[]>{
+    const eventsRefList = collection(this.firestore, `club/${clubId}/helferEvents`);
+    const q = query(
+      eventsRefList,
+      where(
+        "date",
+        "<",
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+      ),
+      limit(20)
+    ); // heute - 1 Tag
+
+    return collectionData(q, {
       idField: "id",
     }) as unknown as Observable<HelferEvent[]>;
   }
