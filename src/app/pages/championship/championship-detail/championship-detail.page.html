@@ -62,7 +62,7 @@
 
 
 
-    <ion-list [inset]="true">
+    <ion-list [inset]="true" lines="none">
       <ion-list-header>
         An-/Abwesenheiten
       </ion-list-header>
@@ -86,7 +86,8 @@
           <ion-label>Mein Status</ion-label>
         </ng-container>
       </ion-item>
-
+    </ion-list>
+      <ion-list [inset]="true">
       <ion-accordion-group [multiple]="true" [value]="['yes']">
         <ion-accordion value="yes">
           <ion-item slot="header" color="light">
@@ -94,7 +95,7 @@
           </ion-item>
           <div slot="content"> <!-- class="ion-padding"-->
             <ion-list>
-              <ion-item *ngFor="let member of attendeeListTrue">
+              <ion-item *ngFor="let member of attendeeListTrue" detail="true">
                 <ion-icon color="success" slot="start" name="checkmark-circle">
                 </ion-icon>
         
@@ -109,7 +110,7 @@
           </ion-item>
           <div slot="content"> <!-- class="ion-padding"-->
             <ion-list>
-              <ion-item *ngFor="let member of attendeeListFalse">
+              <ion-item *ngFor="let member of attendeeListFalse" detail="true">
         
                 <ion-icon color="danger" slot="start" name="close-circle">
                 </ion-icon>
@@ -126,7 +127,7 @@
           </ion-item>
           <div slot="content"> <!-- class="ion-padding"-->
             <ion-list>
-              <ion-item *ngFor="let member of attendeeListUndefined">
+              <ion-item *ngFor="let member of attendeeListUndefined" detail="true">
                 <ion-icon color="warning" slot="start" name="help-circle">
                 </ion-icon>
                 <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>

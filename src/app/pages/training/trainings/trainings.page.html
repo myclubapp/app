@@ -24,7 +24,7 @@
   </ion-header>
 
   <ng-container *ngIf="trainingList$ | async as trainingList; else loading">
-    <ion-list *ngIf="trainingList.length > 0">
+    <ion-list *ngIf="trainingList.length > 0"  lines="full">
       <ion-list-header>
         <ion-label>Kommende Trainings</ion-label>
       </ion-list-header>
@@ -38,8 +38,8 @@
         </ion-label>
       </ion-item>
 
-      <ion-item-sliding #item *ngFor="let training of trainingList">
-        <ion-item>
+      <ion-item-sliding #item *ngFor="let training of trainingList" >
+        <ion-item type="button" detail="true" >
           <ion-icon *ngIf="training.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
             (click)="toggle(true, training)"></ion-icon>
           <ion-icon *ngIf="training.status === false" slot="icon-only" color="danger" slot="start" name="close-circle"
@@ -103,7 +103,7 @@
     </ion-list>
   </ng-container>
   <ng-container *ngIf="trainingListPast$ | async as trainingListPast; else loading">
-    <ion-list *ngIf="trainingListPast.length > 0">
+    <ion-list *ngIf="trainingListPast.length > 0" lines="full">
 
       <ion-list-header>
         <ion-label>Vergangene Trainings</ion-label>
@@ -117,7 +117,7 @@
         </ion-label>
       </ion-item>
       <ion-item-sliding #item *ngFor="let training of trainingListPast">
-        <ion-item>
+        <ion-item type="button" detail="true">
           <ion-icon *ngIf="training.status === null" slot="icon-only" color="warning" slot="start"
             name="help-circle"></ion-icon>
           <ion-icon *ngIf="training.status === false" slot="icon-only" color="danger" slot="start"
