@@ -67,14 +67,14 @@
       <ion-list-header>
         An-/Abwesenheiten
       </ion-list-header>
-      <ion-item class="myclubStatus">
+      <ion-item >
         <ng-container *ngIf="training.hasOwnProperty('status'); else loading">
-          <ion-fab-button (click)="toggle(true, training)" size="small" color="warning" slot="start"
+          <ion-fab-button  (click)="toggle(true, training)" size="small" color="warning" slot="start"
             *ngIf="training.status === null">
             <ion-icon name="help-circle"> </ion-icon>
           </ion-fab-button>
 
-          <ion-fab-button (click)="toggle(true, training)" size="small" color="danger" slot="start"
+          <ion-fab-button class="myclubStatus" (click)="toggle(true, training)" size="small" color="danger" slot="start"
             *ngIf="training.status === false">
             <ion-icon name="close-circle"> </ion-icon>
           </ion-fab-button>
