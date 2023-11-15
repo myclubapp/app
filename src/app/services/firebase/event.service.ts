@@ -109,7 +109,7 @@ export class EventService {
     console.log("event");
     console.log(event);
     return addDoc(
-      collection(this.firestore, `userProfile/${user.uid}/clubEvent`),
+      collection(this.firestore, `userProfile/${user.uid}/clubEvents`),
       event
     );
   }
