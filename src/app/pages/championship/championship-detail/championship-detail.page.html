@@ -66,7 +66,7 @@
       <ion-list-header>
         An-/Abwesenheiten
       </ion-list-header>
-      <ion-item>
+      <ion-item class="myclubStatus">
         <ng-container *ngIf="game.hasOwnProperty('status'); else loading">
           <ion-fab-button (click)="toggle(true, game)" size="small" color="warning" slot="start"
             *ngIf="game.status === null">
@@ -136,7 +136,9 @@
           </div>
         </ion-accordion>
       </ion-accordion-group>
+
     </ion-list>
+
   </ion-content>
 
 </ng-container>
