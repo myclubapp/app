@@ -114,6 +114,13 @@ export class EventService {
     );
   }
 
+  getClubEventAttendeesRef(clubId: string,  eventId: string): Observable<any[]>  {
+    const attendeesRefList = collection(this.firestore, `club/${clubId}/events/${eventId}/attendees`);
+    return collectionData(attendeesRefList, {
+      idField: "id",
+    }) as unknown as Observable<any[]>;
+  }
+
   
   /* HELFER EVENTS */
   getClubHelferEventRefs(clubId: string): Observable<HelferEvent[]>{
@@ -162,5 +169,8 @@ export class EventService {
       event
     );
   }
+
+
+
 
 }

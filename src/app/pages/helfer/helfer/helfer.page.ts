@@ -8,15 +8,14 @@ import {
   AlertController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, Subscription, catchError, combineLatest, concatMap, defaultIfEmpty, finalize, forkJoin, from,  map,  mergeMap,  of, switchMap, take, tap, timeout} from "rxjs";
-import { HelferEvent, Veranstaltung } from "src/app/models/event";
+import { Observable, catchError, combineLatest,  map,  mergeMap,  of, switchMap, take, tap} from "rxjs";
+import { Veranstaltung } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
-import { Club } from "src/app/models/club";
-import { Team } from "src/app/models/team";
 import { HelferAddPage } from '../helfer-add/helfer-add.page';
 import { Timestamp } from 'firebase/firestore';
+import { HelferDetailPage } from '../helfer-detail/helfer-detail.page';
 
 @Component({
   selector: 'app-helfer',
@@ -38,7 +37,7 @@ export class HelferPage implements OnInit {
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
-    private readonly modalController: ModalController,
+    private readonly modalCtrl: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly eventService: EventService,
@@ -73,86 +72,6 @@ export class HelferPage implements OnInit {
       error: (err) => console.error("HELFER PAST Error in subscription:", err),
       complete: () => console.log("HELFER PAST Observable completed")
     });
-
-
-
-
-
-
-
-
-/*
-    const TIMEOUT_DURATION = 1000; // 5 seconds, adjust as needed
-
-    const helferEventList: HelferEvent[] = [];
-    const helferEventPastList: HelferEvent[] = [];
-
-    // CURRENT EventS
-    const helferEvent$ = this.authService.getUser$().pipe(
-      take(1),
-      tap(() => console.log("Fetching user...")),
-      switchMap(user => {
-        console.log("Got user:", user);
-        this.user = user;
-        return this.fbService.getUserClubRefs(user);
-      }),
-      tap(clubs => console.log("Fetched clubs:", clubs)),
-      concatMap(clubArray => from(clubArray)),
-      tap(club => console.log("Processing club:", club.id)),
-      concatMap(club => this.eventService.getClubHelferEventRefs(club.id).pipe(
-        timeout(TIMEOUT_DURATION), // Adding timeout here 
-        take(1),
-        tap(events => console.log(`Fetched Events for Club ${club.id}:`, events)),
-        switchMap(events => {
-          // Fetch attendees for each Event and combine the results
-          const eventWithAttendees$ = events.map(event => 
-            this.eventService.getClubHelferEventAttendeesRef(club.id, event.id).pipe(
-              take(1),
-              map(attendees => {
-                const userAttendee = attendees.find(att => att.id == this.user.uid);
-                const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
-                return {
-                  ...event,
-                  status: status,
-                  countAttendees: attendees.filter(att => att.status == true).length,
-                  attendees: attendees
-                };
-              })
-            )
-          );
-          return forkJoin(eventWithAttendees$);
-        }),
-        catchError(error => {
-          if (error.name === 'TimeoutError') {
-            console.error(`Error fetching Events for Club ${club.id}:`);
-            return of([]);
-          } else {
-          // Handle other errors, maybe rethrow or return a default object
-            throw error;
-          }
-        })
-      )),
-      tap(events => events.forEach(event => helferEventList.push(event))),
-      finalize(() => console.log("Team Event fetching completed"))
-    );
-
-
-    // Use combineLatest to get results when both observables have emitted
-   this.subscription = combineLatest([helferEvent$]).subscribe({
-      next: () => {
-        this.eventsList = [...helferEventList].sort((a, b):any => {
-          // return a.date.getTime() > b.date.getTime();
-          return a.date.toMillis() < b.date.seconds ;
-        });
-        this.eventsList = this.eventsList.filter((event, index, self) => 
-          index === self.findIndex((t) => (t.id === event.id))
-        );
-        this.eventsList$ = of(this.eventsList);
-        console.log("Combined Event list created");
-      },
-      error: err => console.error('Error in the observable chain:', err)
-    });
-*/
   }
 
   getHelferEvent() {
@@ -368,7 +287,7 @@ export class HelferPage implements OnInit {
 
   async openEventCreateModal() {
     // const presentingElement = await this.modalCtrl.getTop();
-    const modal = await this.modalController.create({
+    const modal = await this.modalCtrl.create({
       component: HelferAddPage,
       presentingElement: this.routerOutlet.nativeEl,
       canDismiss: true,
@@ -385,4 +304,25 @@ export class HelferPage implements OnInit {
     }
   }
  
+  async openEventDetailModal(event: Veranstaltung) {
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalCtrl.create({
+      component: HelferDetailPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: event,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+ 
+
+
 }

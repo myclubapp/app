@@ -22,7 +22,7 @@
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="eventsList$ | async as eventsList; else loading">
+  <ng-container *ngIf="eventList$ | async as eventsList; else loading">
     <ion-list *ngIf="eventsList.length > 0">
       <ion-list-header>
         <ion-label>Kommende Veranstaltungen</ion-label>
@@ -105,9 +105,17 @@
         </ion-item-options>-->
       </ion-item-sliding>
     </ion-list>
+    <ion-list class="ion-padding" *ngIf="eventsList.length==0">
+      <ion-list-header>
+        <ion-label>Kommende Veranstaltungen</ion-label>
+      </ion-list-header>
+      <ion-note>
+        keine Veranstaltungen gefunden
+      </ion-note>
+    </ion-list>
   </ng-container>
 
-  <ng-container *ngIf="eventsListPast$ | async as eventsListPast; else loading">
+  <ng-container *ngIf="eventListPast$ | async as eventsListPast; else loading">
     <ion-list *ngIf="eventsListPast.length > 0">
       <ion-list-header>
         <ion-label>Vergangene Veranstaltungen</ion-label>
@@ -187,6 +195,14 @@
         </ion-item-option>
       </ion-item-options>-->
       </ion-item-sliding>
+    </ion-list>
+    <ion-list class="ion-padding" *ngIf="eventsListPast.length==0">
+      <ion-list-header>
+        <ion-label>Vergangene Veranstaltungen</ion-label>
+      </ion-list-header>
+      <ion-note>
+        keine Veranstaltungen gefunden
+      </ion-note>
     </ion-list>
   </ng-container>
 

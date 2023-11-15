@@ -127,6 +127,10 @@ const routes: Routes = [
     path: 'helfer-add',
     loadChildren: () => import('./pages/helfer/helfer-add/helfer-add.module').then( m => m.HelferAddPageModule)
   },
+  {
+    path: 'helfer-detail',
+    loadChildren: () => import('./pages/helfer/helfer-detail/helfer-detail.module').then( m => m.HelferDetailPageModule)
+  },
 
 ];
 
