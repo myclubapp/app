@@ -21,7 +21,7 @@ jobs:
       - name: Build (Default Unihockey)
         run: npm run build:prod
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@v12.8.0
         with:
           args: deploy --only hosting:app-unihockey
         env:
@@ -44,7 +44,7 @@ jobs:
       - name: Build app-kadetten-unihockey
         run: npm run build:app-kadetten-unihockey
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@v12.8.0
         with:
           args: deploy --only hosting:app-kadetten-unihockey
         env:
@@ -67,7 +67,7 @@ jobs:
       - name: Build app-uhc-win-u
         run: npm run build:app-uhc-win-u
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@v12.8.0
         with:
           args: deploy --only hosting:app-uhc-win-u
         env:
@@ -90,7 +90,7 @@ jobs:
       - name: Build app-stv-spreitenbach
         run: npm run build:app-stv-spreitenbach
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@v12.8.0
         with:
           args: deploy --only hosting:app-stv-spreitenbach
         env:
@@ -113,7 +113,7 @@ jobs:
       - name: Build app-vbc-schaffhausen
         run: npm run build:app-vbc-schaffhausen
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@v12.8.0
         with:
           args: deploy --only hosting:app-vbc-schaffhausen
         env:
@@ -136,7 +136,7 @@ jobs:
       - name: Build app-kadetten-handball
         run: npm run build:app-kadetten-handball
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+        uses: w9jds/firebase-action@v12.8.0
         with:
           args: deploy --only hosting:app-kadetten-handball
         env:
