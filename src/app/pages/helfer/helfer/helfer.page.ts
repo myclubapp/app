@@ -9,7 +9,7 @@ import {
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
 import { Observable, catchError, combineLatest,  map,  mergeMap,  of, switchMap, take, tap} from "rxjs";
-import { Veranstaltung } from "src/app/models/event";
+import { HelferEvent, Veranstaltung } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
@@ -173,38 +173,41 @@ export class HelferPage implements OnInit {
       })
     );
   }
-  async toggle(status: boolean, event: Veranstaltung) {
+  async toggle(status: boolean, training: Training) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
     );
-/*
-    await this.eventService.setTeamEventAttendeeStatus(
+    await this.eventService.setHelferEventAttendeeStatus(
       this.user.uid,
       status,
-      event.teamId,
-      event.id
-    );*/
+      training.teamId,
+      training.id
+    );
     this.presentToast();
   }
 
-  async toggleItem(slidingItem: IonItemSliding, status: boolean, event: Veranstaltung) {
+  async toggleItem(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    event: HelferEvent
+  ) {
     slidingItem.closeOpened();
 
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
     );
-    /*await this.eventService.setTeamEventAttendeeStatus(
+    await this.eventService.setHelferEventAttendeeStatus(
       this.user.uid,
       status,
-      event.teamId,
+      event.clubId,
       event.id
-    );*/
+    );
     this.presentToast();
   }
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: "changes has been saved",
+      message: "Änderung wurde gespeichert",
       color: "primary",
       duration: 2000,
       position: "top",
@@ -284,6 +287,39 @@ export class HelferPage implements OnInit {
   */
   }
 
+  async copyEvent(slidingItem: IonItemSliding, event) {
+    slidingItem.closeOpened();
+
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalCtrl.create({
+      component: HelferAddPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: event,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+
+  }
+
+
+  async deleteEvent(slidingItem: IonItemSliding, event) {
+    slidingItem.closeOpened();
+    const toast = await this.toastController.create({
+      message: "Delete",
+      color: "primary",
+      duration: 2000,
+      position: "top",
+    });
+    toast.present();
+  }
 
   async openEventCreateModal() {
     // const presentingElement = await this.modalCtrl.getTop();

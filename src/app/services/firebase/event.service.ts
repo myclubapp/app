@@ -98,6 +98,18 @@ export class EventService {
   */
 
   /* CLUB EventS */
+  async setClubEventAttendeeStatus(
+    userId: string,
+    status: boolean,
+    clubId: string,
+    eventId: string
+  ){
+    const statusRef = doc(
+      this.firestore,
+      `club/${clubId}/events/${eventId}/attendees/${userId}`
+    );
+    return await setDoc(statusRef, { status });
+  }
   getClubEventsRef(clubId: string): Observable<Veranstaltung[]> {
     const eventsRefList = collection(this.firestore, `club/${clubId}/events`);
     return collectionData(eventsRefList, {
@@ -123,6 +135,21 @@ export class EventService {
 
   
   /* HELFER EVENTS */
+
+  async setHelferEventAttendeeStatus(
+    userId: string,
+    status: boolean,
+    clubId: string,
+    eventId: string
+  ){
+    const statusRef = doc(
+      this.firestore,
+      `club/${clubId}/helferEvents/${eventId}/attendees/${userId}`
+    );
+    return await setDoc(statusRef, { status });
+  }
+
+
   getClubHelferEventRefs(clubId: string): Observable<HelferEvent[]>{
     const eventsRefList = collection(this.firestore, `club/${clubId}/helferEvents`);
     const q = query(

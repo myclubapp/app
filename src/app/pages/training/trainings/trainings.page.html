@@ -101,7 +101,17 @@
         </ion-item-options>-->
       </ion-item-sliding>
     </ion-list>
+
+    <ion-list class="ion-padding" *ngIf="trainingList.length==0">
+      <ion-list-header>
+        <ion-label>Kommende Trainings</ion-label>
+      </ion-list-header>
+      <ion-note>
+        keine Trainings gefunden
+      </ion-note>
+    </ion-list>
   </ng-container>
+
   <ng-container *ngIf="trainingListPast$ | async as trainingListPast; else loading">
     <ion-list *ngIf="trainingListPast.length > 0" lines="full">
 
@@ -178,6 +188,15 @@
           </ion-item-option>
         </ion-item-options>
       </ion-item-sliding>
+    </ion-list>
+
+    <ion-list class="ion-padding" *ngIf="trainingListPast.length==0">
+      <ion-list-header>
+        <ion-label>Vergangene Trainings</ion-label>
+      </ion-list-header>
+      <ion-note>
+        keine Trainings gefunden
+      </ion-note>
     </ion-list>
   </ng-container>
 
