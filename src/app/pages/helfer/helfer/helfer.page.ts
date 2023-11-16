@@ -173,15 +173,15 @@ export class HelferPage implements OnInit {
       })
     );
   }
-  async toggle(status: boolean, training: Training) {
+  async toggle(status: boolean, event: Veranstaltung) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
+      `Set Status ${status} for user ${this.user.uid} and team ${event.clubId} and training ${event.id}`
     );
     await this.eventService.setHelferEventAttendeeStatus(
       this.user.uid,
       status,
-      training.teamId,
-      training.id
+      event.clubId,
+      event.id
     );
     this.presentToast();
   }
@@ -189,12 +189,12 @@ export class HelferPage implements OnInit {
   async toggleItem(
     slidingItem: IonItemSliding,
     status: boolean,
-    event: HelferEvent
+    event: Veranstaltung
   ) {
     slidingItem.closeOpened();
 
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
+      `Set Status ${status} for user ${this.user.uid} and team ${event.clubId} and training ${event.id}`
     );
     await this.eventService.setHelferEventAttendeeStatus(
       this.user.uid,
