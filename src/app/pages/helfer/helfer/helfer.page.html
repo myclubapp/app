@@ -40,8 +40,8 @@
             (click)="toggle(true, event)"></ion-icon>
           <ion-icon *ngIf="event.status === false" slot="icon-only" color="danger" slot="start" name="close-circle"
             (click)="toggle( true, event)"></ion-icon>
-          <ion-icon *ngIf="event.status === true" slot="icon-only" color="success" slot="start"
-            name="checkmark-circle" (click)="toggle(false, event)"></ion-icon>
+          <ion-icon *ngIf="event.status === true" slot="icon-only" color="success" slot="start" name="checkmark-circle"
+            (click)="toggle(false, event)"></ion-icon>
           <ion-label (click)="openEventDetailModal(event)">
             <h2>
               {{event.name}}
@@ -53,10 +53,10 @@
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="location-outline"></ion-icon>
-              {{event.streetAndNumber}} {{event.city}}
+              {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
 
-  
+
           </ion-label>
           <ion-note slot="end" (click)="openEventDetailModal(event)">
             <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
@@ -89,7 +89,7 @@
 
     <ion-list class="ion-padding" *ngIf="eventsList.length==0">
       <ion-list-header>
-        <ion-label>Kommende Veranstaltungen</ion-label>
+        <ion-label>Kommende Helferevents</ion-label>
       </ion-list-header>
       <ion-note>
         keine Veranstaltungen gefunden
@@ -118,21 +118,22 @@
             name="close-circle"></ion-icon>
           <ion-icon *ngIf="event.status === true" slot="icon-only" color="success" slot="start"
             name="checkmark-circle"></ion-icon>
-          <ion-label>
-            <h2>
-              {{event.name}}
-            </h2>
-            <h3>
-              <ion-icon slot="icon-only" name="location-outline"></ion-icon>
-              {{event.streetAndNumber}} {{event.city}}
-            </h3>
-            <h3>
-              <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
-              {{event.date.toDate() | date:'dd.MM.YYYY '}} {{event.timeFrom | date:'HH:mm'}} Uhr -
-              {{event.timeTo | date:'HH:mm'}} Uhr
-            </h3>
-
-          </ion-label>
+            <ion-label (click)="openEventDetailModal(event)">
+              <h2>
+                {{event.name}}
+              </h2>
+              <h3>
+                <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+                {{event.date.toDate() | date:'dd.MM.YYYY '}} {{event.timeFrom | date:'HH:mm'}} Uhr -
+                {{event.timeTo | date:'HH:mm'}} Uhr
+              </h3>
+              <h3>
+                <ion-icon slot="icon-only" name="location-outline"></ion-icon>
+                {{event.location}} {{event.streetAndNumber}} {{event.city}}
+              </h3>
+  
+  
+            </ion-label>
           <ion-note slot="end">
             <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
           </ion-note>

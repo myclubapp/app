@@ -209,6 +209,40 @@ export class EventsPage implements OnInit {
     toast.present();
   }
 
+  async copyEvent(slidingItem: IonItemSliding, event) {
+    slidingItem.closeOpened();
+
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalCtrl.create({
+      component: EventAddPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: event,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+
+  }
+
+
+  async deleteEvent(slidingItem: IonItemSliding, event) {
+    slidingItem.closeOpened();
+    const toast = await this.toastController.create({
+      message: "Delete",
+      color: "primary",
+      duration: 2000,
+      position: "top",
+    });
+    toast.present();
+  }
+
   async openFilter(ev: Event){
     /*
     let filterList = [];
