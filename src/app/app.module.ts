@@ -43,7 +43,7 @@ import { TeamPage } from './pages/team/team.page';
   declarations: [
     AppComponent,
     NewsDetailPage,
-    ChampionshipDetailPage,
+    // ChampionshipDetailPage,
     TrainingDetailPage,
     TrainingCreatePage,
     EventAddPage,

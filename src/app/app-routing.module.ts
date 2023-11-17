@@ -113,6 +113,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/info/info.module').then( m => m.InfoPageModule)
   },
   {
+    path: 'championship-details',
+    loadChildren: () => import('./pages/championship/championship-detail/championship-detail.module').then( m => m.ChampionshipDetailPageModule)
+  },
+  {
     path: "**",
     loadChildren: () =>
       import("./pages/not-found/not-found.module").then(

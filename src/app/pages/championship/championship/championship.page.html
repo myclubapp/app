@@ -6,7 +6,7 @@
     <ion-title>Meisterschaft</ion-title>
 
     <ion-buttons slot="end">
-      <!--   <ion-button (click)="openFilter($event)">
+         <!--   <ion-button (click)="openFilter($event)">
         <ion-icon slot="icon-only" name="filter"></ion-icon>
       </ion-button>-->
     </ion-buttons>
@@ -33,6 +33,8 @@
     </ion-toolbar>
 
   </ion-header>
+  <!-- <capacitor-google-map #map id="detailMap"></capacitor-google-map> -->
+
   <ng-container *ngIf="mode=='ranking'">
     <ng-container *ngIf="teamRankings$ | async as teamRankings">
       <ion-list *ngFor="let entry of teamRankings" lines="full">

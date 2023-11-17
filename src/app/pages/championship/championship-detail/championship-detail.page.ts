@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
-import { ModalController, NavParams, ToastController } from "@ionic/angular";
+import { ModalController, NavController, NavParams, ToastController } from "@ionic/angular";
 import { Game } from "src/app/models/game";
 import { GoogleMap } from "@capacitor/google-maps";
 import { Geolocation, PermissionStatus } from "@capacitor/geolocation";
@@ -10,6 +10,7 @@ import { User } from "@angular/fire/auth";
 import { catchError, concatMap, defaultIfEmpty, finalize, map, startWith, switchMap, take, tap } from "rxjs/operators";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { environment } from "src/environments/environment";
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
   selector: "app-championship-detail",
@@ -35,7 +36,9 @@ export class ChampionshipDetailPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public navParams: NavParams,
+    private navController: NavController,
+    // public navParams: NavParams,
+    private readonly route: ActivatedRoute,
     private readonly championshipService: ChampionshipService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
@@ -46,29 +49,39 @@ export class ChampionshipDetailPage implements OnInit {
  
  
   ngOnInit() {
-    this.game = this.navParams.get("data");
-    this.game$ = of(this.game);
+    // console.log(this.navParams);
+    // this.game = this.navParams.get("data");
+    this.route.queryParams.subscribe(params => {
+      console.log(params)
+      this.game = JSON.parse(params.data);
+      this.game$ = of(this.game);
 
-    this.attendeeListTrue = [];
-    this.attendeeListFalse = [];
-    this.attendeeListUndefined = [];
-
-    this.game$ = this.getGame(this.game.teamId, this.game.id);
-    this.game$.subscribe({
-      next: (data) => {
-        console.log("GAMES Data received");
-        this.game = {
-          ...this.game, ...data
-        };
-        this.cdr.detectChanges();
+      this.attendeeListTrue = [];
+      this.attendeeListFalse = [];
+      this.attendeeListUndefined = [];
   
-        this.setMap();
-        
-      },
-      error: (err) => console.error("GAMES Error in subscription:", err),
-      complete: () => console.log("GAMES Observable completed")
+      this.game$ = this.getGame(this.game.teamId, this.game.id);
+      this.game$.subscribe({
+        next: (data) => {
+          console.log("GAMES Data received");
+          this.game = {
+            ...this.game, ...data
+          };
+          this.cdr.detectChanges();
+    
+          this.setMap();
+          
+        },
+        error: (err) => console.error("GAMES Error in subscription:", err),
+        complete: () => console.log("GAMES Observable completed")
+      });
     });
-   
+    
+    // let this.mapRef =  @ViewChild('map') abc;
+  }
+  ionViewDidEnter() {
+    if(!this.newMap)
+      this.setMap();
   }
 
 
@@ -78,6 +91,7 @@ export class ChampionshipDetailPage implements OnInit {
       this.newMap.destroy();
     }
   }
+  // ng
 
 
   getGame(teamId: string, gameId: string) {
@@ -152,16 +166,28 @@ export class ChampionshipDetailPage implements OnInit {
   }
 
   async close() {
-    return await this.modalCtrl.dismiss(null, "close");
+    // return await this.modalCtrl.dismiss(null, "close");
+    this.navController.pop();
   }
 
   async confirm() {
-    return await this.modalCtrl.dismiss(this.game, "confirm");
+    // return await this.modalCtrl.dismiss(this.game, "confirm");
+    this.navController.navigateBack('championship',{
+      state: {
+        role: "confirm",
+        data: this.game
+      }
+    })
   }
 
 
   async setMap() {
-
+    // if(this.mapRef == null) {
+    //   return;
+    // }
+    if(this.mapRef == undefined || this.mapRef == null){
+      return;
+    } 
     this.newMap = await GoogleMap.create({
       id: "my-map-" + this.game.id, // Unique identifier for this map instance
       element: this.mapRef.nativeElement, // mapRef, // reference to the capacitor-google-map element

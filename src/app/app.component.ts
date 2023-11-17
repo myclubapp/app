@@ -101,35 +101,35 @@ export class AppComponent implements OnInit {
     Network.addListener('networkStatusChange', async (status:ConnectionStatus) => {
       
       if (!status.connected) {
-        const toast = await this.toastController.create({
-          message: "Du bist offline",
-          duration: 3000,
-          position: "top",
-          buttons: [
-            {
-              // text:"Ok",
-              icon: "cloud-offline-outline"
-            }
+        // const toast = await this.toastController.create({
+        //   message: "Du bist offline",
+        //   duration: 3000,
+        //   position: "top",
+        //   buttons: [
+        //     {
+        //       // text:"Ok",
+        //       icon: "cloud-offline-outline"
+        //     }
             
-          ],
-          color: "danger",
-        });
-        await toast.present();
+        //   ],
+        //   color: "danger",
+        // });
+        // await toast.present();
       } else {
-        const toast = await this.toastController.create({
-          message: "Du bist online",
-          duration: 1500,
-          position: "top",
-          color: "success",
-          buttons: [
-            {
-              // text:"Ok",
-              icon: "wifi-outline"
-            }
+        // const toast = await this.toastController.create({
+        //   message: "Du bist online",
+        //   duration: 1500,
+        //   position: "top",
+        //   color: "success",
+        //   buttons: [
+        //     {
+        //       // text:"Ok",
+        //       icon: "wifi-outline"
+        //     }
             
-          ],
-        });
-        await toast.present();
+        //   ],
+        // });
+        // await toast.present();
       }
 
     });
