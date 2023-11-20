@@ -32,7 +32,6 @@ export class AppComponent implements OnInit {
     private readonly swUpdate: SwUpdate,
     private readonly swPush: SwPush,
     private readonly alertController: AlertController,
-    private readonly toastController: ToastController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly profileService: UserProfileService,
@@ -389,6 +388,4 @@ export class AppComponent implements OnInit {
     console.log("logout");
     await this.authService.logout();
   }
-
-
 }
