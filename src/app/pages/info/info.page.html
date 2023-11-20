@@ -15,111 +15,25 @@
   </ion-header>
 
   <ion-list class="ion-padding">
-    <ion-img
-      src="./../../../assets/sms.png"
-      alt="Swiss Made Software Logo"
-    ></ion-img>
-    <ion-input
-      value="liitu consulting gmbh, schaffhausen, schweiz"
-      label="Entwickler"
-      labelPlacement="floating"
-      [readonly]="true"
-    ></ion-input>
 
-    <ion-input
-      value="{{appVersion}}"
-      label="App Version"
-      labelPlacement="floating"
-      [readonly]="true"
-    ></ion-input>
+    <ion-item>
+      Enwickler: liitu consulting gmbh, schaffhausen, schweiz
+    </ion-item>
 
-    <ion-textarea labelPlacement="floating" [readonly]="true" autoGrow="true">
-      <ion-text>
-        <h1><ion-text color="primary">Allgemein</ion-text></h1>
+    <ion-item>
+      <ion-img src="./../../../assets/sms.png" alt="Swiss Made Software Logo"></ion-img>
+    </ion-item>
 
-        <p>
-          myclub ist ein Portal zur Vereinsverwaltung. Dazu gehören die Webseite
-          von my-club.app, die Web App und die beiden Apps im Google Play Store
-          und Apple App Store. Diese Nutzungsbedingungen können jederzeit und
-          unangekündigt ändern. myclub wird jedoch gravierende Änderungen an den
-          Nutzungsbedingungen oder dem Leistungsumfang in angemessener Frist per
-          E-Mail ankündigen. Die Nutzung ist ausschliesslich für schweizer
-          Bürger vorgesehen.
-        </p>
-        <br />
-        <p>
-          <ion-text color=""
-            >Als Nutzer:in von myclub erklären Sie sich mit folgenden
-            Nutzungsbedingungen einverstanden:
-          </ion-text>
-        </p>
-        <br />
+    <ion-item>
+      App Version {{appVersion}}
+    </ion-item>
 
-        <h1><ion-text color="primary">Datenschutz</ion-text></h1>
-        <p>
-          myclub behandelt Ihren Inhalt als vertrauliche Information, versucht
-          unter grösstmöglicher Anstrengung den Datenschutz zu gewährleisten und
-          gibt keine Daten an Dritte weiter. Dazu gehören unter anderem die
-          Geheimhaltung von Passwort, E-Mail Adresse und Namen. myclub haftet
-          nicht für einen möglichen Zugriff auf Ihr Benutzerkonto durch Dritte
-          und damit zusammenhängende Schäden. Zum Zwecke einer Fehleranalyse
-          kann sich myclub auf Anfrage des Benutzers Zugriff zum Konto
-          verschaffen und somit schnell und effizient allfällige Fragen oder
-          Probleme lösen. myclub wird ausschliesslich auf Servern in der Schweiz
-          betrieben und speichert ebenfalls Nutzerdaten auf diesen Servern.
-        </p>
-        <br />
+    <ion-item>
+      <ion-button>Geschäftsbedingungen</ion-button>
+    </ion-item>
 
-        <h1><ion-text color="primary">Gesammelte Datenpunkte</ion-text></h1>
-        <p>
-          Damit myclub Push-Mitteilungen senden und empfangen kann, werden Daten
-          über das verwendete Gerät gespeichert. Das ist notwendig, damit wir
-          wissen, wohin Push-Nachrichten gesendet werden müssen. Die Zustimmung
-          erfolgt durch die Nutzer:in und kann jederzeit im Profil rückgängig
-          gemacht werden. Weiter kann die Nutzer:in im Profil jederzeit das
-          Profil vollständig löschen. my-club hat anschliessend keine
-          Möglichkeit, die Daten widerherzustellen. Neben den von der Nutzer:in
-          zur Verfügung gestellten Daten, den Gerätedaten für Push-Nachrichten
-          kann my-club ebenfalls auf Zustimmung der Nutzer:in die aktuelle
-          GPS-Position abfragen. Diese GPS-Daten werden nicht an my-club
-          gesendet und bleiben auf dem Endgerät gespeichert, bis die Nutzer:in
-          diese wieder aus dem Browser-Cache löscht.
-        </p>
-        <br />
-
-        <h1><ion-text color="primary">Haftbarkeit</ion-text></h1>
-        <p>
-          myclub versucht den Service rund um die Uhr aufrecht zu erhalten.
-          Trotzdem kann myclub einen Teil- oder Totalausfall des Services oder
-          Datenverlust nicht ausschliessen und haftet nicht für allfällige
-          entstandene Schäden. myclub ist berechtigt, den Service unangekündigt
-          vorübergehend zu beenden oder zu blockieren. Mögliche Gründe hierfür
-          sind Verdacht auf Sicherheitslücken, Wartungsarbeiten oder Ähnliches.
-          Ausserdem haftet myclub nicht, für den Inhalt von integrierten
-          Drittanbietern (Swiss Unihockey, Swiss Handball, Swiss Volleyball etc.
-          ) oder anderen Quellen.
-        </p>
-        <br />
-
-        <!--
-
-       <h1><ion-text color="primary">Dienste</ion-text>
-       </h1>
-       <p>Damit myclub funktioniert, müssen einige Dienste verwendet werden. Diese Dienste haben ihre eigenen AGBs und Datenschutzbestimmungen. Diese Dienste können Nutzerprofile erstellen und Nutzungsdaten sammeln.
-      </p><br/>
-    -->
-
-        <h1><ion-text color="primary">Kreditkartenzahlung</ion-text></h1>
-        <p>
-          Für Kreditkartenzahlungen wird Stripe verwendet. Dadurch kann eine
-          absolute Trennung der Kreditkartendaten von myclub garantiert werden.
-          Stripe gehört zu den weltweit führenden Anbietern für Online-Zahlungen
-          und bietet allerhöchste Sicherheitsstandards (weitere Infos unter
-          stripe.com).
-        </p>
-        <br />
-        <p>Zuletzt aktualisiert: 01.05.2023</p>
-      </ion-text>
-    </ion-textarea>
+    <ion-item>
+      <ion-button>Datenschutzrichtlinie </ion-button>
+    </ion-item>
   </ion-list>
 </ion-content>
