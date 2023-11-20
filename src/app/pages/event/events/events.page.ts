@@ -136,7 +136,7 @@ export class EventsPage implements OnInit {
         if (teams.length === 0) return of([]);
         return combineLatest(
           teams.map(team => 
-            this.eventService.getClubEventsRef(team.id).pipe(
+            this.eventService.getClubEventsPastRef(team.id).pipe(
               switchMap(teamGames => {
                 if (teamGames.length === 0) return of([]);
                 return combineLatest(
