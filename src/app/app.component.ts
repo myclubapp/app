@@ -47,7 +47,7 @@ export class AppComponent implements OnInit {
         this.email = user.email;
         // this.menuDisabled = false;
         this.menuCtrl.enable(true,"menu");
-
+        SplashScreen.hide();
         // 1. EMAIL VERIFIED?
         if (!user.emailVerified) {
           this.presentAlertEmailNotVerified();
@@ -86,6 +86,7 @@ export class AppComponent implements OnInit {
         // const uid = user.uid;
         // ...
       } else {
+        SplashScreen.hide();
         console.log("User is signed out");
         // this.menuDisabled = true;
         this.menuCtrl.enable(false,"menu");
@@ -156,7 +157,7 @@ export class AppComponent implements OnInit {
   }
 
   initializeApp(): void {
-    this.hideSplashScreen();
+    this.showSplashScreen();
 
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
       if (event.type === "VERSION_READY") {
@@ -219,7 +220,7 @@ export class AppComponent implements OnInit {
     */
   }
 
-  async hideSplashScreen() {
+  async showSplashScreen() {
     // await SplashScreen.hide();
     // Show the splash for two seconds and then automatically hide it:
     await SplashScreen.show({
