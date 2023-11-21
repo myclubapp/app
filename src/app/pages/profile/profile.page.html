@@ -15,7 +15,7 @@
   </ion-header>
 
   <ng-container *ngIf="userProfile$ | async as userProfile; else loading">
-    <ion-list>
+    <ion-list lines="full" [inset]="true">
       <ion-list-header>
         <ion-label> Allgemein </ion-label>
       </ion-list-header>
@@ -69,6 +69,8 @@
         </ion-input>
       </ion-item>
 
+    </ion-list>
+    <ion-list lines="full" [inset]="true">
       <ion-list-header *ngIf="clubRequestList.length > 0">
         Offene Club-Anfragen
       </ion-list-header>
@@ -83,6 +85,8 @@
         </ion-button>
       </ion-item>
 
+    </ion-list>
+    <ion-list lines="full" [inset]="true">
       <ion-list-header *ngIf="teamRequestList.length > 0">
         Offene Team-Anfragen
       </ion-list-header>
@@ -96,6 +100,9 @@
           <ion-icon icon-only name="trash"></ion-icon>
         </ion-button>
       </ion-item>
+
+    </ion-list>
+    <ion-list lines="full" [inset]="true">
 
       <ion-list-header>
         <ion-label> Einstellungen </ion-label>
