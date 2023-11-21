@@ -14,26 +14,44 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-list class="ion-padding">
+
+    <ion-list lines="full" [inset]="true">
+    <ion-item type="button" detail="true" (click)="openTCSite()">
+      <ion-icon slot="start" name="business-outline"></ion-icon>
+      <ion-label>
+        Geschäftsbedingungen
+      </ion-label>
+    </ion-item>
+
+    <ion-item type="button" detail="true" (click)="openPPSite()">
+      <ion-icon slot="start" name="finger-print-outline"></ion-icon>
+      <ion-label>
+        Datenschutzrichtlinie
+      </ion-label>
+    </ion-item>
+
+  </ion-list>
+
+  <ion-list lines="full" [inset]="true">
 
     <ion-item>
-      Enwickler: liitu consulting gmbh, schaffhausen, schweiz
+      <ion-icon slot="start" color="primary" name="heart-outline"></ion-icon>
+      <ion-label>
+        liitu consulting gmbh, schaffhausen, ch
+      </ion-label>
     </ion-item>
 
     <ion-item>
       <ion-img src="./../../../assets/sms.png" alt="Swiss Made Software Logo"></ion-img>
     </ion-item>
-
+    
     <ion-item>
-      App Version {{appVersion}}
-    </ion-item>
-
-    <ion-item>
-      <ion-button>Geschäftsbedingungen</ion-button> 
-    </ion-item>
-
-    <ion-item>
-      <ion-button>Datenschutzrichtlinie </ion-button>
+      <ion-icon slot="start" name="code-outline"></ion-icon>
+      <ion-label>
+        App Version {{appVersion}}
+      </ion-label>
     </ion-item>
   </ion-list>
+
+
 </ion-content>
