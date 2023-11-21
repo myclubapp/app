@@ -27,7 +27,6 @@ npm-debug.log*
 /coverage
 /dist
 /node_modules
-!node_modules/@capacitor/
 /platforms
 /plugins
 /www
