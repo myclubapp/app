@@ -1,5 +1,5 @@
 App/build
-App/Pods
+# App/Pods
 App/output
 App/App/public
 DerivedData
