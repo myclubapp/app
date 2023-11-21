@@ -64,7 +64,7 @@ export class TrainingService {
       where(
         "date",
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 7))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
       )
     ); // heute - 1 Woche
     return collectionData(q, { idField: "id" }) as unknown as Observable<
@@ -84,7 +84,7 @@ export class TrainingService {
       where(
         "date",
         "<",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 7))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
       ),
       limit(20)
     ); // heute - 1 Woche
