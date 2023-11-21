@@ -82,7 +82,7 @@ export class ResetPasswordPage implements OnInit {
     this.authService.resetPassword(credentials.email).then(
       async () => {
         const alert = await this.alertCtrl.create({
-          message: 'Check your email for a password reset link',
+          message: 'Suchen Sie in Ihren E-Mails nach einem Link zum Zurücksetzen des Passworts',
           buttons: [
             {
               text: 'Ok',
