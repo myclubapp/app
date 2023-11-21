@@ -17,14 +17,14 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { provideFirebaseApp, getApp, initializeApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore, persistentLocalCache } from '@angular/fire/firestore';
+import { provideAuth,getAuth, initializeAuth } from '@angular/fire/auth'
 import {
-  provideAuth,
-  getAuth,
   setPersistence,
   browserSessionPersistence,
   inMemoryPersistence,
+  indexedDBLocalPersistence,
   // indexedDBLocalPersistence
-} from '@angular/fire/auth';
+} from 'firebase/auth';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 import { provideMessaging,getMessaging } from '@angular/fire/messaging';
 
@@ -37,6 +37,7 @@ import { EventAddPage } from './pages/event/event-add/event-add.page';
 import { EventDetailPage } from './pages/event/event-detail/event-detail.page';
 import { ClubPage } from './pages/club/club.page';
 import { TeamPage } from './pages/team/team.page';
+import { Capacitor } from '@capacitor/core';
 
 
 @NgModule({
@@ -74,9 +75,16 @@ import { TeamPage } from './pages/team/team.page';
       return firestore;
     }),
     provideAuth(() => {
-      const auth = getAuth(); 
-      setPersistence(auth,browserSessionPersistence);
-      return auth;
+      if (Capacitor.isNativePlatform()) {
+        return initializeAuth(getApp(), {
+          persistence: indexedDBLocalPersistence
+        })
+      } else {
+        return getAuth()
+      }
+      // const auth = getAuth(); 
+      // setPersistence(auth,browserSessionPersistence);
+      // return auth;
     }),
     provideStorage(() => getStorage()),
     provideMessaging(() => getMessaging()),

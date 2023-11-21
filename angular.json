@@ -4,18 +4,18 @@
   "newProjectRoot": "projects",
   "projects": {
     "app": {
-      "i18n":{
+      "i18n": {
         "sourceLocale": "de-CH",
         "locales": {
           "fr-CH": {
             "translation": "src/locale/messages.fr.xlf",
             "baseHref": "fr"
           },
-          "it-CH":  {
+          "it-CH": {
             "translation": "src/locale/messages.it.xlf",
             "baseHref": "it"
           },
-          "en-US":  {
+          "en-US": {
             "translation": "src/locale/messages.en.xlf",
             "baseHref": "en"
           }
@@ -49,7 +49,10 @@
               },
               "src/manifest.webmanifest"
             ],
-            "styles": ["src/theme/variables.scss", "src/global.scss"],
+            "styles": [
+              "src/theme/variables.scss",
+              "src/global.scss"
+            ],
             "scripts": [],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -61,6 +64,7 @@
             "ngswConfigPath": "ngsw-config.json"
           },
           "configurations": {
+            
             "beta": {
               "index": "src/custom-themes/default/index.html",
               "assets": [
@@ -409,7 +413,6 @@
             }
           }
         },
-
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
@@ -463,7 +466,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         },
         "e2e": {
@@ -495,7 +501,9 @@
     }
   },
   "cli": {
-    "schematicCollections": ["@ionic/angular-toolkit"],
+    "schematicCollections": [
+      "@ionic/angular-toolkit"
+    ],
     "analytics": false
   },
   "schematics": {

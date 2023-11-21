@@ -1,33 +1,22 @@
 <ion-content>
   <div class="min-h-screen bg-white flex">
-    <div
-      class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24"
-    >
+    <div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
       <div class="mx-auto w-full max-w-sm lg:w-96">
         <div>
           <picture>
-            <source
-              srcset="assets/logo_trans.png"
-              media="(prefers-color-scheme: dark)"
-            />
-            <source
-              srcset="assets/logo_trans.png"
-              media="(prefers-color-scheme: light)"
-            />
+            <source srcset="assets/logo_trans.png" media="(prefers-color-scheme: dark)" />
+            <source srcset="assets/logo_trans.png" media="(prefers-color-scheme: light)" />
             <img class="h-12 w-auto" src="assets/logo_trans.png" alt="Logo" />
           </picture>
 
           <h2 i18n class="mt-6 text-3xl font-extrabold text-gray-900">
             Melden Dich mit deinem Konto an
           </h2>
-          <p class="mt-2 text-sm text-gray-600">
+          <p class="mt-2 text-sm text-gray-600" i18n>
             Oder
-            <a
-              href="/signup"
-              class="font-medium text-myclublight hover:text-myclubdark"
-            >
+            <span  routerLink="/signup" class="font-medium text-myclublight hover:text-myclubdark">
               erstelle einen neuen Account
-            </a>
+            </span>
           </p>
         </div>
 
@@ -35,44 +24,24 @@
           <div class="mt-6">
             <form class="space-y-6" [formGroup]="authForm">
               <div>
-                <label
-                  for="email"
-                  class="block text-sm font-medium text-gray-700"
-                >
+                <label for="email" class="block text-sm font-medium text-gray-700" i18n>
                   E-Mail Adresse
                 </label>
                 <div class="mt-1">
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autocomplete="email"
-                    formControlName="email"
-                    required
-                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-myclubdark focus:border-myclubdark sm:text-sm dark:text-black"
-                  />
+                  <input id="email" name="email" type="email" autocomplete="email" formControlName="email" required
+                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-myclubdark focus:border-myclubdark sm:text-sm dark:text-black" />
                 </div>
               </div>
 
               <div class="space-y-1">
-                <label
-                  for="password"
-                  class="block text-sm font-medium text-gray-700"
-                >
+                <label for="password" class="block text-sm font-medium text-gray-700" i18n>
                   Passwort
                 </label>
                 <div class="mt-1">
-                 
-                  <input
-                    :type="show ? 'password' : 'text'"
-                    id="password"
-                    formControlName="password"
-                    name="password"
-                    type="password"
-                    autocomplete="current-password"
-                    required
-                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-myclubdark focus:border-myclubdark sm:text-sm dark:text-black"
-                  />
+
+                  <input :type="show ? 'password' : 'text'" id="password" formControlName="password" name="password"
+                    type="password" autocomplete="current-password" required
+                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-myclubdark focus:border-myclubdark sm:text-sm dark:text-black" />
                 </div>
               </div>
 
@@ -85,20 +54,15 @@
                 </div>-->
 
                 <div class="text-sm">
-                  <a
-                    href="/reset-password"
-                    class="font-medium text-myclublight hover:text-myclubdark"
-                  >
+                  <span routerLink="/reset-password" class="font-medium text-myclublight hover:text-myclubdark" i18n>
                     Passwort vergessen?
-                  </a>
+                  </span>
                 </div>
               </div>
 
               <div>
-                <button
-                  (click)="submitCredentials(authForm)"
-                  class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white dark:text-white bg-myclublight dark:bg-myclubdark hover:bg-myclubdark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bg-myclubdark"
-                >
+                <button (click)="submitCredentials(authForm)"
+                  class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white dark:text-white bg-myclublight dark:bg-myclubdark hover:bg-myclubdark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-bg-myclubdark" i18n>
                   Anmelden
                 </button>
               </div>
@@ -108,11 +72,8 @@
       </div>
     </div>
     <div class="hidden lg:block relative w-0 flex-1">
-      <img
-        class="absolute inset-0 h-full w-full object-cover"
-        src="assets/bg/login.jpg"
-        alt="background image for login"
-      />
+      <img class="absolute inset-0 h-full w-full object-cover" src="assets/bg/login.jpg"
+        alt="background image for login" />
     </div>
   </div>
 </ion-content>

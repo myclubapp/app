@@ -387,6 +387,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
         this.errorPushMessageEnable("Error push token register");
       }
     } catch (err) {
+      console.log(err);
       this.alertPushNotSupported();
     }
   }

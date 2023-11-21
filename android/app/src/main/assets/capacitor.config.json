@@ -2,6 +2,14 @@
 	"appId": "app.myclub.defaultapp",
 	"appName": "myclub",
 	"webDir": "www",
+	"server": {
+		"allowNavigation": [
+			"http://developers.google.com/*"
+		]
+	},
 	"bundledWebRuntime": false,
-	"android": {}
+	"android": {},
+	"ios": {
+		"contentInset": "always"
+	}
 }

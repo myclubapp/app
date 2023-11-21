@@ -23,15 +23,17 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Für Profilfoto</string>
+	<string>Need camera access to select profile image.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Für Hallensuche</string>
+	<string>Need your location access for Hall search</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Für Hallensuche</string>
+	<string>Need your location access for Hall search</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Für Profilfoto</string>
+	<string>Need photo library access to select profile image.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Für Profilfoto</string>
+	<string>Need photo library access to select profile image.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Need notification access to send you latest updates of your account.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -42,15 +44,16 @@
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>

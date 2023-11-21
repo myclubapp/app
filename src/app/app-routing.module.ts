@@ -23,6 +23,11 @@ const routes: Routes = [
       import("./pages/auth/login/login.module").then((m) => m.LoginPageModule),
   },
   {
+    path: ":lang/login",
+    loadChildren: () =>
+      import("./pages/auth/login/login.module").then((m) => m.LoginPageModule),
+  },
+  {
     path: "logout",
     loadChildren: () =>
       import("./pages/auth/logout/logout.module").then(
