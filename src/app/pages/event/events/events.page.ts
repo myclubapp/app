@@ -175,12 +175,12 @@ export class EventsPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
     );
 
-    /*await this.eventService.setTeamEventAttendeeStatus(
+    await this.eventService.setClubEventAttendeeStatus(
       this.user.uid,
       status,
-      event.teamId,
+      event.clubId,
       event.id
-    );*/
+    );
     this.presentToast();
   }
 
@@ -190,12 +190,12 @@ export class EventsPage implements OnInit {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
     );
-    /*await this.eventService.setTeamEventAttendeeStatus(
+    await this.eventService.setClubEventAttendeeStatus(
       this.user.uid,
       status,
-      event.teamId,
+      event.clubId,
       event.id
-    );*/
+    );
     this.presentToast();
   }
 
