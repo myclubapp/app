@@ -23,11 +23,11 @@ variant_for_slice()
   "GoogleMapsBase.xcframework/ios-arm64_x86_64-simulator")
     echo "simulator"
     ;;
-  "GoogleMaps.xcframework/ios-arm64_x86_64-simulator")
-    echo "simulator"
-    ;;
   "GoogleMaps.xcframework/ios-arm64")
     echo ""
+    ;;
+  "GoogleMaps.xcframework/ios-arm64_x86_64-simulator")
+    echo "simulator"
     ;;
   "GoogleMapsCore.xcframework/ios-arm64")
     echo ""
@@ -47,11 +47,11 @@ archs_for_slice()
   "GoogleMapsBase.xcframework/ios-arm64_x86_64-simulator")
     echo "arm64 x86_64"
     ;;
-  "GoogleMaps.xcframework/ios-arm64_x86_64-simulator")
-    echo "arm64 x86_64"
-    ;;
   "GoogleMaps.xcframework/ios-arm64")
     echo "arm64"
+    ;;
+  "GoogleMaps.xcframework/ios-arm64_x86_64-simulator")
+    echo "arm64 x86_64"
     ;;
   "GoogleMapsCore.xcframework/ios-arm64")
     echo "arm64"
@@ -142,6 +142,6 @@ install_xcframework() {
 }
 
 install_xcframework "${PODS_ROOT}/GoogleMaps/Base/Frameworks/GoogleMapsBase.xcframework" "GoogleMaps/Base" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
-install_xcframework "${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.xcframework" "GoogleMaps/Maps" "framework" "ios-arm64_x86_64-simulator" "ios-arm64"
+install_xcframework "${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.xcframework" "GoogleMaps/Maps" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
 install_xcframework "${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMapsCore.xcframework" "GoogleMaps/Maps" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
 

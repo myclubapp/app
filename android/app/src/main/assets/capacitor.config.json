@@ -8,8 +8,5 @@
 		]
 	},
 	"bundledWebRuntime": false,
-	"android": {},
-	"ios": {
-		"contentInset": "always"
-	}
+	"android": {}
 }
