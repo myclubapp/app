@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   ModalController,
@@ -19,12 +19,15 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
   styleUrls: ["./club.page.scss"],
 })
 export class ClubPage implements OnInit {
-  @Input("data") club: Club;
+  @Input("data") club: any;
+
+  club$: Observable<any>;
 
   memberList$: Observable<Profile[]>;
   adminList$: Observable<Profile[]>;
   requestList$: Observable<Profile[]>;
 
+  user$: Observable<User>;
   user: User;
 
   alertTeamSelection = [];
@@ -43,11 +46,32 @@ export class ClubPage implements OnInit {
     private readonly alertCtrl: AlertController,
     private readonly toastCtrl: ToastController,
     private readonly userProfileService: UserProfileService,
-    private readonly fbService: FirebaseService
+    private readonly fbService: FirebaseService,
+    private readonly authService: AuthService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
     this.club = this.navParams.get("data");
+    this.club.clubAdmins = [];
+    this.club.clubMembers = [];
+    this.club$ = of(this.club);
+
+    this.club$ = this.getClub(this.club.id);
+    this.club$.subscribe({
+      next: (data) => {
+        console.log(">> Club Data" );
+        console.log( data);
+        this.cdr.detectChanges();
+  
+  
+      },
+      error: (err) => console.error("Club Error in subscription:", err),
+      complete: () => console.log("Club Observable completed")
+    });
+
+
+/*
 
     const teamList: any[] = [];
 
@@ -82,6 +106,7 @@ export class ClubPage implements OnInit {
     const memberList: Profile[] = [];
     const adminList: Profile[] = [];
     const requestList: any[] = [];
+    */
 
     /*
     const member$ = this.fbService.getClubRef(this.club.id).pipe( 
@@ -133,7 +158,7 @@ export class ClubPage implements OnInit {
       tap(users => users.forEach(n => adminList.push(n))),
       finalize(() => console.log("Club Admin"))
     )*/
-
+/*
     const member$ = this.fbService.getClubRef(this.club.id).pipe( 
       take(1), 
       switchMap(club => this.fbService.getClubMemberRefs(club.id).pipe(
@@ -239,7 +264,7 @@ export class ClubPage implements OnInit {
       },
       error: err => console.error('Error in the observable chain:', err)
     });
-
+*/
     /*const requests$ = this.fbService.getClubRef(this.club.id).pipe( 
       take(1), 
       switchMap(club => this.fbService.getClubRequestRefs(club.id).pipe(
@@ -277,7 +302,7 @@ export class ClubPage implements OnInit {
   }
 
   ngOnDestroy() {
-
+/*
     if (this.subscriptionAdmin) {
       this.subscriptionAdmin.unsubscribe();
     }
@@ -289,8 +314,94 @@ export class ClubPage implements OnInit {
     }
     if (this.subscriptionTeamList) {
       this.subscriptionTeamList.unsubscribe();
-    }
+    }*/
   }
+
+
+  getClub(clubId: string) {
+    /*
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap(user => {
+        this.user = user;
+        if (!user) {
+          console.log("No user found");
+          throw new Error("User not found");
+        }
+      }),
+      switchMap(() => this.fbService.getClubRef(clubId)),
+      switchMap(club => {
+        if (!club) return of(null); // If no club is found, return null
+        return combineLatest({
+          clubMembers: this.fbService.getClubMemberRefs(clubId),
+          clubAdmins: this.fbService.getClubAdminRefs(clubId)
+        }).pipe(
+          map(({ clubMembers, clubAdmins }) => ({
+            ...club,
+            clubMembers,
+            clubAdmins
+          })),
+          catchError(() => of({
+            ...club,
+            clubMembers: [],
+            clubAdmins: []
+          })) // If error in fetching members or admins, return club with empty arrays
+        );
+      }),
+      catchError(err => {
+        console.error("Error in getClubWithMembersAndAdmins:", err);
+        return of(null); // Return null on error
+      })
+    );*/
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap(user => {
+        this.user = user;
+        if (!user) throw new Error("User not found");
+      }),
+      switchMap(() => this.fbService.getClubRef(clubId)),
+      switchMap(club => {
+        if (!club) return of(null);
+        return combineLatest({
+          clubMembers: this.fbService.getClubMemberRefs(clubId),
+          clubAdmins: this.fbService.getClubAdminRefs(clubId)
+        }).pipe(
+          switchMap(({ clubMembers, clubAdmins }) => {
+            const memberProfiles$ = clubMembers.map(member => 
+              this.userProfileService.getUserProfileById(member.id).pipe(take(1),
+                catchError(() => of({ ...member, firstName: 'Unknown', lastName: 'Unknown' }))
+              )
+            );
+            const adminProfiles$ = clubAdmins.map(admin => 
+              this.userProfileService.getUserProfileById(admin.id).pipe(take(1),
+                catchError(() => of({ ...admin, firstName: 'Unknown', lastName: 'Unknown' }))
+              )
+            );
+            return forkJoin({
+              clubMembers: forkJoin(memberProfiles$),
+              clubAdmins: forkJoin(adminProfiles$)
+            }).pipe(
+              map(({ clubMembers, clubAdmins }) => ({
+                clubMembers: clubMembers.filter(member => member !== undefined), // Filter out undefined
+                clubAdmins: clubAdmins.filter(admin => admin !== undefined) // Filter out undefined
+              })
+            ));
+          }),
+          map(({ clubMembers, clubAdmins }) => ({
+            ...club,
+            clubMembers,
+            clubAdmins
+          }))
+        );
+      }),
+      catchError(err => {
+        console.error("Error in getClubWithMembersAndAdmins:", err);
+        return of(null); 
+      })
+    );
+  }
+
+
 
   async approveClubRequest(user){
     console.log(user);

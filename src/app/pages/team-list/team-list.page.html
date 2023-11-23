@@ -14,7 +14,6 @@
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="teamList; else loading">
     <ion-list>
       <ion-grid>
         <ion-row>
@@ -23,7 +22,7 @@
             size-md="6"
             size-sm="6"
             size="12"
-            *ngFor="let team of teamList"
+            *ngFor="let team of teamList$ | async; else loading"
           >
             <ion-card (click)="openModal(team)">
               <img src="{{team.logo}}" />
@@ -40,7 +39,7 @@
         </ion-row>
       </ion-grid>
     </ion-list>
-  </ng-container>
+    
 
   <!-- fab placed to the bottom end -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">

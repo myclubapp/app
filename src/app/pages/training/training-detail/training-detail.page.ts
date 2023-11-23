@@ -14,7 +14,6 @@ import { TrainingService } from 'src/app/services/firebase/training.service';
 export class TrainingDetailPage implements OnInit {
   @Input("data") training: Training;
 
-
   training$: Observable<Training>;
 
   mode = "yes";

@@ -13,6 +13,34 @@
       <ion-title size="large">{{club.name}}</ion-title>
     </ion-toolbar>
   </ion-header>
+ 
+
+
+  <ng-container *ngIf="club$ | async as club">
+
+    <ion-list [inset]="true">
+      <ion-list-header> Mitglieder </ion-list-header>
+      <ion-item *ngFor="let member of club['clubMembers']">
+        <ion-avatar slot="start">
+          <img src="{{member?.profilePicture}}" />
+        </ion-avatar>
+        <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
+      </ion-item>
+    </ion-list>
+  
+    <ion-list [inset]="true">
+      <ion-list-header> Administratoren </ion-list-header>
+      <ion-item *ngFor="let admin of club['clubAdmins']">
+        <ion-avatar slot="start">
+          <img src="{{admin?.profilePicture}}" />
+        </ion-avatar>
+        <ion-label> {{admin?.firstName}} {{admin?.lastName}} </ion-label>
+      </ion-item>
+    </ion-list>
+  
+  </ng-container>
+
+
 <!--
 
   <ion-list *ngIf="requestList.length > 0">
@@ -35,6 +63,8 @@
   </ion-item>
 </ion-list>
 -->
+<!--
+
 
 <ng-container *ngIf="requestList$ | async as requests; else noRequests">
   <ion-list [inset]="true" *ngIf="requests.length > 0">
@@ -53,26 +83,8 @@
     </ion-item>
   </ion-list>
 </ng-container>
+-->
 
-  <ion-list [inset]="true">
-    <ion-list-header> Mitglieder </ion-list-header>
-    <ion-item *ngFor="let member of memberList$ | async">
-      <ion-avatar slot="start">
-        <img src="{{member?.profilePicture}}" />
-      </ion-avatar>
-      <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
-    </ion-item>
-  </ion-list>
-
-  <ion-list [inset]="true">
-    <ion-list-header> Administratoren </ion-list-header>
-    <ion-item *ngFor="let admin of adminList$ | async">
-      <ion-avatar slot="start">
-        <img src="{{admin?.profilePicture}}" />
-      </ion-avatar>
-      <ion-label> {{admin?.firstName}} {{admin?.lastName}} </ion-label>
-    </ion-item>
-  </ion-list>
 </ion-content>
 
 

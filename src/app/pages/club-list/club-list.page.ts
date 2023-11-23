@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Club } from "src/app/models/club";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -11,6 +11,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { AlertController } from "@ionic/angular";
+import { Timestamp } from "firebase/firestore";
 
 @Component({
   selector: "app-club-list",
@@ -20,11 +21,7 @@ import { AlertController } from "@ionic/angular";
 export class ClubListPage implements OnInit {
 
   skeleton = new Array(12);
-
   user: User;
-  private subscription: Subscription;
-
-  clubList: Club[] = [];
   clubList$: Observable<Club[]>;
 
   constructor(
@@ -32,13 +29,22 @@ export class ClubListPage implements OnInit {
     private readonly authService: AuthService,
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
-    private readonly alertController: AlertController,
-    private readonly toastController: ToastController
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
 
-    const clubList: Club[] = [];
+    this.clubList$  = this.getClubList();
+    this.clubList$.subscribe({
+      next: (data) => {
+        console.log("ClubList Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("ClubList Error in subscription:", err),
+      complete: () => console.log("ClubList Observable completed")
+    });
+
+/*    const clubList: Club[] = [];
     clubList.length = 0;
 
     const clubs$ = this.authService.getUser$().pipe(
@@ -68,12 +74,12 @@ export class ClubListPage implements OnInit {
           this.clubList$ = of(clubList);
     },
     error: err => console.error('Error in the observable chain:', err)
-  });
+  });*/
   }
   ngOnDestroy(): void {
-    if (this.subscription) {
+   /* if (this.subscription) {
         this.subscription.unsubscribe();
-    }
+    }*/
   }
   async openModal(club: Club) {
     // const presentingElement = await this.modalCtrl.getTop();
@@ -92,6 +98,33 @@ export class ClubListPage implements OnInit {
 
     if (role === "confirm") {
     }
+  }
+
+
+  getClubList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap(user=>{
+        this.user = user;
+      }),
+      switchMap(user => {
+        if (!user) return of([]);
+        return this.fbService.getUserClubRefs(user);
+      }),
+      tap(clubs => console.log("Clubs:", clubs)),
+      mergeMap(clubs => {
+        if (clubs.length === 0) return of([]);
+        return combineLatest(
+          clubs.map(club => this.fbService.getClubRef(club.id))
+        );
+      }),
+      map(clubsDetails => clubsDetails.flat()), // Flatten to get all clubs details
+      tap(results => console.log("Final results with all Clubs:", results)),
+      catchError(err => {
+        console.error("Error in getClubList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
   }
 
 

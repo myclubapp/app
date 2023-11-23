@@ -1,8 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Team } from "src/app/models/team";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { switchMap, map, take, tap } from "rxjs/operators";
+import { switchMap, map, take, tap, mergeMap, catchError } from "rxjs/operators";
 import { of, combineLatest, Subscription, Observable } from "rxjs";
 import { User } from "@angular/fire/auth";
 import {
@@ -21,15 +21,12 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
   styleUrls: ["./team-list.page.scss"],
 })
 export class TeamListPage implements OnInit {
-  teamList: Team[] = [];
-  availableTeamList: Team[] = [];
+  teamList$: Observable<Team[]>;
+  availableTeamList$: Observable<Team[]>;
+
   skeleton = new Array(12);
   userProfile$: Observable<Profile>;
   user: User;
-
-  private subscription: Subscription;
-  availableTeamListSub: Subscription;
-  teamListSub: Subscription;
 
   constructor(
     private readonly fbService: FirebaseService,
@@ -38,33 +35,63 @@ export class TeamListPage implements OnInit {
     private readonly modalCtrl: ModalController,
     private readonly alertController: AlertController,
     private readonly profileService: UserProfileService,
-    private readonly toastController: ToastController
+    private readonly toastController: ToastController,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
-    this.subscription = this.authService.getUser$().pipe(
-      take(1),
-      tap(user => this.user = user),
-      switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
-      ).subscribe(profile => {
-          this.userProfile$ = of(profile);
-      })
 
-    this.getTeamList();
-    this.getAvailableTeamList();
+    this.teamList$  = this.getTeamList();
+    this.teamList$.subscribe({
+      next: (data) => {
+        console.log("ClubList Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("ClubList Error in subscription:", err),
+      complete: () => console.log("ClubList Observable completed")
+    });
+
   }
 
   ngOnDestroy() {
 
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-    if (this.availableTeamListSub) {
-      this.availableTeamListSub.unsubscribe();
-    }
-
-    this.teamListSub.unsubscribe();
   }
+
+
+  getTeamList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap(user=>{
+        this.user = user;
+      }),
+      switchMap(user => {
+        if (!user) return of([]);
+        return this.fbService.getUserTeamRefs(user);
+      }),
+      tap(teams => console.log("Clubs:", teams)),
+      mergeMap(teams => {
+        if (teams.length === 0) return of([]);
+        return combineLatest(
+          teams.map(team => this.fbService.getTeamRef(team.id))
+        );
+      }),
+      map(teamsDetails => teamsDetails.flat()), // Flatten to get all teams details
+      tap(results => console.log("Final results with all Clubs:", results)),
+      catchError(err => {
+        console.error("Error in getClubList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+
+
+
+  }
+
+  getAvailableTeamList() {
+    // console.log("getAvailableTeamList");
+    
+  }
+
 
   async openModal(team: Team) {
     // const presentingElement = await this.modalCtrl.getTop();
@@ -86,6 +113,7 @@ export class TeamListPage implements OnInit {
   }
 
   async joinTeamAlert() {
+    /*
     let _inputs = [];
 
     if (this.teamList.length > 0) {
@@ -139,95 +167,7 @@ export class TeamListPage implements OnInit {
     });
 
     await alert.present();
+    */
   }
 
-  getTeamList() {
-    this.teamListSub = this.authService
-      .getUser$()
-      .pipe(
-        take(1),
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserTeamRefs(user)),
-        // Loop Over Teams
-        switchMap((allTeams: any) =>
-          combineLatest(
-            allTeams.map((team) =>
-              combineLatest(of(team), this.fbService.getTeamRef(team.id))
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        console.log("get user team list");
-        console.log(data);
-        this.teamList = [];
-        const teamListNew = [];
-        for (const team of data) {
-          // loop over teams
-
-          const teamDetails = team[1];
-          teamListNew.push(teamDetails);
-        }
-        this.teamList = this.teamList.sort(
-          (a, b) => Number(a.id) - Number(b.id)
-        );
-        this.teamList = [...new Set(teamListNew.concat(...this.teamList))];
-      });
-  }
-
-  getAvailableTeamList() {
-    // console.log("getAvailableTeamList");
-    this.availableTeamListSub = this.authService
-      .getUser$()
-      .pipe(
-        take(1),
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserClubRefs(user)),
-        // Loop Over Teams
-        switchMap((allClubs: any) =>
-          combineLatest(
-            allClubs.map((club) =>
-              combineLatest(
-                of(club),
-                // Loop over Games
-                // this.championshipService.getTeamGamesRef(team.id),
-                this.fbService
-                  .getClubTeamRefs(club.id)
-                  .pipe(
-                    switchMap((allTeams: any) =>
-                      combineLatest(
-                        allTeams.map((team) =>
-                          combineLatest(
-                            of(team),
-                            this.fbService.getTeamRef(team.id)
-                          )
-                        )
-                      )
-                    )
-                  ),
-                this.fbService.getClubRef(club.id)
-              )
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        let availableTeamListNew = [];
-        this.availableTeamList = [];
-
-        for (const team of data[0][1]) {
-          // loop over teams
-          const teamDetail = team[1];
-          console.log(teamDetail.id);
-          availableTeamListNew.push(teamDetail);
-        }
-        availableTeamListNew = availableTeamListNew.sort(
-          (a, b) => Number(a.id) - Number(b.id)
-        );
-
-        this.availableTeamList = [
-          ...new Set(availableTeamListNew.concat(...this.availableTeamList)),
-        ];
-      });
-  }
 }

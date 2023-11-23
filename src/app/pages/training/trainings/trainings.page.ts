@@ -8,13 +8,12 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, Subscription, catchError, combineLatest, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, mergeMap, of, switchMap, take, tap, timeout } from "rxjs";
+import { Observable, catchError, combineLatest, map, mergeMap, of, switchMap, take, tap } from "rxjs";
 import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
 import { TrainingCreatePage } from "../training-create/training-create.page";
-import { Team } from "src/app/models/team";
 import { Timestamp } from "firebase/firestore";
 import { TrainingDetailPage } from "../training-detail/training-detail.page";
 
@@ -71,223 +70,10 @@ export class TrainingsPage implements OnInit {
       complete: () => console.log("Training PAST Observable completed")
     });
 
-
-/*
-   // Assuming Training is already imported
-
-this.trainingList$ = this.authService.getUser$().pipe(
-  take(1),
-  tap(() => console.log("Fetching user...")),
-  tap(user => this.user = user), // set user to page
-  switchMap(user => this.fbService.getUserTeamRefs(user)),
-  tap(teams => console.log("Fetched teams:", teams)),
-  concatMap(teamsArray => from(teamsArray)),
-  tap(team => console.log("Processing team:", team.id)),
-  concatMap(team => this.trainingService.getTeamTrainingsRefs(team.id).pipe(
-    take(1),
-    tap(trainings => console.log(`Fetched trainings for team ${team.id}:`, trainings)),
-    switchMap(trainings => {
-      const trainingWithAttendees$ = trainings.map(training => 
-        this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id).pipe(
-          map(attendees => {
-            const userAttendee = attendees.find(att => att.id == this.user.uid);
-            const status = userAttendee ? userAttendee.status : null; 
-            console.log(training.date);
-            return {
-              ...training,
-              date: training.date,
-              teamId: team.id,
-              status: status,
-              countAttendees: attendees.filter(att => att.status == true).length,
-              attendees: attendees
-            };
-          }),
-          catchError(error => {
-            console.error('Error fetching training attandee', error);
-            return of([]);
-        })
-        ),
-        catchError(error => {
-          console.error('Error fetching training ', error);
-          return of([]);
-      })
-      );
-      return forkJoin(trainingWithAttendees$);
-    }),
-    catchError(error => {
-      console.error(`Error fetching trainings for team ${team.id}:`, error);
-      return of([] as Training[]); // if there's an error, emit an empty array to continue the stream
-    })
-  )),
-  map((trainingsArray: Training[]) => trainingsArray.flat()),
-  map(trainings => trainings.sort((a, b) => a.date.toMillis() - b.date.toMillis())),
-  map(trainings => trainings.filter((training, index, self) => 
-    index === self.findIndex(t => t.id === training.id))),
-  tap(() => console.log("Team training fetching completed"))
-) as Observable<Training[]>;
-
-this.subscription = this.trainingList$.subscribe({
-  next: trainings => {
-    console.log("Combined training list created", trainings);
-  },
-  error: err => console.error('Error in the observable chain:', err.message)
-});
-
-
-
-    const TIMEOUT_DURATION = 1000; // adjust as needed
-    // const teamtrainingList: Training[] = [];
-    const teamtrainingPastList: Training[] = [];
-
-    // CURRENT trainingS
-    /*const teamtraining$ = this.authService.getUser$().pipe(
-      take(1),
-      tap(() => console.log("Fetching user...")),
-      switchMap(user => {
-        console.log("Got user:", user);
-        this.user = user;
-        return this.fbService.getUserTeamRefs(user);
-      }),
-      tap(teams => console.log("Fetched teams:", teams)),
-      concatMap(teamsArray => from(teamsArray)),
-      tap(team => console.log("Processing team:", team.id)),
-      concatMap(team => this.trainingService.getTeamTrainingsRefs(team.id).pipe(
-        timeout(TIMEOUT_DURATION), // Adding timeout here 
-        take(1),
-        tap(trainings => console.log(`Fetched trainings for team ${team.id}:`, trainings)),
-        switchMap(trainings => {
-          // Fetch attendees for each training and combine the results
-          const trainingWithAttendees$ = trainings.map(training =>
-            this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id).pipe(
-              take(1),
-              map(attendees => {
-                const userAttendee = attendees.find(att => att.id == this.user.uid);
-                const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
-                console.log(training.date);
-                return {
-                  ...training,
-                  date: training.date,
-                  teamId: team.id,
-                  status: status,
-                  countAttendees: attendees.filter(att => att.status == true).length,
-                  attendees: attendees
-                };
-              })
-            )
-          );
-          return forkJoin(trainingWithAttendees$);
-        }),
-        catchError(error => {
-          if (error.name === 'TimeoutError') {
-            console.error(`Error fetching trainings for team ${team.id}:`);
-            return of([]);
-          } else {
-            // Handle other errors, maybe rethrow or return a default object
-            throw error;
-          }
-        })
-      )),
-      tap(trainings => trainings.forEach(training => teamtrainingList.push(training))),
-      finalize(() => console.log("Team training fetching completed"))
-    );*/
-/*
-    // PAST trainingS
-    const teamtrainingPast$ = this.authService.getUser$().pipe(
-      take(1),
-      tap(() => console.log("Fetching user...")),
-      switchMap(user => {
-        console.log("Got user:", user);
-        this.user = user;
-        return this.fbService.getUserTeamRefs(user);
-      }),
-      tap(teams => console.log("Fetched teams:", teams)),
-      concatMap(teamsArray => from(teamsArray)),
-      tap(team => console.log("Processing team:", team.id)),
-      concatMap(team => this.trainingService.getTeamTrainingsPastRefs(team.id).pipe(
-        timeout(TIMEOUT_DURATION), // Adding timeout here 
-        take(1),
-        tap(trainings => console.log(`Fetched trainings for team ${team.id}:`, trainings)),
-        switchMap(trainings => {
-          // Fetch attendees for each training and combine the results
-          const trainingWithAttendees$ = trainings.map(training =>
-            this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id).pipe(
-              map(attendees => {
-                const userAttendee = attendees.find(att => att.id == this.user.uid);
-                const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
-                return {
-                  ...training,
-                  date: training.date,
-                  teamId: team.id,
-                  status: status,
-                  countAttendees: attendees.filter(att => att.status == true).length,
-                  attendees: attendees
-                };
-              }),
-              catchError(error => {
-                console.error('Error fetching training attandee', error);
-                return of([]);
-            })
-
-            ),
-            catchError(error => {
-              console.error('Error fetching training attandee', error);
-              return of([]);
-          })
-          );
-          return forkJoin(trainingWithAttendees$);
-        }),
-        catchError(error => {
-          if (error.name === 'TimeoutError') {
-            console.error(`Error fetching trainings for team ${team.id}:`);
-            return of([]);
-          } else {
-            // Handle other errors, maybe rethrow or return a default object
-            throw error;
-          }
-        })
-      )),
-      tap(trainings => trainings.forEach(training => teamtrainingPastList.push(training))),
-      finalize(() => console.log("Team training fetching completed"))
-    );
-
-    // Use combineLatest to get results when both observables have emitted
-    /*this.subscription = combineLatest([teamtraining$]).subscribe({
-      next: () => {
-        this.trainingList = [...teamtrainingList].sort((a, b): any => {
-          return a.date.toMillis() > b.date.toMillis();
-        });
-        this.trainingList = this.trainingList.filter((training, index, self) =>
-          index === self.findIndex((t) => (t.id === training.id))
-        );
-        this.trainingList$ = of(this.trainingList);
-        console.log("Combined training list created");
-      },
-      error: err => console.error('Error in the observable chain:', err.message)
-    });*/
-/*
-    this.subscriptionPast = combineLatest([teamtrainingPast$]).subscribe({
-      next: () => {
-        this.trainingListPast = [...teamtrainingPastList].sort((a, b): any => {
-          return a.date.toMillis() < b.date.toMillis();
-        });
-        this.trainingListPast = this.trainingListPast.filter((training, index, self) =>
-          index === self.findIndex((t) => (t.id === training.id))
-        );
-        this.trainingListPast$ = of(this.trainingListPast);
-        console.log("Combined training list PAST created");
-      },
-      error: err => console.error('Error in the observable chain:', err.message)
-    });
-*/
   }
 
   ngOnDestroy(): void {
-  /*  if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-    if (this.subscriptionPast) {
-      this.subscriptionPast.unsubscribe();
-    }*/
+
   }
 
   getTeamTraining() {
@@ -306,35 +92,35 @@ this.subscription = this.trainingList$.subscribe({
         return combineLatest(
           teams.map(team => 
             this.trainingService.getTeamTrainingsRefs(team.id).pipe(
-              switchMap(teamGames => {
-                if (teamGames.length === 0) return of([]);
+              switchMap(teamTrainings => {
+                if (teamTrainings.length === 0) return of([]);
                 return combineLatest(
-                  teamGames.map(game => 
-                    this.trainingService.getTeamTrainingsAttendeesRef(team.id, game.id).pipe(
+                  teamTrainings.map(training => 
+                    this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id).pipe(
                       map(attendees => {
                         const userAttendee = attendees.find(att => att.id == this.user.uid);
                         const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
-                        return ({...game, attendees, status: status, countAttendees: attendees.filter(att => att.status == true).length, teamId: team.id,})
+                        return ({...training, attendees, status: status, countAttendees: attendees.filter(att => att.status == true).length, teamId: team.id,})
                       }),
-                      catchError(() => of({ ...game, attendees: [], status: null, countAttendees: 0, teamId: team.id,})) // If error, return game with empty attendees
+                      catchError(() => of({ ...training, attendees: [], status: null, countAttendees: 0, teamId: team.id,})) // If error, return training with empty attendees
                     )
                   )
                 );
               }),
-              map(gamesWithAttendees => gamesWithAttendees), // Flatten games array for each team
-              catchError(() => of([])) // If error in fetching games, return empty array
+              map(trainingsWithAttendees => trainingsWithAttendees), // Flatten trainings array for each team
+              catchError(() => of([])) // If error in fetching trainings, return empty array
             )
           )
         ).pipe(
-          map(teamsGames => teamsGames.flat()), // Flatten to get all games across all teams
-          map(allGames => 
-            allGames.sort((a, b) => Timestamp.fromMillis(a.dateTime).seconds - Timestamp.fromMillis(b.dateTime).seconds) // Sort games by date
+          map(teamsTrainings => teamsTrainings.flat()), // Flatten to get all trainings across all teams
+          map(allTrainings => 
+            allTrainings.sort((a, b) => Timestamp.fromMillis(a.dateTime).seconds - Timestamp.fromMillis(b.dateTime).seconds) // Sort trainings by date
           )
         );
       }),
-      tap(results => console.log("Final results with all games:", results)),
+      tap(results => console.log("Final results with all trainings:", results)),
       catchError(err => {
-        console.error("Error in getTeamGamesUpcoming:", err);
+        console.error("Error in getTeamTrainingsUpcoming:", err);
         return of([]); // Return an empty array on error
       })
     );
@@ -357,35 +143,35 @@ this.subscription = this.trainingList$.subscribe({
         return combineLatest(
           teams.map(team => 
             this.trainingService.getTeamTrainingsPastRefs(team.id).pipe(
-              switchMap(teamGames => {
-                if (teamGames.length === 0) return of([]);
+              switchMap(teamTrainings => {
+                if (teamTrainings.length === 0) return of([]);
                 return combineLatest(
-                  teamGames.map(game => 
-                    this.trainingService.getTeamTrainingsAttendeesRef(team.id, game.id).pipe(
+                  teamTrainings.map(training => 
+                    this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id).pipe(
                       map(attendees => {
                         const userAttendee = attendees.find(att => att.id == this.user.uid);
                         const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
-                        return ({...game, attendees, status: status, countAttendees: attendees.filter(att => att.status == true).length, teamId: team.id,})
+                        return ({...training, attendees, status: status, countAttendees: attendees.filter(att => att.status == true).length, teamId: team.id,})
                       }),
-                      catchError(() => of({ ...game, attendees: [], status: null, countAttendees: 0, teamId: team.id,})) // If error, return game with empty attendees
+                      catchError(() => of({ ...training, attendees: [], status: null, countAttendees: 0, teamId: team.id,})) // If error, return training with empty attendees
                     )
                   )
                 );
               }),
-              map(gamesWithAttendees => gamesWithAttendees), // Flatten games array for each team
-              catchError(() => of([])) // If error in fetching games, return empty array
+              map(trainingsWithAttendees => trainingsWithAttendees), // Flatten trainings array for each team
+              catchError(() => of([])) // If error in fetching trainings, return empty array
             )
           )
         ).pipe(
-          map(teamsGames => teamsGames.flat()), // Flatten to get all games across all teams
-          map(allGames => 
-            allGames.sort((b, a) => Timestamp.fromMillis(a.dateTime).seconds - Timestamp.fromMillis(b.dateTime).seconds) // Sort games by date
+          map(teamsTrainings => teamsTrainings.flat()), // Flatten to get all trainings across all teams
+          map(allTrainings => 
+            allTrainings.sort((b, a) => Timestamp.fromMillis(a.dateTime).seconds - Timestamp.fromMillis(b.dateTime).seconds) // Sort trainings by date
           )
         );
       }),
-      tap(results => console.log("Final results with all games:", results)),
+      tap(results => console.log("Final results with all trainings:", results)),
       catchError(err => {
-        console.error("Error in getTeamGamesUpcoming:", err);
+        console.error("Error in getTeamTrainingsUpcoming:", err);
         return of([]); // Return an empty array on error
       })
     );

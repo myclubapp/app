@@ -79,24 +79,24 @@ export class FirebaseService {
     }) as Observable<Club[]>;
   }
 
-  getClubMemberRefs(clubId: string): Observable<Profile> {
+  getClubMemberRefs(clubId: string): Observable<Profile[]> {
     const clubMemberRefList = collection(
       this.firestore,
       `club/${clubId}/members`
     );
     return collectionData(clubMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<Profile>;
+    }) as unknown as Observable<Profile[]>;
   }
 
-  getClubAdminRefs(clubId: string): Observable<Profile> {
+  getClubAdminRefs(clubId: string): Observable<Profile[]> {
     const clubMemberRefList = collection(
       this.firestore,
       `club/${clubId}/admins`
     );
     return collectionData(clubMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<Profile>;
+    }) as unknown as Observable<Profile[]>;
   }
 
   getClubRequestRefs(clubId: string): Observable<any> {

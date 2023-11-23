@@ -22,7 +22,7 @@
           size-md="6"
           size-sm="6"
           size="12"
-          *ngFor="let club of clubList$ | async"
+          *ngFor="let club of clubList$ | async; else loading"
         >
             <ion-card (click)="openModal(club)">
               <img src="{{club.logo}}" />
