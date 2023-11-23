@@ -32,14 +32,6 @@ export class ClubPage implements OnInit {
 
   alertTeamSelection = [];
 
-  private subscription: Subscription;
-
-  private subscriptionRequest: Subscription;
-  private subscriptionAdmin: Subscription;
-  private subscriptionMember: Subscription;
-
-
-  private subscriptionTeamList: Subscription;
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,

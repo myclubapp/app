@@ -234,24 +234,24 @@ export class FirebaseService {
     }) as unknown as Observable<Team[]>;
   }
 
-  getTeamMemberRefs(teamId: string): Observable<any> {
+  getTeamMemberRefs(teamId: string): Observable<Profile[]> {
     const teamMemberRefList = collection(
       this.firestore,
       `teams/${teamId}/members`
     );
     return collectionData(teamMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<any>;
+    }) as unknown as Observable<Profile[]>;
   }
 
-  getTeamAdminRefs(teamId: string): Observable<any> {
+  getTeamAdminRefs(teamId: string): Observable<Profile[]> {
     const teamMemberRefList = collection(
       this.firestore,
       `teams/${teamId}/admins`
     );
     return collectionData(teamMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<any>;
+    }) as unknown as Observable<Profile[]>;
   }
 
   async setClubRequest(clubId: string, userId: string) {

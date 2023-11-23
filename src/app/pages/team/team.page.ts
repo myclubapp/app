@@ -68,12 +68,12 @@ export class TeamPage implements OnInit {
         this.user = user;
         if (!user) throw new Error("User not found");
       }),
-      switchMap(() => this.fbService.getClubRef(teamId)),
+      switchMap(() => this.fbService.getTeamRef(teamId)),
       switchMap(team => {
         if (!team) return of(null);
         return combineLatest({
-          teamMembers: this.fbService.getClubMemberRefs(teamId),
-          teamAdmins: this.fbService.getClubAdminRefs(teamId)
+          teamMembers: this.fbService.getTeamMemberRefs(teamId),
+          teamAdmins: this.fbService.getTeamAdminRefs(teamId)
         }).pipe(
           switchMap(({ teamMembers, teamAdmins }) => {
             const memberProfiles$ = teamMembers.map(member => 

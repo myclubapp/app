@@ -29,7 +29,35 @@
       Trainingspräsenz: 
     </ion-item>
   </ion-list>
+
+
+  <ng-container *ngIf="team$ | async as team">
+
+    <ion-list [inset]="true">
+      <ion-list-header> Mitglieder </ion-list-header>
+      <ion-item *ngFor="let member of team['teamMembers']">
+        <ion-avatar slot="start">
+          <img src="{{member?.profilePicture}}" />
+        </ion-avatar>
+        <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
+      </ion-item>
+    </ion-list>
   
+    <ion-list [inset]="true">
+      <ion-list-header> Administratoren </ion-list-header>
+      <ion-item *ngFor="let admin of team['teamAdmins']">
+        <ion-avatar slot="start">
+          <img src="{{admin?.profilePicture}}" />
+        </ion-avatar>
+        <ion-label> {{admin?.firstName}} {{admin?.lastName}} </ion-label>
+      </ion-item>
+    </ion-list>
+  
+  </ng-container>
+  
+  <!--
+
+
   <ng-container *ngIf="requestList$ | async as requests; else noRequests">
     <ion-list [inset]="true" *ngIf="requests.length > 0">
       <ion-list-header> Anfragen </ion-list-header>
@@ -84,7 +112,7 @@
       <ion-label> {{admin?.firstName}} {{admin?.lastName}} </ion-label>
     </ion-item>
   </ion-list>
-
+  -->
   <!-- fab placed to the bottom end -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="addTeamMember()">
