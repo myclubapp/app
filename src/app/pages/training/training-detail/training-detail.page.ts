@@ -1,10 +1,11 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ModalController, NavParams, ToastController } from '@ionic/angular';
 import { User } from 'firebase/auth';
-import { Observable, catchError, map, of, switchMap, take, tap } from 'rxjs';
+import { Observable, catchError, forkJoin, map, of, switchMap, take, tap } from 'rxjs';
 import { Training } from 'src/app/models/training';
 import { AuthService } from 'src/app/services/auth.service';
 import { TrainingService } from 'src/app/services/firebase/training.service';
+import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
 
 @Component({
   selector: 'app-training-detail',
@@ -14,7 +15,7 @@ import { TrainingService } from 'src/app/services/firebase/training.service';
 export class TrainingDetailPage implements OnInit {
   @Input("data") training: Training;
 
-  training$: Observable<Training>;
+  training$: Observable<any>;
 
   mode = "yes";
 
@@ -27,6 +28,7 @@ export class TrainingDetailPage implements OnInit {
   constructor (
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
+    private readonly userProfileService: UserProfileService,
     private readonly trainingService: TrainingService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
@@ -45,6 +47,7 @@ export class TrainingDetailPage implements OnInit {
     this.training$.subscribe({
       next: (data) => {
         console.log("TRAINING Data received");
+        console.log(data);
         this.training = {
           ...this.training, ...data
         };
@@ -62,45 +65,40 @@ export class TrainingDetailPage implements OnInit {
       take(1),
       tap(user => {
         this.user = user;
-        if (!user) {
-          console.log("No user found");
-          throw new Error("User not found");
-        }
+        if (!user) throw new Error("User not found");
       }),
       switchMap(() => this.trainingService.getTeamTrainingRef(teamId, trainingId)),
-      switchMap(game => {
-        if (!game) return of(null); // If no game is found, return null
+      switchMap(training => {
+        if (!training) return of(null);
         return this.trainingService.getTeamTrainingsAttendeesRef(teamId, trainingId).pipe(
-          map(attendees => {
-
-            // get firstName & lastName from userProfile Method call for each attendees element
-            // this.userProfileService.getUserProfileById(attendee.id)
-
-            const userAttendee = attendees.find(att => att.id == this.user.uid);
-            const status = userAttendee ? userAttendee.status : null;
-
-            //this.attendeeListUndefined
-
-            this.attendeeListTrue = attendees.filter(att => att.status == true) || [];
-            this.attendeeListFalse = attendees.filter(att => att.status == false) || [];
-            this.attendeeListUndefined = [];
-
-            return {
-              ...game,
-              attendees,
-              status,
-            };
+          switchMap(attendees => {
+            const attendeeProfiles$ = attendees.map(attendee => 
+              this.userProfileService.getUserProfileById(attendee.id).pipe(
+                take(1),
+                map(profile => ({ ...profile, ...attendee })), // Combine attendee object with profile
+                catchError(() => of({ ...attendee, firstName: 'Unknown', lastName: 'Unknown' }))
+              )
+            );
+            return forkJoin(attendeeProfiles$).pipe(
+              map(attendeesWithDetails => ({
+                ...training,
+                attendees: attendeesWithDetails,
+                attendeeListTrue: attendeesWithDetails.filter(e=>e.status==true),
+                attendeeListFalse: attendeesWithDetails.filter(e=>e.status==false),
+                status: attendeesWithDetails.find(att => att.id == this.user.uid)?.status
+              }))
+            );
           }),
           catchError(() => of({
-            ...game,
+            ...training,
             attendees: [],
             status: null,
-          })) // If error in fetching attendees, return game with empty attendees
+          }))
         );
       }),
       catchError(err => {
-        console.error("Error in getSingleGameWithAttendees:", err);
-        return of(null); // Return null on error
+        console.error("Error in getTrainingWithAttendees:", err);
+        return of(null);
       })
     );
   }

@@ -8,6 +8,8 @@
     </ion-toolbar>
   </ion-header>
   <!-- class="ion-padding" -->
+
+
   <ion-content>
     <ion-list [inset]="true">
       <ion-list-header>
@@ -87,11 +89,11 @@
       <ion-accordion-group [multiple]="true" [value]="['yes']">
         <ion-accordion value="yes">
           <ion-item slot="header" color="light">
-            <ion-label>Anwesend: {{attendeeListTrue.length}}</ion-label>
+            <ion-label>Anwesend: {{training['attendeeListTrue'].length}}</ion-label>
           </ion-item>
           <div slot="content"> <!-- class="ion-padding"-->
             <ion-list>
-              <ion-item *ngFor="let member of attendeeListTrue" detail="true">
+              <ion-item *ngFor="let member of training['attendeeListTrue']" detail="true">
                 <ion-icon color="success" slot="start" name="checkmark-circle">
                 </ion-icon>
 
@@ -102,11 +104,11 @@
         </ion-accordion>
         <ion-accordion value="no">
           <ion-item slot="header" color="light">
-            <ion-label>Abwesend: {{attendeeListFalse.length}}</ion-label>
+            <ion-label>Abwesend: {{training['attendeeListFalse'].length}}</ion-label>
           </ion-item>
           <div slot="content"> <!-- class="ion-padding"-->
             <ion-list>
-              <ion-item *ngFor="let member of attendeeListFalse" detail="true">
+              <ion-item *ngFor="let member of training['attendeeListFalse']" detail="true">
 
                 <ion-icon color="danger" slot="start" name="close-circle">
                 </ion-icon>
@@ -117,11 +119,11 @@
             </ion-list>
           </div>
         </ion-accordion>
-        <ion-accordion value="unknown">
+      <!--  <ion-accordion value="unknown">
           <ion-item slot="header" color="light">
             <ion-label>Keine Antwort: {{attendeeListUndefined.length}}</ion-label>
           </ion-item>
-          <div slot="content"> <!-- class="ion-padding"-->
+          <div slot="content">
             <ion-list>
               <ion-item *ngFor="let member of attendeeListUndefined" detail="true">
                 <ion-icon color="warning" slot="start" name="help-circle">
@@ -130,7 +132,7 @@
               </ion-item>
             </ion-list>
           </div>
-        </ion-accordion>
+        </ion-accordion>-->
       </ion-accordion-group>
     </ion-list>
 

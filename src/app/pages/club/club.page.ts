@@ -55,8 +55,6 @@ export class ClubPage implements OnInit {
         console.log(">> Club Data" );
         console.log( data);
         this.cdr.detectChanges();
-  
-  
       },
       error: (err) => console.error("Club Error in subscription:", err),
       complete: () => console.log("Club Observable completed")
