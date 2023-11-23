@@ -1,8 +1,10 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { ModalController, NavParams, ToastController } from "@ionic/angular";
+import { User } from "firebase/auth";
 import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, merge, mergeMap, of, shareReplay, startWith, switchMap, take, tap, timeout, toArray } from "rxjs";
 import { Team } from "src/app/models/team";
 import { Profile } from "src/app/models/user";
+import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 
@@ -14,155 +16,98 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 export class TeamPage implements OnInit {
   @Input("data") team: Team;
 
+  team$: Observable<any>;
+
+  user$: Observable<User>;
+  user: User;
+
   allowEdit: boolean = false;
 
   memberList$: Observable<Profile[]>;
   adminList$: Observable<Profile[]>;
   requestList$: Observable<Profile[]>;
 
-  private subscription: Subscription;
-
-  private subscriptionRequest: Subscription;
-  private subscriptionAdmin: Subscription;
-  private subscriptionMember: Subscription;
 
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
     private readonly toastController: ToastController,
     private readonly userProfileService: UserProfileService,
-    private readonly fbService: FirebaseService
+    private readonly fbService: FirebaseService,
+    private readonly authService: AuthService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
     this.team = this.navParams.get("data");
+    this.team$ = of(this.team);
 
-    const memberList: Profile[] = [];
-    const adminList: Profile[] = [];
-    const requestList: any[] = [];
-
-
-    const member$ = this.fbService.getTeamRef(this.team.id).pipe( 
-      take(1), 
-      switchMap(club => this.fbService.getTeamMemberRefs(club.id).pipe(
-        defaultIfEmpty([{}]),
-        startWith([{}])
-      )),
-      switchMap((clubMemberArray:any) => {
-        // Clear out the requestList when new data comes in
-        memberList.length = 0;
-        return from(clubMemberArray);
-      }),
-      tap((member:any) => console.log(member.id)),
-      concatMap(user => 
-          this.userProfileService.getUserProfileById(user.id).pipe(
-            take(1), 
-            map(user => {
-              return [{...user, teamId: this.team.id}]
-            }),
-            catchError(error => {
-              console.error('Error fetching member:', error);
-              return of([]);
-            })
-          )
-      ),
-      tap(users => users.forEach(n => memberList.push(n))),
-      finalize(() => console.log("Team Member"))
-    )
-
-    this.subscriptionMember = member$.subscribe({
-      next: () => {
-        this.memberList$ = of(memberList.filter(obj => Object.keys(obj).length > 1));
+    this.team$ = this.getClub(this.team.id);
+    this.team$.subscribe({
+      next: (data) => {
+        console.log(">> Tean Data" );
+        console.log( data);
+        this.cdr.detectChanges();
+  
+  
       },
-      error: err => console.error('Member: Error in the observable chain:', err)
+      error: (err) => console.error("Team Error in subscription:", err),
+      complete: () => console.log("team Observable completed")
     });
-
-    const admin$ = this.fbService.getTeamRef(this.team.id).pipe( 
-      take(1), 
-      switchMap(club => this.fbService.getTeamAdminRefs(club.id).pipe(
-        defaultIfEmpty([{}]),
-        startWith([{}])
-      )),
-      switchMap((clubAdminArray:any) => {
-        // Clear out the requestList when new data comes in
-        adminList.length = 0;
-        return from(clubAdminArray);
-      }),
-      tap((admin:any) => console.log(admin.id)),
-      concatMap(user => 
-          this.userProfileService.getUserProfileById(user.id).pipe(
-            take(1), 
-            map(user => {
-              return [{...user, teamId: this.team.id}]
-            }),
-            catchError(error => {
-              console.error('Error fetching teamadmin:', error);
-              return of([]);
-            })
-          )
-      ),
-      tap(users => users.forEach(n => adminList.push(n))),
-      finalize(() => console.log("Team Admin"))
-    )
-
-    this.subscriptionAdmin = admin$.subscribe({
-      next: () => {
-        this.adminList$ = of(adminList.filter(obj => Object.keys(obj).length > 1));
-      },
-      error: err => console.error('Admin: Error in the observable chain:', err)
-    });
-
-
-    const requests$ = this.fbService.getTeamRef(this.team.id).pipe( 
-      take(1), 
-      switchMap(club => this.fbService.getTeamRequestRefs(club.id).pipe(
-        defaultIfEmpty([{}]),
-        startWith([{}])
-      )),
-      switchMap((clubRequestArray:any) => {
-        // Clear out the requestList when new data comes in
-        requestList.length = 0;
-        return from(clubRequestArray);
-      }),
-      tap((request:any) => console.log(request.id)),
-      concatMap(user => 
-          this.userProfileService.getUserProfileById(user.id).pipe(
-            take(1), 
-            map(user => {
-              return [{...user, teamId: this.team.id}]
-            }),
-            catchError(error => {
-              console.error('Error fetching teamadmin:', error);
-              return of([]);
-            })
-          )
-      ),
-      tap(users => users.forEach(n => requestList.push(n))),
-      finalize(() => console.log("Team Requests"))
-    )
-
-    this.subscriptionRequest = requests$.subscribe({
-      next: () => {
-        this.requestList$ = of(requestList.filter(obj => Object.keys(obj).length > 1));
-      },
-      error: err => console.error('Request: Error in the observable chain:', err)
-    });
-
   }
-
 
   ngOnDestroy() {
 
-    if (this.subscriptionAdmin) {
-      this.subscriptionAdmin.unsubscribe();
-    }
-    if (this.subscriptionMember) {
-      this.subscriptionMember.unsubscribe();
-    }
-    if (this.subscriptionRequest) {
-      this.subscriptionRequest.unsubscribe();
-    }
+  }
 
+  getClub(teamId: string) {
+ 
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap(user => {
+        this.user = user;
+        if (!user) throw new Error("User not found");
+      }),
+      switchMap(() => this.fbService.getClubRef(teamId)),
+      switchMap(team => {
+        if (!team) return of(null);
+        return combineLatest({
+          teamMembers: this.fbService.getClubMemberRefs(teamId),
+          teamAdmins: this.fbService.getClubAdminRefs(teamId)
+        }).pipe(
+          switchMap(({ teamMembers, teamAdmins }) => {
+            const memberProfiles$ = teamMembers.map(member => 
+              this.userProfileService.getUserProfileById(member.id).pipe(take(1),
+                catchError(() => of({ ...member, firstName: 'Unknown', lastName: 'Unknown' }))
+              )
+            );
+            const adminProfiles$ = teamAdmins.map(admin => 
+              this.userProfileService.getUserProfileById(admin.id).pipe(take(1),
+                catchError(() => of({ ...admin, firstName: 'Unknown', lastName: 'Unknown' }))
+              )
+            );
+            return forkJoin({
+              teamMembers: forkJoin(memberProfiles$),
+              teamAdmins: forkJoin(adminProfiles$)
+            }).pipe(
+              map(({ teamMembers, teamAdmins }) => ({
+                teamMembers: teamMembers.filter(member => member !== undefined), // Filter out undefined
+                teamAdmins: teamAdmins.filter(admin => admin !== undefined) // Filter out undefined
+              })
+            ));
+          }),
+          map(({ teamMembers, teamAdmins }) => ({
+            ...team,
+            teamMembers,
+            teamAdmins
+          }))
+        );
+      }),
+      catchError(err => {
+        console.error("Error in getClubWithMembersAndAdmins:", err);
+        return of(null); 
+      })
+    );
   }
 
   async removeAdmin(admin) {
