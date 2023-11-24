@@ -27,9 +27,10 @@ import { User, user } from "@angular/fire/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
 import { filter } from 'rxjs/operators';
-import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, merge, mergeMap, of, shareReplay, switchMap, take, tap, timeout, toArray } from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, finalize, forkJoin, from, lastValueFrom, map, merge, mergeMap, of, shareReplay, switchMap, take, tap, timeout, toArray } from "rxjs";
 import { Club } from "src/app/models/club";
 import { Team } from "src/app/models/team";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: "app-news",
@@ -68,7 +69,8 @@ export class NewsPage implements OnInit {
     private readonly modalCtrl: ModalController,
     private readonly alertCtrl: AlertController,
     private readonly menuCtrl: MenuController,
-    public animationCtrl: AnimationController
+    public animationCtrl: AnimationController,
+    private translate: TranslateService
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -320,7 +322,7 @@ export class NewsPage implements OnInit {
   );
 
   this.subscription = forkJoin([teams$, clubs$]).subscribe({
-    next: () => {
+    next: async () => {
       const alertInputs = [];
       for (const item of filterList){
         alertInputs.push({
@@ -332,12 +334,12 @@ export class NewsPage implements OnInit {
       }
     
       this.alertCtrl.create({
-        header: 'News filtern',
-        message: 'Nach Verein oder Teams filtern.',
+        header: await lastValueFrom(this.translate.get("filter__news")),
+        message: await lastValueFrom(this.translate.get("filter__by_club_team")),
        // subHeader: 'Nach Verein oder Teams filtern.',
         inputs: alertInputs,
         buttons: [
-          { text: "OK",
+          { text:  await lastValueFrom(this.translate.get("ok")),
             role: "confirm",
             handler: (value)=>{
               console.log(value)
@@ -345,7 +347,7 @@ export class NewsPage implements OnInit {
               this.newsList$ = of(this.newsList.filter((news: any) => news.filterable == value));
             } 
           },
-          { text: "abbrechen",
+          { text:  await lastValueFrom(this.translate.get("cancel")),
             role: "cancel",
             handler: (value)=>{
               console.log(value);

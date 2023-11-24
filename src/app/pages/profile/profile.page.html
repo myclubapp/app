@@ -3,21 +3,21 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Profil</ion-title>
+    <ion-title>{{'profile' | translate}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Profil</ion-title>
+      <ion-title size="large">{{'profile' | translate}}</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ng-container *ngIf="userProfile$ | async as userProfile; else loading">
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
-        <ion-label> Allgemein </ion-label>
+        <ion-label> {{"generally" | translate}} </ion-label>
       </ion-list-header>
 
       <ion-item>
@@ -31,27 +31,27 @@
       </ion-item>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" label="Vorname" aria-label="Vorname" readonly
+        <ion-input labelPlacement="stacked" [label]='"first__name" | translate' attr.aria-label='{{"first__name" | translate}}' readonly
           [(ngModel)]="userProfile.firstName" value="{{userProfile.firstName}}">
         </ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" label="Nachname" aria-label="Nachname" readonly
+        <ion-input labelPlacement="stacked" [label]='"last__name" | translate' attr.aria-label='{{"last__name" | translate}}' readonly
           [(ngModel)]="userProfile.lastName" value="{{userProfile.lastName}}">
         </ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" label="E-Mail" aria-label="E-Mail" readonly [(ngModel)]="userProfile.email"
+        <ion-input labelPlacement="stacked" [label]='"email" | translate' attr.aria-label='{{"email" | translate}}' readonly [(ngModel)]="userProfile.email"
           value="{{userProfile.email}}">
         </ion-input>
       </ion-item>
     </ion-list>
 
     <ion-list *ngIf="clubRequestList.length > 0" lines="full" [inset]="true">
-      <ion-list-header >
-        Offene Club-Anfragen
+      <ion-list-header>
+        {{ "open__club_inquiry" | translate}}
       </ion-list-header>
       <ion-item *ngFor="let request of clubRequestList">
         {{request.name}}
@@ -62,8 +62,8 @@
     </ion-list>
 
     <ion-list *ngIf="teamRequestList.length > 0" lines="full" [inset]="true">
-      <ion-list-header >
-        Offene Team-Anfragen
+      <ion-list-header>
+        {{"open__team_request" | translate}}
       </ion-list-header>
       <ion-item *ngFor="let request of teamRequestList">
         {{request.liga}} {{request.name}}
@@ -75,7 +75,7 @@
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
-        <ion-label> Benachrichtigungen </ion-label>
+        <ion-label> {{"notifications" | translate}} </ion-label>
       </ion-list-header>
       <!--
      <ion-item>
@@ -85,36 +85,36 @@
     -->
 
       <ion-item>
-        <ion-toggle labelPlacement="stacked" aria-label="Push-Nachrichten" value="{{userProfile?.settingsPush}}"
+        <ion-toggle labelPlacement="stacked" attr.aria-label='{{"Push-Nachrichten" | translate}}' value="{{userProfile?.settingsPush}}"
           slot="end" [checked]="userProfile.settingsPush" [enableOnOffLabels]="true"
           (ionChange)="togglePush($event)"></ion-toggle>
-        Push-Nachrichten
+        {{"push__message" | translate}}
       </ion-item>
 
       <ion-item>
-        <ion-toggle labelPlacement="stacked" aria-label="E-Mail-Nachrichten" value="{{userProfile?.settingsEmail}}"
+        <ion-toggle labelPlacement="stacked" attr.aria-label='{{"email__messages" | translate}}' value="{{userProfile?.settingsEmail}}"
           slot="end" [checked]="userProfile.settingsEmail" [enableOnOffLabels]="true"
           (ionChange)="toggleEmail($event)"></ion-toggle>
-        E-Mail-Nachrichten
+        {{"email__messages" | translate}}
       </ion-item>
 
       <ion-item>
-        <ion-toggle labelPlacement="stacked" aria-label="E-Mail-Nachrichten Reporting"
+        <ion-toggle labelPlacement="stacked" attr.aria-label='{{"email__messages_report" | translate}}'
           value="{{userProfile?.settingsEmailReporting}}" slot="end" [checked]="userProfile.settingsEmailReporting"
           [enableOnOffLabels]="true" (ionChange)="toggleEmailReporting($event)"></ion-toggle>
-        E-Mail-Nachrichten Reporting
+        {{"email__messages_report" | translate}}
       </ion-item>
 
     </ion-list>
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
-        Push Notifications
+        {{"push__notifications" | translate}}
       </ion-list-header>
       <ion-accordion-group *ngIf="pushDeviceList.length > 0">
         <ion-accordion value="pushDeviceList">
           <ion-item slot="header" color="light">
-            <ion-label>Registrierte Push Geräte</ion-label>
+            <ion-label>{{"push__notifications_devices" | translate}}</ion-label>
           </ion-item>
           <div class="ion-padding" slot="content">
             <ion-list>
@@ -124,7 +124,7 @@
                 <ion-button color="danger" (click)="deletePushDevice(device.id)">
                   <ion-icon slot="icon-only" name="trash"> </ion-icon>
                 </ion-button>
-                <ion-badge slot="end" *ngIf="device.id==deviceId.identifier">aktuelles Gerät</ion-badge>
+                <ion-badge slot="end" *ngIf="device.id==deviceId.identifier">{{"current__device" | translate}}</ion-badge>
               </ion-item>
             </ion-list>
           </div>
@@ -132,13 +132,13 @@
       </ion-accordion-group>
 
       <ion-item>
-        <ion-button (click)="registerDevice()"> Push Registrierung </ion-button>
+        <ion-button (click)="registerDevice()"> {{"push__registeration" | translate}} </ion-button>
       </ion-item>
     </ion-list>
 
     <ion-list lines="full" [inset]="true">
       <ion-item>
-        <ion-label color="danger">Danger Zone: Profil löschen</ion-label>
+        <ion-label color="danger">{{'delete__profile' | translate}}</ion-label>
         <ion-button slot="end" color="danger" (click)="deleteProfile()">
           <ion-icon slot="icon-only" name="trash"> </ion-icon>
         </ion-button>
@@ -196,9 +196,9 @@
 </ng-template>
 
 <ng-template #loadingClub>
-  <ion-text> loading </ion-text>
+  <ion-text> {{"loading" | translate}} </ion-text>
 </ng-template>
 
 <ng-template #loadingTeams>
-  <ion-text> loading </ion-text>
+  <ion-text> {{"loading" | translate}} </ion-text>
 </ng-template>

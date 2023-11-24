@@ -1,7 +1,8 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ModalController, NavParams, ToastController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
 import { User } from 'firebase/auth';
-import { Observable, catchError, forkJoin, map, of, switchMap, take, tap } from 'rxjs';
+import { Observable, catchError, forkJoin, lastValueFrom, map, of, switchMap, take, tap } from 'rxjs';
 import { Training } from 'src/app/models/training';
 import { AuthService } from 'src/app/services/auth.service';
 import { TrainingService } from 'src/app/services/firebase/training.service';
@@ -33,6 +34,7 @@ export class TrainingDetailPage implements OnInit {
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
+    private translate: TranslateService
   ) {}
 
   ngOnInit () {
@@ -118,7 +120,7 @@ export class TrainingDetailPage implements OnInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: "Änderungen gespeichert",
+      message: await lastValueFrom(this.translate.get("success__saved")),
       color: "primary",
       duration: 2000,
       position: "top",

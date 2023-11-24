@@ -1,12 +1,12 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="secondary">
-      <ion-button *ngIf="!allowEdit" (click)="edit()">bearbeiten</ion-button>
-      <ion-button *ngIf="allowEdit" (click)="edit()">abbrechen</ion-button>
+      <ion-button *ngIf="!allowEdit" (click)="edit()">{{"edit" | translate}}</ion-button>
+      <ion-button *ngIf="allowEdit" (click)="edit()">{{"cancel" | translate}}</ion-button>
     </ion-buttons>
     <ion-title>{{team?.name}}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="close()">schliessen</ion-button>
+      <ion-button (click)="close()">{{"close" | translate}}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -20,13 +20,13 @@
   
   <ion-list [inset]="true">
     <ion-item>
-      Anzahl Mitglieder: 
+      {{"no_of__members" | translate}}: 
     </ion-item>
     <ion-item>
-      Durchschnittsalter: 
+      {{"average__age" | translate}}: 
     </ion-item>
     <ion-item>
-      Trainingspräsenz: 
+      {{"trainaing__presence" | translate}}: 
     </ion-item>
   </ion-list>
 
@@ -34,7 +34,7 @@
   <ng-container *ngIf="team$ | async as team">
 
     <ion-list [inset]="true">
-      <ion-list-header> Mitglieder </ion-list-header>
+      <ion-list-header> {{"members" | translate}} </ion-list-header>
       <ion-item *ngFor="let member of team['teamMembers']">
         <ion-avatar slot="start">
           <img src="{{member?.profilePicture}}" />
@@ -44,7 +44,7 @@
     </ion-list>
   
     <ion-list [inset]="true">
-      <ion-list-header> Administratoren </ion-list-header>
+      <ion-list-header> {{"admins" | translate}} </ion-list-header>
       <ion-item *ngFor="let admin of team['teamAdmins']">
         <ion-avatar slot="start">
           <img src="{{admin?.profilePicture}}" />

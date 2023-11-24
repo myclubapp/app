@@ -13,10 +13,11 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { Club } from "src/app/models/club";
 import { AuthService } from "src/app/services/auth.service";
 import { Router } from "@angular/router";
-import { Observable, Subscription, of, switchMap, take, tap } from "rxjs";
+import { Observable, Subscription, lastValueFrom, of, switchMap, take, tap } from "rxjs";
 import { User } from "firebase/auth";
 import { Profile } from "src/app/models/user";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: "app-onboarding",
@@ -53,7 +54,8 @@ export class OnboardingPage implements OnInit {
     private readonly authService: AuthService,
     private readonly profileService: UserProfileService,
     private readonly router: Router,
-    private readonly alertController: AlertController
+    private readonly alertController: AlertController,
+    private translate: TranslateService
   ) {
     this.menuCtrl.enable(false, "menu");
   }
@@ -65,12 +67,12 @@ export class OnboardingPage implements OnInit {
       take(1),
       tap(user => this.user = user),
       switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
-      ).subscribe(profile => {
-          this.userProfile$ = of(profile);
-      })
+    ).subscribe(profile => {
+      this.userProfile$ = of(profile);
+    })
 
 
-      this.subscriptionActiveClubList = this.fbService.getActiveClubList().pipe(
+    this.subscriptionActiveClubList = this.fbService.getActiveClubList().pipe(
       take(1),
       tap(activeClubList => {
         console.log("clubs");
@@ -88,7 +90,7 @@ export class OnboardingPage implements OnInit {
     if (this.subscriptionActiveClubList) {
       this.subscriptionActiveClubList.unsubscribe();
     }
-  
+
   }
   handleChange(event: any) {
     console.log(event.detail.value);
@@ -115,11 +117,11 @@ export class OnboardingPage implements OnInit {
   async joinClub(club: Club) {
     console.log(club);
     const alert = await this.alertCtrl.create({
-      message: `Möchtest du dem Verein "${club.name}" beitreten?`,
-      header: "Club beitreten",
+      message: await lastValueFrom(this.translate.get("do_you_want_to_join__club")) + ` ${club.name}`,
+      header: await lastValueFrom(this.translate.get("join__club")),
       buttons: [
         {
-          text: "Ja",
+          text: await lastValueFrom(this.translate.get("yes")),
           handler: async (data: any) => {
             await this.fbService.setClubRequest(club.id, this.user.uid);
             await this.presentRequestToast();
@@ -129,7 +131,7 @@ export class OnboardingPage implements OnInit {
           },
         },
         {
-          text: "Nein",
+          text: await lastValueFrom(this.translate.get("no")),
           role: "cancel",
           handler: () => {
             console.log("nein");
@@ -147,7 +149,7 @@ export class OnboardingPage implements OnInit {
 
   async presentRequestToast() {
     const toast = await this.toastController.create({
-      message: "Anfrage erfolgreich gesendet",
+      message: await lastValueFrom(this.translate.get("success__request_sent")),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -157,7 +159,7 @@ export class OnboardingPage implements OnInit {
   }
   async presentCancelToast() {
     const toast = await this.toastController.create({
-      message: "Aktion wurde abgebrochen",
+      message: await lastValueFrom(this.translate.get("warning__action_canceled")),
       duration: 1500,
       position: "bottom",
       color: "danger",
@@ -169,9 +171,9 @@ export class OnboardingPage implements OnInit {
   async presentRequestSentAlert(clubName: string) {
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
-      header: "Antrag erfolgreich versendet",
+      header: await lastValueFrom(this.translate.get("success__application_sent")),
       subHeader: "",
-      message: `Dein Antrag wurde erfolgreich an den Club "${clubName}" gesendet. Sobald dein Antrag genehmigt wurde, informieren wir dich wieder.`,
+      message: await lastValueFrom(this.translate.get("success__application_sent_desc")),
       buttons: [
         {
           text: "Logout",

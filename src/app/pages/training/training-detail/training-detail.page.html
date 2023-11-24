@@ -3,7 +3,7 @@
     <ion-toolbar>
       <ion-title></ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()">schliessen</ion-button>
+        <ion-button (click)="close()">{{"close" | translate}}</ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -13,7 +13,7 @@
   <ion-content>
     <ion-list [inset]="true">
       <ion-list-header>
-        Details
+        {{"details" | translate}}
       </ion-list-header>
 
       <ion-item>
@@ -62,9 +62,9 @@
 
     <ion-list [inset]="true" lines="none">
       <ion-list-header>
-        An-/Abwesenheiten
+        {{"attendances__absences" | translate}}
       </ion-list-header>
-      <ion-item class="myclubStatus"> 
+      <ion-item class="myclubStatus">
         <ng-container *ngIf="training.hasOwnProperty('status'); else loading">
           <ion-fab-button (click)="toggle(true, training)" size="small" color="warning" slot="start"
             *ngIf="training.status === null">
@@ -81,7 +81,7 @@
             <ion-icon name="checkmark-circle"> </ion-icon>
           </ion-fab-button>
 
-          <ion-label>Mein Status</ion-label>
+          <ion-label>{{"my__status" | translate}}</ion-label>
         </ng-container>
       </ion-item>
     </ion-list>
@@ -89,7 +89,7 @@
       <ion-accordion-group [multiple]="true" [value]="['yes']">
         <ion-accordion value="yes">
           <ion-item slot="header" color="light">
-            <ion-label>Anwesend: {{training['attendeeListTrue'].length}}</ion-label>
+            <ion-label>{{"present" | translate}}: {{training['attendeeListTrue'].length}}</ion-label>
           </ion-item>
           <div slot="content"> <!-- class="ion-padding"-->
             <ion-list>
@@ -104,7 +104,7 @@
         </ion-accordion>
         <ion-accordion value="no">
           <ion-item slot="header" color="light">
-            <ion-label>Abwesend: {{training['attendeeListFalse'].length}}</ion-label>
+            <ion-label>{{"absent" | translate}}: {{training['attendeeListFalse'].length}}</ion-label>
           </ion-item>
           <div slot="content"> <!-- class="ion-padding"-->
             <ion-list>
@@ -119,7 +119,7 @@
             </ion-list>
           </div>
         </ion-accordion>
-      <!--  <ion-accordion value="unknown">
+        <!--  <ion-accordion value="unknown">
           <ion-item slot="header" color="light">
             <ion-label>Keine Antwort: {{attendeeListUndefined.length}}</ion-label>
           </ion-item>

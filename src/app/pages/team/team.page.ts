@@ -1,7 +1,8 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { ModalController, NavParams, ToastController } from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
-import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, merge, mergeMap, of, shareReplay, startWith, switchMap, take, tap, timeout, toArray } from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, finalize, forkJoin, from, lastValueFrom, map, merge, mergeMap, of, shareReplay, startWith, switchMap, take, tap, timeout, toArray } from "rxjs";
 import { Team } from "src/app/models/team";
 import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
@@ -36,6 +37,7 @@ export class TeamPage implements OnInit {
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
@@ -148,7 +150,7 @@ export class TeamPage implements OnInit {
 
   async toastActionSaved() {
     const toast = await this.toastController.create({
-      message: "Änderungen erfolgreich gespeichert",
+      message: await lastValueFrom(this.translate.get("success__saved")),
       duration: 1500,
       position: "bottom",
       color: "success",

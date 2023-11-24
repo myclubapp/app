@@ -1,11 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="secondary">
-      <ion-button (click)="close()">schliessen</ion-button>
+      <ion-button (click)="close()">{{"close" | translate}}</ion-button>
     </ion-buttons>
-    <ion-title>Neues Training</ion-title>
+    <ion-title>{{"new__training" | translate}}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="createTraining()">erstellen</ion-button>
+      <ion-button (click)="createTraining()">{{"create" | translate}}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -25,7 +25,7 @@
     <ion-item>
      
       <ion-textarea
-      label="Beschreibung" label-placement="stacked"
+      [label]='"Beschreibung" | translate' label-placement="stacked"
         value="{{training.description}}" [(ngModel)]="training.description"
       >
       </ion-textarea>
@@ -33,27 +33,27 @@
     <ion-item>
     
       <ion-input
-      label="Strasse & Hausnummer" label-placement="stacked"
+      [label]='"street__house_number" | translate' label-placement="stacked"
         value="{{training.streetAndNumber}}" [(ngModel)]="training.streetAndNumber"
       >
       </ion-input>
     </ion-item>
     <ion-item>
       <ion-input
-      label="Postleitzahl" label-placement="stacked"
+      [label]='"postal__code" | translate' label-placement="stacked"
         value="{{training.postalCode}}" [(ngModel)]="training.postalCode"
       >
       </ion-input>
     </ion-item>
     <ion-item>
       
-      <ion-input label="Ortschaft" label-placement="stacked" value="{{training.city}}" [(ngModel)]="training.city">
+      <ion-input [label]='"locality" | translate' label-placement="stacked" value="{{training.city}}" [(ngModel)]="training.city">
       </ion-input>
     </ion-item>
 
 
     <ion-item id="timeFromItem">
-      <ion-label position=""> Start Training: </ion-label>
+      <ion-label position=""> {{"start__training" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -64,7 +64,7 @@
     </ion-item>
 
     <ion-item id="timeToItem">
-      <ion-label position=""> Ende Training: </ion-label>
+      <ion-label position=""> {{"end__training" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -74,12 +74,12 @@
       </ion-modal>
     </ion-item>
 
-    <ion-list-header>Serien Einstellungen</ion-list-header>
+    <ion-list-header>{{"series__settings" | translate}}</ion-list-header>
     <ion-item>
 
       <ion-select label="Wiederholen" label-placement="stacked" value="{{training.repeatFrequency}}" [(ngModel)]="training.repeatFrequency" >
-        <ion-select-option value="D">Täglich</ion-select-option>
-        <ion-select-option value="W">Wöchentlich</ion-select-option>
+        <ion-select-option value="D">{{"daily" | translate}}</ion-select-option>
+        <ion-select-option value="W">{{"weekly" | translate}}</ion-select-option>
       </ion-select>
       <ion-select label="Alle" label-placement="stacked" value="{{training.repeatAmount}}" [(ngModel)]="training.repeatAmount" >
         <ion-select-option value="1">1</ion-select-option>
@@ -89,7 +89,7 @@
       </ion-select> 
     </ion-item>
     <ion-item id="startDateItem">
-      <ion-label position="default"> Erstes Training: </ion-label>
+      <ion-label position="default"> {{"first__training" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="startDate"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -101,7 +101,7 @@
     </ion-item>
 
     <ion-item id="endDateItem">
-      <ion-label position="default"> Letztes Training: </ion-label>
+      <ion-label position="default"> {{"last__training" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="endDate"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">

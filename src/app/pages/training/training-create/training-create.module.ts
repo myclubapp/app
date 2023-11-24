@@ -7,6 +7,7 @@ import { IonicModule } from "@ionic/angular";
 import { TrainingCreatePageRoutingModule } from "./training-create-routing.module";
 
 import { TrainingCreatePage } from "./training-create.page";
+import { TranslateModule } from "@ngx-translate/core";
 
 @NgModule({
   imports: [
@@ -14,6 +15,7 @@ import { TrainingCreatePage } from "./training-create.page";
     FormsModule,
     IonicModule,
     TrainingCreatePageRoutingModule,
+    TranslateModule
   ],
   declarations: [TrainingCreatePage],
 })

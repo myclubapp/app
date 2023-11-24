@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit } from "@angular/core";
-import { combineLatest, Observable, of, Subscription } from "rxjs";
+import { combineLatest, lastValueFrom, Observable, of, Subscription } from "rxjs";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
 import { User } from "@angular/fire/auth";
 
@@ -29,6 +29,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { Router } from "@angular/router";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: "app-profile",
@@ -65,7 +66,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
     private readonly loadingController: LoadingController,
     private readonly alertController: AlertController,
     private readonly router: Router,
-    private readonly menuCtrl: MenuController
+    private readonly menuCtrl: MenuController,
+    private translate: TranslateService
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -76,9 +78,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
       take(1),
       tap(user => this.user = user),
       switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
-      ).subscribe(profile => {
-          this.userProfile$ = of(profile);
-      })
+    ).subscribe(profile => {
+      this.userProfile$ = of(profile);
+    })
 
     // await this.getUser();
     // this.getClubRequestList();
@@ -106,8 +108,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
     if (this.teamRequestListSub) {
       this.teamRequestListSub.unsubscribe();
     }
-  
-   
+
+
   }
 
   getClubRequestList() {
@@ -205,7 +207,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   async takePicture() {
 
     const loading = await this.loadingController.create({
-      message: 'Profilbild wird hochgeladen',
+      message: await lastValueFrom(this.translate.get('profile_pic__uploaded')),
       showBackdrop: true,
       backdropDismiss: false,
       translucent: true,
@@ -248,10 +250,10 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
   async deleteProfile() {
     const alert = await this.alertController.create({
-      message: "Möchtest du das Profil wirklich löschen?",
+      message: await lastValueFrom(this.translate.get("delete_profile__confirm")),
       buttons: [
         {
-          text: "Ja",
+          text: await lastValueFrom(this.translate.get("yes")),
           handler: async () => {
             await this.authService.deleteProfile().catch((error) => {
               this.presentErrorDeleteProfile();
@@ -261,7 +263,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
           },
         },
         {
-          text: "Nein",
+          text: await lastValueFrom(this.translate.get("no")),
         },
       ],
     });
@@ -270,7 +272,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: "Anfrage erfolgreich gelöscht",
+      message: await lastValueFrom(this.translate.get("request_success__deleted")),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -280,7 +282,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
   async presentToastTakePicture() {
     const toast = await this.toastController.create({
-      message: "Profilbild erfolgreich geändert",
+      message: await lastValueFrom(this.translate.get("success__profile_pic_changed")),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -328,18 +330,18 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async alertPushNotSupported() {
     const alert = await this.alertController.create({
-      header: "Push-Benachrichtugung nicht verfügbar",
+      header: await lastValueFrom(this.translate.get("error__push_notification_not_available")),
       message:
-        "Leider unterstützt ihr Gerät/Browser keine Push-Benachrichtugen.",
-      buttons: [{ text: "OK" }],
+        await lastValueFrom(this.translate.get("error_device_not_support_push_notifications")),
+      buttons: [{ text: await lastValueFrom(this.translate.get("ok")) }],
     });
     alert.present();
   }
 
   async errorPushMessageEnable(error) {
     const alert = await this.alertController.create({
-      header: "Push-Benachrichtugung nicht verfügbar",
-      message: "Leider ist ein Fehler aufgetreten: " + error,
+      header: await lastValueFrom(this.translate.get("error_push_service_not_available")),
+      message: await lastValueFrom(this.translate.get("error_text")) + error,
       buttons: [{ text: "OK" }],
     });
     alert.present();
@@ -347,17 +349,17 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async alertAskForPush() {
     const alert = await this.alertController.create({
-      header: "Push-Benachrichtugung",
+      header: await lastValueFrom(this.translate.get("push__notifications")),
       message:
-        "Sollen Push-Benachrichtigungen für dieses Gerät aktiviert werden?",
+        await lastValueFrom(this.translate.get("push_notification__permission_desc")),
       buttons: [
         {
-          text: "Ja",
+          text:  await lastValueFrom(this.translate.get("yes")),
           handler: () => {
             this.subscribeToNotifications();
           },
         },
-        { text: "Nein" },
+        { text: await lastValueFrom(this.translate.get("no")), },
       ],
     });
     alert.present();
@@ -384,7 +386,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
         this.toastActionSaved();
       } else {
         console.log("error push token register");
-        this.errorPushMessageEnable("Error push token register");
+        this.errorPushMessageEnable(await lastValueFrom(this.translate.get("error_push_token")));
       }
     } catch (err) {
       console.log(err);
@@ -393,7 +395,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
   async presentDeleteProfile() {
     const toast = await this.toastController.create({
-      message: "Profil erfolgreich gelöscht",
+      message: await lastValueFrom(this.translate.get("success__profile_deleted")),
       duration: 1500,
       position: "bottom",
       color: "danger",
@@ -404,7 +406,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async presentErrorDeleteProfile() {
     const toast = await this.toastController.create({
-      message: "Fehler beim löschen des Profils",
+      message: await lastValueFrom(this.translate.get("error__while_deleting_msg")),
       duration: 1500,
       position: "bottom",
       color: "danger",
@@ -415,7 +417,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async toastActionSaved() {
     const toast = await this.toastController.create({
-      message: "Änderungen erfolgreich gespeichert",
+      message: await lastValueFrom(this.translate.get("success__saved")),
       duration: 1500,
       position: "bottom",
       color: "success",

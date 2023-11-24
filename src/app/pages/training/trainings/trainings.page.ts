@@ -8,7 +8,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, catchError, combineLatest, map, mergeMap, of, switchMap, take, tap } from "rxjs";
+import { Observable, catchError, combineLatest, lastValueFrom, map, mergeMap, of, switchMap, take, tap } from "rxjs";
 import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -16,6 +16,7 @@ import { TrainingService } from "src/app/services/firebase/training.service";
 import { TrainingCreatePage } from "../training-create/training-create.page";
 import { Timestamp } from "firebase/firestore";
 import { TrainingDetailPage } from "../training-detail/training-detail.page";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: "app-trainings",
@@ -43,6 +44,7 @@ export class TrainingsPage implements OnInit {
     private readonly menuCtrl: MenuController,
     private readonly alertCtrl: AlertController,
     private cdr: ChangeDetectorRef,
+    private translate: TranslateService
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -243,7 +245,7 @@ export class TrainingsPage implements OnInit {
   async deleteTraining(slidingItem: IonItemSliding, training) {
     slidingItem.closeOpened();
     const toast = await this.toastController.create({
-      message: "Delete",
+      message: await lastValueFrom(this.translate.get("delete")),
       color: "primary",
       duration: 2000,
       position: "top",
@@ -286,7 +288,7 @@ export class TrainingsPage implements OnInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: "Änderung wurde gespeichert",
+      message: await lastValueFrom(this.translate.get("success__saved")),
       color: "primary",
       duration: 2000,
       position: "top",
