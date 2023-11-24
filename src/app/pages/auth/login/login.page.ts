@@ -11,7 +11,8 @@ import {
 } from "@angular/forms";
 import { AlertController, MenuController } from "@ionic/angular";
 import { AuthService } from "src/app/services/auth.service";
-
+import { TranslateService } from "@ngx-translate/core";
+import { lastValueFrom } from 'rxjs';
 @Component({
   selector: "app-login",
   templateUrl: "./login.page.html",
@@ -27,9 +28,10 @@ export class LoginPage implements OnInit {
     private readonly authService: AuthService,
     private readonly router: Router,
     private readonly formBuilder: UntypedFormBuilder,
-    public readonly menuCtrl: MenuController 
+    public readonly menuCtrl: MenuController,
+    private translate: TranslateService
   ) {
-    this.menuCtrl.enable(true,"menu");
+    this.menuCtrl.enable(true, "menu");
     this.authForm = this.formBuilder.group({
       email: ["", Validators.compose([Validators.required, Validators.email])],
       password: ["", Validators.minLength(6)],
@@ -37,7 +39,7 @@ export class LoginPage implements OnInit {
   }
 
   ngOnInit() {
-    this.menuCtrl.enable(true,"menu");
+    this.menuCtrl.enable(true, "menu");
     this.user = {
       email: "",
       password: "",
@@ -60,20 +62,20 @@ export class LoginPage implements OnInit {
       console.error(err.code);
 
       if (err.code == "auth/user-not-found") {
-        message = "Kein Account mit dieser E-Mail-Adresse gefunden.";
+        message = await lastValueFrom(this.translate.get("error__no_acount_found"));
       } else if (err.code == "auth/wrong-password") {
-        message = "Die Kombination aus Benutzername und Passwort ist falsch.";
+        message =  await lastValueFrom(this.translate.get("error__no_acount_found"));
       } else if (err.code == "auth/network-request-failed") {
-        message = "Es gibt ein Problem mit der Netzwerkverbindung.";
+        message = await lastValueFrom(this.translate.get("error__network_connection"));
       } else {
-        
+
       }
 
       const alert = await this.alertCtrl.create({
-          message: message,
-          buttons: [{ text: "OK", role: "cancel" }],
-        });
-      alert.present();      
+        message: message,
+        buttons: [{ text: await lastValueFrom(this.translate.get("ok")), role: "cancel" }],
+      });
+      alert.present();
     }
   }
 }

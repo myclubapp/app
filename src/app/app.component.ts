@@ -11,6 +11,7 @@ import { onAuthStateChanged } from "@angular/fire/auth";
 import { UserProfileService } from "./services/firebase/user-profile.service";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
 import { Network, ConnectionStatus } from '@capacitor/network';
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: "app-root",
@@ -36,7 +37,8 @@ export class AppComponent implements OnInit {
     private readonly fbService: FirebaseService,
     private readonly profileService: UserProfileService,
     private readonly router: Router,
-    public readonly menuCtrl: MenuController
+    public readonly menuCtrl: MenuController,
+    private translate: TranslateService,
   ) {
     this.initializeApp();
     // this.initializeFirebase();
@@ -158,7 +160,7 @@ export class AppComponent implements OnInit {
 
   initializeApp(): void {
     this.showSplashScreen();
-
+    this.translate.setDefaultLang('de');
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
       if (event.type === "VERSION_READY") {
         this.presentAlertUpdateVersion();

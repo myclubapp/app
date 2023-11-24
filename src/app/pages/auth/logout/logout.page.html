@@ -18,14 +18,14 @@
           </picture>
 
           <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-            Logout war erfolgreich!
+            {{"logout__success"|translate}}
           </h2>
           <p class="mt-2 text-sm text-gray-600">
             <span
               routerLink="/login"
               class="font-medium text-myclublight hover:text-myclubdark"
             >
-              zurück zum Login
+              {{"back_to__login"| translate}}
             </span>
           </p>
         </div>
@@ -35,7 +35,7 @@
       <img
         class="absolute inset-0 h-full w-full object-cover"
         src="assets/bg/mountain-3.jpg"
-        alt="Hintergrundbild"
+        [alt]='"backgroud_image__alt"|translate'
       />
     </div>
   </div>

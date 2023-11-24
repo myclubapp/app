@@ -10,6 +10,8 @@ import {
   LoadingController,
   MenuController
 } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
+import { lastValueFrom } from 'rxjs';
 import { UserCredentialLogin } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -27,7 +29,8 @@ export class ResetPasswordPage implements OnInit {
     private readonly alertCtrl: AlertController,
     private readonly router: Router,
     private readonly formBuilder: UntypedFormBuilder,
-    private readonly loadingCtrl: LoadingController
+    private readonly loadingCtrl: LoadingController,
+    private translate: TranslateService
   ) {
     this.menuCtrl.enable(false, 'menu');
     this.authForm = this.formBuilder.group({
@@ -44,13 +47,13 @@ export class ResetPasswordPage implements OnInit {
     };
   }
 
-  submitCredentials (authForm: UntypedFormGroup): void {
+  async submitCredentials (authForm: UntypedFormGroup): Promise<void> {
     if (!authForm.get('email').valid) {
       // console.log('Form is not valid yet, current value:', authForm.value);
       this.alertCtrl
         .create({
-          message: 'Formular ist noch fehlerhaft',
-          buttons: [{ text: 'Ok', role: 'cancel' }]
+          message: await lastValueFrom(this.translate.get("error__invalid_form")),
+          buttons: [{ text: await lastValueFrom(this.translate.get("ok")), role: 'cancel' }]
         })
         .then((alert) => {
           alert.present();
@@ -69,7 +72,7 @@ export class ResetPasswordPage implements OnInit {
   async presentLoading () {
     const loading = await this.loadingCtrl.create({
       cssClass: 'my-custom-class',
-      message: 'Bitte warten...',
+      message: await lastValueFrom(this.translate.get("please__wait"))+'...',
       duration: 2000
     })
     await loading.present();
@@ -82,10 +85,10 @@ export class ResetPasswordPage implements OnInit {
     this.authService.resetPassword(credentials.email).then(
       async () => {
         const alert = await this.alertCtrl.create({
-          message: 'Suchen Sie in Ihren E-Mails nach einem Link zum Zurücksetzen des Passworts',
+          message: await lastValueFrom(this.translate.get("check__email_for_reset_link")),
           buttons: [
             {
-              text: 'Ok',
+              text: await lastValueFrom(this.translate.get("ok")),
               role: 'cancel',
               handler: () => {
                 this.router.navigateByUrl('login');
@@ -98,7 +101,7 @@ export class ResetPasswordPage implements OnInit {
       async (error) => {
         const errorAlert = await this.alertCtrl.create({
           message: error.message,
-          buttons: [{ text: 'Ok', role: 'cancel' }]
+          buttons: [{ text: await lastValueFrom(this.translate.get("ok")), role: 'cancel' }]
         })
         await errorAlert.present();
       }

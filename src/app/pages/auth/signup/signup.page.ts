@@ -10,6 +10,8 @@ import {
   LoadingController,
   MenuController,
 } from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
+import { lastValueFrom } from "rxjs";
 import { UserCredentialLogin, Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 
@@ -29,7 +31,8 @@ export class SignupPage implements OnInit {
     // private afs: AngularFirestore,
     public menuCtrl: MenuController,
     private readonly loadingCtrl: LoadingController,
-    private readonly router: Router
+    private readonly router: Router,
+    private translate: TranslateService
   ) {
     this.authForm = this.formBuilder.group({
       email: ["", Validators.compose([Validators.required, Validators.email])],
@@ -48,13 +51,13 @@ export class SignupPage implements OnInit {
     this.menuCtrl.enable(false, "menu");
   }
 
-  submitCredentials(authForm: UntypedFormGroup): void {
+  async submitCredentials(authForm: UntypedFormGroup): Promise<void> {
     if (!authForm.valid) {
       // console.log('Form is not valid yet, current value:', authForm.value);
       this.alertCtrl
         .create({
-          message: "Formular ist noch fehlerhaft",
-          buttons: [{ text: "Ok", role: "cancel" }],
+          message: await lastValueFrom(this.translate.get("error__invalid_form")),
+          buttons: [{ text:  await lastValueFrom(this.translate.get("ok")), role: "cancel" }],
         })
         .then((alert) => {
           alert.present();
@@ -76,7 +79,7 @@ export class SignupPage implements OnInit {
   async presentLoading() {
     const loading = await this.loadingCtrl.create({
       cssClass: "my-custom-class",
-      message: "Bitte warten...",
+      message: await lastValueFrom(this.translate.get("please__wait"))+"...",
       duration: 2000,
     });
     await loading.present();
@@ -104,7 +107,7 @@ export class SignupPage implements OnInit {
       this.alertCtrl
         .create({
           message: err.message,
-          buttons: [{ text: "Ok", role: "cancel" }],
+          buttons: [{ text: await lastValueFrom(this.translate.get("ok")), role: "cancel" }],
         })
         .then((alert) => {
           alert.present();

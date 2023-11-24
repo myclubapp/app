@@ -9,7 +9,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule,HttpClient } from '@angular/common/http';
 
 // import { GraphQLModule } from './graphql.module';
 
@@ -38,6 +38,8 @@ import { EventDetailPage } from './pages/event/event-detail/event-detail.page';
 import { ClubPage } from './pages/club/club.page';
 import { TeamPage } from './pages/team/team.page';
 import { Capacitor } from '@capacitor/core';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 
 @NgModule({
@@ -66,6 +68,13 @@ import { Capacitor } from '@capacitor/core';
     }),
     // GraphQLModule,
     HttpClientModule,
+    TranslateModule.forRoot({ // <--- add this
+      loader: { // <--- add this
+        provide: TranslateLoader, // <--- add this
+        useFactory: (createTranslateLoader),  // <--- add this
+        deps: [HttpClient] // <--- add this
+      } // <--- add this
+    }),
     provideFirebaseApp(() => {
       const init = initializeApp(environment.firebase);
      return init;
@@ -96,3 +105,6 @@ import { Capacitor } from '@capacitor/core';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {}
+export function createTranslateLoader(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/lang/', '.json');
+}
