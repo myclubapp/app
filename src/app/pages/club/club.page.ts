@@ -5,8 +5,9 @@ import {
   NavParams,
   ToastController,
 } from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
-import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, filter, finalize, forkJoin, from, map, merge, mergeMap, of, pipe, shareReplay, startWith, switchMap, take, tap, timeout, toArray } from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, filter, finalize, forkJoin, from, lastValueFrom, map, merge, mergeMap, of, pipe, shareReplay, startWith, switchMap, take, tap, timeout, toArray } from "rxjs";
 import { Club } from "src/app/models/club";
 import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
@@ -41,7 +42,8 @@ export class ClubPage implements OnInit {
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
-  ) {}
+    private translate: TranslateService
+  ) { }
 
   ngOnInit() {
     this.club = this.navParams.get("data");
@@ -52,8 +54,8 @@ export class ClubPage implements OnInit {
     this.club$ = this.getClub(this.club.id);
     this.club$.subscribe({
       next: (data) => {
-        console.log(">> Club Data" );
-        console.log( data);
+        console.log(">> Club Data");
+        console.log(data);
         this.cdr.detectChanges();
       },
       error: (err) => console.error("Club Error in subscription:", err),
@@ -66,7 +68,7 @@ export class ClubPage implements OnInit {
   }
 
   getClub(clubId: string) {
- 
+
     return this.authService.getUser$().pipe(
       take(1),
       tap(user => {
@@ -81,12 +83,12 @@ export class ClubPage implements OnInit {
           clubAdmins: this.fbService.getClubAdminRefs(clubId)
         }).pipe(
           switchMap(({ clubMembers, clubAdmins }) => {
-            const memberProfiles$ = clubMembers.map(member => 
+            const memberProfiles$ = clubMembers.map(member =>
               this.userProfileService.getUserProfileById(member.id).pipe(take(1),
                 catchError(() => of({ ...member, firstName: 'Unknown', lastName: 'Unknown' }))
               )
             );
-            const adminProfiles$ = clubAdmins.map(admin => 
+            const adminProfiles$ = clubAdmins.map(admin =>
               this.userProfileService.getUserProfileById(admin.id).pipe(take(1),
                 catchError(() => of({ ...admin, firstName: 'Unknown', lastName: 'Unknown' }))
               )
@@ -99,7 +101,7 @@ export class ClubPage implements OnInit {
                 clubMembers: clubMembers.filter(member => member !== undefined), // Filter out undefined
                 clubAdmins: clubAdmins.filter(admin => admin !== undefined) // Filter out undefined
               })
-            ));
+              ));
           }),
           map(({ clubMembers, clubAdmins }) => ({
             ...club,
@@ -110,31 +112,31 @@ export class ClubPage implements OnInit {
       }),
       catchError(err => {
         console.error("Error in getClubWithMembersAndAdmins:", err);
-        return of(null); 
+        return of(null);
       })
     );
   }
 
 
 
-  async approveClubRequest(user){
+  async approveClubRequest(user) {
     console.log(user);
     const alert = await this.alertCtrl.create({
-      message: `Möchtest du ${user.firstName} ${user.lastName} deinem Club hinzufügen?`,
+      message: ((await lastValueFrom(this.translate.get("want_to_add__user__to_club_string"))) ?? '').replace("{userName}", `${user.firstName} ${user.lastName}`),
       subHeader: '',
       buttons: [
         {
-          text: "Ja!",
+          text: await lastValueFrom(this.translate.get("yes")),
           role: "confirm",
         },
         {
-          text: "abbrechen",
+          text: await lastValueFrom(this.translate.get("cancel")),
           role: "cancel",
-        
+
         },
       ],
       htmlAttributes: { 'aria-label': 'alert dialog' },
-        
+
     });
     await alert.present();
     const { role, data } = await alert.onDidDismiss();
@@ -142,57 +144,59 @@ export class ClubPage implements OnInit {
     if (role == "confirm") {
       await this.fbService.approveUserClubRequest(user.clubId, user.id);
       const toast = await this.toastCtrl.create({
-        message: `${user.firstName} ${user.lastName} wurde erfolgreich dem Club hinzugefügt`,
+        message: await lastValueFrom(this.translate.get("success__user_added")),
         color: "primary",
         duration: 1500,
         position: "bottom",
       });
-      await toast.present(); 
+      await toast.present();
 
       await this.assignTeamAlert(user);
     } else {
       await this.toastActionCanceled();
     }
-    
+
   }
 
 
   async assignTeamAlert(user) {
     console.log(user);
     const alert = await this.alertCtrl.create({
-      header: `Team auswählen`,
-      message: `Möchtest du ${user.firstName} ${user.lastName} einem Team hinzufügen?`,
+      header: await lastValueFrom(this.translate.get("select__team")),
+      message: ((await lastValueFrom(this.translate.get("want_to_add__user__to_team_string"))) ?? '').replace("{userName}", `${user.firstName} ${user.lastName}`),
       inputs: this.alertTeamSelection,
       buttons: [
         {
-          text: "hinzufügen",
+          text: await lastValueFrom(this.translate.get("add")),
           role: "confirm",
         },
         {
-          text: "Abbrechen",
+          text: await lastValueFrom(this.translate.get("cancel")),
           role: "cancel",
-        
+
         },
       ],
       htmlAttributes: { 'aria-label': 'alert dialog selcting teams' },
-        
+
     });
     await alert.present();
     const { role, data } = await alert.onDidDismiss();
     console.log(data);
 
     if (role == "confirm") {
-      for (const teamId of data.values){
+      for (const teamId of data.values) {
         await this.fbService.approveUserTeamRequest(teamId, user.id)
       }
       const toast = await this.toastCtrl.create({
-        message: `${user.firstName} ${user.lastName} wurde erfolgreich ${data.values.length} Team(s) hinzugefügt`,
+        message: ((await lastValueFrom(this.translate.get("success__added_user_to_team_string"))) ?? '')
+          .replace("{userName}", `${user.firstName} ${user.lastName}`)
+          .replace("length", `${data.values.length}`),
         color: "primary",
         duration: 1500,
         position: "bottom",
       });
-      await toast.present(); 
-      
+      await toast.present();
+
     } else {
       await this.toastActionCanceled();
     }
@@ -207,7 +211,7 @@ export class ClubPage implements OnInit {
 
   async toastActionSaved() {
     const toast = await this.toastCtrl.create({
-      message: "Änderungen erfolgreich gespeichert",
+      message: await lastValueFrom(this.translate.get("success__saved")),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -218,7 +222,7 @@ export class ClubPage implements OnInit {
 
   async toastActionCanceled() {
     const toast = await this.toastCtrl.create({
-      message: "Aktion wurde abgebrochen",
+      message: await lastValueFrom(this.translate.get("action__canceled")),
       duration: 1500,
       position: "bottom",
       color: "danger",

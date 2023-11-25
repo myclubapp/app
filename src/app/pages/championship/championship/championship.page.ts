@@ -10,7 +10,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, Subscription, catchError, combineLatest, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, mergeMap, of, switchMap, take, tap, timeout } from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concatMap, defaultIfEmpty, finalize, forkJoin, from, lastValueFrom, map, mergeMap, of, switchMap, take, tap, timeout } from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -19,6 +19,7 @@ import { ChampionshipDetailPage } from "../championship-detail/championship-deta
 import { Team } from "src/app/models/team";
 import { Timestamp } from "firebase/firestore";
 import { NavigationExtras, Router } from "@angular/router";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: "app-championship",
@@ -55,7 +56,8 @@ export class ChampionshipPage implements OnInit {
     private readonly menuCtrl: MenuController,
     private cdr: ChangeDetectorRef,
     private navCtrl: NavController,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -303,7 +305,7 @@ export class ChampionshipPage implements OnInit {
   }
   async presentToast() {
     const toast = await this.toastController.create({
-      message: "Änderungen gespeichert",
+      message: await lastValueFrom(this.translate.get("changes__saved")),
       color: "primary",
       duration: 2000,
       position: "top",

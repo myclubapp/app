@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { HelferAddPageRoutingModule } from './helfer-add-routing.module';
 
 import { HelferAddPage } from './helfer-add.page';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    HelferAddPageRoutingModule
+    HelferAddPageRoutingModule,
+    TranslateModule
   ],
   declarations: [HelferAddPage]
 })

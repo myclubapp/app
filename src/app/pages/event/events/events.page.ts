@@ -8,7 +8,7 @@ import {
   AlertController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, Subscription, catchError, combineLatest, concatMap, defaultIfEmpty, finalize, forkJoin, from,  map,  mergeMap,  of, switchMap, take, tap, timeout} from "rxjs";
+import { Observable, Subscription, catchError, combineLatest, concatMap, defaultIfEmpty, finalize, forkJoin, from,  lastValueFrom,  map,  mergeMap,  of, switchMap, take, tap, timeout} from "rxjs";
 import { Veranstaltung } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -16,6 +16,7 @@ import { EventService } from "src/app/services/firebase/event.service";
 import { EventAddPage } from "../event-add/event-add.page";
 import { Timestamp } from "firebase/firestore";
 import { EventDetailPage } from "../event-detail/event-detail.page";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: "app-events",
@@ -43,6 +44,7 @@ export class EventsPage implements OnInit {
     private readonly eventService: EventService,
     private readonly menuCtrl: MenuController,
     private cdr: ChangeDetectorRef,
+    private translate: TranslateService
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -201,7 +203,7 @@ export class EventsPage implements OnInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: "changes has been saved",
+      message: await lastValueFrom(this.translate.get("changes__saved")),
       color: "primary",
       duration: 2000,
       position: "top",
@@ -235,7 +237,7 @@ export class EventsPage implements OnInit {
   async deleteEvent(slidingItem: IonItemSliding, event) {
     slidingItem.closeOpened();
     const toast = await this.toastController.create({
-      message: "Delete",
+      message: await lastValueFrom(this.translate.get("delete")),
       color: "primary",
       duration: 2000,
       position: "top",

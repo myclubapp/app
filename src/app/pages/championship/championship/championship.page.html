@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Meisterschaft</ion-title>
+    <ion-title>{{"championship" | translate}}</ion-title>
 
     <ion-buttons slot="end">
          <!--   <ion-button (click)="openFilter($event)">
@@ -14,10 +14,10 @@
   <ion-toolbar>
     <ion-segment [(ngModel)]="mode">
       <ion-segment-button value="games">
-        <ion-label>Spiele</ion-label>
+        <ion-label>{{"games" | translate}}</ion-label>
       </ion-segment-button>
       <ion-segment-button value="ranking">
-        <ion-label>Tabelle</ion-label>
+        <ion-label>{{"table" | translate}}</ion-label>
       </ion-segment-button>
       <!-- <ion-segment-button value="stats">
         <ion-label>Statistik</ion-label>
@@ -29,7 +29,7 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Meisterschaft</ion-title>
+      <ion-title size="large">{{"championship" | translate}}</ion-title>
     </ion-toolbar>
 
   </ion-header>
@@ -46,7 +46,7 @@
           <ion-grid>
             <ion-row>
               <ion-col size="1">#</ion-col>
-              <ion-col size="5">Name</ion-col>
+              <ion-col size="5">{{"name" | translate}}</ion-col>
               <ion-col size="3">Sp/S/N</ion-col>
               <ion-col size="2">T</ion-col>
               <ion-col size="1">P</ion-col>
@@ -87,15 +87,15 @@
     </ng-container>
     <ion-text padding>
       <p><b>
-          Legende:
+          {{"legend" | translate}}:
         </b>
       </p>
       <ul>
-        <li>Sp = Spiele gesamt </li>
-        <li>S = Siege</li>
-        <li> N = Niederlage</li>
-        <li> T = Torbilanz </li>
-        <li>P = Punkte</li>
+        <li>Sp = {{"games__total" |  translate}} </li>
+        <li>S = {{"victories" | translate}}</li>
+        <li> N = {{"defeat" | translate}}</li>
+        <li> T = {{"goal__record" | translate}} </li>
+        <li>P = {{"points" | translate}}</li>
       </ul>
 
     </ion-text>
@@ -109,15 +109,15 @@
     <ng-container *ngIf="gameList$ | async as gameList; else loading">
       <ion-list *ngIf="gameList.length > 0" lines="full">
         <ion-list-header>
-          <ion-label>Kommende Spiele</ion-label>
+          <ion-label>{{"upcomming__games" | translate}}</ion-label>
         </ion-list-header>
 
         <ion-item>
           <ion-label slot="start">
-            <p>Status</p>
+            <p>{{"status" | translate}}</p>
           </ion-label>
           <ion-label slot="end">
-            <p>Teilnehmer</p>
+            <p>{{"participant" | translate}}</p>
           </ion-label>
         </ion-item>
 
@@ -177,14 +177,14 @@
     <ng-container *ngIf="gameListPast$ | async as gameListPast; else loading">
       <ion-list *ngIf="gameListPast.length > 0" lines="full">
         <ion-list-header>
-          <ion-label>Vergangene Spiele</ion-label>
+          <ion-label>{{"past__games" | translate}}</ion-label>
         </ion-list-header>
         <ion-item>
           <ion-label slot="start">
-            <p>Status</p>
+            <p>{{"status" | translate}}</p>
           </ion-label>
           <ion-label slot="end">
-            <p>Teilnehmer</p>
+            <p>{{"participant" | translate}}</p>
           </ion-label>
         </ion-item>
 

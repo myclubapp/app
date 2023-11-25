@@ -8,7 +8,7 @@ import {
   AlertController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, catchError, combineLatest,  map,  mergeMap,  of, switchMap, take, tap} from "rxjs";
+import { Observable, catchError, combineLatest,  lastValueFrom,  map,  mergeMap,  of, switchMap, take, tap} from "rxjs";
 import { HelferEvent, Veranstaltung } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -16,6 +16,7 @@ import { EventService } from "src/app/services/firebase/event.service";
 import { HelferAddPage } from '../helfer-add/helfer-add.page';
 import { Timestamp } from 'firebase/firestore';
 import { HelferDetailPage } from '../helfer-detail/helfer-detail.page';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-helfer',
@@ -44,6 +45,7 @@ export class HelferPage implements OnInit {
     private readonly alertCtrl: AlertController,
     private readonly menuCtrl: MenuController,
     private cdr: ChangeDetectorRef,
+    private translate: TranslateService
   ) { 
     this.menuCtrl.enable(true, "menu");
   }
@@ -207,7 +209,7 @@ export class HelferPage implements OnInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: "Änderung wurde gespeichert",
+      message: await lastValueFrom(this.translate.get("changes__saved")),
       color: "primary",
       duration: 2000,
       position: "top",
@@ -313,7 +315,7 @@ export class HelferPage implements OnInit {
   async deleteEvent(slidingItem: IonItemSliding, event) {
     slidingItem.closeOpened();
     const toast = await this.toastController.create({
-      message: "Delete",
+      message: await lastValueFrom(this.translate.get("delete")),
       color: "primary",
       duration: 2000,
       position: "top",

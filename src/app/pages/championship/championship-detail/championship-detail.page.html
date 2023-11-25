@@ -3,7 +3,7 @@
     <ion-toolbar>
       <ion-title></ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()">schliessen</ion-button>
+        <ion-button (click)="close()">{{"close" | translate}}</ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -13,7 +13,7 @@
     <capacitor-google-map #map></capacitor-google-map>
     <ion-list [inset]="true">
       <ion-list-header>
-        Details
+        {{"details" | translate}}
       </ion-list-header>
       <ion-item>
         <ion-avatar slot="start">
@@ -64,7 +64,7 @@
 
     <ion-list [inset]="true" lines="none">
       <ion-list-header>
-        An-/Abwesenheiten
+       {{"attendances__absences" | translate}}
       </ion-list-header>
       <ion-item class="myclubStatus">
         <ng-container *ngIf="game.hasOwnProperty('status'); else loading">
@@ -83,7 +83,7 @@
             <ion-icon name="checkmark-circle"> </ion-icon>
           </ion-fab-button>
 
-          <ion-label>Mein Status</ion-label>
+          <ion-label>{{"my__status" | translate}}</ion-label>
         </ng-container>
       </ion-item>
     </ion-list>
@@ -91,7 +91,7 @@
       <ion-accordion-group [multiple]="true" [value]="['yes']">
         <ion-accordion value="yes">
           <ion-item slot="header" color="light">
-            <ion-label>Anwesend: {{attendeeListTrue.length}}</ion-label>
+            <ion-label>{{"present" | translate}}: {{attendeeListTrue.length}}</ion-label>
           </ion-item>
           <div slot="content"> <!-- class="ion-padding"-->
             <ion-list>
@@ -106,7 +106,7 @@
         </ion-accordion>
         <ion-accordion value="no">
           <ion-item slot="header" color="light">
-            <ion-label>Abwesend: {{attendeeListFalse.length}}</ion-label>
+            <ion-label>{{"absent" | translate}}: {{attendeeListFalse.length}}</ion-label>
           </ion-item>
           <div slot="content"> <!-- class="ion-padding"-->
             <ion-list>
@@ -123,7 +123,7 @@
         </ion-accordion>
         <ion-accordion value="unknown">
           <ion-item slot="header" color="light">
-            <ion-label>Keine Antwort: {{attendeeListUndefined.length}}</ion-label>
+            <ion-label>{{"no__answer" | translate}}: {{attendeeListUndefined.length}}</ion-label>
           </ion-item>
           <div slot="content"> <!-- class="ion-padding"-->
             <ion-list>

@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { ChampionshipDetailPageRoutingModule } from './championship-detail-routing.module';
 
 import { ChampionshipDetailPage } from './championship-detail.page';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ChampionshipDetailPageRoutingModule
+    ChampionshipDetailPageRoutingModule,
+    TranslateModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [ChampionshipDetailPage]

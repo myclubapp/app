@@ -4,13 +4,14 @@ import { Game } from "src/app/models/game";
 import { GoogleMap } from "@capacitor/google-maps";
 import { Geolocation, PermissionStatus } from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import { combineLatest, forkJoin, from, Observable, of, Subscriber, Subscription } from "rxjs";
+import { combineLatest, forkJoin, from, lastValueFrom, Observable, of, Subscriber, Subscription } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "@angular/fire/auth";
 import { catchError, concatMap, defaultIfEmpty, finalize, map, startWith, switchMap, take, tap } from "rxjs/operators";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { environment } from "src/environments/environment";
 import { ActivatedRoute } from "@angular/router";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: "app-championship-detail",
@@ -43,6 +44,7 @@ export class ChampionshipDetailPage implements OnInit {
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
+    private translate: TranslateService
   ) { 
    //  this.setMap();
   }
@@ -157,7 +159,7 @@ export class ChampionshipDetailPage implements OnInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: "Änderungen gespeichert",
+      message: await lastValueFrom(this.translate.get("success__saved")),
       color: "primary",
       duration: 2000,
       position: "top",

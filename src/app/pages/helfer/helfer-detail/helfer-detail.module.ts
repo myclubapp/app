@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { HelferDetailPageRoutingModule } from './helfer-detail-routing.module';
 
 import { HelferDetailPage } from './helfer-detail.page';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    HelferDetailPageRoutingModule
+    HelferDetailPageRoutingModule,
+    TranslateModule
   ],
   declarations: [HelferDetailPage]
 })

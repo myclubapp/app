@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>{{club?.name}}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="close()">schliessen</ion-button>
+      <ion-button (click)="close()">{{"close" | translate}}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -19,7 +19,7 @@
   <ng-container *ngIf="club$ | async as club">
 
     <ion-list [inset]="true">
-      <ion-list-header> Mitglieder </ion-list-header>
+      <ion-list-header> {{"members" | translate}} </ion-list-header>
       <ion-item *ngFor="let member of club['clubMembers']">
         <ion-avatar slot="start">
           <img src="{{member?.profilePicture}}" />
@@ -29,7 +29,7 @@
     </ion-list>
   
     <ion-list [inset]="true">
-      <ion-list-header> Administratoren </ion-list-header>
+      <ion-list-header> {{"admins" | translate}} </ion-list-header>
       <ion-item *ngFor="let admin of club['clubAdmins']">
         <ion-avatar slot="start">
           <img src="{{admin?.profilePicture}}" />
