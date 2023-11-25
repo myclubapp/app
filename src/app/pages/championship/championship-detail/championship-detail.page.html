@@ -58,7 +58,7 @@
       </ion-item>
     </ion-list>
 
-    <ion-list [inset]="true" lines="none">
+    <ion-list [inset]="true" lines="none" *ngIf="isFuture">
       <ion-list-header>
         {{"attendances__absences" | translate}}
       </ion-list-header>

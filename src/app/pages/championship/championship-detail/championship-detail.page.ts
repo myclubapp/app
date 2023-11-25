@@ -16,29 +16,10 @@ import { Game } from "src/app/models/game";
 import { GoogleMap } from "@capacitor/google-maps";
 import { Geolocation, PermissionStatus } from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import {
-  combineLatest,
-  forkJoin,
-  from,
-  lastValueFrom,
-  Observable,
-  of,
-  Subscriber,
-  Subscription,
-} from "rxjs";
+import { forkJoin, lastValueFrom, Observable, of } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "@angular/fire/auth";
-import {
-  catchError,
-  concatMap,
-  defaultIfEmpty,
-  finalize,
-  map,
-  startWith,
-  switchMap,
-  take,
-  tap,
-} from "rxjs/operators";
+import { catchError, map, switchMap, take, tap } from "rxjs/operators";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { environment } from "src/environments/environment";
 import { ActivatedRoute } from "@angular/router";
@@ -51,6 +32,8 @@ import { TranslateService } from "@ngx-translate/core";
 })
 export class ChampionshipDetailPage implements OnInit {
   @Input("data") game: Game;
+  @Input("isFuture") isFuture: boolean;
+
   @ViewChild("map")
   mapRef: ElementRef<HTMLElement>;
   newMap: GoogleMap;
@@ -69,6 +52,7 @@ export class ChampionshipDetailPage implements OnInit {
   constructor(
     private readonly modalCtrl: ModalController,
     private navController: NavController,
+    private navParams: NavParams,
     private readonly userProfileService: UserProfileService,
     private readonly route: ActivatedRoute,
     private readonly championshipService: ChampionshipService,
@@ -82,32 +66,32 @@ export class ChampionshipDetailPage implements OnInit {
 
   ngOnInit() {
     // console.log(this.navParams);
-    // this.game = this.navParams.get("data");
-    this.route.queryParams.subscribe((params) => {
-      console.log(params);
-      this.game = JSON.parse(params.data);
-      this.game$ = of(this.game);
+    this.game = this.navParams.get("data");
+    //this.route.queryParams.subscribe((params) => {
+    // console.log(params);
+    // this.game = JSON.parse(params.data);
+    this.game$ = of(this.game);
 
-      this.attendeeListTrue = [];
-      this.attendeeListFalse = [];
-      this.attendeeListUndefined = [];
+    this.attendeeListTrue = [];
+    this.attendeeListFalse = [];
+    this.attendeeListUndefined = [];
 
-      this.game$ = this.getGame(this.game.teamId, this.game.id);
-      this.game$.subscribe({
-        next: (data) => {
-          console.log("GAMES Data received");
-          this.game = {
-            ...this.game,
-            ...data,
-          };
-          this.cdr.detectChanges();
+    this.game$ = this.getGame(this.game.teamId, this.game.id);
+    this.game$.subscribe({
+      next: (data) => {
+        console.log("GAMES Data received");
+        this.game = {
+          ...this.game,
+          ...data,
+        };
+        this.cdr.detectChanges();
 
-          this.setMap();
-        },
-        error: (err) => console.error("GAMES Error in subscription:", err),
-        complete: () => console.log("GAMES Observable completed"),
-      });
+        this.setMap();
+      },
+      error: (err) => console.error("GAMES Error in subscription:", err),
+      complete: () => console.log("GAMES Observable completed"),
     });
+    //  });
 
     // let this.mapRef =  @ViewChild('map') abc;
   }
@@ -218,8 +202,8 @@ export class ChampionshipDetailPage implements OnInit {
   }
 
   async close() {
-    // return await this.modalCtrl.dismiss(null, "close");
-    this.navController.pop();
+    return await this.modalCtrl.dismiss(null, "close");
+    // this.navController.pop();
   }
 
   async confirm() {

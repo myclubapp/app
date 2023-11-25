@@ -5,19 +5,12 @@ import {
   ModalController,
   MenuController,
   ToastController,
-  AlertController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
 import {
   Observable,
-  Subscription,
   catchError,
   combineLatest,
-  concatMap,
-  defaultIfEmpty,
-  finalize,
-  forkJoin,
-  from,
   lastValueFrom,
   map,
   mergeMap,
@@ -25,7 +18,6 @@ import {
   switchMap,
   take,
   tap,
-  timeout,
 } from "rxjs";
 import { Veranstaltung } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
@@ -408,7 +400,6 @@ export class EventsPage implements OnInit {
   }
 
   async openEventDetailModal(event: Veranstaltung, isFuture: boolean) {
-    // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: EventDetailPage,
       presentingElement: this.routerOutlet.nativeEl,

@@ -12,14 +12,8 @@ import {
 import { User } from "@angular/fire/auth";
 import {
   Observable,
-  Subscription,
   catchError,
   combineLatest,
-  concatMap,
-  defaultIfEmpty,
-  finalize,
-  forkJoin,
-  from,
   lastValueFrom,
   map,
   mergeMap,
@@ -27,17 +21,15 @@ import {
   switchMap,
   take,
   tap,
-  timeout,
 } from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import { ChampionshipDetailPage } from "../championship-detail/championship-detail.page";
-import { Team } from "src/app/models/team";
 import { Timestamp } from "firebase/firestore";
 import { NavigationExtras, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
+import { ChampionshipDetailPage } from "../championship-detail/championship-detail.page";
 
 @Component({
   selector: "app-championship",
@@ -318,12 +310,12 @@ export class ChampionshipPage implements OnInit {
     );
   }
 
-  async openChampionshipDetailModal(game: Game) {
-    // const presentingElement = await this.modalCtrl.getTop();
-    game["abc"] = new Date().toISOString();
+  async openChampionshipDetailModal(game: Game, isFuture: boolean) {
+    /*
     let extras: NavigationExtras = {
       queryParams: {
         data: JSON.stringify(game),
+        isFuture: isFuture,
       },
     };
     console.log(extras);
@@ -332,22 +324,24 @@ export class ChampionshipPage implements OnInit {
       .catch((e) => {
         console.log(e);
       });
-    // const modal = await this.modalCtrl.create({
-    //   component: ChampionshipDetailPage,
-    //   presentingElement: this.routerOutlet.nativeEl,
-    //   canDismiss: true,
-    //   showBackdrop: true,
-    //   componentProps: {
-    //     data: game,
-    //     time: new Date().toISOString(),
-    //   },
-    // });
-    // modal.present();
+    */
 
-    // const { data, role } = await modal.onWillDismiss();
+    const modal = await this.modalCtrl.create({
+      component: ChampionshipDetailPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: game,
+        isFuture: isFuture,
+      },
+    });
+    modal.present();
 
-    // if (role === "confirm") {
-    // }
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
   }
 
   // List item
