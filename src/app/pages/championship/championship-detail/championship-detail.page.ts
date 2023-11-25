@@ -1,13 +1,44 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
-import { ModalController, NavController, NavParams, ToastController } from "@ionic/angular";
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
+import {
+  ModalController,
+  NavController,
+  NavParams,
+  ToastController,
+} from "@ionic/angular";
 import { Game } from "src/app/models/game";
 import { GoogleMap } from "@capacitor/google-maps";
 import { Geolocation, PermissionStatus } from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import { combineLatest, forkJoin, from, lastValueFrom, Observable, of, Subscriber, Subscription } from "rxjs";
+import {
+  combineLatest,
+  forkJoin,
+  from,
+  lastValueFrom,
+  Observable,
+  of,
+  Subscriber,
+  Subscription,
+} from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "@angular/fire/auth";
-import { catchError, concatMap, defaultIfEmpty, finalize, map, startWith, switchMap, take, tap } from "rxjs/operators";
+import {
+  catchError,
+  concatMap,
+  defaultIfEmpty,
+  finalize,
+  map,
+  startWith,
+  switchMap,
+  take,
+  tap,
+} from "rxjs/operators";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { environment } from "src/environments/environment";
 import { ActivatedRoute } from "@angular/router";
@@ -20,7 +51,7 @@ import { TranslateService } from "@ngx-translate/core";
 })
 export class ChampionshipDetailPage implements OnInit {
   @Input("data") game: Game;
-  @ViewChild('map')
+  @ViewChild("map")
   mapRef: ElementRef<HTMLElement>;
   newMap: GoogleMap;
 
@@ -38,68 +69,63 @@ export class ChampionshipDetailPage implements OnInit {
   constructor(
     private readonly modalCtrl: ModalController,
     private navController: NavController,
-    // public navParams: NavParams,
+    private readonly userProfileService: UserProfileService,
     private readonly route: ActivatedRoute,
     private readonly championshipService: ChampionshipService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService
-  ) { 
-   //  this.setMap();
+  ) {
+    //  this.setMap();
   }
- 
- 
+
   ngOnInit() {
     // console.log(this.navParams);
     // this.game = this.navParams.get("data");
-    this.route.queryParams.subscribe(params => {
-      console.log(params)
+    this.route.queryParams.subscribe((params) => {
+      console.log(params);
       this.game = JSON.parse(params.data);
       this.game$ = of(this.game);
 
       this.attendeeListTrue = [];
       this.attendeeListFalse = [];
       this.attendeeListUndefined = [];
-  
+
       this.game$ = this.getGame(this.game.teamId, this.game.id);
       this.game$.subscribe({
         next: (data) => {
           console.log("GAMES Data received");
           this.game = {
-            ...this.game, ...data
+            ...this.game,
+            ...data,
           };
           this.cdr.detectChanges();
-    
+
           this.setMap();
-          
         },
         error: (err) => console.error("GAMES Error in subscription:", err),
-        complete: () => console.log("GAMES Observable completed")
+        complete: () => console.log("GAMES Observable completed"),
       });
     });
-    
+
     // let this.mapRef =  @ViewChild('map') abc;
   }
   ionViewDidEnter() {
-    if(!this.newMap)
-      this.setMap();
+    if (!this.newMap) this.setMap();
   }
 
-
   ngOnDestroy() {
-
     if (this.newMap) {
       this.newMap.destroy();
     }
   }
   // ng
 
-
   getGame(teamId: string, gameId: string) {
     return this.authService.getUser$().pipe(
       take(1),
-      tap(user => {
+      tap((user) => {
         this.user = user;
         if (!user) {
           console.log("No user found");
@@ -107,39 +133,63 @@ export class ChampionshipDetailPage implements OnInit {
         }
       }),
       switchMap(() => this.championshipService.getTeamGameRef(teamId, gameId)),
-      switchMap(game => {
-        if (!game) return of(null); // If no game is found, return null
-        return this.championshipService.getTeamGameAttendeesRef(teamId, gameId).pipe(
-          map(attendees => {
-
-            // get firstName & lastName from userProfile Method call for each attendees element
-            // this.userProfileService.getUserProfileById(attendee.id)
-
-            const userAttendee = attendees.find(att => att.id == this.user.uid);
-            const status = userAttendee ? userAttendee.status : null;
-
-            //this.attendeeListUndefined
-
-            this.attendeeListTrue = attendees.filter(att => att.status == true) || [];
-            this.attendeeListFalse = attendees.filter(att => att.status == false) || [];
-            this.attendeeListUndefined = [];
-
-            return {
-              ...game,
-              attendees,
-              status,
-            };
-          }),
-          catchError(() => of({
-            ...game,
-            attendees: [],
-            status: null,
-          })) // If error in fetching attendees, return game with empty attendees
-        );
+      switchMap((game) => {
+        if (!game) return of(null);
+        return this.championshipService
+          .getTeamGameAttendeesRef(teamId, gameId)
+          .pipe(
+            switchMap((attendees) => {
+              if (attendees.length === 0) {
+                // If no attendees, return event data immediately
+                return of({
+                  ...game,
+                  attendees: [],
+                  attendeeListTrue: [],
+                  attendeeListFalse: [],
+                  status: null,
+                });
+              }
+              const attendeeProfiles$ = attendees.map((attendee) =>
+                this.userProfileService.getUserProfileById(attendee.id).pipe(
+                  take(1),
+                  map((profile) => ({ ...profile, ...attendee })), // Combine attendee object with profile
+                  catchError(() =>
+                    of({
+                      ...attendee,
+                      firstName: "Unknown",
+                      lastName: "Unknown",
+                    })
+                  )
+                )
+              );
+              return forkJoin(attendeeProfiles$).pipe(
+                map((attendeesWithDetails) => ({
+                  ...game,
+                  attendees: attendeesWithDetails,
+                  attendeeListTrue: attendeesWithDetails.filter(
+                    (e) => e.status == true
+                  ),
+                  attendeeListFalse: attendeesWithDetails.filter(
+                    (e) => e.status == false
+                  ),
+                  status: attendeesWithDetails.find(
+                    (att) => att.id == this.user.uid
+                  )?.status,
+                }))
+              );
+            }),
+            catchError(() =>
+              of({
+                ...game,
+                attendees: [],
+                status: null,
+              })
+            )
+          );
       }),
-      catchError(err => {
-        console.error("Error in getSingleGameWithAttendees:", err);
-        return of(null); // Return null on error
+      catchError((err) => {
+        console.error("Error in getTrainingWithAttendees:", err);
+        return of(null);
       })
     );
   }
@@ -174,22 +224,21 @@ export class ChampionshipDetailPage implements OnInit {
 
   async confirm() {
     // return await this.modalCtrl.dismiss(this.game, "confirm");
-    this.navController.navigateBack('championship',{
+    this.navController.navigateBack("championship", {
       state: {
         role: "confirm",
-        data: this.game
-      }
-    })
+        data: this.game,
+      },
+    });
   }
-
 
   async setMap() {
     // if(this.mapRef == null) {
     //   return;
     // }
-    if(this.mapRef == undefined || this.mapRef == null){
+    if (this.mapRef == undefined || this.mapRef == null) {
       return;
-    } 
+    }
     this.newMap = await GoogleMap.create({
       id: "my-map-" + this.game.id, // Unique identifier for this map instance
       element: this.mapRef.nativeElement, // mapRef, // reference to the capacitor-google-map element
@@ -243,5 +292,4 @@ export class ChampionshipDetailPage implements OnInit {
       console.log("no coordinates on map");
     }
   }
-
 }

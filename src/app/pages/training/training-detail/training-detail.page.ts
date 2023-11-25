@@ -1,17 +1,27 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { ModalController, NavParams, ToastController } from '@ionic/angular';
-import { TranslateService } from '@ngx-translate/core';
-import { User } from 'firebase/auth';
-import { Observable, catchError, forkJoin, lastValueFrom, map, of, switchMap, take, tap } from 'rxjs';
-import { Training } from 'src/app/models/training';
-import { AuthService } from 'src/app/services/auth.service';
-import { TrainingService } from 'src/app/services/firebase/training.service';
-import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
+import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import { ModalController, NavParams, ToastController } from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
+import { User } from "firebase/auth";
+import {
+  Observable,
+  catchError,
+  forkJoin,
+  lastValueFrom,
+  map,
+  of,
+  switchMap,
+  take,
+  tap,
+} from "rxjs";
+import { Training } from "src/app/models/training";
+import { AuthService } from "src/app/services/auth.service";
+import { TrainingService } from "src/app/services/firebase/training.service";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 
 @Component({
-  selector: 'app-training-detail',
-  templateUrl: './training-detail.page.html',
-  styleUrls: ['./training-detail.page.scss'],
+  selector: "app-training-detail",
+  templateUrl: "./training-detail.page.html",
+  styleUrls: ["./training-detail.page.scss"],
 })
 export class TrainingDetailPage implements OnInit {
   @Input("data") training: Training;
@@ -26,7 +36,8 @@ export class TrainingDetailPage implements OnInit {
   attendeeListTrue: any[] = [];
   attendeeListFalse: any[] = [];
   attendeeListUndefined: any[] = [];
-  constructor (
+
+  constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
     private readonly userProfileService: UserProfileService,
@@ -37,7 +48,7 @@ export class TrainingDetailPage implements OnInit {
     private translate: TranslateService
   ) {}
 
-  ngOnInit () {
+  ngOnInit() {
     this.training = this.navParams.get("data");
     this.training$ = of(this.training);
 
@@ -51,54 +62,81 @@ export class TrainingDetailPage implements OnInit {
         console.log("TRAINING Data received");
         console.log(data);
         this.training = {
-          ...this.training, ...data
+          ...this.training,
+          ...data,
         };
         this.cdr.detectChanges();
-  
-  
       },
       error: (err) => console.error("TRAINING Error in subscription:", err),
-      complete: () => console.log("TRANING Observable completed")
+      complete: () => console.log("TRANING Observable completed"),
     });
   }
 
   getTraining(teamId: string, trainingId: string) {
     return this.authService.getUser$().pipe(
       take(1),
-      tap(user => {
+      tap((user) => {
         this.user = user;
         if (!user) throw new Error("User not found");
       }),
-      switchMap(() => this.trainingService.getTeamTrainingRef(teamId, trainingId)),
-      switchMap(training => {
+      switchMap(() =>
+        this.trainingService.getTeamTrainingRef(teamId, trainingId)
+      ),
+      switchMap((training) => {
         if (!training) return of(null);
-        return this.trainingService.getTeamTrainingsAttendeesRef(teamId, trainingId).pipe(
-          switchMap(attendees => {
-            const attendeeProfiles$ = attendees.map(attendee => 
-              this.userProfileService.getUserProfileById(attendee.id).pipe(
-                take(1),
-                map(profile => ({ ...profile, ...attendee })), // Combine attendee object with profile
-                catchError(() => of({ ...attendee, firstName: 'Unknown', lastName: 'Unknown' }))
-              )
-            );
-            return forkJoin(attendeeProfiles$).pipe(
-              map(attendeesWithDetails => ({
+        return this.trainingService
+          .getTeamTrainingsAttendeesRef(teamId, trainingId)
+          .pipe(
+            switchMap((attendees) => {
+              if (attendees.length === 0) {
+                // If no attendees, return event data immediately
+                return of({
+                  ...training,
+                  attendees: [],
+                  attendeeListTrue: [],
+                  attendeeListFalse: [],
+                  status: null,
+                });
+              }
+              const attendeeProfiles$ = attendees.map((attendee) =>
+                this.userProfileService.getUserProfileById(attendee.id).pipe(
+                  take(1),
+                  map((profile) => ({ ...profile, ...attendee })), // Combine attendee object with profile
+                  catchError(() =>
+                    of({
+                      ...attendee,
+                      firstName: "Unknown",
+                      lastName: "Unknown",
+                    })
+                  )
+                )
+              );
+              return forkJoin(attendeeProfiles$).pipe(
+                map((attendeesWithDetails) => ({
+                  ...training,
+                  attendees: attendeesWithDetails,
+                  attendeeListTrue: attendeesWithDetails.filter(
+                    (e) => e.status == true
+                  ),
+                  attendeeListFalse: attendeesWithDetails.filter(
+                    (e) => e.status == false
+                  ),
+                  status: attendeesWithDetails.find(
+                    (att) => att.id == this.user.uid
+                  )?.status,
+                }))
+              );
+            }),
+            catchError(() =>
+              of({
                 ...training,
-                attendees: attendeesWithDetails,
-                attendeeListTrue: attendeesWithDetails.filter(e=>e.status==true),
-                attendeeListFalse: attendeesWithDetails.filter(e=>e.status==false),
-                status: attendeesWithDetails.find(att => att.id == this.user.uid)?.status
-              }))
-            );
-          }),
-          catchError(() => of({
-            ...training,
-            attendees: [],
-            status: null,
-          }))
-        );
+                attendees: [],
+                status: null,
+              })
+            )
+          );
       }),
-      catchError(err => {
+      catchError((err) => {
         console.error("Error in getTrainingWithAttendees:", err);
         return of(null);
       })
@@ -135,6 +173,4 @@ export class TrainingDetailPage implements OnInit {
   async confirm() {
     return await this.modalCtrl.dismiss(this.training, "confirm");
   }
-
-
 }

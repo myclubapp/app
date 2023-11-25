@@ -14,7 +14,22 @@ import {
 } from "@angular/fire/firestore";
 
 // import firebase from 'firebase/compat/app';
-import { Observable, Observer, Subscription, catchError, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, of, switchMap, take, tap } from "rxjs";
+import {
+  Observable,
+  Observer,
+  Subscription,
+  catchError,
+  concatMap,
+  defaultIfEmpty,
+  finalize,
+  forkJoin,
+  from,
+  map,
+  of,
+  switchMap,
+  take,
+  tap,
+} from "rxjs";
 
 import { AuthService } from "src/app/services/auth.service";
 import { Training } from "src/app/models/training";
@@ -32,10 +47,8 @@ export class TrainingService {
   constructor(
     private firestore: Firestore = inject(Firestore),
     private readonly authService: AuthService,
-    private readonly fbService: FirebaseService,
-  ) {
-
-  }
+    private readonly fbService: FirebaseService
+  ) {}
 
   async setCreateTraining(training: Training, user: User) {
     console.log("training");
@@ -48,9 +61,12 @@ export class TrainingService {
 
   getTeamTrainingRef(teamId: string, trainingId: string): Observable<Training> {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
-    const gameRef = doc(this.firestore, `teams/${teamId}/trainings/${trainingId}`);
+    const gameRef = doc(
+      this.firestore,
+      `teams/${teamId}/trainings/${trainingId}`
+    );
     return docData(gameRef, { idField: "id" }) as Observable<Training>;
-  } 
+  }
 
   /* TEAM TrainingS */
   getTeamTrainingsRefs(teamId: string): Observable<Training[]> {

@@ -9,27 +9,24 @@
   </ion-header>
   <!-- class="ion-padding" -->
 
-
   <ion-content>
     <ion-list [inset]="true">
-      <ion-list-header>
-        {{"details" | translate}}
-      </ion-list-header>
+      <ion-list-header> {{"details" | translate}} </ion-list-header>
 
       <ion-item>
         <ion-icon slot="start" name="home-outline"></ion-icon>
         <ion-label class="ion-text-wrap">
-          <h2>
-            {{training.name}}
-          </h2>
+          <h2>{{training.name}}</h2>
         </ion-label>
       </ion-item>
 
       <ion-item>
         <ion-icon slot="start" name="calendar-outline"></ion-icon>
         <ion-label>
-          <h2>{{training.date.toDate() | date:'dd.MM.YYYY '}} {{training.timeFrom | date:'HH:mm'}} Uhr -
-            {{training.timeTo | date:'HH:mm'}} Uhr</h2>
+          <h2>
+            {{training.date.toDate() | date:'dd.MM.YYYY '}} {{training.timeFrom
+            | date:'HH:mm'}} Uhr - {{training.timeTo | date:'HH:mm'}} Uhr
+          </h2>
         </ion-label>
       </ion-item>
 
@@ -39,8 +36,6 @@
           <h2>{{training.streetAndNumber}} {{training.city}}</h2>
         </ion-label>
       </ion-item>
-
-
 
       <ion-item>
         <ion-icon slot="start" name="trophy-outline"></ion-icon>
@@ -52,12 +47,9 @@
       <ion-item>
         <ion-icon slot="start" name="information-circle-outline"></ion-icon>
         <ion-label class="ion-text-wrap">
-          <h2>
-            {{training.description}}
-          </h2>
+          <h2>{{training.description}}</h2>
         </ion-label>
       </ion-item>
-
     </ion-list>
 
     <ion-list [inset]="true" lines="none">
@@ -66,18 +58,34 @@
       </ion-list-header>
       <ion-item class="myclubStatus">
         <ng-container *ngIf="training.hasOwnProperty('status'); else loading">
-          <ion-fab-button (click)="toggle(true, training)" size="small" color="warning" slot="start"
-            *ngIf="training.status === null">
+          <ion-fab-button
+            (click)="toggle(true, training)"
+            size="small"
+            color="warning"
+            slot="start"
+            *ngIf="training.status === null"
+          >
             <ion-icon name="help-circle"> </ion-icon>
           </ion-fab-button>
 
-          <ion-fab-button class="myclubStatus" (click)="toggle(true, training)" size="small" color="danger" slot="start"
-            *ngIf="training.status === false">
+          <ion-fab-button
+            class="myclubStatus"
+            (click)="toggle(true, training)"
+            size="small"
+            color="danger"
+            slot="start"
+            *ngIf="training.status === false"
+          >
             <ion-icon name="close-circle"> </ion-icon>
           </ion-fab-button>
 
-          <ion-fab-button (click)="toggle(false, training)" size="small" color="success" slot="start"
-            *ngIf="training.status === true">
+          <ion-fab-button
+            (click)="toggle(false, training)"
+            size="small"
+            color="success"
+            slot="start"
+            *ngIf="training.status === true"
+          >
             <ion-icon name="checkmark-circle"> </ion-icon>
           </ion-fab-button>
 
@@ -89,11 +97,18 @@
       <ion-accordion-group [multiple]="true" [value]="['yes']">
         <ion-accordion value="yes">
           <ion-item slot="header" color="light">
-            <ion-label>{{"present" | translate}}: {{training['attendeeListTrue'].length}}</ion-label>
+            <ion-label
+              >{{"present" | translate}}:
+              {{training['attendeeListTrue'].length}}</ion-label
+            >
           </ion-item>
-          <div slot="content"> <!-- class="ion-padding"-->
+          <div slot="content">
+            <!-- class="ion-padding"-->
             <ion-list>
-              <ion-item *ngFor="let member of training['attendeeListTrue']" detail="true">
+              <ion-item
+                *ngFor="let member of training['attendeeListTrue']"
+                detail="true"
+              >
                 <ion-icon color="success" slot="start" name="checkmark-circle">
                 </ion-icon>
 
@@ -104,90 +119,29 @@
         </ion-accordion>
         <ion-accordion value="no">
           <ion-item slot="header" color="light">
-            <ion-label>{{"absent" | translate}}: {{training['attendeeListFalse'].length}}</ion-label>
+            <ion-label
+              >{{"absent" | translate}}:
+              {{training['attendeeListFalse'].length}}</ion-label
+            >
           </ion-item>
-          <div slot="content"> <!-- class="ion-padding"-->
+          <div slot="content">
+            <!-- class="ion-padding"-->
             <ion-list>
-              <ion-item *ngFor="let member of training['attendeeListFalse']" detail="true">
-
+              <ion-item
+                *ngFor="let member of training['attendeeListFalse']"
+                detail="true"
+              >
                 <ion-icon color="danger" slot="start" name="close-circle">
                 </ion-icon>
-
 
                 <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>
               </ion-item>
             </ion-list>
           </div>
         </ion-accordion>
-        <!--  <ion-accordion value="unknown">
-          <ion-item slot="header" color="light">
-            <ion-label>Keine Antwort: {{attendeeListUndefined.length}}</ion-label>
-          </ion-item>
-          <div slot="content">
-            <ion-list>
-              <ion-item *ngFor="let member of attendeeListUndefined" detail="true">
-                <ion-icon color="warning" slot="start" name="help-circle">
-                </ion-icon>
-                <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>
-              </ion-item>
-            </ion-list>
-          </div>
-        </ion-accordion>-->
       </ion-accordion-group>
     </ion-list>
-
-
-
-
-
-    <!--
-
-    
-    <ion-segment [(ngModel)]="mode">
-      <ion-segment-button value="yes">
-        <ion-label>Anmeldungen: {{attendeeListTrue.length}}</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="no">
-        <ion-label>Abmeldungen: {{attendeeListFalse.length}}</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="undefined">
-        <ion-label>Keine Antwort: {{attendeeListUndefined.length}}</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-
-    <ion-list *ngIf="mode=='yes'">
-      <ion-item *ngFor="let member of attendeeListTrue">
-        <ion-icon color="success" slot="start" name="checkmark-circle">
-        </ion-icon>
-
-        <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>
-      </ion-item>
-    </ion-list>
-
-    <ion-list *ngIf="mode=='no'">
-      <ion-item *ngFor="let member of attendeeListFalse">
-
-        <ion-icon color="danger" slot="start" name="close-circle">
-        </ion-icon>
-
-
-        <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>
-      </ion-item>
-    </ion-list>
-
-    <ion-list *ngIf="mode=='undefined'">
-      <ion-item *ngFor="let member of attendeeListUndefined">
-        <ion-icon color="warning" slot="start" name="help-circle">
-        </ion-icon>
-
-
-        <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>
-      </ion-item>
-    </ion-list>
-    -->
-
   </ion-content>
-
 </ng-container>
 
 <ng-template #loading>
