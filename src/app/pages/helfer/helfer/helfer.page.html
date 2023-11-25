@@ -36,44 +36,63 @@
 
       <ion-item-sliding #item *ngFor="let event of eventsList">
         <ion-item type="button" detail="true">
-          <ion-icon *ngIf="event.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
-            (click)="toggle(true, event)"></ion-icon>
-          <ion-icon *ngIf="event.status === false" slot="icon-only" color="danger" slot="start" name="close-circle"
-            (click)="toggle( true, event)"></ion-icon>
-          <ion-icon *ngIf="event.status === true" slot="icon-only" color="success" slot="start" name="checkmark-circle"
-            (click)="toggle(false, event)"></ion-icon>
-          <ion-label (click)="openEventDetailModal(event)">
-            <h2>
-              {{event.name}}
-            </h2>
+          <ion-icon
+            *ngIf="event.status === null"
+            slot="icon-only"
+            color="warning"
+            slot="start"
+            name="help-circle"
+            (click)="toggle(true, event)"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="event.status === false"
+            slot="icon-only"
+            color="danger"
+            slot="start"
+            name="close-circle"
+            (click)="toggle( true, event)"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="event.status === true"
+            slot="icon-only"
+            color="success"
+            slot="start"
+            name="checkmark-circle"
+            (click)="toggle(false, event)"
+          ></ion-icon>
+          <ion-label (click)="openEventDetailModal(event, true)">
+            <h2>{{event.name}}</h2>
             <h3>
               <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
-              {{event.date.toDate() | date:'dd.MM.YYYY '}} {{event.timeFrom | date:'HH:mm'}} Uhr -
-              {{event.timeTo | date:'HH:mm'}} Uhr
+              {{event.date.toDate() | date:'dd.MM.YYYY '}} {{event.timeFrom |
+              date:'HH:mm'}} Uhr - {{event.timeTo | date:'HH:mm'}} Uhr
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="location-outline"></ion-icon>
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
-
-
           </ion-label>
-          <ion-note slot="end" (click)="openEventDetailModal(event)">
+          <ion-note slot="end" (click)="openEventDetailModal(event, true)">
             <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
           </ion-note>
         </ion-item>
 
         <ion-item-options side="start">
-          <ion-item-option color="success" *ngIf="event.status === false || event.status === null"
-            (click)="toggleItem(item, true, event)">
+          <ion-item-option
+            color="success"
+            *ngIf="event.status === false || event.status === null"
+            (click)="toggleItem(item, true, event)"
+          >
             <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
           </ion-item-option>
-          <ion-item-option color="danger" *ngIf="event.status === true || event.status === null"
-            (click)="toggleItem(item, false, event)">
+          <ion-item-option
+            color="danger"
+            *ngIf="event.status === true || event.status === null"
+            (click)="toggleItem(item, false, event)"
+          >
             <ion-icon slot="icon-only" name="close-circle"></ion-icon>
           </ion-item-option>
         </ion-item-options>
-
 
         <ion-item-options side="end">
           <ion-item-option color="medium" (click)="copyEvent(item, event)">
@@ -83,7 +102,6 @@
             <ion-icon slot="icon-only" name="trash"></ion-icon>
           </ion-item-option>
         </ion-item-options>
-
       </ion-item-sliding>
     </ion-list>
 
@@ -91,9 +109,7 @@
       <ion-list-header>
         <ion-label>{{"upcomming__helper_event" | translate}}</ion-label>
       </ion-list-header>
-      <ion-note>
-        {{"no_event__found" | translate}}
-      </ion-note>
+      <ion-note> {{"no_event__found" | translate}} </ion-note>
     </ion-list>
   </ng-container>
 
@@ -112,44 +128,50 @@
       </ion-item>
       <ion-item-sliding #item *ngFor="let event of eventsListPast">
         <ion-item type="button" detail="true">
-          <ion-icon *ngIf="event.status === null" slot="icon-only" color="warning" slot="start"
-            name="help-circle"></ion-icon>
-          <ion-icon *ngIf="event.status === false" slot="icon-only" color="danger" slot="start"
-            name="close-circle"></ion-icon>
-          <ion-icon *ngIf="event.status === true" slot="icon-only" color="success" slot="start"
-            name="checkmark-circle"></ion-icon>
-            <ion-label (click)="openEventDetailModal(event)">
-              <h2>
-                {{event.name}}
-              </h2>
-              <h3>
-                <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
-                {{event.date.toDate() | date:'dd.MM.YYYY '}} {{event.timeFrom | date:'HH:mm'}} Uhr -
-                {{event.timeTo | date:'HH:mm'}} Uhr
-              </h3>
-              <h3>
-                <ion-icon slot="icon-only" name="location-outline"></ion-icon>
-                {{event.location}} {{event.streetAndNumber}} {{event.city}}
-              </h3>
-  
-  
-            </ion-label>
-          <ion-note slot="end">
+          <ion-icon
+            *ngIf="event.status === null"
+            slot="icon-only"
+            color="warning"
+            slot="start"
+            name="help-circle"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="event.status === false"
+            slot="icon-only"
+            color="danger"
+            slot="start"
+            name="close-circle"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="event.status === true"
+            slot="icon-only"
+            color="success"
+            slot="start"
+            name="checkmark-circle"
+          ></ion-icon>
+          <ion-label (click)="openEventDetailModal(event, false)">
+            <h2>{{event.name}}</h2>
+            <h3>
+              <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+              {{event.date.toDate() | date:'dd.MM.YYYY '}} {{event.timeFrom |
+              date:'HH:mm'}} Uhr - {{event.timeTo | date:'HH:mm'}} Uhr
+            </h3>
+            <h3>
+              <ion-icon slot="icon-only" name="location-outline"></ion-icon>
+              {{event.location}} {{event.streetAndNumber}} {{event.city}}
+            </h3>
+          </ion-label>
+          <ion-note slot="end" (click)="openEventDetailModal(event, false)">
             <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
           </ion-note>
         </ion-item>
-
-
-
       </ion-item-sliding>
     </ion-list>
     <ion-list class="ion-padding" *ngIf="eventsListPast.length==0">
       <ion-list-header>
         <ion-label>{{"past__helper_events" | translate}}</ion-label>
       </ion-list-header>
-      <ion-note>
-        {{"no_event__found" | translate}}
-      </ion-note>
+      <ion-note> {{"no_event__found" | translate}} </ion-note>
     </ion-list>
   </ng-container>
 
@@ -164,23 +186,50 @@
   <ion-list *ngIf="loading">
     <ion-grid>
       <ion-row>
-        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
+        <ion-col
+          size-lg="4"
+          size-md="6"
+          size-sm="6"
+          size="12"
+          *ngFor="let item of skeleton"
+        >
           <ion-card>
             <ion-card-header>
               <ion-card-subtitle>
-                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%"
+                ></ion-skeleton-text>
               </ion-card-subtitle>
               <ion-card-title>
-                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%"
+                ></ion-skeleton-text>
               </ion-card-title>
             </ion-card-header>
 
             <ion-card-content>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
             </ion-card-content>
           </ion-card>
         </ion-col>

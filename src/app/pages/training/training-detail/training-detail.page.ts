@@ -25,6 +25,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 })
 export class TrainingDetailPage implements OnInit {
   @Input("data") training: Training;
+  @Input("isFuture") isFuture: boolean;
 
   training$: Observable<any>;
 

@@ -400,7 +400,7 @@ export class HelferPage implements OnInit {
     }
   }
 
-  async openEventDetailModal(event: HelferEvent) {
+  async openEventDetailModal(event: HelferEvent, isFuture: boolean) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: HelferDetailPage,
@@ -409,6 +409,7 @@ export class HelferPage implements OnInit {
       showBackdrop: true,
       componentProps: {
         data: event,
+        isFuture: isFuture,
       },
     });
     modal.present();

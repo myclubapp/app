@@ -52,7 +52,7 @@
       </ion-item>
     </ion-list>
 
-    <ion-list [inset]="true" lines="none">
+    <ion-list [inset]="true" lines="none" *ngIf="isFuture">
       <ion-list-header>
         {{"attendances__absences" | translate}}
       </ion-list-header>
@@ -93,6 +93,7 @@
         </ng-container>
       </ion-item>
     </ion-list>
+
     <ion-list [inset]="true">
       <ion-accordion-group [multiple]="true" [value]="['yes']">
         <ion-accordion value="yes">

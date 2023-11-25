@@ -8,7 +8,25 @@ import {
   AlertController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { Observable, Subscription, catchError, combineLatest, concatMap, defaultIfEmpty, finalize, forkJoin, from,  lastValueFrom,  map,  mergeMap,  of, switchMap, take, tap, timeout} from "rxjs";
+import {
+  Observable,
+  Subscription,
+  catchError,
+  combineLatest,
+  concatMap,
+  defaultIfEmpty,
+  finalize,
+  forkJoin,
+  from,
+  lastValueFrom,
+  map,
+  mergeMap,
+  of,
+  switchMap,
+  take,
+  tap,
+  timeout,
+} from "rxjs";
 import { Veranstaltung } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -50,7 +68,6 @@ export class EventsPage implements OnInit {
   }
 
   ngOnInit() {
-  
     this.eventList$ = this.getClubEvent();
     this.eventList$.subscribe({
       next: (data) => {
@@ -58,9 +75,8 @@ export class EventsPage implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => console.error("EVENT Error in subscription:", err),
-      complete: () => console.log("EVENT Observable completed")
+      complete: () => console.log("EVENT Observable completed"),
     });
-
 
     this.eventListPast$ = this.getClubEventPast();
     this.eventListPast$.subscribe({
@@ -69,104 +85,157 @@ export class EventsPage implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => console.error("EVENT PAST Error in subscription:", err),
-      complete: () => console.log("EVENT PAST Observable completed")
+      complete: () => console.log("EVENT PAST Observable completed"),
     });
-
   }
   getClubEvent() {
     return this.authService.getUser$().pipe(
       take(1),
-      tap(user=>{
+      tap((user) => {
         this.user = user;
       }),
-      switchMap(user => {
+      switchMap((user) => {
         if (!user) return of([]);
         return this.fbService.getUserClubRefs(user);
       }),
-      tap(clubs => console.log("Teams:", clubs)),
-      mergeMap(teams => {
+      tap((clubs) => console.log("Teams:", clubs)),
+      mergeMap((teams) => {
         if (teams.length === 0) return of([]);
         return combineLatest(
-          teams.map(team => 
+          teams.map((team) =>
             this.eventService.getClubEventsRef(team.id).pipe(
-              switchMap(clubEvents => {
+              switchMap((clubEvents) => {
                 if (clubEvents.length === 0) return of([]);
                 return combineLatest(
-                  clubEvents.map(game => 
-                    this.eventService.getClubEventAttendeesRef(team.id, game.id).pipe(
-                      map(attendees => {
-                        const userAttendee = attendees.find(att => att.id == this.user.uid);
-                        const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
-                        return ({...game, attendees, status: status, countAttendees: attendees.filter(att => att.status == true).length, teamId: team.id,})
-                      }),
-                      catchError(() => of({ ...game, attendees: [], status: null, countAttendees: 0, teamId: team.id,})) // If error, return game with empty attendees
-                    )
+                  clubEvents.map((game) =>
+                    this.eventService
+                      .getClubEventAttendeesRef(team.id, game.id)
+                      .pipe(
+                        map((attendees) => {
+                          const userAttendee = attendees.find(
+                            (att) => att.id == this.user.uid
+                          );
+                          const status = userAttendee
+                            ? userAttendee.status
+                            : null; // default to false if user is not found in attendees list
+                          return {
+                            ...game,
+                            attendees,
+                            status: status,
+                            countAttendees: attendees.filter(
+                              (att) => att.status == true
+                            ).length,
+                            teamId: team.id,
+                          };
+                        }),
+                        catchError(() =>
+                          of({
+                            ...game,
+                            attendees: [],
+                            status: null,
+                            countAttendees: 0,
+                            teamId: team.id,
+                          })
+                        ) // If error, return game with empty attendees
+                      )
                   )
                 );
               }),
-              map(gamesWithAttendees => gamesWithAttendees), // Flatten games array for each team
+              map((gamesWithAttendees) => gamesWithAttendees), // Flatten games array for each team
               catchError(() => of([])) // If error in fetching games, return empty array
             )
           )
         ).pipe(
-          map(teamsGames => teamsGames.flat()), // Flatten to get all games across all teams
-          map(allGames => 
-            allGames.sort((a, b) => Timestamp.fromMillis(a.dateTime).seconds - Timestamp.fromMillis(b.dateTime).seconds) // Sort games by date
+          map((teamsGames) => teamsGames.flat()), // Flatten to get all games across all teams
+          map(
+            (allGames) =>
+              allGames.sort(
+                (a, b) =>
+                  Timestamp.fromMillis(a.dateTime).seconds -
+                  Timestamp.fromMillis(b.dateTime).seconds
+              ) // Sort games by date
           )
         );
       }),
-      tap(results => console.log("Final results with all games:", results)),
-      catchError(err => {
+      tap((results) => console.log("Final results with all games:", results)),
+      catchError((err) => {
         console.error("Error in getClubEvent:", err);
         return of([]); // Return an empty array on error
       })
     );
   }
-  
+
   getClubEventPast() {
     return this.authService.getUser$().pipe(
       take(1),
-      tap(user=>{
+      tap((user) => {
         this.user = user;
       }),
-      switchMap(user => {
+      switchMap((user) => {
         if (!user) return of([]);
         return this.fbService.getUserClubRefs(user);
       }),
-      tap(clubs => console.log("Teams:", clubs)),
-      mergeMap(teams => {
+      tap((clubs) => console.log("Teams:", clubs)),
+      mergeMap((teams) => {
         if (teams.length === 0) return of([]);
         return combineLatest(
-          teams.map(team => 
+          teams.map((team) =>
             this.eventService.getClubEventsPastRef(team.id).pipe(
-              switchMap(teamGames => {
+              switchMap((teamGames) => {
                 if (teamGames.length === 0) return of([]);
                 return combineLatest(
-                  teamGames.map(game => 
-                    this.eventService.getClubEventAttendeesRef(team.id, game.id).pipe(
-                      map(attendees => {
-                        const userAttendee = attendees.find(att => att.id == this.user.uid);
-                        const status = userAttendee ? userAttendee.status : null; // default to false if user is not found in attendees list
-                        return ({...game, attendees, status: status, countAttendees: attendees.filter(att => att.status == true).length, teamId: team.id,})
-                      }),
-                      catchError(() => of({ ...game, attendees: [], status: null, countAttendees: 0, teamId: team.id,})) // If error, return game with empty attendees
-                    )
+                  teamGames.map((game) =>
+                    this.eventService
+                      .getClubEventAttendeesRef(team.id, game.id)
+                      .pipe(
+                        map((attendees) => {
+                          const userAttendee = attendees.find(
+                            (att) => att.id == this.user.uid
+                          );
+                          const status = userAttendee
+                            ? userAttendee.status
+                            : null; // default to false if user is not found in attendees list
+                          return {
+                            ...game,
+                            attendees,
+                            status: status,
+                            countAttendees: attendees.filter(
+                              (att) => att.status == true
+                            ).length,
+                            teamId: team.id,
+                          };
+                        }),
+                        catchError(() =>
+                          of({
+                            ...game,
+                            attendees: [],
+                            status: null,
+                            countAttendees: 0,
+                            teamId: team.id,
+                          })
+                        ) // If error, return game with empty attendees
+                      )
                   )
                 );
               }),
-              map(gamesWithAttendees => gamesWithAttendees), // Flatten games array for each team
+              map((gamesWithAttendees) => gamesWithAttendees), // Flatten games array for each team
               catchError(() => of([])) // If error in fetching games, return empty array
             )
           )
         ).pipe(
-          map(teamsGames => teamsGames.flat()), // Flatten to get all games across all teams
-          map(allGames => 
-            allGames.sort((a, b) => Timestamp.fromMillis(a.dateTime).seconds - Timestamp.fromMillis(b.dateTime).seconds) // Sort games by date
+          map((teamsGames) => teamsGames.flat()), // Flatten to get all games across all teams
+          map(
+            (allGames) =>
+              allGames.sort(
+                (a, b) =>
+                  Timestamp.fromMillis(a.dateTime).seconds -
+                  Timestamp.fromMillis(b.dateTime).seconds
+              ) // Sort games by date
           )
         );
       }),
-      tap(results => console.log("Final results with all games:", results)),
-      catchError(err => {
+      tap((results) => console.log("Final results with all games:", results)),
+      catchError((err) => {
         console.error("Error in getClubEventPast:", err);
         return of([]); // Return an empty array on error
       })
@@ -186,7 +255,11 @@ export class EventsPage implements OnInit {
     this.presentToast();
   }
 
-  async toggleItem(slidingItem: IonItemSliding, status: boolean, event: Veranstaltung) {
+  async toggleItem(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    event: Veranstaltung
+  ) {
     slidingItem.closeOpened();
 
     console.log(
@@ -230,9 +303,7 @@ export class EventsPage implements OnInit {
 
     if (role === "confirm") {
     }
-
   }
-
 
   async deleteEvent(slidingItem: IonItemSliding, event) {
     slidingItem.closeOpened();
@@ -245,7 +316,7 @@ export class EventsPage implements OnInit {
     toast.present();
   }
 
-  async openFilter(ev: Event){
+  async openFilter(ev: Event) {
     /*
     let filterList = [];
 
@@ -315,7 +386,7 @@ export class EventsPage implements OnInit {
     error: err => console.error('Error in the observable chain:', err)
   });
    */
-}
+  }
 
   async openEventCreateModal() {
     // const presentingElement = await this.modalCtrl.getTop();
@@ -336,7 +407,7 @@ export class EventsPage implements OnInit {
     }
   }
 
-  async openEventDetailModal(event: Veranstaltung) {
+  async openEventDetailModal(event: Veranstaltung, isFuture: boolean) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: EventDetailPage,
@@ -345,6 +416,7 @@ export class EventsPage implements OnInit {
       showBackdrop: true,
       componentProps: {
         data: event,
+        isFuture: isFuture,
       },
     });
     modal.present();
@@ -354,5 +426,4 @@ export class EventsPage implements OnInit {
     if (role === "confirm") {
     }
   }
- 
 }

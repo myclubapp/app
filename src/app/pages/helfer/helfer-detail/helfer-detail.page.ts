@@ -25,6 +25,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 })
 export class HelferDetailPage implements OnInit {
   @Input("data") event: HelferEvent;
+  @Input("isFuture") isFuture: boolean;
 
   event$: Observable<any>;
 

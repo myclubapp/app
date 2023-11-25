@@ -26,6 +26,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 })
 export class EventDetailPage implements OnInit {
   @Input("data") event: Veranstaltung;
+  @Input("isFuture") isFuture: boolean;
 
   event$: Observable<any>;
 
