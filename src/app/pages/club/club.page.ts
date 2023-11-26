@@ -34,6 +34,7 @@ import {
   timeout,
   toArray,
 } from "rxjs";
+import { Timestamp } from "firebase/firestore";
 import { Club } from "src/app/models/club";
 import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
@@ -93,7 +94,8 @@ export class ClubPage implements OnInit {
 
   getClub(clubId: string) {
     const calculateAge = (dateOfBirth) => {
-      const birthday = new Date(dateOfBirth);
+      // console.log("DoB: " + JSON.stringify(dateOfBirth));
+      const birthday = new Date(dateOfBirth.seconds * 1000);
       const ageDifMs = Date.now() - birthday.getTime();
       const ageDate = new Date(ageDifMs); // miliseconds from epoch
       return Math.abs(ageDate.getUTCFullYear() - 1970);
@@ -139,9 +141,9 @@ export class ClubPage implements OnInit {
               )
             );
             return forkJoin({
-              clubMembers: forkJoin(memberProfiles$),
-              clubAdmins: forkJoin(adminProfiles$),
-              clubRequests: forkJoin(clubRequests$),
+              clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
+              clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
+              clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
             }).pipe(
               map(({ clubMembers, clubAdmins, clubRequests }) => ({
                 clubMembers: clubMembers.filter(
@@ -157,12 +159,12 @@ export class ClubPage implements OnInit {
           map(({ clubMembers, clubAdmins, clubRequests }) => {
             const ages = clubMembers
               .map((member) =>
-                !member.hasOwnProperty("dateOfBirth")
+                member.hasOwnProperty("dateOfBirth")
                   ? calculateAge(member.dateOfBirth)
                   : 0
               )
               .filter((age) => age > 0); // Filter out invalid or 'Unknown' ages
-            console.log(ages);
+            // console.log(ages);
 
             const averageAge =
               ages.length > 0
@@ -171,7 +173,7 @@ export class ClubPage implements OnInit {
 
             return {
               ...club,
-              averageAge: averageAge.toFixed(2), // Keep two decimal places
+              averageAge: averageAge.toFixed(1), // Keep two decimal places
               clubMembers,
               clubAdmins,
               clubRequests,
@@ -180,6 +182,7 @@ export class ClubPage implements OnInit {
         );
       }),
       catchError((err) => {
+        this.toastActionError(err);
         console.error("Error in getClubWithMembersAndAdmins:", err);
         return of(null);
       })
@@ -298,6 +301,17 @@ export class ClubPage implements OnInit {
       position: "bottom",
       color: "danger",
     });
+    await toast.present();
+  }
+
+  async toastActionError(error) {
+    const toast = await this.toastCtrl.create({
+      message: error.message,
+      duration: 2000,
+      position: "bottom",
+      color: "danger",
+    });
+
     await toast.present();
   }
 

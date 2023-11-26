@@ -17,9 +17,13 @@
   <ng-container *ngIf="club$ | async as club">
     <ion-list [inset]="true">
       <ion-item>
-        {{"no_of__members" | translate}}: {{club['clubMembers'].length}}
+        <ion-label> {{"no_of__members" | translate}}: </ion-label>
+        <ion-label slot="end"> {{club['clubMembers'].length}} </ion-label>
       </ion-item>
-      <ion-item> {{"average__age" | translate}}: {{club.averageAge}} </ion-item>
+      <ion-item>
+        <ion-label> {{"average__age" | translate}}: </ion-label>
+        <ion-label slot="end"> {{club.averageAge}} </ion-label>
+      </ion-item>
       <!--
   <ion-item>
     {{"trainaing__presence" | translate}}: 
@@ -33,6 +37,7 @@
           <img src="{{request?.profilePicture}}" />
         </ion-avatar>
         <ion-label> {{request?.firstName}} {{request?.lastName}} </ion-label>
+        <ion-label> {{request?.email}} </ion-label>
       </ion-item>
     </ion-list>
 

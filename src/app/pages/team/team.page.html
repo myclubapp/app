@@ -25,15 +25,13 @@
   <ng-container *ngIf="team$ | async as team">
     <ion-list [inset]="true">
       <ion-item>
-        {{"no_of__members" | translate}}: {{team['teamMembers'].length}}
+        <ion-label> {{"no_of__members" | translate}}: </ion-label>
+        <ion-label slot="end"> {{team['teamMembers'].length}} </ion-label>
       </ion-item>
-      <ion-item> {{"average__age" | translate}}: </ion-item>
-      <!--
-
       <ion-item>
-        {{"trainaing__presence" | translate}}: 
+        <ion-label> {{"average__age" | translate}}: </ion-label>
+        <ion-label slot="end"> {{team.averageAge}} </ion-label>
       </ion-item>
-    -->
     </ion-list>
 
     <ion-list [inset]="true">

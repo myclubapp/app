@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface UserCredentialLogin {
   email: string;
   password: string;
@@ -9,7 +11,7 @@ export interface Profile {
   lastName: string;
   profilePicture: string;
   phone: number;
-  dateOfBirth: Date;
+  dateOfBirth: Timestamp;
   settingsPush: boolean;
   settingsEmail: boolean;
   settingsEmailReporting: boolean;
