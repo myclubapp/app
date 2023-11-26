@@ -1,8 +1,12 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="secondary">
-      <ion-button *ngIf="!allowEdit" (click)="edit()">{{"edit" | translate}}</ion-button>
-      <ion-button *ngIf="allowEdit" (click)="edit()">{{"cancel" | translate}}</ion-button>
+      <ion-button *ngIf="!allowEdit" (click)="edit()"
+        >{{"edit" | translate}}</ion-button
+      >
+      <ion-button *ngIf="allowEdit" (click)="edit()"
+        >{{"cancel" | translate}}</ion-button
+      >
     </ion-buttons>
     <ion-title>{{team?.name}}</ion-title>
     <ion-buttons slot="primary">
@@ -17,21 +21,20 @@
       <ion-title size="large">{{team.name}}</ion-title>
     </ion-toolbar>
   </ion-header>
-  
-  <ion-list [inset]="true">
-    <ion-item>
-      {{"no_of__members" | translate}}: 
-    </ion-item>
-    <ion-item>
-      {{"average__age" | translate}}: 
-    </ion-item>
-    <ion-item>
-      {{"trainaing__presence" | translate}}: 
-    </ion-item>
-  </ion-list>
-
 
   <ng-container *ngIf="team$ | async as team">
+    <ion-list [inset]="true">
+      <ion-item>
+        {{"no_of__members" | translate}}: {{team['teamMembers'].length}}
+      </ion-item>
+      <ion-item> {{"average__age" | translate}}: </ion-item>
+      <!--
+
+      <ion-item>
+        {{"trainaing__presence" | translate}}: 
+      </ion-item>
+    -->
+    </ion-list>
 
     <ion-list [inset]="true">
       <ion-list-header> {{"members" | translate}} </ion-list-header>
@@ -42,7 +45,7 @@
         <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
       </ion-item>
     </ion-list>
-  
+
     <ion-list [inset]="true">
       <ion-list-header> {{"admins" | translate}} </ion-list-header>
       <ion-item *ngFor="let admin of team['teamAdmins']">
@@ -52,9 +55,8 @@
         <ion-label> {{admin?.firstName}} {{admin?.lastName}} </ion-label>
       </ion-item>
     </ion-list>
-  
   </ng-container>
-  
+
   <!--
 
 
@@ -119,9 +121,7 @@
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-
 </ion-content>
-
 
 <ng-template #noRequests>
   <!-- You can put any placeholder or message here if needed when there are no requests -->

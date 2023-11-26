@@ -13,10 +13,28 @@
       <ion-title size="large">{{club.name}}</ion-title>
     </ion-toolbar>
   </ion-header>
- 
-
 
   <ng-container *ngIf="club$ | async as club">
+    <ion-list [inset]="true">
+      <ion-item>
+        {{"no_of__members" | translate}}: {{club['clubMembers'].length}}
+      </ion-item>
+      <ion-item> {{"average__age" | translate}}: {{club.averageAge}} </ion-item>
+      <!--
+  <ion-item>
+    {{"trainaing__presence" | translate}}: 
+  </ion-item>
+-->
+    </ion-list>
+    <ion-list [inset]="true">
+      <ion-list-header> {{"requests" | translate}} </ion-list-header>
+      <ion-item *ngFor="let request of club['clubRequests']">
+        <ion-avatar slot="start">
+          <img src="{{request?.profilePicture}}" />
+        </ion-avatar>
+        <ion-label> {{request?.firstName}} {{request?.lastName}} </ion-label>
+      </ion-item>
+    </ion-list>
 
     <ion-list [inset]="true">
       <ion-list-header> {{"members" | translate}} </ion-list-header>
@@ -27,7 +45,7 @@
         <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
       </ion-item>
     </ion-list>
-  
+
     <ion-list [inset]="true">
       <ion-list-header> {{"admins" | translate}} </ion-list-header>
       <ion-item *ngFor="let admin of club['clubAdmins']">
@@ -37,11 +55,9 @@
         <ion-label> {{admin?.firstName}} {{admin?.lastName}} </ion-label>
       </ion-item>
     </ion-list>
-  
   </ng-container>
 
-
-<!--
+  <!--
 
   <ion-list *ngIf="requestList.length > 0">
     <ion-list-header> Anfragen </ion-list-header>
@@ -63,7 +79,7 @@
   </ion-item>
 </ion-list>
 -->
-<!--
+  <!--
 
 
 <ng-container *ngIf="requestList$ | async as requests; else noRequests">
@@ -84,9 +100,7 @@
   </ion-list>
 </ng-container>
 -->
-
 </ion-content>
-
 
 <ng-template #noRequests>
   <!-- You can put any placeholder or message here if needed when there are no requests -->

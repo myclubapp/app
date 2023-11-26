@@ -12,7 +12,6 @@ import {
   setDoc,
 } from "@angular/fire/firestore";
 
-
 import {
   Storage,
   ref,
@@ -40,9 +39,7 @@ import { Profile } from "../models/user";
 })
 export class FirebaseService {
   inviteList: any = [];
-  constructor(
-    private readonly firestore: Firestore = inject(Firestore)
-  ) {}
+  constructor(private readonly firestore: Firestore = inject(Firestore)) {}
 
   /* CLUBS */
   getClubRef(clubId: string) {
@@ -62,7 +59,7 @@ export class FirebaseService {
   getActiveClubList(): Observable<Club[]> {
     const clubRefList = collection(this.firestore, `club/`);
 
-    const q = query(clubRefList, where("active", "==", true)); 
+    const q = query(clubRefList, where("active", "==", true));
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       Club[]
     >;
@@ -99,24 +96,24 @@ export class FirebaseService {
     }) as unknown as Observable<Profile[]>;
   }
 
-  getClubRequestRefs(clubId: string): Observable<any> {
+  getClubRequestRefs(clubId: string): Observable<Profile[]> {
     const clubRequestRefList = collection(
       this.firestore,
       `club/${clubId}/requests`
     );
     return collectionData(clubRequestRefList, {
       idField: "id",
-    }) as unknown as Observable<any>;
+    }) as unknown as Observable<Profile[]>;
   }
 
-  getTeamRequestRefs(teamId: string): Observable<any> {
+  getTeamRequestRefs(teamId: string): Observable<Profile[]> {
     const teamRequestRefList = collection(
       this.firestore,
       `teams/${teamId}/requests`
     );
     return collectionData(teamRequestRefList, {
       idField: "id",
-    }) as unknown as Observable<any>;
+    }) as unknown as Observable<Profile[]>;
   }
 
   /* TEAMS */
@@ -191,40 +188,59 @@ export class FirebaseService {
   }
 
   approveUserClubRequest(clubId: string, userId: string): Promise<any> {
-    return setDoc(doc(this.firestore, `/club/${clubId}/requests/${userId}`), {
-      approve: true,
-    },{
-      merge: true
-    });
+    return setDoc(
+      doc(this.firestore, `/club/${clubId}/requests/${userId}`),
+      {
+        approve: true,
+      },
+      {
+        merge: true,
+      }
+    );
   }
   async approveUserTeamRequest(teamId: string, userId: string): Promise<any> {
     // trigger create event on backend -> not handled
-    await setDoc(doc(this.firestore, `teams/${teamId}/requests/${userId}` ), {
-    },{
-      merge: true
-    });
+    await setDoc(
+      doc(this.firestore, `teams/${teamId}/requests/${userId}`),
+      {},
+      {
+        merge: true,
+      }
+    );
     // then trigger update event on backend --> handled
-    return setDoc(doc(this.firestore, `teams/${teamId}/requests/${userId}` ), {
-      approve: true,
-    },{
-      merge: true
-    });
+    return setDoc(
+      doc(this.firestore, `teams/${teamId}/requests/${userId}`),
+      {
+        approve: true,
+      },
+      {
+        merge: true,
+      }
+    );
   }
 
   async deleteUserClubRequest(clubId: string, userId: string) {
-    return setDoc(doc(this.firestore, `club/${clubId}/requests/${userId}` ), {
-      approve: false,
-    },{
-      merge: true
-    });
+    return setDoc(
+      doc(this.firestore, `club/${clubId}/requests/${userId}`),
+      {
+        approve: false,
+      },
+      {
+        merge: true,
+      }
+    );
   }
 
   async deleteUserTeamRequest(teamId: string, userId: string) {
-    return setDoc(doc(this.firestore, `teams/${teamId}/requests/${userId}` ), {
-      approve: false,
-    },{
-      merge: true
-    });
+    return setDoc(
+      doc(this.firestore, `teams/${teamId}/requests/${userId}`),
+      {
+        approve: false,
+      },
+      {
+        merge: true,
+      }
+    );
   }
 
   getClubTeamRefs(clubId: string): Observable<Team[]> {
@@ -276,27 +292,32 @@ export class FirebaseService {
   }
 
   async deleteTeamMember(teamId: string, userId: string): Promise<any> {
-    return deleteDoc(doc(this.firestore, `teams/${teamId}/members/${userId}` ));
+    return deleteDoc(doc(this.firestore, `teams/${teamId}/members/${userId}`));
   }
   async deleteTeamAdmin(teamId: string, userId: string): Promise<any> {
-    await deleteDoc(doc(this.firestore, `teams/${teamId}/admins/${userId}` ));
+    await deleteDoc(doc(this.firestore, `teams/${teamId}/admins/${userId}`));
   }
 
   async deleteClubember(clubId: string, userId: string): Promise<any> {
-    
-    await setDoc(doc(this.firestore, `club/${clubId}/members/${userId}` ), {
-      remove: true,
-    },{
-      merge: true
-    });
+    await setDoc(
+      doc(this.firestore, `club/${clubId}/members/${userId}`),
+      {
+        remove: true,
+      },
+      {
+        merge: true,
+      }
+    );
   }
   async deleteClubAdmin(clubId: string, userId: string): Promise<any> {
-   
-    await setDoc(doc(this.firestore, `club/${clubId}/admins/${userId}` ), {
-      remove: true,
-    },{
-      merge: true
-    });
+    await setDoc(
+      doc(this.firestore, `club/${clubId}/admins/${userId}`),
+      {
+        remove: true,
+      },
+      {
+        merge: true,
+      }
+    );
   }
-
 }
