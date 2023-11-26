@@ -34,6 +34,17 @@
       </ion-item>
     </ion-list>
 
+    <ion-list [inset]="true" *ngIf="team['teamRequests'].length > 0">
+      <ion-list-header> {{"requests" | translate}} </ion-list-header>
+      <ion-item *ngFor="let request of team['teamRequests']">
+        <ion-avatar slot="start">
+          <img src="{{request?.profilePicture}}" />
+        </ion-avatar>
+        <ion-label> {{request?.firstName}} {{request?.lastName}} </ion-label>
+        <ion-label> {{request?.email}} </ion-label>
+      </ion-item>
+    </ion-list>
+
     <ion-list [inset]="true">
       <ion-list-header> {{"members" | translate}} </ion-list-header>
       <ion-item *ngFor="let member of team['teamMembers']">

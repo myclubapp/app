@@ -30,7 +30,7 @@
   </ion-item>
 -->
     </ion-list>
-    <ion-list [inset]="true">
+    <ion-list [inset]="true" *ngIf="club['clubRequests'].length > 0">
       <ion-list-header> {{"requests" | translate}} </ion-list-header>
       <ion-item *ngFor="let request of club['clubRequests']">
         <ion-avatar slot="start">

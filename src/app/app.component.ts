@@ -1,6 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
-import { AlertController, MenuController, ToastController } from "@ionic/angular";
+import {
+  AlertController,
+  MenuController,
+  ToastController,
+} from "@ionic/angular";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
@@ -10,7 +14,7 @@ import { Subscription, take } from "rxjs";
 import { onAuthStateChanged } from "@angular/fire/auth";
 import { UserProfileService } from "./services/firebase/user-profile.service";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
-import { Network, ConnectionStatus } from '@capacitor/network';
+import { Network, ConnectionStatus } from "@capacitor/network";
 import { TranslateService } from "@ngx-translate/core";
 
 @Component({
@@ -38,7 +42,7 @@ export class AppComponent implements OnInit {
     private readonly profileService: UserProfileService,
     private readonly router: Router,
     public readonly menuCtrl: MenuController,
-    private translate: TranslateService,
+    private translate: TranslateService
   ) {
     this.initializeApp();
     // this.initializeFirebase();
@@ -48,35 +52,44 @@ export class AppComponent implements OnInit {
         // 0. LOGIN
         this.email = user.email;
         // this.menuDisabled = false;
-        this.menuCtrl.enable(true,"menu");
-        SplashScreen.hide();
+        // this.menuCtrl.enable(true,"menu");
+        // SplashScreen.hide();
         // 1. EMAIL VERIFIED?
         if (!user.emailVerified) {
           this.presentAlertEmailNotVerified();
         } else {
           // 2. CLUB ASSIGNED
-          this.fbService.getUserClubRefs(user).pipe(take(1)).subscribe(async (clubData: any) => {
+          this.fbService
+            .getUserClubRefs(user)
+            .pipe(take(1))
+            .subscribe(async (clubData: any) => {
               if (clubData.length === 0) {
-                this.fbService.getUserClubRequestRefs(user).pipe(take(1)).subscribe(async (clubRequestData: any) => {
-                  console.log("clubRequestData " + clubRequestData.length);
-                  if (clubRequestData.length === 0) {
-                    console.log("NO club assigned, start onboarding flow");
-                    await this.presentAlertNoClub();
-                  } else {
-                    console.log("open request available > OPEN Profile");
-                    this.presentClubRequstOpen();
-                  }
-                });
+                this.fbService
+                  .getUserClubRequestRefs(user)
+                  .pipe(take(1))
+                  .subscribe(async (clubRequestData: any) => {
+                    console.log("clubRequestData " + clubRequestData.length);
+                    if (clubRequestData.length === 0) {
+                      console.log("NO club assigned, start onboarding flow");
+                      await this.presentAlertNoClub();
+                    } else {
+                      console.log("open request available > OPEN Profile");
+                      this.presentClubRequstOpen();
+                    }
+                  });
               } else {
                 // 3. TEAM ASSIGNED
-                this.fbService.getUserTeamRefs(user).pipe(take(1)).subscribe(async (teamData: any) => {
-                /*this.userTeamRefs = this.fbService
+                this.fbService
+                  .getUserTeamRefs(user)
+                  .pipe(take(1))
+                  .subscribe(async (teamData: any) => {
+                    /*this.userTeamRefs = this.fbService
                   .getUserTeamRefs(user)
                   .subscribe(async (teamData: any) => { */
                     // console.log(data);
                     if (teamData.length === 0) {
                       console.log("NO TEAM assigned, start onboarding flow");
-                      await this.presentAlertNoTeam();                      
+                      await this.presentAlertNoTeam();
                     }
                   });
               }
@@ -91,7 +104,7 @@ export class AppComponent implements OnInit {
         SplashScreen.hide();
         console.log("User is signed out");
         // this.menuDisabled = true;
-        this.menuCtrl.enable(false,"menu");
+        this.menuCtrl.enable(false, "menu");
         this.email = "";
         // User is signed out
         // ...
@@ -99,68 +112,62 @@ export class AppComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-
-    Network.addListener('networkStatusChange', async (status:ConnectionStatus) => {
-      
-      if (!status.connected) {
-        // const toast = await this.toastController.create({
-        //   message: "Du bist offline",
-        //   duration: 3000,
-        //   position: "top",
-        //   buttons: [
-        //     {
-        //       // text:"Ok",
-        //       icon: "cloud-offline-outline"
-        //     }
-            
-        //   ],
-        //   color: "danger",
-        // });
-        // await toast.present();
-      } else {
-        // const toast = await this.toastController.create({
-        //   message: "Du bist online",
-        //   duration: 1500,
-        //   position: "top",
-        //   color: "success",
-        //   buttons: [
-        //     {
-        //       // text:"Ok",
-        //       icon: "wifi-outline"
-        //     }
-            
-        //   ],
-        // });
-        // await toast.present();
+    Network.addListener(
+      "networkStatusChange",
+      async (status: ConnectionStatus) => {
+        if (!status.connected) {
+          // const toast = await this.toastController.create({
+          //   message: "Du bist offline",
+          //   duration: 3000,
+          //   position: "top",
+          //   buttons: [
+          //     {
+          //       // text:"Ok",
+          //       icon: "cloud-offline-outline"
+          //     }
+          //   ],
+          //   color: "danger",
+          // });
+          // await toast.present();
+        } else {
+          // const toast = await this.toastController.create({
+          //   message: "Du bist online",
+          //   duration: 1500,
+          //   position: "top",
+          //   color: "success",
+          //   buttons: [
+          //     {
+          //       // text:"Ok",
+          //       icon: "wifi-outline"
+          //     }
+          //   ],
+          // });
+          // await toast.present();
+        }
       }
-
-    });
-
-
+    );
 
     this.requestSubscription();
-    this.swPush.messages.subscribe( message =>{
+    this.swPush.messages.subscribe((message) => {
       console.log(message);
 
       this.alertPushMessage(message);
-
-    })
+    });
   }
 
   ngOnDestroy() {
-
     Network.removeAllListeners();
 
-//     this.pushNotificationClickSubscription.unsubscribe();
-//    this.pushMessageSubscription.unsubscribe();
-//    this.swPush.unsubscribe();
+    //     this.pushNotificationClickSubscription.unsubscribe();
+    //    this.pushMessageSubscription.unsubscribe();
+    //    this.swPush.unsubscribe();
     // this.userClubRefs.unsubscribe();
     // this.userTeamRefs.unsubscribe();
   }
 
   initializeApp(): void {
     this.showSplashScreen();
-    this.translate.setDefaultLang('de');
+    this.translate.setDefaultLang("de");
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
       if (event.type === "VERSION_READY") {
         this.presentAlertUpdateVersion();
@@ -178,12 +185,16 @@ export class AppComponent implements OnInit {
     this.deviceInfo = await Device.getInfo();
 
     const pushSubscription = await this.swPush.requestSubscription({
-      serverPublicKey: 'BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY'
+      serverPublicKey:
+        "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY",
     });
 
-    await this.profileService.addPushSubscriber(pushSubscription, this.deviceId, this.deviceInfo);
-
-  };
+    await this.profileService.addPushSubscriber(
+      pushSubscription,
+      this.deviceId,
+      this.deviceInfo
+    );
+  }
 
   async alertPushMessage(message) {
     const alert = await this.alertController.create({
@@ -195,8 +206,6 @@ export class AppComponent implements OnInit {
   }
 
   initializeFirebase() {
-
-    
     // https://cloud.google.com/firestore/docs/manage-data/enable-offline
     // The default cache size threshold is 40 MB. Configure "cacheSizeBytes"
     // for a different threshold (minimum 1 MB) or set to "CACHE_SIZE_UNLIMITED"
@@ -266,8 +275,7 @@ export class AppComponent implements OnInit {
       cssClass: "my-custom-class",
       header: "Offene Club-Anfragen vorhanden",
       subHeader: "",
-      message:
-        "Du hast berets offene Club anfragen.",
+      message: "Du hast berets offene Club anfragen.",
       buttons: [
         {
           text: "Neuen Club beitreten",
@@ -290,8 +298,6 @@ export class AppComponent implements OnInit {
     const { role } = await alert.onDidDismiss();
     console.log("onDidDismiss resolved with role", role);
   }
-
-
 
   async presentAlertNoTeam() {
     const alert = await this.alertController.create({
@@ -323,7 +329,7 @@ export class AppComponent implements OnInit {
   }
 
   async presentAlertEmailNotVerified() {
-    const alert = await this.alertController.create({
+    /*const alert = await this.alertController.create({
       cssClass: "my-custom-class",
       header: "E-Mail Adresse ist nicht verifiziert",
       subHeader: "",
@@ -353,6 +359,7 @@ export class AppComponent implements OnInit {
 
     const { role } = await alert.onDidDismiss();
     console.log("onDidDismiss resolved with role", role);
+    */
   }
 
   async presentAlertUpdateVersion() {
@@ -366,7 +373,7 @@ export class AppComponent implements OnInit {
           text: "Abbrechen",
           role: "cancel",
           cssClass: "secondary",
-          handler: (data:any) => {
+          handler: (data: any) => {
             // console.log('Confirm Cancel: data');
           },
         },

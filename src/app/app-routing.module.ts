@@ -8,6 +8,7 @@ import {
 
 // https://github.com/angular/angularfire/blob/master/docs/auth/router-guards.md
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(["login"]);
+// const emailVerifiedToLogout = () => emailVerified(["logout"]);
 
 const routes: Routes = [
   {
@@ -109,12 +110,16 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'info',
-    loadChildren: () => import('./pages/info/info.module').then( m => m.InfoPageModule)
+    path: "info",
+    loadChildren: () =>
+      import("./pages/info/info.module").then((m) => m.InfoPageModule),
   },
   {
-    path: 'championship-details',
-    loadChildren: () => import('./pages/championship/championship-detail/championship-detail.module').then( m => m.ChampionshipDetailPageModule)
+    path: "championship-details",
+    loadChildren: () =>
+      import(
+        "./pages/championship/championship-detail/championship-detail.module"
+      ).then((m) => m.ChampionshipDetailPageModule),
   },
   {
     path: "**",
@@ -124,18 +129,26 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'helfer',
-    loadChildren: () => import('./pages/helfer/helfer/helfer.module').then( m => m.HelferPageModule)
+    path: "helfer",
+    loadChildren: () =>
+      import("./pages/helfer/helfer/helfer.module").then(
+        (m) => m.HelferPageModule
+      ),
   },
   {
-    path: 'helfer-add',
-    loadChildren: () => import('./pages/helfer/helfer-add/helfer-add.module').then( m => m.HelferAddPageModule)
+    path: "helfer-add",
+    loadChildren: () =>
+      import("./pages/helfer/helfer-add/helfer-add.module").then(
+        (m) => m.HelferAddPageModule
+      ),
   },
   {
-    path: 'helfer-detail',
-    loadChildren: () => import('./pages/helfer/helfer-detail/helfer-detail.module').then( m => m.HelferDetailPageModule)
+    path: "helfer-detail",
+    loadChildren: () =>
+      import("./pages/helfer/helfer-detail/helfer-detail.module").then(
+        (m) => m.HelferDetailPageModule
+      ),
   },
-
 ];
 
 @NgModule({

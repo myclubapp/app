@@ -53,30 +53,86 @@ export class SignupPage implements OnInit {
 
   async submitCredentials(authForm: UntypedFormGroup): Promise<void> {
     if (!authForm.valid) {
-      // console.log('Form is not valid yet, current value:', authForm.value);
       this.alertCtrl
         .create({
-          message: await lastValueFrom(this.translate.get("error__invalid_form")),
-          buttons: [{ text:  await lastValueFrom(this.translate.get("ok")), role: "cancel" }],
+          message: await lastValueFrom(
+            this.translate.get("error__invalid_form")
+          ),
+          buttons: [
+            {
+              text: await lastValueFrom(this.translate.get("ok")),
+              role: "cancel",
+            },
+          ],
         })
         .then((alert) => {
           alert.present();
         });
     } else {
-      this.presentLoading();
+      const loading = await this.loadingCtrl.create({
+        cssClass: "my-custom-class",
+        message:
+          (await lastValueFrom(this.translate.get("please__wait"))) + "...",
+        // duration: 10000,
+      });
+      await loading.present();
+
       const credentials: UserCredentialLogin = {
         email: authForm.value.email,
         password: authForm.value.password,
       };
 
-      this.signupUser(credentials, {
-        firstName: authForm.value.firstName,
-        lastName: authForm.value.lastName,
-      });
+      try {
+        await this.signupUser(credentials, {
+          firstName: authForm.value.firstName,
+          lastName: authForm.value.lastName,
+        });
+
+        await this.authService.logout();
+        await this.router.navigateByUrl("login");
+        const alert = await this.alertCtrl.create({
+          header: "Account erstellt",
+          message:
+            "Dein Account wurde erfolgreich erstellt. Bitte bestätige deine E-Mail Adresse.",
+          buttons: [
+            {
+              text: await lastValueFrom(this.translate.get("ok")),
+              role: "cancel",
+            },
+          ],
+        });
+        await loading.dismiss();
+        alert.present();
+      } catch (err) {
+        let message =
+          "Es ist ein allgemeiner Fehler aufgetreten: " +
+          err.code +
+          " / " +
+          err.message;
+        console.error(err.code);
+
+        if (err.code == "auth/email-already-in-use") {
+          message = "E-Mail already in use";
+        } else {
+          console.log("Error");
+        }
+        await loading.dismiss();
+        const alert = await this.alertCtrl.create({
+          header: "Fehler",
+          message: message,
+          buttons: [
+            {
+              text: await lastValueFrom(this.translate.get("ok")),
+              role: "cancel",
+            },
+          ],
+        });
+        alert.present();
+      }
     }
   }
 
-  async presentLoading() {
+  /* async presentLoading() {
     const loading = await this.loadingCtrl.create({
       cssClass: "my-custom-class",
       message: await lastValueFrom(this.translate.get("please__wait"))+"...",
@@ -86,32 +142,14 @@ export class SignupPage implements OnInit {
 
     const { role, data } = await loading.onDidDismiss();
     console.log("Loading dismissed!");
-  }
+  }*/
 
-  async signupUser(
-    credentials: UserCredentialLogin,
-    userData: any
-  ): Promise<void> {
-    console.log("signup user: " + credentials.email);
-
-    try {
-      const userCredential = await this.authService.signup(
-        credentials.email,
-        credentials.password,
-        userData.firstName,
-        userData.lastName
-      );
-
-      await this.router.navigateByUrl("login");
-    } catch (err) {
-      this.alertCtrl
-        .create({
-          message: err.message,
-          buttons: [{ text: await lastValueFrom(this.translate.get("ok")), role: "cancel" }],
-        })
-        .then((alert) => {
-          alert.present();
-        });
-    }
+  async signupUser(credentials: UserCredentialLogin, userData: any) {
+    return this.authService.signup(
+      credentials.email,
+      credentials.password,
+      userData.firstName,
+      userData.lastName
+    );
   }
 }

@@ -12,7 +12,7 @@ import {
 import { AlertController, MenuController } from "@ionic/angular";
 import { AuthService } from "src/app/services/auth.service";
 import { TranslateService } from "@ngx-translate/core";
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom } from "rxjs";
 @Component({
   selector: "app-login",
   templateUrl: "./login.page.html",
@@ -58,22 +58,38 @@ export class LoginPage implements OnInit {
         this.router.navigateByUrl("");
       });
     } catch (err) {
-      let message = "Es ist ein allgemeiner Fehler aufgetreten: " + err.code + " / " + err.message;
+      let message =
+        "Es ist ein allgemeiner Fehler aufgetreten: " +
+        err.code +
+        " / " +
+        err.message;
       console.error(err.code);
 
       if (err.code == "auth/user-not-found") {
-        message = await lastValueFrom(this.translate.get("error__no_acount_found"));
+        message = await lastValueFrom(
+          this.translate.get("error__no_acount_found")
+        );
       } else if (err.code == "auth/wrong-password") {
-        message =  await lastValueFrom(this.translate.get("error__no_acount_found"));
+        message = await lastValueFrom(
+          this.translate.get("error__no_acount_found")
+        );
       } else if (err.code == "auth/network-request-failed") {
-        message = await lastValueFrom(this.translate.get("error__network_connection"));
+        message = await lastValueFrom(
+          this.translate.get("error__network_connection")
+        );
       } else {
-
+        console.log("Error");
       }
 
       const alert = await this.alertCtrl.create({
+        header: "Fehler",
         message: message,
-        buttons: [{ text: await lastValueFrom(this.translate.get("ok")), role: "cancel" }],
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("ok")),
+            role: "cancel",
+          },
+        ],
       });
       alert.present();
     }
