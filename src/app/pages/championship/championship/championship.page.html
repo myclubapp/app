@@ -4,7 +4,6 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>{{"championship" | translate}}</ion-title>
-
     <ion-buttons slot="end">
       <!--   <ion-button (click)="openFilter($event)">
         <ion-icon slot="icon-only" name="filter"></ion-icon>
@@ -32,7 +31,6 @@
       <ion-title size="large">{{"championship" | translate}}</ion-title>
     </ion-toolbar>
   </ion-header>
-  <!-- <capacitor-google-map #map id="detailMap"></capacitor-google-map> -->
 
   <ng-container *ngIf="mode=='ranking'">
     <ng-container *ngIf="teamRankings$ | async as teamRankings">
@@ -181,6 +179,12 @@
         </ion-item-options>-->
         </ion-item-sliding>
       </ion-list>
+      <ion-list class="ion-padding" *ngIf="gameList.length==0">
+        <ion-list-header>
+          <ion-label>{{"upcomming__games" | translate}}</ion-label>
+        </ion-list-header>
+        <ion-note> Keine Spiele gefunden </ion-note>
+      </ion-list>
     </ng-container>
 
     <ng-container *ngIf="gameListPast$ | async as gameListPast; else loading">
@@ -258,6 +262,12 @@
             </ion-item-option>
           </ion-item-options>-->
         </ion-item-sliding>
+      </ion-list>
+      <ion-list class="ion-padding" *ngIf="gameListPast.length==0">
+        <ion-list-header>
+          <ion-label>{{"past__games" | translate}}</ion-label>
+        </ion-list-header>
+        <ion-note> Keine Spiele gefunden </ion-note>
       </ion-list>
     </ng-container>
   </ng-container>

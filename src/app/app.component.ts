@@ -2,8 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
 import {
   AlertController,
-  MenuController,
-  ToastController,
+  MenuController
 } from "@ionic/angular";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
