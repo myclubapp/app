@@ -177,11 +177,13 @@
     </ion-list>
   </ng-container>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="openEventCreateModal()">
-      <ion-icon name="add-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+    <ion-fab *ngIf="clubAdminList.length > 0" vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="openEventCreateModal()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ng-container>
 </ion-content>
 
 <ng-template #loading>

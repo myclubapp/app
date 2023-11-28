@@ -27,6 +27,7 @@ import { EventAddPage } from "../event-add/event-add.page";
 import { Timestamp } from "firebase/firestore";
 import { EventDetailPage } from "../event-detail/event-detail.page";
 import { TranslateService } from "@ngx-translate/core";
+import { Club } from "src/app/models/club";
 
 @Component({
   selector: "app-events",
@@ -35,12 +36,13 @@ import { TranslateService } from "@ngx-translate/core";
 })
 export class EventsPage implements OnInit {
   skeleton = new Array(12);
-
   user$: Observable<User>;
   user: User;
 
   eventList$: Observable<Veranstaltung[]>;
   eventListPast$: Observable<Veranstaltung[]>;
+
+  clubAdminList$: Observable<Club[]>;
 
   filterList: any[] = [];
   filterValue: string = "";
@@ -54,9 +56,11 @@ export class EventsPage implements OnInit {
     private readonly eventService: EventService,
     private readonly menuCtrl: MenuController,
     private cdr: ChangeDetectorRef,
-    private translate: TranslateService
+    private translate: TranslateService,
+
   ) {
     this.menuCtrl.enable(true, "menu");
+
   }
 
   ngOnInit() {
@@ -78,6 +82,17 @@ export class EventsPage implements OnInit {
       },
       error: (err) => console.error("EVENT PAST Error in subscription:", err),
       complete: () => console.log("EVENT PAST Observable completed"),
+    });
+
+    //Create Events, Helfer, News
+    this.clubAdminList$ = this.fbService.getClubAdminList();
+    this.clubAdminList$.subscribe({
+      next: () => {
+        console.log("Club Admin Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Club Admin Error in subscription:", err),
+      complete: () => console.log("Club Admin Observable completed"),
     });
   }
   getClubEvent() {

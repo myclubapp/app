@@ -3,7 +3,6 @@ import { Device, DeviceId, DeviceInfo } from '@capacitor/device';
 import { Browser, OpenOptions​ } from '@capacitor/browser';
 import packagejson from "./../../../../package.json";
 
-
 @Component({
   selector: 'app-info',
   templateUrl: './info.page.html',

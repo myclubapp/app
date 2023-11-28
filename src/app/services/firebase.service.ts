@@ -12,14 +12,7 @@ import {
   setDoc,
 } from "@angular/fire/firestore";
 
-import {
-  Storage,
-  ref,
-  uploadString,
-  getDownloadURL,
-} from "@angular/fire/storage";
-
-import { Observable, Observer } from "rxjs";
+import { Observable, Observer, catchError, combineLatest, map, mergeMap, of, switchMap, take, tap } from "rxjs";
 import {
   Club,
   SwissHandballClub,
@@ -38,8 +31,131 @@ import { Profile } from "../models/user";
   providedIn: "root",
 })
 export class FirebaseService {
-  inviteList: any = [];
-  constructor(private readonly firestore: Firestore = inject(Firestore)) {}
+  user: User;
+  constructor(
+    private readonly firestore: Firestore = inject(Firestore),
+    private readonly authService: AuthService,
+  ) {
+
+  }
+
+  getClubList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.getUserClubRefs(user);
+      }),
+      tap((clubs) => console.log("Clubs:", clubs)),
+      mergeMap((clubs) => {
+        if (clubs.length === 0) return of([]);
+        return combineLatest(
+          clubs.map((club) =>
+            this.getClubRef(club.id).pipe(
+              catchError(() => of(null)) // In case of error, return null for this club
+            )
+          )
+        );
+      }),
+      map((clubsWithDetails) => clubsWithDetails.filter(club => club !== null)), // Filter out null (error cases)
+      tap((results) => console.log("Final results with all clubs:", results)),
+      catchError((err) => {
+        console.error("Error in getClubList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+  getClubAdminList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.getUserClubAdminRefs(user);
+      }),
+      tap((clubs) => console.log("Admin Clubs:", clubs)),
+      mergeMap((clubs) => {
+        if (clubs.length === 0) return of([]);
+        return combineLatest(
+          clubs.map((club) =>
+            this.getClubRef(club.id).pipe(
+              catchError(() => of(null)) // In case of error, return null for this club
+            )
+          )
+        );
+      }),
+      map((clubsWithDetails) => clubsWithDetails.filter(club => club !== null)), // Filter out null (error cases)
+      tap((results) => console.log("Final results with all clubs:", results)),
+      catchError((err) => {
+        console.error("Error in getClubList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+  getTeamList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.getUserTeamRefs(user);
+      }),
+      tap((teams) => console.log("Teams:", teams)),
+      mergeMap((teams) => {
+        if (teams.length === 0) return of([]);
+        return combineLatest(
+          teams.map((team) =>
+            this.getTeamRef(team.id).pipe(
+              catchError(() => of(null)) // In case of error, return null for this team
+            )
+          )
+        );
+      }),
+      map((teamsWithDetails) => teamsWithDetails.filter(team => team !== null)), // Filter out null (error cases)
+      tap((results) => console.log("Final results with all teams:", results)),
+      catchError((err) => {
+        console.error("Error in getTeamList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+  getTeamAdminList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.getUserTeamAdminRefs(user);
+      }),
+      tap((teams) => console.log("Teams:", teams)),
+      mergeMap((teams) => {
+        if (teams.length === 0) return of([]);
+        return combineLatest(
+          teams.map((team) =>
+            this.getTeamRef(team.id).pipe(
+              catchError(() => of(null)) // In case of error, return null for this team
+            )
+          )
+        );
+      }),
+      map((teamsWithDetails) => teamsWithDetails.filter(team => team !== null)), // Filter out null (error cases)
+      tap((results) => console.log("Final results with all teams:", results)),
+      catchError((err) => {
+        console.error("Error in getTeamList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+
 
   /* CLUBS */
   getClubRef(clubId: string) {

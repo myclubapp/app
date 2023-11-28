@@ -28,6 +28,7 @@ import { HelferAddPage } from "../helfer-add/helfer-add.page";
 import { Timestamp } from "firebase/firestore";
 import { HelferDetailPage } from "../helfer-detail/helfer-detail.page";
 import { TranslateService } from "@ngx-translate/core";
+import { Club } from "src/app/models/club";
 
 @Component({
   selector: "app-helfer",
@@ -42,6 +43,8 @@ export class HelferPage implements OnInit {
 
   helferList$: Observable<HelferEvent[]>;
   helferListPast$: Observable<HelferEvent[]>;
+
+  clubAdminList$: Observable<Club[]>;
 
   filterList: any[] = [];
   filterValue: string = "";
@@ -79,6 +82,17 @@ export class HelferPage implements OnInit {
       },
       error: (err) => console.error("HELFER PAST Error in subscription:", err),
       complete: () => console.log("HELFER PAST Observable completed"),
+    });
+
+    //Create Events, Helfer, News
+    this.clubAdminList$ = this.fbService.getClubAdminList();
+    this.clubAdminList$.subscribe({
+      next: () => {
+        console.log("Club Admin Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Club Admin Error in subscription:", err),
+      complete: () => console.log("Club Admin Observable completed"),
     });
   }
 

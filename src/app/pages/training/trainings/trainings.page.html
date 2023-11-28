@@ -208,12 +208,13 @@
     </ion-list>
   </ng-container>
 
-  <!-- fab placed to the bottom end -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="openTrainingCreateModal()">
-      <ion-icon name="add-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+  <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+    <ion-fab *ngIf="teamAdminList.length > 0" vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="openTrainingCreateModal()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ng-container>
 </ion-content>
 
 <ng-template #loading>

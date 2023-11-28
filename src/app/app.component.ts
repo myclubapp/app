@@ -26,20 +26,14 @@ import { Team } from "./models/team";
 export class AppComponent implements OnInit {
   public email: string;
   public appVersion: string = packagejson.version;
-  public clubList$: Observable<Club[]>;
-  public teamList$: Observable<Team[]>;
-  public clubAdminList$: Observable<Club[]>;
-  public teamAdminList$: Observable<Team[]>;
+
+  private clubList$: Observable<Club[]>;
+  private teamList$: Observable<Team[]>;
+  private clubAdminList$: Observable<Club[]>;
+  private teamAdminList$: Observable<Team[]>;
   user: User;
-
-
-  userClubRefs: Subscription;
-  userTeamRefs: Subscription;
-
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
-
-  // menuDisabled: boolean = false;
 
   constructor(
     private readonly swUpdate: SwUpdate,
@@ -55,8 +49,10 @@ export class AppComponent implements OnInit {
   ) {
     this.initializeApp();
 
+// https://fireship.io/lessons/sharing-data-between-angular-components-four-methods/
+
     //Filter for Events, Helfer, News
-    this.clubList$ = this.getClubList();
+    this.clubList$ = this.fbService.getClubList();
     this.clubList$.subscribe({
       next: () => {
         console.log("Club Data received");
@@ -83,7 +79,7 @@ export class AppComponent implements OnInit {
       complete: () => console.log("Club Observable completed"),
     });
     //Filter for Trainings
-    this.teamList$ = this.getTeamList();
+    this.teamList$ = this.fbService.getTeamList();
     this.teamList$.subscribe({
       next: () => {
         console.log("Team Data received");
@@ -109,7 +105,7 @@ export class AppComponent implements OnInit {
     });
 
     //Create Events, Helfer, News
-    this.clubAdminList$ = this.getClubAdminList();
+    this.clubAdminList$ = this.fbService.getClubAdminList();
     this.clubAdminList$.subscribe({
       next: () => {
         console.log("Club Admin Data received");
@@ -119,7 +115,7 @@ export class AppComponent implements OnInit {
       complete: () => console.log("Club Admin Observable completed"),
     });
     // Create Trainings
-    this.teamAdminList$ = this.getTeamAdminList();
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
     this.teamAdminList$.subscribe({
       next: () => {
         console.log("Team Admin Data received");
@@ -208,122 +204,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  getClubList() {
-    return this.authService.getUser$().pipe(
-      take(1),
-      tap((user) => {
-        this.user = user;
-      }),
-      switchMap((user) => {
-        if (!user) return of([]);
-        return this.fbService.getUserClubRefs(user);
-      }),
-      tap((clubs) => console.log("Clubs:", clubs)),
-      mergeMap((clubs) => {
-        if (clubs.length === 0) return of([]);
-        return combineLatest(
-          clubs.map((club) =>
-            this.fbService.getClubRef(club.id).pipe(
-              catchError(() => of(null)) // In case of error, return null for this club
-            )
-          )
-        );
-      }),
-      map((clubsWithDetails) => clubsWithDetails.filter(club => club !== null)), // Filter out null (error cases)
-      tap((results) => console.log("Final results with all clubs:", results)),
-      catchError((err) => {
-        console.error("Error in getClubList:", err);
-        return of([]); // Return an empty array on error
-      })
-    );
-  }
-  getClubAdminList() {
-    return this.authService.getUser$().pipe(
-      take(1),
-      tap((user) => {
-        this.user = user;
-      }),
-      switchMap((user) => {
-        if (!user) return of([]);
-        return this.fbService.getUserClubAdminRefs(user);
-      }),
-      tap((clubs) => console.log("Admin Clubs:", clubs)),
-      mergeMap((clubs) => {
-        if (clubs.length === 0) return of([]);
-        return combineLatest(
-          clubs.map((club) =>
-            this.fbService.getClubRef(club.id).pipe(
-              catchError(() => of(null)) // In case of error, return null for this club
-            )
-          )
-        );
-      }),
-      map((clubsWithDetails) => clubsWithDetails.filter(club => club !== null)), // Filter out null (error cases)
-      tap((results) => console.log("Final results with all clubs:", results)),
-      catchError((err) => {
-        console.error("Error in getClubList:", err);
-        return of([]); // Return an empty array on error
-      })
-    );
-  }
-  getTeamList() {
-    return this.authService.getUser$().pipe(
-      take(1),
-      tap((user) => {
-        this.user = user;
-      }),
-      switchMap((user) => {
-        if (!user) return of([]);
-        return this.fbService.getUserTeamRefs(user);
-      }),
-      tap((teams) => console.log("Teams:", teams)),
-      mergeMap((teams) => {
-        if (teams.length === 0) return of([]);
-        return combineLatest(
-          teams.map((team) =>
-            this.fbService.getTeamRef(team.id).pipe(
-              catchError(() => of(null)) // In case of error, return null for this team
-            )
-          )
-        );
-      }),
-      map((teamsWithDetails) => teamsWithDetails.filter(team => team !== null)), // Filter out null (error cases)
-      tap((results) => console.log("Final results with all teams:", results)),
-      catchError((err) => {
-        console.error("Error in getTeamList:", err);
-        return of([]); // Return an empty array on error
-      })
-    );
-  }
-  getTeamAdminList() {
-    return this.authService.getUser$().pipe(
-      take(1),
-      tap((user) => {
-        this.user = user;
-      }),
-      switchMap((user) => {
-        if (!user) return of([]);
-        return this.fbService.getUserTeamAdminRefs(user);
-      }),
-      tap((teams) => console.log("Teams:", teams)),
-      mergeMap((teams) => {
-        if (teams.length === 0) return of([]);
-        return combineLatest(
-          teams.map((team) =>
-            this.fbService.getTeamRef(team.id).pipe(
-              catchError(() => of(null)) // In case of error, return null for this team
-            )
-          )
-        );
-      }),
-      map((teamsWithDetails) => teamsWithDetails.filter(team => team !== null)), // Filter out null (error cases)
-      tap((results) => console.log("Final results with all teams:", results)),
-      catchError((err) => {
-        console.error("Error in getTeamList:", err);
-        return of([]); // Return an empty array on error
-      })
-    );
-  }
+
 
   async requestSubscription() {
     if (!this.swPush.isEnabled) {

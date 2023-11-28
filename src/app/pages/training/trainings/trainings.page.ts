@@ -28,6 +28,7 @@ import { TrainingCreatePage } from "../training-create/training-create.page";
 import { Timestamp } from "firebase/firestore";
 import { TrainingDetailPage } from "../training-detail/training-detail.page";
 import { TranslateService } from "@ngx-translate/core";
+import { Team } from "src/app/models/team";
 
 @Component({
   selector: "app-trainings",
@@ -41,6 +42,8 @@ export class TrainingsPage implements OnInit {
 
   trainingList$: Observable<Training[]>;
   trainingListPast$: Observable<Training[]>;
+
+  teamAdminList$: Observable<Team[]>;
 
   filterList: any[] = [];
   filterValue: string = "";
@@ -81,6 +84,16 @@ export class TrainingsPage implements OnInit {
         console.error("Training PAST Error in subscription:", err),
       complete: () => console.log("Training PAST Observable completed"),
     });
+        //Create Events, Helfer, News
+        this.teamAdminList$ = this.fbService.getTeamAdminList();
+        this.teamAdminList$.subscribe({
+          next: () => {
+            console.log("Team Admin Data received");
+            this.cdr.detectChanges();
+          },
+          error: (err) => console.error("Team Admin Error in subscription:", err),
+          complete: () => console.log("Team Admin Observable completed"),
+        });
   }
 
   ngOnDestroy(): void {}
