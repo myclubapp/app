@@ -12,6 +12,7 @@ import {
 import { User } from "@angular/fire/auth";
 import {
   Observable,
+  Subscription,
   catchError,
   combineLatest,
   lastValueFrom,
@@ -30,6 +31,7 @@ import { Timestamp } from "firebase/firestore";
 import { NavigationExtras, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { ChampionshipDetailPage } from "../championship-detail/championship-detail.page";
+import { Team } from "src/app/models/team";
 
 @Component({
   selector: "app-championship",
@@ -44,12 +46,18 @@ export class ChampionshipPage implements OnInit {
   gameList$: Observable<Game[]>;
   gameListPast$: Observable<Game[]>;
 
+  gameListBackup$: Observable<Game[]>;
+  gameListPastBackup$: Observable<Game[]>;
+
+
+  gameListBackup: Subscription;
+  gameListPastBackup: Subscription;
+
+
   mode = "games";
 
-  /*
-  private subscription: Subscription;
-  private subscriptionPast: Subscription;
-*/
+  teamList$: Observable<Team[]>;
+
   filterList: any[] = [];
   filterValue: string = "";
 
@@ -91,6 +99,15 @@ export class ChampionshipPage implements OnInit {
       error: (err) => console.error("GAMES Error in subscription:", err),
       complete: () => console.log("GAMES Observable completed"),
     });
+    this.gameListBackup$ = this.getTeamGamesUpcoming();
+    this.gameListBackup$.subscribe({
+      next: (data) => {
+        console.log("GAMES Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("GAMES Error in subscription:", err),
+      complete: () => console.log("GAMES Observable completed"),
+    });
 
     this.gameListPast$ = this.getTeamGamesPast();
     this.gameListPast$.subscribe({
@@ -100,6 +117,27 @@ export class ChampionshipPage implements OnInit {
       },
       error: (err) => console.error("GAMES PAST Error in subscription:", err),
       complete: () => console.log("GAMES PAST Observable completed"),
+    });
+    this.gameListPastBackup$ = this.getTeamGamesPast();
+    this.gameListPastBackup$.subscribe({
+      next: () => {
+        console.log("GAMES PAST Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("GAMES PAST Error in subscription:", err),
+      complete: () => console.log("GAMES PAST Observable completed"),
+    });
+
+    // Filter
+    this.teamList$ = this.fbService.getTeamList();
+    this.teamList$.subscribe({
+      next: (data) => {
+        this.filterList = data;
+        console.log("Team Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Team Error in subscription:", err),
+      complete: () => console.log("Team Observable completed"),
     });
   }
 
@@ -383,35 +421,11 @@ export class ChampionshipPage implements OnInit {
     toast.present();
   }
 
+
   async openFilter(ev: Event) {
-    /*
-  let filterList = [];
 
- 
-const teams$ = this.authService.getUser$().pipe(
-  take(1),
-  switchMap(user => this.fbService.getUserTeamRefs(user).pipe(take(1))),
-  concatMap(teamsArray =>  from(teamsArray)),
-  tap((team:Team)=>console.log(team.id)),
-  concatMap(team => 
-    this.fbService.getTeamRef(team.id).pipe(
-      take(1),
-      defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
-      map(result => [result]),
-      catchError(error => {
-        console.error('Error fetching TeamDetail:', error);
-        return of([]);
-    })
-  )
-  ),
-  tap(teamList => teamList.forEach(team => filterList.push(team))),
-  finalize(() => console.log("Get Teams completed"))
-);
-
-this.subscription = forkJoin([teams$]).subscribe({
-  next: () => {
     const alertInputs = [];
-    for (const item of filterList){
+    for (const item of this.filterList) {
       alertInputs.push({
         label: item.name,
         type: 'radio',
@@ -419,37 +433,46 @@ this.subscription = forkJoin([teams$]).subscribe({
         value: item.id,
       });
     }
-  
-    this.alertCtrl.create({
+
+    let alert = await this.alertCtrl.create({
       header: 'News filtern',
       message: 'Nach Verein oder Teams filtern.',
-     // subHeader: 'Nach Verein oder Teams filtern.',
+      // subHeader: 'Nach Verein oder Teams filtern.',
       inputs: alertInputs,
       buttons: [
-        { text: "OK",
+        {
+          text: "OK",
           role: "confirm",
-          handler: (value)=>{
+          handler: (value) => {
             console.log(value)
             this.filterValue = value;
-            this.gameList$ = of(this.gameList.filter((game: any) => game.teamId == value));
-          } 
+            
+            this.gameList$ = this.gameListBackup$.pipe(
+              map(items => {
+               return items.filter(element => element.teamId == value)
+              })
+            )  
+            this.gameListPast$ = this.gameListPastBackup$.pipe(
+              map(items => {
+               return items.filter(element => element.teamId == value)
+              })
+            )          
+           
+          }
         },
-        { text: "abbrechen",
+        {
+          text: "abbrechen",
           role: "cancel",
-          handler: (value)=>{
+          handler: (value) => {
             console.log(value);
             this.filterValue = "";
-            this.gameList$ = of(this.gameList);
-          } 
+            this.gameList$ = this.gameListBackup$;
+            this.gameListPast$ = this.gameListPastBackup$;
+          }
         }
       ],
       htmlAttributes: { 'aria-label': 'alert dialog' },
-    }).then(alert => {
-      alert.present();
     });
-  },
-  error: err => console.error('Error in the observable chain:', err)
-});
-*/
+    alert.present();
   }
 }

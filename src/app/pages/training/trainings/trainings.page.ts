@@ -10,6 +10,7 @@ import {
 import { User } from "@angular/fire/auth";
 import {
   Observable,
+  Subscription,
   catchError,
   combineLatest,
   lastValueFrom,
@@ -43,6 +44,13 @@ export class TrainingsPage implements OnInit {
   trainingList$: Observable<Training[]>;
   trainingListPast$: Observable<Training[]>;
 
+  trainingListBackup$: Observable<Training[]>;
+  trainingListPastBackup$: Observable<Training[]>;
+
+  trainingListBackupSub: Subscription;
+  trainingListPastBackupSub: Subscription;
+
+  teamList$: Observable<Team[]>;
   teamAdminList$: Observable<Team[]>;
 
   filterList: any[] = [];
@@ -66,8 +74,20 @@ export class TrainingsPage implements OnInit {
   ngOnInit() {
     this.trainingList$ = this.getTeamTraining();
     this.trainingList$.subscribe({
-      next: (data) => {
+      next: () => {
         console.log("Training Data received");
+ 
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Training Error in subscription:", err),
+      complete: () => console.log("Training Observable completed"),
+    });
+
+    this.trainingListBackup$ = this.getTeamTraining();
+    this.trainingListBackupSub = this.trainingListBackup$.subscribe({
+      next: () => {
+        console.log("Training Backup Data received");
+ 
         this.cdr.detectChanges();
       },
       error: (err) => console.error("Training Error in subscription:", err),
@@ -84,19 +104,44 @@ export class TrainingsPage implements OnInit {
         console.error("Training PAST Error in subscription:", err),
       complete: () => console.log("Training PAST Observable completed"),
     });
-        //Create Events, Helfer, News
-        this.teamAdminList$ = this.fbService.getTeamAdminList();
-        this.teamAdminList$.subscribe({
-          next: () => {
-            console.log("Team Admin Data received");
-            this.cdr.detectChanges();
-          },
-          error: (err) => console.error("Team Admin Error in subscription:", err),
-          complete: () => console.log("Team Admin Observable completed"),
-        });
+    this.trainingListPastBackup$ = this.getTeamTrainingPast();
+    this.trainingListPastBackup$.subscribe({
+      next: () => {
+        console.log("Training PAST Backup Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) =>
+        console.error("Training PAST Backup Error in subscription:", err),
+      complete: () => console.log("Training PAST Backup Observable completed"),
+    });
+    //Create Events, Helfer, News
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    this.teamAdminList$.subscribe({
+      next: () => {
+        console.log("Team Admin Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Team Admin Error in subscription:", err),
+      complete: () => console.log("Team Admin Observable completed"),
+    });
+
+    // Filter
+    this.teamList$ = this.fbService.getTeamList();
+    this.teamList$.subscribe({
+      next: (data) => {
+        this.filterList = data;
+        console.log("Team Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Team Error in subscription:", err),
+      complete: () => console.log("Team Observable completed"),
+    });
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void { 
+    this.trainingListBackupSub.unsubscribe();
+    this.trainingListPastBackupSub.unsubscribe();
+  }
 
   getTeamTraining() {
     return this.authService.getUser$().pipe(
@@ -370,74 +415,56 @@ export class TrainingsPage implements OnInit {
   }
 
   async openFilter(ev: Event) {
-    /*
-    let filterList = [];
 
+    const alertInputs = [];
+    for (const item of this.filterList) {
+      alertInputs.push({
+        label: item.name,
+        type: 'radio',
+        checked: item.id == this.filterValue,
+        value: item.id,
+      });
+    }
 
-    const teams$ = this.authService.getUser$().pipe(
-      take(1),
-      switchMap(user => this.fbService.getUserTeamRefs(user).pipe(take(1))),
-      concatMap(teamsArray => from(teamsArray)),
-      tap((team: Team) => console.log(team.id)),
-      concatMap(team =>
-        this.fbService.getTeamRef(team.id).pipe(
-          take(1),
-          defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
-          map(result => [result]),
-          catchError(error => {
-            console.error('Error fetching TeamDetail:', error);
-            return of([]);
-          })
-        )
-      ),
-      tap(teamList => teamList.forEach(team => filterList.push(team))),
-      finalize(() => console.log("Get Teams completed"))
-    );
-
-    this.subscription = forkJoin([teams$]).subscribe({
-      next: () => {
-        const alertInputs = [];
-        for (const item of filterList) {
-          alertInputs.push({
-            label: item.name,
-            type: 'radio',
-            checked: item.id == this.filterValue,
-            value: item.id,
-          });
+    let alert = await this.alertCtrl.create({
+      header: 'News filtern',
+      message: 'Nach Verein oder Teams filtern.',
+      // subHeader: 'Nach Verein oder Teams filtern.',
+      inputs: alertInputs,
+      buttons: [
+        {
+          text: "OK",
+          role: "confirm",
+          handler: (value) => {
+            console.log(value)
+            this.filterValue = value;
+            
+            this.trainingList$ = this.trainingListBackup$.pipe(
+              map(items => {
+               return items.filter(element => element.teamId == value)
+              })
+            )  
+            this.trainingListPast$ = this.trainingListPastBackup$.pipe(
+              map(items => {
+               return items.filter(element => element.teamId == value)
+              })
+            )          
+           
+          }
+        },
+        {
+          text: "abbrechen",
+          role: "cancel",
+          handler: (value) => {
+            console.log(value);
+            this.filterValue = "";
+            this.trainingList$ = this.trainingListBackup$;
+            this.trainingListPast$ = this.trainingListPastBackup$;
+          }
         }
-
-        this.alertCtrl.create({
-          header: 'News filtern',
-          message: 'Nach Verein oder Teams filtern.',
-          // subHeader: 'Nach Verein oder Teams filtern.',
-          inputs: alertInputs,
-          buttons: [
-            {
-              text: "OK",
-              role: "confirm",
-              handler: (value) => {
-                console.log(value)
-                this.filterValue = value;
-                this.trainingList$ = of(this.trainingList.filter((training: any) => training.teamId == value));
-              }
-            },
-            {
-              text: "abbrechen",
-              role: "cancel",
-              handler: (value) => {
-                console.log(value);
-                this.filterValue = "";
-                this.trainingList$ = of(this.trainingList);
-              }
-            }
-          ],
-          htmlAttributes: { 'aria-label': 'alert dialog' },
-        }).then(alert => {
-          alert.present();
-        });
-      },
-      error: err => console.error('Error in the observable chain:', err)
+      ],
+      htmlAttributes: { 'aria-label': 'alert dialog' },
     });
-*/
+    alert.present();
   }
 }

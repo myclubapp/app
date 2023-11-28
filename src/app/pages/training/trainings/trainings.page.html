@@ -3,15 +3,19 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>{{"training" | translate}}</ion-title>
-    <!--  <ion-buttons slot="end">
-      <ion-button *ngIf="!filterValue" (click)="openFilter($event)">
-        <ion-icon slot="icon-only" name="filter"></ion-icon>
-      </ion-button>
-      <ion-button *ngIf="filterValue" (click)="openFilter($event)">
-        <ion-icon slot="icon-only" name="filter-circle"></ion-icon>
-      </ion-button>
-    </ion-buttons>-->
+    <ion-title> {{"training" | translate}}</ion-title>
+    <ion-buttons slot="end">
+      <ng-container *ngIf="teamList$ | async as teamList">
+        <ng-container *ngIf="teamList.length > 0">
+          <ion-button *ngIf="!filterValue" (click)="openFilter($event)">
+            <ion-icon slot="icon-only" name="filter"></ion-icon>
+          </ion-button>
+          <ion-button *ngIf="filterValue" (click)="openFilter($event)">
+            <ion-icon slot="icon-only" name="filter-circle"></ion-icon>
+          </ion-button>
+        </ng-container>
+      </ng-container>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -19,6 +23,7 @@
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">{{"training" | translate}}</ion-title>
+
     </ion-toolbar>
   </ion-header>
 
@@ -37,30 +42,12 @@
       </ion-item>
       <ion-item-sliding #item *ngFor="let training of trainingList">
         <ion-item type="button" detail="true">
-          <ion-icon
-            *ngIf="training.status === null"
-            slot="icon-only"
-            color="warning"
-            slot="start"
-            name="help-circle"
-            (click)="toggle(true, training)"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="training.status === false"
-            slot="icon-only"
-            color="danger"
-            slot="start"
-            name="close-circle"
-            (click)="toggle( true, training)"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="training.status === true"
-            slot="icon-only"
-            color="success"
-            slot="start"
-            name="checkmark-circle"
-            (click)="toggle(false, training)"
-          ></ion-icon>
+          <ion-icon *ngIf="training.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
+            (click)="toggle(true, training)"></ion-icon>
+          <ion-icon *ngIf="training.status === false" slot="icon-only" color="danger" slot="start" name="close-circle"
+            (click)="toggle( true, training)"></ion-icon>
+          <ion-icon *ngIf="training.status === true" slot="icon-only" color="success" slot="start"
+            name="checkmark-circle" (click)="toggle(false, training)"></ion-icon>
           <ion-label (click)="openTrainingDetailModal(training, true)">
             <h2>{{training.name}}</h2>
             <h3>
@@ -85,33 +72,21 @@
         </ion-item>
 
         <ion-item-options side="start">
-          <ion-item-option
-            color="success"
-            *ngIf="training.status === false || training.status === null"
-            (click)="toggleItem(item, true, training)"
-          >
+          <ion-item-option color="success" *ngIf="training.status === false || training.status === null"
+            (click)="toggleItem(item, true, training)">
             <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
           </ion-item-option>
-          <ion-item-option
-            color="danger"
-            *ngIf="training.status === true || training.status === null"
-            (click)="toggleItem(item, false, training)"
-          >
+          <ion-item-option color="danger" *ngIf="training.status === true || training.status === null"
+            (click)="toggleItem(item, false, training)">
             <ion-icon slot="icon-only" name="close-circle"></ion-icon>
           </ion-item-option>
         </ion-item-options>
 
         <ion-item-options side="end">
-          <ion-item-option
-            color="medium"
-            (click)="copyTraining(item, training)"
-          >
+          <ion-item-option color="medium" (click)="copyTraining(item, training)">
             <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
           </ion-item-option>
-          <ion-item-option
-            color="danger"
-            (click)="deleteTraining(item, training)"
-          >
+          <ion-item-option color="danger" (click)="deleteTraining(item, training)">
             <ion-icon slot="icon-only" name="trash"></ion-icon>
           </ion-item-option>
         </ion-item-options>
@@ -126,9 +101,7 @@
     </ion-list>
   </ng-container>
 
-  <ng-container
-    *ngIf="trainingListPast$ | async as trainingListPast; else loading"
-  >
+  <ng-container *ngIf="trainingListPast$ | async as trainingListPast; else loading">
     <ion-list *ngIf="trainingListPast.length > 0" lines="full">
       <ion-list-header>
         <ion-label>{{"past__training" | translate}}</ion-label>
@@ -143,27 +116,12 @@
       </ion-item>
       <ion-item-sliding #item *ngFor="let training of trainingListPast">
         <ion-item type="button" detail="true">
-          <ion-icon
-            *ngIf="training.status === null"
-            slot="icon-only"
-            color="warning"
-            slot="start"
-            name="help-circle"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="training.status === false"
-            slot="icon-only"
-            color="danger"
-            slot="start"
-            name="close-circle"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="training.status === true"
-            slot="icon-only"
-            color="success"
-            slot="start"
-            name="checkmark-circle"
-          ></ion-icon>
+          <ion-icon *ngIf="training.status === null" slot="icon-only" color="warning" slot="start"
+            name="help-circle"></ion-icon>
+          <ion-icon *ngIf="training.status === false" slot="icon-only" color="danger" slot="start"
+            name="close-circle"></ion-icon>
+          <ion-icon *ngIf="training.status === true" slot="icon-only" color="success" slot="start"
+            name="checkmark-circle"></ion-icon>
           <ion-label (click)="openTrainingDetailModal(training, false)">
             <h2>{{training.name}}</h2>
             <h3>
@@ -181,19 +139,13 @@
               {{training.liga}} {{training.teamName}}
             </h3>
           </ion-label>
-          <ion-note
-            slot="end"
-            (click)="openTrainingDetailModal(training,false)"
-          >
+          <ion-note slot="end" (click)="openTrainingDetailModal(training,false)">
             <ion-badge color="primary">{{training.countAttendees}}</ion-badge>
           </ion-note>
         </ion-item>
 
         <ion-item-options side="end">
-          <ion-item-option
-            color="medium"
-            (click)="copyTraining(item, training)"
-          >
+          <ion-item-option color="medium" (click)="copyTraining(item, training)">
             <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
           </ion-item-option>
         </ion-item-options>
@@ -221,50 +173,23 @@
   <ion-list>
     <ion-grid>
       <ion-row>
-        <ion-col
-          size-lg="4"
-          size-md="6"
-          size-sm="6"
-          size="12"
-          *ngFor="let item of skeleton"
-        >
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
           <ion-card>
             <ion-card-header>
               <ion-card-subtitle>
-                <ion-skeleton-text
-                  animated
-                  style="width: 60%"
-                ></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
               </ion-card-subtitle>
               <ion-card-title>
-                <ion-skeleton-text
-                  animated
-                  style="width: 80%"
-                ></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
               </ion-card-title>
             </ion-card-header>
 
             <ion-card-content>
-              <ion-skeleton-text
-                animated
-                style="width: 80%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 60%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 80%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 60%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 80%"
-              ></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
             </ion-card-content>
           </ion-card>
         </ion-col>

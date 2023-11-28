@@ -6,9 +6,16 @@
     <ion-title>{{"common.championship" | translate}}</ion-title>
 
     <ion-buttons slot="end">
-      <!--   <ion-button (click)="openFilter($event)">
-        <ion-icon slot="icon-only" name="filter"></ion-icon>
-      </ion-button>-->
+      <ng-container *ngIf="teamList$ | async as teamList">
+        <ng-container *ngIf="teamList.length > 0">
+          <ion-button *ngIf="!filterValue" (click)="openFilter($event)">
+            <ion-icon slot="icon-only" name="filter"></ion-icon>
+          </ion-button>
+          <ion-button *ngIf="filterValue" (click)="openFilter($event)">
+            <ion-icon slot="icon-only" name="filter-circle"></ion-icon>
+          </ion-button>
+        </ng-container>
+      </ng-container>
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
