@@ -58,31 +58,32 @@ export class LoginPage implements OnInit {
         this.router.navigateByUrl("");
       });
     } catch (err) {
-      let message =
-        "Es ist ein allgemeiner Fehler aufgetreten: " +
-        err.code +
-        " / " +
+      let message = (await lastValueFrom(
+        this.translate.get("common.general__error_occurred")
+      )) + " " + err.code + " / " +
         err.message;
       console.error(err.code);
 
       if (err.code == "auth/user-not-found") {
         message = await lastValueFrom(
-          this.translate.get("error__no_acount_found")
+          this.translate.get("login.error__no_acount_found")
         );
       } else if (err.code == "auth/wrong-password") {
         message = await lastValueFrom(
-          this.translate.get("error__no_acount_found")
+          this.translate.get("login.error__no_acount_found")
         );
       } else if (err.code == "auth/network-request-failed") {
         message = await lastValueFrom(
-          this.translate.get("error__network_connection")
+          this.translate.get("login.error__network_connection")
         );
       } else {
         console.log("Error");
       }
 
       const alert = await this.alertCtrl.create({
-        header: "Fehler",
+        header: await lastValueFrom(
+          this.translate.get("login.mistake")
+        ),
         message: message,
         buttons: [
           {

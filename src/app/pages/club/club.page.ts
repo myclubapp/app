@@ -194,17 +194,17 @@ export class ClubPage implements OnInit {
     const alert = await this.alertCtrl.create({
       message: (
         (await lastValueFrom(
-          this.translate.get("want_to_add__user__to_club_string")
+          this.translate.get("club.want_to_add__user__to_club_string")
         )) ?? ""
       ).replace("{userName}", `${user.firstName} ${user.lastName}`),
       subHeader: "",
       buttons: [
         {
-          text: await lastValueFrom(this.translate.get("yes")),
+          text: await lastValueFrom(this.translate.get("common.yes")),
           role: "confirm",
         },
         {
-          text: await lastValueFrom(this.translate.get("cancel")),
+          text: await lastValueFrom(this.translate.get("common.cancel")),
           role: "cancel",
         },
       ],
@@ -216,7 +216,7 @@ export class ClubPage implements OnInit {
     if (role == "confirm") {
       await this.fbService.approveUserClubRequest(user.clubId, user.id);
       const toast = await this.toastCtrl.create({
-        message: await lastValueFrom(this.translate.get("success__user_added")),
+        message: await lastValueFrom(this.translate.get("club.success__user_added")),
         color: "primary",
         duration: 1500,
         position: "bottom",
@@ -232,20 +232,20 @@ export class ClubPage implements OnInit {
   async assignTeamAlert(user) {
     console.log(user);
     const alert = await this.alertCtrl.create({
-      header: await lastValueFrom(this.translate.get("select__team")),
+      header: await lastValueFrom(this.translate.get("club.select__team")),
       message: (
         (await lastValueFrom(
-          this.translate.get("want_to_add__user__to_team_string")
+          this.translate.get("club.want_to_add__user__to_team_string")
         )) ?? ""
       ).replace("{userName}", `${user.firstName} ${user.lastName}`),
       inputs: this.alertTeamSelection,
       buttons: [
         {
-          text: await lastValueFrom(this.translate.get("add")),
+          text: await lastValueFrom(this.translate.get("club.add")),
           role: "confirm",
         },
         {
-          text: await lastValueFrom(this.translate.get("cancel")),
+          text: await lastValueFrom(this.translate.get("common.cancel")),
           role: "cancel",
         },
       ],
@@ -262,7 +262,7 @@ export class ClubPage implements OnInit {
       const toast = await this.toastCtrl.create({
         message: (
           (await lastValueFrom(
-            this.translate.get("success__added_user_to_team_string")
+            this.translate.get("club.success__added_user_to_team_string")
           )) ?? ""
         )
           .replace("{userName}", `${user.firstName} ${user.lastName}`)
@@ -285,7 +285,7 @@ export class ClubPage implements OnInit {
 
   async toastActionSaved() {
     const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("success__saved")),
+      message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -296,7 +296,7 @@ export class ClubPage implements OnInit {
 
   async toastActionCanceled() {
     const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("action__canceled")),
+      message: await lastValueFrom(this.translate.get("club.action__canceled")),
       duration: 1500,
       position: "bottom",
       color: "danger",

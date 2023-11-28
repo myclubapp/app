@@ -52,8 +52,8 @@ export class ResetPasswordPage implements OnInit {
       // console.log('Form is not valid yet, current value:', authForm.value);
       this.alertCtrl
         .create({
-          message: await lastValueFrom(this.translate.get("error__invalid_form")),
-          buttons: [{ text: await lastValueFrom(this.translate.get("ok")), role: 'cancel' }]
+          message: await lastValueFrom(this.translate.get("common.error__invalid_form")),
+          buttons: [{ text: await lastValueFrom(this.translate.get("common.ok")), role: 'cancel' }]
         })
         .then((alert) => {
           alert.present();
@@ -72,7 +72,7 @@ export class ResetPasswordPage implements OnInit {
   async presentLoading () {
     const loading = await this.loadingCtrl.create({
       cssClass: 'my-custom-class',
-      message: await lastValueFrom(this.translate.get("please__wait"))+'...',
+      message: await lastValueFrom(this.translate.get("common.please__wait"))+'...',
       duration: 2000
     })
     await loading.present();
@@ -85,10 +85,10 @@ export class ResetPasswordPage implements OnInit {
     this.authService.resetPassword(credentials.email).then(
       async () => {
         const alert = await this.alertCtrl.create({
-          message: await lastValueFrom(this.translate.get("check__email_for_reset_link")),
+          message: await lastValueFrom(this.translate.get("reset-password.check__email_for_reset_link")),
           buttons: [
             {
-              text: await lastValueFrom(this.translate.get("ok")),
+              text: await lastValueFrom(this.translate.get("common.ok")),
               role: 'cancel',
               handler: () => {
                 this.router.navigateByUrl('login');
@@ -101,7 +101,7 @@ export class ResetPasswordPage implements OnInit {
       async (error) => {
         const errorAlert = await this.alertCtrl.create({
           message: error.message,
-          buttons: [{ text: await lastValueFrom(this.translate.get("ok")), role: 'cancel' }]
+          buttons: [{ text: await lastValueFrom(this.translate.get("common.ok")), role: 'cancel' }]
         })
         await errorAlert.present();
       }

@@ -56,11 +56,11 @@ export class SignupPage implements OnInit {
       this.alertCtrl
         .create({
           message: await lastValueFrom(
-            this.translate.get("error__invalid_form")
+            this.translate.get("common.error__invalid_form")
           ),
           buttons: [
             {
-              text: await lastValueFrom(this.translate.get("ok")),
+              text: await lastValueFrom(this.translate.get("common.ok")),
               role: "cancel",
             },
           ],
@@ -72,7 +72,7 @@ export class SignupPage implements OnInit {
       const loading = await this.loadingCtrl.create({
         cssClass: "my-custom-class",
         message:
-          (await lastValueFrom(this.translate.get("please__wait"))) + "...",
+          (await lastValueFrom(this.translate.get("common.please__wait"))) + "...",
         // duration: 10000,
       });
       await loading.present();
@@ -91,12 +91,12 @@ export class SignupPage implements OnInit {
         await this.authService.logout();
         await this.router.navigateByUrl("login");
         const alert = await this.alertCtrl.create({
-          header: "Account erstellt",
+          header: await lastValueFrom(this.translate.get("signup.account__created")),
           message:
-            "Dein Account wurde erfolgreich erstellt. Bitte bestätige deine E-Mail Adresse.",
+            "signup.account__created_description",
           buttons: [
             {
-              text: await lastValueFrom(this.translate.get("ok")),
+              text: await lastValueFrom(this.translate.get("common.ok")),
               role: "cancel",
             },
           ],
@@ -105,24 +105,24 @@ export class SignupPage implements OnInit {
         alert.present();
       } catch (err) {
         let message =
-          "Es ist ein allgemeiner Fehler aufgetreten: " +
+          (await lastValueFrom(this.translate.get("common.general__error_occurred"))) + ": " +
           err.code +
           " / " +
           err.message;
         console.error(err.code);
 
         if (err.code == "auth/email-already-in-use") {
-          message = "E-Mail already in use";
+          message =  (await lastValueFrom(this.translate.get("signup.email__already_in_use")));
         } else {
           console.log("Error");
         }
         await loading.dismiss();
         const alert = await this.alertCtrl.create({
-          header: "Fehler",
+          header: (await lastValueFrom(this.translate.get("common.mistake"))),
           message: message,
           buttons: [
             {
-              text: await lastValueFrom(this.translate.get("ok")),
+              text: await lastValueFrom(this.translate.get("common.ok")),
               role: "cancel",
             },
           ],

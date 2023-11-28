@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-title>{{club?.name}}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="close()">{{"close" | translate}}</ion-button>
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -17,11 +17,11 @@
   <ng-container *ngIf="club$ | async as club">
     <ion-list [inset]="true">
       <ion-item>
-        <ion-label> {{"no_of__members" | translate}}: </ion-label>
+        <ion-label> {{"common.no_of__members" | translate}}: </ion-label>
         <ion-label slot="end"> {{club['clubMembers'].length}} </ion-label>
       </ion-item>
       <ion-item>
-        <ion-label> {{"average__age" | translate}}: </ion-label>
+        <ion-label> {{"common.average__age" | translate}}: </ion-label>
         <ion-label slot="end"> {{club.averageAge}} </ion-label>
       </ion-item>
       <!--
@@ -31,7 +31,7 @@
 -->
     </ion-list>
     <ion-list [inset]="true" *ngIf="club['clubRequests'].length > 0">
-      <ion-list-header> {{"requests" | translate}} </ion-list-header>
+      <ion-list-header> {{"common.requests" | translate}} </ion-list-header>
       <ion-item *ngFor="let request of club['clubRequests']">
         <ion-avatar slot="start">
           <img src="{{request?.profilePicture}}" />
@@ -42,7 +42,7 @@
     </ion-list>
 
     <ion-list [inset]="true">
-      <ion-list-header> {{"members" | translate}} </ion-list-header>
+      <ion-list-header> {{"common.members" | translate}} </ion-list-header>
       <ion-item *ngFor="let member of club['clubMembers']">
         <ion-avatar slot="start">
           <img src="{{member?.profilePicture}}" />
@@ -52,7 +52,7 @@
     </ion-list>
 
     <ion-list [inset]="true">
-      <ion-list-header> {{"admins" | translate}} </ion-list-header>
+      <ion-list-header> {{"common.admins" | translate}} </ion-list-header>
       <ion-item *ngFor="let admin of club['clubAdmins']">
         <ion-avatar slot="start">
           <img src="{{admin?.profilePicture}}" />

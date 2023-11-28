@@ -375,7 +375,7 @@ export class ChampionshipPage implements OnInit {
   }
   async presentToast() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("changes__saved")),
+      message: await lastValueFrom(this.translate.get("common.changes__saved")),
       color: "primary",
       duration: 2000,
       position: "top",

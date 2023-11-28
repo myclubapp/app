@@ -19,7 +19,7 @@
     </ion-item>
 
     <ion-item>
-      <ion-input label="Name" label-placement="stacked" [(ngModel)]="training.name" value="{{training.name}}">
+      <ion-input [label]="'name' | translate" label-placement="stacked" [(ngModel)]="training.name" value="{{training.name}}">
       </ion-input>
     </ion-item>
     <ion-item>
