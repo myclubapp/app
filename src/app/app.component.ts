@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
 import {
   AlertController,
@@ -9,12 +9,14 @@ import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
 import { Router } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { Subscription, take } from "rxjs";
-import { onAuthStateChanged } from "@angular/fire/auth";
+import { Observable, Subscription, catchError, combineLatest, map, mergeMap, of, switchMap, take, tap } from "rxjs";
+import { User, onAuthStateChanged } from "@angular/fire/auth";
 import { UserProfileService } from "./services/firebase/user-profile.service";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
 import { Network, ConnectionStatus } from "@capacitor/network";
 import { TranslateService } from "@ngx-translate/core";
+import { Club } from "./models/club";
+import { Team } from "./models/team";
 
 @Component({
   selector: "app-root",
@@ -24,6 +26,13 @@ import { TranslateService } from "@ngx-translate/core";
 export class AppComponent implements OnInit {
   public email: string;
   public appVersion: string = packagejson.version;
+  public clubList$: Observable<Club[]>;
+  public teamList$: Observable<Team[]>;
+  public clubAdminList$: Observable<Club[]>;
+  public teamAdminList$: Observable<Team[]>;
+  user: User;
+
+
   userClubRefs: Subscription;
   userTeamRefs: Subscription;
 
@@ -41,29 +50,19 @@ export class AppComponent implements OnInit {
     private readonly profileService: UserProfileService,
     private readonly router: Router,
     public readonly menuCtrl: MenuController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.initializeApp();
-    // this.initializeFirebase();
 
-    onAuthStateChanged(this.authService.auth, (user) => {
-      if (user) {
-        // 0. LOGIN
-        this.email = user.email;
-        // this.menuDisabled = false;
-        // this.menuCtrl.enable(true,"menu");
-        // SplashScreen.hide();
-        // 1. EMAIL VERIFIED?
-        if (!user.emailVerified) {
-          this.presentAlertEmailNotVerified();
-        } else {
-          // 2. CLUB ASSIGNED
-          this.fbService
-            .getUserClubRefs(user)
-            .pipe(take(1))
-            .subscribe(async (clubData: any) => {
-              if (clubData.length === 0) {
-                this.fbService
+    //Filter for Events, Helfer, News
+    this.clubList$ = this.getClubList();
+    this.clubList$.subscribe({
+      next: () => {
+        console.log("Club Data received");
+        this.cdr.detectChanges();
+
+/*      this.fbService
                   .getUserClubRequestRefs(user)
                   .pipe(take(1))
                   .subscribe(async (clubRequestData: any) => {
@@ -75,38 +74,73 @@ export class AppComponent implements OnInit {
                       console.log("open request available > OPEN Profile");
                       this.presentClubRequstOpen();
                     }
-                  });
-              } else {
-                // 3. TEAM ASSIGNED
+                    */
+
+
+
+      },
+      error: (err) => console.error("Club Error in subscription:", err),
+      complete: () => console.log("Club Observable completed"),
+    });
+    //Filter for Trainings
+    this.teamList$ = this.getTeamList();
+    this.teamList$.subscribe({
+      next: () => {
+        console.log("Team Data received");
+        this.cdr.detectChanges();
+
+/*
+ // 3. TEAM ASSIGNED
                 this.fbService
                   .getUserTeamRefs(user)
                   .pipe(take(1))
                   .subscribe(async (teamData: any) => {
-                    /*this.userTeamRefs = this.fbService
-                  .getUserTeamRefs(user)
-                  .subscribe(async (teamData: any) => { */
                     // console.log(data);
                     if (teamData.length === 0) {
                       console.log("NO TEAM assigned, start onboarding flow");
                       await this.presentAlertNoTeam();
                     }
                   });
-              }
-            });
-        }
+*/
 
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        // const uid = user.uid;
-        // ...
+      },
+      error: (err) => console.error("Team Error in subscription:", err),
+      complete: () => console.log("Team Observable completed"),
+    });
+
+    //Create Events, Helfer, News
+    this.clubAdminList$ = this.getClubAdminList();
+    this.clubAdminList$.subscribe({
+      next: () => {
+        console.log("Club Admin Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Club Admin Error in subscription:", err),
+      complete: () => console.log("Club Admin Observable completed"),
+    });
+    // Create Trainings
+    this.teamAdminList$ = this.getTeamAdminList();
+    this.teamAdminList$.subscribe({
+      next: () => {
+        console.log("Team Admin Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Team Admin Error in subscription:", err),
+      complete: () => console.log("Team Admin Observable completed"),
+    });
+
+    onAuthStateChanged(this.authService.auth, (user) => {
+      if (user) {
+        // 0. LOGIN
+        this.email = user.email;
+        this.user = user;
+        if (!user.emailVerified) {
+          this.presentAlertEmailNotVerified();
+        } 
       } else {
-        SplashScreen.hide();
         console.log("User is signed out");
-        // this.menuDisabled = true;
         this.menuCtrl.enable(false, "menu");
         this.email = "";
-        // User is signed out
-        // ...
       }
     });
   }
@@ -174,6 +208,123 @@ export class AppComponent implements OnInit {
     });
   }
 
+  getClubList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.fbService.getUserClubRefs(user);
+      }),
+      tap((clubs) => console.log("Clubs:", clubs)),
+      mergeMap((clubs) => {
+        if (clubs.length === 0) return of([]);
+        return combineLatest(
+          clubs.map((club) =>
+            this.fbService.getClubRef(club.id).pipe(
+              catchError(() => of(null)) // In case of error, return null for this club
+            )
+          )
+        );
+      }),
+      map((clubsWithDetails) => clubsWithDetails.filter(club => club !== null)), // Filter out null (error cases)
+      tap((results) => console.log("Final results with all clubs:", results)),
+      catchError((err) => {
+        console.error("Error in getClubList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+  getClubAdminList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.fbService.getUserClubAdminRefs(user);
+      }),
+      tap((clubs) => console.log("Admin Clubs:", clubs)),
+      mergeMap((clubs) => {
+        if (clubs.length === 0) return of([]);
+        return combineLatest(
+          clubs.map((club) =>
+            this.fbService.getClubRef(club.id).pipe(
+              catchError(() => of(null)) // In case of error, return null for this club
+            )
+          )
+        );
+      }),
+      map((clubsWithDetails) => clubsWithDetails.filter(club => club !== null)), // Filter out null (error cases)
+      tap((results) => console.log("Final results with all clubs:", results)),
+      catchError((err) => {
+        console.error("Error in getClubList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+  getTeamList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.fbService.getUserTeamRefs(user);
+      }),
+      tap((teams) => console.log("Teams:", teams)),
+      mergeMap((teams) => {
+        if (teams.length === 0) return of([]);
+        return combineLatest(
+          teams.map((team) =>
+            this.fbService.getTeamRef(team.id).pipe(
+              catchError(() => of(null)) // In case of error, return null for this team
+            )
+          )
+        );
+      }),
+      map((teamsWithDetails) => teamsWithDetails.filter(team => team !== null)), // Filter out null (error cases)
+      tap((results) => console.log("Final results with all teams:", results)),
+      catchError((err) => {
+        console.error("Error in getTeamList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+  getTeamAdminList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.fbService.getUserTeamAdminRefs(user);
+      }),
+      tap((teams) => console.log("Teams:", teams)),
+      mergeMap((teams) => {
+        if (teams.length === 0) return of([]);
+        return combineLatest(
+          teams.map((team) =>
+            this.fbService.getTeamRef(team.id).pipe(
+              catchError(() => of(null)) // In case of error, return null for this team
+            )
+          )
+        );
+      }),
+      map((teamsWithDetails) => teamsWithDetails.filter(team => team !== null)), // Filter out null (error cases)
+      tap((results) => console.log("Final results with all teams:", results)),
+      catchError((err) => {
+        console.error("Error in getTeamList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+
   async requestSubscription() {
     if (!this.swPush.isEnabled) {
       console.log("Notification is not enabled.");
@@ -204,31 +355,31 @@ export class AppComponent implements OnInit {
     alert.present();
   }
 
-  initializeFirebase() {
-    // https://cloud.google.com/firestore/docs/manage-data/enable-offline
-    // The default cache size threshold is 40 MB. Configure "cacheSizeBytes"
-    // for a different threshold (minimum 1 MB) or set to "CACHE_SIZE_UNLIMITED"
-    // to disable clean-up.
-    /*
-    firebase.firestore().settings({
-      cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
-    });
+  // initializeFirebase() {
+  // https://cloud.google.com/firestore/docs/manage-data/enable-offline
+  // The default cache size threshold is 40 MB. Configure "cacheSizeBytes"
+  // for a different threshold (minimum 1 MB) or set to "CACHE_SIZE_UNLIMITED"
+  // to disable clean-up.
+  /*
+  firebase.firestore().settings({
+    cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+  });
 
-    firebase.firestore().enablePersistence()
-      .catch(function (err) {
-        if (err.code == 'failed-precondition') {
-          // Multiple tabs open, persistence can only be enabled
-          // in one tab at a a time.
-          // ...
-        } else if (err.code == 'unimplemented') {
-          // The current browser does not support all of the
-          // features required to enable persistence
-          // ...
-        }
-      });
-    // Subsequent queries will use persistence, if it was enabled successfully
-    */
-  }
+  firebase.firestore().enablePersistence()
+    .catch(function (err) {
+      if (err.code == 'failed-precondition') {
+        // Multiple tabs open, persistence can only be enabled
+        // in one tab at a a time.
+        // ...
+      } else if (err.code == 'unimplemented') {
+        // The current browser does not support all of the
+        // features required to enable persistence
+        // ...
+      }
+    });
+  // Subsequent queries will use persistence, if it was enabled successfully
+  */
+  //}
 
   async showSplashScreen() {
     // await SplashScreen.hide();

@@ -183,44 +183,6 @@ export class NewsPage implements OnInit {
         this.subscription.unsubscribe();
     }
   }
-/*
-  getGameReports() {
-    let reportListNew = [];
-    this.gameReportSubscription = this.authService
-      .getUser$()
-      .pipe(
-        switchMap((user) => {
-          return this.fbService.getUserTeamRefs(user).pipe(
-            map((result: any) => {
-              return result.map((team) => {
-                // console.log(`Read News for Team > ${team.id}`);
-                return team.id;
-              });
-            })
-          );
-        }),
-        switchMap((allTeamIds) => {
-          return combineLatest(
-            allTeamIds.map((teamId) => {
-              return this.newsService.getGameReports(teamId);
-            })
-          );
-        }),
-        map(([allGameReports]) => {
-          return allGameReports;
-        })
-      )
-      .subscribe((data: any) => {
-        // console.log(data);
-        reportListNew = data;
-        this.newsList = [...new Set(reportListNew.concat(...this.newsList))];
-        this.newsList = this.newsList.sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        // this.newsList = [...new Set(reportListNew.concat(...this.newsList))];
-      });
-  }
- */
   async openModal(news: News) {
     // const presentingElement = await this.modalCtrl.getTop();
 
@@ -276,7 +238,7 @@ export class NewsPage implements OnInit {
   }
 
   async openFilter(ev: Event){
-    let filterList = [];
+    /*let filterList = [];
 
     const clubs$ = this.authService.getUser$().pipe(
       take(1),
@@ -363,7 +325,7 @@ export class NewsPage implements OnInit {
     },
     error: err => console.error('Error in the observable chain:', err)
   });
-
+*/
 /*
   this.subscriptionFilter = forkJoin([teams$, clubs$]).pipe(
     map(([teams, clubs]) => [...teams, ...clubs]),
