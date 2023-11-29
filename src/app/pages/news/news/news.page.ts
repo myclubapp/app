@@ -296,8 +296,8 @@ export class NewsPage implements OnInit {
       }
     
       this.alertCtrl.create({
-        header: await lastValueFrom(this.translate.get("filter__news")),
-        message: await lastValueFrom(this.translate.get("filter__by_club_team")),
+        header: await lastValueFrom(this.translate.get("news.filter__news")),
+        message: await lastValueFrom(this.translate.get("news.filter__by_club_team")),
        // subHeader: 'Nach Verein oder Teams filtern.',
         inputs: alertInputs,
         buttons: [

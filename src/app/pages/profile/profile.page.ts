@@ -207,7 +207,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   async takePicture() {
 
     const loading = await this.loadingController.create({
-      message: await lastValueFrom(this.translate.get('profile_pic__uploaded')),
+      message: await lastValueFrom(this.translate.get('profile.profile_pic__uploaded')),
       showBackdrop: true,
       backdropDismiss: false,
       translucent: true,
@@ -250,10 +250,10 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
   async deleteProfile() {
     const alert = await this.alertController.create({
-      message: await lastValueFrom(this.translate.get("delete_profile__confirm")),
+      message: await lastValueFrom(this.translate.get("profile.delete_profile__confirm")),
       buttons: [
         {
-          text: await lastValueFrom(this.translate.get("yes")),
+          text: await lastValueFrom(this.translate.get("common.yes")),
           handler: async () => {
             await this.authService.deleteProfile().catch((error) => {
               this.presentErrorDeleteProfile();
@@ -263,7 +263,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
           },
         },
         {
-          text: await lastValueFrom(this.translate.get("no")),
+          text: await lastValueFrom(this.translate.get("common.no")),
         },
       ],
     });
@@ -272,7 +272,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("request_success__deleted")),
+      message: await lastValueFrom(this.translate.get("profile.request_success__deleted")),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -282,7 +282,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
   async presentToastTakePicture() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("success__profile_pic_changed")),
+      message: await lastValueFrom(this.translate.get("profile.success__profile_pic_changed")),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -330,18 +330,18 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async alertPushNotSupported() {
     const alert = await this.alertController.create({
-      header: await lastValueFrom(this.translate.get("error__push_notification_not_available")),
+      header: await lastValueFrom(this.translate.get("profile.error__push_notification_not_available")),
       message:
-        await lastValueFrom(this.translate.get("error_device_not_support_push_notifications")),
-      buttons: [{ text: await lastValueFrom(this.translate.get("ok")) }],
+        await lastValueFrom(this.translate.get("profile.error_device_not_support_push_notifications")),
+      buttons: [{ text: await lastValueFrom(this.translate.get("common.ok")) }],
     });
     alert.present();
   }
 
   async errorPushMessageEnable(error) {
     const alert = await this.alertController.create({
-      header: await lastValueFrom(this.translate.get("error_push_service_not_available")),
-      message: await lastValueFrom(this.translate.get("error_text")) + error,
+      header: await lastValueFrom(this.translate.get("profile.error_push_service_not_available")),
+      message: await lastValueFrom(this.translate.get("profile.error_text")) + error,
       buttons: [{ text: "OK" }],
     });
     alert.present();
@@ -349,17 +349,17 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async alertAskForPush() {
     const alert = await this.alertController.create({
-      header: await lastValueFrom(this.translate.get("push__notifications")),
+      header: await lastValueFrom(this.translate.get("profile.push__notifications")),
       message:
-        await lastValueFrom(this.translate.get("push_notification__permission_desc")),
+        await lastValueFrom(this.translate.get("profile.push_notification__permission_desc")),
       buttons: [
         {
-          text:  await lastValueFrom(this.translate.get("yes")),
+          text:  await lastValueFrom(this.translate.get("common.yes")),
           handler: () => {
             this.subscribeToNotifications();
           },
         },
-        { text: await lastValueFrom(this.translate.get("no")), },
+        { text: await lastValueFrom(this.translate.get("common.no")), },
       ],
     });
     alert.present();
@@ -386,7 +386,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
         this.toastActionSaved();
       } else {
         console.log("error push token register");
-        this.errorPushMessageEnable(await lastValueFrom(this.translate.get("error_push_token")));
+        this.errorPushMessageEnable(await lastValueFrom(this.translate.get("profile.error_push_token")));
       }
     } catch (err) {
       console.log(err);
@@ -395,7 +395,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
   async presentDeleteProfile() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("success__profile_deleted")),
+      message: await lastValueFrom(this.translate.get("profile.success__profile_deleted")),
       duration: 1500,
       position: "bottom",
       color: "danger",
@@ -406,7 +406,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async presentErrorDeleteProfile() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("error__while_deleting_msg")),
+      message: await lastValueFrom(this.translate.get("profile.error__while_deleting_msg")),
       duration: 1500,
       position: "bottom",
       color: "danger",
@@ -417,7 +417,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async toastActionSaved() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("success__saved")),
+      message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
       position: "bottom",
       color: "success",

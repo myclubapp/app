@@ -19,12 +19,12 @@
                 <ion-item routerDirection="root" [routerLink]="['/t/news']" lines="none" detail="true"
                   routerLinkActive="selected">
                   <ion-icon slot="start" name="newspaper-outline"></ion-icon>
-                  <ion-label>{{"news" | translate}}</ion-label>
+                  <ion-label>{{"common.news" | translate}}</ion-label>
                 </ion-item>
                 <ion-item routerDirection="root" [routerLink]="['/t/training']" lines="none" detail="true"
                   routerLinkActive="selected">
                   <ion-icon slot="start" name="barbell-outline"></ion-icon>
-                  <ion-label>{{"training" | translate}}</ion-label>
+                  <ion-label>{{"common.training" | translate}}</ion-label>
                 </ion-item>
                 <ion-item routerDirection="root" [routerLink]="['/t/championship']" lines="none" detail="true"
                   routerLinkActive="selected">
@@ -34,23 +34,23 @@
                 <ion-item routerDirection="root" [routerLink]="['/t/events']" lines="none" detail="true"
                   routerLinkActive="selected">
                   <ion-icon slot="start" name="calendar-outline"></ion-icon>
-                  <ion-label>{{"events" | translate}}</ion-label>
+                  <ion-label>{{"common.events" | translate}}</ion-label>
                 </ion-item>
                 <ion-item routerDirection="root" [routerLink]="['/t/helfer']" lines="none" detail="true"
                   routerLinkActive="selected">
                   <ion-icon slot="start" name="help-buoy-outline"></ion-icon>
-                  <ion-label>{{"helper" | translate}}</ion-label>
+                  <ion-label>{{"common.helper" | translate}}</ion-label>
                 </ion-item>
 
                 <ion-item routerDirection="root" [routerLink]="['/profile']" lines="none" detail="true"
                   routerLinkActive="selected">
                   <ion-icon slot="start" name="person-circle-outline"></ion-icon>
-                  <ion-label>{{"profile" | translate}}</ion-label>
+                  <ion-label>{{"common.profile" | translate}}</ion-label>
                 </ion-item>
                 <ion-item routerDirection="root" [routerLink]="['/info']" lines="none" detail="true"
                   routerLinkActive="selected">
                   <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-                  <ion-label>{{"info__and__help" | translate}}</ion-label>
+                  <ion-label>{{"side_bar.info__and__help" | translate}}</ion-label>
                 </ion-item>
               </ion-menu-toggle>
             </ion-list>
@@ -58,18 +58,18 @@
           <ion-accordion value="administration">
             <ion-item slot="header">
               <ion-icon name="home" slot="start" color="primary"></ion-icon>
-              <ion-label>{{"administration" | translate}}</ion-label>
+              <ion-label>{{"side_bar.administration" | translate}}</ion-label>
             </ion-item>
 
             <ion-list slot="content">
               <ion-menu-toggle auto-hide="false">
                 <ion-item routerDirection="root" [routerLink]="['/club-list']" lines="none" detail="true"
                   routerLinkActive="selected">
-                  <ion-label>{{"my__club" | translate}}</ion-label>
+                  <ion-label>{{"side_bar.my__club" | translate}}</ion-label>
                 </ion-item>
                 <ion-item routerDirection="root" [routerLink]="['/team-list']" lines="none" detail="true"
                   routerLinkActive="selected">
-                  <ion-label>{{"my__team" | translate}}</ion-label>
+                  <ion-label>{{"side_bar.my__team" | translate}}</ion-label>
                 </ion-item>
               </ion-menu-toggle>
             </ion-list>
@@ -79,11 +79,11 @@
         <ion-list>
           <ion-item (click)="logout()">
             <ion-icon slot="start" name="exit-outline" color="danger"></ion-icon>
-            <ion-label> {{"logout" | translate}}</ion-label>
-            <ion-button (click)="logout()">{{"logout" | translate}}</ion-button>
+            <ion-label> {{"common.logout" | translate}}</ion-label>
+            <ion-button (click)="logout()">{{"common.logout" | translate}}</ion-button>
           </ion-item>
         </ion-list>
-        <ion-note> {{"version" | translate}} {{ appVersion }} </ion-note>
+        <ion-note> {{"side_bar.version" | translate}} {{ appVersion }} </ion-note>
         <!--
 
         <ion-list id="inbox-list">

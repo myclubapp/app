@@ -47,7 +47,8 @@
         "want_to_add__user__to_team_string": "Möchtest du {userName} einem Team hinzufügen?",
         "add": "hinzufügen",
         "success__added_user_to_team_string": "{userName} wurde erfolgreich {length} Team(s) hinzugefügt",
-        "action__canceled": "Action was canceled"
+        "action__canceled": "Action was canceled",
+        "trainaing__presence": "Trainingspräsenz"
     },
     "club-list": {
         "my__clubs": "Meine Clubs"
@@ -59,14 +60,14 @@
     "events": {
         "event": "Veranstaltungen",
         "upcomming__events": "Kommende Veranstaltungen",
-        "past__events": "Vergangene Veranstaltungen",
+        "past__events": "Vergangene Veranstaltungen"
     },
     "follow": {
-        "follow": "folgen",
+        "follow": "folgen"
     },
     "helfer": {
         "upcomming__helper_event": "Kommende Helferevents",
-        "past__helper_events": "Vergangene Helferevents",
+        "past__helper_events": "Vergangene Helferevents"
     },
     "helfer-add": {
         "new__helper_event": "Neuer Helferevent"
@@ -79,7 +80,85 @@
         "info_description": "liitu consulting gmbh, schaffhausen, ch",
         "app__version": "App Version"
     },
-    "news": {},
+    "news": {
+        "filter__news": "News filtern",
+        "filter__by_club_team": "Nach Verein oder Teams filtern."
+    },
+    "news-detail": {},
+    "not-found": {
+        "not_found": "Nicht gefunden"
+    },
+    "onboarding": {
+        "join__club": "Club beitreten",
+        "search_by_club__pholder": "Nach Club suchen",
+        "do_you_want_to_join__club": "Möchtest du dem Verein beitreten?",
+        "success__request_sent": "Anfrage erfolgreich gesendet",
+        "warning__action_canceled": "Aktion wurde abgebrochen",
+        "success__application_sent": "Antrag erfolgreich versendet",
+        "success__application_sent_desc": "Dein Antrag wurde erfolgreich an den Club gesendet. Sobald dein Antrag genehmigt wurde, informieren wir dich wieder."
+    },
+    "onboarding-team": {
+        "onboarding__team": "Onboarding-Team"
+    },
+    "profile": {
+        "email": "E-mail",
+        "generally": "Allgemein",
+        "open__club_inquiry": "Offene Club-Anfragen",
+        "open__team_request": "Offene Team-Anfragens",
+        "notifications": "Benachrichtigungen",
+        "push__message": "Push-Nachrichten",
+        "email__messages_report": "E-Mail-Nachrichten Reporting",
+        "push__notifications": "Push Notifications",
+        "push__notifications_devices": "Registrierte Push Geräte",
+        "current__device": "aktuelles Gerät",
+        "push__registeration": "Push Registrierung",
+        "delete__profile": "Danger Zone: Profil löschen",
+        "profile_pic__uploaded": "Profilbild wird hochgeladen",
+        "delete_profile__confirm": "Möchtest du das Profil wirklich löschen?",
+        "request_success__deleted": "Anfrage erfolgreich gelöscht",
+        "success__profile_pic_changed": "Profilbild erfolgreich geändert",
+        "error__push_notification_not_available": "Push-Benachrichtugung nicht verfügbar",
+        "error_device_not_support_push_notifications": "Leider unterstützt ihr Gerät/Browser keine Push-Benachrichtugen.",
+        "error_push_service_not_available": "Push-Benachrichtugung nicht verfügbar",
+        "error_text": "Leider ist ein Fehler aufgetreten:",
+        "push_notification__permission_desc": "Sollen Push-Benachrichtigungen für dieses Gerät aktiviert werden?",
+        "error_push_token": "Error push token register",
+        "success__profile_deleted": "Profil erfolgreich gelöscht",
+        "error__while_deleting_msg": "Fehler beim löschen des Profils"
+    },
+    "tabs": {},
+    "team": {},
+    "team-list": {
+        "my__teams": "Meine Teams"
+    },
+    "training-create": {
+        "new__training": "Neues Training",
+        "team": "Team",
+        "start__training": "Beginne zu trainieren",
+        "end__training": "Beenden Sie das Training",
+        "series__settings": "Serien Einstellungen",
+        "daily": "Täglich",
+        "weekly": "Wöchentlich",
+        "repeat": "Wiederholen",
+        "first__training": "Erstes Training",
+        "last__training": "Letztes Training"
+    },
+    "traning-detail": {},
+    "training": {
+        "upcomming__training_courses": "Kommende Schulungen",
+        "upcomming__training": "Kommende Trainings",
+        "no_training__found": "keine Trainings gefunden",
+        "past__training": "Vergangene Trainings",
+        "news__filter": "News filtern",
+        "news__filer__desc": "Nach Verein oder Teams filtern."
+    },
+    "side_bar": {
+        "administration": "Administration",
+        "info__and__help": "Infos & Hilfe",
+        "my__club": "Mein Club",
+        "my__team": "Mein Team",
+        "version": "Version"
+    },
     "common": {
         "or": "Oder",
         "email__address": "E-Mail Adresse",
@@ -125,71 +204,17 @@
         "no_event__found": "keine Veranstaltungen gefunden",
         "delete": "Delete",
         "helper": "Helfer",
-        "news": "News"
-    },
-    "training": "Training",
-    "events": "Events",
-    "profile": "Profil",
-    "info__and__help": "Infos & Hilfe",
-    "administration": "Administration",
-    "my__club": "Mein Club",
-    "my__team": "Mein Team",
-    "logout_txt": "Logout",
-    "version": "Version",
-    "filter__news": "News filtern",
-    "filter__by_club_team": "Nach Verein oder Teams filtern.",
-    "not_found": "Nicht gefunden",
-    "join__club": "Club beitreten",
-    "search_by_club__pholder": "Nach Club suchen",
-    "do_you_want_to_join__club": "Möchtest du dem Verein beitreten?",
-    "yes": "Ja",
-    "no": "Nein",
-    "success__request_sent": "Anfrage erfolgreich gesendet",
-    "warning__action_canceled": "Aktion wurde abgebrochen",
-    "success__application_sent": "Antrag erfolgreich versendet",
-    "success__application_sent_desc": "Dein Antrag wurde erfolgreich an den Club gesendet. Sobald dein Antrag genehmigt wurde, informieren wir dich wieder.",
-    "onboarding__team": "Onboarding-Team",
-    "generally": "Allgemein",
-    "email": "E-mail",
-    "open__club_inquiry": "Offene Club-Anfragen",
-    "open__team_request": "Offene Team-Anfragens",
-    "notifications": "Benachrichtigungen",
-    "push__message": "Push-Nachrichten",
-    "email__messages": "E-Mail-Nachrichten",
-    "email__messages_report": "E-Mail-Nachrichten Reporting",
-    "push__notifications": "Push Notifications",
-    "push__notifications_devices": "Registrierte Push Geräte",
-    "current__device": "aktuelles Gerät",
-    "push__registeration": "Push Registrierung",
-    "delete__profile": "Danger Zone: Profil löschen",
-    "loading": "Wird geladen",
-    "profile_pic__uploaded": "Profilbild wird hochgeladen",
-    "delete_profile__confirm": "Möchtest du das Profil wirklich löschen?",
-    "request_success__deleted": "Anfrage erfolgreich gelöscht",
-    "success__profile_pic_changed": "Profilbild erfolgreich geändert",
-    "error__push_notification_not_available": "Push-Benachrichtugung nicht verfügbar",
-    "error_device_not_support_push_notifications": "Leider unterstützt ihr Gerät/Browser keine Push-Benachrichtugen.",
-    "error_push_service_not_available": "Push-Benachrichtugung nicht verfügbar",
-    "error_text": "Leider ist ein Fehler aufgetreten:",
-    "push_notification__permission_desc": "Sollen Push-Benachrichtigungen für dieses Gerät aktiviert werden?",
-    "error_push_token": "Error push token register",
-    "success__profile_deleted": "Profil erfolgreich gelöscht",
-    "error__while_deleting_msg": "Fehler beim löschen des Profils",
-    "edit": "bearbeiten",
-    "trainaing__presence": "Trainingspräsenz",
-    "my__teams": "Meine Teams",
-    "new__training": "Neues Training",
-    "start__training": "Beginne zu trainieren",
-    "end__training": "Beenden Sie das Training",
-    "series__settings": "Serien Einstellungen",
-    "daily": "Täglich",
-    "weekly": "Wöchentlich",
-    "first__training": "Erstes Training",
-    "last__training": "Letztes Training",
-    "upcomming__training_courses": "Kommende Schulungen",
-    "upcomming__training": "Kommende Trainings",
-    "no_training__found": "keine Trainings gefunden",
-    "past__training": "Vergangene Trainings",
-    "event__details": "Ereignisdetails",
-    "no__answer": "Keine Antwort"
+        "news": "News",
+        "yes": "Ja",
+        "no": "Nein",
+        "logout": "Logout",
+        "profile": "Profil",
+        "loading": "Wird geladen",
+        "training": "Training",
+        "events": "Events",
+        "edit": "bearbeiten",
+        "all": "Alle",
+        "no__answer": "Keine Antwort",
+        "event__details": "Ereignisdetails"
+    }
 }

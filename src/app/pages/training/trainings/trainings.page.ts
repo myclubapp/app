@@ -364,7 +364,7 @@ export class TrainingsPage implements OnInit {
   async deleteTraining(slidingItem: IonItemSliding, training) {
     slidingItem.closeOpened();
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("delete")),
+      message: await lastValueFrom(this.translate.get("common.delete")),
       color: "primary",
       duration: 2000,
       position: "top",
@@ -406,7 +406,7 @@ export class TrainingsPage implements OnInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("success__saved")),
+      message: await lastValueFrom(this.translate.get("common.success__saved")),
       color: "primary",
       duration: 2000,
       position: "top",
@@ -427,13 +427,13 @@ export class TrainingsPage implements OnInit {
     }
 
     let alert = await this.alertCtrl.create({
-      header: 'News filtern',
-      message: 'Nach Verein oder Teams filtern.',
+      header:  await lastValueFrom(this.translate.get("training.news__filter")),
+      message:  await lastValueFrom(this.translate.get("training.news__filer__desc")),
       // subHeader: 'Nach Verein oder Teams filtern.',
       inputs: alertInputs,
       buttons: [
         {
-          text: "OK",
+          text: await lastValueFrom(this.translate.get("common.ok")),
           role: "confirm",
           handler: (value) => {
             console.log(value)
@@ -453,7 +453,7 @@ export class TrainingsPage implements OnInit {
           }
         },
         {
-          text: "abbrechen",
+          text: await lastValueFrom(this.translate.get("common.cancel")),
           role: "cancel",
           handler: (value) => {
             console.log(value);

@@ -117,11 +117,11 @@ export class OnboardingPage implements OnInit {
   async joinClub(club: Club) {
     console.log(club);
     const alert = await this.alertCtrl.create({
-      message: await lastValueFrom(this.translate.get("do_you_want_to_join__club")) + ` ${club.name}`,
-      header: await lastValueFrom(this.translate.get("join__club")),
+      message: await lastValueFrom(this.translate.get("onboarding.do_you_want_to_join__club")) + ` ${club.name}`,
+      header: await lastValueFrom(this.translate.get("onboarding.join__club")),
       buttons: [
         {
-          text: await lastValueFrom(this.translate.get("yes")),
+          text: await lastValueFrom(this.translate.get("common.yes")),
           handler: async (data: any) => {
             await this.fbService.setClubRequest(club.id, this.user.uid);
             await this.presentRequestToast();
@@ -131,7 +131,7 @@ export class OnboardingPage implements OnInit {
           },
         },
         {
-          text: await lastValueFrom(this.translate.get("no")),
+          text: await lastValueFrom(this.translate.get("common.no")),
           role: "cancel",
           handler: () => {
             console.log("nein");
@@ -149,7 +149,7 @@ export class OnboardingPage implements OnInit {
 
   async presentRequestToast() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("success__request_sent")),
+      message: await lastValueFrom(this.translate.get("onboarding.success__request_sent")),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -159,7 +159,7 @@ export class OnboardingPage implements OnInit {
   }
   async presentCancelToast() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("warning__action_canceled")),
+      message: await lastValueFrom(this.translate.get("onboarding.warning__action_canceled")),
       duration: 1500,
       position: "bottom",
       color: "danger",
@@ -171,12 +171,12 @@ export class OnboardingPage implements OnInit {
   async presentRequestSentAlert(clubName: string) {
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
-      header: await lastValueFrom(this.translate.get("success__application_sent")),
+      header: await lastValueFrom(this.translate.get("onboarding.success__application_sent")),
       subHeader: "",
-      message: await lastValueFrom(this.translate.get("success__application_sent_desc")),
+      message: await lastValueFrom(this.translate.get("onboarding.success__application_sent_desc")),
       buttons: [
         {
-          text: "Logout",
+          text: await lastValueFrom(this.translate.get("common.logout")),
           handler: async () => {
             await this.authService.logout();
             this.router.navigateByUrl("login");

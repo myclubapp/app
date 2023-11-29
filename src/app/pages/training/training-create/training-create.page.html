@@ -1,11 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="secondary">
-      <ion-button (click)="close()">{{"close" | translate}}</ion-button>
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
     </ion-buttons>
-    <ion-title>{{"new__training" | translate}}</ion-title>
+    <ion-title>{{"training-create.new__training" | translate}}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="createTraining()">{{"create" | translate}}</ion-button>
+      <ion-button (click)="createTraining()">{{"common.create" | translate}}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -13,19 +13,19 @@
   <ion-list>
 
     <ion-item>
-      <ion-select label="Team" label-placement="stacked" [(ngModel)]="training.teamId" value="{{training.teamId}}" >
+      <ion-select [label]="'training-create.team' | translate" label-placement="stacked" [(ngModel)]="training.teamId" value="{{training.teamId}}" >
         <ion-select-option *ngFor="let team of teamList" value="{{team.id}}">{{team.name}}</ion-select-option>
       </ion-select>
     </ion-item>
 
     <ion-item>
-      <ion-input [label]="'name' | translate" label-placement="stacked" [(ngModel)]="training.name" value="{{training.name}}">
+      <ion-input [label]="'common.name' | translate" label-placement="stacked" [(ngModel)]="training.name" value="{{training.name}}">
       </ion-input>
     </ion-item>
     <ion-item>
      
       <ion-textarea
-      [label]='"description" | translate' label-placement="stacked"
+      [label]='"common.description" | translate' label-placement="stacked"
         value="{{training.description}}" [(ngModel)]="training.description"
       >
       </ion-textarea>
@@ -33,27 +33,27 @@
     <ion-item>
     
       <ion-input
-      [label]='"street__house_number" | translate' label-placement="stacked"
+      [label]='"common.street__house_number" | translate' label-placement="stacked"
         value="{{training.streetAndNumber}}" [(ngModel)]="training.streetAndNumber"
       >
       </ion-input>
     </ion-item>
     <ion-item>
       <ion-input
-      [label]='"postal__code" | translate' label-placement="stacked"
+      [label]='"common.postal__code" | translate' label-placement="stacked"
         value="{{training.postalCode}}" [(ngModel)]="training.postalCode"
       >
       </ion-input>
     </ion-item>
     <ion-item>
       
-      <ion-input [label]='"locality" | translate' label-placement="stacked" value="{{training.city}}" [(ngModel)]="training.city">
+      <ion-input [label]='"common.locality" | translate' label-placement="stacked" value="{{training.city}}" [(ngModel)]="training.city">
       </ion-input>
     </ion-item>
 
 
     <ion-item id="timeFromItem">
-      <ion-label position=""> {{"start__training" | translate}}: </ion-label>
+      <ion-label position=""> {{"training-create.start__training" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -64,7 +64,7 @@
     </ion-item>
 
     <ion-item id="timeToItem">
-      <ion-label position=""> {{"end__training" | translate}}: </ion-label>
+      <ion-label position=""> {{"training-create.end__training" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -74,14 +74,14 @@
       </ion-modal>
     </ion-item>
 
-    <ion-list-header>{{"series__settings" | translate}}</ion-list-header>
+    <ion-list-header>{{"training-create.series__settings" | translate}}</ion-list-header>
     <ion-item>
 
-      <ion-select label="Wiederholen" label-placement="stacked" value="{{training.repeatFrequency}}" [(ngModel)]="training.repeatFrequency" >
-        <ion-select-option value="D">{{"daily" | translate}}</ion-select-option>
-        <ion-select-option value="W">{{"weekly" | translate}}</ion-select-option>
+      <ion-select [label]="'training-create.repeat' | translate" label-placement="stacked" value="{{training.repeatFrequency}}" [(ngModel)]="training.repeatFrequency" >
+        <ion-select-option value="D">{{"training-create.daily" | translate}}</ion-select-option>
+        <ion-select-option value="W">{{"training-create.weekly" | translate}}</ion-select-option>
       </ion-select>
-      <ion-select label="Alle" label-placement="stacked" value="{{training.repeatAmount}}" [(ngModel)]="training.repeatAmount" >
+      <ion-select [label]="'common.all' | translate" label-placement="stacked" value="{{training.repeatAmount}}" [(ngModel)]="training.repeatAmount" >
         <ion-select-option value="1">1</ion-select-option>
         <ion-select-option value="2">2</ion-select-option>
         <ion-select-option value="3">3</ion-select-option>
@@ -89,7 +89,7 @@
       </ion-select> 
     </ion-item>
     <ion-item id="startDateItem">
-      <ion-label position="default"> {{"first__training" | translate}}: </ion-label>
+      <ion-label position="default"> {{"training-create.first__training" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="startDate"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -101,7 +101,7 @@
     </ion-item>
 
     <ion-item id="endDateItem">
-      <ion-label position="default"> {{"last__training" | translate}}: </ion-label>
+      <ion-label position="default"> {{"training-create.last__training" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="endDate"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
