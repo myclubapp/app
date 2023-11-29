@@ -69,6 +69,11 @@
               "index": "src/custom-themes/default/index.html",
               "assets": [
                 {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
+                {
                   "glob": "**/*.svg",
                   "input": "node_modules/ionicons/dist/ionicons/svg",
                   "output": "./svg"
@@ -117,6 +122,11 @@
             "production": {
               "index": "src/custom-themes/default/index.html",
               "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
                 {
                   "glob": "**/*.svg",
                   "input": "node_modules/ionicons/dist/ionicons/svg",
@@ -167,6 +177,11 @@
               "index": "src/custom-themes/app-kadetten-unihockey/index.html",
               "assets": [
                 {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
+                {
                   "glob": "**/*.svg",
                   "input": "node_modules/ionicons/dist/ionicons/svg",
                   "output": "./svg"
@@ -215,6 +230,11 @@
             "app-uhc-win-u": {
               "index": "src/custom-themes/app-uhc-win-u/index.html",
               "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
                 {
                   "glob": "**/*.svg",
                   "input": "node_modules/ionicons/dist/ionicons/svg",
@@ -265,6 +285,11 @@
               "index": "src/custom-themes/app-stv-spreitenbach/index.html",
               "assets": [
                 {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
+                {
                   "glob": "**/*.svg",
                   "input": "node_modules/ionicons/dist/ionicons/svg",
                   "output": "./svg"
@@ -314,6 +339,11 @@
               "index": "src/custom-themes/app-vbc-schaffhausen/index.html",
               "assets": [
                 {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
+                {
                   "glob": "**/*.svg",
                   "input": "node_modules/ionicons/dist/ionicons/svg",
                   "output": "./svg"
@@ -362,6 +392,11 @@
             "app-kadetten-handball": {
               "index": "src/custom-themes/app-kadetten-handball/index.html",
               "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
                 {
                   "glob": "**/*.svg",
                   "input": "node_modules/ionicons/dist/ionicons/svg",
