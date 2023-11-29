@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
-
+import { Preferences, GetResult } from '@capacitor/preferences';
 import {
   AlertController,
   IonItemSliding,
@@ -62,6 +62,7 @@ export class ChampionshipPage implements OnInit {
   filterValue: string = "";
 
   teamRankings$: Observable<any[]>;
+  teamRankingsBackup$: Observable<any[]>;
 
   constructor(
     public toastController: ToastController,
@@ -77,6 +78,7 @@ export class ChampionshipPage implements OnInit {
     private translate: TranslateService
   ) {
     this.menuCtrl.enable(true, "menu");
+
   }
 
   ngOnInit() {
@@ -88,6 +90,15 @@ export class ChampionshipPage implements OnInit {
       },
       error: (err) => console.error("RANKING Error in subscription:", err),
       complete: () => console.log("RANKING Observable completed"),
+    });
+    this.teamRankingsBackup$ = this.getTeamsWithRankingsForYear("2023");
+    this.teamRankingsBackup$.subscribe({
+      next: () => {
+        console.log("RANKING Backup Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("RANKING Backup Error in subscription:", err),
+      complete: () => console.log("RANKING Backup Observable completed"),
     });
 
     this.gameList$ = this.getTeamGamesUpcoming();
@@ -176,6 +187,7 @@ export class ChampionshipPage implements OnInit {
             }).pipe(
               map(({ teamDetails, rankingsTable, rankingDetails }) => ({
                 ...teamDetails,
+                teamId: teamDetails.id,
                 rankings: rankingsTable,
                 details: rankingDetails,
               })),
@@ -457,17 +469,26 @@ export class ChampionshipPage implements OnInit {
                return items.filter(element => element.teamId == value)
               })
             )          
-           
+            this.teamRankings$ = this.teamRankingsBackup$.pipe(
+              map(items => {
+               return items.filter(element => element.teamId == value)
+              })
+            )   
           }
         },
         {
           text: "abbrechen",
           role: "cancel",
-          handler: (value) => {
+          handler:async  (value) => {
             console.log(value);
             this.filterValue = "";
+            await Preferences.set({
+              key: 'teamFilter',
+              value: this.filterValue,
+            });
             this.gameList$ = this.gameListBackup$;
             this.gameListPast$ = this.gameListPastBackup$;
+            this.teamRankings$ = this.teamRankingsBackup$;
           }
         }
       ],

@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { Preferences, GetResult} from '@capacitor/preferences';
 import {
   AlertController,
   IonItemSliding,
@@ -30,6 +31,7 @@ import { Timestamp } from "firebase/firestore";
 import { TrainingDetailPage } from "../training-detail/training-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Team } from "src/app/models/team";
+import { FilterService } from "src/app/services/filter.service";
 
 @Component({
   selector: "app-trainings",
@@ -55,6 +57,7 @@ export class TrainingsPage implements OnInit {
 
   filterList: any[] = [];
   filterValue: string = "";
+  private teamFilterSubscription: Subscription;
 
   constructor(
     public toastController: ToastController,
@@ -66,9 +69,11 @@ export class TrainingsPage implements OnInit {
     private readonly menuCtrl: MenuController,
     private readonly alertCtrl: AlertController,
     private cdr: ChangeDetectorRef,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private filterService: FilterService,
   ) {
     this.menuCtrl.enable(true, "menu");
+
   }
 
   ngOnInit() {
@@ -76,7 +81,7 @@ export class TrainingsPage implements OnInit {
     this.trainingList$.subscribe({
       next: () => {
         console.log("Training Data received");
- 
+
         this.cdr.detectChanges();
       },
       error: (err) => console.error("Training Error in subscription:", err),
@@ -87,7 +92,7 @@ export class TrainingsPage implements OnInit {
     this.trainingListBackupSub = this.trainingListBackup$.subscribe({
       next: () => {
         console.log("Training Backup Data received");
- 
+
         this.cdr.detectChanges();
       },
       error: (err) => console.error("Training Error in subscription:", err),
@@ -125,7 +130,7 @@ export class TrainingsPage implements OnInit {
       complete: () => console.log("Team Admin Observable completed"),
     });
 
-    // Filter
+    // Filterlist
     this.teamList$ = this.fbService.getTeamList();
     this.teamList$.subscribe({
       next: (data) => {
@@ -136,11 +141,24 @@ export class TrainingsPage implements OnInit {
       error: (err) => console.error("Team Error in subscription:", err),
       complete: () => console.log("Team Observable completed"),
     });
+
+    //Filter
+    this.teamFilterSubscription = this.filterService.teamFilter$.subscribe(
+      newTeamFilterValue => {
+        console.log("Set new filter value: " + newTeamFilterValue);
+        this.filterValue = newTeamFilterValue;
+
+      }
+    );
+
   }
 
-  ngOnDestroy(): void { 
+  ngOnDestroy(): void {
     this.trainingListBackupSub.unsubscribe();
     this.trainingListPastBackupSub.unsubscribe();
+
+    // Unsubscribe to prevent memory leaks
+    this.teamFilterSubscription.unsubscribe();
   }
 
   getTeamTraining() {
@@ -435,29 +453,30 @@ export class TrainingsPage implements OnInit {
         {
           text: await lastValueFrom(this.translate.get("common.ok")),
           role: "confirm",
-          handler: (value) => {
-            console.log(value)
-            this.filterValue = value;
-            
+          handler: async (value) => {
+            console.log("update filter " + value);
+            this.filterService.updateTeamFilter(value);
+
             this.trainingList$ = this.trainingListBackup$.pipe(
               map(items => {
-               return items.filter(element => element.teamId == value)
+                return items.filter(element => element.teamId == value)
               })
-            )  
+            )
             this.trainingListPast$ = this.trainingListPastBackup$.pipe(
               map(items => {
-               return items.filter(element => element.teamId == value)
+                return items.filter(element => element.teamId == value)
               })
-            )          
-           
+            )
+
           }
         },
         {
           text: await lastValueFrom(this.translate.get("common.cancel")),
           role: "cancel",
-          handler: (value) => {
-            console.log(value);
-            this.filterValue = "";
+          handler: async (value) => {
+            console.log("update filter " + value);
+            this.filterService.updateTeamFilter(value);
+
             this.trainingList$ = this.trainingListBackup$;
             this.trainingListPast$ = this.trainingListPastBackup$;
           }
