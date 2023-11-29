@@ -15,6 +15,7 @@ export interface Profile {
   settingsPush: boolean;
   settingsEmail: boolean;
   settingsEmailReporting: boolean;
+  language: string;
 
   // Business Logic Fields
   isAdmin: boolean;

@@ -108,6 +108,7 @@
     "notifications": "Notifications",
     "push__message": "Messages push",
     "email__messages_report": "Rapports de messages e-mail",
+    "email__messages": "messages e-mail",
     "push__notifications": "Notifications push",
     "push__notifications_devices": "Appareils push enregistrés",
     "current__device": "appareil actuel",
@@ -124,7 +125,9 @@
     "push_notification__permission_desc": "Les notifications push doivent-elles être activées pour cet appareil ?",
     "error_push_token": "Erreur d'enregistrement du jeton push",
     "success__profile_deleted": "Profil supprimé avec succès",
-    "error__while_deleting_msg": "Erreur lors de la suppression du profil"
+    "error__while_deleting_msg": "Erreur lors de la suppression du profil",
+    "language": "Langue",
+    "select__language": "Choisir la langue"
   },
   "tabs": {},
   "team": {},

@@ -108,6 +108,7 @@
     "notifications": "Notifications",
     "push__message": "Push messages",
     "email__messages_report": "Email messages reporting",
+    "email__messages": "Email messages",
     "push__notifications": "Push notifications",
     "push__notifications_devices": "Registered push devices",
     "current__device": "current device",
@@ -124,7 +125,9 @@
     "push_notification__permission_desc": "Should push notifications be activated for this device?",
     "error_push_token": "Error push token register",
     "success__profile_deleted": "Profile successfully deleted",
-    "error__while_deleting_msg": "Error while deleting profile"
+    "error__while_deleting_msg": "Error while deleting profile",
+    "language": "Language",
+    "select__language": "Select Language"
   },
   "tabs": {},
   "team": {},

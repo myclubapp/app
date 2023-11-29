@@ -130,4 +130,9 @@ export class UserProfileService {
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { settingsEmailReporting: state });
   }
+  async changeLanguage(state: string) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { language: state });
+  }
 }

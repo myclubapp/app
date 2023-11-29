@@ -49,7 +49,7 @@ export class AppComponent implements OnInit {
   ) {
     this.initializeApp();
 
-// https://fireship.io/lessons/sharing-data-between-angular-components-four-methods/
+    // https://fireship.io/lessons/sharing-data-between-angular-components-four-methods/
 
     //Filter for Events, Helfer, News
     this.clubList$ = this.fbService.getClubList();
@@ -58,19 +58,19 @@ export class AppComponent implements OnInit {
         console.log("Club Data received");
         this.cdr.detectChanges();
 
-/*      this.fbService
-                  .getUserClubRequestRefs(user)
-                  .pipe(take(1))
-                  .subscribe(async (clubRequestData: any) => {
-                    console.log("clubRequestData " + clubRequestData.length);
-                    if (clubRequestData.length === 0) {
-                      console.log("NO club assigned, start onboarding flow");
-                      await this.presentAlertNoClub();
-                    } else {
-                      console.log("open request available > OPEN Profile");
-                      this.presentClubRequstOpen();
-                    }
-                    */
+        /*      this.fbService
+                          .getUserClubRequestRefs(user)
+                          .pipe(take(1))
+                          .subscribe(async (clubRequestData: any) => {
+                            console.log("clubRequestData " + clubRequestData.length);
+                            if (clubRequestData.length === 0) {
+                              console.log("NO club assigned, start onboarding flow");
+                              await this.presentAlertNoClub();
+                            } else {
+                              console.log("open request available > OPEN Profile");
+                              this.presentClubRequstOpen();
+                            }
+                            */
 
 
 
@@ -85,19 +85,19 @@ export class AppComponent implements OnInit {
         console.log("Team Data received");
         this.cdr.detectChanges();
 
-/*
- // 3. TEAM ASSIGNED
-                this.fbService
-                  .getUserTeamRefs(user)
-                  .pipe(take(1))
-                  .subscribe(async (teamData: any) => {
-                    // console.log(data);
-                    if (teamData.length === 0) {
-                      console.log("NO TEAM assigned, start onboarding flow");
-                      await this.presentAlertNoTeam();
-                    }
-                  });
-*/
+        /*
+         // 3. TEAM ASSIGNED
+                        this.fbService
+                          .getUserTeamRefs(user)
+                          .pipe(take(1))
+                          .subscribe(async (teamData: any) => {
+                            // console.log(data);
+                            if (teamData.length === 0) {
+                              console.log("NO TEAM assigned, start onboarding flow");
+                              await this.presentAlertNoTeam();
+                            }
+                          });
+        */
 
       },
       error: (err) => console.error("Team Error in subscription:", err),
@@ -132,7 +132,7 @@ export class AppComponent implements OnInit {
         this.user = user;
         if (!user.emailVerified) {
           this.presentAlertEmailNotVerified();
-        } 
+        }
       } else {
         console.log("User is signed out");
         this.menuCtrl.enable(false, "menu");
@@ -196,14 +196,30 @@ export class AppComponent implements OnInit {
 
   initializeApp(): void {
     this.showSplashScreen();
-    this.translate.setDefaultLang("de");
+    this.setDefaultLanguage();
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
       if (event.type === "VERSION_READY") {
         this.presentAlertUpdateVersion();
       }
     });
   }
-
+  async setDefaultLanguage() {
+    this.authService.getUser$().pipe(
+      take(1),
+      tap(user => this.user = user),
+      switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
+    ).subscribe(profile => {
+      if (profile) {
+        if (profile.language) {
+          if (profile.language.length > 0) {
+            this.translate.setDefaultLang(profile.language);
+            return;
+          }
+        }
+      }
+      this.translate.setDefaultLang("de");
+    })
+  }
 
 
   async requestSubscription() {

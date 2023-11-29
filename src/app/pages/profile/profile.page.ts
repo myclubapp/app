@@ -79,7 +79,16 @@ export class ProfilePage implements OnInit, AfterViewInit {
       tap(user => this.user = user),
       switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
     ).subscribe(profile => {
+      console.log("profile==>",profile);
       this.userProfile$ = of(profile);
+      if(profile){
+        if(profile.language){
+            if(profile.language.length > 0){
+              this.translate.use(profile.language);
+              // this.translate.set("SELECTED_LANGUAGE", profile.language);
+            }
+        }
+      }
     })
 
     // await this.getUser();
@@ -130,7 +139,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
         )
       )
       .subscribe(async (data: any) => {
-        console.log(data);
+        console.log("===>data",data);
         this.clubRequestList = [];
         const requestListNew = [];
         for (const request of data) {
@@ -424,5 +433,14 @@ export class ProfilePage implements OnInit, AfterViewInit {
     });
 
     await toast.present();
+  }
+  async languageChange(event){
+    console.log(event.target.value);
+    if(event.target.value){
+      if(event.target.value.length > 0){
+        await this.profileService.changeLanguage(event.detail.value);
+        
+      }
+    }
   }
 }

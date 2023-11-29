@@ -31,21 +31,33 @@
       </ion-item>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" [label]='"common.first__name" | translate' attr.aria-label='{{"common.first__name" | translate}}' readonly
-          [(ngModel)]="userProfile.firstName" value="{{userProfile.firstName}}">
+        <ion-input labelPlacement="stacked" [label]='"common.first__name" | translate'
+          attr.aria-label='{{"common.first__name" | translate}}' readonly [(ngModel)]="userProfile.firstName"
+          value="{{userProfile.firstName}}">
         </ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" [label]='"common.last__name" | translate' attr.aria-label='{{"common.last__name" | translate}}' readonly
-          [(ngModel)]="userProfile.lastName" value="{{userProfile.lastName}}">
+        <ion-input labelPlacement="stacked" [label]='"common.last__name" | translate'
+          attr.aria-label='{{"common.last__name" | translate}}' readonly [(ngModel)]="userProfile.lastName"
+          value="{{userProfile.lastName}}">
         </ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" [label]='"profile.email" | translate' attr.aria-label='{{"profile.email" | translate}}' readonly [(ngModel)]="userProfile.email"
+        <ion-input labelPlacement="stacked" [label]='"profile.email" | translate'
+          attr.aria-label='{{"profile.email" | translate}}' readonly [(ngModel)]="userProfile.email"
           value="{{userProfile.email}}">
         </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-select [label]="'profile.language' | translate" [(ngModel)]="userProfile.language"
+          (ionChange)="languageChange($event)" [placeholder]="'profile.select__language' | translate">
+          <ion-select-option value="de">German</ion-select-option>
+          <ion-select-option value="fr">Franch</ion-select-option>
+          <ion-select-option value="it">Italian</ion-select-option>
+          <ion-select-option value="en">English</ion-select-option>
+        </ion-select>
       </ion-item>
     </ion-list>
 
@@ -85,16 +97,16 @@
     -->
 
       <ion-item>
-        <ion-toggle labelPlacement="stacked" attr.aria-label='{{"profile.push__message" | translate}}' value="{{userProfile?.settingsPush}}"
-          slot="end" [checked]="userProfile.settingsPush" [enableOnOffLabels]="true"
-          (ionChange)="togglePush($event)"></ion-toggle>
+        <ion-toggle labelPlacement="stacked" attr.aria-label='{{"profile.push__message" | translate}}'
+          value="{{userProfile?.settingsPush}}" slot="end" [checked]="userProfile.settingsPush"
+          [enableOnOffLabels]="true" (ionChange)="togglePush($event)"></ion-toggle>
         {{"profile.push__message" | translate}}
       </ion-item>
 
       <ion-item>
-        <ion-toggle labelPlacement="stacked" attr.aria-label='{{"profile.email__messages" | translate}}' value="{{userProfile?.settingsEmail}}"
-          slot="end" [checked]="userProfile.settingsEmail" [enableOnOffLabels]="true"
-          (ionChange)="toggleEmail($event)"></ion-toggle>
+        <ion-toggle labelPlacement="stacked" attr.aria-label='{{"profile.email__messages" | translate}}'
+          value="{{userProfile?.settingsEmail}}" slot="end" [checked]="userProfile.settingsEmail"
+          [enableOnOffLabels]="true" (ionChange)="toggleEmail($event)"></ion-toggle>
         {{"profile.email__messages" | translate}}
       </ion-item>
 
@@ -124,7 +136,8 @@
                 <ion-button color="danger" (click)="deletePushDevice(device.id)">
                   <ion-icon slot="icon-only" name="trash"> </ion-icon>
                 </ion-button>
-                <ion-badge slot="end" *ngIf="device.id==deviceId.identifier">{{"profile.current__device" | translate}}</ion-badge>
+                <ion-badge slot="end" *ngIf="device.id==deviceId.identifier">{{"profile.current__device" |
+                  translate}}</ion-badge>
               </ion-item>
             </ion-list>
           </div>
