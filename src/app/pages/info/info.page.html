@@ -3,30 +3,30 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Informationen</ion-title>
+    <ion-title>{{"info.information" | translate}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Informationen</ion-title>
+      <ion-title size="large">{{"info.information" | translate}}</ion-title>
     </ion-toolbar>
   </ion-header>
 
 
-    <ion-list lines="full" [inset]="true">
+  <ion-list lines="full" [inset]="true">
     <ion-item type="button" detail="true" (click)="openTCSite()">
       <ion-icon slot="start" name="business-outline"></ion-icon>
       <ion-label>
-        Geschäftsbedingungen
+        {{"info.terms__and_conditions" | translate}}
       </ion-label>
     </ion-item>
 
     <ion-item type="button" detail="true" (click)="openPPSite()">
       <ion-icon slot="start" name="finger-print-outline"></ion-icon>
       <ion-label>
-        Datenschutzrichtlinie
+        {{"privacy__policy" | translate}}
       </ion-label>
     </ion-item>
 
@@ -37,18 +37,18 @@
     <ion-item>
       <ion-icon slot="start" color="primary" name="heart-outline"></ion-icon>
       <ion-label>
-        liitu consulting gmbh, schaffhausen, ch
+        {{"info_description" | translate}}
       </ion-label>
     </ion-item>
 
     <ion-item>
       <ion-img src="./../../../assets/sms.png" alt="Swiss Made Software Logo"></ion-img>
     </ion-item>
-    
+
     <ion-item>
       <ion-icon slot="start" name="code-outline"></ion-icon>
       <ion-label>
-        App Version {{appVersion}}
+        {{"app__version" | translate}} {{appVersion}}
       </ion-label>
     </ion-item>
   </ion-list>

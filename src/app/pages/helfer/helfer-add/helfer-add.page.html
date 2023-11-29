@@ -1,11 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="secondary">
-      <ion-button (click)="close()">{{"close" | translate}}</ion-button>
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
     </ion-buttons>
-    <ion-title>{{"new__helper_event" | translate}}</ion-title>
+    <ion-title>{{"helfer-add.new__helper_event" | translate}}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="createEvent()">{{"create" | translate}}</ion-button>
+      <ion-button (click)="createEvent()">{{"common.create" | translate}}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -13,7 +13,7 @@
   <ion-list>
 
     <ion-item>
-      <ion-select label="Club" label-placement="stacked" [(ngModel)]="event.clubId" value="{{event.clubId}}" >
+      <ion-select [label]="'common.club' | translate" label-placement="stacked" [(ngModel)]="event.clubId" value="{{event.clubId}}" >
         <ion-select-option *ngFor="let club of clubList" value="{{club.id}}">{{club.name}}</ion-select-option>
       </ion-select>
     </ion-item>
@@ -25,14 +25,14 @@
     <ion-item>
      
       <ion-textarea
-      label="Beschreibung" label-placement="stacked"
+      [label]='"common.description" | translate' label-placement="stacked"
         value="{{event.description}}" [(ngModel)]="event.description"
       >
       </ion-textarea>
     </ion-item>
 
     <ion-item>
-      <ion-input label="Location" label-placement="stacked"
+      <ion-input [label]='"common.location" | translate' label-placement="stacked"
         value="{{event.location}}" [(ngModel)]="event.location">
       </ion-input>
 
@@ -40,27 +40,27 @@
 
     <ion-item>
       <ion-input
-      label="Strasse & Hausnummer" label-placement="stacked"
+      [label]='"common.street__house_number" | translate' label-placement="stacked"
         value="{{event.streetAndNumber}}" [(ngModel)]="event.streetAndNumber"
       >
       </ion-input>
     </ion-item>
     <ion-item>
       <ion-input
-      label="Postleitzahl" label-placement="stacked"
+      [label]='"common.postal__code" | translate' label-placement="stacked"
         value="{{event.postalCode}}" [(ngModel)]="event.postalCode"
       >
       </ion-input>
     </ion-item>
     <ion-item>
       
-      <ion-input label="Ortschaft" label-placement="stacked" value="{{event.city}}" [(ngModel)]="event.city">
+      <ion-input [label]="'common.locality' | translate" label-placement="stacked" value="{{event.city}}" [(ngModel)]="event.city">
       </ion-input>
     </ion-item>
 
 
     <ion-item id="timeFromItem">
-      <ion-label position=""> {{"start__event" | translate}}: </ion-label>
+      <ion-label position=""> {{"common.start__event" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -71,7 +71,7 @@
     </ion-item>
 
     <ion-item id="timeToItem">
-      <ion-label position=""> {{"end__event" | translate}}: </ion-label>
+      <ion-label position=""> {{"common.end__event" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -82,7 +82,7 @@
     </ion-item>
 
     <ion-item id="startDateItem">
-      <ion-label position="default"> {{"start__date" | translate}}: </ion-label>
+      <ion-label position="default"> {{"common.start__date" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="startDate"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -95,7 +95,7 @@
 
 
     <ion-item id="endDateItem">
-      <ion-label position="default"> {{"end__date" | translate}}: </ion-label>
+      <ion-label position="default"> {{"common.end__date" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="endDate"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">

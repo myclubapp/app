@@ -1,11 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="secondary">
-      <ion-button (click)="close()">{{"close" | translate}}</ion-button>
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
     </ion-buttons>
-    <ion-title>{{"new__event" | translate}}</ion-title>
+    <ion-title>{{"event-add.new__event" | translate}}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="createEvent()">{{"create" | translate}}</ion-button>
+      <ion-button (click)="createEvent()">{{"common.create" | translate}}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -13,8 +13,9 @@
   <ion-list>
 
     <ion-item>
-      <ion-select [label]='"Club" | translate' label-placement="stacked" [(ngModel)]="event.clubId" value="{{event.clubId}}" >
-        <ion-select-option  *ngFor="let club of clubList" value="{{club.id}}">{{club.name}}</ion-select-option>
+      <ion-select [label]='"common.club" | translate' label-placement="stacked" [(ngModel)]="event.clubId"
+        value="{{event.clubId}}">
+        <ion-select-option *ngFor="let club of clubList" value="{{club.id}}">{{club.name}}</ion-select-option>
       </ion-select>
     </ion-item>
 
@@ -25,89 +26,88 @@
     </ion-item>-->
 
     <ion-item>
-      <ion-input [label]='"common.name" | translate' label-placement="stacked" [(ngModel)]="event.name" value="{{event.name}}">
+      <ion-input [label]='"common.name" | translate' label-placement="stacked" [(ngModel)]="event.name"
+        value="{{event.name}}">
       </ion-input>
     </ion-item>
     <ion-item>
-     
-      <ion-textarea
-      [label]='"Beschreibung" | translate' label-placement="stacked"
-        value="{{event.description}}" [(ngModel)]="event.description"
-      >
+
+      <ion-textarea [label]='"common.description" | translate' label-placement="stacked" value="{{event.description}}"
+        [(ngModel)]="event.description">
       </ion-textarea>
     </ion-item>
 
     <ion-item>
-      <ion-input [label]='"Location" | translate' label-placement="stacked"
-        value="{{event.location}}" [(ngModel)]="event.location">
+      <ion-input [label]='"common.location" | translate' label-placement="stacked" value="{{event.location}}"
+        [(ngModel)]="event.location">
       </ion-input>
 
     </ion-item>
 
     <ion-item>
-      <ion-input
-      [label]='"street__house_number" | translate' label-placement="stacked"
-        value="{{event.streetAndNumber}}" [(ngModel)]="event.streetAndNumber"
-      >
+      <ion-input [label]='"common.street__house_number" | translate' label-placement="stacked"
+        value="{{event.streetAndNumber}}" [(ngModel)]="event.streetAndNumber">
       </ion-input>
     </ion-item>
     <ion-item>
-      <ion-input
-      [label]="'postal__code' | translate" label-placement="stacked"
-        value="{{event.postalCode}}" [(ngModel)]="event.postalCode"
-      >
+      <ion-input [label]="'common.postal__code' | translate" label-placement="stacked" value="{{event.postalCode}}"
+        [(ngModel)]="event.postalCode">
       </ion-input>
     </ion-item>
     <ion-item>
-      
-      <ion-input [label]='"locality" | translate' label-placement="stacked" value="{{event.city}}" [(ngModel)]="event.city">
+
+      <ion-input [label]='"common.locality" | translate' label-placement="stacked" value="{{event.city}}"
+        [(ngModel)]="event.city">
       </ion-input>
     </ion-item>
 
 
     <ion-item id="timeFromItem">
-      <ion-label position=""> {{"start__event" | translate}}: </ion-label>
+      <ion-label position=""> {{"common.start__event" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime presentation="time" id="timeFrom" (ionChange)="changeTimeFrom($event)" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" value="{{event.timeFrom}}" [(ngModel)]="event.timeFrom"></ion-datetime>
+          <ion-datetime presentation="time" id="timeFrom" (ionChange)="changeTimeFrom($event)"
+            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" value="{{event.timeFrom}}"
+            [(ngModel)]="event.timeFrom"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
 
     <ion-item id="timeToItem">
-      <ion-label position=""> {{"end__event" | translate}}: </ion-label>
+      <ion-label position=""> {{"common.end__event" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime presentation="time" id="timeTo" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" value="{{event.timeTo}}" [(ngModel)]="event.timeTo"></ion-datetime>
+          <ion-datetime presentation="time" id="timeTo" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+            value="{{event.timeTo}}" [(ngModel)]="event.timeTo"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
 
     <ion-item id="startDateItem">
-      <ion-label position="default"> {{"start__date" | translate}}: </ion-label>
+      <ion-label position="default"> {{"common.start__date" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="startDate"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime [firstDayOfWeek]="1" (ionChange)="changeStartDate($event)"  presentation="date" id="startDate"
-          value="{{event.startDate}}" [(ngModel)]="event.startDate"></ion-datetime>
+          <ion-datetime [firstDayOfWeek]="1" (ionChange)="changeStartDate($event)" presentation="date" id="startDate"
+            value="{{event.startDate}}" [(ngModel)]="event.startDate"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
 
 
     <ion-item id="endDateItem">
-      <ion-label position="default"> {{"end__date" | translate}}: </ion-label>
+      <ion-label position="default"> {{"common.end__date" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="endDate"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime [firstDayOfWeek]="1" presentation="date" id="endDate"
-          value="{{event.endDate}}" [(ngModel)]="event.endDate"></ion-datetime>
+          <ion-datetime [firstDayOfWeek]="1" presentation="date" id="endDate" value="{{event.endDate}}"
+            [(ngModel)]="event.endDate"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>

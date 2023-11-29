@@ -12,6 +12,7 @@ import {
 } from "@ionic/angular";
 import { AlertController } from "@ionic/angular";
 import { Timestamp } from "firebase/firestore";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: "app-club-list",
@@ -30,6 +31,7 @@ export class ClubListPage implements OnInit {
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
     private cdr: ChangeDetectorRef,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {

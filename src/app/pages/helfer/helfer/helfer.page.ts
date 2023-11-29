@@ -387,7 +387,7 @@ export class HelferPage implements OnInit {
   async deleteEvent(slidingItem: IonItemSliding, event) {
     slidingItem.closeOpened();
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("delete")),
+      message: await lastValueFrom(this.translate.get("common.delete")),
       color: "primary",
       duration: 2000,
       position: "top",

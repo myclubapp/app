@@ -152,7 +152,7 @@ export class EventDetailPage implements OnInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("success__saved")),
+      message: await lastValueFrom(this.translate.get("common.success__saved")),
       color: "primary",
       duration: 2000,
       position: "top",
