@@ -218,6 +218,10 @@
     "edit": "Modifica",
     "all": "Tutti",
     "no__answer": "Nessuna risposta",
-    "event__details": "Dettagli dell'evento"
+    "event__details": "Dettagli dell'evento",
+    "language__german": "Deutsch",
+    "language__french": "Französisch",
+    "language__italian": "Italienisch",
+    "language__english": "Englisch"
   }
 }

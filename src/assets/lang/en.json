@@ -218,6 +218,10 @@
     "edit": "Edit",
     "all": "All",
     "no__answer": "No answer",
-    "event__details": "Event details"
+    "event__details": "Event details",
+    "language__german": "Deutsch",
+    "language__french": "Französisch",
+    "language__italian": "Italienisch",
+    "language__english": "Englisch"
   }
 }

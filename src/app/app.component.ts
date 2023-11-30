@@ -12,7 +12,7 @@ import { SplashScreen } from "@capacitor/splash-screen";
 import { Observable, Subscription, catchError, combineLatest, map, mergeMap, of, switchMap, take, tap } from "rxjs";
 import { User, onAuthStateChanged } from "@angular/fire/auth";
 import { UserProfileService } from "./services/firebase/user-profile.service";
-import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
+import { Device, DeviceId, DeviceInfo, GetLanguageCodeResult, LanguageTag } from "@capacitor/device";
 import { Network, ConnectionStatus } from "@capacitor/network";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "./models/club";
@@ -133,6 +133,14 @@ export class AppComponent implements OnInit {
         if (!user.emailVerified) {
           this.presentAlertEmailNotVerified();
         }
+        this.setDefaultLanguage();
+        // READ USER LANGUAGE FROM DATABASE if AVAILABLE
+
+        // ELSE GET DEVICE PRIMARY LANGUAGE
+        /*Device.getLanguageCode().then((result: GetLanguageCodeResult)=>{
+          console.log("language code");
+          console.log(result);
+        });*/
       } else {
         console.log("User is signed out");
         this.menuCtrl.enable(false, "menu");
@@ -203,6 +211,21 @@ export class AppComponent implements OnInit {
       }
     });
   }
+
+  setFallbackLanguage() {
+    Device.getLanguageTag().then((result: LanguageTag)=>{
+//    console.log("language tag");
+//    console.log(result);
+      if (result.value == "de" || result.value == "fr" || result.value == "en" || result.value == "it" ){
+        console.log("Set Fallback Language to " + result.value);
+        this.translate.setDefaultLang(result.value);
+      } else {
+        console.log("Set Fallback Language to EN")
+        this.translate.setDefaultLang("en");
+      }
+    });
+  }
+
   async setDefaultLanguage() {
     this.authService.getUser$().pipe(
       take(1),
@@ -217,7 +240,7 @@ export class AppComponent implements OnInit {
           }
         }
       }
-      this.translate.setDefaultLang("de");
+      this.setFallbackLanguage()
     })
   }
 

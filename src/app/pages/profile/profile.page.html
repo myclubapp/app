@@ -53,10 +53,10 @@
       <ion-item>
         <ion-select [label]="'profile.language' | translate" [(ngModel)]="userProfile.language"
           (ionChange)="languageChange($event)" [placeholder]="'profile.select__language' | translate">
-          <ion-select-option value="de">German</ion-select-option>
-          <ion-select-option value="fr">Franch</ion-select-option>
-          <ion-select-option value="it">Italian</ion-select-option>
-          <ion-select-option value="en">English</ion-select-option>
+          <ion-select-option value="de">{{"common.language__german" | translate}}</ion-select-option>
+          <ion-select-option value="fr">{{"common.language__french" | translate}}</ion-select-option>
+          <ion-select-option value="it">{{"common.language__italian" | translate}}</ion-select-option>
+          <ion-select-option value="en">{{"common.language__english" | translate}}</ion-select-option>
         </ion-select>
       </ion-item>
     </ion-list>

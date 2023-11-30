@@ -101,7 +101,7 @@
         "onboarding__team": "Onboarding-Team"
     },
     "profile": {
-        "email": "E-mail",
+        "email": "E-Mail",
         "generally": "Allgemein",
         "open__club_inquiry": "Offene Club-Anfragen",
         "open__team_request": "Offene Team-Anfragens",
@@ -218,6 +218,10 @@
         "edit": "bearbeiten",
         "all": "Alle",
         "no__answer": "Keine Antwort",
-        "event__details": "Ereignisdetails"
+        "event__details": "Ereignisdetails",
+        "language__german": "Deutsch",
+        "language__french": "Französisch",
+        "language__italian": "Italienisch",
+        "language__english": "Englisch"
     }
 }
