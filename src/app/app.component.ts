@@ -214,8 +214,6 @@ export class AppComponent implements OnInit {
 
   setFallbackLanguage() {
     Device.getLanguageTag().then((result: LanguageTag)=>{
-//    console.log("language tag");
-//    console.log(result);
       if (result.value == "de" || result.value == "fr" || result.value == "en" || result.value == "it" ){
         console.log("Set Fallback Language to " + result.value);
         this.translate.setDefaultLang(result.value);
