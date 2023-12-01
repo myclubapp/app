@@ -58,9 +58,7 @@ export class UserProfileService {
       this.storage,
       `userProfile/${user.uid}/profilePicture/picture.${photo.format}`
     );
-    await uploadString(storageRef, photo.base64String, "base64", {
-
-    });
+    await uploadString(storageRef, photo.base64String, "base64", {});
     const url = await getDownloadURL(storageRef);
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { profilePicture: url });
@@ -134,5 +132,16 @@ export class UserProfileService {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { language: state });
+  }
+  async changeFavTeam(state: string) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { favTeam: state });
+  }
+
+  async changeFavClub(state: string) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { favClub: state });
   }
 }

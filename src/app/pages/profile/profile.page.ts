@@ -1,5 +1,16 @@
-import { Component, OnInit, AfterViewInit } from "@angular/core";
-import { combineLatest, lastValueFrom, Observable, of, Subscription } from "rxjs";
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from "@angular/core";
+import {
+  combineLatest,
+  lastValueFrom,
+  Observable,
+  of,
+  Subscription,
+} from "rxjs";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
 import { User } from "@angular/fire/auth";
 
@@ -21,7 +32,7 @@ import {
   Photo,
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { switchMap, take, tap } from "rxjs/operators";
+import { catchError, switchMap, take, tap } from "rxjs/operators";
 import {
   AlertController,
   LoadingController,
@@ -30,6 +41,8 @@ import {
 } from "@ionic/angular";
 import { Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
+import { Team } from "src/app/models/team";
+import { Club } from "src/app/models/club";
 
 @Component({
   selector: "app-profile",
@@ -39,19 +52,11 @@ import { TranslateService } from "@ngx-translate/core";
 export class ProfilePage implements OnInit, AfterViewInit {
   userProfile$: Observable<Profile>;
 
-  clubRequestList: any[] = [];
-  clubRequestListSub: Subscription;
-
-  teamRequestList: any[] = [];
-  teamRequestListSub: Subscription;
-
-  pushDeviceList: any[] = [];
-  pushDeviceListSub: Subscription;
+  teamList$: Observable<Team[]>;
+  clubList$: Observable<Club[]>;
 
   user$: Observable<User>;
   user: User;
-  private subscription: Subscription;
-
 
   private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
@@ -67,14 +72,43 @@ export class ProfilePage implements OnInit, AfterViewInit {
     private readonly alertController: AlertController,
     private readonly router: Router,
     private readonly menuCtrl: MenuController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef
   ) {
     this.menuCtrl.enable(true, "menu");
   }
 
   async ngOnInit() {
+    this.userProfile$ = this.getUserProfile();
+    this.userProfile$.subscribe({
+      next: () => {
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("User Profile Error in subscription:", err),
+      complete: () => console.log("User Profile Observable completed"),
+    });
 
-    this.subscription = this.authService.getUser$().pipe(
+    this.teamList$ = this.fbService.getTeamList();
+    this.teamList$.subscribe({
+      next: (data) => {
+        console.log("Team Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Team Error in subscription:", err),
+      complete: () => console.log("Team Observable completed"),
+    });
+
+    this.clubList$ = this.fbService.getClubList();
+    this.clubList$.subscribe({
+      next: (data) => {
+        console.log("Club Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Cluh Error in subscription:", err),
+      complete: () => console.log("Club Observable completed"),
+    });
+
+    /*    this.subscription = this.authService.getUser$().pipe(
       take(1),
       tap(user => this.user = user),
       switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
@@ -90,6 +124,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
         }
       }
     })
+    */
 
     // await this.getUser();
     // this.getClubRequestList();
@@ -104,119 +139,35 @@ export class ProfilePage implements OnInit, AfterViewInit {
     // this.getClubList();
     // this.getTeamList();
   }
-  ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-    if (this.pushDeviceListSub) {
-      this.pushDeviceListSub.unsubscribe();
-    }
-    if (this.clubRequestListSub) {
-      this.clubRequestListSub.unsubscribe();
-    }
-    if (this.teamRequestListSub) {
-      this.teamRequestListSub.unsubscribe();
-    }
+  ngOnDestroy() {}
 
-
-  }
-
-  getClubRequestList() {
-    this.clubRequestList = [];
-    this.clubRequestListSub = this.authService
-      .getUser$()
-      .pipe(
-        take(1),
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserClubRequestRefs(user)),
-        // Loop Over Teams
-        switchMap((allRequests: any) =>
-          combineLatest(
-            allRequests.map((request) =>
-              combineLatest(of(request), this.fbService.getClubRef(request.id))
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        console.log("===>data",data);
-        this.clubRequestList = [];
-        const requestListNew = [];
-        for (const request of data) {
-          const requestDetail = request[1];
-
-          // const detailRef: DocumentReference = request[0].clubRef;
-          // const clubData = await this.fbService.getClubRef(requestDetail.id).toPromise();
-          requestListNew.push(requestDetail);
+  getUserProfile(): Observable<any> {
+    // Replace 'any' with the actual type of the user profile
+    return this.authService.getUser$().pipe(
+      switchMap((user: User) => {
+        if (!user || !user.uid) {
+          console.log("No user found");
+          return of(null); // Return null or appropriate default value if user is not logged in
         }
-        this.clubRequestList = this.clubRequestList.sort(
-          (a, b) => Number(a.id) - Number(b.id)
-        );
-        this.clubRequestList = [...new Set([].concat(...requestListNew))];
-      });
-  }
-  getTeamRequestList() {
-    this.teamRequestList = [];
-    this.teamRequestListSub = this.authService
-      .getUser$()
-      .pipe(
-        take(1),
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserTeamRequestRefs(user)),
-        // Loop Over Teams
-        switchMap((allRequests: any) =>
-          combineLatest(
-            allRequests.map((request) =>
-              combineLatest(of(request), this.fbService.getTeamRef(request.id))
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        console.log(data);
-        this.teamRequestList = [];
-        const requestListNew = [];
-        for (const request of data) {
-          const requestDetail = request[1];
-
-          // const detailRef: DocumentReference = request[0].clubRef;
-          // const clubData = await this.fbService.getClubRef(requestDetail.id).toPromise();
-          requestListNew.push(requestDetail);
-        }
-        this.teamRequestList = this.teamRequestList.sort(
-          (a, b) => Number(a.id) - Number(b.id)
-        );
-        this.teamRequestList = [...new Set([].concat(...requestListNew))];
-      });
+        return this.profileService.getUserProfile(user);
+      }),
+      catchError((err) => {
+        console.error("Error fetching user profile", err);
+        return of(null); // Handle the error and return a default value
+      })
+    );
   }
 
-  async getPushDeviceList() {
-    this.pushDeviceListSub = this.profileService
-      .getPushDeviceList()
-      .subscribe((pushDeviceData) => {
-        this.pushDeviceList = [];
-        pushDeviceData.map((element) => {
-          this.pushDeviceList.push(element);
-        });
-      });
-  }
-  /*
-  async getClubList(){
-    const user: User = await this.authService.getUser();
-    // this.clubList$ =
-    this.clubList$ = this.fbService.getClubRefs(user);
-  }
+  getClubRequestList() {}
+  getTeamRequestList() {}
 
-  async getTeamList(){
-    const user: User = await this.authService.getUser();
-    this.teamList$ = this.fbService.getTeamRefs(user);
-  }
-*/
+  async getPushDeviceList() {}
 
   async takePicture() {
-
     const loading = await this.loadingController.create({
-      message: await lastValueFrom(this.translate.get('profile.profile_pic__uploaded')),
+      message: await lastValueFrom(
+        this.translate.get("profile.profile_pic__uploaded")
+      ),
       showBackdrop: true,
       backdropDismiss: false,
       translucent: true,
@@ -259,7 +210,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
   async deleteProfile() {
     const alert = await this.alertController.create({
-      message: await lastValueFrom(this.translate.get("profile.delete_profile__confirm")),
+      message: await lastValueFrom(
+        this.translate.get("profile.delete_profile__confirm")
+      ),
       buttons: [
         {
           text: await lastValueFrom(this.translate.get("common.yes")),
@@ -281,7 +234,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("profile.request_success__deleted")),
+      message: await lastValueFrom(
+        this.translate.get("profile.request_success__deleted")
+      ),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -291,7 +246,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
   async presentToastTakePicture() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("profile.success__profile_pic_changed")),
+      message: await lastValueFrom(
+        this.translate.get("profile.success__profile_pic_changed")
+      ),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -339,9 +296,14 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async alertPushNotSupported() {
     const alert = await this.alertController.create({
-      header: await lastValueFrom(this.translate.get("profile.error__push_notification_not_available")),
-      message:
-        await lastValueFrom(this.translate.get("profile.error_device_not_support_push_notifications")),
+      header: await lastValueFrom(
+        this.translate.get("profile.error__push_notification_not_available")
+      ),
+      message: await lastValueFrom(
+        this.translate.get(
+          "profile.error_device_not_support_push_notifications"
+        )
+      ),
       buttons: [{ text: await lastValueFrom(this.translate.get("common.ok")) }],
     });
     alert.present();
@@ -349,8 +311,11 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async errorPushMessageEnable(error) {
     const alert = await this.alertController.create({
-      header: await lastValueFrom(this.translate.get("profile.error_push_service_not_available")),
-      message: await lastValueFrom(this.translate.get("profile.error_text")) + error,
+      header: await lastValueFrom(
+        this.translate.get("profile.error_push_service_not_available")
+      ),
+      message:
+        (await lastValueFrom(this.translate.get("profile.error_text"))) + error,
       buttons: [{ text: "OK" }],
     });
     alert.present();
@@ -358,17 +323,20 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async alertAskForPush() {
     const alert = await this.alertController.create({
-      header: await lastValueFrom(this.translate.get("profile.push__notifications")),
-      message:
-        await lastValueFrom(this.translate.get("profile.push_notification__permission_desc")),
+      header: await lastValueFrom(
+        this.translate.get("profile.push__notifications")
+      ),
+      message: await lastValueFrom(
+        this.translate.get("profile.push_notification__permission_desc")
+      ),
       buttons: [
         {
-          text:  await lastValueFrom(this.translate.get("common.yes")),
+          text: await lastValueFrom(this.translate.get("common.yes")),
           handler: () => {
             this.subscribeToNotifications();
           },
         },
-        { text: await lastValueFrom(this.translate.get("common.no")), },
+        { text: await lastValueFrom(this.translate.get("common.no")) },
       ],
     });
     alert.present();
@@ -395,7 +363,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
         this.toastActionSaved();
       } else {
         console.log("error push token register");
-        this.errorPushMessageEnable(await lastValueFrom(this.translate.get("profile.error_push_token")));
+        this.errorPushMessageEnable(
+          await lastValueFrom(this.translate.get("profile.error_push_token"))
+        );
       }
     } catch (err) {
       console.log(err);
@@ -404,7 +374,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
   async presentDeleteProfile() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("profile.success__profile_deleted")),
+      message: await lastValueFrom(
+        this.translate.get("profile.success__profile_deleted")
+      ),
       duration: 1500,
       position: "bottom",
       color: "danger",
@@ -415,7 +387,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async presentErrorDeleteProfile() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("profile.error__while_deleting_msg")),
+      message: await lastValueFrom(
+        this.translate.get("profile.error__while_deleting_msg")
+      ),
       duration: 1500,
       position: "bottom",
       color: "danger",
@@ -434,13 +408,20 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
     await toast.present();
   }
-  async languageChange(event){
+  async languageChange(event) {
     console.log(event.target.value);
-    if(event.target.value){
-      if(event.target.value.length > 0){
+    if (event.target.value) {
+      if (event.target.value.length > 0) {
         await this.profileService.changeLanguage(event.detail.value);
-        
       }
     }
+  }
+
+  async setFavTeam(event) {
+    await this.profileService.changeFavTeam(event.detail.value);
+  }
+
+  async setFavClub(event) {
+    await this.profileService.changeFavClub(event.detail.value);
   }
 }

@@ -16,6 +16,8 @@ export interface Profile {
   settingsEmail: boolean;
   settingsEmailReporting: boolean;
   language: string;
+  favTeam: string;
+  favClub: string;
 
   // Business Logic Fields
   isAdmin: boolean;
