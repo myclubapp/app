@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { Preferences, GetResult} from '@capacitor/preferences';
 import {
   AlertController,
   IonItemSliding,
@@ -70,10 +69,9 @@ export class TrainingsPage implements OnInit {
     private readonly alertCtrl: AlertController,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService,
-    private filterService: FilterService,
+    private filterService: FilterService
   ) {
     this.menuCtrl.enable(true, "menu");
-
   }
 
   ngOnInit() {
@@ -144,13 +142,11 @@ export class TrainingsPage implements OnInit {
 
     //Filter
     this.teamFilterSubscription = this.filterService.teamFilter$.subscribe(
-      newTeamFilterValue => {
+      (newTeamFilterValue) => {
         console.log("Set new filter value: " + newTeamFilterValue);
         this.filterValue = newTeamFilterValue;
-
       }
     );
-
   }
 
   ngOnDestroy(): void {
@@ -381,6 +377,7 @@ export class TrainingsPage implements OnInit {
 
   async deleteTraining(slidingItem: IonItemSliding, training) {
     slidingItem.closeOpened();
+    await this.trainingService.deleteTeamTraining(training.teamId, training.id);
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.delete")),
       color: "primary",
@@ -433,20 +430,21 @@ export class TrainingsPage implements OnInit {
   }
 
   async openFilter(ev: Event) {
-
     const alertInputs = [];
     for (const item of this.filterList) {
       alertInputs.push({
         label: item.name,
-        type: 'radio',
+        type: "radio",
         checked: item.id == this.filterValue,
         value: item.id,
       });
     }
 
     let alert = await this.alertCtrl.create({
-      header:  await lastValueFrom(this.translate.get("training.news__filter")),
-      message:  await lastValueFrom(this.translate.get("training.news__filer__desc")),
+      header: await lastValueFrom(this.translate.get("training.news__filter")),
+      message: await lastValueFrom(
+        this.translate.get("training.news__filer__desc")
+      ),
       // subHeader: 'Nach Verein oder Teams filtern.',
       inputs: alertInputs,
       buttons: [
@@ -458,17 +456,16 @@ export class TrainingsPage implements OnInit {
             this.filterService.updateTeamFilter(value);
 
             this.trainingList$ = this.trainingListBackup$.pipe(
-              map(items => {
-                return items.filter(element => element.teamId == value)
+              map((items) => {
+                return items.filter((element) => element.teamId == value);
               })
-            )
+            );
             this.trainingListPast$ = this.trainingListPastBackup$.pipe(
-              map(items => {
-                return items.filter(element => element.teamId == value)
+              map((items) => {
+                return items.filter((element) => element.teamId == value);
               })
-            )
-
-          }
+            );
+          },
         },
         {
           text: await lastValueFrom(this.translate.get("common.cancel")),
@@ -479,10 +476,10 @@ export class TrainingsPage implements OnInit {
 
             this.trainingList$ = this.trainingListBackup$;
             this.trainingListPast$ = this.trainingListPastBackup$;
-          }
-        }
+          },
+        },
       ],
-      htmlAttributes: { 'aria-label': 'alert dialog' },
+      htmlAttributes: { "aria-label": "alert dialog" },
     });
     alert.present();
   }

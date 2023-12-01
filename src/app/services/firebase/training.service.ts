@@ -36,6 +36,7 @@ import { Training } from "src/app/models/training";
 import { User } from "firebase/auth";
 import { FirebaseService } from "../firebase.service";
 import { Team } from "src/app/models/team";
+import { deleteDoc } from "firebase/firestore";
 
 @Injectable({
   providedIn: "root",
@@ -147,5 +148,13 @@ export class TrainingService {
       `teams/${teamId}/trainings/${trainingId}/attendees/${userId}`
     );
     return await setDoc(statusRef, { status });
+  }
+
+  deleteTeamTraining(teamId: string, trainingId: string) {
+    const gameRef = doc(
+      this.firestore,
+      `teams/${teamId}/trainings/${trainingId}`
+    );
+    return deleteDoc(gameRef);
   }
 }
