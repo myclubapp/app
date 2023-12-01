@@ -180,6 +180,19 @@ export class EventService {
     );
   }
 
+  deleteClubEvent(clubId: string, eventId: string) {
+    const eventRef = doc(this.firestore, `club/${clubId}/events/${eventId}`);
+    return deleteDoc(eventRef);
+  }
+
+  deleteHelferEvent(clubId: string, eventId: string) {
+    const eventRef = doc(
+      this.firestore,
+      `club/${clubId}/helferEvents/${eventId}`
+    );
+    return deleteDoc(eventRef);
+  }
+
   /* TEAM EventS */
   /*
   getTeamEventsRef(teamId: string): Observable<Veranstaltung[]> {

@@ -56,11 +56,9 @@ export class EventsPage implements OnInit {
     private readonly eventService: EventService,
     private readonly menuCtrl: MenuController,
     private cdr: ChangeDetectorRef,
-    private translate: TranslateService,
-
+    private translate: TranslateService
   ) {
     this.menuCtrl.enable(true, "menu");
-
   }
 
   ngOnInit() {
@@ -314,6 +312,7 @@ export class EventsPage implements OnInit {
 
   async deleteEvent(slidingItem: IonItemSliding, event) {
     slidingItem.closeOpened();
+    await this.eventService.deleteClubEvent(event.clubId, event.id);
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.delete")),
       color: "primary",
