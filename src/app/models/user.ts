@@ -12,6 +12,10 @@ export interface Profile {
   profilePicture: string;
   phone: number;
   dateOfBirth: Timestamp;
+  streetAndNumber: string;
+  postalcode: number;
+  city: string;
+  licenseNumber: string;
   settingsPush: boolean;
   settingsEmail: boolean;
   settingsEmailReporting: boolean;

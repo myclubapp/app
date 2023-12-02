@@ -2,7 +2,14 @@ import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Team } from "src/app/models/team";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { switchMap, map, take, tap, mergeMap, catchError } from "rxjs/operators";
+import {
+  switchMap,
+  map,
+  take,
+  tap,
+  mergeMap,
+  catchError,
+} from "rxjs/operators";
 import { of, combineLatest, Subscription, Observable } from "rxjs";
 import { User } from "@angular/fire/auth";
 import {
@@ -11,7 +18,7 @@ import {
   ModalController,
   ToastController,
 } from "@ionic/angular";
-import { TeamPage } from "../team/team.page";
+import { TeamPage } from "../team/team-detail/team.page";
 import { Profile } from "src/app/models/user";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 
@@ -36,62 +43,52 @@ export class TeamListPage implements OnInit {
     private readonly alertController: AlertController,
     private readonly profileService: UserProfileService,
     private readonly toastController: ToastController,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-
-    this.teamList$  = this.getTeamList();
+    this.teamList$ = this.getTeamList();
     this.teamList$.subscribe({
       next: (data) => {
         console.log("ClubList Data received");
         this.cdr.detectChanges();
       },
       error: (err) => console.error("ClubList Error in subscription:", err),
-      complete: () => console.log("ClubList Observable completed")
+      complete: () => console.log("ClubList Observable completed"),
     });
-
   }
 
-  ngOnDestroy() {
-
-  }
-
+  ngOnDestroy() {}
 
   getTeamList() {
     return this.authService.getUser$().pipe(
       take(1),
-      tap(user=>{
+      tap((user) => {
         this.user = user;
       }),
-      switchMap(user => {
+      switchMap((user) => {
         if (!user) return of([]);
         return this.fbService.getUserTeamRefs(user);
       }),
-      tap(teams => console.log("Clubs:", teams)),
-      mergeMap(teams => {
+      tap((teams) => console.log("Clubs:", teams)),
+      mergeMap((teams) => {
         if (teams.length === 0) return of([]);
         return combineLatest(
-          teams.map(team => this.fbService.getTeamRef(team.id))
+          teams.map((team) => this.fbService.getTeamRef(team.id))
         );
       }),
-      map(teamsDetails => teamsDetails.flat()), // Flatten to get all teams details
-      tap(results => console.log("Final results with all Clubs:", results)),
-      catchError(err => {
+      map((teamsDetails) => teamsDetails.flat()), // Flatten to get all teams details
+      tap((results) => console.log("Final results with all Clubs:", results)),
+      catchError((err) => {
         console.error("Error in getClubList:", err);
         return of([]); // Return an empty array on error
       })
     );
-
-
-
   }
 
   getAvailableTeamList() {
     // console.log("getAvailableTeamList");
-    
   }
-
 
   async openModal(team: Team) {
     // const presentingElement = await this.modalCtrl.getTop();
@@ -169,5 +166,4 @@ export class TeamListPage implements OnInit {
     await alert.present();
     */
   }
-
 }

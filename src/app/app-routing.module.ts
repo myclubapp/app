@@ -149,6 +149,20 @@ const routes: Routes = [
         (m) => m.HelferDetailPageModule
       ),
   },
+  {
+    path: "lineup",
+    loadChildren: () =>
+      import("./pages/championship/lineup/lineup.module").then(
+        (m) => m.LineupPageModule
+      ),
+  },
+  {
+    path: "training-exercises",
+    loadChildren: () =>
+      import(
+        "./pages/training/training-exercises/training-exercises.module"
+      ).then((m) => m.TrainingExercisesPageModule),
+  },
 ];
 
 @NgModule({

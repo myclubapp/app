@@ -38,7 +38,7 @@
           labelPlacement="stacked"
           [label]='"common.first__name" | translate'
           attr.aria-label='{{"common.first__name" | translate}}'
-          readonly
+          (ionChange)="profileChange($event, 'firstName')"
           [(ngModel)]="userProfile.firstName"
           value="{{userProfile.firstName}}"
         >
@@ -50,9 +50,57 @@
           labelPlacement="stacked"
           [label]='"common.last__name" | translate'
           attr.aria-label='{{"common.last__name" | translate}}'
-          readonly
+          (ionChange)="profileChange($event, 'lastName')"
           [(ngModel)]="userProfile.lastName"
           value="{{userProfile.lastName}}"
+        >
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"common.street_number" | translate'
+          attr.aria-label='{{"common.street_number" | translate}}'
+          (ionChange)="profileChange($event, 'streetAndNumber')"
+          [(ngModel)]="userProfile.streetAndNumber"
+          value="{{userProfile.streetAndNumber}}"
+        >
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"common.postalcode" | translate'
+          attr.aria-label='{{"common.postalcode" | translate}}'
+          (ionChange)="profileChange($event,'postalcode' )"
+          [(ngModel)]="userProfile.postalcode"
+          value="{{userProfile.postalcode}}"
+        >
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"common.city" | translate'
+          attr.aria-label='{{"common.city" | translate}}'
+          (ionChange)="profileChange($event, 'city')"
+          [(ngModel)]="userProfile.city"
+          value="{{userProfile.city}}"
+        >
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"common.license__number" | translate'
+          attr.aria-label='{{"common.license__number" | translate}}'
+          (ionChange)="profileChange($event, 'licenseNumber')"
+          [(ngModel)]="userProfile.licenseNumber"
+          value="{{userProfile.licenseNumber}}"
         >
         </ion-input>
       </ion-item>
@@ -72,7 +120,7 @@
         <ion-select
           [label]="'profile.language' | translate"
           [(ngModel)]="userProfile.language"
-          (ionChange)="languageChange($event)"
+          (ionChange)="profileChange($event, 'language')"
           [placeholder]="'profile.select__language' | translate"
         >
           <ion-select-option value="de"
@@ -89,12 +137,17 @@
           >
         </ion-select>
       </ion-item>
+    </ion-list>
+    <ion-list lines="full" [inset]="true">
+      <ion-list-header>
+        <ion-label> {{"profile.filter" | translate}} </ion-label>
+      </ion-list-header>
 
       <ion-item *ngIf="teamList$ | async as teamList">
         <ion-select
           [label]="'profile.favTeam' | translate"
           [(ngModel)]="userProfile.favTeam"
-          (ionChange)="setFavTeam($event)"
+          (ionChange)="profileChange($event, 'favTeam')"
           [placeholder]="'profile.favTeam' | translate"
         >
           <ion-select-option *ngFor="let team of teamList" value="{{team.id}}"
@@ -107,7 +160,7 @@
         <ion-select
           [label]="'profile.favClub' | translate"
           [(ngModel)]="userProfile.favClub"
-          (ionChange)="setFavClub($event)"
+          (ionChange)="profileChange($event, 'favClub')"
           [placeholder]="'profile.favClub' | translate"
         >
           <ion-select-option *ngFor="let club of clubList" value="{{club.id}}"

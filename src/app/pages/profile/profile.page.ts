@@ -408,6 +408,16 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
     await toast.present();
   }
+
+  async profileChange(event, fieldname) {
+    console.log(event);
+    await this.profileService.changeProfileAttribute(
+      event.detail.value,
+      fieldname
+    );
+  }
+
+  /*
   async languageChange(event) {
     console.log(event.target.value);
     if (event.target.value) {
@@ -423,5 +433,5 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async setFavClub(event) {
     await this.profileService.changeFavClub(event.detail.value);
-  }
+  }*/
 }

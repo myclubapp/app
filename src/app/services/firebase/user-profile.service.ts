@@ -128,11 +128,20 @@ export class UserProfileService {
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { settingsEmailReporting: state });
   }
+
+  changeProfileAttribute(value: any, fieldname) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { [fieldname]: value });
+  }
+
+  /*
   async changeLanguage(state: string) {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { language: state });
   }
+
   async changeFavTeam(state: string) {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
@@ -143,5 +152,5 @@ export class UserProfileService {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { favClub: state });
-  }
+  }*/
 }
