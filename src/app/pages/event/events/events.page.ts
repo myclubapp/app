@@ -289,7 +289,7 @@ export class EventsPage implements OnInit {
     toast.present();
   }
 
-  async copyEvent(slidingItem: IonItemSliding, event) {
+  async copyEvent(slidingItem: IonItemSliding, event: Veranstaltung) {
     slidingItem.closeOpened();
 
     // const presentingElement = await this.modalCtrl.getTop();

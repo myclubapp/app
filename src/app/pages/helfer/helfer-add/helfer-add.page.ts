@@ -1,30 +1,48 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController, NavParams } from '@ionic/angular';
-import { User } from 'firebase/auth';
-import { Timestamp } from 'firebase/firestore';
-import { Observable, Subscription, catchError, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, of, switchMap, take, tap } from "rxjs";
-import { Club } from 'src/app/models/club';
-import { HelferEvent } from 'src/app/models/event';
-import { AuthService } from 'src/app/services/auth.service';
-import { FirebaseService } from 'src/app/services/firebase.service';
-import { EventService } from 'src/app/services/firebase/event.service';
+import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import { ModalController, NavParams } from "@ionic/angular";
+import { User } from "firebase/auth";
+import { Timestamp } from "firebase/firestore";
+import {
+  Observable,
+  Subscription,
+  catchError,
+  concatMap,
+  defaultIfEmpty,
+  finalize,
+  forkJoin,
+  from,
+  map,
+  of,
+  switchMap,
+  take,
+  tap,
+} from "rxjs";
+import { Club } from "src/app/models/club";
+import { HelferEvent } from "src/app/models/event";
+import { AuthService } from "src/app/services/auth.service";
+import { FirebaseService } from "src/app/services/firebase.service";
+import { EventService } from "src/app/services/firebase/event.service";
 
 @Component({
-  selector: 'app-helfer-add',
-  templateUrl: './helfer-add.page.html',
-  styleUrls: ['./helfer-add.page.scss'],
+  selector: "app-helfer-add",
+  templateUrl: "./helfer-add.page.html",
+  styleUrls: ["./helfer-add.page.scss"],
 })
 export class HelferAddPage implements OnInit {
+  @Input("data") eventCopy: HelferEvent;
   event: HelferEvent;
   user: User;
-  private subscription: Subscription;
-  clubList: Club[] = [];
-  constructor(    private readonly modalCtrl: ModalController,
+
+  clubAdminList$: Observable<Club[]>;
+
+  constructor(
+    private readonly modalCtrl: ModalController,
     private eventService: EventService,
+    private cdr: ChangeDetectorRef,
     private readonly authService: AuthService,
     private fbService: FirebaseService,
-    public navParams: NavParams) {
-
+    public navParams: NavParams
+  ) {
     this.event = {
       id: "",
       name: "",
@@ -34,12 +52,12 @@ export class HelferAddPage implements OnInit {
       streetAndNumber: "",
       postalCode: "",
       city: "",
-      
+
       date: Timestamp.fromDate(new Date()),
 
       timeFrom: new Date().toISOString(),
       timeTo: new Date().toISOString(),
-      
+
       startDate: new Date().toISOString(),
       endDate: new Date().toISOString(),
 
@@ -50,69 +68,42 @@ export class HelferAddPage implements OnInit {
       clubId: "",
       clubName: "",
 
-      schichten: [{
-        name: "",
-      }],
-      
+      schichten: [
+        {
+          name: "",
+        },
+      ],
+
       status: true,
       attendees: [],
       countAttendees: 0,
     };
   }
 
-  ngOnInit () {
-    
+  ngOnInit() {
+    this.eventCopy = this.navParams.get("data");
+    if (this.eventCopy.id) {
+      this.event = this.eventCopy;
+    }
 
-    let  clubList: any[] = [];
-    const clubs$ = this.authService.getUser$().pipe(
-      take(1),
-      tap(user=>this.user = user),
-      switchMap(user => this.fbService.getUserClubAdminRefs(user).pipe(take(1))),
-      concatMap(clubsArray =>  from(clubsArray)),
-      tap((club:Club)=>console.log(club.id)),
-      concatMap(club => 
-        this.fbService.getClubRef(club.id).pipe(
-          take(1),
-          defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
-          map(result => [result]),
-          catchError(error => {
-            console.error('Error fetching ClubDetail:', error);
-            return of([]);
-          })
-        )
-      ),
-      tap(clubs => {
-        console.log(clubs);
-        clubs.forEach(club => clubList.push(club))
-      }),
-      finalize(() => {
-        // clubList.push({"name": "Kein Club", "id": "undefined"})
-        console.log("Get Club completed")
-      })
-    );
-
-    this.subscription = forkJoin([clubs$]).subscribe({
-      next: () => {
-        console.log(">>>" + JSON.stringify(clubList));
-        this.clubList = clubList;
-        this.event.clubId = this.clubList[0].id;
-        this.event.clubName = this.clubList[0].name;
+    this.clubAdminList$ = this.fbService.getClubAdminList();
+    this.clubAdminList$.subscribe({
+      next: (data) => {
+        console.log("Club Admin Data received");
+        this.cdr.detectChanges();
+        this.event.clubId = data[0].id;
+        this.event.clubName = data[0].name;
       },
-      error: err => console.error('Error in the observable chain:', err)
+      error: (err) => console.error("Club Admin Error in subscription:", err),
+      complete: () => console.log("Club Admin Observable completed"),
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.subscription) {
-        this.subscription.unsubscribe();
-    }
-    
-  }
+  ngOnDestroy(): void {}
 
   async close() {
     return this.modalCtrl.dismiss(null, "close");
   }
-
 
   async createEvent() {
     //Set Hours/Minutes of endDate to TimeFrom of training
@@ -137,7 +128,9 @@ export class HelferAddPage implements OnInit {
     const calculatedTimeFrom = new Date(this.event.timeFrom);
     calculatedTimeFrom.setDate(new Date(this.event.startDate).getDate());
     calculatedTimeFrom.setMonth(new Date(this.event.startDate).getMonth());
-    calculatedTimeFrom.setFullYear(new Date(this.event.startDate).getFullYear());
+    calculatedTimeFrom.setFullYear(
+      new Date(this.event.startDate).getFullYear()
+    );
     calculatedTimeFrom.setSeconds(0);
     calculatedTimeFrom.setMilliseconds(0);
     this.event.timeFrom = calculatedTimeFrom.toISOString();
@@ -155,17 +148,16 @@ export class HelferAddPage implements OnInit {
     this.eventService.setCreateHelferEvent(this.event, this.user);
     return this.modalCtrl.dismiss({}, "confirm");
   }
- 
-  changeTimeFrom(ev){
-    console.log(ev.detail.value)
+
+  changeTimeFrom(ev) {
+    console.log(ev.detail.value);
     if (this.event.timeFrom > this.event.timeTo) {
       this.event.timeTo = this.event.timeFrom;
     }
-
   }
 
-  changeStartDate(ev){
-    console.log(ev.detail.value)
+  changeStartDate(ev) {
+    console.log(ev.detail.value);
     if (this.event.startDate > this.event.endDate) {
       this.event.endDate = this.event.startDate;
     }

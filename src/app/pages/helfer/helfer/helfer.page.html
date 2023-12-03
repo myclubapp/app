@@ -165,6 +165,11 @@
             <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
           </ion-note>
         </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="medium" (click)="copyEvent(item, event)">
+            <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
       </ion-item-sliding>
     </ion-list>
     <ion-list class="ion-padding" *ngIf="eventsListPast.length==0">
@@ -176,7 +181,12 @@
   </ng-container>
 
   <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-    <ion-fab *ngIf="clubAdminList.length > 0" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab
+      *ngIf="clubAdminList.length > 0"
+      vertical="bottom"
+      horizontal="end"
+      slot="fixed"
+    >
       <ion-fab-button (click)="openEventCreateModal()">
         <ion-icon name="add-outline"></ion-icon>
       </ion-fab-button>
