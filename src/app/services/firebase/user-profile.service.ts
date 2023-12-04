@@ -84,7 +84,8 @@ export class UserProfileService {
   async addPushSubscriber(
     sub: PushSubscription,
     deviceId: DeviceId,
-    deviceInfo: DeviceInfo
+    deviceInfo: DeviceInfo,
+    token: string
   ) {
     const user = this.authService.auth.currentUser;
     const pushObject = JSON.stringify(sub);
@@ -98,7 +99,8 @@ export class UserProfileService {
       model: deviceInfo.model || "",
       operatingSystem: deviceInfo.operatingSystem || "",
       osVersion: deviceInfo.osVersion || "",
-      platform: deviceInfo.platform || "",
+      platform: deviceInfo.platform || "", // --> set to "Web" for Web Push from Backend or "Native" for Native Push from firebase
+      token: token || "", // Set token for native Web Push
     });
   }
 

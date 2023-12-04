@@ -188,7 +188,9 @@ export class ChampionshipPage implements OnInit {
               map(({ teamDetails, rankingsTable, rankingDetails }) => ({
                 ...teamDetails,
                 teamId: teamDetails.id,
-                rankings: rankingsTable,
+                rankings: rankingsTable.sort((a,b)=>{
+                  return a.ranking as number - b.ranking as number;
+                }),
                 details: rankingDetails,
               })),
               tap((result) =>

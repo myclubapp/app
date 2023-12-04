@@ -355,7 +355,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
       console.log(sub.toJSON());
       if (sub && this.deviceId) {
         const profileUpdate = await this.profileService
-          .addPushSubscriber(sub, this.deviceId, this.deviceInfo)
+          .addPushSubscriber(sub, this.deviceId, this.deviceInfo, "")
           .catch((err) => {
             console.error("Could not subscribe to notifications", err);
             this.errorPushMessageEnable("Could not subscribe to notifications");
