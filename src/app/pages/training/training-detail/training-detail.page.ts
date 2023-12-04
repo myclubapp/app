@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { ModalController, NavParams, ToastController } from "@ionic/angular";
+import { IonRouterOutlet } from "@ionic/angular/common";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
@@ -17,6 +18,7 @@ import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { TrainingExercisesPage } from "../training-exercises/training-exercises.page";
 
 @Component({
   selector: "app-training-detail",
@@ -46,7 +48,8 @@ export class TrainingDetailPage implements OnInit {
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
-    private translate: TranslateService
+    private translate: TranslateService,
+    // private readonly routerOutlet: IonRouterOutlet,
   ) {}
 
   ngOnInit() {
@@ -174,4 +177,25 @@ export class TrainingDetailPage implements OnInit {
   async confirm() {
     return await this.modalCtrl.dismiss(this.training, "confirm");
   }
+
+  async openTrainingExerciseModal() {
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalCtrl.create({
+      component: TrainingExercisesPage,
+      // presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+       
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+
 }

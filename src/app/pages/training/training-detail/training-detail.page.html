@@ -52,6 +52,14 @@
       </ion-item>
     </ion-list>
 
+
+    <ion-list [inset]="true" lines="none">
+      <ion-item (click)="openTrainingExerciseModal()" detail="true">
+        Exercise
+      </ion-item>
+    </ion-list>
+
+
     <ion-list [inset]="true" lines="none" *ngIf="isFuture">
       <ion-list-header>
         {{"common.attendances__absences" | translate}}
