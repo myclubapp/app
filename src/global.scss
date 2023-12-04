@@ -25,6 +25,7 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+
 ion-content {
     --background: transparent;
 }
@@ -32,12 +33,15 @@ ion-content {
 body {
     background: transparent;
 }
+
 ion-content {
     --ion-background-color: transparent;
 }
+
 html {
     background-color: transparent;
 }
+
 // ion-header {
 //     --background: transparent;
 // }
@@ -59,8 +63,14 @@ ion-spinner {
 // Alert iOS Popup
 @media (prefers-color-scheme: dark) {
     .ios input {
-      --ion-text-color: #FFFFFF;
-      --ion-text-color-rgb: 255, 255, 255;
-      color: var(--ion-text-color);
+        --ion-text-color: #FFFFFF;
+        --ion-text-color-rgb: 255, 255, 255;
+        color: var(--ion-text-color);
+    }
+
+    .md input {
+        --ion-text-color: #FFFFFF;
+        --ion-text-color-rgb: 255, 255, 255;
+        color: var(--ion-text-color);
     }
 }
