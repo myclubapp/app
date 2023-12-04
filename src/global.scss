@@ -55,3 +55,12 @@ ion-spinner {
     right: 50%;
     top: 30%;
 }
+
+// Alert iOS Popup
+@media (prefers-color-scheme: dark) {
+    .ios input {
+      --ion-text-color: #FFFFFF;
+      --ion-text-color-rgb: 255, 255, 255;
+      color: var(--ion-text-color);
+    }
+}

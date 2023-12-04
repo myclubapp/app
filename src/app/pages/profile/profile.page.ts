@@ -417,6 +417,88 @@ export class ProfilePage implements OnInit, AfterViewInit {
     );
   }
 
+  async changeEmail(oldEmail: string){
+    const alert = await this.alertController.create({
+      message: "Change Email",
+      header: "Change Email Header",
+      inputs: [
+        { 
+          label: "Old E-Mail",
+          name: "oldEmail",
+          type: "email",
+          value: oldEmail
+        },
+        { 
+          label: "New E-Mail",
+          name: "newEmail",
+          type: "email"
+        }
+      ],
+      buttons: [{
+        text: "Save",
+        role: "",
+        handler: async (data)=>{
+          console.log(data);
+          await this.authService.updateEmail(data.newEmail);
+          await this.profileChange({detail: {value: data.newEmail}}, "email")
+          alert.dismiss();
+        }
+      },
+    {
+      text: "Cancel",
+      handler: ()=>{
+        alert.dismiss();
+      }
+    }]
+
+    });
+    alert.present();
+    // alert.onDidDismiss
+  }
+
+  async changeAddress(profile: Profile) {
+    const alert = await this.alertController.create({
+      message: "Change Address",
+      header: "Change Address Header",
+      inputs: [
+        {
+          label: "Street and Number",
+          name: "streetAndNumber",
+          type: "text",
+          value: profile.streetAndNumber
+        },
+        {
+          label: "Postalcode",
+          name: "postalcode",
+          type: "number",
+          value: profile.postalcode
+        },
+        { 
+          label: "City",
+          name: "city",
+          type: "text",
+          value: profile.city
+        }
+      ],
+      buttons: [{
+        text: "Save",
+        role: "",
+        handler: ()=>{
+          alert.dismiss();
+        }
+      },
+    {
+      text: "Cancel",
+      handler: ()=>{
+        alert.dismiss();
+      }
+    }]
+
+    });
+    alert.present();
+  }
+
+
   /*
   async languageChange(event) {
     console.log(event.target.value);

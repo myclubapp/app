@@ -57,84 +57,28 @@
         </ion-input>
       </ion-item>
 
-      <ion-item>
-        <ion-input
-          labelPlacement="stacked"
-          [label]='"common.street_number" | translate'
-          attr.aria-label='{{"common.street_number" | translate}}'
-          (ionChange)="profileChange($event, 'streetAndNumber')"
-          [(ngModel)]="userProfile.streetAndNumber"
-          value="{{userProfile.streetAndNumber}}"
-        >
-        </ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-input
-          labelPlacement="stacked"
-          [label]='"common.postalcode" | translate'
-          attr.aria-label='{{"common.postalcode" | translate}}'
-          (ionChange)="profileChange($event,'postalcode' )"
-          [(ngModel)]="userProfile.postalcode"
-          value="{{userProfile.postalcode}}"
-        >
-        </ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-input
-          labelPlacement="stacked"
-          [label]='"common.city" | translate'
-          attr.aria-label='{{"common.city" | translate}}'
-          (ionChange)="profileChange($event, 'city')"
-          [(ngModel)]="userProfile.city"
-          value="{{userProfile.city}}"
-        >
-        </ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-input
-          labelPlacement="stacked"
-          [label]='"common.license__number" | translate'
-          attr.aria-label='{{"common.license__number" | translate}}'
-          (ionChange)="profileChange($event, 'licenseNumber')"
-          [(ngModel)]="userProfile.licenseNumber"
-          value="{{userProfile.licenseNumber}}"
-        >
-        </ion-input>
-      </ion-item>
-
-      <ion-item>
+      <!--<ion-item>
         <ion-input labelPlacement="stacked" [label]='"profile.birthdate" | translate'
           attr.aria-label='{{"profile.birthdate" | translate}}'
-          
           value="{{userProfile.dateOfBirth.toDate() | date:'dd.MM.YYYY '}}">
         </ion-input>
-      </ion-item>
+      </ion-item>-->
 
-      <ion-item id="dateOfBirth">
-        <ion-label position="stacked"> {{"profile.birthdate" | translate}}: </ion-label>
-        <ion-datetime-button slot="end" datetime="dateOfBirth"></ion-datetime-button>
+      <ion-item id="dateOfBirthItem">
+        <ion-label position=""> {{"profile.birthdate" | translate}}: </ion-label>
+        <ion-datetime-button  slot="end" datetime="dateOfBirth"></ion-datetime-button>
   
         <ion-modal [keepContentsMounted]="true">
           <ng-template>
-            <ion-datetime presentation="date" id="dateOfBirth"
-               value="{{userProfile.dateOfBirth}}"
-              [(ngModel)]="userProfile.dateOfBirth"></ion-datetime>
+            <ion-datetime [firstDayOfWeek]="1"  presentation="date" id="dateOfBirth"
+              value="{{userProfile.dateOfBirth.toDate().toISOString()}}"
+             ></ion-datetime>
           </ng-template>
         </ion-modal>
       </ion-item>
 
 
 
-
-      <ion-item>
-        <ion-input labelPlacement="stacked" [label]='"profile.email" | translate'
-          attr.aria-label='{{"profile.email" | translate}}' readonly [(ngModel)]="userProfile.email"
-          value="{{userProfile.email}}">
-        </ion-input>
-      </ion-item>
       <ion-item>
         <ion-select
           [label]="'profile.language' | translate"
@@ -156,21 +100,65 @@
           >
         </ion-select>
       </ion-item>
-    </ion-list>
 
+    </ion-list>
+    <ion-list lines="full" [inset]="true">
+      <ion-list-header>
+        <ion-label>
+          {{ "profile.contact__information" | translate}}
+        </ion-label>
+      </ion-list-header>
+
+      <ion-item >
+        <ion-input labelPlacement="stacked" [label]='"profile.phonenumber" | translate'
+          attr.aria-label='{{"profile.phonenumber" | translate}}' [(ngModel)]="userProfile.phonenumber"
+          type="tel"
+          value="{{userProfile.phonenumber}}" (ionChange)="profileChange($event, 'phonenumber')" >
+        </ion-input>
+      </ion-item>
+
+      <ion-item type="button" detail="true">
+        <ion-input labelPlacement="stacked" [label]='"profile.email" | translate'
+          attr.aria-label='{{"profile.email" | translate}}' readonly [(ngModel)]="userProfile.email"
+          value="{{userProfile.email}}" (click)="changeEmail(userProfile.email)" >
+        </ion-input>
+      </ion-item>
+      
+      <ion-item (click)="changeAddress(userProfile)" type="button" detail="true">
+    
+        <ion-input 
+        labelPlacement="stacked" [label]='"profile.address" | translate'
+          attr.aria-label='{{"profile.address" | translate}}' 
+        value="{{userProfile.streetAndNumber}}, {{userProfile.postalcode}} {{userProfile.city}}">
+
+        </ion-input>
+      </ion-item>
+    </ion-list>
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
         <ion-label>
-          {{ "profile.adresse" | translate}}
+          {{ "profile.sport" | translate}}
         </ion-label>
       </ion-list-header>
-      <ion-item type="button" detail="true">
-        <ion-label>
-          Villenstrasse 4, 8200 Schaffhausen
-        </ion-label>
+
+      <ion-item>
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"common.license__number" | translate'
+          attr.aria-label='{{"common.license__number" | translate}}'
+          (ionChange)="profileChange($event, 'licenseNumber')"
+          [(ngModel)]="userProfile.licenseNumber"
+          value="{{userProfile.licenseNumber}}"
+        >
+        </ion-input>
       </ion-item>
+
+
     </ion-list>
+
+
+
 
 <!--
     <ion-list *ngIf="clubRequestList.length > 0" lines="full" [inset]="true">

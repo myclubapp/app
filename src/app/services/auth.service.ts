@@ -12,6 +12,7 @@ import {
   sendPasswordResetEmail,
   sendEmailVerification,
   signInWithEmailAndPassword,
+  updateEmail,
   signOut,
   updateProfile,
   UserCredential,
@@ -93,6 +94,10 @@ export class AuthService {
   async resetPassword(email: string): Promise<void> {
     return await sendPasswordResetEmail(this.auth, email);
   }
+
+  async updateEmail(newEmail: string): Promise<void> {
+    return updateEmail(this.auth.currentUser, newEmail);
+  } 
 
   async logout(): Promise<void> {
     await signOut(this.auth);

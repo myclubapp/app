@@ -10,7 +10,7 @@ export interface Profile {
   firstName: string;
   lastName: string;
   profilePicture: string;
-  phone: number;
+  phonenumber: number;
   dateOfBirth: Timestamp;
   streetAndNumber: string;
   postalcode: number;

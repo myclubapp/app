@@ -82,7 +82,7 @@
     "@angular/localize": "^16.2.12",
     "@capacitor/cli": "5.5.1",
     "@ionic/angular-toolkit": "9.0.0",
-    "@ionic/cli": "^6.18.0",
+    "@ionic/cli": "7.1.5",
     "@ionic/lab": "3.2.15",
     "@types/jasmine": "4.3.1",
     "@types/jasminewd2": "~2.0.3",
