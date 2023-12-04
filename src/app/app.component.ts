@@ -260,7 +260,8 @@ export class AppComponent implements OnInit {
     await this.profileService.addPushSubscriber(
       pushSubscription,
       this.deviceId,
-      this.deviceInfo
+      this.deviceInfo,
+      ""
     );
   }
 
