@@ -261,11 +261,11 @@ export class ProfilePage implements OnInit, AfterViewInit {
   async togglePush(event) {
     // console.log(event);
     await this.profileService.changeSettingsPush(event.detail.checked);
-    if (event.detail.checked) {
+    /*if (event.detail.checked) {
       this.alertAskForPush();
     } else {
       console.log("disable push");
-    }
+    }*/
   }
 
   async toggleEmail(event) {
@@ -282,14 +282,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.toastActionSaved();
   }
 
-  async askForPush() {
-    if (this.swPush.isEnabled) {
-      // Push is available
-      this.alertAskForPush();
-    } else {
-      this.alertPushNotSupported();
-    }
-  }
+
   async addListeners() {
     await PushNotifications.addListener('registration', async token => {
       console.info('Registration token: ', token.value);
@@ -336,10 +329,40 @@ export class ProfilePage implements OnInit, AfterViewInit {
     if (this.deviceInfo.platform == "android" || this.deviceInfo.platform == "ios") {
       this.subscribeMobileNotifications();
     } else {
-      this.subscribeToNotifications();
+      // this.subscribeToNotifications();
     }
   }
 
+
+
+  async errorPushMessageEnable(error) {
+    const alert = await this.alertController.create({
+      header: await lastValueFrom(
+        this.translate.get("profile.error_push_service_not_available")
+      ),
+      message:
+        (await lastValueFrom(this.translate.get("profile.error_text"))) + error,
+      buttons: [{ text: "OK" }],
+    });
+    alert.present();
+  }
+
+  
+  async deletePushDevice(id) {
+    await this.profileService.deletePushDevice(id);
+    await this.toastActionSaved();
+  }
+
+  /* WEB PUSH STUFF
+
+  async askForPush() {
+    if (this.swPush.isEnabled) {
+      // Push is available
+      this.alertAskForPush();
+    } else {
+      this.alertPushNotSupported();
+    }
+  }
   async alertPushNotSupported() {
     const alert = await this.alertController.create({
       header: await lastValueFrom(
@@ -354,19 +377,6 @@ export class ProfilePage implements OnInit, AfterViewInit {
     });
     alert.present();
   }
-
-  async errorPushMessageEnable(error) {
-    const alert = await this.alertController.create({
-      header: await lastValueFrom(
-        this.translate.get("profile.error_push_service_not_available")
-      ),
-      message:
-        (await lastValueFrom(this.translate.get("profile.error_text"))) + error,
-      buttons: [{ text: "OK" }],
-    });
-    alert.present();
-  }
-
   async alertAskForPush() {
     const alert = await this.alertController.create({
       header: await lastValueFrom(
@@ -386,11 +396,6 @@ export class ProfilePage implements OnInit, AfterViewInit {
       ],
     });
     alert.present();
-  }
-
-  async deletePushDevice(id) {
-    await this.profileService.deletePushDevice(id);
-    await this.toastActionSaved();
   }
 
   async subscribeToNotifications() {
@@ -417,7 +422,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
       console.log(err);
       this.alertPushNotSupported();
     }
-  }
+  }*/
   async presentDeleteProfile() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(
