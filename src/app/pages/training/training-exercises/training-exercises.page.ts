@@ -18,7 +18,7 @@ export class TrainingExercisesPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.exercisesList$ = this.getExercises();
+    this.exercisesList$ = this.getExercises("swissunihockey");
     this.exercisesList$.subscribe({
       next: () => {
         console.log("Training Data received");

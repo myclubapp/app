@@ -17,14 +17,14 @@ export class ExerciseService {
     return docData(exercisesRef, { idField: "id" }) as Observable<any>;
   }
 
-  getExerciseRefs(): Observable<any[]> {
+  getExerciseRefs(type: string): Observable<any[]> {
     const exercisesRefList = collection(this.firestore, `exercises`);
     const q = query(
       exercisesRefList,
       where(
         "type",
         ">=",
-        "swissunihockey"
+        type
         )
       )
   
