@@ -20,7 +20,7 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { AuthService } from "src/app/services/auth.service";
 
 // Push
-import { SwPush } from "@angular/service-worker";
+// import { SwPush } from "@angular/service-worker";
 
 // models
 import { Profile } from "src/app/models/user";
@@ -64,7 +64,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
   constructor(
-    private readonly swPush: SwPush,
+    // private readonly swPush: SwPush,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly profileService: UserProfileService,
