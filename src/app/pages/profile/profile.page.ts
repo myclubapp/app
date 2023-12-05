@@ -416,6 +416,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
       fieldname
     );
   }
+<<<<<<< Updated upstream
 
   async changeEmail(oldEmail: string){
     const alert = await this.alertController.create({
@@ -516,4 +517,6 @@ export class ProfilePage implements OnInit, AfterViewInit {
   async setFavClub(event) {
     await this.profileService.changeFavClub(event.detail.value);
   }*/
+=======
+>>>>>>> Stashed changes
 }
