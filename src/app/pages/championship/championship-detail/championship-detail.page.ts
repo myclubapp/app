@@ -66,32 +66,33 @@ export class ChampionshipDetailPage implements OnInit {
 
   ngOnInit() {
     // console.log(this.navParams);
-    this.game = this.navParams.get("data");
-    //this.route.queryParams.subscribe((params) => {
-    // console.log(params);
-    // this.game = JSON.parse(params.data);
-    this.game$ = of(this.game);
+    // this.game = this.navParams.get("data");
 
-    this.attendeeListTrue = [];
-    this.attendeeListFalse = [];
-    this.attendeeListUndefined = [];
+    this.route.queryParams.subscribe((params) => {
+      console.log(params);
+      this.game = JSON.parse(params.data);
+      this.game$ = of(this.game);
 
-    this.game$ = this.getGame(this.game.teamId, this.game.id);
-    this.game$.subscribe({
-      next: (data) => {
-        console.log("GAMES Data received");
-        this.game = {
-          ...this.game,
-          ...data,
-        };
-        this.cdr.detectChanges();
+      this.attendeeListTrue = [];
+      this.attendeeListFalse = [];
+      this.attendeeListUndefined = [];
 
-        this.setMap();
-      },
-      error: (err) => console.error("GAMES Error in subscription:", err),
-      complete: () => console.log("GAMES Observable completed"),
+      this.game$ = this.getGame(this.game.teamId, this.game.id);
+      this.game$.subscribe({
+        next: (data) => {
+          console.log("GAMES Data received");
+          this.game = {
+            ...this.game,
+            ...data,
+          };
+          this.cdr.detectChanges();
+
+          this.setMap();
+        },
+        error: (err) => console.error("GAMES Error in subscription:", err),
+        complete: () => console.log("GAMES Observable completed"),
+      });
     });
-    //  });
 
     // let this.mapRef =  @ViewChild('map') abc;
   }
@@ -202,8 +203,8 @@ export class ChampionshipDetailPage implements OnInit {
   }
 
   async close() {
-    return await this.modalCtrl.dismiss(null, "close");
-    // this.navController.pop();
+    // return await this.modalCtrl.dismiss(null, "close");
+    this.navController.pop();
   }
 
   async confirm() {

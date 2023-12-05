@@ -51,6 +51,7 @@ import { TranslateHttpLoader } from "@ngx-translate/http-loader";
     AppComponent,
     NewsDetailPage,
     // ChampionshipDetailPage,
+    TrainingExercisesPage,
     TrainingDetailPage,
     TrainingCreatePage,
     EventAddPage,

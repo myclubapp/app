@@ -121,13 +121,7 @@ const routes: Routes = [
         "./pages/championship/championship-detail/championship-detail.module"
       ).then((m) => m.ChampionshipDetailPageModule),
   },
-  {
-    path: "**",
-    loadChildren: () =>
-      import("./pages/not-found/not-found.module").then(
-        (m) => m.NotFoundPageModule
-      ),
-  },
+
   {
     path: "helfer",
     loadChildren: () =>
@@ -156,12 +150,13 @@ const routes: Routes = [
         (m) => m.LineupPageModule
       ),
   },
+
   {
-    path: "training-exercises",
+    path: "**",
     loadChildren: () =>
-      import(
-        "./pages/training/training-exercises/training-exercises.module"
-      ).then((m) => m.TrainingExercisesPageModule),
+      import("./pages/not-found/not-found.module").then(
+        (m) => m.NotFoundPageModule
+      ),
   },
 ];
 

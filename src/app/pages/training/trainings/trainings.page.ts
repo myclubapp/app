@@ -48,8 +48,8 @@ export class TrainingsPage implements OnInit {
   trainingListBackup$: Observable<Training[]>;
   trainingListPastBackup$: Observable<Training[]>;
 
-  trainingListBackupSub: Subscription;
-  trainingListPastBackupSub: Subscription;
+   trainingListBackupSub: Subscription;
+   trainingListPastBackupSub: Subscription;
 
   teamList$: Observable<Team[]>;
   teamAdminList$: Observable<Team[]>;
@@ -150,11 +150,17 @@ export class TrainingsPage implements OnInit {
   }
 
   ngOnDestroy(): void {
-    this.trainingListBackupSub.unsubscribe();
-    this.trainingListPastBackupSub.unsubscribe();
+    if (this.trainingListPastBackupSub){
+      this.trainingListPastBackupSub.unsubscribe();
+    }
+    if (this.trainingListBackupSub){
+      this.trainingListBackupSub.unsubscribe();
+    }
 
     // Unsubscribe to prevent memory leaks
-    this.teamFilterSubscription.unsubscribe();
+    if (this.teamFilterSubscription) {
+      this.teamFilterSubscription.unsubscribe();
+    }
   }
 
   getTeamTraining() {

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit, ElementRef } from "@angular/core";
 import { ModalController, NavParams, ToastController } from "@ionic/angular";
 import { IonRouterOutlet } from "@ionic/angular/common";
 import { TranslateService } from "@ngx-translate/core";
@@ -49,7 +49,6 @@ export class TrainingDetailPage implements OnInit {
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService,
-    // private readonly routerOutlet: IonRouterOutlet,
   ) {}
 
   ngOnInit() {
@@ -182,7 +181,7 @@ export class TrainingDetailPage implements OnInit {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: TrainingExercisesPage,
-      // presentingElement: , //this.routerOutlet.nativeEl,
+      presentingElement: await this.modalCtrl.getTop(),
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
