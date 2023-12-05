@@ -109,28 +109,6 @@ export class ProfilePage implements OnInit, AfterViewInit {
       complete: () => console.log("Club Observable completed"),
     });
 
-    /*    this.subscription = this.authService.getUser$().pipe(
-      take(1),
-      tap(user => this.user = user),
-      switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
-    ).subscribe(profile => {
-      console.log("profile==>",profile);
-      this.userProfile$ = of(profile);
-      if(profile){
-        if(profile.language){
-            if(profile.language.length > 0){
-              this.translate.use(profile.language);
-              // this.translate.set("SELECTED_LANGUAGE", profile.language);
-            }
-        }
-      }
-    })
-    */
-
-    // await this.getUser();
-    // this.getClubRequestList();
-    // this.getTeamRequestList();
-    this.getPushDeviceList();
     this.deviceId = await Device.getId();
     this.deviceInfo = await Device.getInfo();
     // console.log(this.deviceInfo);
@@ -161,8 +139,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   getClubRequestList() { }
   getTeamRequestList() { }
-
-  async getPushDeviceList() { }
+  getPushDeviceList() { }
 
   async takePicture() {
     const loading = await this.loadingController.create({
