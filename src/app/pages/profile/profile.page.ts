@@ -289,7 +289,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
       this.alertPushNotSupported();
     }
   }
-
+  subscribeMobileNotifications(){
+    
+  }
   registerDevice() {
     this.subscribeToNotifications();
   }
