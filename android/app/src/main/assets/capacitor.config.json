@@ -8,5 +8,14 @@
 		]
 	},
 	"bundledWebRuntime": false,
-	"android": {}
+	"android": {},
+	"plugins": {
+		"PushNotifications": {
+			"presentationOptions": [
+				"badge",
+				"sound",
+				"alert"
+			]
+		}
+	}
 }

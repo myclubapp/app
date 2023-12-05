@@ -13,6 +13,7 @@ import {
 } from "rxjs";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
 import { User } from "@angular/fire/auth";
+import { PushNotifications } from '@capacitor/push-notifications';
 
 // Services
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -139,7 +140,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     // this.getClubList();
     // this.getTeamList();
   }
-  ngOnDestroy() {}
+  ngOnDestroy() { }
 
   getUserProfile(): Observable<any> {
     // Replace 'any' with the actual type of the user profile
@@ -158,10 +159,10 @@ export class ProfilePage implements OnInit, AfterViewInit {
     );
   }
 
-  getClubRequestList() {}
-  getTeamRequestList() {}
+  getClubRequestList() { }
+  getTeamRequestList() { }
 
-  async getPushDeviceList() {}
+  async getPushDeviceList() { }
 
   async takePicture() {
     const loading = await this.loadingController.create({
@@ -289,11 +290,54 @@ export class ProfilePage implements OnInit, AfterViewInit {
       this.alertPushNotSupported();
     }
   }
-  subscribeMobileNotifications(){
-    
+  async addListeners() {
+    await PushNotifications.addListener('registration', async token => {
+      console.info('Registration token: ', token.value);
+      if (token.value) {
+        const profileUpdate = await this.profileService
+          .addPushSubscriber(null, this.deviceId, this.deviceInfo, token.value)
+          .catch((err) => {
+            console.error("Could not subscribe to notifications", err);
+            this.errorPushMessageEnable("Could not subscribe to notifications");
+          });
+      }
+    });
+
+    await PushNotifications.addListener('registrationError', err => {
+      console.error('Registration error: ', err.error);
+    });
+
+    await PushNotifications.addListener('pushNotificationReceived', notification => {
+      console.log('Push notification received: ', notification);
+    });
+
+    await PushNotifications.addListener('pushNotificationActionPerformed', notification => {
+      console.log('Push notification action performed', notification.actionId, notification.inputValue);
+    });
+  }
+  async registerNotifications() {
+    let permStatus = await PushNotifications.checkPermissions();
+    if (permStatus.receive === 'prompt') {
+      permStatus = await PushNotifications.requestPermissions();
+    }
+    if (permStatus.receive !== 'granted') {
+      throw new Error('User denied permissions!');
+    }
+    PushNotifications.removeAllListeners();
+    await this.addListeners();
+    await PushNotifications.register();
+  }
+
+  subscribeMobileNotifications() {
+    this.registerNotifications();
   }
   registerDevice() {
-    this.subscribeToNotifications();
+    console.log(this.deviceInfo);
+    if (this.deviceInfo.platform == "android" || this.deviceInfo.platform == "ios") {
+      this.subscribeMobileNotifications();
+    } else {
+      this.subscribeToNotifications();
+    }
   }
 
   async alertPushNotSupported() {
@@ -419,18 +463,18 @@ export class ProfilePage implements OnInit, AfterViewInit {
     );
   }
 
-  async changeEmail(oldEmail: string){
+  async changeEmail(oldEmail: string) {
     const alert = await this.alertController.create({
       message: "Change Email",
       header: "Change Email Header",
       inputs: [
-        { 
+        {
           label: "Old E-Mail",
           name: "oldEmail",
           type: "email",
           value: oldEmail
         },
-        { 
+        {
           label: "New E-Mail",
           name: "newEmail",
           type: "email"
@@ -439,19 +483,19 @@ export class ProfilePage implements OnInit, AfterViewInit {
       buttons: [{
         text: "Save",
         role: "",
-        handler: async (data)=>{
+        handler: async (data) => {
           console.log(data);
           await this.authService.updateEmail(data.newEmail);
-          await this.profileChange({detail: {value: data.newEmail}}, "email")
+          await this.profileChange({ detail: { value: data.newEmail } }, "email")
           alert.dismiss();
         }
       },
-    {
-      text: "Cancel",
-      handler: ()=>{
-        alert.dismiss();
-      }
-    }]
+      {
+        text: "Cancel",
+        handler: () => {
+          alert.dismiss();
+        }
+      }]
 
     });
     alert.present();
@@ -475,7 +519,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
           type: "number",
           value: profile.postalcode
         },
-        { 
+        {
           label: "City",
           name: "city",
           type: "text",
@@ -485,16 +529,16 @@ export class ProfilePage implements OnInit, AfterViewInit {
       buttons: [{
         text: "Save",
         role: "",
-        handler: ()=>{
+        handler: () => {
           alert.dismiss();
         }
       },
-    {
-      text: "Cancel",
-      handler: ()=>{
-        alert.dismiss();
-      }
-    }]
+      {
+        text: "Cancel",
+        handler: () => {
+          alert.dismiss();
+        }
+      }]
 
     });
     alert.present();

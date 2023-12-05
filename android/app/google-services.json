@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "631527568360",
+    "firebase_url": "https://myclubmanagement.firebaseio.com",
+    "project_id": "myclubmanagement",
+    "storage_bucket": "myclubmanagement.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:631527568360:android:482505b348e2a647fc6a5d",
+        "android_client_info": {
+          "package_name": "app.myclub.defaultapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "631527568360-1eim3r9sj5640lr0tlsc8ll3fi7cv6b3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeSWVv8x3PZVBcxx7MhXz2B8Z69_pXLKA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "631527568360-1eim3r9sj5640lr0tlsc8ll3fi7cv6b3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "631527568360-9fqnkikk6g8e6o9kq0rbatand6q6589n.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "app.mylcub",
+                "app_store_id": "1551604768"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
