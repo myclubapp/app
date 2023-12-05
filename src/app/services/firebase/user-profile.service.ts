@@ -82,10 +82,10 @@ export class UserProfileService {
   }
 
   async addPushSubscriber(
-    sub: PushSubscription,
+    sub: PushSubscription,  // WebPush
     deviceId: DeviceId,
     deviceInfo: DeviceInfo,
-    token: string
+    token: string // native
   ) {
     const user = this.authService.auth.currentUser;
     const pushObject = JSON.stringify(sub);

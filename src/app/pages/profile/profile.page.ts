@@ -152,7 +152,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
       spinner: "circular",
     });
 
-    const image = await Camera.getPhoto({
+    const image: Photo = await Camera.getPhoto({
       quality: 90,
       allowEditing: true,
       resultType: CameraResultType.Base64,
