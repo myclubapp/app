@@ -182,7 +182,7 @@ export class TrainingDetailPage implements OnInit {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: TrainingExercisesPage,
-      // presentingElement: this.routerOutlet.nativeEl,
+      // presentingElement: , //this.routerOutlet.nativeEl,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
