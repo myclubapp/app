@@ -83,14 +83,7 @@ export class ChampionshipPage implements OnInit {
 
   ngOnInit() {
     this.teamRankings$ = this.getTeamsWithRankingsForYear("2023");
-    this.teamRankings$.subscribe({
-      next: () => {
-        console.log("RANKING Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("RANKING Error in subscription:", err),
-      complete: () => console.log("RANKING Observable completed"),
-    });
+   
     this.teamRankingsBackup$ = this.getTeamsWithRankingsForYear("2023");
     this.teamRankingsBackup$.subscribe({
       next: () => {
@@ -102,14 +95,7 @@ export class ChampionshipPage implements OnInit {
     });
 
     this.gameList$ = this.getTeamGamesUpcoming();
-    this.gameList$.subscribe({
-      next: (data) => {
-        console.log("GAMES Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("GAMES Error in subscription:", err),
-      complete: () => console.log("GAMES Observable completed"),
-    });
+   
     this.gameListBackup$ = this.getTeamGamesUpcoming();
     this.gameListBackup$.subscribe({
       next: (data) => {
@@ -121,14 +107,7 @@ export class ChampionshipPage implements OnInit {
     });
 
     this.gameListPast$ = this.getTeamGamesPast();
-    this.gameListPast$.subscribe({
-      next: () => {
-        console.log("GAMES PAST Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("GAMES PAST Error in subscription:", err),
-      complete: () => console.log("GAMES PAST Observable completed"),
-    });
+   
     this.gameListPastBackup$ = this.getTeamGamesPast();
     this.gameListPastBackup$.subscribe({
       next: () => {

@@ -16,7 +16,7 @@
       <ion-title size="large">Exercise</ion-title>
     </ion-toolbar>
     <ion-toolbar>
-      <ion-searchbar animated="true" (ionInput)="handleSearch($event)" placeholder="Passspiel" show-clear-button="focus"></ion-searchbar>
+      <ion-searchbar [debounce]="500" animated="true" (ionInput)="handleSearch($event)" placeholder="Passspiel" show-clear-button="focus"></ion-searchbar>
     </ion-toolbar>
   </ion-header>
 

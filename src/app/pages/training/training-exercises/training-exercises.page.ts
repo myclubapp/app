@@ -11,6 +11,7 @@ import { ExerciseService } from "src/app/services/firebase/exercise.service";
 })
 export class TrainingExercisesPage implements OnInit {
   exercisesList$: Observable<any[]>;
+  exercisesListBackup$: Observable<any[]>;
   skeleton = new Array(12);
 
   constructor(
@@ -21,14 +22,16 @@ export class TrainingExercisesPage implements OnInit {
 
   ngOnInit() {
     this.exercisesList$ = this.getExercises("swissunihockey");
+    this.exercisesListBackup$ = this.getExercises("swissunihockey");
   }
   handleSearch(event) {
-    console.log(event.detail.value)
-    this.exercisesList$.pipe(
-      map(exercise=>{
-        exercise.filter(exercise => exercise.title.toLowerCase().includes(event.detail.value.toLowerCase()))
+    console.log(event.detail.value);
+
+    this.exercisesList$ = this.exercisesListBackup$.pipe(
+      map(items => {
+       return items.filter(element => element.title.toLowerCase().includes(event.detail.value.toLowerCase()));
       })
-    )
+    )  
   }
 
 
