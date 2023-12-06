@@ -39,7 +39,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private readonly swUpdate: SwUpdate,
-    private readonly swPush: SwPush,
+    // private readonly swPush: SwPush,
     private readonly alertController: AlertController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -48,7 +48,7 @@ export class AppComponent implements OnInit {
     public readonly menuCtrl: MenuController,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
-    private platform: Platform
+    // private platform: Platform
   ) {
     this.initializeApp();
 
@@ -196,12 +196,12 @@ export class AppComponent implements OnInit {
       }
     );
 
-    this.requestSubscription();
-    this.swPush.messages.subscribe((message) => {
+    // this.requestSubscription();
+    /*this.swPush.messages.subscribe((message) => {
       console.log(message);
 
       this.alertPushMessage(message);
-    });
+    });*/
   }
 
   ngOnDestroy() {
@@ -255,7 +255,7 @@ export class AppComponent implements OnInit {
   }
 
 
-  async requestSubscription() {
+  /*async requestSubscription() {
     if (!this.swPush.isEnabled) {
       console.log("Notification is not enabled.");
       return;
@@ -275,7 +275,7 @@ export class AppComponent implements OnInit {
       this.deviceInfo,
       ""
     );
-  }
+  }*/
 
   async alertPushMessage(message) {
     const alert = await this.alertController.create({
