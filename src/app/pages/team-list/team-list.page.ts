@@ -47,44 +47,19 @@ export class TeamListPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.teamList$ = this.getTeamList();
-    this.teamList$.subscribe({
+    this.teamList$ = this.fbService.getTeamList();
+    /*this.teamList$.subscribe({
       next: (data) => {
         console.log("ClubList Data received");
         this.cdr.detectChanges();
       },
       error: (err) => console.error("ClubList Error in subscription:", err),
       complete: () => console.log("ClubList Observable completed"),
-    });
+    });*/
   }
 
   ngOnDestroy() {}
 
-  getTeamList() {
-    return this.authService.getUser$().pipe(
-      take(1),
-      tap((user) => {
-        this.user = user;
-      }),
-      switchMap((user) => {
-        if (!user) return of([]);
-        return this.fbService.getUserTeamRefs(user);
-      }),
-      tap((teams) => console.log("Clubs:", teams)),
-      mergeMap((teams) => {
-        if (teams.length === 0) return of([]);
-        return combineLatest(
-          teams.map((team) => this.fbService.getTeamRef(team.id))
-        );
-      }),
-      map((teamsDetails) => teamsDetails.flat()), // Flatten to get all teams details
-      tap((results) => console.log("Final results with all Clubs:", results)),
-      catchError((err) => {
-        console.error("Error in getClubList:", err);
-        return of([]); // Return an empty array on error
-      })
-    );
-  }
 
   getAvailableTeamList() {
     // console.log("getAvailableTeamList");

@@ -36,47 +36,9 @@ export class ClubListPage implements OnInit {
 
   ngOnInit() {
 
-    this.clubList$  = this.getClubList();
-    this.clubList$.subscribe({
-      next: (data) => {
-        console.log("ClubList Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("ClubList Error in subscription:", err),
-      complete: () => console.log("ClubList Observable completed")
-    });
+    this.clubList$  = this.fbService.getClubList();
+    
 
-/*    const clubList: Club[] = [];
-    clubList.length = 0;
-
-    const clubs$ = this.authService.getUser$().pipe(
-      take(1),
-      switchMap(user => this.fbService.getUserClubRefs(user).pipe(take(1))),  
-      concatMap(clubArray => from(clubArray)),
-      tap((club:Club)=>console.log(club.id)),
-      concatMap(club => 
-        this.fbService.getClubRef(club.id).pipe(
-          take(1),
-          defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
-          map(result => [result]),
-          catchError(error => {
-            console.error('Error fetching ClubDetail:', error);
-            return of([]);
-          })
-        )
-      ),
-      tap(clubs => clubs.forEach(club => {
-        return clubList.push(club);
-      })),
-      finalize(() => console.log("Get Club completed"))
-  );
-
-  this.subscription = forkJoin([clubs$]).subscribe({
-    next: () => {    
-          this.clubList$ = of(clubList);
-    },
-    error: err => console.error('Error in the observable chain:', err)
-  });*/
   }
   ngOnDestroy(): void {
    /* if (this.subscription) {
@@ -101,34 +63,6 @@ export class ClubListPage implements OnInit {
     if (role === "confirm") {
     }
   }
-
-
-  getClubList() {
-    return this.authService.getUser$().pipe(
-      take(1),
-      tap(user=>{
-        this.user = user;
-      }),
-      switchMap(user => {
-        if (!user) return of([]);
-        return this.fbService.getUserClubRefs(user);
-      }),
-      tap(clubs => console.log("Clubs:", clubs)),
-      mergeMap(clubs => {
-        if (clubs.length === 0) return of([]);
-        return combineLatest(
-          clubs.map(club => this.fbService.getClubRef(club.id))
-        );
-      }),
-      map(clubsDetails => clubsDetails.flat()), // Flatten to get all clubs details
-      tap(results => console.log("Final results with all Clubs:", results)),
-      catchError(err => {
-        console.error("Error in getClubList:", err);
-        return of([]); // Return an empty array on error
-      })
-    );
-  }
-
 
   async joinClubAlert() {
     /*

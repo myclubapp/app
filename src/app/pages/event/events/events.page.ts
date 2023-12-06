@@ -63,35 +63,11 @@ export class EventsPage implements OnInit {
 
   ngOnInit() {
     this.eventList$ = this.getClubEvent();
-    /*this.eventList$.subscribe({
-      next: (data) => {
-        console.log("EVENT Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("EVENT Error in subscription:", err),
-      complete: () => console.log("EVENT Observable completed"),
-    });*/
-
     this.eventListPast$ = this.getClubEventPast();
-    /*this.eventListPast$.subscribe({
-      next: () => {
-        console.log("EVENT PAST Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("EVENT PAST Error in subscription:", err),
-      complete: () => console.log("EVENT PAST Observable completed"),
-    });*/
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
-    /*this.clubAdminList$.subscribe({
-      next: () => {
-        console.log("Club Admin Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Club Admin Error in subscription:", err),
-      complete: () => console.log("Club Admin Observable completed"),
-    });*/
+ 
   }
   getClubEvent() {
     return this.authService.getUser$().pipe(

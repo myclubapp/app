@@ -59,19 +59,6 @@ export class EventDetailPage implements OnInit {
     this.attendeeListUndefined = [];
 
     this.event$ = this.getEvent(this.event.clubId, this.event.id);
-    /*this.event$.subscribe({
-      next: (data) => {
-        console.log("HELFEREVENT Data received");
-        console.log(data);
-        this.event = {
-          ...this.event,
-          ...data,
-        };
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("HELFEREVENT Error in subscription:", err),
-      complete: () => console.log("HELFEREVENT Observable completed"),
-    });*/
   }
 
   getEvent(clubId: string, eventId: string) {
