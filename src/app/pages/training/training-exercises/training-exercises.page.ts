@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Browser } from "@capacitor/browser";
 import { ModalController } from "@ionic/angular";
-import { Observable } from "rxjs";
+import { Observable, filter } from "rxjs";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 
 @Component({
@@ -31,6 +31,17 @@ export class TrainingExercisesPage implements OnInit {
       complete: () => console.log("Training Observable completed"),
     });
 
+  }
+  handleSearch(event) {
+    console.log(event.detail.value)
+    this.exercisesList$.pipe(
+      filter((element:any,index) => {
+        console.log(element.title, index)
+        return element;
+      })
+    ).subscribe({
+      next: (val) => console.log(val),
+    });
   }
 
 

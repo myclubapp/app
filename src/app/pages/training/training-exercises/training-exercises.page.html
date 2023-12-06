@@ -7,6 +7,7 @@
       </ion-buttons>
     
   </ion-toolbar>
+
 </ion-header>
 
 <ion-content [fullscreen]="true">
@@ -14,14 +15,17 @@
     <ion-toolbar>
       <ion-title size="large">Exercise</ion-title>
     </ion-toolbar>
+    <ion-toolbar>
+      <ion-searchbar animated="true" (ionInput)="handleSearch($event)" placeholder="Passspiel" show-clear-button="focus"></ion-searchbar>
+    </ion-toolbar>
   </ion-header>
 
   <ng-container *ngIf="exercisesList$ | async as exercisesList; else loading">
     <ion-list *ngIf="exercisesList.length > 0" lines="full">
       <ion-list-header>
-        <ion-label>Exercise</ion-label>
+        <ion-label>swissunihockey</ion-label>
       </ion-list-header>
-
+     
 
 
       <ion-item-sliding #item *ngFor="let exercise of exercisesList">
