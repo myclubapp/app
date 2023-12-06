@@ -2,7 +2,8 @@ import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
 import {
   AlertController,
-  MenuController
+  MenuController,
+  Platform
 } from "@ionic/angular";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
@@ -17,6 +18,7 @@ import { Network, ConnectionStatus } from "@capacitor/network";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "./models/club";
 import { Team } from "./models/team";
+import { PushNotifications } from "@capacitor/push-notifications";
 
 @Component({
   selector: "app-root",
@@ -46,6 +48,7 @@ export class AppComponent implements OnInit {
     public readonly menuCtrl: MenuController,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
+    private platform: Platform
   ) {
     this.initializeApp();
 
@@ -125,7 +128,7 @@ export class AppComponent implements OnInit {
       complete: () => console.log("Team Admin Observable completed"),
     });
 
-    onAuthStateChanged(this.authService.auth, (user) => {
+    onAuthStateChanged(this.authService.auth, async (user) => {
       if (user) {
         // 0. LOGIN
         this.email = user.email;
@@ -134,6 +137,15 @@ export class AppComponent implements OnInit {
           this.presentAlertEmailNotVerified();
         }
         this.setDefaultLanguage();
+       
+        // this.platform.ready().then(async () => {
+          this.deviceInfo = await Device.getInfo();
+          this.deviceId = await Device.getId();
+          console.log(this.deviceInfo)
+          if (this.deviceInfo.platform == 'android' || this.deviceInfo.platform == 'ios') {
+            this.subscribeMobileNotifications();
+          }
+        // })
         // READ USER LANGUAGE FROM DATABASE if AVAILABLE
 
         // ELSE GET DEVICE PRIMARY LANGUAGE
@@ -213,8 +225,8 @@ export class AppComponent implements OnInit {
   }
 
   setFallbackLanguage() {
-    Device.getLanguageTag().then((result: LanguageTag)=>{
-      if (result.value == "de" || result.value == "fr" || result.value == "en" || result.value == "it" ){
+    Device.getLanguageTag().then((result: LanguageTag) => {
+      if (result.value == "de" || result.value == "fr" || result.value == "en" || result.value == "it") {
         console.log("Set Fallback Language to " + result.value);
         this.translate.setDefaultLang(result.value);
       } else {
@@ -466,5 +478,46 @@ export class AppComponent implements OnInit {
   async logout() {
     console.log("logout");
     await this.authService.logout();
+  }
+  async addListeners() {
+    await PushNotifications.addListener('registration', async token => {
+      console.info('Registration token: ', token.value);
+      if (token.value) {
+        const profileUpdate = await this.profileService
+          .addPushSubscriber(null, this.deviceId, this.deviceInfo, token.value)
+          .catch((err) => {
+            console.error("Could not subscribe to notifications", err);
+            // this.errorPushMessageEnable("Could not subscribe to notifications");
+          });
+      }
+    });
+
+    await PushNotifications.addListener('registrationError', err => {
+      console.error('Registration error: ', err.error);
+    });
+
+    await PushNotifications.addListener('pushNotificationReceived', notification => {
+      console.log('Push notification received: ', notification);
+    });
+
+    await PushNotifications.addListener('pushNotificationActionPerformed', notification => {
+      console.log('Push notification action performed', notification.actionId, notification.inputValue);
+    });
+  }
+  async registerNotifications() {
+    let permStatus = await PushNotifications.checkPermissions();
+    if (permStatus.receive === 'prompt') {
+      permStatus = await PushNotifications.requestPermissions();
+    }
+    if (permStatus.receive !== 'granted') {
+      throw new Error('User denied permissions!');
+    }
+    PushNotifications.removeAllListeners();
+    await this.addListeners();
+    await PushNotifications.register();
+  }
+
+  subscribeMobileNotifications() {
+    this.registerNotifications();
   }
 }

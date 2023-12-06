@@ -94,7 +94,7 @@ export class UserProfileService {
       `userProfile/${user.uid}/push/${deviceId.identifier}`
     );
     return setDoc(userProfileRef, {
-      pushObject: pushObject,
+      pushObject: pushObject && "{}",
       updated: new Date(),
       model: deviceInfo.model || "",
       operatingSystem: deviceInfo.operatingSystem || "",
