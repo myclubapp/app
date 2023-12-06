@@ -65,35 +65,35 @@ export class HelferPage implements OnInit {
 
   ngOnInit() {
     this.helferList$ = this.getHelferEvent();
-    this.helferList$.subscribe({
+    /*this.helferList$.subscribe({
       next: (data) => {
         console.log("HELFER Data received");
         this.cdr.detectChanges();
       },
       error: (err) => console.error("HELFER Error in subscription:", err),
       complete: () => console.log("HELFER Observable completed"),
-    });
+    });*/
 
     this.helferListPast$ = this.getHelferEventPast();
-    this.helferListPast$.subscribe({
+    /*this.helferListPast$.subscribe({
       next: () => {
         console.log("HELFER PAST Data received");
         this.cdr.detectChanges();
       },
       error: (err) => console.error("HELFER PAST Error in subscription:", err),
       complete: () => console.log("HELFER PAST Observable completed"),
-    });
+    });*/
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
-    this.clubAdminList$.subscribe({
+    /*this.clubAdminList$.subscribe({
       next: () => {
         console.log("Club Admin Data received");
         this.cdr.detectChanges();
       },
       error: (err) => console.error("Club Admin Error in subscription:", err),
       complete: () => console.log("Club Admin Observable completed"),
-    });
+    });*/
   }
 
   getHelferEvent() {

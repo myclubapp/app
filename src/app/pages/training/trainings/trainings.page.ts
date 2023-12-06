@@ -76,7 +76,7 @@ export class TrainingsPage implements OnInit {
 
   ngOnInit() {
     this.trainingList$ = this.getTeamTraining();
-    this.trainingList$.subscribe({
+    /*this.trainingList$.subscribe({
       next: () => {
         console.log("Training Data received");
 
@@ -84,7 +84,7 @@ export class TrainingsPage implements OnInit {
       },
       error: (err) => console.error("Training Error in subscription:", err),
       complete: () => console.log("Training Observable completed"),
-    });
+    });*/
 
     this.trainingListBackup$ = this.getTeamTraining();
     this.trainingListBackupSub = this.trainingListBackup$.subscribe({
@@ -98,7 +98,7 @@ export class TrainingsPage implements OnInit {
     });
 
     this.trainingListPast$ = this.getTeamTrainingPast();
-    this.trainingListPast$.subscribe({
+    /*this.trainingListPast$.subscribe({
       next: () => {
         console.log("Training PAST Data received");
         this.cdr.detectChanges();
@@ -106,7 +106,7 @@ export class TrainingsPage implements OnInit {
       error: (err) =>
         console.error("Training PAST Error in subscription:", err),
       complete: () => console.log("Training PAST Observable completed"),
-    });
+    });*/
     this.trainingListPastBackup$ = this.getTeamTrainingPast();
     this.trainingListPastBackup$.subscribe({
       next: () => {
@@ -119,14 +119,14 @@ export class TrainingsPage implements OnInit {
     });
     //Create Events, Helfer, News
     this.teamAdminList$ = this.fbService.getTeamAdminList();
-    this.teamAdminList$.subscribe({
+    /*this.teamAdminList$.subscribe({
       next: () => {
         console.log("Team Admin Data received");
         this.cdr.detectChanges();
       },
       error: (err) => console.error("Team Admin Error in subscription:", err),
       complete: () => console.log("Team Admin Observable completed"),
-    });
+    });*/
 
     // Filterlist
     this.teamList$ = this.fbService.getTeamList();

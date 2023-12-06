@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Browser } from "@capacitor/browser";
 import { ModalController } from "@ionic/angular";
-import { Observable, filter } from "rxjs";
+import { Observable, filter, map } from "rxjs";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 
 @Component({
@@ -21,27 +21,14 @@ export class TrainingExercisesPage implements OnInit {
 
   ngOnInit() {
     this.exercisesList$ = this.getExercises("swissunihockey");
-    this.exercisesList$.subscribe({
-      next: () => {
-        console.log("Training Data received");
-
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Training Error in subscription:", err),
-      complete: () => console.log("Training Observable completed"),
-    });
-
   }
   handleSearch(event) {
     console.log(event.detail.value)
     this.exercisesList$.pipe(
-      filter((element:any,index) => {
-        console.log(element.title, index)
-        return element;
+      map(exercise=>{
+        exercise.filter(exercise => exercise.title.toLowerCase().includes(event.detail.value.toLowerCase()))
       })
-    ).subscribe({
-      next: (val) => console.log(val),
-    });
+    )
   }
 
 

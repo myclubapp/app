@@ -60,7 +60,7 @@ export class TrainingDetailPage implements OnInit {
     this.attendeeListUndefined = [];
 
     this.training$ = this.getTraining(this.training.teamId, this.training.id);
-    this.training$.subscribe({
+    /*this.training$.subscribe({
       next: (data) => {
         console.log("TRAINING Data received");
         console.log(data);
@@ -72,7 +72,7 @@ export class TrainingDetailPage implements OnInit {
       },
       error: (err) => console.error("TRAINING Error in subscription:", err),
       complete: () => console.log("TRANING Observable completed"),
-    });
+    });*/
   }
 
   getTraining(teamId: string, trainingId: string) {
