@@ -228,7 +228,7 @@ export class EventsPage implements OnInit {
     );
 
     await this.eventService.setClubEventAttendeeStatus(
-      this.user.uid,
+    
       status,
       event.clubId,
       event.id
@@ -247,7 +247,7 @@ export class EventsPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
     );
     await this.eventService.setClubEventAttendeeStatus(
-      this.user.uid,
+    
       status,
       event.clubId,
       event.id

@@ -141,7 +141,7 @@ export class EventAddPage implements OnInit {
 
     delete this.event.attendees;
 
-    this.eventService.setCreateClubEvent(this.event, this.user);
+    this.eventService.setCreateClubEvent(this.event);
     return this.modalCtrl.dismiss({}, "confirm");
   }
 

@@ -374,7 +374,6 @@ export class TrainingsPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
     );
     await this.trainingService.setTeamTrainingAttendeeStatus(
-      this.user.uid,
       status,
       training.teamId,
       training.id
@@ -393,7 +392,6 @@ export class TrainingsPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
     );
     await this.trainingService.setTeamTrainingAttendeeStatus(
-      this.user.uid,
       status,
       training.teamId,
       training.id

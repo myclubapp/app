@@ -51,7 +51,8 @@ export class TrainingService {
     private readonly fbService: FirebaseService
   ) {}
 
-  async setCreateTraining(training: Training, user: User) {
+  async setCreateTraining(training: Training) {
+    const user = this.authService.auth.currentUser;
     console.log("training");
     console.log(training);
     return addDoc(
@@ -138,14 +139,14 @@ export class TrainingService {
 
   /* TEAM TrainingS ATTENDEE Status */
   async setTeamTrainingAttendeeStatus(
-    userId: string,
     status: boolean,
     teamId: string,
     trainingId: string
   ) {
+    const user = this.authService.auth.currentUser;
     const statusRef = doc(
       this.firestore,
-      `teams/${teamId}/trainings/${trainingId}/attendees/${userId}`
+      `teams/${teamId}/trainings/${trainingId}/attendees/${user.uid}`
     );
     return await setDoc(statusRef, { status });
   }

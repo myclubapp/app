@@ -18,12 +18,15 @@ import {
 import { Observable, Observer } from "rxjs";
 import { HelferEvent, Veranstaltung } from "src/app/models/event";
 import { User } from "firebase/auth";
+import { AuthService } from "../auth.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class EventService {
-  constructor(private firestore: Firestore = inject(Firestore)) {}
+  constructor(
+    private firestore: Firestore = inject(Firestore),
+    private readonly authService: AuthService) {}
 
   /* CLUB EventS */
 
@@ -74,19 +77,20 @@ export class EventService {
     }) as unknown as Observable<any[]>;
   }
   async setClubEventAttendeeStatus(
-    userId: string,
     status: boolean,
     clubId: string,
     eventId: string
   ) {
+    const user = this.authService.auth.currentUser;
     const statusRef = doc(
       this.firestore,
-      `club/${clubId}/events/${eventId}/attendees/${userId}`
+      `club/${clubId}/events/${eventId}/attendees/${user.uid}`
     );
     return await setDoc(statusRef, { status });
   }
 
-  async setCreateClubEvent(event: Veranstaltung, user: User) {
+  async setCreateClubEvent(event: Veranstaltung) {
+    const user = this.authService.auth.currentUser;
     console.log("event");
     console.log(event);
     return addDoc(
@@ -159,19 +163,20 @@ export class EventService {
   }
 
   setClubHelferEventAttendeeStatus(
-    userId: string,
     status: boolean,
     clubId: string,
     eventId: string
   ) {
+    const user = this.authService.auth.currentUser;
     const statusRef = doc(
       this.firestore,
-      `club/${clubId}/helferEvents/${eventId}/attendees/${userId}`
+      `club/${clubId}/helferEvents/${eventId}/attendees/${user.uid}`
     );
     return setDoc(statusRef, { status });
   }
 
-  async setCreateHelferEvent(event: HelferEvent, user: User) {
+  async setCreateHelferEvent(event: HelferEvent) {
+    const user = this.authService.auth.currentUser;
     console.log("Helferevent");
     console.log(event);
     return addDoc(

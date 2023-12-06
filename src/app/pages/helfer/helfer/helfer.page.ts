@@ -254,7 +254,7 @@ export class HelferPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${event.clubId} and training ${event.id}`
     );
     await this.eventService.setClubHelferEventAttendeeStatus(
-      this.user.uid,
+    
       status,
       event.clubId,
       event.id
@@ -273,7 +273,7 @@ export class HelferPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${event.clubId} and training ${event.id}`
     );
     await this.eventService.setClubHelferEventAttendeeStatus(
-      this.user.uid,
+    
       status,
       event.clubId,
       event.id
