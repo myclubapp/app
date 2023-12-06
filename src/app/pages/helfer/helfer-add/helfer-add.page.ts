@@ -145,7 +145,7 @@ export class HelferAddPage implements OnInit {
 
     delete this.event.attendees;
 
-    this.eventService.setCreateHelferEvent(this.event, this.user);
+    this.eventService.setCreateHelferEvent(this.event);
     return this.modalCtrl.dismiss({}, "confirm");
   }
 

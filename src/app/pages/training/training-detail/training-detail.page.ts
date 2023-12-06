@@ -151,7 +151,6 @@ export class TrainingDetailPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${this.training.teamId} and training ${training.id}`
     );
     await this.trainingService.setTeamTrainingAttendeeStatus(
-      this.user.uid,
       status,
       this.training.teamId,
       training.id

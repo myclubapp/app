@@ -18,7 +18,7 @@ export class TrainingCreatePage implements OnInit {
   @Input("data") trainingCopy: Training;
   training: Training;
   user$: Observable<User>;
-  user: User;
+  // user: User;
   private subscription: Subscription;
   teamList: Team[] = [];
 
@@ -77,7 +77,7 @@ export class TrainingCreatePage implements OnInit {
     let teamsList: any[] = [];
     const teams$ = this.authService.getUser$().pipe(
       take(1),
-      tap(user => this.user = user),
+      // tap(user => this.user = user),
       switchMap(user => this.fbService.getUserTeamAdminRefs(user).pipe(take(1))),
       concatMap(teamsArray => from(teamsArray)),
       tap((team: Team) => console.log(team.id)),
@@ -175,7 +175,7 @@ export class TrainingCreatePage implements OnInit {
 
     delete this.training.attendees;
 
-    this.trainingService.setCreateTraining(this.training, this.user);
+    this.trainingService.setCreateTraining(this.training);
     return this.modalCtrl.dismiss({}, "confirm");
   }
 }
