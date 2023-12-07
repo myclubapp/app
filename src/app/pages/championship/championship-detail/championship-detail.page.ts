@@ -66,11 +66,12 @@ export class ChampionshipDetailPage implements OnInit {
 
   ngOnInit() {
     // console.log(this.navParams);
-    // this.game = this.navParams.get("data");
+    this.game = this.navParams.get("data");
 
-    this.route.queryParams.subscribe((params) => {
+    /*this.route.queryParams.subscribe((params) => {
       console.log(params);
       this.game = JSON.parse(params.data);
+      */
       this.game$ = of(this.game);
 
       this.attendeeListTrue = [];
@@ -92,7 +93,7 @@ export class ChampionshipDetailPage implements OnInit {
         error: (err) => console.error("GAMES Error in subscription:", err),
         complete: () => console.log("GAMES Observable completed"),
       });
-    });
+   // });
 
     // let this.mapRef =  @ViewChild('map') abc;
   }
@@ -203,18 +204,18 @@ export class ChampionshipDetailPage implements OnInit {
   }
 
   async close() {
-    // return await this.modalCtrl.dismiss(null, "close");
-    this.navController.pop();
+    return await this.modalCtrl.dismiss(null, "close");
+    // this.navController.pop();
   }
 
   async confirm() {
-    // return await this.modalCtrl.dismiss(this.game, "confirm");
-    this.navController.navigateBack("championship", {
+    return await this.modalCtrl.dismiss(this.game, "confirm");
+    /*this.navController.navigateBack("championship", {
       state: {
         role: "confirm",
         data: this.game,
       },
-    });
+    });*/
   }
 
   async setMap() {

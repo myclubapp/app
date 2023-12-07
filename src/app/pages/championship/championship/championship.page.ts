@@ -343,7 +343,7 @@ export class ChampionshipPage implements OnInit {
 
   async openChampionshipDetailModal(game: Game, isFuture: boolean) {
   
-    let extras: NavigationExtras = {
+    /*let extras: NavigationExtras = {
       queryParams: {
         data: JSON.stringify(game),
         isFuture: isFuture,
@@ -355,9 +355,9 @@ export class ChampionshipPage implements OnInit {
       .catch((e) => {
         console.log(e);
       });
-    
+    */
 
-    /*const modal = await this.modalCtrl.create({
+    const modal = await this.modalCtrl.create({
       component: ChampionshipDetailPage,
       presentingElement: this.routerOutlet.nativeEl,
       canDismiss: true,
@@ -372,7 +372,7 @@ export class ChampionshipPage implements OnInit {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
-    }*/
+    }
   }
 
   // List item

@@ -249,9 +249,11 @@ export class ProfilePage implements OnInit, AfterViewInit {
     } else {
       console.log("disable push");
     }
+    this.toastActionSaved();
   }
   async togglePushModule(event, module) {
     await this.profileService.changeSettingsPushModule(event.detail.checked, module);
+    this.toastActionSaved();
   }
 
   async toggleEmail(event) {
