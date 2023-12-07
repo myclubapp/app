@@ -18,7 +18,7 @@ import { Network, ConnectionStatus } from "@capacitor/network";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "./models/club";
 import { Team } from "./models/team";
-import { PushNotifications } from "@capacitor/push-notifications";
+import { ActionPerformed, PushNotificationSchema, PushNotifications, Token } from "@capacitor/push-notifications";
 
 @Component({
   selector: "app-root",
@@ -142,8 +142,12 @@ export class AppComponent implements OnInit {
           this.deviceInfo = await Device.getInfo();
           this.deviceId = await Device.getId();
           console.log(this.deviceInfo)
+          // Register Native Push
           if (this.deviceInfo.platform == 'android' || this.deviceInfo.platform == 'ios') {
-            this.subscribeMobileNotifications();
+            // this.subscribeMobileNotifications();
+            this.registerNotifications();
+          } else {
+            // Register Web Push, if available
           }
         // })
         // READ USER LANGUAGE FROM DATABASE if AVAILABLE
@@ -275,7 +279,7 @@ export class AppComponent implements OnInit {
       this.deviceInfo,
       ""
     );
-  }*/
+  }
 
   async alertPushMessage(message) {
     const alert = await this.alertController.create({
@@ -284,7 +288,7 @@ export class AppComponent implements OnInit {
       buttons: ["OK"],
     });
     alert.present();
-  }
+  }*/
 
   // initializeFirebase() {
   // https://cloud.google.com/firestore/docs/manage-data/enable-offline
@@ -479,7 +483,7 @@ export class AppComponent implements OnInit {
     console.log("logout");
     await this.authService.logout();
   }
-  async addListeners() {
+  /*async addListeners() {
     await PushNotifications.addListener('registration', async token => {
       console.info('Registration token: ', token.value);
       if (token.value) {
@@ -498,13 +502,70 @@ export class AppComponent implements OnInit {
 
     await PushNotifications.addListener('pushNotificationReceived', notification => {
       console.log('Push notification received: ', notification);
+      this.alertController.create({
+        header: notification.title,
+        message: notification.body,
+      }).then(alert=>{
+        alert.present();
+      })
     });
 
     await PushNotifications.addListener('pushNotificationActionPerformed', notification => {
       console.log('Push notification action performed', notification.actionId, notification.inputValue);
     });
-  }
+  }*/
   async registerNotifications() {
+
+    // Request permission to use push notifications
+    // iOS will prompt user and return if they granted permission or not
+    // Android will just grant without prompting
+    PushNotifications.requestPermissions().then(result => {
+      if (result.receive === 'granted') {
+        // Register with Apple / Google to receive push via APNS/FCM
+        PushNotifications.register();
+      } else {
+        // Show some error
+      }
+    });
+
+    PushNotifications.addListener('registration', (token: Token) => {
+      alert('Push registration success, token: ' + token.value);
+        this.profileService
+          .addPushSubscriber(null, this.deviceId, this.deviceInfo, token.value)
+          .catch((err) => {
+            console.error("Could not subscribe to notifications", err);
+            // this.errorPushMessageEnable("Could not subscribe to notifications");
+          });
+    });
+
+    PushNotifications.addListener('registrationError', (error: any) => {
+      alert('Error on registration: ' + JSON.stringify(error));
+    });
+
+    PushNotifications.addListener(
+      'pushNotificationReceived',
+      (notification: PushNotificationSchema) => {
+        // alert('Push received: ' + JSON.stringify(notification));
+        this.alertController.create({
+          header: notification.title,
+          message: notification.body,
+        }).then(alert=>{
+          alert.present();
+        })
+      },
+    );
+
+    PushNotifications.addListener(
+      'pushNotificationActionPerformed',
+      (notification: ActionPerformed) => {
+        alert('Push action performed: ' + JSON.stringify(notification));
+      },
+    );
+
+
+
+// OLD CODE
+/*
     let permStatus = await PushNotifications.checkPermissions();
     if (permStatus.receive === 'prompt') {
       permStatus = await PushNotifications.requestPermissions();
@@ -518,6 +579,6 @@ export class AppComponent implements OnInit {
   }
 
   subscribeMobileNotifications() {
-    this.registerNotifications();
+   */
   }
 }
