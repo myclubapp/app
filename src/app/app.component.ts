@@ -3,7 +3,8 @@ import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
 import {
   AlertController,
   MenuController,
-  Platform
+  Platform,
+  ToastController
 } from "@ionic/angular";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
@@ -19,6 +20,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { Club } from "./models/club";
 import { Team } from "./models/team";
 import { ActionPerformed, PushNotificationSchema, PushNotifications, Token } from "@capacitor/push-notifications";
+import { Dialog } from '@capacitor/dialog';
 
 @Component({
   selector: "app-root",
@@ -47,6 +49,7 @@ export class AppComponent implements OnInit {
     private readonly router: Router,
     public readonly menuCtrl: MenuController,
     private translate: TranslateService,
+    public toastController: ToastController,
     private cdr: ChangeDetectorRef,
     // private platform: Platform
   ) {
@@ -529,36 +532,47 @@ export class AppComponent implements OnInit {
     });
 
     PushNotifications.addListener('registration', (token: Token) => {
-      alert('Push registration success, token: ' + token.value);
-        this.profileService
-          .addPushSubscriber(null, this.deviceId, this.deviceInfo, token.value)
-          .catch((err) => {
-            console.error("Could not subscribe to notifications", err);
-            // this.errorPushMessageEnable("Could not subscribe to notifications");
-          });
+      // alert('Push registration success, token: ' + token.value);
+      /*this.toastController.create({
+        message: "Push erfolgreich registriert",
+        color: "primary",
+        duration: 2000,
+        position: "top",
+      }).then(toast=>{
+        toast.present();
+      });*/
+
+      this.profileService
+        .addPushSubscriber(null, this.deviceId, this.deviceInfo, token.value)
+        .catch((err) => {
+          console.error("Could not subscribe to notifications", err);
+          // this.errorPushMessageEnable("Could not subscribe to notifications");
+        }).then(ok=>{
+          console.log(ok);
+        });
     });
 
     PushNotifications.addListener('registrationError', (error: any) => {
-      alert('Error on registration: ' + JSON.stringify(error));
+      // alert('Error on registration: ' + JSON.stringify(error));
     });
 
     PushNotifications.addListener(
       'pushNotificationReceived',
       (notification: PushNotificationSchema) => {
         // alert('Push received: ' + JSON.stringify(notification));
-        this.alertController.create({
-          header: notification.title,
+        Dialog.confirm({
+          title: notification.title,
           message: notification.body,
-        }).then(alert=>{
-          alert.present();
-        })
+          okButtonTitle: "OK",
+        });
       },
     );
 
     PushNotifications.addListener(
       'pushNotificationActionPerformed',
       (notification: ActionPerformed) => {
-        alert('Push action performed: ' + JSON.stringify(notification));
+        console.log(notification);
+        // alert('Push action performed: ' + JSON.stringify(notification));
       },
     );
 

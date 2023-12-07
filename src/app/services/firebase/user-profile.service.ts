@@ -89,10 +89,11 @@ export class UserProfileService {
   ) {
     const user = this.authService.auth.currentUser;
     const pushObject = JSON.stringify(sub);
-    const userProfileRef = doc(
+    const userProfileRef: DocumentReference<DocumentData> = doc(
       this.firestore,
       `userProfile/${user.uid}/push/${deviceId.identifier}`
     );
+
     return setDoc(userProfileRef, {
       pushObject: pushObject && "{}",
       updated: new Date(),
@@ -117,6 +118,11 @@ export class UserProfileService {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { settingsPush: state });
+  }
+  async changeSettingsPushModule(state: boolean, module) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { ['settingsPush' + module]: state });
   }
 
   async changeSettingsEmail(state: boolean) {

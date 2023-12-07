@@ -12,6 +12,7 @@ dependencies {
     implementation project(':capacitor-browser')
     implementation project(':capacitor-camera')
     implementation project(':capacitor-device')
+    implementation project(':capacitor-dialog')
     implementation project(':capacitor-geolocation')
     implementation project(':capacitor-google-maps')
     implementation project(':capacitor-haptics')

@@ -238,11 +238,20 @@ export class ProfilePage implements OnInit, AfterViewInit {
   async togglePush(event) {
     // console.log(event);
     await this.profileService.changeSettingsPush(event.detail.checked);
-    /*if (event.detail.checked) {
-      this.alertAskForPush();
+    
+    if (event.detail.checked) {
+      if (this.deviceInfo.platform == 'android' || this.deviceInfo.platform == 'ios') {
+        this.registerPushDevice();
+      } else {
+        console.log("implement web push");
+        // this.alertAskForPush();
+      }
     } else {
       console.log("disable push");
-    }*/
+    }
+  }
+  async togglePushModule(event, module) {
+    await this.profileService.changeSettingsPushModule(event.detail.checked, module);
   }
 
   async toggleEmail(event) {
@@ -259,75 +268,22 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.toastActionSaved();
   }
 
-
-  async addListeners() {
-    await PushNotifications.addListener('registration', async token => {
-      console.info('Registration token: ', token.value);
-      if (token.value) {
-        const profileUpdate = await this.profileService
-          .addPushSubscriber(null, this.deviceId, this.deviceInfo, token.value)
-          .catch((err) => {
-            console.error("Could not subscribe to notifications", err);
-            this.errorPushMessageEnable("Could not subscribe to notifications");
-          });
-      }
-    });
-
-    await PushNotifications.addListener('registrationError', err => {
-      console.error('Registration error: ', err.error);
-    });
-
-    await PushNotifications.addListener('pushNotificationReceived', notification => {
-      console.log('Push notification received: ', notification);
-    });
-
-    await PushNotifications.addListener('pushNotificationActionPerformed', notification => {
-      console.log('Push notification action performed', notification.actionId, notification.inputValue);
-    });
-  }
-  async registerNotifications() {
-    let permStatus = await PushNotifications.checkPermissions();
-    if (permStatus.receive === 'prompt') {
-      permStatus = await PushNotifications.requestPermissions();
-    }
-    if (permStatus.receive !== 'granted') {
-      throw new Error('User denied permissions!');
-    }
-    PushNotifications.removeAllListeners();
-    await this.addListeners();
-    await PushNotifications.register();
-  }
-
-  subscribeMobileNotifications() {
-    this.registerNotifications();
-  }
-  registerDevice() {
-    console.log(this.deviceInfo);
-    if (this.deviceInfo.platform == "android" || this.deviceInfo.platform == "ios") {
-      this.subscribeMobileNotifications();
-    } else {
-      // this.subscribeToNotifications();
-    }
-  }
-
-
-
-  async errorPushMessageEnable(error) {
-    const alert = await this.alertController.create({
-      header: await lastValueFrom(
-        this.translate.get("profile.error_push_service_not_available")
-      ),
-      message:
-        (await lastValueFrom(this.translate.get("profile.error_text"))) + error,
-      buttons: [{ text: "OK" }],
-    });
-    alert.present();
-  }
-
   
   async deletePushDevice(id) {
     await this.profileService.deletePushDevice(id);
     await this.toastActionSaved();
+  }
+
+  registerPushDevice() {
+    PushNotifications.requestPermissions().then(result => {
+      if (result.receive === 'granted') {
+        // Register with Apple / Google to receive push via APNS/FCM
+        PushNotifications.register(); 
+        // --> this should trigger listener in app.component.ts to save token
+      } else {
+        // Show some error
+      }
+    });
   }
 
   /* WEB PUSH STUFF

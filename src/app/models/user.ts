@@ -17,6 +17,11 @@ export interface Profile {
   city: string;
   licenseNumber: string;
   settingsPush: boolean;
+  settingsPushNews: boolean;
+  settingsPushTraining: boolean;
+  settingsPushChampionship: boolean;
+  settingsPushEvent: boolean;
+  settingsPushHelfer: boolean;
   settingsEmail: boolean;
   settingsEmailReporting: boolean;
   language: string;

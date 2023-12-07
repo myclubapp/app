@@ -43,6 +43,7 @@
     "@capacitor/camera": "5.0.7",
     "@capacitor/core": "5.5.1",
     "@capacitor/device": "^5.0.6",
+    "@capacitor/dialog": "^5.0.6",
     "@capacitor/geolocation": "5.0.6",
     "@capacitor/google-maps": "^5.3.3",
     "@capacitor/haptics": "5.0.6",

@@ -212,6 +212,47 @@
           </ion-label>
       </ion-item>
 
+      <ion-item *ngIf="userProfile.settingsPush">
+        <ion-toggle labelPlacement="stacked" attr.aria-label='{{"profile.push__message__news" | translate}}'
+          value="{{userProfile?.settingsPushNews}}" slot="end" [checked]="userProfile.settingsPushNews"
+          [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'News')"></ion-toggle>
+          <ion-label>
+            {{"profile.push__message__news" | translate}}
+          </ion-label>
+      </ion-item>
+      <ion-item *ngIf="userProfile.settingsPush">
+        <ion-toggle labelPlacement="stacked" attr.aria-label='{{"profile.push__message__training" | translate}}'
+          value="{{userProfile?.settingsPushTraining}}" slot="end" [checked]="userProfile.settingsPushTraining"
+          [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'Training')"></ion-toggle>
+          <ion-label>
+            {{"profile.push__message__training" | translate}}
+          </ion-label>
+      </ion-item>
+      <ion-item *ngIf="userProfile.settingsPush">
+        <ion-toggle labelPlacement="stacked" attr.aria-label='{{"profile.push__message__championship" | translate}}'
+          value="{{userProfile?.settingsPushChampionship}}" slot="end" [checked]="userProfile.settingsPushChampionship"
+          [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'Championship')"></ion-toggle>
+          <ion-label>
+            {{"profile.push__message__championship" | translate}}
+          </ion-label>
+      </ion-item>
+      <ion-item *ngIf="userProfile.settingsPush">
+        <ion-toggle labelPlacement="stacked" attr.aria-label='{{"profile.push__message__event" | translate}}'
+          value="{{userProfile?.settingsPushEvent}}" slot="end" [checked]="userProfile.settingsPushEvent"
+          [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'Event')"></ion-toggle>
+          <ion-label>
+            {{"profile.push__message__event" | translate}}
+          </ion-label>
+      </ion-item>
+      <ion-item *ngIf="userProfile.settingsPush">
+        <ion-toggle labelPlacement="stacked" attr.aria-label='{{"profile.push__message__helfer" | translate}}'
+          value="{{userProfile?.settingsPushHelfer}}" slot="end" [checked]="userProfile.settingsPushHelfer"
+          [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'Helfer')"></ion-toggle>
+          <ion-label>
+            {{"profile.push__message__helfer" | translate}}
+          </ion-label>
+      </ion-item>
+
       <ion-item>
         <ion-toggle labelPlacement="stacked" attr.aria-label='{{"profile.email__messages" | translate}}'
           value="{{userProfile?.settingsEmail}}" slot="end" [checked]="userProfile.settingsEmail"
