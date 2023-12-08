@@ -29,6 +29,9 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { environment } from "src/environments/environment";
 import { ActivatedRoute } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
+import { LineupPage } from "../lineup/lineup.page";
+import { Profile } from "src/app/models/user";
+import { MemberPage } from "../../member/member.page";
 
 @Component({
   selector: "app-championship-detail",
@@ -278,6 +281,43 @@ export class ChampionshipDetailPage implements OnInit {
       }
     } catch (e) {
       console.log("no coordinates on map");
+    }
+  }
+  async openMember(member: Profile) {
+    console.log("openMember");
+    const modal = await this.modalCtrl.create({
+      component: MemberPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: member,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+  async openLineup(game: Game) {
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalCtrl.create({
+      component: LineupPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: game,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
     }
   }
 

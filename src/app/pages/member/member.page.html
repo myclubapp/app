@@ -1,59 +1,60 @@
-<ng-container *ngIf="game$ | async as game">
-  <ion-header [translucent]="true">
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Member</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title>Lineup</ion-title>
-      <ion-buttons slot="primary">
-        <ion-button (click)="close()"
-          >{{"common.close" | translate}}</ion-button
-        >
-      </ion-buttons>
+      <ion-title size="large">Member</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <ion-content [fullscreen]="true">
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-title size="large">Lineup</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-list lines="full" [inset]="true" *ngFor="let block of blocks, index">
-      <ion-list-header>
-        <ion-item> {{"common.present" | translate}} </ion-item>
-      </ion-list-header>
-
-      <ion-item *ngFor="let member of block['members']" detail="true">
-        <ion-icon
-          color="primary"
-          name="add-circle-outline"
-          (click)="addMember(member)"
-          slot="start"
-        ></ion-icon>
-        <ion-label (click)="openMember(member)"
-          >{{member.firstName}} {{member.lastName}}</ion-label
-        >
-      </ion-item>
-    </ion-list>
-
+  <ng-container *ngIf="userProfile$ | async as userProfile; else loading">
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
-        <ion-item> {{"common.present" | translate}} </ion-item>
+        <ion-label> {{"profile.generally" | translate}} </ion-label>
       </ion-list-header>
 
-      <ion-item *ngFor="let member of game['attendeeListTrue']" detail="true">
-        <ion-icon
-          color="primary"
-          name="add-circle-outline"
-          (click)="addMember(member)"
-          slot="start"
-        ></ion-icon>
-        <ion-label (click)="openMember(member)"
-          >{{member.firstName}} {{member.lastName}}</ion-label
+      <ion-item>
+        <ion-avatar slot="start">
+          <img
+            alt="{{userProfile.firstName}}"
+            src="{{userProfile.profilePicture}}"
+          />
+        </ion-avatar>
+        <ion-label></ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-input
+          readonly
+          labelPlacement="stacked"
+          [label]='"common.first__name" | translate'
+          attr.aria-label='{{"common.first__name" | translate}}'
+          [(ngModel)]="userProfile.firstName"
+          value="{{userProfile.firstName}}"
         >
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          readonly
+          labelPlacement="stacked"
+          [label]='"common.last__name" | translate'
+          attr.aria-label='{{"common.last__name" | translate}}'
+          [(ngModel)]="userProfile.lastName"
+          value="{{userProfile.lastName}}"
+        >
+        </ion-input>
       </ion-item>
     </ion-list>
-  </ion-content>
-</ng-container>
+  </ng-container>
+</ion-content>
 
 <ng-template #loading>
   <ion-list *ngIf="loading">

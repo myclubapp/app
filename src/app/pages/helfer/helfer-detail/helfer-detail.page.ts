@@ -14,9 +14,11 @@ import {
   tap,
 } from "rxjs";
 import { HelferEvent } from "src/app/models/event";
+import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 import { EventService } from "src/app/services/firebase/event.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { MemberPage } from "../../member/member.page";
 
 @Component({
   selector: "app-helfer-detail",
@@ -143,7 +145,24 @@ export class HelferDetailPage implements OnInit {
       })
     );
   }
+  async openMember(member: Profile) {
+    console.log("openMember");
+    const modal = await this.modalCtrl.create({
+      component: MemberPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: member,
+      },
+    });
+    modal.present();
 
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
   async toggle(status: boolean, event: HelferEvent) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${this.event.clubId} and event ${event.id}`

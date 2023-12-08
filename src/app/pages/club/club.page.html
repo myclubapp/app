@@ -32,32 +32,38 @@
     </ion-list>
     <ion-list [inset]="true" *ngIf="club['clubRequests'].length > 0">
       <ion-list-header> {{"common.requests" | translate}} </ion-list-header>
-      <ion-item *ngFor="let request of club['clubRequests']">
+      <ion-item *ngFor="let request of club['clubRequests']" detail="true">
         <ion-avatar slot="start">
           <img src="{{request?.profilePicture}}" />
         </ion-avatar>
-        <ion-label> {{request?.firstName}} {{request?.lastName}} </ion-label>
+        <ion-label (click)="openMember(request)"
+          >{{request.firstName}} {{request.lastName}}</ion-label
+        >
         <ion-label> {{request?.email}} </ion-label>
       </ion-item>
     </ion-list>
 
     <ion-list [inset]="true">
       <ion-list-header> {{"common.members" | translate}} </ion-list-header>
-      <ion-item *ngFor="let member of club['clubMembers']">
+      <ion-item *ngFor="let member of club['clubMembers']" detail="true">
         <ion-avatar slot="start">
           <img src="{{member?.profilePicture}}" />
         </ion-avatar>
-        <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
+        <ion-label (click)="openMember(member)"
+          >{{member.firstName}} {{member.lastName}}</ion-label
+        >
       </ion-item>
     </ion-list>
 
     <ion-list [inset]="true">
       <ion-list-header> {{"common.admins" | translate}} </ion-list-header>
-      <ion-item *ngFor="let admin of club['clubAdmins']">
+      <ion-item *ngFor="let admin of club['clubAdmins']" detail="true">
         <ion-avatar slot="start">
           <img src="{{admin?.profilePicture}}" />
         </ion-avatar>
-        <ion-label> {{admin?.firstName}} {{admin?.lastName}} </ion-label>
+        <ion-label (click)="openMember(admin)"
+          >{{admin.firstName}} {{admin.lastName}}</ion-label
+        >
       </ion-item>
     </ion-list>
   </ng-container>

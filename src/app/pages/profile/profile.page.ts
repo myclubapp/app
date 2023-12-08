@@ -13,7 +13,7 @@ import {
 } from "rxjs";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
 import { User } from "@angular/fire/auth";
-import { PushNotifications } from '@capacitor/push-notifications';
+import { PushNotifications } from "@capacitor/push-notifications";
 
 // Services
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -118,7 +118,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     // this.getClubList();
     // this.getTeamList();
   }
-  ngOnDestroy() { }
+  ngOnDestroy() {}
 
   getUserProfile(): Observable<any> {
     // Replace 'any' with the actual type of the user profile
@@ -137,9 +137,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
     );
   }
 
-  getClubRequestList() { }
-  getTeamRequestList() { }
-  getPushDeviceList() { }
+  getClubRequestList() {}
+  getTeamRequestList() {}
+  getPushDeviceList() {}
 
   async takePicture() {
     const loading = await this.loadingController.create({
@@ -238,9 +238,12 @@ export class ProfilePage implements OnInit, AfterViewInit {
   async togglePush(event) {
     // console.log(event);
     await this.profileService.changeSettingsPush(event.detail.checked);
-    
+
     if (event.detail.checked) {
-      if (this.deviceInfo.platform == 'android' || this.deviceInfo.platform == 'ios') {
+      if (
+        this.deviceInfo.platform == "android" ||
+        this.deviceInfo.platform == "ios"
+      ) {
         this.registerPushDevice();
       } else {
         console.log("implement web push");
@@ -252,7 +255,10 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.toastActionSaved();
   }
   async togglePushModule(event, module) {
-    await this.profileService.changeSettingsPushModule(event.detail.checked, module);
+    await this.profileService.changeSettingsPushModule(
+      event.detail.checked,
+      module
+    );
     this.toastActionSaved();
   }
 
@@ -270,17 +276,16 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.toastActionSaved();
   }
 
-  
   async deletePushDevice(id) {
     await this.profileService.deletePushDevice(id);
     await this.toastActionSaved();
   }
 
   registerPushDevice() {
-    PushNotifications.requestPermissions().then(result => {
-      if (result.receive === 'granted') {
+    PushNotifications.requestPermissions().then((result) => {
+      if (result.receive === "granted") {
         // Register with Apple / Google to receive push via APNS/FCM
-        PushNotifications.register(); 
+        PushNotifications.register();
         // --> this should trigger listener in app.component.ts to save token
       } else {
         // Show some error
@@ -412,31 +417,35 @@ export class ProfilePage implements OnInit, AfterViewInit {
           label: "Old E-Mail",
           name: "oldEmail",
           type: "email",
-          value: oldEmail
+          value: oldEmail,
         },
         {
           label: "New E-Mail",
           name: "newEmail",
-          type: "email"
-        }
+          type: "email",
+        },
       ],
-      buttons: [{
-        text: "Save",
-        role: "",
-        handler: async (data) => {
-          console.log(data);
-          await this.authService.updateEmail(data.newEmail);
-          await this.profileChange({ detail: { value: data.newEmail } }, "email")
-          alert.dismiss();
-        }
-      },
-      {
-        text: "Cancel",
-        handler: () => {
-          alert.dismiss();
-        }
-      }]
-
+      buttons: [
+        {
+          text: "Save",
+          role: "",
+          handler: async (data) => {
+            console.log(data);
+            await this.authService.updateEmail(data.newEmail);
+            await this.profileChange(
+              { detail: { value: data.newEmail } },
+              "email"
+            );
+            alert.dismiss();
+          },
+        },
+        {
+          text: "Cancel",
+          handler: () => {
+            alert.dismiss();
+          },
+        },
+      ],
     });
     alert.present();
     // alert.onDidDismiss
@@ -451,39 +460,39 @@ export class ProfilePage implements OnInit, AfterViewInit {
           label: "Street and Number",
           name: "streetAndNumber",
           type: "text",
-          value: profile.streetAndNumber
+          value: profile.streetAndNumber,
         },
         {
           label: "Postalcode",
           name: "postalcode",
           type: "number",
-          value: profile.postalcode
+          value: profile.postalcode,
         },
         {
           label: "City",
           name: "city",
           type: "text",
-          value: profile.city
-        }
+          value: profile.city,
+        },
       ],
-      buttons: [{
-        text: "Save",
-        role: "",
-        handler: () => {
-          alert.dismiss();
-        }
-      },
-      {
-        text: "Cancel",
-        handler: () => {
-          alert.dismiss();
-        }
-      }]
-
+      buttons: [
+        {
+          text: "Save",
+          role: "",
+          handler: () => {
+            alert.dismiss();
+          },
+        },
+        {
+          text: "Cancel",
+          handler: () => {
+            alert.dismiss();
+          },
+        },
+      ],
     });
     alert.present();
   }
-
 
   /*
   async languageChange(event) {

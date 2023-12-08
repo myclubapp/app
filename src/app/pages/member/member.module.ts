@@ -4,9 +4,9 @@ import { FormsModule } from "@angular/forms";
 
 import { IonicModule } from "@ionic/angular";
 
-import { LineupPageRoutingModule } from "./lineup-routing.module";
+import { MemberPageRoutingModule } from "./member-routing.module";
 
-import { LineupPage } from "./lineup.page";
+import { MemberPage } from "./member.page";
 import { TranslateModule } from "@ngx-translate/core";
 
 @NgModule({
@@ -14,9 +14,9 @@ import { TranslateModule } from "@ngx-translate/core";
     CommonModule,
     FormsModule,
     IonicModule,
-    LineupPageRoutingModule,
+    MemberPageRoutingModule,
     TranslateModule,
   ],
-  declarations: [LineupPage],
+  declarations: [MemberPage],
 })
-export class LineupPageModule {}
+export class MemberPageModule {}

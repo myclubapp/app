@@ -112,7 +112,9 @@
                 <ion-icon color="success" slot="start" name="checkmark-circle">
                 </ion-icon>
 
-                <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>
+                <ion-label (click)="openMember(member)"
+                  >{{member.firstName}} {{member.lastName}}</ion-label
+                >
               </ion-item>
             </ion-list>
           </div>
@@ -134,7 +136,9 @@
                 <ion-icon color="danger" slot="start" name="close-circle">
                 </ion-icon>
 
-                <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>
+                <ion-label (click)="openMember(member)"
+                  >{{member.firstName}} {{member.lastName}}</ion-label
+                >
               </ion-item>
             </ion-list>
           </div>

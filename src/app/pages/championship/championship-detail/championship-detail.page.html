@@ -90,6 +90,10 @@
       </ion-item>
     </ion-list>
 
+    <ion-list [inset]="true" lines="none">
+      <ion-item (click)="openLineup(game)" detail="true"> Lineup </ion-item>
+    </ion-list>
+
     <ion-list [inset]="true" lines="none" *ngIf="isFuture">
       <ion-list-header>
         {{"common.attendances__absences" | translate}}
@@ -151,7 +155,9 @@
                 <ion-icon color="success" slot="start" name="checkmark-circle">
                 </ion-icon>
 
-                <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>
+                <ion-label (click)="openMember(member)"
+                  >{{member.firstName}} {{member.lastName}}</ion-label
+                >
               </ion-item>
             </ion-list>
           </div>
@@ -173,7 +179,9 @@
                 <ion-icon color="danger" slot="start" name="close-circle">
                 </ion-icon>
 
-                <ion-label>{{member.firstName}} {{member.lastName}}</ion-label>
+                <ion-label (click)="openMember(member)"
+                  >{{member.firstName}} {{member.lastName}}</ion-label
+                >
               </ion-item>
             </ion-list>
           </div>

@@ -40,6 +40,7 @@ import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { MemberPage } from "../member/member.page";
 
 @Component({
   selector: "app-club",
@@ -189,6 +190,24 @@ export class ClubPage implements OnInit {
     );
   }
 
+  async openMember(member: Profile) {
+    console.log("openMember");
+    const modal = await this.modalCtrl.create({
+      component: MemberPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: member,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
   async approveClubRequest(user) {
     console.log(user);
     const alert = await this.alertCtrl.create({
@@ -216,7 +235,9 @@ export class ClubPage implements OnInit {
     if (role == "confirm") {
       await this.fbService.approveUserClubRequest(user.clubId, user.id);
       const toast = await this.toastCtrl.create({
-        message: await lastValueFrom(this.translate.get("club.success__user_added")),
+        message: await lastValueFrom(
+          this.translate.get("club.success__user_added")
+        ),
         color: "primary",
         duration: 1500,
         position: "bottom",

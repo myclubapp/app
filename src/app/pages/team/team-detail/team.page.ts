@@ -32,6 +32,7 @@ import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { MemberPage } from "../../member/member.page";
 
 @Component({
   selector: "app-team",
@@ -203,7 +204,24 @@ export class TeamPage implements OnInit {
     await this.fbService.approveUserTeamRequest(request.teamId, request.id);
     await this.toastActionSaved();
   }
+  async openMember(member: Profile) {
+    console.log("openMember");
+    const modal = await this.modalCtrl.create({
+      component: MemberPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: member,
+      },
+    });
+    modal.present();
 
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
   addTeamMember() {
     // this.fbService.getClubMemberRefs(this.team.)
   }
