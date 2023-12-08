@@ -183,12 +183,14 @@
         </ng-container>
       </ion-item-sliding>
     </ion-list>
-    <ion-list class="ion-padding" *ngIf="eventsListPast.length==0">
+    <ion-list *ngIf="eventsListPast.length==0">
       <ion-list-header>
         <ion-label>{{"helfer.past__helper_events" | translate}}</ion-label>
       </ion-list-header>
       <ion-item>
-        <ion-note> {{"common.no_event__found" | translate}} </ion-note>
+        <ion-label>
+          <ion-note> {{"common.no_event__found" | translate}} </ion-note>
+        </ion-label>
       </ion-item>
     </ion-list>
   </ng-container>

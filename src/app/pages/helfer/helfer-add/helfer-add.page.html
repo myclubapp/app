@@ -11,8 +11,8 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
-  <ion-list>
+<ion-content>
+  <ion-list [inset]="true">
     <ion-item *ngIf="clubAdminList$ | async as clubList">
       <ion-select
         [label]='"common.club" | translate'
@@ -44,7 +44,8 @@
       >
       </ion-textarea>
     </ion-item>
-
+  </ion-list>
+  <ion-list [inset]="true">
     <ion-item>
       <ion-input
         [label]='"common.location" | translate'
@@ -82,7 +83,8 @@
       >
       </ion-input>
     </ion-item>
-
+  </ion-list>
+  <ion-list [inset]="true">
     <ion-item id="timeFromItem">
       <ion-label position="">
         {{"common.start__event" | translate}}:
@@ -160,6 +162,23 @@
           ></ion-datetime>
         </ng-template>
       </ion-modal>
+    </ion-item>
+  </ion-list>
+
+  <ion-list lines="full" [inset]="true">
+    <ion-list-header>
+      <ion-label> {{"helper.schichten" | translate}} </ion-label>
+      <ion-button (click)="addSchicht()">hinzufügen</ion-button>
+    </ion-list-header>
+    <ion-item
+      *ngFor="let schicht of event.schichten"
+      (click)="editSchicht(schicht)"
+    >
+      <ion-label>
+        <h3>{{schicht.name}}</h3>
+        <h2>{{schicht.timeFrom}} {{schicht.timeTo}}</h2>
+      </ion-label>
+      <ion-badge>{{schicht.countNeeded}}</ion-badge>
     </ion-item>
   </ion-list>
 </ion-content>

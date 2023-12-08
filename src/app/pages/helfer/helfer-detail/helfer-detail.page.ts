@@ -36,9 +36,6 @@ export class HelferDetailPage implements OnInit {
   user$: Observable<User>;
   user: User;
 
-  attendeeListTrue: any[] = [];
-  attendeeListFalse: any[] = [];
-  attendeeListUndefined: any[] = [];
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -52,11 +49,8 @@ export class HelferDetailPage implements OnInit {
 
   ngOnInit() {
     this.event = this.navParams.get("data");
+    console.log(this.event);
     this.event$ = of(this.event);
-
-    this.attendeeListTrue = [];
-    this.attendeeListFalse = [];
-    this.attendeeListUndefined = [];
 
     this.event$ = this.getEvent(this.event.clubId, this.event.id);
     /*this.event$.subscribe({
@@ -95,6 +89,7 @@ export class HelferDetailPage implements OnInit {
                 // If no attendees, return event data immediately
                 return of({
                   ...event,
+
                   attendees: [],
                   attendeeListTrue: [],
                   attendeeListFalse: [],

@@ -1,38 +1,43 @@
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from "firebase/firestore";
 
 export interface Veranstaltung {
-  id: string
-  name: string
-  description: string
+  id: string;
+  name: string;
+  description: string;
 
-  location: string
-  streetAndNumber: string
-  postalCode: string
-  city: string
-  
-  date: Timestamp,
+  location: string;
+  streetAndNumber: string;
+  postalCode: string;
+  city: string;
 
-  startDate: string
-  endDate: string
+  date: Timestamp;
 
-  timeFrom: string
-  timeTo: string
-  
+  startDate: string;
+  endDate: string;
+
+  timeFrom: string;
+  timeTo: string;
+
   /*teamId: string
   teamName: string
   liga: string*/
 
-  clubId: string
-  clubName: string
+  clubId: string;
+  clubName: string;
   // Business Logic Fields
-  status: boolean
-  attendees: any
-  countAttendees: number
+  status: boolean;
+  attendees: any;
+  countAttendees: number;
 }
 export interface HelferEvent extends Veranstaltung {
-  schichten: [Schicht]
+  schichten?: [Schicht];
 }
 
-interface Schicht {
-  name: string
+export interface Schicht {
+  id: number;
+  name: string;
+  timeFrom: any;
+  timeTo: any;
+  countNeeded: number;
+  count: number;
 }

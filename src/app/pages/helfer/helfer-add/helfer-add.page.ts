@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
-import { ModalController, NavParams } from "@ionic/angular";
+import { AlertController, ModalController, NavParams } from "@ionic/angular";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import {
@@ -18,7 +18,7 @@ import {
   tap,
 } from "rxjs";
 import { Club } from "src/app/models/club";
-import { HelferEvent } from "src/app/models/event";
+import { HelferEvent, Schicht } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
@@ -41,6 +41,7 @@ export class HelferAddPage implements OnInit {
     private cdr: ChangeDetectorRef,
     private readonly authService: AuthService,
     private fbService: FirebaseService,
+    private alertController: AlertController,
     public navParams: NavParams
   ) {
     this.event = {
@@ -68,11 +69,7 @@ export class HelferAddPage implements OnInit {
       clubId: "",
       clubName: "",
 
-      schichten: [
-        {
-          name: "",
-        },
-      ],
+      schichten: <any>[],
 
       status: true,
       attendees: [],
@@ -84,6 +81,7 @@ export class HelferAddPage implements OnInit {
     this.eventCopy = this.navParams.get("data");
     if (this.eventCopy.id) {
       this.event = this.eventCopy;
+      this.event.schichten = <any>[];
     }
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
@@ -103,6 +101,134 @@ export class HelferAddPage implements OnInit {
 
   async close() {
     return this.modalCtrl.dismiss(null, "close");
+  }
+
+  async editSchicht(schicht: Schicht) {
+    const alert = await this.alertController.create({
+      header: "Helferschicht bearbeiten",
+      subHeader: " ",
+      message: "Eine Helferschicht bearbeiten.",
+      inputs: [
+        {
+          id: "name",
+          name: "name",
+          label: "Beschreibung",
+          placeholder: "Beschreibung",
+          type: "text",
+          value: schicht.name,
+        },
+        {
+          id: "count",
+          name: "countNeeded",
+          label: "Anzahl Helfer",
+          placeholder: "Anzahl Helfer",
+          type: "number",
+          value: schicht.countNeeded,
+        },
+        {
+          id: "timeFrom",
+          name: "timeFrom",
+          label: "Zeit von",
+          placeholder: "Zeit von",
+          type: "time",
+          value: schicht.timeFrom,
+        },
+        {
+          id: "timeTo",
+          name: "timeTo",
+          label: "Zeit bis",
+          placeholder: "Zeit bis",
+          type: "time",
+          value: schicht.timeTo,
+        },
+      ],
+      buttons: [
+        {
+          text: "Abbrechen",
+          handler: () => {
+            console.log("Abbrechen");
+          },
+        },
+        {
+          text: "Speichern",
+          handler: (data) => {
+            console.log(data);
+
+            const index = this.event.schichten.findIndex((object) => {
+              return object.id === schicht.id;
+            });
+            if (index !== -1) {
+              this.event.schichten[index] = {
+                id: schicht.id,
+                ...data,
+                count: 0,
+              };
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  async addSchicht() {
+    const alert = await this.alertController.create({
+      header: "Neue Helferschicht",
+      subHeader: " ",
+      message: "Eine neue Helferschicht erstellen.",
+      inputs: [
+        {
+          id: "name",
+          name: "name",
+          label: "Beschreibung",
+          placeholder: "Beschreibung",
+          type: "text",
+        },
+        {
+          id: "count",
+          name: "countNeeded",
+          label: "Anzahl Helfer",
+          placeholder: "Anzahl Helfer",
+          type: "number",
+        },
+        {
+          id: "timeFrom",
+          name: "timeFrom",
+          label: "Zeit von",
+          placeholder: "Zeit von",
+          type: "time",
+        },
+        {
+          id: "timeTo",
+          name: "timeTo",
+          label: "Zeit bis",
+          placeholder: "Zeit bis",
+          type: "time",
+        },
+      ],
+      buttons: [
+        {
+          text: "Abbrechen",
+          handler: () => {
+            console.log("Abbrechen");
+          },
+        },
+        {
+          text: "Hinzufügen",
+          handler: (data) => {
+            console.log(data);
+            this.event.schichten.push({
+              id: this.event.schichten.length + 1,
+              ...data,
+              count: 0,
+            });
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 
   async createEvent() {

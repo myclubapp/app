@@ -28,6 +28,7 @@ import { Timestamp } from "firebase/firestore";
 import { EventDetailPage } from "../event-detail/event-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
+import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
 
 @Component({
   selector: "app-events",
@@ -264,6 +265,27 @@ export class EventsPage implements OnInit {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: EventAddPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: event,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+  async createHelferEvent(slidingItem: IonItemSliding, event: Veranstaltung) {
+    slidingItem.closeOpened();
+
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalCtrl.create({
+      component: HelferAddPage,
       presentingElement: this.routerOutlet.nativeEl,
       canDismiss: true,
       showBackdrop: true,
