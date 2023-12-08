@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import {
   IonItemSliding,
   IonRouterOutlet,
@@ -44,9 +44,6 @@ export class EventsPage implements OnInit {
 
   clubAdminList$: Observable<Club[]>;
 
-  filterList: any[] = [];
-  filterValue: string = "";
-
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
@@ -55,7 +52,6 @@ export class EventsPage implements OnInit {
     private readonly fbService: FirebaseService,
     private readonly eventService: EventService,
     private readonly menuCtrl: MenuController,
-    private cdr: ChangeDetectorRef,
     private translate: TranslateService
   ) {
     this.menuCtrl.enable(true, "menu");
@@ -67,7 +63,6 @@ export class EventsPage implements OnInit {
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
- 
   }
   getClubEvent() {
     return this.authService.getUser$().pipe(
@@ -122,23 +117,23 @@ export class EventsPage implements OnInit {
                   )
                 );
               }),
-              map((gamesWithAttendees) => gamesWithAttendees), // Flatten games array for each team
-              catchError(() => of([])) // If error in fetching games, return empty array
+              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
+              catchError(() => of([])) // If error in fetching events, return empty array
             )
           )
         ).pipe(
-          map((teamsGames) => teamsGames.flat()), // Flatten to get all games across all teams
+          map((teamsevents) => teamsevents.flat()), // Flatten to get all events across all teams
           map(
-            (allGames) =>
-              allGames.sort(
+            (allevents) =>
+              allevents.sort(
                 (a, b) =>
                   Timestamp.fromMillis(a.dateTime).seconds -
                   Timestamp.fromMillis(b.dateTime).seconds
-              ) // Sort games by date
+              ) // Sort events by date
           )
         );
       }),
-      tap((results) => console.log("Final results with all games:", results)),
+      tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
         console.error("Error in getClubEvent:", err);
         return of([]); // Return an empty array on error
@@ -162,10 +157,10 @@ export class EventsPage implements OnInit {
         return combineLatest(
           teams.map((team) =>
             this.eventService.getClubEventsPastRef(team.id).pipe(
-              switchMap((teamGames) => {
-                if (teamGames.length === 0) return of([]);
+              switchMap((teamevents) => {
+                if (teamevents.length === 0) return of([]);
                 return combineLatest(
-                  teamGames.map((game) =>
+                  teamevents.map((game) =>
                     this.eventService
                       .getClubEventAttendeesRef(team.id, game.id)
                       .pipe(
@@ -199,23 +194,23 @@ export class EventsPage implements OnInit {
                   )
                 );
               }),
-              map((gamesWithAttendees) => gamesWithAttendees), // Flatten games array for each team
-              catchError(() => of([])) // If error in fetching games, return empty array
+              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
+              catchError(() => of([])) // If error in fetching events, return empty array
             )
           )
         ).pipe(
-          map((teamsGames) => teamsGames.flat()), // Flatten to get all games across all teams
+          map((teamsevents) => teamsevents.flat()), // Flatten to get all events across all teams
           map(
-            (allGames) =>
-              allGames.sort(
+            (allevents) =>
+              allevents.sort(
                 (a, b) =>
                   Timestamp.fromMillis(a.dateTime).seconds -
                   Timestamp.fromMillis(b.dateTime).seconds
-              ) // Sort games by date
+              ) // Sort events by date
           )
         );
       }),
-      tap((results) => console.log("Final results with all games:", results)),
+      tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
         console.error("Error in getClubEventPast:", err);
         return of([]); // Return an empty array on error
@@ -228,7 +223,6 @@ export class EventsPage implements OnInit {
     );
 
     await this.eventService.setClubEventAttendeeStatus(
-    
       status,
       event.clubId,
       event.id
@@ -247,7 +241,6 @@ export class EventsPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
     );
     await this.eventService.setClubEventAttendeeStatus(
-    
       status,
       event.clubId,
       event.id

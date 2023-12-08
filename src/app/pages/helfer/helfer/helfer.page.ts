@@ -112,10 +112,10 @@ export class HelferPage implements OnInit {
         return combineLatest(
           teams.map((team) =>
             this.eventService.getClubHelferEventRefs(team.id).pipe(
-              switchMap((teamGames) => {
-                if (teamGames.length === 0) return of([]);
+              switchMap((teamevents) => {
+                if (teamevents.length === 0) return of([]);
                 return combineLatest(
-                  teamGames.map((game) =>
+                  teamevents.map((game) =>
                     this.eventService
                       .getClubHelferEventAttendeesRef(team.id, game.id)
                       .pipe(
@@ -149,25 +149,25 @@ export class HelferPage implements OnInit {
                   )
                 );
               }),
-              map((gamesWithAttendees) => gamesWithAttendees), // Flatten games array for each team
-              catchError(() => of([])) // If error in fetching games, return empty array
+              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
+              catchError(() => of([])) // If error in fetching events, return empty array
             )
           )
         ).pipe(
-          map((teamsGames) => teamsGames.flat()), // Flatten to get all games across all teams
+          map((teamsevents) => teamsevents.flat()), // Flatten to get all events across all teams
           map(
-            (allGames) =>
-              allGames.sort(
+            (allevents) =>
+              allevents.sort(
                 (a, b) =>
                   Timestamp.fromMillis(a.dateTime).seconds -
                   Timestamp.fromMillis(b.dateTime).seconds
-              ) // Sort games by date
+              ) // Sort events by date
           )
         );
       }),
-      tap((results) => console.log("Final results with all games:", results)),
+      tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
-        console.error("Error in getTeamGamesUpcoming:", err);
+        console.error("Error in getTeameventsUpcoming:", err);
         return of([]); // Return an empty array on error
       })
     );
@@ -189,10 +189,10 @@ export class HelferPage implements OnInit {
         return combineLatest(
           teams.map((team) =>
             this.eventService.getClubHelferEventPastRefs(team.id).pipe(
-              switchMap((teamGames) => {
-                if (teamGames.length === 0) return of([]);
+              switchMap((teamevents) => {
+                if (teamevents.length === 0) return of([]);
                 return combineLatest(
-                  teamGames.map((game) =>
+                  teamevents.map((game) =>
                     this.eventService
                       .getClubHelferEventAttendeesRef(team.id, game.id)
                       .pipe(
@@ -226,25 +226,25 @@ export class HelferPage implements OnInit {
                   )
                 );
               }),
-              map((gamesWithAttendees) => gamesWithAttendees), // Flatten games array for each team
-              catchError(() => of([])) // If error in fetching games, return empty array
+              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
+              catchError(() => of([])) // If error in fetching events, return empty array
             )
           )
         ).pipe(
-          map((teamsGames) => teamsGames.flat()), // Flatten to get all games across all teams
+          map((teamsevents) => teamsevents.flat()), // Flatten to get all events across all teams
           map(
-            (allGames) =>
-              allGames.sort(
+            (allevents) =>
+              allevents.sort(
                 (a, b) =>
                   Timestamp.fromMillis(a.dateTime).seconds -
                   Timestamp.fromMillis(b.dateTime).seconds
-              ) // Sort games by date
+              ) // Sort events by date
           )
         );
       }),
-      tap((results) => console.log("Final results with all games:", results)),
+      tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
-        console.error("Error in getTeamGamesUpcoming:", err);
+        console.error("Error in getTeameventsUpcoming:", err);
         return of([]); // Return an empty array on error
       })
     );
@@ -254,7 +254,6 @@ export class HelferPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${event.clubId} and training ${event.id}`
     );
     await this.eventService.setClubHelferEventAttendeeStatus(
-    
       status,
       event.clubId,
       event.id
@@ -273,7 +272,6 @@ export class HelferPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${event.clubId} and training ${event.id}`
     );
     await this.eventService.setClubHelferEventAttendeeStatus(
-    
       status,
       event.clubId,
       event.id

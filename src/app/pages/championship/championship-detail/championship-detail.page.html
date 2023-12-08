@@ -1,15 +1,20 @@
 <ng-container *ngIf="game$ | async as game">
-  <ion-header [translucent]="true">
+  <!--<ion-header [translucent]="true">
     <ion-toolbar>
       <ion-title></ion-title>
       <ion-buttons slot="primary">
         <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
       </ion-buttons>
     </ion-toolbar>
-  </ion-header>
+  </ion-header>-->
 
   <!-- class="ion-padding" -->
   <ion-content>
+    <ion-fab vertical="top" horizontal="end">
+      <ion-fab-button size="small" (click)="close()">
+        <ion-icon name="close" size="small"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
     <capacitor-google-map #map></capacitor-google-map>
     <ion-list [inset]="true">
       <ion-list-header> {{"common.details" | translate}} </ion-list-header>
@@ -48,12 +53,39 @@
         <ion-label class="ion-text-wrap">
           <h2>{{game.location}} {{game.city}}</h2>
         </ion-label>
+        <ion-icon
+          color="primary"
+          (click)="openMaps(game)"
+          slot="end"
+          name="map-outline"
+        ></ion-icon>
       </ion-item>
 
       <ion-item>
         <ion-icon slot="start" name="trophy-outline"></ion-icon>
         <ion-label class="ion-text-wrap">
           <h2>{{game.liga}} {{game.teamName}}</h2>
+        </ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="game.result">
+        <ion-icon slot="start" name="podium-outline"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <h2>{{game.result}}</h2>
+        </ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="game.referee1">
+        <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <h2>{{game.referee1}} {{game.referee2}}</h2>
+        </ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="game.spectators && game.spectators != '0' ">
+        <ion-icon slot="start" name="people-outline"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <h2>{{game.spectators}}</h2>
         </ion-label>
       </ion-item>
     </ion-list>

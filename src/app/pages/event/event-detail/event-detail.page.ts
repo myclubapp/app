@@ -35,10 +35,6 @@ export class EventDetailPage implements OnInit {
   user$: Observable<User>;
   user: User;
 
-  attendeeListTrue: any[] = [];
-  attendeeListFalse: any[] = [];
-  attendeeListUndefined: any[] = [];
-
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -46,18 +42,12 @@ export class EventDetailPage implements OnInit {
     private readonly eventService: EventService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
-    private cdr: ChangeDetectorRef,
     private translate: TranslateService
   ) {}
 
   ngOnInit() {
     this.event = this.navParams.get("data");
     this.event$ = of(this.event);
-
-    this.attendeeListTrue = [];
-    this.attendeeListFalse = [];
-    this.attendeeListUndefined = [];
-
     this.event$ = this.getEvent(this.event.clubId, this.event.id);
   }
 
@@ -129,7 +119,6 @@ export class EventDetailPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and club ${this.event.clubId} and event ${event.id}`
     );
     await this.eventService.setClubEventAttendeeStatus(
-     
       status,
       this.event.clubId,
       event.id

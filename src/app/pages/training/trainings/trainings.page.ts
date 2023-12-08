@@ -39,24 +39,24 @@ import { FilterService } from "src/app/services/filter.service";
 })
 export class TrainingsPage implements OnInit {
   skeleton = new Array(12);
+
   user: User;
   user$: Observable<User>;
 
   trainingList$: Observable<Training[]>;
   trainingListPast$: Observable<Training[]>;
 
-  trainingListBackup$: Observable<Training[]>;
-  trainingListPastBackup$: Observable<Training[]>;
-
-   trainingListBackupSub: Subscription;
-   trainingListPastBackupSub: Subscription;
-
-  teamList$: Observable<Team[]>;
   teamAdminList$: Observable<Team[]>;
 
-  filterList: any[] = [];
-  filterValue: string = "";
-  private teamFilterSubscription: Subscription;
+  // teamList$: Observable<Team[]>;
+  // filterList: any[] = [];
+  // filterValue: string = "";
+  // private teamFilterSubscription: Subscription;
+  // trainingListBackup$: Observable<Training[]>;
+  // trainingListPastBackup$: Observable<Training[]>;
+
+  // trainingListBackupSub: Subscription;
+  // trainingListPastBackupSub: Subscription;
 
   constructor(
     public toastController: ToastController,
@@ -75,9 +75,13 @@ export class TrainingsPage implements OnInit {
   }
 
   ngOnInit() {
+    // DATA
     this.trainingList$ = this.getTeamTraining();
+    this.trainingListPast$ = this.getTeamTrainingPast();
+    // CREATE
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
 
-    this.trainingListBackup$ = this.getTeamTraining();
+    /*this.trainingListBackup$ = this.getTeamTraining();
     this.trainingListBackupSub = this.trainingListBackup$.subscribe({
       next: () => {
         console.log("Training Backup Data received");
@@ -88,7 +92,6 @@ export class TrainingsPage implements OnInit {
       complete: () => console.log("Training Observable completed"),
     });
 
-    this.trainingListPast$ = this.getTeamTrainingPast();
 
     this.trainingListPastBackup$ = this.getTeamTrainingPast();
     this.trainingListPastBackup$.subscribe({
@@ -100,11 +103,10 @@ export class TrainingsPage implements OnInit {
         console.error("Training PAST Backup Error in subscription:", err),
       complete: () => console.log("Training PAST Backup Observable completed"),
     });
-    //Create Events, Helfer, News
-    this.teamAdminList$ = this.fbService.getTeamAdminList();
-   
+    */
 
     // Filterlist
+    /*
     this.teamList$ = this.fbService.getTeamList();
     this.teamList$.subscribe({
       next: (data) => {
@@ -122,11 +124,11 @@ export class TrainingsPage implements OnInit {
         console.log("Set new filter value: " + newTeamFilterValue);
         this.filterValue = newTeamFilterValue;
       }
-    );
+    );*/
   }
 
   ngOnDestroy(): void {
-    if (this.trainingListPastBackupSub){
+    /*if (this.trainingListPastBackupSub){
       this.trainingListPastBackupSub.unsubscribe();
     }
     if (this.trainingListBackupSub){
@@ -136,7 +138,7 @@ export class TrainingsPage implements OnInit {
     // Unsubscribe to prevent memory leaks
     if (this.teamFilterSubscription) {
       this.teamFilterSubscription.unsubscribe();
-    }
+    }*/
   }
 
   getTeamTraining() {
@@ -409,7 +411,7 @@ export class TrainingsPage implements OnInit {
     toast.present();
   }
 
-  async openFilter(ev: Event) {
+  /* async openFilter(ev: Event) {
     const alertInputs = [];
     for (const item of this.filterList) {
       alertInputs.push({
@@ -462,5 +464,5 @@ export class TrainingsPage implements OnInit {
       htmlAttributes: { "aria-label": "alert dialog" },
     });
     alert.present();
-  }
+  }*/
 }

@@ -14,7 +14,12 @@ import {
 } from "@ionic/angular";
 import { Game } from "src/app/models/game";
 import { GoogleMap } from "@capacitor/google-maps";
-import { Geolocation, PermissionStatus } from "@capacitor/geolocation";
+import { Browser } from "@capacitor/browser";
+import {
+  Geolocation,
+  PermissionStatus,
+  Position,
+} from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { forkJoin, lastValueFrom, Observable, of } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
@@ -45,9 +50,7 @@ export class ChampionshipDetailPage implements OnInit {
   user$: Observable<User>;
   user: User;
 
-  attendeeListTrue: any[] = [];
-  attendeeListFalse: any[] = [];
-  attendeeListUndefined: any[] = [];
+  coordinates: Position;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -72,28 +75,24 @@ export class ChampionshipDetailPage implements OnInit {
       console.log(params);
       this.game = JSON.parse(params.data);
       */
-      this.game$ = of(this.game);
+    this.game$ = of(this.game);
 
-      this.attendeeListTrue = [];
-      this.attendeeListFalse = [];
-      this.attendeeListUndefined = [];
+    this.game$ = this.getGame(this.game.teamId, this.game.id);
+    this.game$.subscribe({
+      next: (data) => {
+        console.log("GAMES Data received");
+        this.game = {
+          ...this.game,
+          ...data,
+        };
+        this.cdr.detectChanges();
 
-      this.game$ = this.getGame(this.game.teamId, this.game.id);
-      this.game$.subscribe({
-        next: (data) => {
-          console.log("GAMES Data received");
-          this.game = {
-            ...this.game,
-            ...data,
-          };
-          this.cdr.detectChanges();
-
-          this.setMap();
-        },
-        error: (err) => console.error("GAMES Error in subscription:", err),
-        complete: () => console.log("GAMES Observable completed"),
-      });
-   // });
+        this.setMap();
+      },
+      error: (err) => console.error("GAMES Error in subscription:", err),
+      complete: () => console.log("GAMES Observable completed"),
+    });
+    // });
 
     // let this.mapRef =  @ViewChild('map') abc;
   }
@@ -262,13 +261,16 @@ export class ChampionshipDetailPage implements OnInit {
       console.log("No Permission Request possible");
     }
     try {
-      const coordinates = await Geolocation.getCurrentPosition();
-      if (coordinates.coords.latitude && coordinates.coords.longitude) {
+      this.coordinates = await Geolocation.getCurrentPosition();
+      if (
+        this.coordinates.coords.latitude &&
+        this.coordinates.coords.longitude
+      ) {
         this.newMap.addMarker({
           title: "Meine Position",
           coordinate: {
-            lat: coordinates.coords.latitude,
-            lng: coordinates.coords.longitude,
+            lat: this.coordinates.coords.latitude,
+            lng: this.coordinates.coords.longitude,
           },
           isFlat: true,
           snippet: "Meine Position",
@@ -276,6 +278,30 @@ export class ChampionshipDetailPage implements OnInit {
       }
     } catch (e) {
       console.log("no coordinates on map");
+    }
+  }
+
+  openMaps(game: Game) {
+    if (this.coordinates.coords.longitude && this.coordinates.coords.latitude) {
+      Browser.open({
+        url:
+          "https://www.google.com/maps/dir/?api=1&destination=" +
+          game.latitude +
+          "," +
+          game.longitude +
+          "&origin=" +
+          this.coordinates.coords.latitude +
+          "," +
+          this.coordinates.coords.longitude,
+      });
+    } else {
+      Browser.open({
+        url:
+          "https://www.google.com/maps/dir/?api=1&destination=" +
+          game.latitude +
+          "," +
+          game.longitude,
+      });
     }
   }
 }

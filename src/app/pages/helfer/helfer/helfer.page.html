@@ -94,22 +94,27 @@
           </ion-item-option>
         </ion-item-options>
 
-        <ion-item-options side="end">
-          <ion-item-option color="medium" (click)="copyEvent(item, event)">
-            <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
-          </ion-item-option>
-          <ion-item-option color="danger" (click)="deleteEvent(item, event)">
-            <ion-icon slot="icon-only" name="trash"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
+        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+          <ion-item-options side="end" *ngIf="clubAdminList.length > 0">
+            <ion-item-option color="medium" (click)="copyEvent(item, event)">
+              <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+            </ion-item-option>
+
+            <ion-item-option color="danger" (click)="deleteEvent(item, event)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ng-container>
       </ion-item-sliding>
     </ion-list>
 
-    <ion-list class="ion-padding" *ngIf="eventsList.length==0">
+    <ion-list *ngIf="eventsList.length==0">
       <ion-list-header>
         <ion-label>{{"helfer.upcomming__helper_event" | translate}}</ion-label>
       </ion-list-header>
-      <ion-note> {{"common.no_event__found" | translate}} </ion-note>
+      <ion-item>
+        <ion-note> {{"common.no_event__found" | translate}} </ion-note>
+      </ion-item>
     </ion-list>
   </ng-container>
 
@@ -165,18 +170,26 @@
             <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
           </ion-note>
         </ion-item>
-        <ion-item-options side="end">
-          <ion-item-option color="medium" (click)="copyEvent(item, event)">
-            <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
+        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+          <ion-item-options side="end" *ngIf="clubAdminList.length > 0">
+            <ion-item-option color="medium" (click)="copyEvent(item, event)">
+              <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+            </ion-item-option>
+
+            <ion-item-option color="danger" (click)="deleteEvent(item, event)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ng-container>
       </ion-item-sliding>
     </ion-list>
     <ion-list class="ion-padding" *ngIf="eventsListPast.length==0">
       <ion-list-header>
         <ion-label>{{"helfer.past__helper_events" | translate}}</ion-label>
       </ion-list-header>
-      <ion-note> {{"common.no_event__found" | translate}} </ion-note>
+      <ion-item>
+        <ion-note> {{"common.no_event__found" | translate}} </ion-note>
+      </ion-item>
     </ion-list>
   </ng-container>
 

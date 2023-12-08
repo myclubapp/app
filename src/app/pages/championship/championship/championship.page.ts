@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { Preferences, GetResult } from '@capacitor/preferences';
+import { Preferences, GetResult } from "@capacitor/preferences";
 import {
   AlertController,
   IonItemSliding,
@@ -45,24 +45,24 @@ export class ChampionshipPage implements OnInit {
 
   gameList$: Observable<Game[]>;
   gameListPast$: Observable<Game[]>;
+  teamRankings$: Observable<any[]>;
 
-  gameListBackup$: Observable<Game[]>;
+  /*gameListBackup$: Observable<Game[]>;
   gameListPastBackup$: Observable<Game[]>;
+  teamRankingsBackup$: Observable<any[]>;
 
 
   gameListBackup: Subscription;
   gameListPastBackup: Subscription;
-
+  */
 
   mode = "games";
 
   teamList$: Observable<Team[]>;
 
-  filterList: any[] = [];
+  /*filterList: any[] = [];
   filterValue: string = "";
-
-  teamRankings$: Observable<any[]>;
-  teamRankingsBackup$: Observable<any[]>;
+  */
 
   constructor(
     public toastController: ToastController,
@@ -78,13 +78,14 @@ export class ChampionshipPage implements OnInit {
     private translate: TranslateService
   ) {
     this.menuCtrl.enable(true, "menu");
-
   }
 
   ngOnInit() {
     this.teamRankings$ = this.getTeamsWithRankingsForYear("2023");
-   
-    this.teamRankingsBackup$ = this.getTeamsWithRankingsForYear("2023");
+    this.gameList$ = this.getTeamGamesUpcoming();
+    this.gameListPast$ = this.getTeamGamesPast();
+
+    /*this.teamRankingsBackup$ = this.getTeamsWithRankingsForYear("2023");
     this.teamRankingsBackup$.subscribe({
       next: () => {
         console.log("RANKING Backup Data received");
@@ -94,7 +95,6 @@ export class ChampionshipPage implements OnInit {
       complete: () => console.log("RANKING Backup Observable completed"),
     });
 
-    this.gameList$ = this.getTeamGamesUpcoming();
    
     this.gameListBackup$ = this.getTeamGamesUpcoming();
     this.gameListBackup$.subscribe({
@@ -104,11 +104,9 @@ export class ChampionshipPage implements OnInit {
       },
       error: (err) => console.error("GAMES Error in subscription:", err),
       complete: () => console.log("GAMES Observable completed"),
-    });
+    });*/
 
-    this.gameListPast$ = this.getTeamGamesPast();
-   
-    this.gameListPastBackup$ = this.getTeamGamesPast();
+    /*this.gameListPastBackup$ = this.getTeamGamesPast();
     this.gameListPastBackup$.subscribe({
       next: () => {
         console.log("GAMES PAST Data received");
@@ -116,19 +114,19 @@ export class ChampionshipPage implements OnInit {
       },
       error: (err) => console.error("GAMES PAST Error in subscription:", err),
       complete: () => console.log("GAMES PAST Observable completed"),
-    });
+    });*/
 
     // Filter
-    this.teamList$ = this.fbService.getTeamList();
+    /* this.teamList$ = this.fbService.getTeamList();
     this.teamList$.subscribe({
       next: (data) => {
-        this.filterList = data;
+       // this.filterList = data;
         console.log("Team Data received");
         this.cdr.detectChanges();
       },
       error: (err) => console.error("Team Error in subscription:", err),
       complete: () => console.log("Team Observable completed"),
-    });
+    });*/
   }
 
   ngOnDestroy(): void {
@@ -167,8 +165,8 @@ export class ChampionshipPage implements OnInit {
               map(({ teamDetails, rankingsTable, rankingDetails }) => ({
                 ...teamDetails,
                 teamId: teamDetails.id,
-                rankings: rankingsTable.sort((a,b)=>{
-                  return a.ranking as number - b.ranking as number;
+                rankings: rankingsTable.sort((a, b) => {
+                  return ((a.ranking as number) - b.ranking) as number;
                 }),
                 details: rankingDetails,
               })),
@@ -342,7 +340,6 @@ export class ChampionshipPage implements OnInit {
   }
 
   async openChampionshipDetailModal(game: Game, isFuture: boolean) {
-  
     /*let extras: NavigationExtras = {
       queryParams: {
         data: JSON.stringify(game),
@@ -414,8 +411,7 @@ export class ChampionshipPage implements OnInit {
     toast.present();
   }
 
-
-  async openFilter(ev: Event) {
+  /*  async openFilter(ev: Event) {
 
     const alertInputs = [];
     for (const item of this.filterList) {
@@ -476,5 +472,5 @@ export class ChampionshipPage implements OnInit {
       htmlAttributes: { 'aria-label': 'alert dialog' },
     });
     alert.present();
-  }
+  }*/
 }

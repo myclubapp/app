@@ -22,7 +22,10 @@
 
       <ion-item>
         <ion-avatar slot="start">
-          <img alt="{{userProfile.firstName}}" src="{{userProfile.profilePicture}}" />
+          <img
+            alt="{{userProfile.firstName}}"
+            src="{{userProfile.profilePicture}}"
+          />
         </ion-avatar>
         <ion-label></ion-label>
         <ion-button slot="end" (click)="takePicture()">
@@ -31,16 +34,26 @@
       </ion-item>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" [label]='"common.first__name" | translate'
-          attr.aria-label='{{"common.first__name" | translate}}' (ionChange)="profileChange($event, 'firstName')"
-          [(ngModel)]="userProfile.firstName" value="{{userProfile.firstName}}">
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"common.first__name" | translate'
+          attr.aria-label='{{"common.first__name" | translate}}'
+          (ionChange)="profileChange($event, 'firstName')"
+          [(ngModel)]="userProfile.firstName"
+          value="{{userProfile.firstName}}"
+        >
         </ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" [label]='"common.last__name" | translate'
-          attr.aria-label='{{"common.last__name" | translate}}' (ionChange)="profileChange($event, 'lastName')"
-          [(ngModel)]="userProfile.lastName" value="{{userProfile.lastName}}">
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"common.last__name" | translate'
+          attr.aria-label='{{"common.last__name" | translate}}'
+          (ionChange)="profileChange($event, 'lastName')"
+          [(ngModel)]="userProfile.lastName"
+          value="{{userProfile.lastName}}"
+        >
         </ion-input>
       </ion-item>
 
@@ -52,81 +65,112 @@
       </ion-item>-->
 
       <ion-item id="dateOfBirthItem">
-        <ion-label position=""> {{"profile.birthdate" | translate}}: </ion-label>
-        <ion-datetime-button slot="end" datetime="dateOfBirth"></ion-datetime-button>
+        <ion-label position="">
+          {{"profile.birthdate" | translate}}:
+        </ion-label>
+        <ion-datetime-button
+          slot="end"
+          datetime="dateOfBirth"
+        ></ion-datetime-button>
 
         <ion-modal [keepContentsMounted]="true">
           <ng-template>
-            <ion-datetime [firstDayOfWeek]="1" presentation="date" id="dateOfBirth"
-              value="{{userProfile.dateOfBirth.toDate().toISOString()}}"></ion-datetime>
+            <ion-datetime
+              [firstDayOfWeek]="1"
+              presentation="date"
+              id="dateOfBirth"
+              value="{{userProfile.dateOfBirth.toDate().toISOString()}}"
+            ></ion-datetime>
           </ng-template>
         </ion-modal>
       </ion-item>
 
-
-
       <ion-item>
-        <ion-select [label]="'profile.language' | translate" [(ngModel)]="userProfile.language"
-          (ionChange)="profileChange($event, 'language')" [placeholder]="'profile.select__language' | translate">
-          <ion-select-option value="de">{{"common.language__german" | translate}}</ion-select-option>
-          <ion-select-option value="fr">{{"common.language__french" | translate}}</ion-select-option>
-          <ion-select-option value="it">{{"common.language__italian" | translate}}</ion-select-option>
-          <ion-select-option value="en">{{"common.language__english" | translate}}</ion-select-option>
+        <ion-select
+          [label]="'profile.language' | translate"
+          [(ngModel)]="userProfile.language"
+          (ionChange)="profileChange($event, 'language')"
+          [placeholder]="'profile.select__language' | translate"
+        >
+          <ion-select-option value="de"
+            >{{"common.language__german" | translate}}</ion-select-option
+          >
+          <ion-select-option value="fr"
+            >{{"common.language__french" | translate}}</ion-select-option
+          >
+          <ion-select-option value="it"
+            >{{"common.language__italian" | translate}}</ion-select-option
+          >
+          <ion-select-option value="en"
+            >{{"common.language__english" | translate}}</ion-select-option
+          >
         </ion-select>
       </ion-item>
-
     </ion-list>
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
-        <ion-label>
-          {{ "profile.contact__information" | translate}}
-        </ion-label>
+        <ion-label> {{ "profile.contact__information" | translate}} </ion-label>
       </ion-list-header>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" [label]='"profile.phonenumber" | translate'
-          attr.aria-label='{{"profile.phonenumber" | translate}}' [(ngModel)]="userProfile.phonenumber" type="tel"
-          value="{{userProfile.phonenumber}}" (ionChange)="profileChange($event, 'phonenumber')">
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"profile.phonenumber" | translate'
+          attr.aria-label='{{"profile.phonenumber" | translate}}'
+          [(ngModel)]="userProfile.phonenumber"
+          tel
+          value="{{userProfile.phonenumber}}"
+          (ionChange)="profileChange($event, 'phonenumber')"
+        >
         </ion-input>
       </ion-item>
 
       <ion-item type="button" detail="true">
-        <ion-input labelPlacement="stacked" [label]='"profile.email" | translate'
-          attr.aria-label='{{"profile.email" | translate}}' readonly [(ngModel)]="userProfile.email"
-          value="{{userProfile.email}}" (click)="changeEmail(userProfile.email)">
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"profile.email" | translate'
+          email
+          attr.aria-label='{{"profile.email" | translate}}'
+          readonly
+          [(ngModel)]="userProfile.email"
+          value="{{userProfile.email}}"
+          (click)="changeEmail(userProfile.email)"
+        >
         </ion-input>
       </ion-item>
 
-      <ion-item (click)="changeAddress(userProfile)" type="button" detail="true">
-
-        <ion-input labelPlacement="stacked" [label]='"profile.address" | translate'
+      <ion-item
+        (click)="changeAddress(userProfile)"
+        type="button"
+        detail="true"
+      >
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"profile.address" | translate'
           attr.aria-label='{{"profile.address" | translate}}'
-          value="{{userProfile.streetAndNumber}}, {{userProfile.postalcode}} {{userProfile.city}}">
-
+          value="{{userProfile.streetAndNumber}}, {{userProfile.postalcode}} {{userProfile.city}}"
+        >
         </ion-input>
       </ion-item>
     </ion-list>
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
-        <ion-label>
-          {{ "profile.sport" | translate}}
-        </ion-label>
+        <ion-label> {{ "profile.sport" | translate}} </ion-label>
       </ion-list-header>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" [label]='"common.license__number" | translate'
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"common.license__number" | translate'
           attr.aria-label='{{"common.license__number" | translate}}'
-          (ionChange)="profileChange($event, 'licenseNumber')" [(ngModel)]="userProfile.licenseNumber"
-          value="{{userProfile.licenseNumber}}">
+          (ionChange)="profileChange($event, 'licenseNumber')"
+          [(ngModel)]="userProfile.licenseNumber"
+          value="{{userProfile.licenseNumber}}"
+        >
         </ion-input>
       </ion-item>
-
-
     </ion-list>
-
-
-
 
     <!--
     <ion-list *ngIf="clubRequestList.length > 0" lines="full" [inset]="true">
@@ -169,115 +213,190 @@
        <ion-label position="stacked"> Meine Geräte Id </ion-label>
        <ion-input readonly value="{{deviceId.uuid}}"></ion-input>
       </ion-item>
-    --> 
+    -->
       <ion-accordion-group>
         <ion-accordion value="settingsPush">
           <ion-item slot="header">
-            <ion-icon slot="start" color="primary" name="notifications-outline"></ion-icon>
-            <ion-label>
-              {{"profile.push__message" | translate}}
-            </ion-label>
+            <ion-icon
+              slot="start"
+              color="primary"
+              name="notifications-outline"
+            ></ion-icon>
+            <ion-label> {{"profile.push__message" | translate}} </ion-label>
           </ion-item>
           <div slot="content">
             <ion-item>
-              <ion-icon *ngIf="userProfile.settingsPush"slot="start" color="success" name="notifications-circle"></ion-icon>
-              <ion-icon *ngIf="!userProfile.settingsPush"  slot="start" color="danger" name="notifications-off-circle"></ion-icon>
-    
-              <ion-toggle labelPlacement="stacked" attr.aria-label='{{"profile.push__message" | translate}}'
-              value="{{userProfile?.settingsPush}}" slot="end" [checked]="userProfile.settingsPush"
-              [enableOnOffLabels]="true" (ionChange)="togglePush($event)"></ion-toggle>
+              <ion-icon
+                *ngIf="userProfile.settingsPush"
+                slot="start"
+                color="success"
+                name="notifications-circle"
+              ></ion-icon>
+              <ion-icon
+                *ngIf="!userProfile.settingsPush"
+                slot="start"
+                color="danger"
+                name="notifications-off-circle"
+              ></ion-icon>
+
+              <ion-toggle
+                labelPlacement="stacked"
+                attr.aria-label='{{"profile.push__message" | translate}}'
+                value="{{userProfile?.settingsPush}}"
+                slot="end"
+                [checked]="userProfile.settingsPush"
+                [enableOnOffLabels]="true"
+                (ionChange)="togglePush($event)"
+              ></ion-toggle>
               <ion-label>
                 {{"profile.push__message__aktivate" | translate}}
               </ion-label>
             </ion-item>
             <ion-item *ngIf="userProfile.settingsPush">
-              <ion-icon size="small" slot="start" name="newspaper-outline"></ion-icon>
-              <ion-toggle labelPlacement="stacked" attr.aria-label='{{"common.news" | translate}}'
-                value="{{userProfile?.settingsPushNews}}" slot="end" [checked]="userProfile.settingsPushNews"
-                [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'News')"></ion-toggle>
-              <ion-label>
-                {{"common.news" | translate}}
-              </ion-label>
+              <ion-icon
+                size="small"
+                slot="start"
+                name="newspaper-outline"
+              ></ion-icon>
+              <ion-toggle
+                labelPlacement="stacked"
+                attr.aria-label='{{"common.news" | translate}}'
+                value="{{userProfile?.settingsPushNews}}"
+                slot="end"
+                [checked]="userProfile.settingsPushNews"
+                [enableOnOffLabels]="true"
+                (ionChange)="togglePushModule($event, 'News')"
+              ></ion-toggle>
+              <ion-label> {{"common.news" | translate}} </ion-label>
             </ion-item>
-  
+
             <ion-item *ngIf="userProfile.settingsPush">
-              <ion-icon size="small" slot="start" name="barbell-outline"></ion-icon>
-              <ion-toggle labelPlacement="stacked" attr.aria-label='{{"common.training" | translate}}'
-                value="{{userProfile?.settingsPushTraining}}" slot="end" [checked]="userProfile.settingsPushTraining"
-                [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'Training')"></ion-toggle>
-              <ion-label>
-                {{"common.training" | translate}}
-              </ion-label>
+              <ion-icon
+                size="small"
+                slot="start"
+                name="barbell-outline"
+              ></ion-icon>
+              <ion-toggle
+                labelPlacement="stacked"
+                attr.aria-label='{{"common.training" | translate}}'
+                value="{{userProfile?.settingsPushTraining}}"
+                slot="end"
+                [checked]="userProfile.settingsPushTraining"
+                [enableOnOffLabels]="true"
+                (ionChange)="togglePushModule($event, 'Training')"
+              ></ion-toggle>
+              <ion-label> {{"common.training" | translate}} </ion-label>
             </ion-item>
-  
+
             <ion-item *ngIf="userProfile.settingsPush">
-              <ion-icon size="small" slot="start" name="trophy-outline"></ion-icon>
-              <ion-toggle labelPlacement="stacked" attr.aria-label='{{"common.championship" | translate}}'
-                value="{{userProfile?.settingsPushChampionship}}" slot="end"
-                [checked]="userProfile.settingsPushChampionship" [enableOnOffLabels]="true"
-                (ionChange)="togglePushModule($event, 'Championship')"></ion-toggle>
-              <ion-label>
-                {{"common.championship" | translate}}
-              </ion-label>
+              <ion-icon
+                size="small"
+                slot="start"
+                name="trophy-outline"
+              ></ion-icon>
+              <ion-toggle
+                labelPlacement="stacked"
+                attr.aria-label='{{"common.championship" | translate}}'
+                value="{{userProfile?.settingsPushChampionship}}"
+                slot="end"
+                [checked]="userProfile.settingsPushChampionship"
+                [enableOnOffLabels]="true"
+                (ionChange)="togglePushModule($event, 'Championship')"
+              ></ion-toggle>
+              <ion-label> {{"common.championship" | translate}} </ion-label>
             </ion-item>
             <ion-item *ngIf="userProfile.settingsPush">
-              <ion-icon size="small"slot="start" name="calendar-outline"></ion-icon>
-              <ion-toggle labelPlacement="stacked" attr.aria-label='{{"common.events" | translate}}'
-                value="{{userProfile?.settingsPushEvent}}" slot="end" [checked]="userProfile.settingsPushEvent"
-                [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'Event')"></ion-toggle>
-              <ion-label>
-                {{"common.events" | translate}}
-              </ion-label>
+              <ion-icon
+                size="small"
+                slot="start"
+                name="calendar-outline"
+              ></ion-icon>
+              <ion-toggle
+                labelPlacement="stacked"
+                attr.aria-label='{{"common.events" | translate}}'
+                value="{{userProfile?.settingsPushEvent}}"
+                slot="end"
+                [checked]="userProfile.settingsPushEvent"
+                [enableOnOffLabels]="true"
+                (ionChange)="togglePushModule($event, 'Event')"
+              ></ion-toggle>
+              <ion-label> {{"common.events" | translate}} </ion-label>
             </ion-item>
             <ion-item *ngIf="userProfile.settingsPush">
-              <ion-icon size="small" slot="start" name="help-buoy-outline"></ion-icon>
-              <ion-toggle labelPlacement="stacked" attr.aria-label='{{"common.helper" | translate}}'
-                value="{{userProfile?.settingsPushHelfer}}" slot="end" [checked]="userProfile.settingsPushHelfer"
-                [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'Helfer')"></ion-toggle>
-              <ion-label>
-                {{"common.helper" | translate}}
-              </ion-label>
+              <ion-icon
+                size="small"
+                slot="start"
+                name="help-buoy-outline"
+              ></ion-icon>
+              <ion-toggle
+                labelPlacement="stacked"
+                attr.aria-label='{{"common.helper" | translate}}'
+                value="{{userProfile?.settingsPushHelfer}}"
+                slot="end"
+                [checked]="userProfile.settingsPushHelfer"
+                [enableOnOffLabels]="true"
+                (ionChange)="togglePushModule($event, 'Helfer')"
+              ></ion-toggle>
+              <ion-label> {{"common.helper" | translate}} </ion-label>
             </ion-item>
           </div>
         </ion-accordion>
 
         <ion-accordion value="settingsPushModule">
           <ion-item slot="header">
-            <ion-icon slot="start" color="secondary" name="mail-outline"></ion-icon>
-            <ion-label>
-              {{"profile.email__messages" | translate}}
-            </ion-label>
+            <ion-icon
+              slot="start"
+              color="secondary"
+              name="mail-outline"
+            ></ion-icon>
+            <ion-label> {{"profile.email__messages" | translate}} </ion-label>
           </ion-item>
           <div slot="content">
             <ion-item>
-              <ion-icon *ngIf="userProfile.settingsEmail"slot="start" color="success" name="notifications-circle"></ion-icon>
-              <ion-icon *ngIf="!userProfile.settingsEmail"  slot="start" color="danger" name="notifications-off-circle"></ion-icon>
-    
-              <ion-toggle color="secondary" labelPlacement="stacked" attr.aria-label='{{"profile.email__messages" | translate}}'
-                value="{{userProfile?.settingsEmail}}" slot="end" [checked]="userProfile.settingsEmail"
-                [enableOnOffLabels]="true" (ionChange)="toggleEmail($event)"></ion-toggle>
-              <ion-label>
-                {{"profile.email__messages" | translate}}
-              </ion-label>
+              <ion-icon
+                *ngIf="userProfile.settingsEmail"
+                slot="start"
+                color="success"
+                name="notifications-circle"
+              ></ion-icon>
+              <ion-icon
+                *ngIf="!userProfile.settingsEmail"
+                slot="start"
+                color="danger"
+                name="notifications-off-circle"
+              ></ion-icon>
+
+              <ion-toggle
+                color="secondary"
+                labelPlacement="stacked"
+                attr.aria-label='{{"profile.email__messages" | translate}}'
+                value="{{userProfile?.settingsEmail}}"
+                slot="end"
+                [checked]="userProfile.settingsEmail"
+                [enableOnOffLabels]="true"
+                (ionChange)="toggleEmail($event)"
+              ></ion-toggle>
+              <ion-label> {{"profile.email__messages" | translate}} </ion-label>
             </ion-item>
             <ion-item>
               <ion-icon slot="start" size="small" name="analytics"></ion-icon>
-              <ion-toggle color="secondary" labelPlacement="stacked" attr.aria-label='{{"profile.email__messages_report" | translate}}'
-                value="{{userProfile?.settingsEmailReporting}}" slot="end" [checked]="userProfile.settingsEmailReporting"
-                [enableOnOffLabels]="true" (ionChange)="toggleEmailReporting($event)"></ion-toggle>
+              <ion-toggle
+                color="secondary"
+                labelPlacement="stacked"
+                attr.aria-label='{{"profile.email__messages_report" | translate}}'
+                value="{{userProfile?.settingsEmailReporting}}"
+                slot="end"
+                [checked]="userProfile.settingsEmailReporting"
+                [enableOnOffLabels]="true"
+                (ionChange)="toggleEmailReporting($event)"
+              ></ion-toggle>
               <ion-label>
                 {{"profile.email__messages_report" | translate}}
               </ion-label>
             </ion-item>
           </div>
-         
         </ion-accordion>
-      
       </ion-accordion-group>
-
-
-
-
     </ion-list>
 
     <!-- <ion-list lines="full" [inset]="true">
@@ -315,7 +434,9 @@
 
     <ion-list lines="full" [inset]="true">
       <ion-item>
-        <ion-label color="danger">{{'profile.delete__profile' | translate}}</ion-label>
+        <ion-label color="danger"
+          >{{'profile.delete__profile' | translate}}</ion-label
+        >
         <ion-button slot="end" color="danger" (click)="deleteProfile()">
           <ion-icon slot="icon-only" name="trash"> </ion-icon>
         </ion-button>

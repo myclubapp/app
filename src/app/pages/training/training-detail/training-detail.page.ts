@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, Input, OnInit, ElementRef } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { ModalController, NavParams, ToastController } from "@ionic/angular";
-import { IonRouterOutlet } from "@ionic/angular/common";
+
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
@@ -36,10 +36,6 @@ export class TrainingDetailPage implements OnInit {
   user$: Observable<User>;
   user: User;
 
-  attendeeListTrue: any[] = [];
-  attendeeListFalse: any[] = [];
-  attendeeListUndefined: any[] = [];
-
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -47,32 +43,13 @@ export class TrainingDetailPage implements OnInit {
     private readonly trainingService: TrainingService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
-    private cdr: ChangeDetectorRef,
-    private translate: TranslateService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit() {
     this.training = this.navParams.get("data");
     this.training$ = of(this.training);
-
-    this.attendeeListTrue = [];
-    this.attendeeListFalse = [];
-    this.attendeeListUndefined = [];
-
     this.training$ = this.getTraining(this.training.teamId, this.training.id);
-    /*this.training$.subscribe({
-      next: (data) => {
-        console.log("TRAINING Data received");
-        console.log(data);
-        this.training = {
-          ...this.training,
-          ...data,
-        };
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("TRAINING Error in subscription:", err),
-      complete: () => console.log("TRANING Observable completed"),
-    });*/
   }
 
   getTraining(teamId: string, trainingId: string) {
@@ -168,14 +145,6 @@ export class TrainingDetailPage implements OnInit {
     toast.present();
   }
 
-  async close() {
-    return await this.modalCtrl.dismiss(null, "close");
-  }
-
-  async confirm() {
-    return await this.modalCtrl.dismiss(this.training, "confirm");
-  }
-
   async openTrainingExerciseModal() {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
@@ -183,9 +152,7 @@ export class TrainingDetailPage implements OnInit {
       presentingElement: await this.modalCtrl.getTop(),
       canDismiss: true,
       showBackdrop: true,
-      componentProps: {
-       
-      },
+      componentProps: {},
     });
     modal.present();
 
@@ -195,5 +162,11 @@ export class TrainingDetailPage implements OnInit {
     }
   }
 
+  async close() {
+    return await this.modalCtrl.dismiss(null, "close");
+  }
 
+  async confirm() {
+    return await this.modalCtrl.dismiss(this.training, "confirm");
+  }
 }
