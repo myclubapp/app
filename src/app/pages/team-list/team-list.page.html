@@ -14,39 +14,38 @@
     </ion-toolbar>
   </ion-header>
 
-    <ion-list>
-      <ion-grid>
-        <ion-row>
-          <ion-col
-            size-lg="4"
-            size-md="6"
-            size-sm="6"
-            size="12"
-            *ngFor="let team of teamList$ | async; else loading"
-          >
-            <ion-card (click)="openModal(team)">
-              <img src="{{team.logo}}" />
-              <ion-card-header>
-                <ion-card-subtitle> {{team.name}} </ion-card-subtitle>
-                <ion-card-title> {{team.liga}} </ion-card-title>
-              </ion-card-header>
+  <ion-list>
+    <ion-grid>
+      <ion-row>
+        <ion-col
+          size-lg="4"
+          size-md="6"
+          size-sm="6"
+          size="12"
+          *ngFor="let team of teamList$ | async"
+        >
+          <ion-card (click)="openModal(team)">
+            <img src="{{team.logo}}" />
+            <ion-card-header>
+              <ion-card-subtitle> {{team.name}} </ion-card-subtitle>
+              <ion-card-title> {{team.liga}} </ion-card-title>
+            </ion-card-header>
 
-              <ion-card-content>
-                <ion-badge> {{team.type}} </ion-badge>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-list>
-    
+            <ion-card-content>
+              <ion-badge> {{team.type}} </ion-badge>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-list>
 
-  <!-- fab placed to the bottom end -->
+  <!-- fab placed to the bottom end
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="joinTeamAlert()">
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
-  </ion-fab>
+  </ion-fab> -->
 </ion-content>
 
 <ng-template #loading>

@@ -11,20 +11,22 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
-  <ion-list>
-    <ion-item *ngIf="clubAdminList$ | async as clubList">
-      <ion-select
-        [label]='"common.club" | translate'
-        label-placement="stacked"
-        [(ngModel)]="event.clubId"
-        value="{{event.clubId}}"
-      >
-        <ion-select-option *ngFor="let club of clubList" value="{{club.id}}"
-          >{{club.name}}</ion-select-option
+<ion-content>
+  <ion-list [inset]="true">
+    <div *ngIf="clubAdminList$ | async as clubList">
+      <ion-item *ngIf="clubList.length > 1">
+        <ion-select
+          [label]='"common.club" | translate'
+          label-placement="stacked"
+          [(ngModel)]="event.clubId"
+          value="{{event.clubId}}"
         >
-      </ion-select>
-    </ion-item>
+          <ion-select-option *ngFor="let club of clubList" value="{{club.id}}"
+            >{{club.name}}</ion-select-option
+          >
+        </ion-select>
+      </ion-item>
+    </div>
 
     <!--<ion-item *ngIf="clubList.length==0">
       <ion-select cancel-text="Abbrechen" ok-text="Auswählen" label="Club" label-placement="stacked" [(ngModel)]="event.clubId" value="{{event.clubId}}" >
@@ -50,7 +52,8 @@
       >
       </ion-textarea>
     </ion-item>
-
+  </ion-list>
+  <ion-list [inset]="true">
     <ion-item>
       <ion-input
         [label]='"common.location" | translate'
@@ -88,7 +91,8 @@
       >
       </ion-input>
     </ion-item>
-
+  </ion-list>
+  <ion-list [inset]="true">
     <ion-item id="timeFromItem">
       <ion-label position="">
         {{"common.start__event" | translate}}:

@@ -5,114 +5,198 @@
     </ion-buttons>
     <ion-title>{{"training-create.new__training" | translate}}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="createTraining()">{{"common.create" | translate}}</ion-button>
+      <ion-button (click)="createTraining()"
+        >{{"common.create" | translate}}</ion-button
+      >
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
-  <ion-list>
+<ion-content>
+  <ion-list [inset]="true">
+    <div *ngIf="teamAdminList$ | async as teamList">
+      <ion-item *ngIf="teamList.length > 1">
+        <ion-select
+          [label]="'training-create.team' | translate"
+          label-placement="stacked"
+          [(ngModel)]="training.teamId"
+          value="{{training.teamId}}"
+        >
+          <ion-select-option *ngFor="let team of teamList" value="{{team.id}}"
+            >{{team.name}}</ion-select-option
+          >
+        </ion-select>
+      </ion-item>
+    </div>
 
-    <ion-item>
-      <ion-select [label]="'training-create.team' | translate" label-placement="stacked" [(ngModel)]="training.teamId" value="{{training.teamId}}" >
+    <!-- <ion-item>
+      <ion-select [label]="'training-create.team' | translate" label-placement="stacked" [(ngModel)]="training.teamId"
+        value="{{training.teamId}}">
         <ion-select-option *ngFor="let team of teamList" value="{{team.id}}">{{team.name}}</ion-select-option>
       </ion-select>
-    </ion-item>
+    </ion-item>-->
 
     <ion-item>
-      <ion-input [label]="'common.name' | translate" label-placement="stacked" [(ngModel)]="training.name" value="{{training.name}}">
+      <ion-input
+        [label]="'common.name' | translate"
+        label-placement="stacked"
+        [(ngModel)]="training.name"
+        value="{{training.name}}"
+      >
       </ion-input>
     </ion-item>
     <ion-item>
-     
       <ion-textarea
-      [label]='"common.description" | translate' label-placement="stacked"
-        value="{{training.description}}" [(ngModel)]="training.description"
+        [label]='"common.description" | translate'
+        label-placement="stacked"
+        value="{{training.description}}"
+        [(ngModel)]="training.description"
       >
       </ion-textarea>
     </ion-item>
+  </ion-list>
+  <ion-list [inset]="true">
     <ion-item>
-    
       <ion-input
-      [label]='"common.street__house_number" | translate' label-placement="stacked"
-        value="{{training.streetAndNumber}}" [(ngModel)]="training.streetAndNumber"
+        [label]='"common.street__house_number" | translate'
+        label-placement="stacked"
+        value="{{training.streetAndNumber}}"
+        [(ngModel)]="training.streetAndNumber"
       >
       </ion-input>
     </ion-item>
     <ion-item>
       <ion-input
-      [label]='"common.postal__code" | translate' label-placement="stacked"
-        value="{{training.postalCode}}" [(ngModel)]="training.postalCode"
+        [label]='"common.postal__code" | translate'
+        label-placement="stacked"
+        value="{{training.postalCode}}"
+        [(ngModel)]="training.postalCode"
       >
       </ion-input>
     </ion-item>
     <ion-item>
-      
-      <ion-input [label]='"common.locality" | translate' label-placement="stacked" value="{{training.city}}" [(ngModel)]="training.city">
+      <ion-input
+        [label]='"common.locality" | translate'
+        label-placement="stacked"
+        value="{{training.city}}"
+        [(ngModel)]="training.city"
+      >
       </ion-input>
     </ion-item>
+  </ion-list>
 
+  <ion-list [inset]="true">
+    <ion-list-header>
+      <ion-label>
+        {{"training-create.series__settings" | translate}}
+      </ion-label>
+    </ion-list-header>
 
-    <ion-item id="timeFromItem">
-      <ion-label position=""> {{"training-create.start__training" | translate}}: </ion-label>
-      <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
-
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime presentation="time" id="timeFrom" (ionChange)="changeTimeFrom($event)" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" value="{{training.timeFrom}}" [(ngModel)]="training.timeFrom"></ion-datetime>
-        </ng-template>
-      </ion-modal>
-    </ion-item>
-
-    <ion-item id="timeToItem">
-      <ion-label position=""> {{"training-create.end__training" | translate}}: </ion-label>
-      <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
-
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime presentation="time" id="timeTo" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" value="{{training.timeTo}}" [(ngModel)]="training.timeTo"></ion-datetime>
-        </ng-template>
-      </ion-modal>
-    </ion-item>
-
-    <ion-list-header>{{"training-create.series__settings" | translate}}</ion-list-header>
     <ion-item>
-
-      <ion-select [label]="'training-create.repeat' | translate" label-placement="stacked" value="{{training.repeatFrequency}}" [(ngModel)]="training.repeatFrequency" >
-        <ion-select-option value="D">{{"training-create.daily" | translate}}</ion-select-option>
-        <ion-select-option value="W">{{"training-create.weekly" | translate}}</ion-select-option>
+      <ion-select
+        [label]="'training-create.repeat' | translate"
+        label-placement="stacked"
+        value="{{training.repeatFrequency}}"
+        [(ngModel)]="training.repeatFrequency"
+      >
+        <ion-select-option value="D"
+          >{{"training-create.daily" | translate}}</ion-select-option
+        >
+        <ion-select-option value="W"
+          >{{"training-create.weekly" | translate}}</ion-select-option
+        >
       </ion-select>
-      <ion-select [label]="'common.all' | translate" label-placement="stacked" value="{{training.repeatAmount}}" [(ngModel)]="training.repeatAmount" >
+      <ion-select
+        [label]="'common.all' | translate"
+        label-placement="stacked"
+        value="{{training.repeatAmount}}"
+        [(ngModel)]="training.repeatAmount"
+      >
         <ion-select-option value="1">1</ion-select-option>
         <ion-select-option value="2">2</ion-select-option>
         <ion-select-option value="3">3</ion-select-option>
         <ion-select-option value="4">4</ion-select-option>
-      </ion-select> 
+      </ion-select>
     </ion-item>
     <ion-item id="startDateItem">
-      <ion-label position="default"> {{"training-create.first__training" | translate}}: </ion-label>
-      <ion-datetime-button slot="end" datetime="startDate"></ion-datetime-button>
+      <ion-label position="default">
+        {{"training-create.first__training" | translate}}:
+      </ion-label>
+      <ion-datetime-button
+        slot="end"
+        datetime="startDate"
+      ></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime [firstDayOfWeek]="1" (ionChange)="changeStartDate($event)" presentation="date" id="startDate"
-          value="{{training.startDate}}" [(ngModel)]="training.startDate"></ion-datetime>
+          <ion-datetime
+            [firstDayOfWeek]="1"
+            (ionChange)="changeStartDate($event)"
+            presentation="date"
+            id="startDate"
+            value="{{training.startDate}}"
+            [(ngModel)]="training.startDate"
+          ></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
 
     <ion-item id="endDateItem">
-      <ion-label position="default"> {{"training-create.last__training" | translate}}: </ion-label>
+      <ion-label position="default">
+        {{"training-create.last__training" | translate}}:
+      </ion-label>
       <ion-datetime-button slot="end" datetime="endDate"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime [firstDayOfWeek]="1" presentation="date" id="endDate" 
-          value="{{training.endDate}}" [(ngModel)]="training.endDate">
+          <ion-datetime
+            [firstDayOfWeek]="1"
+            presentation="date"
+            id="endDate"
+            value="{{training.endDate}}"
+            [(ngModel)]="training.endDate"
+          >
           </ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
+    <ion-item id="timeFromItem">
+      <ion-label position="">
+        {{"training-create.start__training" | translate}}:
+      </ion-label>
+      <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
 
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            presentation="time"
+            id="timeFrom"
+            (ionChange)="changeTimeFrom($event)"
+            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+            value="{{training.timeFrom}}"
+            [(ngModel)]="training.timeFrom"
+          ></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+
+    <ion-item id="timeToItem">
+      <ion-label position="">
+        {{"training-create.end__training" | translate}}:
+      </ion-label>
+      <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
+
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            presentation="time"
+            id="timeTo"
+            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+            value="{{training.timeTo}}"
+            [(ngModel)]="training.timeTo"
+          ></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
   </ion-list>
 </ion-content>
 

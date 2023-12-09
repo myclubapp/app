@@ -83,15 +83,10 @@ export class EventAddPage implements OnInit {
     }
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
-    this.clubAdminList$.subscribe({
-      next: (data) => {
-        console.log("Club Admin Data received");
-        this.cdr.detectChanges();
-        this.event.clubId = data[0].id;
-        this.event.clubName = data[0].name;
-      },
-      error: (err) => console.error("Club Admin Error in subscription:", err),
-      complete: () => console.log("Club Admin Observable completed"),
+    this.clubAdminList$.forEach((clubList) => {
+      this.event.clubId = clubList[0].id;
+      this.event.clubName = clubList[0].name;
+      return clubList;
     });
   }
 

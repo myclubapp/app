@@ -2,7 +2,21 @@ import { Component, Input, OnInit } from "@angular/core";
 import { ModalController, NavParams } from "@ionic/angular";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
-import { Observable, Subscription, catchError, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, of, switchMap, take, tap } from "rxjs";
+import {
+  Observable,
+  Subscription,
+  catchError,
+  concatMap,
+  defaultIfEmpty,
+  finalize,
+  forkJoin,
+  from,
+  map,
+  of,
+  switchMap,
+  take,
+  tap,
+} from "rxjs";
 import { Team } from "src/app/models/team";
 import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
@@ -18,9 +32,8 @@ export class TrainingCreatePage implements OnInit {
   @Input("data") trainingCopy: Training;
   training: Training;
   user$: Observable<User>;
-  // user: User;
-  private subscription: Subscription;
-  teamList: Team[] = [];
+
+  teamAdminList$: Observable<Team[]>;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -60,74 +73,43 @@ export class TrainingCreatePage implements OnInit {
   }
 
   ngOnInit() {
-
     this.trainingCopy = this.navParams.get("data");
     if (this.trainingCopy.id) {
       this.training = this.trainingCopy;
 
       const startDate: Timestamp = this.trainingCopy.startDate as any;
-      const endDate: Timestamp = this.trainingCopy.endDate  as any;
+      const endDate: Timestamp = this.trainingCopy.endDate as any;
       this.training.startDate = startDate.toDate().toISOString();
       this.training.endDate = endDate.toDate().toISOString();
 
-      this.training.timeFrom = new Date(new Date(this.trainingCopy.timeFrom).getTime() - new Date(this.trainingCopy.timeFrom).getTimezoneOffset() * 60 * 1000).toISOString();
-      this.training.timeTo = new Date(new Date(this.trainingCopy.timeTo).getTime() - new Date(this.trainingCopy.timeTo).getTimezoneOffset() * 60 * 1000).toISOString();
+      this.training.timeFrom = new Date(
+        new Date(this.trainingCopy.timeFrom).getTime() -
+          new Date(this.trainingCopy.timeFrom).getTimezoneOffset() * 60 * 1000
+      ).toISOString();
+      this.training.timeTo = new Date(
+        new Date(this.trainingCopy.timeTo).getTime() -
+          new Date(this.trainingCopy.timeTo).getTimezoneOffset() * 60 * 1000
+      ).toISOString();
     }
 
-    let teamsList: any[] = [];
-    const teams$ = this.authService.getUser$().pipe(
-      take(1),
-      // tap(user => this.user = user),
-      switchMap(user => this.fbService.getUserTeamAdminRefs(user).pipe(take(1))),
-      concatMap(teamsArray => from(teamsArray)),
-      tap((team: Team) => console.log(team.id)),
-      concatMap(team =>
-        this.fbService.getTeamRef(team.id).pipe(
-          take(1),
-          defaultIfEmpty({}),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
-          map(result => [result]),
-          catchError(error => {
-            console.error('Error fetching TeamDetail:', error);
-            return of([]);
-          })
-        )
-      ),
-      tap(teamList => teamList.forEach(team => teamsList.push(team))),
-      finalize(() => console.log("Get Teams completed"))
-    );
-
-    this.subscription = forkJoin([teams$]).subscribe({
-      next: () => {
-        // console.log(">>>" + teamsList);
-        this.teamList = teamsList;
-        if (!this.training.teamId) {
-          this.training.teamId = this.teamList[0].id;
-        }
-      },
-      error: err => console.error('Error in the observable chain:', err)
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    this.teamAdminList$.forEach((teamList) => {
+      this.training.teamId = teamList[0].id;
+      this.training.teamName = teamList[0].name;
     });
-
-
-
   }
 
-  ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-
-  }
+  ngOnDestroy(): void {}
 
   changeTimeFrom(ev) {
-    console.log(ev.detail.value)
+    console.log(ev.detail.value);
     if (this.training.timeFrom > this.training.timeTo) {
       this.training.timeTo = this.training.timeFrom;
     }
-
   }
 
   changeStartDate(ev) {
-    console.log(ev.detail.value)
+    console.log(ev.detail.value);
     if (this.training.startDate > this.training.endDate) {
       this.training.endDate = this.training.startDate;
     }
@@ -142,7 +124,9 @@ export class TrainingCreatePage implements OnInit {
     console.log(`Start Date before calculation: ${this.training.startDate}`);
     const calculatedStartDate = new Date(this.training.startDate);
     calculatedStartDate.setHours(new Date(this.training.timeFrom).getHours());
-    calculatedStartDate.setMinutes(new Date(this.training.timeFrom).getMinutes());
+    calculatedStartDate.setMinutes(
+      new Date(this.training.timeFrom).getMinutes()
+    );
     calculatedStartDate.setSeconds(0);
     calculatedStartDate.setMilliseconds(0);
     this.training.startDate = calculatedStartDate.toISOString();
@@ -160,7 +144,9 @@ export class TrainingCreatePage implements OnInit {
     const calculatedTimeFrom = new Date(this.training.timeFrom);
     calculatedTimeFrom.setDate(new Date(this.training.startDate).getDate());
     calculatedTimeFrom.setMonth(new Date(this.training.startDate).getMonth());
-    calculatedTimeFrom.setFullYear(new Date(this.training.startDate).getFullYear());
+    calculatedTimeFrom.setFullYear(
+      new Date(this.training.startDate).getFullYear()
+    );
     calculatedTimeFrom.setSeconds(0);
     calculatedTimeFrom.setMilliseconds(0);
     this.training.timeFrom = calculatedTimeFrom.toISOString();
@@ -168,7 +154,9 @@ export class TrainingCreatePage implements OnInit {
     const calculatedTimeTo = new Date(this.training.timeTo);
     calculatedTimeTo.setDate(new Date(this.training.startDate).getDate());
     calculatedTimeTo.setMonth(new Date(this.training.startDate).getMonth());
-    calculatedTimeTo.setFullYear(new Date(this.training.startDate).getFullYear());
+    calculatedTimeTo.setFullYear(
+      new Date(this.training.startDate).getFullYear()
+    );
     calculatedTimeTo.setSeconds(0);
     calculatedTimeTo.setMilliseconds(0);
     this.training.timeTo = calculatedTimeTo.toISOString();

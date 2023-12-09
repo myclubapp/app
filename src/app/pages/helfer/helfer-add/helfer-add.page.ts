@@ -173,6 +173,7 @@ export class HelferAddPage implements OnInit {
   }
 
   async addSchicht() {
+    console.log(this.event.timeTo);
     const alert = await this.alertController.create({
       header: "Neue Helferschicht",
       subHeader: " ",
@@ -198,6 +199,7 @@ export class HelferAddPage implements OnInit {
           label: "Zeit von",
           placeholder: "Zeit von",
           type: "time",
+          value: this.event.timeFrom.slice(11, 16),
         },
         {
           id: "timeTo",
@@ -205,6 +207,7 @@ export class HelferAddPage implements OnInit {
           label: "Zeit bis",
           placeholder: "Zeit bis",
           type: "time",
+          value: this.event.timeTo.slice(11, 16),
         },
       ],
       buttons: [

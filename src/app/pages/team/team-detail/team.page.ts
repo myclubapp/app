@@ -1,5 +1,10 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
-import { ModalController, NavParams, ToastController } from "@ionic/angular";
+import {
+  AlertController,
+  ModalController,
+  NavParams,
+  ToastController,
+} from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
@@ -56,6 +61,7 @@ export class TeamPage implements OnInit {
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
+    private readonly alertCtrl: AlertController,
     private readonly toastController: ToastController,
     private readonly userProfileService: UserProfileService,
     private readonly fbService: FirebaseService,
@@ -222,11 +228,119 @@ export class TeamPage implements OnInit {
     if (role === "confirm") {
     }
   }
-  addTeamMember() {
-    // this.fbService.getClubMemberRefs(this.team.)
+  addMember() {
+    let memberSelect = [];
+    this.team$.forEach(async (team) => {
+      console.log(team);
+      this.fbService
+        .getTeamRef(this.team.id)
+        .pipe(
+          take(1),
+          tap((team: any) => {
+            console.log(team.clubRef.id);
+          }),
+          switchMap((team: any) => {
+            if (!team) return of([]);
+            return this.fbService.getClubMemberRefs(team.clubRef.id);
+          }),
+          switchMap((members) => {
+            if (!members.length) return of([]);
+
+            // Fetch each member's user profile
+            const memberDetails$ = members.map((member) =>
+              this.userProfileService.getUserProfileById(member.id).pipe(
+                take(1),
+                catchError(() =>
+                  of({ ...member, firstName: "Unknown", lastName: "Unknown" })
+                )
+              )
+            );
+
+            return combineLatest(memberDetails$);
+          }),
+          map((memberProfiles) =>
+            memberProfiles.filter((member) => member !== undefined)
+          )
+        )
+        .subscribe(async (memberDetails) => {
+          console.log("Club Members:", memberDetails);
+          // Handle the fetched member details
+          for (let member of memberDetails) {
+            if (!team.teamMembers.find((element) => element.id == member.id)) {
+              memberSelect.push({
+                type: "checkbox",
+                name: member.id,
+                label: member.firstName + " " + member.lastName,
+                value: member,
+                checked: false,
+              });
+            }
+          }
+          const alert = await this.alertCtrl.create({
+            header: "Administrator hinzufügen",
+            inputs: memberSelect,
+            buttons: [
+              {
+                text: "Abbrechen",
+                handler: () => {
+                  console.log("Cancel clicked");
+                },
+              },
+              {
+                text: "Hinzufügen",
+                handler: (data) => {
+                  console.log(data);
+                },
+              },
+            ],
+          });
+          if (memberSelect.length > 0) {
+            await alert.present();
+          }
+        });
+    });
   }
 
-  addTeamAdmin() {}
+  async addAdministrator() {
+    let memberSelect = [];
+
+    this.team$.forEach(async (team) => {
+      console.log(team);
+      for (let member of team.teamMembers) {
+        if (!team.teamAdmins.find((element) => element.id == member.id)) {
+          memberSelect.push({
+            type: "checkbox",
+            name: member.id,
+            label: member.firstName + " " + member.lastName,
+            value: member,
+            checked: false,
+          });
+        }
+      }
+
+      const alert = await this.alertCtrl.create({
+        header: "Administrator hinzufügen",
+        inputs: memberSelect,
+        buttons: [
+          {
+            text: "Abbrechen",
+            handler: () => {
+              console.log("Cancel clicked");
+            },
+          },
+          {
+            text: "Hinzufügen",
+            handler: (data) => {
+              console.log(data);
+            },
+          },
+        ],
+      });
+      if (memberSelect.length > 0) {
+        await alert.present();
+      }
+    });
+  }
 
   async toastActionSaved() {
     const toast = await this.toastController.create({

@@ -12,14 +12,7 @@ import {
   Subscription,
   catchError,
   combineLatest,
-  concat,
-  concatAll,
-  concatMap,
-  defaultIfEmpty,
-  filter,
-  finalize,
   forkJoin,
-  from,
   lastValueFrom,
   map,
   merge,
@@ -78,17 +71,7 @@ export class ClubPage implements OnInit {
     this.club.clubAdmins = [];
     this.club.clubMembers = [];
     this.club$ = of(this.club);
-
     this.club$ = this.getClub(this.club.id);
-    this.club$.subscribe({
-      next: (data) => {
-        console.log(">> Club Data");
-        console.log(data);
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Club Error in subscription:", err),
-      complete: () => console.log("Club Observable completed"),
-    });
   }
 
   ngOnDestroy() {}
@@ -190,6 +173,36 @@ export class ClubPage implements OnInit {
     );
   }
 
+  async addAdministrator() {
+    let memberSelect = [];
+    for (let member of this.club.clubMembers) {
+      memberSelect.push({
+        type: "checkbox",
+        name: member.id,
+        value: member.firstName + " " + member.lastName,
+        checked: false,
+      });
+    }
+
+    const alert = await this.alertCtrl.create({
+      inputs: memberSelect,
+      buttons: [
+        {
+          text: "Cancel",
+          handler: () => {
+            console.log("Cancel clicked");
+          },
+        },
+        {
+          text: "hinzufügen",
+          handler: (data) => {
+            console.log(data);
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
   async openMember(member: Profile) {
     console.log("openMember");
     const modal = await this.modalCtrl.create({

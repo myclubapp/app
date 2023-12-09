@@ -2,15 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Team } from "src/app/models/team";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import {
-  switchMap,
-  map,
-  take,
-  tap,
-  mergeMap,
-  catchError,
-} from "rxjs/operators";
-import { of, combineLatest, Subscription, Observable } from "rxjs";
+import { Observable } from "rxjs";
 import { User } from "@angular/fire/auth";
 import {
   AlertController,
@@ -59,7 +51,6 @@ export class TeamListPage implements OnInit {
   }
 
   ngOnDestroy() {}
-
 
   getAvailableTeamList() {
     // console.log("getAvailableTeamList");

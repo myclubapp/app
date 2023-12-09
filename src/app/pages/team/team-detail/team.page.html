@@ -35,7 +35,10 @@
     </ion-list>
 
     <ion-list [inset]="true" *ngIf="team['teamRequests'].length > 0">
-      <ion-list-header> {{"common.requests" | translate}} </ion-list-header>
+      <ion-list-header>
+        <ion-label> {{"common.requests" | translate}} </ion-label>
+        <ion-button (click)="addMember()">hinzufügen</ion-button>
+      </ion-list-header>
       <ion-item *ngFor="let request of team['teamRequests']" detail="true">
         <ion-avatar slot="start">
           <img src="{{request?.profilePicture}}" />
@@ -48,7 +51,10 @@
     </ion-list>
 
     <ion-list [inset]="true">
-      <ion-list-header> {{"common.members" | translate}} </ion-list-header>
+      <ion-list-header>
+        <ion-label> {{"common.members" | translate}} </ion-label>
+        <ion-button (click)="addMember()">hinzufügen</ion-button>
+      </ion-list-header>
       <ion-item *ngFor="let member of team['teamMembers']" detail="true">
         <ion-avatar slot="start">
           <img src="{{member?.profilePicture}}" />
@@ -60,7 +66,10 @@
     </ion-list>
 
     <ion-list [inset]="true">
-      <ion-list-header> {{"commons.admins" | translate}} </ion-list-header>
+      <ion-list-header>
+        <ion-label> {{"common.admins" | translate}} </ion-label>
+        <ion-button (click)="addAdministrator()">hinzufügen</ion-button>
+      </ion-list-header>
       <ion-item *ngFor="let admin of team['teamAdmins']" detail="true">
         <ion-avatar slot="start">
           <img src="{{admin?.profilePicture}}" />
@@ -130,12 +139,12 @@
     </ion-item>
   </ion-list>
   -->
-  <!-- fab placed to the bottom end -->
+  <!-- fab placed to the bottom end 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="addTeamMember()">
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
-  </ion-fab>
+  </ion-fab>-->
 </ion-content>
 
 <ng-template #noRequests>

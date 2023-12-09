@@ -24,29 +24,28 @@
           size="12"
           *ngFor="let club of clubList$ | async; else loading"
         >
-            <ion-card (click)="openModal(club)">
-              <img src="{{club.logo}}" />
-              <ion-card-header>
-                <ion-card-subtitle> </ion-card-subtitle>
-                <ion-card-title> {{club.name}} </ion-card-title>
-              </ion-card-header>
+          <ion-card (click)="openModal(club)">
+            <img src="{{club.logo}}" />
+            <ion-card-header>
+              <ion-card-subtitle> </ion-card-subtitle>
+              <ion-card-title> {{club.name}} </ion-card-title>
+            </ion-card-header>
 
-              <ion-card-content>
-                <ion-badge> {{club.type}} </ion-badge>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-list>
+            <ion-card-content>
+              <ion-badge> {{club.type}} </ion-badge>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-list>
 
-
-  <!-- fab placed to the bottom end -->
+  <!-- fab placed to the bottom end 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="joinClubAlert()">
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
-  </ion-fab>
+  </ion-fab>-->
 </ion-content>
 
 <ng-template #loading>
