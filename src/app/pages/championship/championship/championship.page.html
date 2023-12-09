@@ -242,13 +242,13 @@
   <!-- RANKING -->
   <ng-container *ngIf="mode=='ranking'">
     <ng-container *ngIf="teamRankings$ | async as teamRankings">
+      <ion-list [inset]="true">
       <ion-accordion-group [multiple]="true" [value]="teamRankings[0].teamId">
         <div *ngFor="let entry of teamRankings">
           <ion-accordion value="{{entry.teamId}}">
             <ion-item slot="header" color="light">
               <ion-label class="ion-text-wrap"
-                >{{entry.details.title}}</ion-label
-              >
+                >{{entry.details.title}}</ion-label>
             </ion-item>
             <div slot="content">
               <ion-list>
@@ -267,7 +267,7 @@
                   </ion-grid>
                 </ion-item>
 
-                <ion-item *ngFor="let ranking of entry.rankings">
+                <ion-item class="myclubPadding" *ngFor="let ranking of entry.rankings">
                   <ion-grid>
                     <ion-row class="ion-align-items-center">
                       <ion-col size="1">
@@ -292,6 +292,7 @@
           </ion-accordion>
         </div>
       </ion-accordion-group>
+      </ion-list>
 
       <!--<ion-list *ngFor="let entry of teamRankings" lines="full">
         <ion-list-header>
