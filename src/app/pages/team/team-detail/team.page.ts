@@ -48,6 +48,7 @@ export class TeamPage implements OnInit {
   @Input("data") team: Team;
 
   team$: Observable<any>;
+  subscribeMember: Subscription;
 
   user$: Observable<User>;
   user: User;
@@ -86,7 +87,11 @@ export class TeamPage implements OnInit {
     });
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    if (this.subscribeMember) {
+      this.subscribeMember.unsubscribe();
+    }
+  }
 
   getTeam(teamId: string) {
     const calculateAge = (dateOfBirth) => {
@@ -232,7 +237,7 @@ export class TeamPage implements OnInit {
     let memberSelect = [];
     this.team$.forEach(async (team) => {
       console.log(team);
-      this.fbService
+      this.subscribeMember = this.fbService
         .getTeamRef(this.team.id)
         .pipe(
           take(1),
