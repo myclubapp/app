@@ -69,7 +69,7 @@ export class TeamPage implements OnInit {
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.team = this.navParams.get("data");
@@ -309,42 +309,43 @@ export class TeamPage implements OnInit {
   async addAdministrator() {
     let memberSelect = [];
 
-    this.team$.forEach(async (team) => {
-      console.log(team);
-      for (let member of team.teamMembers) {
-        if (!team.teamAdmins.find((element) => element.id == member.id)) {
-          memberSelect.push({
-            type: "checkbox",
-            name: member.id,
-            label: member.firstName + " " + member.lastName,
-            value: member,
-            checked: false,
-          });
-        }
-      }
+    this.subscribeMember = this.team$.pipe(
+      take(1),
+      tap((team) => {
+        console.log(team);
+        team.teamMembers.forEach((member) => {
+          if (!team.teamAdmins.find((element) => element.id === member.id)) {
+            memberSelect.push({
+              type: "checkbox",
+              name: member.id,
+              label: `${member.firstName} ${member.lastName}`,
+              value: member,
+              checked: false,
+            });
+          }
+        });
 
-      const alert = await this.alertCtrl.create({
-        header: "Administrator hinzufügen",
-        inputs: memberSelect,
-        buttons: [
-          {
-            text: "Abbrechen",
-            handler: () => {
-              console.log("Cancel clicked");
-            },
-          },
-          {
-            text: "Hinzufügen",
-            handler: (data) => {
-              console.log(data);
-            },
-          },
-        ],
-      });
-      if (memberSelect.length > 0) {
-        await alert.present();
-      }
-    });
+      }),
+      finalize(async () => {
+        if (memberSelect.length > 0) {
+          const alert = await this.alertCtrl.create({
+            header: "Administrator hinzufügen",
+            inputs: memberSelect,
+            buttons: [
+              {
+                text: "Abbrechen",
+                handler: () => console.log("Cancel clicked"),
+              },
+              {
+                text: "Hinzufügen",
+                handler: (data) => console.log(data),
+              },
+            ],
+          });
+          await alert.present();
+        }
+      })
+    ).subscribe();
   }
 
   async toastActionSaved() {
