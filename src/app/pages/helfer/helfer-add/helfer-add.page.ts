@@ -4,18 +4,6 @@ import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import {
   Observable,
-  Subscription,
-  catchError,
-  concatMap,
-  defaultIfEmpty,
-  finalize,
-  forkJoin,
-  from,
-  map,
-  of,
-  switchMap,
-  take,
-  tap,
 } from "rxjs";
 import { Club } from "src/app/models/club";
 import { HelferEvent, Schicht } from "src/app/models/event";
@@ -271,6 +259,8 @@ export class HelferAddPage implements OnInit {
     calculatedTimeTo.setSeconds(0);
     calculatedTimeTo.setMilliseconds(0);
     this.event.timeTo = calculatedTimeTo.toISOString();
+
+    this.event.date = Timestamp.fromDate(new Date(this.event.startDate));
 
     delete this.event.attendees;
 

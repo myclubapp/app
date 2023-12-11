@@ -134,6 +134,8 @@ export class EventAddPage implements OnInit {
     calculatedTimeTo.setMilliseconds(0);
     this.event.timeTo = calculatedTimeTo.toISOString();
 
+    this.event.date = Timestamp.fromDate(new Date(this.event.startDate));
+
     delete this.event.attendees;
 
     this.eventService.setCreateClubEvent(this.event);
