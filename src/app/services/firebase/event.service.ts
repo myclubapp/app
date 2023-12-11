@@ -26,7 +26,8 @@ import { AuthService } from "../auth.service";
 export class EventService {
   constructor(
     private firestore: Firestore = inject(Firestore),
-    private readonly authService: AuthService) {}
+    private readonly authService: AuthService
+  ) {}
 
   /* CLUB EventS */
 
@@ -162,6 +163,47 @@ export class EventService {
     }) as unknown as Observable<any[]>;
   }
 
+  getClubHelferEventSchichtenRef(
+    clubId: string,
+    eventId: string
+  ): Observable<any[]> {
+    const schichtenRefList = collection(
+      this.firestore,
+      `club/${clubId}/helferEvents/${eventId}/schichten`
+    );
+    return collectionData(schichtenRefList, {
+      idField: "id",
+    }) as unknown as Observable<any[]>;
+  }
+
+  getClubHelferEventSchichtAttendeesRef(
+    clubId: string,
+    eventId: string,
+    schichtId: string
+  ): Observable<any[]> {
+    const schichtAttendeesListRef = collection(
+      this.firestore,
+      `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}/attendees`
+    );
+    return collectionData(schichtAttendeesListRef, {
+      idField: "id",
+    }) as unknown as Observable<any[]>;
+  }
+
+  setClubHelferEventSchichtAttendeeStatus(
+    status: boolean,
+    clubId: string,
+    eventId: string,
+    schichtId: string
+  ) {
+    const user = this.authService.auth.currentUser;
+    const statusRef = doc(
+      this.firestore,
+      `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}/attendees/${user.uid}`
+    );
+    return setDoc(statusRef, { status });
+  }
+
   setClubHelferEventAttendeeStatus(
     status: boolean,
     clubId: string,
@@ -179,7 +221,7 @@ export class EventService {
     const user = this.authService.auth.currentUser;
     console.log("Helferevent");
     console.log(event);
-    return addDoc(
+    const newHelferevent = await addDoc(
       collection(this.firestore, `userProfile/${user.uid}/helferEvents`),
       event
     );

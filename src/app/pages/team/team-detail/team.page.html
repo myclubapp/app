@@ -1,28 +1,30 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="secondary">
-      <ion-button *ngIf="!allowEdit" (click)="edit()"
-        >{{"common.edit" | translate}}</ion-button
-      >
-      <ion-button *ngIf="allowEdit" (click)="edit()"
-        >{{"common.cancel" | translate}}</ion-button
-      >
-    </ion-buttons>
-    <ion-title>{{team?.name}}</ion-title>
-    <ion-buttons slot="primary">
-      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+<ng-container *ngIf="team$ | async as team">
+  <ion-header [translucent]="true">
     <ion-toolbar>
-      <ion-title size="large">{{team.name}}</ion-title>
+      <ion-buttons slot="secondary">
+        <ion-button *ngIf="!allowEdit" (click)="edit()"
+          >{{"common.edit" | translate}}</ion-button
+        >
+        <ion-button *ngIf="allowEdit" (click)="edit()"
+          >{{"common.cancel" | translate}}</ion-button
+        >
+      </ion-buttons>
+      <ion-title>{{team?.name}}</ion-title>
+      <ion-buttons slot="primary">
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="team$ | async as team">
+  <ion-content [fullscreen]="true">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">{{team.name}}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
     <ion-list [inset]="true">
       <ion-item>
         <ion-label> {{"common.no_of__members" | translate}}: </ion-label>
@@ -79,9 +81,8 @@
         >
       </ion-item>
     </ion-list>
-  </ng-container>
 
-  <!--
+    <!--
 
 
   <ng-container *ngIf="requestList$ | async as requests; else noRequests">
@@ -139,14 +140,14 @@
     </ion-item>
   </ion-list>
   -->
-  <!-- fab placed to the bottom end 
+    <!-- fab placed to the bottom end 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="addTeamMember()">
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>-->
-</ion-content>
-
+  </ion-content>
+</ng-container>
 <ng-template #noRequests>
   <!-- You can put any placeholder or message here if needed when there are no requests -->
 </ng-template>

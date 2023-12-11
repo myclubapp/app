@@ -5,6 +5,8 @@ import { User } from "firebase/auth";
 import {
   Observable,
   catchError,
+  combineLatest,
+  defaultIfEmpty,
   forkJoin,
   lastValueFrom,
   map,
@@ -30,6 +32,7 @@ export class HelferDetailPage implements OnInit {
   @Input("isFuture") isFuture: boolean;
 
   event$: Observable<any>;
+  schichten$: Observable<any>;
 
   mode = "yes";
 
@@ -52,23 +55,15 @@ export class HelferDetailPage implements OnInit {
     console.log(this.event);
     this.event$ = of(this.event);
 
-    this.event$ = this.getEvent(this.event.clubId, this.event.id);
-    /*this.event$.subscribe({
-      next: (data) => {
-        console.log("HELFEREVENT Data received");
-        console.log(data);
-        this.event = {
-          ...this.event,
-          ...data,
-        };
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("HELFEREVENT Error in subscription:", err),
-      complete: () => console.log("HELFEREVENT Observable completed"),
-    });*/
+    this.event$ = this.getHelferEvent(this.event.clubId, this.event.id);
+
+    this.schichten$ = this.getHelferEventSchichtenWithAttendees(
+      this.event.clubId,
+      this.event.id
+    );
   }
 
-  getEvent(clubId: string, eventId: string) {
+  getHelferEvent(clubId: string, eventId: string) {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => {
@@ -140,6 +135,79 @@ export class HelferDetailPage implements OnInit {
       })
     );
   }
+
+  getHelferEventSchichtenWithAttendees(clubId: string, eventId: string) {
+    return this.eventService
+      .getClubHelferEventSchichtenRef(clubId, eventId)
+      .pipe(
+        switchMap((schichten) => {
+          if (schichten.length === 0) {
+            return of([]); // Return an empty array if no schichten are found
+          }
+
+          // Fetch attendees for each schicht
+          const schichtenWithAttendees$ = schichten.map((schicht) =>
+            this.eventService
+              .getClubHelferEventSchichtAttendeesRef(
+                clubId,
+                eventId,
+                schicht.id
+              )
+              .pipe(
+                // DOESN?T WORK defaultIfEmpty([]), // Emit an empty array if no attendees are found
+                switchMap((attendees) => {
+                  if (attendees.length === 0) {
+                    return of({ ...schicht, attendees: [] }); // Return schicht with empty attendees array
+                  }
+
+                  // Fetch profiles for each attendee
+                  const attendeeProfiles$ = attendees.map((attendee) =>
+                    this.userProfileService
+                      .getUserProfileById(attendee.id)
+                      .pipe(
+                        take(1),
+                        map((profile) => ({ ...profile, ...attendee })), // Combine attendee object with profile
+                        catchError(() =>
+                          of({
+                            ...attendee,
+                            firstName: "Unknown",
+                            lastName: "Unknown",
+                          })
+                        ) // Fallback for unknown profiles
+                      )
+                  );
+
+                  return forkJoin(attendeeProfiles$).pipe(
+                    map((attendeesWithDetails) => ({
+                      ...schicht,
+                      attendees: attendeesWithDetails,
+                    }))
+                  );
+                }),
+                catchError(() => of({ ...schicht, attendees: [] })) // Fallback for error in fetching attendees
+              )
+          );
+
+          return combineLatest(schichtenWithAttendees$);
+        }),
+        catchError((err) => {
+          console.error("Error in getHelferEventSchichtenWithAttendees:", err);
+          return of([]); // Return an empty array on error
+        })
+      );
+  }
+
+  async toggleSchicht(status: boolean, schicht) {
+    console.log(`Set Status ${status}`);
+    await this.eventService.setClubHelferEventSchichtAttendeeStatus(
+      status,
+      this.event.clubId,
+      this.event.id,
+      schicht.id
+    );
+    this.presentToast();
+  }
+
   async openMember(member: Profile) {
     console.log("openMember");
     const modal = await this.modalCtrl.create({

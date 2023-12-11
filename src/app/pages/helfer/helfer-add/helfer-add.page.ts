@@ -2,9 +2,7 @@ import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { AlertController, ModalController, NavParams } from "@ionic/angular";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
-import {
-  Observable,
-} from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { Club } from "src/app/models/club";
 import { HelferEvent, Schicht } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
@@ -22,6 +20,7 @@ export class HelferAddPage implements OnInit {
   user: User;
 
   clubAdminList$: Observable<Club[]>;
+  subscriptionClubAdminList: Subscription;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -69,14 +68,14 @@ export class HelferAddPage implements OnInit {
     this.eventCopy = this.navParams.get("data");
     if (this.eventCopy.id) {
       this.event = this.eventCopy;
-      this.event.schichten = <any>[];
+      // this.event.schichten = <any>[];
     }
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
-    this.clubAdminList$.subscribe({
+
+    this.subscriptionClubAdminList = this.clubAdminList$.subscribe({
       next: (data) => {
         console.log("Club Admin Data received");
-        this.cdr.detectChanges();
         this.event.clubId = data[0].id;
         this.event.clubName = data[0].name;
       },
@@ -85,7 +84,11 @@ export class HelferAddPage implements OnInit {
     });
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    if (this.subscriptionClubAdminList) {
+      this.subscriptionClubAdminList.unsubscribe();
+    }
+  }
 
   async close() {
     return this.modalCtrl.dismiss(null, "close");

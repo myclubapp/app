@@ -1,20 +1,22 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>{{club?.name}}</ion-title>
-    <ion-buttons slot="primary">
-      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+<ng-container *ngIf="club$ | async as club">
+  <ion-header [translucent]="true">
     <ion-toolbar>
-      <ion-title size="large">{{club.name}}</ion-title>
+      <ion-title>{{club?.name}}</ion-title>
+      <ion-buttons slot="primary">
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="club$ | async as club">
+  <ion-content [fullscreen]="true">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">{{club.name}}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
     <ion-list [inset]="true">
       <ion-item>
         <ion-label> {{"common.no_of__members" | translate}}: </ion-label>
@@ -69,9 +71,8 @@
         >
       </ion-item>
     </ion-list>
-  </ng-container>
 
-  <!--
+    <!--
 
   <ion-list *ngIf="requestList.length > 0">
     <ion-list-header> Anfragen </ion-list-header>
@@ -93,7 +94,7 @@
   </ion-item>
 </ion-list>
 -->
-  <!--
+    <!--
 
 
 <ng-container *ngIf="requestList$ | async as requests; else noRequests">
@@ -114,8 +115,8 @@
   </ion-list>
 </ng-container>
 -->
-</ion-content>
-
+  </ion-content>
+</ng-container>
 <ng-template #noRequests>
   <!-- You can put any placeholder or message here if needed when there are no requests -->
 </ng-template>
