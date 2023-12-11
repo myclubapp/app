@@ -9,26 +9,17 @@ import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
   Observable,
-  Subscription,
   catchError,
   combineLatest,
   forkJoin,
   lastValueFrom,
   map,
-  merge,
-  mergeMap,
   of,
-  pipe,
-  shareReplay,
   startWith,
   switchMap,
   take,
   tap,
-  timeout,
-  toArray,
 } from "rxjs";
-import { Timestamp } from "firebase/firestore";
-import { Club } from "src/app/models/club";
 import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -175,33 +166,43 @@ export class ClubPage implements OnInit {
 
   async addAdministrator() {
     let memberSelect = [];
-    for (let member of this.club.clubMembers) {
-      memberSelect.push({
-        type: "checkbox",
-        name: member.id,
-        value: member.firstName + " " + member.lastName,
-        checked: false,
-      });
-    }
 
-    const alert = await this.alertCtrl.create({
-      inputs: memberSelect,
-      buttons: [
-        {
-          text: "Cancel",
-          handler: () => {
-            console.log("Cancel clicked");
+    this.club$.forEach(async (club) => {
+      console.log(club);
+      for (let member of club.clubMembers) {
+        if (!club.clubAdmins.find((element) => element.id == member.id)) {
+          memberSelect.push({
+            type: "checkbox",
+            name: member.id,
+            label: member.firstName + " " + member.lastName,
+            value: member,
+            checked: false,
+          });
+        }
+      }
+
+      const alert = await this.alertCtrl.create({
+        header: "Administrator hinzufügen",
+        inputs: memberSelect,
+        buttons: [
+          {
+            text: "Abbrechen",
+            handler: () => {
+              console.log("Cancel clicked");
+            },
           },
-        },
-        {
-          text: "hinzufügen",
-          handler: (data) => {
-            console.log(data);
+          {
+            text: "Hinzufügen",
+            handler: (data) => {
+              console.log(data);
+            },
           },
-        },
-      ],
+        ],
+      });
+      if (memberSelect.length > 0) {
+        await alert.present();
+      }
     });
-    await alert.present();
   }
   async openMember(member: Profile) {
     console.log("openMember");
