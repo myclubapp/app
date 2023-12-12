@@ -48,7 +48,7 @@ export class HelferDetailPage implements OnInit {
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.event = this.navParams.get("data");
@@ -61,6 +61,9 @@ export class HelferDetailPage implements OnInit {
       this.event.clubId,
       this.event.id
     );
+    this.schichten$.subscribe(data=>{
+      console.log(data);
+    })
   }
 
   getHelferEvent(clubId: string, eventId: string) {
@@ -136,6 +139,8 @@ export class HelferDetailPage implements OnInit {
     );
   }
 
+
+
   getHelferEventSchichtenWithAttendees(clubId: string, eventId: string) {
     return this.eventService
       .getClubHelferEventSchichtenRef(clubId, eventId)
@@ -144,7 +149,7 @@ export class HelferDetailPage implements OnInit {
           if (schichten.length === 0) {
             return of([]); // Return an empty array if no schichten are found
           }
-
+          console.log("this works! "  + schichten); //this works!
           // Fetch attendees for each schicht
           const schichtenWithAttendees$ = schichten.map((schicht) =>
             this.eventService
@@ -154,10 +159,14 @@ export class HelferDetailPage implements OnInit {
                 schicht.id
               )
               .pipe(
-                // DOESN?T WORK defaultIfEmpty([]), // Emit an empty array if no attendees are found
                 switchMap((attendees) => {
+                  console.log(attendees) // <- this line is never called
                   if (attendees.length === 0) {
-                    return of({ ...schicht, attendees: [] }); // Return schicht with empty attendees array
+                    return of({ ...schicht,
+                      attendees: [],
+                      attendeeListTrue: [],
+                      attendeeListFalse: [],
+                      status: null }); // Return schicht with empty attendees array
                   }
 
                   // Fetch profiles for each attendee
@@ -166,7 +175,10 @@ export class HelferDetailPage implements OnInit {
                       .getUserProfileById(attendee.id)
                       .pipe(
                         take(1),
-                        map((profile) => ({ ...profile, ...attendee })), // Combine attendee object with profile
+                        map((profile) => ({
+                           ...profile, 
+                           ...attendee 
+                          })), // Combine attendee object with profile
                         catchError(() =>
                           of({
                             ...attendee,
@@ -181,10 +193,24 @@ export class HelferDetailPage implements OnInit {
                     map((attendeesWithDetails) => ({
                       ...schicht,
                       attendees: attendeesWithDetails,
-                    }))
+                      attendeeListTrue: attendeesWithDetails.filter(
+                        (e) => e.status == true
+                      ),
+                      attendeeListFalse: attendeesWithDetails.filter(
+                        (e) => e.status == false
+                      ),
+                      status: attendeesWithDetails.find(
+                        (att) => att.id == this.user.uid
+                      )?.status,
+                    })),
+                    tap(data=>{
+                      console.log(">>>>>>" + data);
+                    })
                   );
                 }),
-                catchError(() => of({ ...schicht, attendees: [] })) // Fallback for error in fetching attendees
+                catchError((err) => {
+                  console.log(err);
+                  return of({ ...schicht, attendees: [], status: null })}) // Fallback for error in fetching attendees
               )
           );
 
@@ -198,6 +224,7 @@ export class HelferDetailPage implements OnInit {
   }
 
   async toggleSchicht(status: boolean, schicht) {
+    this.toggle(status, this.event);
     console.log(`Set Status ${status}`);
     await this.eventService.setClubHelferEventSchichtAttendeeStatus(
       status,
@@ -228,7 +255,7 @@ export class HelferDetailPage implements OnInit {
   }
   async toggle(status: boolean, event: HelferEvent) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${this.event.clubId} and event ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and Club ${this.event.clubId} and event ${event.id}`
     );
     await this.eventService.setClubHelferEventAttendeeStatus(
       status,

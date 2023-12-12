@@ -54,17 +54,34 @@
         </ion-list-header>
         <ion-item *ngFor="let schicht of schichten">
           <ion-icon
+            *ngIf="schicht.status === null"
+            slot="icon-only"
+            color="warning"
+            slot="start"
+            name="help-circle"
+            (click)="toggleSchicht(true, schicht)"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="schicht.status === false"
+            slot="icon-only"
+            color="danger"
+            slot="start"
+            name="close-circle"
+            (click)="toggleSchicht( true, schicht)"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="schicht.status === true"
             slot="icon-only"
             color="success"
             slot="start"
             name="checkmark-circle"
-            (click)="toggleSchicht(true, schicht)"
+            (click)="toggleSchicht(false, schicht)"
           ></ion-icon>
           <ion-label>
             <h3>{{schicht.name}}</h3>
             <h2>{{schicht.timeFrom}} {{schicht.timeTo}}</h2>
           </ion-label>
-          <ion-badge>{{schicht.count}} / {{schicht.countNeeded}}</ion-badge>
+          <ion-badge>{{schicht.attendeeListTrue.length}} / {{schicht.countNeeded}}</ion-badge>
         </ion-item>
       </ion-list>
 

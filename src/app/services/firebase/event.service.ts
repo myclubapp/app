@@ -147,7 +147,7 @@ export class EventService {
 
     return collectionData(q, {
       idField: "id",
-    }) as unknown as Observable<HelferEvent[]>;
+    })  as Observable<HelferEvent[]>;
   }
 
   getClubHelferEventAttendeesRef(
@@ -160,7 +160,7 @@ export class EventService {
     );
     return collectionData(attendeesRefList, {
       idField: "id",
-    }) as unknown as Observable<any[]>;
+    }) as Observable<any[]>;
   }
 
   getClubHelferEventSchichtenRef(
@@ -173,7 +173,7 @@ export class EventService {
     );
     return collectionData(schichtenRefList, {
       idField: "id",
-    }) as unknown as Observable<any[]>;
+    })  as Observable<any[]>;
   }
 
   getClubHelferEventSchichtAttendeesRef(
@@ -181,13 +181,15 @@ export class EventService {
     eventId: string,
     schichtId: string
   ): Observable<any[]> {
+    console.log("getClubHelferEventSchichtAttendeesRef" , clubId,eventId, schichtId )
     const schichtAttendeesListRef = collection(
       this.firestore,
       `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}/attendees`
     );
+    console.log(schichtAttendeesListRef.id, schichtAttendeesListRef.path);
     return collectionData(schichtAttendeesListRef, {
       idField: "id",
-    }) as unknown as Observable<any[]>;
+    }) as Observable<any[]>;
   }
 
   setClubHelferEventSchichtAttendeeStatus(
