@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
-import { ModalController, NavParams, ToastController } from "@ionic/angular";
+import { AlertController, AlertInput, AlertOptions, ModalController, NavParams, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
@@ -32,7 +32,7 @@ export class HelferDetailPage implements OnInit {
   @Input("isFuture") isFuture: boolean;
 
   event$: Observable<any>;
-  schichten$: Observable<any>;
+  schichten$: Observable<any[]>;
 
   mode = "yes";
 
@@ -45,6 +45,7 @@ export class HelferDetailPage implements OnInit {
     private readonly userProfileService: UserProfileService,
     private readonly eventService: EventService,
     private readonly toastController: ToastController,
+    private readonly alertController: AlertController,
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService
@@ -61,9 +62,9 @@ export class HelferDetailPage implements OnInit {
       this.event.clubId,
       this.event.id
     );
-    this.schichten$.subscribe(data=>{
+    /*this.schichten$.subscribe(data=>{
       console.log(data);
-    })
+    })*/
   }
 
   getHelferEvent(clubId: string, eventId: string) {
@@ -149,7 +150,7 @@ export class HelferDetailPage implements OnInit {
           if (schichten.length === 0) {
             return of([]); // Return an empty array if no schichten are found
           }
-          console.log("this works! "  + schichten); //this works!
+          console.log("this works! " + schichten); //this works!
           // Fetch attendees for each schicht
           const schichtenWithAttendees$ = schichten.map((schicht) =>
             this.eventService
@@ -162,11 +163,13 @@ export class HelferDetailPage implements OnInit {
                 switchMap((attendees) => {
                   console.log(attendees) // <- this line is never called
                   if (attendees.length === 0) {
-                    return of({ ...schicht,
+                    return of({
+                      ...schicht,
                       attendees: [],
                       attendeeListTrue: [],
                       attendeeListFalse: [],
-                      status: null }); // Return schicht with empty attendees array
+                      status: null
+                    }); // Return schicht with empty attendees array
                   }
 
                   // Fetch profiles for each attendee
@@ -176,9 +179,9 @@ export class HelferDetailPage implements OnInit {
                       .pipe(
                         take(1),
                         map((profile) => ({
-                           ...profile, 
-                           ...attendee 
-                          })), // Combine attendee object with profile
+                          ...profile,
+                          ...attendee
+                        })), // Combine attendee object with profile
                         catchError(() =>
                           of({
                             ...attendee,
@@ -203,14 +206,15 @@ export class HelferDetailPage implements OnInit {
                         (att) => att.id == this.user.uid
                       )?.status,
                     })),
-                    tap(data=>{
+                    tap(data => {
                       console.log(">>>>>>" + data);
                     })
                   );
                 }),
                 catchError((err) => {
                   console.log(err);
-                  return of({ ...schicht, attendees: [], status: null })}) // Fallback for error in fetching attendees
+                  return of({ ...schicht, attendees: [], status: null })
+                }) // Fallback for error in fetching attendees
               )
           );
 
@@ -223,8 +227,54 @@ export class HelferDetailPage implements OnInit {
       );
   }
 
+  async confirmSchichten() {
+
+    this.schichten$.forEach(async schichten => {
+
+      let alertInputs = [];
+
+      schichten.map(schicht => {
+        schicht.attendeeListTrue.map(member => {
+          alertInputs.push({
+            name: member.id,
+            type: "checkbox",
+            checked: true,
+            value: {"memberId": member.id, "schichtId": schicht.id, "eventId": this.event.id},
+            label: member.firstName + " " + member.lastName
+          });
+        })
+      });
+
+      const alert = await this.alertController.create({
+        header: "Helfereinsätze bestätigen",
+        message: "Bitte wählen Sie die Mitglieder aus:",
+        inputs: alertInputs,
+        buttons: [{
+          text: "bestätigen", 
+          handler: (event)=>{
+            console.log(event);
+          }
+        }]
+      })
+      alert.present();
+
+    }
+    )
+
+
+
+
+
+    /*const alert = await this.alertController.create({
+      inputs: 
+
+    });
+
+    alert.present();*/
+  }
+
   async toggleSchicht(status: boolean, schicht) {
-    this.toggle(status, this.event);
+
     console.log(`Set Status ${status}`);
     await this.eventService.setClubHelferEventSchichtAttendeeStatus(
       status,

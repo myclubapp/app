@@ -51,6 +51,9 @@
       <ion-list lines="full" [inset]="true" *ngIf="schichten.length > 0">
         <ion-list-header>
           <ion-label> {{"helper.schichten" | translate}} </ion-label>
+          <ion-button (click)="confirmSchichten()">
+            bestätigen
+          </ion-button>
         </ion-list-header>
         <ion-item *ngFor="let schicht of schichten">
           <ion-icon
