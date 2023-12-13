@@ -39,7 +39,7 @@
     <ion-list [inset]="true" *ngIf="team['teamRequests'].length > 0">
       <ion-list-header>
         <ion-label> {{"common.requests" | translate}} </ion-label>
-        <ion-button (click)="addMember()">hinzufügen</ion-button>
+
       </ion-list-header>
       <ion-item *ngFor="let request of team['teamRequests']" detail="true">
         <ion-avatar slot="start">
@@ -55,7 +55,7 @@
     <ion-list [inset]="true">
       <ion-list-header>
         <ion-label> {{"common.members" | translate}} </ion-label>
-        <ion-button (click)="addMember()">hinzufügen</ion-button>
+        <ion-button strong="true"  (click)="addMember()">hinzufügen</ion-button>
       </ion-list-header>
       <ion-item *ngFor="let member of team['teamMembers']" detail="true">
         <ion-avatar slot="start">
@@ -70,7 +70,7 @@
     <ion-list [inset]="true">
       <ion-list-header>
         <ion-label> {{"common.admins" | translate}} </ion-label>
-        <ion-button (click)="addAdministrator()">hinzufügen</ion-button>
+        <ion-button strong="true" (click)="addAdministrator()">hinzufügen</ion-button>
       </ion-list-header>
       <ion-item *ngFor="let admin of team['teamAdmins']" detail="true">
         <ion-avatar slot="start">

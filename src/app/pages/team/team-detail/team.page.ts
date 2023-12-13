@@ -343,6 +343,8 @@ export class TeamPage implements OnInit {
               ],
             });
             await alert.present();
+          }else{
+            alert("no members")
           }
         })
       )
