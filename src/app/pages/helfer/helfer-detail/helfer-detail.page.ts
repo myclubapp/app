@@ -7,6 +7,7 @@ import {
   catchError,
   combineLatest,
   defaultIfEmpty,
+  first,
   forkJoin,
   lastValueFrom,
   map,
@@ -150,9 +151,12 @@ export class HelferDetailPage implements OnInit {
           if (schichten.length === 0) {
             return of([]); // Return an empty array if no schichten are found
           }
-          console.log("this works! " + schichten); //this works!
+          // Sort schichten by ID in ascending order
+          const sortedSchichten = schichten.sort((a, b) => a.timeFrom.localeCompare(b.timeFrom));
+          console.log(schichten)
+          console.log(sortedSchichten);
           // Fetch attendees for each schicht
-          const schichtenWithAttendees$ = schichten.map((schicht) =>
+          const schichtenWithAttendees$ = sortedSchichten.map((schicht) =>
             this.eventService
               .getClubHelferEventSchichtAttendeesRef(
                 clubId,
@@ -206,9 +210,7 @@ export class HelferDetailPage implements OnInit {
                         (att) => att.id == this.user.uid
                       )?.status,
                     })),
-                    tap(data => {
-                      console.log(">>>>>>" + data);
-                    })
+                   
                   );
                 }),
                 catchError((err) => {
@@ -229,48 +231,56 @@ export class HelferDetailPage implements OnInit {
 
   async confirmSchichten() {
 
-    this.schichten$.forEach(async schichten => {
+    this.getHelferEventSchichtenWithAttendees(
+      this.event.clubId,
+      this.event.id
+    ).pipe(
+      take(1),
+      map(schichten=>{
+        let alertInputs = [];
 
-      let alertInputs = [];
+        schichten.map(schicht => {
+          schicht.attendeeListTrue.map(member => {
+            alertInputs.push({
+              name: member.id,
+              type: "checkbox",
+              checked: true,
+              value: { "memberId": member.id, "schichtId": schicht.id, "eventId": this.event.id },
+              label: member.firstName + " " + member.lastName + " - " + schicht.name
+            });
+          })
+        });
 
-      schichten.map(schicht => {
-        schicht.attendeeListTrue.map(member => {
-          alertInputs.push({
-            name: member.id,
-            type: "checkbox",
-            checked: true,
-            value: {"memberId": member.id, "schichtId": schicht.id, "eventId": this.event.id},
-            label: member.firstName + " " + member.lastName
-          });
+        if (alertInputs.length > 0){
+
+       
+        this.alertController.create({
+          header: "Helfereinsätze bestätigen",
+          message: "Bitte wählen Sie die Mitglieder aus:",
+          inputs: alertInputs,
+          buttons: [{
+            text: "Abbrechen",
+            handler: () => {
+              console.log("abbrechen");
+            }
+          }, {
+            text: "bestätigen",
+            handler: (event) => {
+              console.log(event);
+            }
+          }]
+        }).then(alert => {
+          alert.present();
         })
-      });
-
-      const alert = await this.alertController.create({
-        header: "Helfereinsätze bestätigen",
-        message: "Bitte wählen Sie die Mitglieder aus:",
-        inputs: alertInputs,
-        buttons: [{
-          text: "bestätigen", 
-          handler: (event)=>{
-            console.log(event);
-          }
-        }]
+      } else {
+        alert("keine mitglieder")
+      }
       })
-      alert.present();
-
-    }
-    )
-
-
-
-
-
-    /*const alert = await this.alertController.create({
-      inputs: 
-
+    ).subscribe(data=>{
+      console.log(data)
     });
+   
 
-    alert.present();*/
   }
 
   async toggleSchicht(status: boolean, schicht) {
@@ -283,6 +293,9 @@ export class HelferDetailPage implements OnInit {
       schicht.id
     );
     this.presentToast();
+
+    this.toggle(status, this.event);
+
   }
 
   async openMember(member: Profile) {
