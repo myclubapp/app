@@ -3,8 +3,10 @@ import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
 import {
   AlertController,
   MenuController,
+  ModalController,
   Platform,
-  ToastController
+  ToastController,
+  IonRouterOutlet
 } from "@ionic/angular";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
@@ -21,6 +23,8 @@ import { Club } from "./models/club";
 import { Team } from "./models/team";
 import { ActionPerformed, PushNotificationSchema, PushNotifications, Token } from "@capacitor/push-notifications";
 import { Dialog } from '@capacitor/dialog';
+import { OnboardingPage } from "./pages/onboarding/onboarding.page";
+
 
 @Component({
   selector: "app-root",
@@ -35,12 +39,20 @@ export class AppComponent implements OnInit {
   private teamList$: Observable<Team[]>;
   private clubAdminList$: Observable<Club[]>;
   private teamAdminList$: Observable<Team[]>;
+
+  private clubListSub: Subscription;
+  private teamListSub: Subscription;
+  private clubAdminListSub: Subscription;
+  private teamAdminListSub: Subscription;
+
   user: User;
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
 
   constructor(
     private readonly swUpdate: SwUpdate,
+    private readonly modalCtrl: ModalController,
+    // private readonly routerOutlet: IonRouterOutlet,
     // private readonly swPush: SwPush,
     private readonly alertController: AlertController,
     private readonly authService: AuthService,
@@ -59,7 +71,7 @@ export class AppComponent implements OnInit {
 
     //Filter for Events, Helfer, News
     this.clubList$ = this.fbService.getClubList();
-    this.clubList$.subscribe({
+    this.clubListSub = this.clubList$.subscribe({
       next: () => {
         console.log("Club Data received");
         this.cdr.detectChanges();
@@ -86,7 +98,7 @@ export class AppComponent implements OnInit {
     });
     //Filter for Trainings
     this.teamList$ = this.fbService.getTeamList();
-    this.teamList$.subscribe({
+    this.teamListSub = this.teamList$.subscribe({
       next: () => {
         console.log("Team Data received");
         this.cdr.detectChanges();
@@ -112,7 +124,7 @@ export class AppComponent implements OnInit {
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
-    this.clubAdminList$.subscribe({
+    this.clubAdminListSub = this.clubAdminList$.subscribe({
       next: () => {
         console.log("Club Admin Data received");
         this.cdr.detectChanges();
@@ -122,7 +134,7 @@ export class AppComponent implements OnInit {
     });
     // Create Trainings
     this.teamAdminList$ = this.fbService.getTeamAdminList();
-    this.teamAdminList$.subscribe({
+    this.teamAdminListSub = this.teamAdminList$.subscribe({
       next: () => {
         console.log("Team Admin Data received");
         this.cdr.detectChanges();
@@ -137,11 +149,14 @@ export class AppComponent implements OnInit {
         this.email = user.email;
         this.user = user;
         if (!user.emailVerified) {
-          this.presentAlertEmailNotVerified();
+          this.doOnboarding(user);
+          // this.presentAlertEmailNotVerified();
         }
         this.setDefaultLanguage();
        
         // this.platform.ready().then(async () => {
+          
+          // SEt DEVICE INFOS
           this.deviceInfo = await Device.getInfo();
           this.deviceId = await Device.getId();
           console.log(this.deviceInfo)
@@ -214,6 +229,19 @@ export class AppComponent implements OnInit {
   ngOnDestroy() {
     Network.removeAllListeners();
 
+    if (this.clubListSub){
+      this.clubListSub.unsubscribe();
+    }
+    if (this.teamListSub){
+      this.teamListSub.unsubscribe();
+    }
+    if (this.clubAdminListSub){
+      this.clubAdminListSub.unsubscribe();
+    }
+    if (this.teamAdminListSub){
+      this.teamAdminListSub.unsubscribe();
+    }
+
     //     this.pushNotificationClickSubscription.unsubscribe();
     //    this.pushMessageSubscription.unsubscribe();
     //    this.swPush.unsubscribe();
@@ -229,6 +257,28 @@ export class AppComponent implements OnInit {
         this.presentAlertUpdateVersion();
       }
     });
+  }
+
+  async doOnboarding(user){
+      // const presentingElement = await this.modalCtrl.getTop();
+      const modal = await this.modalCtrl.create({
+        component: OnboardingPage,
+        presentingElement: await this.modalCtrl.getTop(),//  this.routerOutlet.nativeEl,
+        canDismiss: false,
+        showBackdrop: true,
+        componentProps: {
+          data: user
+        },
+      });
+      modal.present();
+  
+      const { data, role } = await modal.onWillDismiss();
+  
+      if (role === "confirm") {
+      }
+
+
+
   }
 
   setFallbackLanguage() {

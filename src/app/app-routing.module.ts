@@ -95,13 +95,13 @@ const routes: Routes = [
         (m) => m.ChampionshipPageModule
       ),
   },
-  {
+  /*{
     path: "onboarding",
     loadChildren: () =>
       import("./pages/onboarding/onboarding.module").then(
         (m) => m.OnboardingPageModule
       ),
-  },
+  },*/
   {
     path: "onboarding-team",
     loadChildren: () =>

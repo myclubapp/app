@@ -33,6 +33,7 @@ import { provideStorage, getStorage } from "@angular/fire/storage";
 import { provideMessaging, getMessaging } from "@angular/fire/messaging";
 
 // MODALs
+import { OnboardingPage } from "./pages/onboarding/onboarding.page";
 import { NewsDetailPage } from "./pages/news/news-detail/news-detail.page";
 import { ChampionshipDetailPage } from "./pages/championship/championship-detail/championship-detail.page";
 import { TrainingDetailPage } from "./pages/training/training-detail/training-detail.page";
@@ -56,6 +57,7 @@ import { TranslateHttpLoader } from "@ngx-translate/http-loader";
     TrainingCreatePage,
     EventAddPage,
     EventDetailPage,
+    OnboardingPage,
     ClubPage,
     TeamPage,
   ],

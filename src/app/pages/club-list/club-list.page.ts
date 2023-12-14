@@ -8,10 +8,7 @@ import { ClubPage } from "../club/club.page";
 import {
   IonRouterOutlet,
   ModalController,
-  ToastController,
 } from "@ionic/angular";
-import { AlertController } from "@ionic/angular";
-import { Timestamp } from "firebase/firestore";
 import { TranslateService } from "@ngx-translate/core";
 
 @Component({

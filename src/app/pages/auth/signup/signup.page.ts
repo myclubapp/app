@@ -11,6 +11,7 @@ import {
   MenuController,
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
+import { UserCredential } from "firebase/auth";
 import { lastValueFrom } from "rxjs";
 import { UserCredentialLogin, Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
@@ -83,13 +84,18 @@ export class SignupPage implements OnInit {
       };
 
       try {
-        await this.signupUser(credentials, {
+        const signupUserResponse: UserCredential = await this.signupUser(credentials, {
           firstName: authForm.value.firstName,
           lastName: authForm.value.lastName,
         });
 
-        await this.authService.logout();
-        await this.router.navigateByUrl("login");
+        if (signupUserResponse.operationType !== "signIn"){
+          console.log(signupUserResponse.operationType);
+        }
+        
+        /*await this.authService.logout();
+        await this.router.navigateByUrl("login");*/
+        
         const alert = await this.alertCtrl.create({
           header: await lastValueFrom(this.translate.get("signup.account__created")),
           message:
@@ -97,22 +103,28 @@ export class SignupPage implements OnInit {
           buttons: [
             {
               text: await lastValueFrom(this.translate.get("common.ok")),
-              role: "cancel",
+              role: "confirm",
             },
           ],
         });
         await loading.dismiss();
         alert.present();
+        const { data, role } = await alert.onDidDismiss();
+        if (role === "confirm") {
+        }
+        this.authService.login(credentials.email, credentials.password);
+        // await this.router.navigateByUrl(""); // --> this should trigger appcomponent?
+
       } catch (err) {
         let message =
-          (await lastValueFrom(this.translate.get("common.general__error_occurred"))) + ": " +
+          await lastValueFrom(this.translate.get("common.general__error_occurred")) + ": " +
           err.code +
           " / " +
           err.message;
         console.error(err.code);
 
         if (err.code == "auth/email-already-in-use") {
-          message =  (await lastValueFrom(this.translate.get("signup.email__already_in_use")));
+          message =  await lastValueFrom(this.translate.get("signup.email__already_in_use"));
         } else {
           console.log("Error");
         }
@@ -145,6 +157,8 @@ export class SignupPage implements OnInit {
   }*/
 
   async signupUser(credentials: UserCredentialLogin, userData: any) {
+
+
     return this.authService.signup(
       credentials.email,
       credentials.password,

@@ -1,7 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, Input } from "@angular/core";
 import {
   AlertController,
   MenuController,
+  NavParams,
   ToastController,
 } from "@ionic/angular";
 // import { Camera, CameraResultType } from '@capacitor/camera';
@@ -25,15 +26,11 @@ import { TranslateService } from "@ngx-translate/core";
   styleUrls: ["./onboarding.page.scss"],
 })
 export class OnboardingPage implements OnInit {
-  // imageUrl: any;
-  // public code: string;
+  @Input("data") user: User;
+
   clubList: Club[];
   activeClubList: Club[];
   activeClubListBackup: Club[];
-
-  //Auth
-  //user$: Observable<User>;
-  user: User;
 
   //myClub User Profile
   // userProfile: Profile;
@@ -45,8 +42,7 @@ export class OnboardingPage implements OnInit {
 
   // inviteList: Array<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>>
   constructor(
-    // private readonly qrservice: QrcodeService,
-    // private fbService: FirebaseService,
+    public navParams: NavParams,
     private readonly fbService: FirebaseService,
     public menuCtrl: MenuController,
     private readonly alertCtrl: AlertController,
@@ -61,9 +57,11 @@ export class OnboardingPage implements OnInit {
   }
 
   ngOnInit() {
+    this.user = this.navParams.get("data");
+
     this.menuCtrl.enable(false, "menu");
 
-    this.subscription = this.authService.getUser$().pipe(
+    /*this.subscription = this.authService.getUser$().pipe(
       take(1),
       tap(user => this.user = user),
       switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
@@ -79,7 +77,7 @@ export class OnboardingPage implements OnInit {
         this.activeClubList = activeClubList;
         this.activeClubListBackup = activeClubList;
       })
-    ).subscribe();
+    ).subscribe();*/
 
   }
   ngOnDestroy() {
