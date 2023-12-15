@@ -7,6 +7,7 @@ import {
   Auth,
   getAuth,
   authState,
+  verifyBeforeUpdateEmail,
   // connectAuthEmulator,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -96,8 +97,9 @@ export class AuthService {
   }
 
   async updateEmail(newEmail: string): Promise<void> {
+    // verifyBeforeUpdateEmail
     return updateEmail(this.auth.currentUser, newEmail);
-  } 
+  }
 
   async logout(): Promise<void> {
     await signOut(this.auth);

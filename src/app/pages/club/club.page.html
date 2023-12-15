@@ -35,13 +35,14 @@
     <ion-list [inset]="true" *ngIf="club['clubRequests'].length > 0">
       <ion-list-header> {{"common.requests" | translate}} </ion-list-header>
       <ion-item *ngFor="let request of club['clubRequests']" detail="true">
-        <ion-avatar slot="start">
-          <img src="{{request?.profilePicture}}" />
-        </ion-avatar>
-        <ion-label (click)="openMember(request)"
-          >{{request.firstName}} {{request.lastName}}</ion-label
-        >
-        <ion-label> {{request?.email}} </ion-label>
+        <ion-icon
+          slot="start"
+          color="primary"
+          name="help-circle-outline"
+        ></ion-icon>
+        <ion-label class="ion-text-wrap" (click)="openMember(request)"
+          >{{request.firstName}} {{request.lastName}} {{request?.email}}
+        </ion-label>
       </ion-item>
     </ion-list>
 
@@ -51,7 +52,7 @@
         <ion-avatar slot="start">
           <img src="{{member?.profilePicture}}" />
         </ion-avatar>
-        <ion-label (click)="openMember(member)"
+        <ion-label class="ion-text-wrap" (click)="openMember(member)"
           >{{member.firstName}} {{member.lastName}}</ion-label
         >
       </ion-item>
@@ -60,13 +61,15 @@
     <ion-list [inset]="true">
       <ion-list-header>
         <ion-label> {{"common.admins" | translate}} </ion-label>
-        <ion-button strong="true" (click)="addAdministrator()">hinzufügen</ion-button>
+        <ion-button strong="true" (click)="addAdministrator()"
+          >hinzufügen</ion-button
+        >
       </ion-list-header>
       <ion-item *ngFor="let admin of club['clubAdmins']" detail="true">
         <ion-avatar slot="start">
           <img src="{{admin?.profilePicture}}" />
         </ion-avatar>
-        <ion-label (click)="openMember(admin)"
+        <ion-label class="ion-text-wrap" (click)="openMember(admin)"
           >{{admin.firstName}} {{admin.lastName}}</ion-label
         >
       </ion-item>

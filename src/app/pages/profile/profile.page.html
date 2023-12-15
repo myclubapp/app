@@ -14,7 +14,7 @@
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="userProfile$ | async as userProfile; else loading">
+  <ng-container *ngIf="userProfile$ | async as userProfile">
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
         <ion-label> {{"profile.generally" | translate}} </ion-label>
@@ -354,7 +354,7 @@
           </div>
         </ion-accordion>
 
-        <ion-accordion value="settingsPushModule">
+        <ion-accordion value="settingsEmail">
           <ion-item slot="header">
             <ion-icon
               slot="start"

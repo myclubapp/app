@@ -86,13 +86,6 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     this.userProfile$ = this.getUserProfile();
-    this.userProfile$.subscribe({
-      next: () => {
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("User Profile Error in subscription:", err),
-      complete: () => console.log("User Profile Observable completed"),
-    });
 
     this.teamList$ = this.fbService.getTeamList();
     this.teamList$.subscribe({

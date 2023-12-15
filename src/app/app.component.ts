@@ -6,25 +6,29 @@ import {
   ModalController,
   Platform,
   ToastController,
-  IonRouterOutlet
+  IonRouterOutlet,
 } from "@ionic/angular";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
 import { Router } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { Observable, Subscription, catchError, combineLatest, map, mergeMap, of, switchMap, take, tap } from "rxjs";
+import { Observable, Subscription, of, switchMap, take, tap } from "rxjs";
 import { User, onAuthStateChanged } from "@angular/fire/auth";
 import { UserProfileService } from "./services/firebase/user-profile.service";
-import { Device, DeviceId, DeviceInfo, GetLanguageCodeResult, LanguageTag } from "@capacitor/device";
+import { Device, DeviceId, DeviceInfo, LanguageTag } from "@capacitor/device";
 import { Network, ConnectionStatus } from "@capacitor/network";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "./models/club";
 import { Team } from "./models/team";
-import { ActionPerformed, PushNotificationSchema, PushNotifications, Token } from "@capacitor/push-notifications";
-import { Dialog } from '@capacitor/dialog';
+import {
+  ActionPerformed,
+  PushNotificationSchema,
+  PushNotifications,
+  Token,
+} from "@capacitor/push-notifications";
+import { Dialog } from "@capacitor/dialog";
 import { OnboardingPage } from "./pages/onboarding/onboarding.page";
-
 
 @Component({
   selector: "app-root",
@@ -49,6 +53,9 @@ export class AppComponent implements OnInit {
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
 
+  userHasTeam: boolean = false;
+  userHasClub: boolean = false;
+
   constructor(
     private readonly swUpdate: SwUpdate,
     private readonly modalCtrl: ModalController,
@@ -62,68 +69,38 @@ export class AppComponent implements OnInit {
     public readonly menuCtrl: MenuController,
     private translate: TranslateService,
     public toastController: ToastController,
-    private cdr: ChangeDetectorRef,
-    // private platform: Platform
-  ) {
+    private cdr: ChangeDetectorRef
+  ) // private platform: Platform
+  {
     this.initializeApp();
+    this.clubList$ = this.fbService.getClubList();
 
     // https://fireship.io/lessons/sharing-data-between-angular-components-four-methods/
 
     //Filter for Events, Helfer, News
-    this.clubList$ = this.fbService.getClubList();
-    this.clubListSub = this.clubList$.subscribe({
-      next: () => {
-        console.log("Club Data received");
-        this.cdr.detectChanges();
-
-        /*      this.fbService
-                          .getUserClubRequestRefs(user)
-                          .pipe(take(1))
-                          .subscribe(async (clubRequestData: any) => {
-                            console.log("clubRequestData " + clubRequestData.length);
-                            if (clubRequestData.length === 0) {
-                              console.log("NO club assigned, start onboarding flow");
-                              await this.presentAlertNoClub();
-                            } else {
-                              console.log("open request available > OPEN Profile");
-                              this.presentClubRequstOpen();
-                            }
-                            */
-
-
-
+    /*this.clubListSub = this.clubList$.subscribe({
+      next: (data) => {
+        console.log("Club Data received ");
+        if (data.length > 0){
+          this.userHasClub = true;
+        }
       },
       error: (err) => console.error("Club Error in subscription:", err),
       complete: () => console.log("Club Observable completed"),
-    });
+    });*/
+    /*
     //Filter for Trainings
     this.teamList$ = this.fbService.getTeamList();
     this.teamListSub = this.teamList$.subscribe({
-      next: () => {
+      next: (data) => {
         console.log("Team Data received");
-        this.cdr.detectChanges();
-
-        /*
-         // 3. TEAM ASSIGNED
-                        this.fbService
-                          .getUserTeamRefs(user)
-                          .pipe(take(1))
-                          .subscribe(async (teamData: any) => {
-                            // console.log(data);
-                            if (teamData.length === 0) {
-                              console.log("NO TEAM assigned, start onboarding flow");
-                              await this.presentAlertNoTeam();
-                            }
-                          });
-        */
-
       },
       error: (err) => console.error("Team Error in subscription:", err),
       complete: () => console.log("Team Observable completed"),
-    });
+    });*/
 
     //Create Events, Helfer, News
-    this.clubAdminList$ = this.fbService.getClubAdminList();
+    /*this.clubAdminList$ = this.fbService.getClubAdminList();
     this.clubAdminListSub = this.clubAdminList$.subscribe({
       next: () => {
         console.log("Club Admin Data received");
@@ -141,32 +118,46 @@ export class AppComponent implements OnInit {
       },
       error: (err) => console.error("Team Admin Error in subscription:", err),
       complete: () => console.log("Team Admin Observable completed"),
-    });
+    });*/
 
     onAuthStateChanged(this.authService.auth, async (user) => {
       if (user) {
         // 0. LOGIN
         this.email = user.email;
         this.user = user;
+        this.setDefaultLanguage();
+
         if (!user.emailVerified) {
           this.doOnboarding(user);
-          // this.presentAlertEmailNotVerified();
         }
-        this.setDefaultLanguage();
-       
+        this.clubListSub = this.clubList$
+          .pipe(
+            take(1),
+            tap((data) => {
+              if (data.length == 0) {
+                console.log("NO! Club Data received ");
+                this.doOnboarding(user);
+              }
+            })
+          )
+          .subscribe();
+
         // this.platform.ready().then(async () => {
-          
-          // SEt DEVICE INFOS
-          this.deviceInfo = await Device.getInfo();
-          this.deviceId = await Device.getId();
-          console.log(this.deviceInfo)
-          // Register Native Push
-          if (this.deviceInfo.platform == 'android' || this.deviceInfo.platform == 'ios') {
-            // this.subscribeMobileNotifications();
-            this.registerNotifications();
-          } else {
-            // Register Web Push, if available
-          }
+
+        // SEt DEVICE INFOS
+        this.deviceInfo = await Device.getInfo();
+        this.deviceId = await Device.getId();
+        console.log(this.deviceInfo);
+        // Register Native Push
+        if (
+          this.deviceInfo.platform == "android" ||
+          this.deviceInfo.platform == "ios"
+        ) {
+          // this.subscribeMobileNotifications();
+          this.registerNotifications();
+        } else {
+          // Register Web Push, if available
+        }
         // })
         // READ USER LANGUAGE FROM DATABASE if AVAILABLE
 
@@ -229,16 +220,16 @@ export class AppComponent implements OnInit {
   ngOnDestroy() {
     Network.removeAllListeners();
 
-    if (this.clubListSub){
+    if (this.clubListSub) {
       this.clubListSub.unsubscribe();
     }
-    if (this.teamListSub){
+    if (this.teamListSub) {
       this.teamListSub.unsubscribe();
     }
-    if (this.clubAdminListSub){
+    if (this.clubAdminListSub) {
       this.clubAdminListSub.unsubscribe();
     }
-    if (this.teamAdminListSub){
+    if (this.teamAdminListSub) {
       this.teamAdminListSub.unsubscribe();
     }
 
@@ -259,58 +250,65 @@ export class AppComponent implements OnInit {
     });
   }
 
-  async doOnboarding(user){
-      // const presentingElement = await this.modalCtrl.getTop();
-      const modal = await this.modalCtrl.create({
-        component: OnboardingPage,
-        presentingElement: await this.modalCtrl.getTop(),//  this.routerOutlet.nativeEl,
-        canDismiss: false,
-        showBackdrop: true,
-        componentProps: {
-          data: user
-        },
-      });
-      modal.present();
-  
-      const { data, role } = await modal.onWillDismiss();
-  
-      if (role === "confirm") {
-      }
+  async doOnboarding(user) {
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalCtrl.create({
+      component: OnboardingPage,
+      presentingElement: await this.modalCtrl.getTop(), //  this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: user,
+      },
+    });
+    modal.present();
 
+    const { data, role } = await modal.onWillDismiss();
 
-
+    if (role === "close") {
+      console.log(">>> close onboarding modal" + data);
+    }
   }
 
   setFallbackLanguage() {
     Device.getLanguageTag().then((result: LanguageTag) => {
-      if (result.value == "de" || result.value == "fr" || result.value == "en" || result.value == "it") {
+      if (
+        result.value == "de" ||
+        result.value == "fr" ||
+        result.value == "en" ||
+        result.value == "it"
+      ) {
         console.log("Set Fallback Language to " + result.value);
         this.translate.setDefaultLang(result.value);
       } else {
-        console.log("Set Fallback Language to EN")
+        console.log("Set Fallback Language to EN");
         this.translate.setDefaultLang("en");
       }
     });
   }
 
   async setDefaultLanguage() {
-    this.authService.getUser$().pipe(
-      take(1),
-      tap(user => this.user = user),
-      switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
-    ).subscribe(profile => {
-      if (profile) {
-        if (profile.language) {
-          if (profile.language.length > 0) {
-            this.translate.setDefaultLang(profile.language);
-            return;
+    this.authService
+      .getUser$()
+      .pipe(
+        take(1),
+        tap((user) => (this.user = user)),
+        switchMap((user) =>
+          user ? this.profileService.getUserProfile(user) : of(null)
+        )
+      )
+      .subscribe((profile) => {
+        if (profile) {
+          if (profile.language) {
+            if (profile.language.length > 0) {
+              this.translate.setDefaultLang(profile.language);
+              return;
+            }
           }
         }
-      }
-      this.setFallbackLanguage()
-    })
+        this.setFallbackLanguage();
+      });
   }
-
 
   /*async requestSubscription() {
     if (!this.swPush.isEnabled) {
@@ -568,12 +566,11 @@ export class AppComponent implements OnInit {
     });
   }*/
   async registerNotifications() {
-
     // Request permission to use push notifications
     // iOS will prompt user and return if they granted permission or not
     // Android will just grant without prompting
-    PushNotifications.requestPermissions().then(result => {
-      if (result.receive === 'granted') {
+    PushNotifications.requestPermissions().then((result) => {
+      if (result.receive === "granted") {
         // Register with Apple / Google to receive push via APNS/FCM
         PushNotifications.register();
       } else {
@@ -581,7 +578,7 @@ export class AppComponent implements OnInit {
       }
     });
 
-    PushNotifications.addListener('registration', (token: Token) => {
+    PushNotifications.addListener("registration", (token: Token) => {
       // alert('Push registration success, token: ' + token.value);
       /*this.toastController.create({
         message: "Push erfolgreich registriert",
@@ -597,17 +594,18 @@ export class AppComponent implements OnInit {
         .catch((err) => {
           console.error("Could not subscribe to notifications", err);
           // this.errorPushMessageEnable("Could not subscribe to notifications");
-        }).then(ok=>{
+        })
+        .then((ok) => {
           console.log(ok);
         });
     });
 
-    PushNotifications.addListener('registrationError', (error: any) => {
+    PushNotifications.addListener("registrationError", (error: any) => {
       // alert('Error on registration: ' + JSON.stringify(error));
     });
 
     PushNotifications.addListener(
-      'pushNotificationReceived',
+      "pushNotificationReceived",
       (notification: PushNotificationSchema) => {
         // alert('Push received: ' + JSON.stringify(notification));
         Dialog.confirm({
@@ -615,34 +613,32 @@ export class AppComponent implements OnInit {
           message: notification.body,
           okButtonTitle: "OK",
         });
-      },
+      }
     );
 
     PushNotifications.addListener(
-      'pushNotificationActionPerformed',
+      "pushNotificationActionPerformed",
       (notification: ActionPerformed) => {
         console.log(notification);
         // alert('Push action performed: ' + JSON.stringify(notification));
-      },
+      }
     );
 
-
-
-// OLD CODE
-/*
-    let permStatus = await PushNotifications.checkPermissions();
-    if (permStatus.receive === 'prompt') {
-      permStatus = await PushNotifications.requestPermissions();
-    }
-    if (permStatus.receive !== 'granted') {
-      throw new Error('User denied permissions!');
-    }
-    PushNotifications.removeAllListeners();
-    await this.addListeners();
-    await PushNotifications.register();
-  }
-
-  subscribeMobileNotifications() {
-   */
+    // OLD CODE
+    /*
+        let permStatus = await PushNotifications.checkPermissions();
+        if (permStatus.receive === 'prompt') {
+          permStatus = await PushNotifications.requestPermissions();
+        }
+        if (permStatus.receive !== 'granted') {
+          throw new Error('User denied permissions!');
+        }
+        PushNotifications.removeAllListeners();
+        await this.addListeners();
+        await PushNotifications.register();
+      }
+    
+      subscribeMobileNotifications() {
+       */
   }
 }

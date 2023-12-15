@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from "@angular/core";
 import {
   AlertController,
   MenuController,
+  ModalController,
   NavParams,
   ToastController,
 } from "@ionic/angular";
@@ -14,11 +15,23 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { Club } from "src/app/models/club";
 import { AuthService } from "src/app/services/auth.service";
 import { Router } from "@angular/router";
-import { Observable, Subscription, lastValueFrom, of, switchMap, take, tap } from "rxjs";
+import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
+import {
+  Observable,
+  Subscription,
+  catchError,
+  lastValueFrom,
+  map,
+  of,
+  switchMap,
+  take,
+  tap,
+} from "rxjs";
 import { User } from "firebase/auth";
 import { Profile } from "src/app/models/user";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { TranslateService } from "@ngx-translate/core";
+import { PushNotifications } from "@capacitor/push-notifications";
 
 @Component({
   selector: "app-onboarding",
@@ -28,23 +41,27 @@ import { TranslateService } from "@ngx-translate/core";
 export class OnboardingPage implements OnInit {
   @Input("data") user: User;
 
-  clubList: Club[];
-  activeClubList: Club[];
-  activeClubListBackup: Club[];
+  clubListSV: Club[];
+  clubListSU: Club[];
+  clubListSH: Club[];
+  clubListSub: Subscription;
 
-  //myClub User Profile
-  // userProfile: Profile;
   userProfile$: Observable<Profile>;
 
   private subscription: Subscription;
   private subscriptionActiveClubList: Subscription;
+  deviceId: DeviceId;
+  deviceInfo: DeviceInfo;
 
+  notificationSkip: boolean = false;
+  emailSkip: boolean = false;
 
   // inviteList: Array<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>>
   constructor(
     public navParams: NavParams,
     private readonly fbService: FirebaseService,
     public menuCtrl: MenuController,
+    private readonly modalCtrl: ModalController,
     private readonly alertCtrl: AlertController,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
@@ -56,10 +73,18 @@ export class OnboardingPage implements OnInit {
     this.menuCtrl.enable(false, "menu");
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.clubListSU = [];
+    this.clubListSV = [];
+    this.clubListSH = [];
     this.user = this.navParams.get("data");
 
     this.menuCtrl.enable(false, "menu");
+
+    this.deviceId = await Device.getId();
+    this.deviceInfo = await Device.getInfo();
+
+    this.userProfile$ = this.getUserProfile();
 
     /*this.subscription = this.authService.getUser$().pipe(
       take(1),
@@ -78,76 +103,101 @@ export class OnboardingPage implements OnInit {
         this.activeClubListBackup = activeClubList;
       })
     ).subscribe();*/
-
   }
   ngOnDestroy() {
-
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-    if (this.subscriptionActiveClubList) {
-      this.subscriptionActiveClubList.unsubscribe();
-    }
-
-  }
-  handleChange(event: any) {
-    console.log(event.detail.value);
-
-    if (event.detail.value) {
-      console.log("before club search");
-      // Search
-      this.fbService
-        .searchClubListRef(event.detail.value)
-        .subscribe((data: any) => {
-          console.log(data);
-          this.clubList = data;
-        });
-      // My-Club Clubs Search
-      this.activeClubList = this.activeClubListBackup.filter(
-        (club, index) => club.name.search(event.detail.value) >= 0
-      );
-    } else {
-      this.clubList = [];
-      this.activeClubList = this.activeClubListBackup;
+    if (this.clubListSub) {
+      this.clubListSub.unsubscribe();
     }
   }
 
-  async joinClub(club: Club) {
-    console.log(club);
-    const alert = await this.alertCtrl.create({
-      message: await lastValueFrom(this.translate.get("onboarding.do_you_want_to_join__club")) + ` ${club.name}`,
-      header: await lastValueFrom(this.translate.get("onboarding.join__club")),
-      buttons: [
-        {
-          text: await lastValueFrom(this.translate.get("common.yes")),
-          handler: async (data: any) => {
-            await this.fbService.setClubRequest(club.id, this.user.uid);
-            await this.presentRequestToast();
-            await this.presentRequestSentAlert(club.name);
-
-            // await this.router.navigateByUrl("logout", {});
-          },
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.no")),
-          role: "cancel",
-          handler: () => {
-            console.log("nein");
-            this.presentCancelToast();
-          },
-        },
-      ],
+  getUserProfile(): Observable<any> {
+    // Replace 'any' with the actual type of the user profile
+    return this.authService.getUser$().pipe(
+      switchMap((user: User) => {
+        if (!user || !user.uid) {
+          console.log("No user found");
+          return of(null); // Return null or appropriate default value if user is not logged in
+        }
+        return this.profileService.getUserProfile(user);
+      }),
+      catchError((err) => {
+        console.error("Error fetching user profile", err);
+        return of(null); // Handle the error and return a default value
+      })
+    );
+  }
+  registerPushDevice() {
+    PushNotifications.requestPermissions().then((result) => {
+      if (result.receive === "granted") {
+        // Register with Apple / Google to receive push via APNS/FCM
+        PushNotifications.register();
+        // --> this should trigger listener in app.component.ts to save token
+      } else {
+        // Show some error
+      }
     });
-    if (club) {
-      await alert.present();
+  }
+  skipNotification(boolean) {
+    this.notificationSkip = boolean;
+  }
+
+  async skipEmail(boolean) {
+    // const user =
+    this.authService.auth.currentUser.getIdToken(true);
+    await this.authService.auth.currentUser.reload();
+    // console.log(user);
+    if (this.authService.auth.currentUser.emailVerified) {
+      console.log("email verified");
+      this.user = this.authService.auth.currentUser;
+      this.emailSkip = boolean;
     } else {
-      console.log("No club");
+      console.log("not verified");
     }
   }
 
-  async presentRequestToast() {
+  async togglePush(event) {
+    // console.log(event);
+    await this.profileService.changeSettingsPush(event.detail.checked);
+
+    if (event.detail.checked) {
+      if (
+        this.deviceInfo.platform == "android" ||
+        this.deviceInfo.platform == "ios"
+      ) {
+        this.registerPushDevice();
+      } else {
+        console.log("implement web push");
+        // this.alertAskForPush();
+      }
+    } else {
+      console.log("disable push");
+    }
+    this.toastActionSaved();
+  }
+  async togglePushModule(event, module) {
+    await this.profileService.changeSettingsPushModule(
+      event.detail.checked,
+      module
+    );
+    this.toastActionSaved();
+  }
+
+  async toggleEmail(event) {
+    await this.profileService.changeSettingsEmail(event.detail.checked);
+    console.log("email");
+    this.toastActionSaved();
+  }
+
+  async toggleEmailReporting(event) {
+    await this.profileService.changeSettingsEmailReporting(
+      event.detail.checked
+    );
+    console.log("email");
+    this.toastActionSaved();
+  }
+  async toastActionSaved() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("onboarding.success__request_sent")),
+      message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -155,11 +205,109 @@ export class OnboardingPage implements OnInit {
 
     await toast.present();
   }
+  verifyEmailAddress() {
+    this.authService.sendVerifyEmail();
+  }
+  closeModal() {
+    return this.modalCtrl.dismiss(null, "close");
+  }
+
+  async logout() {
+    await this.closeModal();
+    return this.authService.logout();
+  }
+  handleChange(event: any) {
+    console.log(event.detail.value);
+    const searchValue = event.detail.value;
+
+    if (event.detail.value) {
+      console.log("before club search");
+      // Search
+      this.clubListSub = this.fbService
+        .searchClubListRef(event.detail.value)
+        .pipe(
+          take(1),
+          map((clubs: Club[]) =>
+            clubs.filter((searchClub) =>
+              searchClub.name
+                .toLowerCase()
+                .includes(event.detail.value.toLowerCase())
+            )
+          )
+          // return club.name.search(searchValue)
+        )
+        .subscribe((data: any) => {
+          console.log(data);
+          this.clubListSU = data.filter((el) => el.type == "swissunihockey");
+          this.clubListSV = data.filter((el) => el.type == "swissvolley");
+          this.clubListSH = data.filter((el) => el.type == "swisshandball");
+        });
+    } else {
+      this.clubListSU = [];
+      this.clubListSV = [];
+      this.clubListSH = [];
+      // this.activeClubList = this.activeClubListBackup;
+    }
+  }
+
+  async joinClub(club: Club) {
+    console.log(club);
+
+    if (club.active) {
+      const alert = await this.alertCtrl.create({
+        message:
+          (await lastValueFrom(
+            this.translate.get("onboarding.do_you_want_to_join__club")
+          )) + ` ${club.name}`,
+        header: await lastValueFrom(
+          this.translate.get("onboarding.join__club")
+        ),
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("common.yes")),
+            handler: async (data: any) => {
+              await this.fbService.setClubRequest(club.id, this.user.uid);
+              await this.presentRequestToast();
+              await this.presentRequestSentAlert(club.name);
+
+              // await this.router.navigateByUrl("logout", {});
+            },
+          },
+          {
+            text: await lastValueFrom(this.translate.get("common.no")),
+            role: "cancel",
+            handler: () => {
+              console.log("nein");
+              this.presentCancelToast();
+            },
+          },
+        ],
+      });
+      await alert.present();
+    } else {
+      console.log("dieser club existiert noch nicht");
+    }
+  }
+
+  async presentRequestToast() {
+    const toast = await this.toastController.create({
+      message: await lastValueFrom(
+        this.translate.get("onboarding.success__request_sent")
+      ),
+      duration: 1500,
+      position: "top",
+      color: "success",
+    });
+
+    await toast.present();
+  }
   async presentCancelToast() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("onboarding.warning__action_canceled")),
+      message: await lastValueFrom(
+        this.translate.get("onboarding.warning__action_canceled")
+      ),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
 
@@ -169,15 +317,18 @@ export class OnboardingPage implements OnInit {
   async presentRequestSentAlert(clubName: string) {
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
-      header: await lastValueFrom(this.translate.get("onboarding.success__application_sent")),
+      header: await lastValueFrom(
+        this.translate.get("onboarding.success__application_sent")
+      ),
       subHeader: "",
-      message: await lastValueFrom(this.translate.get("onboarding.success__application_sent_desc")),
+      message: await lastValueFrom(
+        this.translate.get("onboarding.success__application_sent_desc")
+      ),
       buttons: [
         {
           text: await lastValueFrom(this.translate.get("common.logout")),
           handler: async () => {
-            await this.authService.logout();
-            this.router.navigateByUrl("login");
+            this.logout();
           },
         },
       ],

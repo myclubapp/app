@@ -12,7 +12,18 @@ import {
   setDoc,
 } from "@angular/fire/firestore";
 
-import { Observable, Observer, catchError, combineLatest, map, mergeMap, of, switchMap, take, tap } from "rxjs";
+import {
+  Observable,
+  Observer,
+  catchError,
+  combineLatest,
+  map,
+  mergeMap,
+  of,
+  switchMap,
+  take,
+  tap,
+} from "rxjs";
 import {
   Club,
   SwissHandballClub,
@@ -34,10 +45,8 @@ export class FirebaseService {
   user: User;
   constructor(
     private readonly firestore: Firestore = inject(Firestore),
-    private readonly authService: AuthService,
-  ) {
-
-  }
+    private readonly authService: AuthService
+  ) {}
 
   getClubList() {
     return this.authService.getUser$().pipe(
@@ -60,7 +69,9 @@ export class FirebaseService {
           )
         );
       }),
-      map((clubsWithDetails) => clubsWithDetails.filter(club => club !== null)), // Filter out null (error cases)
+      map((clubsWithDetails) =>
+        clubsWithDetails.filter((club) => club !== null)
+      ), // Filter out null (error cases)
       tap((results) => console.log("Final results with all clubs:", results)),
       catchError((err) => {
         console.error("Error in getClubList:", err);
@@ -89,7 +100,9 @@ export class FirebaseService {
           )
         );
       }),
-      map((clubsWithDetails) => clubsWithDetails.filter(club => club !== null)), // Filter out null (error cases)
+      map((clubsWithDetails) =>
+        clubsWithDetails.filter((club) => club !== null)
+      ), // Filter out null (error cases)
       tap((results) => console.log("Final results with all clubs:", results)),
       catchError((err) => {
         console.error("Error in getClubList:", err);
@@ -118,7 +131,9 @@ export class FirebaseService {
           )
         );
       }),
-      map((teamsWithDetails) => teamsWithDetails.filter(team => team !== null)), // Filter out null (error cases)
+      map((teamsWithDetails) =>
+        teamsWithDetails.filter((team) => team !== null)
+      ), // Filter out null (error cases)
       tap((results) => console.log("Final results with all teams:", results)),
       catchError((err) => {
         console.error("Error in getTeamList:", err);
@@ -147,7 +162,9 @@ export class FirebaseService {
           )
         );
       }),
-      map((teamsWithDetails) => teamsWithDetails.filter(team => team !== null)), // Filter out null (error cases)
+      map((teamsWithDetails) =>
+        teamsWithDetails.filter((team) => team !== null)
+      ), // Filter out null (error cases)
       tap((results) => console.log("Final results with all teams:", results)),
       catchError((err) => {
         console.error("Error in getTeamList:", err);
@@ -155,7 +172,6 @@ export class FirebaseService {
       })
     );
   }
-
 
   /* CLUBS */
   getClubRef(clubId: string) {
@@ -166,10 +182,8 @@ export class FirebaseService {
   searchClubListRef(searchString: string): Observable<Club[]> {
     const clubRefList = collection(this.firestore, `club/`);
 
-    const q = query(clubRefList, where("name", "==", searchString));
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
-      Club[]
-    >;
+    // const q = query(clubRefList, where("name", "==", searchString));
+    return collectionData(clubRefList, { idField: "id" }) as Observable<Club[]>;
   }
 
   getActiveClubList(): Observable<Club[]> {

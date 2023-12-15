@@ -52,6 +52,17 @@
         >
         </ion-input>
       </ion-item>
+      <ion-item>
+        <ion-input
+          readonly
+          labelPlacement="stacked"
+          [label]='"common.email" | translate'
+          attr.aria-label='{{"common.email" | translate}}'
+          [(ngModel)]="userProfile.email"
+          value="{{userProfile.email}}"
+        >
+        </ion-input>
+      </ion-item>
     </ion-list>
   </ng-container>
 </ion-content>
