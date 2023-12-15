@@ -1,0 +1,20 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title></ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<!-- class="ion-padding" -->
+
+<ion-content>
+  <ion-list [inset]="true">
+    <ion-list-header> {{"common.Helferpunkte" | translate}} </ion-list-header>
+  </ion-list>
+</ion-content>
+
+<ng-template #loading>
+  <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>
+  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+</ng-template>

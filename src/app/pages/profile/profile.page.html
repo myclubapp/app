@@ -172,6 +172,18 @@
       </ion-item>
     </ion-list>
 
+    <ion-list lines="full" [inset]="true">
+      <ion-list-header>
+        <ion-label> {{ "profile.Diverses" | translate}} </ion-label>
+      </ion-list-header>
+
+      <ion-item detail="true" (click)="openHelferPunkte()">
+        <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
+        <ion-label> Helferpunkte </ion-label>
+        <ion-badge>3</ion-badge>
+      </ion-item>
+    </ion-list>
+
     <!--
     <ion-list *ngIf="clubRequestList.length > 0" lines="full" [inset]="true">
       <ion-list-header>

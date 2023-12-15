@@ -35,8 +35,18 @@
       </ion-item>
 
       <ion-item-sliding #item *ngFor="let event of eventsList">
-        <ion-item type="button" detail="true">
+        <ion-item
+          (click)="openEventDetailModal(event, true)"
+          type="button"
+          detail="true"
+        >
           <ion-icon
+            color="primary"
+            slot="icon-only"
+            slot="start"
+            name="list-outline"
+          ></ion-icon>
+          <!--<ion-icon
             *ngIf="event.status === null"
             slot="icon-only"
             color="warning"
@@ -59,8 +69,8 @@
             slot="start"
             name="checkmark-circle"
             (click)="toggle(false, event)"
-          ></ion-icon>
-          <ion-label (click)="openEventDetailModal(event, true)">
+          ></ion-icon>-->
+          <ion-label>
             <h2>{{event.name}}</h2>
             <h3>
               <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
@@ -72,12 +82,12 @@
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
           </ion-label>
-          <ion-note slot="end" (click)="openEventDetailModal(event, true)">
+          <ion-note slot="end">
             <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
           </ion-note>
         </ion-item>
 
-        <ion-item-options side="start">
+        <!--<ion-item-options side="start">
           <ion-item-option
             color="success"
             *ngIf="event.status === false || event.status === null"
@@ -92,7 +102,7 @@
           >
             <ion-icon slot="icon-only" name="close-circle"></ion-icon>
           </ion-item-option>
-        </ion-item-options>
+        </ion-item-options>-->
 
         <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
           <ion-item-options side="end" *ngIf="clubAdminList.length > 0">
@@ -132,8 +142,18 @@
         </ion-label>
       </ion-item>
       <ion-item-sliding #item *ngFor="let event of eventsListPast">
-        <ion-item type="button" detail="true">
+        <ion-item
+          (click)="openEventDetailModal(event, false)"
+          type="button"
+          detail="true"
+        >
           <ion-icon
+            color="primary"
+            slot="icon-only"
+            slot="start"
+            name="list-outline"
+          ></ion-icon>
+          <!--<ion-icon
             *ngIf="event.status === null"
             slot="icon-only"
             color="warning"
@@ -153,8 +173,8 @@
             color="success"
             slot="start"
             name="checkmark-circle"
-          ></ion-icon>
-          <ion-label (click)="openEventDetailModal(event, false)">
+          ></ion-icon>-->
+          <ion-label>
             <h2>{{event.name}}</h2>
             <h3>
               <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
@@ -166,7 +186,7 @@
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
           </ion-label>
-          <ion-note slot="end" (click)="openEventDetailModal(event, false)">
+          <ion-note slot="end">
             <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
           </ion-note>
         </ion-item>

@@ -36,14 +36,17 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { catchError, switchMap, take, tap } from "rxjs/operators";
 import {
   AlertController,
+  IonRouterOutlet,
   LoadingController,
   MenuController,
+  ModalController,
   ToastController,
 } from "@ionic/angular";
 import { Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
+import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
 
 @Component({
   selector: "app-profile",
@@ -74,6 +77,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
     private readonly router: Router,
     private readonly menuCtrl: MenuController,
     private translate: TranslateService,
+    private readonly modalCtrl: ModalController,
+    private readonly routerOutlet: IonRouterOutlet,
     private cdr: ChangeDetectorRef
   ) {
     this.menuCtrl.enable(true, "menu");
@@ -208,6 +213,26 @@ export class ProfilePage implements OnInit, AfterViewInit {
       ],
     });
     alert.present();
+  }
+
+  async openHelferPunkte() {
+    console.log("openHelferPunkte");
+    const modal = await this.modalCtrl.create({
+      component: HelferPunktePage,
+      // presentingElement: await this.modalCtrl.getTop(),
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: this.user,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
   }
 
   async presentToast() {

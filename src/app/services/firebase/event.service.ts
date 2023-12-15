@@ -147,7 +147,7 @@ export class EventService {
 
     return collectionData(q, {
       idField: "id",
-    })  as Observable<HelferEvent[]>;
+    }) as Observable<HelferEvent[]>;
   }
 
   getClubHelferEventAttendeesRef(
@@ -173,7 +173,7 @@ export class EventService {
     );
     return collectionData(schichtenRefList, {
       idField: "id",
-    })  as Observable<any[]>;
+    }) as Observable<any[]>;
   }
 
   getClubHelferEventSchichtAttendeesRef(
@@ -181,7 +181,12 @@ export class EventService {
     eventId: string,
     schichtId: string
   ): Observable<any[]> {
-    console.log("getClubHelferEventSchichtAttendeesRef" , clubId,eventId, schichtId )
+    console.log(
+      "getClubHelferEventSchichtAttendeesRef",
+      clubId,
+      eventId,
+      schichtId
+    );
     const schichtAttendeesListRef = collection(
       this.firestore,
       `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}/attendees`
@@ -203,7 +208,32 @@ export class EventService {
       this.firestore,
       `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}/attendees/${user.uid}`
     );
-    return setDoc(statusRef, { status });
+    return setDoc(
+      statusRef,
+      { status },
+      {
+        merge: true,
+      }
+    );
+  }
+
+  setClubHelferEventSchichtAttendeeStatusConfirm(
+    clubId: string,
+    eventId: string,
+    schichtId: string,
+    userId: string
+  ) {
+    const user = this.authService.auth.currentUser;
+    const userRef = doc(this.firestore, `userProfile/${user.uid}`);
+    const statusRef = doc(
+      this.firestore,
+      `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}/attendees/${userId}`
+    );
+    return setDoc(
+      statusRef,
+      { confirmed: true, date: new Date(), confirmedBy: userRef },
+      { merge: true }
+    );
   }
 
   setClubHelferEventAttendeeStatus(

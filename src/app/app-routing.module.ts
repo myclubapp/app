@@ -158,11 +158,6 @@ const routes: Routes = [
         (m) => m.NotFoundPageModule
       ),
   },
-  {
-    path: "member",
-    loadChildren: () =>
-      import("./pages/member/member.module").then((m) => m.MemberPageModule),
-  },
 ];
 
 @NgModule({
