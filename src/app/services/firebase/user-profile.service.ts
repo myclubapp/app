@@ -82,7 +82,7 @@ export class UserProfileService {
   }
 
   async addPushSubscriber(
-    sub: PushSubscription,  // WebPush
+    sub: PushSubscription, // WebPush
     deviceId: DeviceId,
     deviceInfo: DeviceInfo,
     token: string // native
@@ -91,17 +91,19 @@ export class UserProfileService {
     const pushObject = JSON.stringify(sub);
     const userProfileRef: DocumentReference<DocumentData> = doc(
       this.firestore,
-      `userProfile/${user.uid}/push/${deviceId.identifier}`
+      // `userProfile/${user.uid}/push/${deviceId.identifier}`
+      `userProfile/${user.uid}/push/${deviceInfo.model}`
     );
 
     return setDoc(userProfileRef, {
-      pushObject: pushObject && "{}",
-      updated: new Date(),
+      identifier: deviceId.identifier,
+      token: token || "", // Set token for native Web Push
+      pushObject: pushObject || "{}", // Set token for web push
       model: deviceInfo.model || "",
       operatingSystem: deviceInfo.operatingSystem || "",
       osVersion: deviceInfo.osVersion || "",
       platform: deviceInfo.platform || "", // --> set to "Web" for Web Push from Backend or "Native" for Native Push from firebase
-      token: token || "", // Set token for native Web Push
+      updated: new Date(),
     });
   }
 
@@ -122,7 +124,7 @@ export class UserProfileService {
   async changeSettingsPushModule(state: boolean, module) {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { ['settingsPush' + module]: state });
+    return updateDoc(userProfileRef, { ["settingsPush" + module]: state });
   }
 
   async changeSettingsEmail(state: boolean) {

@@ -40,10 +40,6 @@ export class ClubPage implements OnInit {
   club$: Observable<any>;
   subscribeMember: Subscription;
 
-  memberList$: Observable<Profile[]>;
-  adminList$: Observable<Profile[]>;
-  requestList$: Observable<Profile[]>;
-
   user$: Observable<User>;
   user: User;
 
@@ -59,12 +55,11 @@ export class ClubPage implements OnInit {
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.club = this.navParams.get("data");
-    this.club.clubAdmins = [];
-    this.club.clubMembers = [];
+
     this.club$ = of(this.club);
     this.club$ = this.getClub(this.club.id);
   }
@@ -175,44 +170,44 @@ export class ClubPage implements OnInit {
   async addAdministrator() {
     let memberSelect = [];
 
-    this.subscribeMember = this.club$.pipe(
-      take(1),
-      tap((club) => {
-        console.log(club);
-        club.clubMembers.forEach((member) => {
-          if (!club.clubAdmins.find((element) => element.id === member.id)) {
-            memberSelect.push({
-              type: "checkbox",
-              name: member.id,
-              label: `${member.firstName} ${member.lastName}`,
-              value: member,
-              checked: false,
-            });
-          }
-
-        });
-      }),
-      finalize(async () => {
-        if (memberSelect.length > 0) {
-          const alert = await this.alertCtrl.create({
-            header: "Administrator hinzufügen",
-            inputs: memberSelect,
-            buttons: [
-              {
-                text: "Abbrechen",
-                handler: () => console.log("Cancel clicked"),
-              },
-              {
-                text: "Hinzufügen",
-                handler: (data) => console.log(data),
-              },
-            ],
+    this.subscribeMember = this.club$
+      .pipe(
+        take(1),
+        tap((club) => {
+          console.log(club);
+          club.clubMembers.forEach((member) => {
+            if (!club.clubAdmins.find((element) => element.id === member.id)) {
+              memberSelect.push({
+                type: "checkbox",
+                name: member.id,
+                label: `${member.firstName} ${member.lastName}`,
+                value: member,
+                checked: false,
+              });
+            }
           });
-          await alert.present();
-        }
-      })
-    ).subscribe();
-
+        }),
+        finalize(async () => {
+          if (memberSelect.length > 0) {
+            const alert = await this.alertCtrl.create({
+              header: "Administrator hinzufügen",
+              inputs: memberSelect,
+              buttons: [
+                {
+                  text: "Abbrechen",
+                  handler: () => console.log("Cancel clicked"),
+                },
+                {
+                  text: "Hinzufügen",
+                  handler: (data) => console.log(data),
+                },
+              ],
+            });
+            await alert.present();
+          }
+        })
+      )
+      .subscribe();
 
     /*
         let memberSelect = [];
