@@ -38,3 +38,6 @@ npm-debug.log*
 
 resources/ios/**/*
 resources/android/**/*
+
+android/KeyStore
+android/private_key.pepk
