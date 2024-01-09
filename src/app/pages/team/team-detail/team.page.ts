@@ -205,10 +205,10 @@ export class TeamPage implements OnInit {
       });
   }
 
-  async deleteTeamRequest(request) {
+/*  async deleteTeamRequest(request) {
     await this.fbService.deleteUserTeamRequest(request.teamId, request.id);
     await this.toastActionSaved();
-  }
+  } */
 
   async approveTeamRequest(request) {
     console.log(request);
@@ -293,8 +293,11 @@ export class TeamPage implements OnInit {
               },
               {
                 text: "Hinzufügen",
-                handler: (data) => {
-                  console.log(data);
+                handler: (teamMemberList) => {
+                  console.log(teamMemberList);
+                  for (const member of teamMemberList) {
+                    this.approveTeamRequest({teamId: this.team.id, id: member.id})
+                  }
                 },
               },
             ],
