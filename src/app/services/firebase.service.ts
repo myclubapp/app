@@ -318,6 +318,7 @@ export class FirebaseService {
   }
 
   approveUserClubRequest(clubId: string, userId: string): Promise<any> {
+    console.log("club " + clubId , " / userid " + userId);
     return setDoc(
       doc(this.firestore, `/club/${clubId}/requests/${userId}`),
       {

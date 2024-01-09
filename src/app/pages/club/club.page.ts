@@ -267,7 +267,29 @@ export class ClubPage implements OnInit {
     if (role === "confirm") {
     }
   }
-  async approveClubRequest(user) {
+
+  async openRequestMember(member: Profile) {
+    console.log("open Request Member");
+    const modal = await this.modalCtrl.create({
+      component: MemberPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: member,
+        isRequest: true,
+        clubId: this.club.id
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+  /*async approveClubRequest(user) {
     console.log(user);
     const alert = await this.alertCtrl.create({
       message: (
@@ -361,7 +383,7 @@ export class ClubPage implements OnInit {
     console.log(user);
     await this.fbService.deleteUserClubRequest(user.clubId, user.id);
     await this.toastActionSaved();
-  }
+  }*/
 
   async toastActionSaved() {
     const toast = await this.toastCtrl.create({
