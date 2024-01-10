@@ -45,6 +45,9 @@ export class ClubPage implements OnInit {
 
   alertTeamSelection = [];
 
+  allowEdit: boolean = false;
+
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -67,6 +70,13 @@ export class ClubPage implements OnInit {
   ngOnDestroy() {
     if (this.subscribeMember) {
       this.subscribeMember.unsubscribe();
+    }
+  }
+  edit() {
+    if (this.allowEdit) {
+      this.allowEdit = false;
+    } else {
+      this.allowEdit = true;
     }
   }
 

@@ -36,10 +36,9 @@
       </ion-item>
     </ion-list>
 
-    <ion-list [inset]="true" *ngIf="team['teamRequests'].length > 0">
+   <!-- <ion-list [inset]="true" *ngIf="team['teamRequests'].length > 0">
       <ion-list-header>
         <ion-label> {{"common.requests" | translate}} </ion-label>
-
       </ion-list-header>
       <ion-item *ngFor="let request of team['teamRequests']" detail="true">
         <ion-avatar slot="start">
@@ -50,7 +49,7 @@
         >
         <ion-label> {{request?.email}} </ion-label>
       </ion-item>
-    </ion-list>
+    </ion-list>-->
 
     <ion-list [inset]="true">
       <ion-list-header>

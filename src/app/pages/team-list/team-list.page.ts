@@ -40,21 +40,9 @@ export class TeamListPage implements OnInit {
 
   ngOnInit() {
     this.teamList$ = this.fbService.getTeamList();
-    /*this.teamList$.subscribe({
-      next: (data) => {
-        console.log("ClubList Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("ClubList Error in subscription:", err),
-      complete: () => console.log("ClubList Observable completed"),
-    });*/
   }
 
   ngOnDestroy() {}
-
-  getAvailableTeamList() {
-    // console.log("getAvailableTeamList");
-  }
 
   async openModal(team: Team) {
     // const presentingElement = await this.modalCtrl.getTop();

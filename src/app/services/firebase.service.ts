@@ -330,7 +330,7 @@ export class FirebaseService {
     );
   }
   async approveUserTeamRequest(teamId: string, userId: string): Promise<any> {
-    // trigger create event on backend -> not handled
+    // trigger create event on backend -> not handled, because no status field for approve
     await setDoc(
       doc(this.firestore, `teams/${teamId}/requests/${userId}`),
       {},
@@ -339,6 +339,7 @@ export class FirebaseService {
       }
     );
     // then trigger update event on backend --> handled
+    // --> only "modify" event is handled
     return setDoc(
       doc(this.firestore, `teams/${teamId}/requests/${userId}`),
       {

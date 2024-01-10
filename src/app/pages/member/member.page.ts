@@ -176,6 +176,7 @@ export class MemberPage implements OnInit {
         position: "bottom",
       });
       await toast.present();
+      this.close();
     } else {
       await this.toastActionCanceled();
     }
