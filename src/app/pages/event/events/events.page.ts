@@ -58,7 +58,7 @@ export class EventsPage implements OnInit {
     private router: Router
   ) {
     this.menuCtrl.enable(true, "menu");
-    if ( this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "clubEvent") {
+    if ( this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "clubEvent") {
       const pushData = this.router.getCurrentNavigation().extras.state;
       // It's a Push Message
       let clubEvent: Veranstaltung;
