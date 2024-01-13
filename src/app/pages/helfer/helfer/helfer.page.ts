@@ -29,6 +29,7 @@ import { Timestamp } from "firebase/firestore";
 import { HelferDetailPage } from "../helfer-detail/helfer-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-helfer",
@@ -58,9 +59,20 @@ export class HelferPage implements OnInit {
     private readonly alertCtrl: AlertController,
     private readonly menuCtrl: MenuController,
     private cdr: ChangeDetectorRef,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private router: Router
   ) {
     this.menuCtrl.enable(true, "menu");
+    if (
+      this.router.getCurrentNavigation().extras.state.type === "helferEvent"
+    ) {
+      const pushData = this.router.getCurrentNavigation().extras.state;
+      // It's a Push Message
+      let helferEvent: HelferEvent;
+      helferEvent.id = pushData.id;
+      helferEvent.clubId = pushData.clubId;
+      this.openEventDetailModal(helferEvent, true);
+    }
   }
 
   ngOnInit() {

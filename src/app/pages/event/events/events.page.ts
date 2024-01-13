@@ -29,6 +29,7 @@ import { EventDetailPage } from "../event-detail/event-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
 import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-events",
@@ -53,9 +54,18 @@ export class EventsPage implements OnInit {
     private readonly fbService: FirebaseService,
     private readonly eventService: EventService,
     private readonly menuCtrl: MenuController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private router: Router
   ) {
     this.menuCtrl.enable(true, "menu");
+    if (this.router.getCurrentNavigation().extras.state.type === "clubEvent") {
+      const pushData = this.router.getCurrentNavigation().extras.state;
+      // It's a Push Message
+      let clubEvent: Veranstaltung;
+      clubEvent.id = pushData.id;
+      clubEvent.clubId = pushData.clubId;
+      this.openEventDetailModal(clubEvent, true);
+    }
   }
 
   ngOnInit() {

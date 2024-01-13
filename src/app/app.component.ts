@@ -69,9 +69,8 @@ export class AppComponent implements OnInit {
     public readonly menuCtrl: MenuController,
     private translate: TranslateService,
     public toastController: ToastController,
-    private cdr: ChangeDetectorRef
-  ) // private platform: Platform
-  {
+    private cdr: ChangeDetectorRef // private platform: Platform
+  ) {
     this.initializeApp();
     this.clubList$ = this.fbService.getClubList();
 
@@ -608,6 +607,57 @@ export class AppComponent implements OnInit {
       "pushNotificationReceived",
       (notification: PushNotificationSchema) => {
         // alert('Push received: ' + JSON.stringify(notification));
+
+        if (
+          notification.data.type &&
+          notification.data.type === "helferEvent"
+        ) {
+          this.router.navigateByUrl("/t/helfer", { state: notification.data });
+          // "clubId": clubId,
+          //  "id": helferEvent.data().id,
+        } else if (
+          notification.data.type &&
+          notification.data.type === "clubEvent"
+        ) {
+          this.router.navigateByUrl("/t/events", { state: notification.data });
+          // "clubId": clubId,
+          // "id": clubEventRef.data().id,
+        } else if (
+          notification.data.type &&
+          notification.data.type === "clubRequest"
+        ) {
+          Dialog.confirm({
+            title: notification.title,
+            message: notification.body,
+            okButtonTitle: "OK",
+          });
+        } else if (
+          notification.data.type &&
+          notification.data.type === "clubRequestAdmin"
+        ) {
+          // "clubId": clubId,
+          // "id": clubId,
+        } else if (
+          notification.data.type &&
+          notification.data.type === "news"
+        ) {
+          this.router.navigateByUrl("/t/news", { state: notification.data });
+          //  "id": newsRef.data().id,
+        } else if (
+          notification.data.type &&
+          notification.data.type === "clubNews"
+        ) {
+          this.router.navigateByUrl("/t/news", { state: notification.data });
+          // "clubId": clubId,
+          // "id": clubNewsRef.data().id,
+        } else {
+          Dialog.confirm({
+            title: notification.title,
+            message: notification.body,
+            okButtonTitle: "OK",
+          });
+        }
+
         Dialog.confirm({
           title: notification.title,
           message: notification.body,
