@@ -45,7 +45,7 @@ export class ClubPage implements OnInit {
 
   alertTeamSelection = [];
 
-  allowEdit: boolean = false;
+    allowEdit: boolean = false;
 
 
   constructor(
@@ -100,10 +100,13 @@ export class ClubPage implements OnInit {
         if (!club) return of(null);
         return combineLatest({
           clubMembers: this.fbService.getClubMemberRefs(clubId),
-          clubAdmins: this.fbService.getClubAdminRefs(clubId),
-          clubRequests: this.fbService.getClubRequestRefs(clubId),
+          //clubAdmins: this.fbService.getClubAdminRefs(clubId),
+          //clubRequests: this.fbService.getClubRequestRefs(clubId),
         }).pipe(
-          switchMap(({ clubMembers, clubAdmins, clubRequests }) => {
+          switchMap(({ clubMembers,
+            // clubAdmins, 
+            // clubRequests
+             }) => {
             const memberProfiles$ = clubMembers.map((member) =>
               this.userProfileService.getUserProfileById(member.id).pipe(
                 take(1),
@@ -112,7 +115,7 @@ export class ClubPage implements OnInit {
                 )
               )
             );
-            const adminProfiles$ = clubAdmins.map((admin) =>
+           /* const adminProfiles$ = clubAdmins.map((admin) =>
               this.userProfileService.getUserProfileById(admin.id).pipe(
                 take(1),
                 catchError(() =>
@@ -127,24 +130,31 @@ export class ClubPage implements OnInit {
                   of({ ...request, firstName: "Unknown", lastName: "Unknown" })
                 )
               )
-            );
+            );*/
             return forkJoin({
               clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
-              clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
-              clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
+              // clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
+              // clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
             }).pipe(
-              map(({ clubMembers, clubAdmins, clubRequests }) => ({
+              map(({ clubMembers, 
+              //  clubAdmins, 
+              //  clubRequests
+               }) => ({
                 clubMembers: clubMembers.filter(
                   (member) => member !== undefined
                 ), // Filter out undefined
-                clubAdmins: clubAdmins.filter((admin) => admin !== undefined), // Filter out undefined
-                clubRequests: clubRequests.filter(
+                // clubAdmins: clubAdmins.filter((admin) => admin !== undefined), // Filter out undefined
+                /*clubRequests: clubRequests.filter(
                   (request) => request !== undefined
-                ), // Filter out undefined
+                ), // Filter out undefined*/
               }))
             );
           }),
-          map(({ clubMembers, clubAdmins, clubRequests }) => {
+          map(({ clubMembers, 
+          //  clubAdmins, 
+          //  clubRequests
+           }) => {
+
             const ages = clubMembers
               .map((member) =>
                 member.hasOwnProperty("dateOfBirth")
@@ -163,8 +173,8 @@ export class ClubPage implements OnInit {
               ...club,
               averageAge: averageAge.toFixed(1), // Keep two decimal places
               clubMembers,
-              clubAdmins,
-              clubRequests,
+            //  clubAdmins,
+            //  clubRequests,
             };
           })
         );
@@ -277,6 +287,45 @@ export class ClubPage implements OnInit {
     if (role === "confirm") {
     }
   }
+
+  async openMemberList() {
+    console.log("open Request Member");
+    const modal = await this.modalCtrl.create({
+      component: MemberPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+   
+      },
+    });
+    modal.present();
+  
+    const { data, role } = await modal.onWillDismiss();
+  
+    if (role === "confirm") {
+    }
+  }
+
+
+async openAdminList(){
+  console.log("open Request Member");
+  const modal = await this.modalCtrl.create({
+    component: MemberPage,
+    presentingElement: await this.modalCtrl.getTop(),
+    canDismiss: true,
+    showBackdrop: true,
+    componentProps: {
+  
+    },
+  });
+  modal.present();
+
+  const { data, role } = await modal.onWillDismiss();
+
+  if (role === "confirm") {
+  }
+}
 
   async openRequestMember(member: Profile) {
     console.log("open Request Member");
