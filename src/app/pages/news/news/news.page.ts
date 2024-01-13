@@ -26,11 +26,35 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { User, user } from "@angular/fire/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
-import { filter } from 'rxjs/operators';
-import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, finalize, forkJoin, from, lastValueFrom, map, merge, mergeMap, of, shareReplay, switchMap, take, tap, timeout, toArray } from "rxjs";
+import { filter } from "rxjs/operators";
+import {
+  Observable,
+  Subscription,
+  catchError,
+  combineLatest,
+  concat,
+  concatAll,
+  concatMap,
+  defaultIfEmpty,
+  finalize,
+  forkJoin,
+  from,
+  lastValueFrom,
+  map,
+  merge,
+  mergeMap,
+  of,
+  shareReplay,
+  switchMap,
+  take,
+  tap,
+  timeout,
+  toArray,
+} from "rxjs";
 import { Club } from "src/app/models/club";
 import { Team } from "src/app/models/team";
 import { TranslateService } from "@ngx-translate/core";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-news",
@@ -57,7 +81,7 @@ export class NewsPage implements OnInit {
 
   private subscription: Subscription;
   private subscriptionFilter: Subscription;
-  
+
   newsList: News[] = [];
   newsList$: Observable<News[]>;
 
@@ -70,117 +94,145 @@ export class NewsPage implements OnInit {
     private readonly alertCtrl: AlertController,
     private readonly menuCtrl: MenuController,
     public animationCtrl: AnimationController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private router: Router
   ) {
     this.menuCtrl.enable(true, "menu");
+    if (this.router.getCurrentNavigation().extras.state.type === "news") {
+      const pushData = this.router.getCurrentNavigation().extras.state;
+      // It's a Push Message
+      let news: News;
+      news.id = pushData.id;
+      this.openModal(news);
+    }
+    if (this.router.getCurrentNavigation().extras.state.type === "clubNews") {
+      const pushData = this.router.getCurrentNavigation().extras.state;
+      // It's a Push Message
+      let news: News;
+      news.id = pushData.id;
+      this.openModal(news);
+    }
   }
-  
+
   ngOnInit() {
-   
-  const clubNewsList: News[] = [];
-  const teamNewsList: News[] = [];
-  const verbandNewsList: News[] = [];
+    const clubNewsList: News[] = [];
+    const teamNewsList: News[] = [];
+    const verbandNewsList: News[] = [];
 
-  clubNewsList.length = 0;
-  teamNewsList.length = 0;
-  verbandNewsList.length = 0;
+    clubNewsList.length = 0;
+    teamNewsList.length = 0;
+    verbandNewsList.length = 0;
 
-  // Club observable
-  const clubNews$ = this.authService.getUser$().pipe(
+    // Club observable
+    const clubNews$ = this.authService.getUser$().pipe(
       take(1),
-      switchMap(user => this.fbService.getUserClubRefs(user)),
-      concatMap(clubsArray => from(clubsArray)),
-      tap(club=>console.log(club.id)),
-      concatMap(club => 
-          this.newsService.getClubNewsRef(club.id).pipe(
-            take(1), 
-            map(newsArray => newsArray.map(newsItem => ({ 
-              ...newsItem, 
-              filterable: club.id 
-            }))),
-              catchError(error => {
-                  console.error('Error fetching club news:', error);
-                  return of([]);
-              })
-          )
-      ),
-      tap(news => news.forEach(n => clubNewsList.push(n))),
-      finalize(() => console.log("Club news fetching completed"))
-  );
-
-  // Verband observable
-  const verbandNews$ = this.authService.getUser$().pipe(
-    take(1),
-    switchMap(user => this.fbService.getUserClubRefs(user)),
-    concatMap(clubsArray => from(clubsArray)),
-    switchMap(club => this.fbService.getClubRef(club.id)),
-    tap(clubDetail=>console.log(clubDetail.type)),
-    concatMap(clubDetail => 
-        this.newsService.getNewsRef(clubDetail.type).pipe(
-          take(1), 
-          map(newsArray => newsArray.map(newsItem => ({ 
-            ...newsItem, 
-            filterable: clubDetail.type 
-          }))),
-            catchError(error => {
-                console.error('Error fetching verband news:', error);
-                return of([]);
-            })
+      switchMap((user) => this.fbService.getUserClubRefs(user)),
+      concatMap((clubsArray) => from(clubsArray)),
+      tap((club) => console.log(club.id)),
+      concatMap((club) =>
+        this.newsService.getClubNewsRef(club.id).pipe(
+          take(1),
+          map((newsArray) =>
+            newsArray.map((newsItem) => ({
+              ...newsItem,
+              filterable: club.id,
+            }))
+          ),
+          catchError((error) => {
+            console.error("Error fetching club news:", error);
+            return of([]);
+          })
         )
-    ),
-    tap(news => news.forEach(n => verbandNewsList.push(n))),
-    finalize(() => console.log("Verband news fetching completed"))
-  );
-
-  // Team observable
-  const teamNews$ = this.authService.getUser$().pipe(
-      take(1),
-      switchMap(user => this.fbService.getUserTeamRefs(user)),
-      concatMap(teamsArray => from(teamsArray)),
-      tap(team=>console.log(team.id)),
-      concatMap(team => 
-          this.newsService.getTeamNewsRef(team.id).pipe(
-            take(1), 
-            map(newsArray => newsArray.map(newsItem => ({ 
-              ...newsItem, 
-              filterable: team.id 
-            }))),
-            catchError(error => {
-                console.error('Error fetching team news:', error);
-                return of([]);
-            })
-          )
       ),
-      tap(news => news.forEach(n => teamNewsList.push(n))),
+      tap((news) => news.forEach((n) => clubNewsList.push(n))),
+      finalize(() => console.log("Club news fetching completed"))
+    );
+
+    // Verband observable
+    const verbandNews$ = this.authService.getUser$().pipe(
+      take(1),
+      switchMap((user) => this.fbService.getUserClubRefs(user)),
+      concatMap((clubsArray) => from(clubsArray)),
+      switchMap((club) => this.fbService.getClubRef(club.id)),
+      tap((clubDetail) => console.log(clubDetail.type)),
+      concatMap((clubDetail) =>
+        this.newsService.getNewsRef(clubDetail.type).pipe(
+          take(1),
+          map((newsArray) =>
+            newsArray.map((newsItem) => ({
+              ...newsItem,
+              filterable: clubDetail.type,
+            }))
+          ),
+          catchError((error) => {
+            console.error("Error fetching verband news:", error);
+            return of([]);
+          })
+        )
+      ),
+      tap((news) => news.forEach((n) => verbandNewsList.push(n))),
+      finalize(() => console.log("Verband news fetching completed"))
+    );
+
+    // Team observable
+    const teamNews$ = this.authService.getUser$().pipe(
+      take(1),
+      switchMap((user) => this.fbService.getUserTeamRefs(user)),
+      concatMap((teamsArray) => from(teamsArray)),
+      tap((team) => console.log(team.id)),
+      concatMap((team) =>
+        this.newsService.getTeamNewsRef(team.id).pipe(
+          take(1),
+          map((newsArray) =>
+            newsArray.map((newsItem) => ({
+              ...newsItem,
+              filterable: team.id,
+            }))
+          ),
+          catchError((error) => {
+            console.error("Error fetching team news:", error);
+            return of([]);
+          })
+        )
+      ),
+      tap((news) => news.forEach((n) => teamNewsList.push(n))),
       finalize(() => console.log("Team news fetching completed"))
-  );
+    );
 
     // Use combineLatest to get results when both observables have emitted
-    this.subscriptionFilter = combineLatest([clubNews$, teamNews$, verbandNews$]).subscribe({
-        next: () => {
-          this.newsList = [...this.newsList, ...clubNewsList, ...teamNewsList, ...verbandNewsList].sort((a, b):any => {
-              // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
-              return new Date(a.date).getTime() < new Date(b.date).getTime();
-          });
+    this.subscriptionFilter = combineLatest([
+      clubNews$,
+      teamNews$,
+      verbandNews$,
+    ]).subscribe({
+      next: () => {
+        this.newsList = [
+          ...this.newsList,
+          ...clubNewsList,
+          ...teamNewsList,
+          ...verbandNewsList,
+        ].sort((a, b): any => {
+          // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
+          return new Date(a.date).getTime() < new Date(b.date).getTime();
+        });
 
-          this.newsList = this.newsList.filter((news, index, self) => 
-              index === self.findIndex((t) => (t.id === news.id))
-          );
-        
-          this.newsList$ = of(this.newsList);
-          console.log("Combined news list created");
-        },
-        error: err => console.error('Error in the observable chain:', err)
+        this.newsList = this.newsList.filter(
+          (news, index, self) =>
+            index === self.findIndex((t) => t.id === news.id)
+        );
+
+        this.newsList$ = of(this.newsList);
+        console.log("Combined news list created");
+      },
+      error: (err) => console.error("Error in the observable chain:", err),
     });
-
-
   }
 
   ngAfterViewInit(): void {}
 
   ngOnDestroy(): void {
     if (this.subscription) {
-        this.subscription.unsubscribe();
+      this.subscription.unsubscribe();
     }
   }
   async openModal(news: News) {
@@ -233,11 +285,9 @@ export class NewsPage implements OnInit {
     }
   }
 
-  async openAddNews() {
+  async openAddNews() {}
 
-  }
-
-  async openFilter(ev: Event){
+  async openFilter(ev: Event) {
     /*let filterList = [];
 
     const clubs$ = this.authService.getUser$().pipe(
@@ -326,7 +376,7 @@ export class NewsPage implements OnInit {
     error: err => console.error('Error in the observable chain:', err)
   });
 */
-/*
+    /*
   this.subscriptionFilter = forkJoin([teams$, clubs$]).pipe(
     map(([teams, clubs]) => [...teams, ...clubs]),
     map(filterList => {
@@ -361,7 +411,7 @@ export class NewsPage implements OnInit {
     error: err => console.error('Error in the observable chain:', err)
   });
 */
-  /*
+    /*
 
 
   // Use forkJoin to get results when both observables have completed
@@ -413,7 +463,7 @@ export class NewsPage implements OnInit {
     error: err => console.error('Error in the observable chain:', err)
   });
 */
-/*
+    /*
     // console.log(ev);
     const filterList = [];
 
@@ -482,8 +532,6 @@ console.log(this.filterList)
   error: err => console.error('Error in the observable chain:', err)
 });
 */
-  
-
   }
 
   async share(news: News) {
