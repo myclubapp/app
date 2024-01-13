@@ -266,9 +266,17 @@ export class OnboardingPage implements OnInit {
           {
             text: await lastValueFrom(this.translate.get("common.yes")),
             handler: async (data: any) => {
-              await this.fbService.setClubRequest(club.id, this.user.uid);
-              await this.presentRequestToast();
-              await this.presentRequestSentAlert(club.name);
+              try {
+                await this.fbService.setClubRequest(club.id, this.user.uid)
+                await this.presentRequestToast();
+                await this.presentRequestSentAlert(club.name);
+              } catch (err) {
+                console.log(err.message);
+                if (err.message === "Missing or insufficient permissions.") {
+                  this.presentErrorAlert();
+                }
+              }
+             
 
               // await this.router.navigateByUrl("logout", {});
             },
@@ -339,6 +347,33 @@ export class OnboardingPage implements OnInit {
     const { role } = await alert.onDidDismiss();
     console.log("onDidDismiss resolved with role", role);
   }
+
+  async presentErrorAlert() {
+    const alert = await this.alertController.create({
+      cssClass: "my-custom-class",
+      header: await lastValueFrom(
+        this.translate.get("onboarding.error__clubRequest")
+      ),
+      subHeader: "",
+      message: await lastValueFrom(
+        this.translate.get("onboarding.error__clubRequest_desc")
+      ),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.ok")),
+          handler: async () => {
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+    console.log("onDidDismiss resolved with role", role);
+  }
+
+
 
   /*
     async scanCode () {

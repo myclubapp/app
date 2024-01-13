@@ -76,6 +76,11 @@ export class LoginPage implements OnInit {
         message = await lastValueFrom(
           this.translate.get("login.error__network_connection")
         );
+      } else if (err.code == "auth/invalid-login-credentials") {
+        message = await lastValueFrom(
+          this.translate.get("login.error__invalid-login-credentials")
+        );
+        
       } else {
         console.log("Error");
       }

@@ -20,7 +20,7 @@
         <ion-label> {{"profile.generally" | translate}} </ion-label>
       </ion-list-header>
 
-      <ion-item>
+      <ion-item *ngIf="!isRequest">
         <ion-avatar slot="start">
           <img
             alt="{{userProfile.firstName}}"
@@ -64,7 +64,24 @@
         </ion-input>
       </ion-item>
     </ion-list>
+
+
+    <ng-container *ngIf="isRequest">
+
+      <ion-button expand="block" shape="round" color="success" (click)="approveClubRequest(userProfile)">
+        Approve Request
+      </ion-button>
+  
+      <ion-button expand="block" shape="round" color="danger" (click)="deleteClubRequest(userProfile)">
+        Delete Request
+      </ion-button>
+  
+    </ng-container>
+
+
+
   </ng-container>
+
 </ion-content>
 
 <ng-template #loading>

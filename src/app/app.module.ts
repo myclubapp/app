@@ -19,7 +19,6 @@ import { provideFirebaseApp, getApp, initializeApp } from "@angular/fire/app";
 import {
   getFirestore,
   provideFirestore,
-  persistentLocalCache,
 } from "@angular/fire/firestore";
 import { provideAuth, getAuth, initializeAuth } from "@angular/fire/auth";
 import {
