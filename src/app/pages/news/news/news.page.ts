@@ -98,14 +98,14 @@ export class NewsPage implements OnInit {
     private router: Router
   ) {
     this.menuCtrl.enable(true, "menu");
-    if (this.router.getCurrentNavigation().extras.state.type === "news") {
+    if (this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "news") {
       const pushData = this.router.getCurrentNavigation().extras.state;
       // It's a Push Message
       let news: News;
       news.id = pushData.id;
       this.openModal(news);
     }
-    if (this.router.getCurrentNavigation().extras.state.type === "clubNews") {
+    if (this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "clubNews") {
       const pushData = this.router.getCurrentNavigation().extras.state;
       // It's a Push Message
       let news: News;

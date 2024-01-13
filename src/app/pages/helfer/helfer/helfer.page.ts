@@ -63,7 +63,7 @@ export class HelferPage implements OnInit {
     private router: Router
   ) {
     this.menuCtrl.enable(true, "menu");
-    if (
+    if (this.router.getCurrentNavigation().extras.state &&
       this.router.getCurrentNavigation().extras.state.type === "helferEvent"
     ) {
       const pushData = this.router.getCurrentNavigation().extras.state;
