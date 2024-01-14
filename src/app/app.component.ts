@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, NgZone, OnInit } from "@angular/core";
 import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
 import {
   AlertController,
@@ -27,7 +27,7 @@ import {
   PushNotifications,
   Token,
 } from "@capacitor/push-notifications";
-import { Dialog } from "@capacitor/dialog";
+import { ConfirmResult, Dialog } from "@capacitor/dialog";
 import { OnboardingPage } from "./pages/onboarding/onboarding.page";
 
 @Component({
@@ -69,6 +69,7 @@ export class AppComponent implements OnInit {
     public readonly menuCtrl: MenuController,
     private translate: TranslateService,
     public toastController: ToastController,
+    private ngZone: NgZone,
     private cdr: ChangeDetectorRef // private platform: Platform
   ) {
     this.initializeApp();
@@ -605,121 +606,123 @@ export class AppComponent implements OnInit {
 
     PushNotifications.addListener(
       "pushNotificationReceived",
-      (notification: PushNotificationSchema) => {
+      async (notification: PushNotificationSchema) => {
         // alert('Push received: ' + JSON.stringify(notification));
+
+        console.log("PUSH MESSAGE RECEIVED");
+        console.log("TYPE:  " + notification.data.type);
 
         if (
           notification.data.type &&
           notification.data.type === "helferEvent"
         ) {
-          Dialog.confirm({
+          const { value } = await Dialog.confirm({
             title: notification.title,
             message: notification.body,
             okButtonTitle: "Öffnen",
             cancelButtonTitle: "Abbrechen",
-          }).then((boolean) => {
-            if (boolean) {
-              this.router.navigateByUrl("/t/helfer", {
-                state: notification.data,
-              });
-            }
-          });
+          })
+
+          if (value) {
+            this.router.navigateByUrl("/t/helfer", {
+              state: notification.data,
+            });
+          }
+
         } else if (
           notification.data.type &&
           notification.data.type === "clubEvent"
         ) {
-          Dialog.confirm({
+          const { value } = await Dialog.confirm({
             title: notification.title,
             message: notification.body,
             okButtonTitle: "Öffnen",
             cancelButtonTitle: "Abbrechen",
-          }).then((boolean) => {
-            if (boolean) {
+          })
+          if (value) {
+            this.ngZone.run(() => {
+
               this.router.navigateByUrl("/t/events", {
                 state: notification.data,
+              }).catch(e => {
+                console.log(e);
               });
-            }
-          });
+
+            });
+
+          }
+
         } else if (
           notification.data.type &&
           notification.data.type === "clubRequest"
         ) {
-          Dialog.confirm({
+          const { value } = await Dialog.confirm({
             title: notification.title,
             message: notification.body,
             okButtonTitle: "Öffnen",
             cancelButtonTitle: "Abbrechen",
-          }).then((boolean) => {
-            if (boolean) {
-            }
-          });
+          })
+          if (value) {
+          }
+
         } else if (
           notification.data.type &&
           notification.data.type === "clubRequestAdmin"
         ) {
-          Dialog.confirm({
+          const { value } = await Dialog.confirm({
             title: notification.title,
             message: notification.body,
             okButtonTitle: "Öffnen",
             cancelButtonTitle: "Abbrechen",
-          }).then((boolean) => {
-            if (boolean) {
-            }
-          });
+          })
+          if (value) {
+          }
+
         } else if (
           notification.data.type &&
           notification.data.type === "news"
         ) {
-          Dialog.confirm({
+          const { value } = await Dialog.confirm({
             title: notification.title,
             message: notification.body,
             okButtonTitle: "Öffnen",
             cancelButtonTitle: "Abbrechen",
-          }).then((boolean) => {
-            if (boolean) {
-              this.router.navigateByUrl("/t/news", {
-                state: notification.data,
-              });
-            }
-          });
-          //  "id": newsRef.data().id,
+          })
+          if (value) {
+            this.router.navigateByUrl("/t/news", {
+              state: notification.data,
+            });
+          }
         } else if (
           notification.data.type &&
           notification.data.type === "clubNews"
         ) {
-          Dialog.confirm({
+          const { value } = await Dialog.confirm({
             title: notification.title,
             message: notification.body,
             okButtonTitle: "Öffnen",
             cancelButtonTitle: "Abbrechen",
-          }).then((boolean) => {
-            if (boolean) {
-              this.router.navigateByUrl("/t/news", {
-                state: notification.data,
-              });
-            }
-          });
-          // "clubId": clubId,
-          // "id": clubNewsRef.data().id,
+          })
+          if (value) {
+            this.router.navigateByUrl("/t/news", {
+              state: notification.data,
+            });
+          }
         } else if (
           notification.data.type &&
           notification.data.type === "training"
         ) {
-          Dialog.confirm({
+          const { value } = await Dialog.confirm({
             title: notification.title,
             message: notification.body,
             okButtonTitle: "Öffnen",
             cancelButtonTitle: "Abbrechen",
-          }).then((boolean) => {
-            if (boolean) {
-              this.router.navigateByUrl("/t/training", {
-                state: notification.data,
-              });
-            }
-          });
-          // "clubId": clubId,
-          // "teamId": teamId,
-          // "id": clubNewsRef.data().id,
+          })
+          if (value) {
+            this.router.navigateByUrl("/t/training", {
+              state: notification.data,
+            });
+          }
         } else {
           Dialog.confirm({
             title: notification.title,
@@ -727,12 +730,6 @@ export class AppComponent implements OnInit {
             okButtonTitle: "OK",
           });
         }
-
-        Dialog.confirm({
-          title: notification.title,
-          message: notification.body,
-          okButtonTitle: "OK",
-        });
       }
     );
 

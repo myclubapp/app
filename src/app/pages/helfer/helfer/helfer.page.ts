@@ -68,7 +68,25 @@ export class HelferPage implements OnInit {
     ) {
       const pushData = this.router.getCurrentNavigation().extras.state;
       // It's a Push Message
-      let helferEvent: HelferEvent;
+      let helferEvent: HelferEvent = {
+        id: "",
+        name: "",
+        description: "",
+        location: "",
+        streetAndNumber: "",
+        postalCode: "",
+        city: "",
+        date: Timestamp.now(),
+        startDate: "",
+        endDate: "",
+        timeFrom: "",
+        timeTo: "",
+        clubId: "",
+        clubName: "",
+        status: false,
+        attendees: undefined,
+        countAttendees: 0
+      };
       helferEvent.id = pushData.id;
       helferEvent.clubId = pushData.clubId;
       this.openEventDetailModal(helferEvent, true);

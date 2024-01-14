@@ -11,6 +11,7 @@ import {
   Observable,
   catchError,
   combineLatest,
+  first,
   lastValueFrom,
   map,
   mergeMap,
@@ -29,7 +30,7 @@ import { EventDetailPage } from "../event-detail/event-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
 import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
   selector: "app-events",
@@ -55,17 +56,40 @@ export class EventsPage implements OnInit {
     private readonly eventService: EventService,
     private readonly menuCtrl: MenuController,
     private translate: TranslateService,
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute
   ) {
     this.menuCtrl.enable(true, "menu");
-    if ( this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "clubEvent") {
-      const pushData = this.router.getCurrentNavigation().extras.state;
-      // It's a Push Message
-      let clubEvent: Veranstaltung;
-      clubEvent.id = pushData.id;
-      clubEvent.clubId = pushData.clubId;
-      this.openEventDetailModal(clubEvent, true);
-    }
+
+    this.activatedRoute.url.subscribe(data=>{
+      if ( this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "clubEvent") {
+        const pushData = this.router.getCurrentNavigation().extras.state;
+        // It's a Push Message
+        console.log("PUSHDATA " + pushData);
+        let clubEvent: Veranstaltung = {
+          id: pushData.id,
+          name: "",
+          description: "",
+          location: "",
+          streetAndNumber: "",
+          postalCode: "",
+          city: "",
+          date:  Timestamp.now(),
+          startDate: "",
+          endDate: "",
+          timeFrom: "",
+          timeTo: "",
+          clubId: pushData.clubId,
+          clubName: "",
+          status: false,
+          attendees: undefined,
+          countAttendees: 0
+        };
+        this.openEventDetailModal(clubEvent, true);
+      } else {
+        console.log("no data");
+      }
+    });
   }
 
   ngOnInit() {

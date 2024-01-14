@@ -45,7 +45,9 @@ export class EventDetailPage implements OnInit {
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
     private translate: TranslateService
-  ) {}
+  ) {
+    
+  }
 
   ngOnInit() {
     this.event = this.navParams.get("data");
