@@ -624,8 +624,12 @@ export class AppComponent implements OnInit {
           })
 
           if (value) {
-            this.router.navigateByUrl("/t/helfer", {
-              state: notification.data,
+            this.ngZone.run(() => {
+              this.router.navigateByUrl("/t/helfer", {
+                state: notification.data,
+              }).catch(e => {
+                console.log(e);
+              });
             });
           }
 
@@ -641,15 +645,12 @@ export class AppComponent implements OnInit {
           })
           if (value) {
             this.ngZone.run(() => {
-
               this.router.navigateByUrl("/t/events", {
                 state: notification.data,
               }).catch(e => {
                 console.log(e);
               });
-
             });
-
           }
 
         } else if (
@@ -689,8 +690,12 @@ export class AppComponent implements OnInit {
             cancelButtonTitle: "Abbrechen",
           })
           if (value) {
-            this.router.navigateByUrl("/t/news", {
-              state: notification.data,
+            this.ngZone.run(() => {
+              this.router.navigateByUrl("/t/news", {
+                state: notification.data,
+              }).catch(e => {
+                console.log(e);
+              });
             });
           }
         } else if (
@@ -704,8 +709,12 @@ export class AppComponent implements OnInit {
             cancelButtonTitle: "Abbrechen",
           })
           if (value) {
-            this.router.navigateByUrl("/t/news", {
-              state: notification.data,
+            this.ngZone.run(() => {
+              this.router.navigateByUrl("/t/news", {
+                state: notification.data,
+              }).catch(e => {
+                console.log(e);
+              });
             });
           }
         } else if (
@@ -719,8 +728,12 @@ export class AppComponent implements OnInit {
             cancelButtonTitle: "Abbrechen",
           })
           if (value) {
-            this.router.navigateByUrl("/t/training", {
-              state: notification.data,
+            this.ngZone.run(() => {
+              this.router.navigateByUrl("/t/training", {
+                state: notification.data,
+              }).catch(e => {
+                console.log(e);
+              });
             });
           }
         } else {
