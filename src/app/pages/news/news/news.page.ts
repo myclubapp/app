@@ -101,15 +101,41 @@ export class NewsPage implements OnInit {
     if (this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "news") {
       const pushData = this.router.getCurrentNavigation().extras.state;
       // It's a Push Message
-      let news: News;
-      news.id = pushData.id;
+      let news: News = {
+        id: pushData.id,
+        title: pushData.title,
+        slug: pushData.slug,
+        image: pushData.iamge,
+        leadText: pushData.leadText,
+        author: pushData.author,
+        authorImage: pushData.authorImage,
+        date: pushData.date,
+        htmlText: pushData.htmlText,
+        text: pushData.text,
+        url: pushData.url,
+        filterable: pushData.filterable,
+        tags: pushData.tags
+      };
       this.openModal(news);
     }
     if (this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "clubNews") {
       const pushData = this.router.getCurrentNavigation().extras.state;
       // It's a Push Message
-      let news: News;
-      news.id = pushData.id;
+      let news: News = {
+        id: pushData.id,
+        title: pushData.title,
+        slug: pushData.slug,
+        image: pushData.iamge,
+        leadText: pushData.leadText,
+        author: pushData.author,
+        authorImage: pushData.authorImage,
+        date: pushData.date,
+        htmlText: pushData.htmlText,
+        text: pushData.text,
+        url: pushData.url,
+        filterable: pushData.filterable,
+        tags: pushData.tags
+      };
       this.openModal(news);
     }
   }
