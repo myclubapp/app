@@ -31,6 +31,7 @@ import { TrainingDetailPage } from "../training-detail/training-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Team } from "src/app/models/team";
 import { FilterService } from "src/app/services/filter.service";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
   selector: "app-trainings",
@@ -69,9 +70,42 @@ export class TrainingsPage implements OnInit {
     private readonly alertCtrl: AlertController,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService,
-    private filterService: FilterService
+    private filterService: FilterService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
   ) {
     this.menuCtrl.enable(true, "menu");
+
+    this.activatedRoute.url.subscribe(data=>{
+      if ( this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "training") {
+        const pushData = this.router.getCurrentNavigation().extras.state;
+        console.log("PUSHDATA " + pushData);
+        let training: Training = {
+          id: pushData.id,
+          name: "",
+          description: "",
+          streetAndNumber: "",
+          postalCode: "",
+          city: "",
+          date: Timestamp.now(),
+          timeFrom: "",
+          timeTo: "",
+          startDate: "",
+          endDate: "",
+          repeatAmount: "",
+          repeatFrequency: "",
+          teamId: pushData.teamId,
+          teamName: "",
+          liga: "",
+          status: false,
+          countAttendees: 0,
+          attendees: undefined
+        };
+        this.openTrainingDetailModal(training, true);
+      } else {
+        console.log("no data");
+      }
+    });
   }
 
   ngOnInit() {

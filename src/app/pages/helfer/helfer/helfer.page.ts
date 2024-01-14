@@ -29,7 +29,7 @@ import { Timestamp } from "firebase/firestore";
 import { HelferDetailPage } from "../helfer-detail/helfer-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
   selector: "app-helfer",
@@ -60,37 +60,38 @@ export class HelferPage implements OnInit {
     private readonly menuCtrl: MenuController,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService,
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
   ) {
     this.menuCtrl.enable(true, "menu");
-    if (this.router.getCurrentNavigation().extras.state &&
-      this.router.getCurrentNavigation().extras.state.type === "helferEvent"
-    ) {
-      const pushData = this.router.getCurrentNavigation().extras.state;
-      // It's a Push Message
-      let helferEvent: HelferEvent = {
-        id: "",
-        name: "",
-        description: "",
-        location: "",
-        streetAndNumber: "",
-        postalCode: "",
-        city: "",
-        date: Timestamp.now(),
-        startDate: "",
-        endDate: "",
-        timeFrom: "",
-        timeTo: "",
-        clubId: "",
-        clubName: "",
-        status: false,
-        attendees: undefined,
-        countAttendees: 0
-      };
-      helferEvent.id = pushData.id;
-      helferEvent.clubId = pushData.clubId;
-      this.openEventDetailModal(helferEvent, true);
-    }
+    this.activatedRoute.url.subscribe(data=>{
+      if ( this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "helferEvent") {
+        const pushData = this.router.getCurrentNavigation().extras.state;
+        console.log("PUSHDATA " + pushData);
+        let helferEvent: HelferEvent = {
+          id: "",
+          name: "",
+          description: "",
+          location: "",
+          streetAndNumber: "",
+          postalCode: "",
+          city: "",
+          date: Timestamp.now(),
+          startDate: "",
+          endDate: "",
+          timeFrom: "",
+          timeTo: "",
+          clubId: "",
+          clubName: "",
+          status: false,
+          attendees: undefined,
+          countAttendees: 0
+        };
+        this.openEventDetailModal(helferEvent, true);
+      } else {
+        console.log("no data");
+      }
+    });
   }
 
   ngOnInit() {

@@ -64,7 +64,6 @@ export class EventsPage implements OnInit {
     this.activatedRoute.url.subscribe(data=>{
       if ( this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "clubEvent") {
         const pushData = this.router.getCurrentNavigation().extras.state;
-        // It's a Push Message
         console.log("PUSHDATA " + pushData);
         let clubEvent: Veranstaltung = {
           id: pushData.id,
