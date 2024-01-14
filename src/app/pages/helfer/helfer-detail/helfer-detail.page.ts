@@ -61,9 +61,7 @@ export class HelferDetailPage implements OnInit {
 
   ngOnInit() {
     this.event = this.navParams.get("data");
-    console.log(this.event);
     this.event$ = of(this.event);
-
     this.event$ = this.getHelferEvent(this.event.clubId, this.event.id);
 
     this.schichten$ = this.getHelferEventSchichtenWithAttendees(

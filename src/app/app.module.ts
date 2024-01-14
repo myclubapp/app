@@ -47,19 +47,26 @@ import { TeamPage } from "./pages/team/team-detail/team.page";
 import { Capacitor } from "@capacitor/core";
 import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
+import { HelferDetailPage } from "./pages/helfer/helfer-detail/helfer-detail.page";
+import { HelferAddPage } from "./pages/helfer/helfer-add/helfer-add.page";
 
 @NgModule({
   declarations: [
     AppComponent,
     NewsDetailPage,
     MemberPage,
+
     HelferPunktePage,
+    HelferDetailPage,
+    HelferAddPage,
     // ChampionshipDetailPage,
     TrainingExercisesPage,
     TrainingDetailPage,
     TrainingCreatePage,
+    
     EventAddPage,
     EventDetailPage,
+
     OnboardingPage,
     ClubPage,
     TeamPage,

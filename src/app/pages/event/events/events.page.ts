@@ -64,7 +64,7 @@ export class EventsPage implements OnInit {
     this.activatedRoute.url.subscribe(data=>{
       if ( this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "clubEvent") {
         const pushData = this.router.getCurrentNavigation().extras.state;
-        console.log("PUSHDATA " + pushData);
+        console.log("PUSHDATA " + JSON.stringify(pushData));
         let clubEvent: Veranstaltung = {
           id: pushData.id,
           name: "",
@@ -438,6 +438,8 @@ export class EventsPage implements OnInit {
   }
 
   async openEventDetailModal(event: Veranstaltung, isFuture: boolean) {
+    console.log("Open Modal");
+    console.log(JSON.stringify(event));
     const modal = await this.modalCtrl.create({
       component: EventDetailPage,
       presentingElement: this.routerOutlet.nativeEl,
