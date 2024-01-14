@@ -39,7 +39,7 @@ export class LoginPage implements OnInit {
   }
 
   ngOnInit() {
-    this.menuCtrl.enable(true, "menu");
+    this.menuCtrl.enable(false, "menu");
     this.user = {
       email: "",
       password: "",
@@ -58,9 +58,13 @@ export class LoginPage implements OnInit {
         this.router.navigateByUrl("");
       });
     } catch (err) {
-      let message = (await lastValueFrom(
-        this.translate.get("common.general__error_occurred")
-      )) + " " + err.code + " / " +
+      let message =
+        (await lastValueFrom(
+          this.translate.get("common.general__error_occurred")
+        )) +
+        " " +
+        err.code +
+        " / " +
         err.message;
       console.error(err.code);
 
@@ -80,15 +84,12 @@ export class LoginPage implements OnInit {
         message = await lastValueFrom(
           this.translate.get("login.error__invalid-login-credentials")
         );
-        
       } else {
         console.log("Error");
       }
 
       const alert = await this.alertCtrl.create({
-        header: await lastValueFrom(
-          this.translate.get("login.mistake")
-        ),
+        header: await lastValueFrom(this.translate.get("login.mistake")),
         message: message,
         buttons: [
           {

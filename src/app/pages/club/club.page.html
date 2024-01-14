@@ -26,7 +26,6 @@
     </ion-header>
 
     <ion-list [inset]="true">
-      
       <ion-item>
         <ion-thumbnail slot="start">
           <img alt="{{club.name}}" src="{{club.logo}}" />
@@ -75,10 +74,7 @@
         <ion-label> Administratoren </ion-label>
         <ion-badge>3</ion-badge>
       </ion-item>
-
-    
     </ion-list>
-
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
@@ -88,26 +84,21 @@
       <ion-item detail="true" (click)="openAdminList()">
         <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
         <ion-label> Helferpunkte </ion-label>
-        <ion-badge>3</ion-badge>
       </ion-item>
     </ion-list>
-
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
         <ion-label> {{ "common.settings" | translate}} </ion-label>
       </ion-list-header>
-      
-      <ion-item >
+
+      <ion-item>
         <ion-icon name="hammer-outline" slot="start"></ion-icon>
         <ion-label> API KEY </ion-label>
-        
       </ion-item>
     </ion-list>
 
-
-
-<!--
+    <!--
   
     <ion-list [inset]="true" *ngIf="club['clubRequests'].length > 0">
       <ion-list-header>

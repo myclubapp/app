@@ -44,12 +44,11 @@ export class SignupPage implements OnInit {
   }
 
   ngOnInit() {
+    this.menuCtrl.enable(false, "menu");
     this.user = {
       email: "",
       password: "",
     };
-
-    this.menuCtrl.enable(false, "menu");
   }
 
   async submitCredentials(authForm: UntypedFormGroup): Promise<void> {
@@ -73,7 +72,8 @@ export class SignupPage implements OnInit {
       const loading = await this.loadingCtrl.create({
         cssClass: "my-custom-class",
         message:
-          (await lastValueFrom(this.translate.get("common.please__wait"))) + "...",
+          (await lastValueFrom(this.translate.get("common.please__wait"))) +
+          "...",
         // duration: 10000,
       });
       await loading.present();
@@ -84,22 +84,26 @@ export class SignupPage implements OnInit {
       };
 
       try {
-        const signupUserResponse: UserCredential = await this.signupUser(credentials, {
-          firstName: authForm.value.firstName,
-          lastName: authForm.value.lastName,
-        });
+        const signupUserResponse: UserCredential = await this.signupUser(
+          credentials,
+          {
+            firstName: authForm.value.firstName,
+            lastName: authForm.value.lastName,
+          }
+        );
 
-        if (signupUserResponse.operationType !== "signIn"){
+        if (signupUserResponse.operationType !== "signIn") {
           console.log(signupUserResponse.operationType);
         }
-        
+
         /*await this.authService.logout();
         await this.router.navigateByUrl("login");*/
-        
+
         const alert = await this.alertCtrl.create({
-          header: await lastValueFrom(this.translate.get("signup.account__created")),
-          message:
-            "signup.account__created_description",
+          header: await lastValueFrom(
+            this.translate.get("signup.account__created")
+          ),
+          message: "signup.account__created_description",
           buttons: [
             {
               text: await lastValueFrom(this.translate.get("common.ok")),
@@ -114,23 +118,27 @@ export class SignupPage implements OnInit {
         }
         this.authService.login(credentials.email, credentials.password);
         // await this.router.navigateByUrl(""); // --> this should trigger appcomponent?
-
       } catch (err) {
         let message =
-          await lastValueFrom(this.translate.get("common.general__error_occurred")) + ": " +
+          (await lastValueFrom(
+            this.translate.get("common.general__error_occurred")
+          )) +
+          ": " +
           err.code +
           " / " +
           err.message;
         console.error(err.code);
 
         if (err.code == "auth/email-already-in-use") {
-          message =  await lastValueFrom(this.translate.get("signup.email__already_in_use"));
+          message = await lastValueFrom(
+            this.translate.get("signup.email__already_in_use")
+          );
         } else {
           console.log("Error");
         }
         await loading.dismiss();
         const alert = await this.alertCtrl.create({
-          header: (await lastValueFrom(this.translate.get("common.mistake"))),
+          header: await lastValueFrom(this.translate.get("common.mistake")),
           message: message,
           buttons: [
             {
@@ -157,8 +165,6 @@ export class SignupPage implements OnInit {
   }*/
 
   async signupUser(credentials: UserCredentialLogin, userData: any) {
-
-
     return this.authService.signup(
       credentials.email,
       credentials.password,
