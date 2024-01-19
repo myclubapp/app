@@ -28,6 +28,8 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { MemberPage } from "../member/member.page";
+import { ClubMemberListPage } from "../club-member-list/club-member-list.page";
+import { ClubAdminListPage } from "../club-admin-list/club-admin-list.page";
 
 @Component({
   selector: "app-club",
@@ -45,8 +47,7 @@ export class ClubPage implements OnInit {
 
   alertTeamSelection = [];
 
-    allowEdit: boolean = false;
-
+  allowEdit: boolean = false;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -269,7 +270,7 @@ export class ClubPage implements OnInit {
           }
         });*/
   }
-  async openMember(member: Profile) {
+  /*async openMember(member: Profile) {
     console.log("openMember");
     const modal = await this.modalCtrl.create({
       component: MemberPage,
@@ -286,17 +287,17 @@ export class ClubPage implements OnInit {
 
     if (role === "confirm") {
     }
-  }
+  }*/
 
   async openMemberList() {
-    console.log("open Request Member");
+    console.log("open Club Member List");
     const modal = await this.modalCtrl.create({
-      component: MemberPage,
+      component: ClubMemberListPage,
       presentingElement: await this.modalCtrl.getTop(),
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
-   
+        club: this.club
       },
     });
     modal.present();
@@ -311,12 +312,12 @@ export class ClubPage implements OnInit {
 async openAdminList(){
   console.log("open Request Member");
   const modal = await this.modalCtrl.create({
-    component: MemberPage,
+    component: ClubAdminListPage,
     presentingElement: await this.modalCtrl.getTop(),
     canDismiss: true,
     showBackdrop: true,
     componentProps: {
-  
+      club: this.club
     },
   });
   modal.present();

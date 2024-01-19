@@ -49,6 +49,10 @@ import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 import { HelferDetailPage } from "./pages/helfer/helfer-detail/helfer-detail.page";
 import { HelferAddPage } from "./pages/helfer/helfer-add/helfer-add.page";
+import { ClubMemberListPage } from "./pages/club-member-list/club-member-list.page";
+import { TeamMemberListPage } from "./pages/team-member-list/team-member-list.page";
+import { ClubAdminListPage } from "./pages/club-admin-list/club-admin-list.page";
+import { TeamAdminListPage } from "./pages/team-admin-list/team-admin-list.page";
 
 @NgModule({
   declarations: [
@@ -69,7 +73,12 @@ import { HelferAddPage } from "./pages/helfer/helfer-add/helfer-add.page";
 
     OnboardingPage,
     ClubPage,
+    ClubMemberListPage,
+    ClubAdminListPage,
+
     TeamPage,
+    TeamMemberListPage,
+    TeamAdminListPage
   ],
   imports: [
     BrowserModule,
