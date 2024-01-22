@@ -311,7 +311,7 @@ export class ClubPage implements OnInit {
 
 
 async openAdminList(){
-  console.log("open Request Member");
+  console.log("open Club Admin");
   const modal = await this.modalCtrl.create({
     component: ClubAdminListPage,
     presentingElement: await this.modalCtrl.getTop(),

@@ -25,10 +25,21 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-list [inset]="true">
-      <ion-item>
-        <ion-label> {{"common.no_of__members" | translate}}: </ion-label>
-        <ion-label slot="end"> {{team['teamMembers'].length}} </ion-label>
+    <ion-list lines="full" [inset]="true">
+      <ion-list-header>
+        <ion-label> {{ "common.Mitgliederverwaltung" | translate}} </ion-label>
+      </ion-list-header>
+
+      <ion-item detail="true" (click)="openMemberList()">
+        <ion-icon name="people-circle-outline" slot="start"></ion-icon>
+        <ion-label> Mitglieder </ion-label>
+        <ion-note slot="end">{{team['teamMembers'].length}}</ion-note>
+      </ion-item>
+
+      <ion-item detail="true" (click)="openAdminList()">
+        <ion-icon name="shield-half-outline" slot="start"></ion-icon>
+        <ion-label> Administratoren </ion-label>
+        <ion-note slot="end">{{team['teamAdmins'].length}}</ion-note>
       </ion-item>
       <ion-item>
         <ion-label> {{"common.average__age" | translate}}: </ion-label>
@@ -51,39 +62,7 @@
       </ion-item>
     </ion-list>-->
 
-    <ion-list [inset]="true">
-      <ion-list-header>
-        <ion-label> {{"common.members" | translate}} </ion-label>
-        <ion-button strong="true"  (click)="addMember()">hinzufügen</ion-button>
-      </ion-list-header>
-      <ion-item *ngFor="let member of team['teamMembers']" detail="true">
-        <ion-avatar slot="start">
-          <img src="{{member?.profilePicture}}" />
-        </ion-avatar>
-        <ion-label (click)="openMember(member)"
-          >{{member.firstName}} {{member.lastName}}</ion-label
-        >
-      </ion-item>
-    </ion-list>
-
-    <ion-list [inset]="true">
-      <ion-list-header>
-        <ion-label> {{"common.admins" | translate}} </ion-label>
-        <ion-button strong="true" (click)="addAdministrator()">hinzufügen</ion-button>
-      </ion-list-header>
-      <ion-item *ngFor="let admin of team['teamAdmins']" detail="true">
-        <ion-avatar slot="start">
-          <img src="{{admin?.profilePicture}}" />
-        </ion-avatar>
-        <ion-label (click)="openMember(admin)"
-          >{{admin.firstName}} {{admin.lastName}}</ion-label
-        >
-      </ion-item>
-    </ion-list>
-
     <!--
-
-
   <ng-container *ngIf="requestList$ | async as requests; else noRequests">
     <ion-list [inset]="true" *ngIf="requests.length > 0">
       <ion-list-header> Anfragen </ion-list-header>

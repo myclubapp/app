@@ -38,6 +38,8 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { MemberPage } from "../../member/member.page";
+import { TeamAdminListPage } from "../../team-admin-list/team-admin-list.page";
+import { TeamMemberListPage } from "../../team-member-list/team-member-list.page";
 
 @Component({
   selector: "app-team",
@@ -184,25 +186,44 @@ export class TeamPage implements OnInit {
     );
   }
 
-  async removeAdmin(admin) {
-    await this.fbService.deleteTeamAdmin(this.team.id, admin.id).then(() => {
-      this.toastActionSaved();
-    })
-      .catch((err) => {
-        this.toastActionError(err);
-      });
+  async openMemberList() {
+    console.log("open Team Member List");
+    const modal = await this.modalCtrl.create({
+      component: TeamMemberListPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        team: this.team
+      },
+    });
+    modal.present();
+  
+    const { data, role } = await modal.onWillDismiss();
+  
+    if (role === "confirm") {
+    }
   }
 
-  async removeMember(member) {
-    await this.fbService
-      .deleteTeamMember(this.team.id, member.id)
-      .then(() => {
-        this.toastActionSaved();
-      })
-      .catch((err) => {
-        this.toastActionError(err);
-      });
+
+async openAdminList(){
+  console.log("open Team Admin ");
+  const modal = await this.modalCtrl.create({
+    component: TeamAdminListPage,
+    presentingElement: await this.modalCtrl.getTop(),
+    canDismiss: true,
+    showBackdrop: true,
+    componentProps: {
+      team: this.team
+    },
+  });
+  modal.present();
+
+  const { data, role } = await modal.onWillDismiss();
+
+  if (role === "confirm") {
   }
+}
 
   async approveTeamRequest(request) {
     console.log(request);
