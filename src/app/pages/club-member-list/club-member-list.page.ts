@@ -34,7 +34,6 @@ import { User } from "firebase/auth";
 })
 export class ClubMemberListPage implements OnInit {
   @Input("club") club: any;
-  @ViewChild("IonList") list: IonList;
   club$: Observable<any>;
 
   user$: Observable<User>;
@@ -62,7 +61,6 @@ export class ClubMemberListPage implements OnInit {
     this.club$ = this.getClub(this.club.id);
   }
   edit() {
-    this.list.closeSlidingItems();
 
     if (this.allowEdit) {
       this.allowEdit = false;
@@ -235,6 +233,15 @@ export class ClubMemberListPage implements OnInit {
     } else {
       console.log("empty " + this.club.id);
       this.club$ = this.getClub(this.club.id);
+    }
+  }
+
+  async deleteClubMember( member){
+    try {
+      await this.fbService.deleteClubember(this.club.id, member.id);
+      await this.toastActionSaved();
+    } catch(e){
+      this.toastActionError(e);
     }
   }
 

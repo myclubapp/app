@@ -32,7 +32,7 @@
       search-icon="search-circle"
     ></ion-searchbar>
 
-    <ion-list [inset]="true" #IonList>
+    <ion-list [inset]="true">
       <!-- <ion-list-header>
         <ion-label> {{"common.members" | translate}} </ion-label>
       </ion-list-header>-->
@@ -44,13 +44,24 @@
 
           <ng-container *ngFor="let member of club['clubMembers']">
             <ion-item-sliding *ngIf="member.groupBy == groupBy">
-              <ion-item-options side="start">
-                <ion-item-option color="danger">
+              <ion-item-options side="end">
+                <ion-item-option color="danger" (click)="deleteClubMember(member)">
                   <ion-icon name="trash"></ion-icon>
                 </ion-item-option>
               </ion-item-options>
 
               <ion-item detail="true">
+                <ion-icon
+                *ngIf="allowEdit==true"
+                slot="icon-only"
+                color="danger"
+                slot="start"
+                name="trash"
+                (click)="deleteClubMember(member)"
+              ></ion-icon>
+
+
+
                 <ion-avatar slot="start">
                   <img src="{{member?.profilePicture}}" />
                 </ion-avatar>

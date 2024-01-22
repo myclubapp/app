@@ -1,14 +1,14 @@
 <ng-container *ngIf="club$ | async as club">
   <ion-header [translucent]="true">
     <ion-toolbar>
-      <ion-buttons slot="secondary">
+      <!--<ion-buttons slot="secondary">
         <ion-button *ngIf="!allowEdit" (click)="edit()"
           >{{"common.edit" | translate}}</ion-button
         >
         <ion-button *ngIf="allowEdit" (click)="edit()"
           >{{"common.cancel" | translate}}</ion-button
         >
-      </ion-buttons>
+      </ion-buttons>-->
       <ion-title>Club Details</ion-title>
       <ion-buttons slot="primary">
         <ion-button (click)="close()"
@@ -43,14 +43,6 @@
         <ion-label> {{club.wordpress}} </ion-label>
       </ion-item>
 
-      <ion-item>
-        <ion-label> {{"common.no_of__members" | translate}}: </ion-label>
-        <ion-label slot="end"> {{club['clubMembers'].length}} </ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label> {{"common.average__age" | translate}}: </ion-label>
-        <ion-label slot="end"> {{club.averageAge}} </ion-label>
-      </ion-item>
       <!--
   <ion-item>
     {{"club.trainaing__presence" | translate}}: 
@@ -60,19 +52,23 @@
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
-        <ion-label> {{ "common.members" | translate}} </ion-label>
+        <ion-label> {{ "common.Mitgliederverwaltung" | translate}} </ion-label>
       </ion-list-header>
 
       <ion-item detail="true" (click)="openMemberList()">
         <ion-icon name="people-circle-outline" slot="start"></ion-icon>
         <ion-label> Mitglieder </ion-label>
-        <ion-badge>10</ion-badge>
+        <ion-note slot="end">{{club['clubMembers'].length}}</ion-note>
       </ion-item>
 
       <ion-item detail="true" (click)="openAdminList()">
         <ion-icon name="shield-half-outline" slot="start"></ion-icon>
         <ion-label> Administratoren </ion-label>
-        <ion-badge>3</ion-badge>
+        <ion-note slot="end">{{club['clubAdmins'].length}}</ion-note>
+      </ion-item>
+      <ion-item>
+        <ion-label> {{"common.average__age" | translate}}: </ion-label>
+        <ion-label slot="end"> {{club.averageAge}} </ion-label>
       </ion-item>
     </ion-list>
 

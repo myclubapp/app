@@ -101,11 +101,11 @@ export class ClubPage implements OnInit {
         if (!club) return of(null);
         return combineLatest({
           clubMembers: this.fbService.getClubMemberRefs(clubId),
-          //clubAdmins: this.fbService.getClubAdminRefs(clubId),
-          //clubRequests: this.fbService.getClubRequestRefs(clubId),
+          clubAdmins: this.fbService.getClubAdminRefs(clubId),
+          // clubRequests: this.fbService.getClubRequestRefs(clubId),
         }).pipe(
           switchMap(({ clubMembers,
-            // clubAdmins, 
+            clubAdmins, 
             // clubRequests
              }) => {
             const memberProfiles$ = clubMembers.map((member) =>
@@ -116,7 +116,7 @@ export class ClubPage implements OnInit {
                 )
               )
             );
-           /* const adminProfiles$ = clubAdmins.map((admin) =>
+           const adminProfiles$ = clubAdmins.map((admin) =>
               this.userProfileService.getUserProfileById(admin.id).pipe(
                 take(1),
                 catchError(() =>
@@ -124,7 +124,7 @@ export class ClubPage implements OnInit {
                 )
               )
             );
-            const clubRequests$ = clubRequests.map((request) =>
+            /*const clubRequests$ = clubRequests.map((request) =>
               this.userProfileService.getUserProfileById(request.id).pipe(
                 take(1),
                 catchError(() =>
@@ -134,17 +134,18 @@ export class ClubPage implements OnInit {
             );*/
             return forkJoin({
               clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
-              // clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
+              clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
               // clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
             }).pipe(
-              map(({ clubMembers, 
-              //  clubAdmins, 
+              map(({ 
+                  clubMembers, 
+                  clubAdmins, 
               //  clubRequests
                }) => ({
                 clubMembers: clubMembers.filter(
                   (member) => member !== undefined
                 ), // Filter out undefined
-                // clubAdmins: clubAdmins.filter((admin) => admin !== undefined), // Filter out undefined
+                clubAdmins: clubAdmins.filter((admin) => admin !== undefined), // Filter out undefined
                 /*clubRequests: clubRequests.filter(
                   (request) => request !== undefined
                 ), // Filter out undefined*/
@@ -152,7 +153,7 @@ export class ClubPage implements OnInit {
             );
           }),
           map(({ clubMembers, 
-          //  clubAdmins, 
+            clubAdmins, 
           //  clubRequests
            }) => {
 
@@ -174,7 +175,7 @@ export class ClubPage implements OnInit {
               ...club,
               averageAge: averageAge.toFixed(1), // Keep two decimal places
               clubMembers,
-            //  clubAdmins,
+              clubAdmins,
             //  clubRequests,
             };
           })

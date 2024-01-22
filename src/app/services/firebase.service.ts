@@ -46,7 +46,7 @@ export class FirebaseService {
   constructor(
     private readonly firestore: Firestore = inject(Firestore),
     private readonly authService: AuthService
-  ) {}
+  ) { }
 
   getClubList() {
     return this.authService.getUser$().pipe(
@@ -318,7 +318,7 @@ export class FirebaseService {
   }
 
   approveUserClubRequest(clubId: string, userId: string): Promise<any> {
-    console.log("club " + clubId , " / userid " + userId);
+    console.log("club " + clubId, " / userid " + userId);
     return setDoc(
       doc(this.firestore, `/club/${clubId}/requests/${userId}`),
       {
@@ -431,25 +431,13 @@ export class FirebaseService {
   }
 
   async deleteClubember(clubId: string, userId: string): Promise<any> {
-    await setDoc(
+    await deleteDoc(
       doc(this.firestore, `club/${clubId}/members/${userId}`),
-      {
-        remove: true,
-      },
-      {
-        merge: true,
-      }
     );
   }
   async deleteClubAdmin(clubId: string, userId: string): Promise<any> {
-    await setDoc(
+    await deleteDoc(
       doc(this.firestore, `club/${clubId}/admins/${userId}`),
-      {
-        remove: true,
-      },
-      {
-        merge: true,
-      }
     );
   }
 }
