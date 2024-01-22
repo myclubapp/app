@@ -42,8 +42,9 @@
         <ion-note slot="end">{{team['teamAdmins'].length}}</ion-note>
       </ion-item>
       <ion-item>
-        <ion-label> {{"common.average__age" | translate}}: </ion-label>
-        <ion-label slot="end"> {{team.averageAge}} </ion-label>
+        <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+        <ion-label> {{"common.average__age" | translate}} </ion-label>
+        <ion-note  slot="end"> {{team.averageAge}}</ion-note>
       </ion-item>
     </ion-list>
 
