@@ -53,6 +53,7 @@ import { ClubMemberListPage } from "./pages/club-member-list/club-member-list.pa
 import { TeamMemberListPage } from "./pages/team-member-list/team-member-list.page";
 import { ClubAdminListPage } from "./pages/club-admin-list/club-admin-list.page";
 import { TeamAdminListPage } from "./pages/team-admin-list/team-admin-list.page";
+import { ClubTeamListPage } from "./pages/club-team-list/club-team-list.page";
 
 @NgModule({
   declarations: [
@@ -75,6 +76,7 @@ import { TeamAdminListPage } from "./pages/team-admin-list/team-admin-list.page"
     ClubPage,
     ClubMemberListPage,
     ClubAdminListPage,
+    ClubTeamListPage,
 
     TeamPage,
     TeamMemberListPage,

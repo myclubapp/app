@@ -31,6 +31,7 @@ import { MemberPage } from "../member/member.page";
 import { ClubMemberListPage } from "../club-member-list/club-member-list.page";
 import { ClubAdminListPage } from "../club-admin-list/club-admin-list.page";
 import { TeamListPage } from "../team-list/team-list.page";
+import { ClubTeamListPage } from "../club-team-list/club-team-list.page";
 
 @Component({
   selector: "app-club",
@@ -255,12 +256,12 @@ async openAdminList(){
   async openTeamList(){
     console.log("open TEam List");
     const modal = await this.modalCtrl.create({
-      component: TeamListPage,
+      component: ClubTeamListPage,
       presentingElement: await this.modalCtrl.getTop(),
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        clubId: this.club.id
+        clubId: this.club.id,
       },
     });
     modal.present();
