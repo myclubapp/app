@@ -30,6 +30,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { MemberPage } from "../member/member.page";
 import { ClubMemberListPage } from "../club-member-list/club-member-list.page";
 import { ClubAdminListPage } from "../club-admin-list/club-admin-list.page";
+import { TeamListPage } from "../team-list/team-list.page";
 
 @Component({
   selector: "app-club",
@@ -189,106 +190,6 @@ export class ClubPage implements OnInit {
     );
   }
 
-  async addAdministrator() {
-    let memberSelect = [];
-
-    this.subscribeMember = this.club$
-      .pipe(
-        take(1),
-        tap((club) => {
-          console.log(club);
-          club.clubMembers.forEach((member) => {
-            if (!club.clubAdmins.find((element) => element.id === member.id)) {
-              memberSelect.push({
-                type: "checkbox",
-                name: member.id,
-                label: `${member.firstName} ${member.lastName}`,
-                value: member,
-                checked: false,
-              });
-            }
-          });
-        }),
-        finalize(async () => {
-          if (memberSelect.length > 0) {
-            const alert = await this.alertCtrl.create({
-              header: "Administrator hinzufügen",
-              inputs: memberSelect,
-              buttons: [
-                {
-                  text: "Abbrechen",
-                  handler: () => console.log("Cancel clicked"),
-                },
-                {
-                  text: "Hinzufügen",
-                  handler: (data) => console.log(data),
-                },
-              ],
-            });
-            await alert.present();
-          }
-        })
-      )
-      .subscribe();
-
-    /*
-        let memberSelect = [];
-    
-        this.club$.forEach(async (club) => {
-          console.log(club);
-          for (let member of club.clubMembers) {
-            if (!club.clubAdmins.find((element) => element.id == member.id)) {
-              memberSelect.push({
-                type: "checkbox",
-                name: member.id,
-                label: member.firstName + " " + member.lastName,
-                value: member,
-                checked: false,
-              });
-            }
-          }
-    
-          const alert = await this.alertCtrl.create({
-            header: "Administrator hinzufügen",
-            inputs: memberSelect,
-            buttons: [
-              {
-                text: "Abbrechen",
-                handler: () => {
-                  console.log("Cancel clicked");
-                },
-              },
-              {
-                text: "Hinzufügen",
-                handler: (data) => {
-                  console.log(data);
-                },
-              },
-            ],
-          });
-          if (memberSelect.length > 0) {
-            await alert.present();
-          }
-        });*/
-  }
-  /*async openMember(member: Profile) {
-    console.log("openMember");
-    const modal = await this.modalCtrl.create({
-      component: MemberPage,
-      presentingElement: await this.modalCtrl.getTop(),
-      canDismiss: true,
-      showBackdrop: true,
-      componentProps: {
-        data: member,
-      },
-    });
-    modal.present();
-
-    const { data, role } = await modal.onWillDismiss();
-
-    if (role === "confirm") {
-    }
-  }*/
 
   async openMemberList() {
     console.log("open Club Member List");
@@ -348,6 +249,26 @@ async openAdminList(){
 
     if (role === "confirm") {
     }
+  }
+
+
+  async openTeamList(){
+    console.log("open TEam List");
+    const modal = await this.modalCtrl.create({
+      component: TeamListPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        clubId: this.club.id
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }  
   }
 
   /*async approveClubRequest(user) {

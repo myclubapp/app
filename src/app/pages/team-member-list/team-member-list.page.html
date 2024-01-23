@@ -74,6 +74,18 @@
         </ng-container>
       </ion-item-group>
     </ion-list>
+    <!--<ng-container *ngIf="teamAdminList$ | async as teamAdminList">-->
+      <ion-fab
+        
+        vertical="bottom"
+        horizontal="end"
+        slot="fixed"
+      >
+        <ion-fab-button (click)="addMember()">
+          <ion-icon name="add-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    <!--</ng-container>-->
   </ion-content>
 </ng-container>
 <ng-template #noRequests>

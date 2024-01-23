@@ -9,8 +9,10 @@ import {
 import { TranslateService } from "@ngx-translate/core";
 import {
   Observable,
+  Subscription,
   catchError,
   combineLatest,
+  finalize,
   forkJoin,
   lastValueFrom,
   map,
@@ -41,6 +43,8 @@ export class TeamAdminListPage implements OnInit {
   allowEdit: boolean = false;
 
   groupArray = [];
+  subscribeAdmin: Subscription;
+
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -59,6 +63,14 @@ export class TeamAdminListPage implements OnInit {
     this.team$ = of(this.team);
     this.team$ = this.getTeam(this.team.id);
   }
+
+  ngOnDestroy() {
+
+    if (this.subscribeAdmin) {
+      this.subscribeAdmin.unsubscribe();
+    }
+  }
+
   edit() {
 
     if (this.allowEdit) {
@@ -89,17 +101,17 @@ export class TeamAdminListPage implements OnInit {
       switchMap((team) => {
         if (!team) return of(null);
         return combineLatest({
-          // teamMembers: this.fbService.getTeamMemberRefs(teamId),
+          teamMembers: this.fbService.getTeamMemberRefs(teamId),
           teamAdmins: this.fbService.getTeamAdminRefs(teamId),
           //teamRequests: this.fbService.getTeamRequestRefs(teamId),
         }).pipe(
           switchMap(
             ({
-              // teamMembers,
+              teamMembers,
               teamAdmins,
               // teamRequests
             }) => {
-              /*const memberProfiles$ = teamMembers.map((member) =>
+              const memberProfiles$ = teamMembers.map((member) =>
                 this.userProfileService.getUserProfileById(member.id).pipe(
                   take(1),
 
@@ -107,7 +119,7 @@ export class TeamAdminListPage implements OnInit {
                     of({ ...member, firstName: "Unknown", lastName: "Unknown" })
                   )
                 )
-              );*/
+              );
              const adminProfiles$ = teamAdmins.map((admin) =>
               this.userProfileService.getUserProfileById(admin.id).pipe(
                 take(1),
@@ -125,13 +137,13 @@ export class TeamAdminListPage implements OnInit {
               )
             );*/
               return forkJoin({
-                // teamMembers: forkJoin(memberProfiles$).pipe(startWith([])),
+                teamMembers: forkJoin(memberProfiles$).pipe(startWith([])),
                 teamAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
                 // teamRequests: forkJoin(teamRequests$).pipe(startWith([])),
               }).pipe(
                 map(
                   ({
-                    // teamMembers,
+                    teamMembers,
                     teamAdmins,
                     //  teamRequests
                   }) => ({
@@ -149,7 +161,7 @@ export class TeamAdminListPage implements OnInit {
                           groupBy: profile.firstName.charAt(0),
                         };
                       }), // Sort by firstName, // Filter out undefined
-                    // teamAdmins: teamAdmins.filter((admin) => admin !== undefined), // Filter out undefined
+                    teamMembers: teamMembers.filter((member) => member !== undefined), // Filter out undefined
                     /*teamRequests: teamRequests.filter(
                   (request) => request !== undefined
                 ), // Filter out undefined*/
@@ -160,7 +172,7 @@ export class TeamAdminListPage implements OnInit {
           ),
           map(
             ({
-              // teamMembers,
+                teamMembers,
                 teamAdmins,
               //  teamRequests
             }) => {
@@ -182,7 +194,7 @@ export class TeamAdminListPage implements OnInit {
               return {
                 ...team,
                 // averageAge: averageAge.toFixed(1), // Keep two decimal places
-                // teamMembers,
+                  teamMembers,
                   teamAdmins,
                 //  teamRequests,
               };
@@ -234,6 +246,53 @@ export class TeamAdminListPage implements OnInit {
       this.team$ = this.getTeam(this.team.id);
     }
   }
+
+
+  async addAdministrator() {
+    let memberSelect = [];
+
+    this.subscribeAdmin = this.team$
+      .pipe(
+        take(1),
+        tap((team) => {
+          console.log(team);
+          team.teamMembers.forEach((member) => {
+            if (!team.teamAdmins.find((element) => element.id === member.id)) {
+              memberSelect.push({
+                type: "checkbox",
+                name: member.id,
+                label: `${member.firstName} ${member.lastName}`,
+                value: member,
+                checked: false,
+              });
+            }
+          });
+        }),
+        finalize(async () => {
+          if (memberSelect.length > 0) {
+            const alert = await this.alertCtrl.create({
+              header: "Administrator hinzufügen",
+              inputs: memberSelect,
+              buttons: [
+                {
+                  text: "Abbrechen",
+                  handler: () => console.log("Cancel clicked"),
+                },
+                {
+                  text: "Hinzufügen",
+                  handler: (data) => console.log(data),
+                },
+              ],
+            });
+            await alert.present();
+          } else {
+            alert("no members")
+          }
+        })
+      )
+      .subscribe();
+  }
+
 
   async deleteTeamAdmin( member){
     try {

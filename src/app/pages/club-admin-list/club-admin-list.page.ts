@@ -9,8 +9,10 @@ import {
 import { TranslateService } from "@ngx-translate/core";
 import {
   Observable,
+  Subscription,
   catchError,
   combineLatest,
+  finalize,
   forkJoin,
   lastValueFrom,
   map,
@@ -43,6 +45,9 @@ export class ClubAdminListPage implements OnInit {
 
   groupArray = [];
 
+  subscribeAdmin: Subscription;
+
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -59,6 +64,13 @@ export class ClubAdminListPage implements OnInit {
 
     this.club$ = of(this.club);
     this.club$ = this.getClub(this.club.id);
+  }
+
+  ngOnDestroy() {
+
+    if (this.subscribeAdmin) {
+      this.subscribeAdmin.unsubscribe();
+    }
   }
   edit() {
 
@@ -90,17 +102,17 @@ export class ClubAdminListPage implements OnInit {
       switchMap((club) => {
         if (!club) return of(null);
         return combineLatest({
-          // clubMembers: this.fbService.getClubMemberRefs(clubId),
+          clubMembers: this.fbService.getClubMemberRefs(clubId),
           clubAdmins: this.fbService.getClubAdminRefs(clubId),
           //clubRequests: this.fbService.getClubRequestRefs(clubId),
         }).pipe(
           switchMap(
             ({
-              // clubMembers,
+              clubMembers,
               clubAdmins,
               // clubRequests
             }) => {
-              /*const memberProfiles$ = clubMembers.map((member) =>
+              const memberProfiles$ = clubMembers.map((member) =>
                 this.userProfileService.getUserProfileById(member.id).pipe(
                   take(1),
 
@@ -108,7 +120,7 @@ export class ClubAdminListPage implements OnInit {
                     of({ ...member, firstName: "Unknown", lastName: "Unknown" })
                   )
                 )
-              );*/
+              );
              const adminProfiles$ = clubAdmins.map((admin) =>
               this.userProfileService.getUserProfileById(admin.id).pipe(
                 take(1),
@@ -126,13 +138,13 @@ export class ClubAdminListPage implements OnInit {
               )
             );*/
               return forkJoin({
-                // clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
+                clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
                 clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
                 // clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
               }).pipe(
                 map(
                   ({
-                    // clubMembers,
+                    clubMembers,
                     clubAdmins,
                     //  clubRequests
                   }) => ({
@@ -150,7 +162,7 @@ export class ClubAdminListPage implements OnInit {
                           groupBy: profile.firstName.charAt(0),
                         };
                       }), // Sort by firstName, // Filter out undefined
-                    // clubAdmins: clubAdmins.filter((admin) => admin !== undefined), // Filter out undefined
+                    clubMembers: clubMembers.filter((member) => member !== undefined), // Filter out undefined
                     /*clubRequests: clubRequests.filter(
                   (request) => request !== undefined
                 ), // Filter out undefined*/
@@ -161,7 +173,7 @@ export class ClubAdminListPage implements OnInit {
           ),
           map(
             ({
-              // clubMembers,
+                clubMembers,
                 clubAdmins,
               //  clubRequests
             }) => {
@@ -183,7 +195,7 @@ export class ClubAdminListPage implements OnInit {
               return {
                 ...club,
                 // averageAge: averageAge.toFixed(1), // Keep two decimal places
-                // clubMembers,
+                  clubMembers,
                   clubAdmins,
                 //  clubRequests,
               };
@@ -235,7 +247,49 @@ export class ClubAdminListPage implements OnInit {
       this.club$ = this.getClub(this.club.id);
     }
   }
+  async addAdministrator() {
+    let memberSelect = [];
 
+    this.subscribeAdmin = this.club$
+      .pipe(
+        take(1),
+        tap((club) => {
+          console.log(club);
+          club.clubMembers.forEach((member) => {
+            if (!club.clubAdmins.find((element) => element.id === member.id)) {
+              memberSelect.push({
+                type: "checkbox",
+                name: member.id,
+                label: `${member.firstName} ${member.lastName}`,
+                value: member,
+                checked: false,
+              });
+            }
+          });
+        }),
+        finalize(async () => {
+          if (memberSelect.length > 0) {
+            const alert = await this.alertCtrl.create({
+              header: "Administrator hinzufügen",
+              inputs: memberSelect,
+              buttons: [
+                {
+                  text: "Abbrechen",
+                  handler: () => console.log("Cancel clicked"),
+                },
+                {
+                  text: "Hinzufügen",
+                  handler: (data) => console.log(data),
+                },
+              ],
+            });
+            await alert.present();
+          }
+        })
+      )
+      .subscribe();
+
+  }
   async deleteClubAdmin( member){
     try {
       await this.fbService.deleteClubAdmin(this.club.id, member.id);

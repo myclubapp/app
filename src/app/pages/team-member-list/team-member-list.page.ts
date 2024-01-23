@@ -9,6 +9,7 @@ import {
 import { TranslateService } from "@ngx-translate/core";
 import {
   Observable,
+  Subscription,
   catchError,
   combineLatest,
   forkJoin,
@@ -41,6 +42,9 @@ export class TeamMemberListPage implements OnInit {
   allowEdit: boolean = false;
 
   groupArray = [];
+
+  subscribeMember: Subscription;
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -58,6 +62,14 @@ export class TeamMemberListPage implements OnInit {
     this.team$ = of(this.team);
     this.team$ = this.getTeam(this.team.id);
   }
+
+  ngOnDestroy() {
+    if (this.subscribeMember) {
+      this.subscribeMember.unsubscribe();
+    }
+  }
+
+
   edit() {
 
     if (this.allowEdit) {
@@ -232,6 +244,85 @@ export class TeamMemberListPage implements OnInit {
       console.log("empty " + this.team.id);
       this.team$ = this.getTeam(this.team.id);
     }
+  }
+
+  addMember() {
+    this.subscribeMember = this.team$.pipe(
+      take(1), // Take only the first emission
+      tap(team => console.log('Team:', team)),
+      switchMap(team => {
+        // If team does not exist or there are no team members, complete the stream
+        if (!team || !team.clubRef || !team.clubRef.id) return of(null);
+  
+        // Fetch club members
+        return this.fbService.getClubMemberRefs(team.clubRef.id).pipe(
+          switchMap(members => {
+            if (!members.length) return of([]);
+  
+            // Fetch each member's user profile
+            const memberDetails$ = members.map(member =>
+              this.userProfileService.getUserProfileById(member.id).pipe(
+                take(1),
+                catchError(() =>
+                  of({ ...member, firstName: 'Unknown', lastName: 'Unknown' })
+                )
+              )
+            );
+  
+            return combineLatest(memberDetails$);
+          }),
+          map(memberProfiles =>
+            memberProfiles.filter(member => member !== undefined)
+          ),
+          map(memberProfiles => memberProfiles.filter(member => 
+            !team.teamMembers.find(element => element.id === member.id)
+          )),
+          map(filteredMembers => filteredMembers.map(member => ({
+            type: 'checkbox',
+            name: member.id,
+            label: `${member.firstName} ${member.lastName}`,
+            value: member,
+            checked: false,
+          })))
+        );
+      }),
+      catchError(err => {
+        console.error('Error in addMember:', err);
+        return of(null);
+      })
+    ).subscribe(async (memberSelect:any) => {
+      if (memberSelect && memberSelect.length > 0) {
+        const alert = await this.alertCtrl.create({
+          header: 'Administrator hinzufügen',
+          inputs: memberSelect,
+          buttons: [
+            {
+              text: 'Abbrechen',
+              handler: () => console.log('Cancel clicked'),
+            },
+            {
+              text: 'Hinzufügen',
+              handler: (teamMemberList) => {
+                console.log(teamMemberList);
+                for (const member of teamMemberList) {
+                  this.approveTeamRequest({ teamId: this.team.id, id: member.id });
+                }
+              },
+            },
+          ],
+        });
+        await alert.present();
+      }
+    });
+  }
+  async approveTeamRequest(request) {
+    console.log(request);
+    await this.fbService.approveUserTeamRequest(request.teamId, request.id).then(() => {
+      this.toastActionSaved();
+    })
+      .catch((err) => {
+        this.toastActionError(err);
+      });
   }
 
   async deleteTeamMember( member){
