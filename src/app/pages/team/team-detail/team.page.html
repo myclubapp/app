@@ -30,6 +30,12 @@
         <ion-label> {{ "common.Mitgliederverwaltung" | translate}} </ion-label>
       </ion-list-header>
 
+      <ion-item>
+        <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+        <ion-label> {{"common.average__age" | translate}} </ion-label>
+        <ion-note  slot="end"> {{team.averageAge}}</ion-note>
+      </ion-item>
+      
       <ion-item detail="true" (click)="openMemberList()">
         <ion-icon name="people-circle-outline" slot="start"></ion-icon>
         <ion-label> Mitglieder </ion-label>
@@ -41,11 +47,7 @@
         <ion-label> Administratoren </ion-label>
         <ion-note slot="end">{{team['teamAdmins'].length}}</ion-note>
       </ion-item>
-      <ion-item>
-        <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
-        <ion-label> {{"common.average__age" | translate}} </ion-label>
-        <ion-note  slot="end"> {{team.averageAge}}</ion-note>
-      </ion-item>
+
     </ion-list>
 
    <!-- <ion-list [inset]="true" *ngIf="team['teamRequests'].length > 0">
