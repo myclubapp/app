@@ -7,9 +7,11 @@ import { IonicModule } from '@ionic/angular';
 import { ClubTeamListPageRoutingModule } from './club-team-list-routing.module';
 
 import { ClubTeamListPage } from './club-team-list.page';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
+    TranslateModule,
     CommonModule,
     FormsModule,
     IonicModule,

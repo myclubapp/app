@@ -1,4 +1,4 @@
-<ng-container *ngIf="team$ | async as team">
+<ng-container *ngIf="team$ | async as team; else header">
   <ion-header [translucent]="true">
     <ion-toolbar>
       <ion-buttons slot="secondary">
@@ -132,3 +132,26 @@
 <ng-template #noRequests>
   <!-- You can put any placeholder or message here if needed when there are no requests -->
 </ng-template>
+<ng-template #header>
+  <ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-title>Keine Berechtigung</ion-title>
+      <ion-buttons slot="primary">
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">Keine Berechtigung</ion-title>
+      </ion-toolbar>
+    </ion-header>
+  </ion-content>
+
+
+</ng-template>
+

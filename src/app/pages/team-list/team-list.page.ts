@@ -29,13 +29,9 @@ export class TeamListPage implements OnInit {
 
   constructor(
     private readonly fbService: FirebaseService,
-    private readonly authService: AuthService,
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
-    private readonly alertController: AlertController,
-    private readonly profileService: UserProfileService,
-    private readonly toastController: ToastController,
-    private cdr: ChangeDetectorRef
+
   ) {}
 
   ngOnInit() {

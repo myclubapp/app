@@ -230,7 +230,7 @@ async openAdminList(){
   if (role === "confirm") {
   }
 }
-
+/*
   async openRequestMember(member: Profile) {
     console.log("open Request Member");
     const modal = await this.modalCtrl.create({
@@ -250,11 +250,11 @@ async openAdminList(){
 
     if (role === "confirm") {
     }
-  }
+  }*/
 
 
   async openTeamList(){
-    console.log("open TEam List");
+    console.log("open Team List");
     const modal = await this.modalCtrl.create({
       component: ClubTeamListPage,
       presentingElement: await this.modalCtrl.getTop(),

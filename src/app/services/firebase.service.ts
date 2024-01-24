@@ -110,6 +110,7 @@ export class FirebaseService {
       })
     );
   }
+
   getTeamList() {
     return this.authService.getUser$().pipe(
       take(1),
@@ -141,6 +142,41 @@ export class FirebaseService {
       })
     );
   }
+
+  getClubTeamList(clubId) {
+    return this.getClubTeamsRef(clubId).pipe(
+      tap((teams) => console.log("Teams for club:", teams)),
+      mergeMap((teams) => {
+        if (teams.length === 0) {
+          console.log("No teams found for club");
+          return of([]);
+        }
+        return combineLatest(
+          teams.map((team) =>
+            this.getTeamRef(team.id).pipe(
+              catchError((error) => {
+                console.error(`Error fetching details for team ${team.id}:`, error);
+                return of(null); // In case of error, return null for this team
+              })
+            )
+          )
+        );
+      }),
+      map((teamsWithDetails) => {
+        const filteredTeams = teamsWithDetails.filter((team) => team !== null); // Filter out null (error cases)
+        console.log("Filtered teams:", filteredTeams);
+        return filteredTeams;
+      }),
+      tap((results) => console.log("Final results with all teams for club:", results)),
+      catchError((err) => {
+        console.error("Error in getClubTeamsWithDetails:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+
+
+
   getTeamAdminList() {
     return this.authService.getUser$().pipe(
       take(1),
@@ -204,6 +240,16 @@ export class FirebaseService {
     return collectionData(clubRefList, {
       idField: "id",
     }) as Observable<Club[]>;
+  }
+
+  getClubTeamsRef(clubId: string): Observable<Team[]> {
+    const clubTeamRefList = collection(
+      this.firestore,
+      `club/${clubId}/teams`
+    );
+    return collectionData(clubTeamRefList, {
+      idField: "id",
+    }) as Observable<Team[]>;
   }
 
   getClubMemberRefs(clubId: string): Observable<Profile[]> {
