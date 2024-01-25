@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { Browser } from "@capacitor/browser";
-import { ModalController } from "@ionic/angular";
+import { ModalController, NavParams } from "@ionic/angular";
 import { Observable, filter, map } from "rxjs";
+import { Training } from "src/app/models/training";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 
 @Component({
@@ -10,36 +11,70 @@ import { ExerciseService } from "src/app/services/firebase/exercise.service";
   styleUrls: ["./training-exercises.page.scss"],
 })
 export class TrainingExercisesPage implements OnInit {
-  exercisesList$: Observable<any[]>;
-  exercisesListBackup$: Observable<any[]>;
+  @Input("training") training: Training;
+
+  exerciseListTemplate$: Observable<any[]>;
+  exerciseListTemplateBackup$: Observable<any[]>;
+
+  teamExerciseList$: Observable<any[]>;
+  teamTrainingExerciseList$: Observable<any[]>;
+
   skeleton = new Array(12);
 
   constructor(
-    private cdr: ChangeDetectorRef,
+    public navParams: NavParams,
     private exerciseService: ExerciseService,
     private modalCtrl: ModalController,
-  ) {}
+  ) {
+
+  }
 
   ngOnInit() {
-    this.exercisesList$ = this.getExercises("swissunihockey");
-    this.exercisesListBackup$ = this.getExercises("swissunihockey");
+    this.training = this.navParams.get("training");
+
+    this.exerciseListTemplate$ = this.getExercises("swissunihockey");
+    this.exerciseListTemplateBackup$ = this.getExercises("swissunihockey");
+
+    this.teamExerciseList$ = this.getTeamExercises(this.training.teamId);
+    this.teamTrainingExerciseList$ = this.getTeamTrainingExercises(this.training.teamId, this.training.id);
+
   }
+  ngOnDestroy(): void {
+    /*if (this.trainingListPastBackupSub){
+      this.trainingListPastBackupSub.unsubscribe();
+    }
+    if (this.trainingListBackupSub){
+      this.trainingListBackupSub.unsubscribe();
+    }
+
+    // Unsubscribe to prevent memory leaks
+    if (this.teamFilterSubscription) {
+      this.teamFilterSubscription.unsubscribe();
+    }*/
+  }
+
   handleSearch(event) {
     console.log(event.detail.value);
 
-    this.exercisesList$ = this.exercisesListBackup$.pipe(
+    this.exerciseListTemplate$ = this.exerciseListTemplateBackup$.pipe(
       map(items => {
-       return items.filter(element => element.title.toLowerCase().includes(event.detail.value.toLowerCase()));
+        return items.filter(element => element.title.toLowerCase().includes(event.detail.value.toLowerCase()));
       })
-    )  
+    )
   }
 
 
-  getExercises(type: string) {
-    return this.exerciseService.getExerciseRefs("swissunihockey");
+  getTeamTrainingExercises(teamId: string, trainingId: string) {
+    return this.exerciseService.getTeamTrainingExerciseRefs(teamId, trainingId);
+  }
+  getTeamExercises(teamId: string) {
+    return this.exerciseService.getTeamExerciseRefs(teamId);
+  }
+  getExercises(type: string = "swissunihockey") {
+    return this.exerciseService.getExerciseRefs(type);
   }
 
-  openExercise(exercise){
+  openExercise(exercise) {
     Browser.open({
       url: exercise.video
     })

@@ -171,7 +171,9 @@ export class TrainingDetailPage implements OnInit {
       presentingElement: await this.modalCtrl.getTop(),
       canDismiss: true,
       showBackdrop: true,
-      componentProps: {},
+      componentProps: {
+        training: this.training
+      },
     });
     modal.present();
 
