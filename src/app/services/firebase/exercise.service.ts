@@ -46,4 +46,7 @@ export class ExerciseService {
       idField: "id",
     }) as unknown as Observable<any[]>;
   }
+
+  addTeamTrainingExercise
+
 }

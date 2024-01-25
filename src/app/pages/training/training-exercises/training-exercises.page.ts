@@ -21,6 +21,8 @@ export class TrainingExercisesPage implements OnInit {
 
   skeleton = new Array(12);
 
+  allowEdit: boolean = false;
+
   constructor(
     public navParams: NavParams,
     private exerciseService: ExerciseService,
@@ -63,6 +65,18 @@ export class TrainingExercisesPage implements OnInit {
     )
   }
 
+  edit() {
+
+    if (this.allowEdit) {
+      this.allowEdit = false;
+    } else {
+      this.allowEdit = true;
+    }
+  }
+
+  addExercise(exercise){
+    this.exerciseService.addTeamTrainingExercise(teamId, trainingId, exercise);
+  }
 
   getTeamTrainingExercises(teamId: string, trainingId: string) {
     return this.exerciseService.getTeamTrainingExerciseRefs(teamId, trainingId);
