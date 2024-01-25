@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { Browser } from "@capacitor/browser";
-import { ModalController, NavParams } from "@ionic/angular";
-import { Observable, filter, map } from "rxjs";
+import { ItemReorderEventDetail, ModalController, NavParams } from "@ionic/angular";
+import { Observable, filter, first, map, pipe } from "rxjs";
 import { Training } from "src/app/models/training";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 
@@ -54,7 +54,21 @@ export class TrainingExercisesPage implements OnInit {
       this.teamFilterSubscription.unsubscribe();
     }*/
   }
+  handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
+    // The `from` and `to` properties contain the index of the item
+    // when the drag started and ended, respectively
+    console.log('Dragged from index', ev.detail.from, 'to', ev.detail.to);
 
+    // Finish the reorder and position the item in the DOM based on
+    // where the gesture ended. This method can also be called directly
+    // by the reorder group
+    ev.detail.complete();
+
+    /*this.teamTrainingExerciseList$.subscribe(data=>{
+      console.log(data);
+      //this.updateTeamTrainingExercise(data);
+    });*/
+  }
   handleSearch(event) {
     console.log(event.detail.value);
 
@@ -75,7 +89,25 @@ export class TrainingExercisesPage implements OnInit {
   }
 
   addExercise(exercise){
-    this.exerciseService.addTeamTrainingExercise(teamId, trainingId, exercise);
+    this.exerciseService.addTeamTrainingExercise(this.training.teamId,this.training.id, exercise);
+  }
+  removeExercise(exercise){
+    this.exerciseService.removeTeamTrainingExercise(this.training.teamId,this.training.id, exercise);
+  }
+
+  trackItems(index: number, itemNumber: number) {
+    console.log("trackItems by " + index, itemNumber);
+    return itemNumber;
+  }
+
+
+  updateTeamTrainingExercise(exerciseList){
+
+    for (const exercise of exerciseList){
+      console.log(exercise);
+      this.exerciseService.updateTeamTrainingExerciseOrder(this.training.teamId,this.training.id, exercise.id, exercise.order)
+    }
+
   }
 
   getTeamTrainingExercises(teamId: string, trainingId: string) {
