@@ -101,10 +101,8 @@ export class TrainingExercisesPage implements OnInit {
   }
 
   trackItems(index: number, itemNumber) {
-    console.log("trackItems by index " + index);
-    console.log("trackItems by itemnumber " + JSON.stringify(itemNumber));
-    
-    
+    // console.log("trackItems by index " + index);
+    // console.log("trackItems by itemnumber " + JSON.stringify(itemNumber));
     return itemNumber;
   }
 
