@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, collectionData, docData } from '@angular/fire/firestore';
-import { addDoc, collection, deleteDoc, doc, query, updateDoc, where } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -23,7 +23,7 @@ export class ExerciseService {
       exercisesRefList,
       where(
         "type",
-        ">=",
+        "==",
         type
       )
     )
@@ -36,13 +36,21 @@ export class ExerciseService {
 
   getTeamExerciseRefs(teamId: string): Observable<any[]> {
     const exercisesRefList = collection(this.firestore, `teams/${teamId}/exercises`);
-    return collectionData(exercisesRefList, {
+    
+    return collectionData(exercisesRefList , {
       idField: "id",
     }) as unknown as Observable<any[]>;
   }
   getTeamTrainingExerciseRefs(teamId: string, trainingId: string): Observable<any[]> {
     const exercisesRefList = collection(this.firestore, `teams/${teamId}/trainings/${trainingId}/exercises`);
-    return collectionData(exercisesRefList, {
+    const q = query(
+      exercisesRefList,
+      orderBy(
+        "order",
+        "asc"
+      )
+    )
+    return collectionData(q, {
       idField: "id",
     }) as unknown as Observable<any[]>;
   }

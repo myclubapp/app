@@ -56,8 +56,12 @@
 
     <ion-list [inset]="true" lines="none">
       <ion-item (click)="openTrainingExerciseModal()" detail="true">
-        Exercise
+        <ion-label>Übungen</ion-label>
+        <ion-badge *ngIf="exerciseList$ | async as exerciseList" slot="end">
+          {{exerciseList.length}}
+        </ion-badge>
       </ion-item>
+
     </ion-list>
 
     <ion-list [inset]="true" lines="none" *ngIf="isFuture">

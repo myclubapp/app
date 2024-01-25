@@ -21,6 +21,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { TrainingExercisesPage } from "../training-exercises/training-exercises.page";
 import { MemberPage } from "../../member/member.page";
 import { Profile } from "src/app/models/user";
+import { ExerciseService } from "src/app/services/firebase/exercise.service";
 
 @Component({
   selector: "app-training-detail",
@@ -32,6 +33,7 @@ export class TrainingDetailPage implements OnInit {
   @Input("isFuture") isFuture: boolean;
 
   training$: Observable<any>;
+  exerciseList$: Observable<any[]>;
 
   mode = "yes";
 
@@ -45,13 +47,15 @@ export class TrainingDetailPage implements OnInit {
     private readonly trainingService: TrainingService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private readonly exerciseService: ExerciseService,
   ) {}
 
   ngOnInit() {
     this.training = this.navParams.get("data");
     this.training$ = of(this.training);
     this.training$ = this.getTraining(this.training.teamId, this.training.id);
+    this.exerciseList$ = this.exerciseService.getTeamTrainingExerciseRefs(this.training.teamId, this.training.id);
   }
 
   getTraining(teamId: string, trainingId: string) {

@@ -54,7 +54,7 @@ export class TrainingExercisesPage implements OnInit {
       this.teamFilterSubscription.unsubscribe();
     }*/
   }
-  handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
+  handleReorder(ev: CustomEvent<ItemReorderEventDetail>, list) {
     // The `from` and `to` properties contain the index of the item
     // when the drag started and ended, respectively
     console.log('Dragged from index', ev.detail.from, 'to', ev.detail.to);
@@ -62,12 +62,16 @@ export class TrainingExercisesPage implements OnInit {
     // Finish the reorder and position the item in the DOM based on
     // where the gesture ended. This method can also be called directly
     // by the reorder group
-    ev.detail.complete();
+    const newList = ev.detail.complete(list);
 
-    /*this.teamTrainingExerciseList$.subscribe(data=>{
-      console.log(data);
-      //this.updateTeamTrainingExercise(data);
-    });*/
+    let index = 0;
+    for (const element of newList){
+      this.exerciseService.updateTeamTrainingExerciseOrder(this.training.teamId,this.training.id, element.id, index);
+    
+      index++;
+    }
+
+
   }
   handleSearch(event) {
     console.log(event.detail.value);
@@ -89,26 +93,21 @@ export class TrainingExercisesPage implements OnInit {
   }
 
   addExercise(exercise){
+    exercise["order"] = 0;
     this.exerciseService.addTeamTrainingExercise(this.training.teamId,this.training.id, exercise);
   }
   removeExercise(exercise){
     this.exerciseService.removeTeamTrainingExercise(this.training.teamId,this.training.id, exercise);
   }
 
-  trackItems(index: number, itemNumber: number) {
-    console.log("trackItems by " + index, itemNumber);
+  trackItems(index: number, itemNumber) {
+    console.log("trackItems by index " + index);
+    console.log("trackItems by itemnumber " + JSON.stringify(itemNumber));
+    
+    
     return itemNumber;
   }
 
-
-  updateTeamTrainingExercise(exerciseList){
-
-    for (const exercise of exerciseList){
-      console.log(exercise);
-      this.exerciseService.updateTeamTrainingExerciseOrder(this.training.teamId,this.training.id, exercise.id, exercise.order)
-    }
-
-  }
 
   getTeamTrainingExercises(teamId: string, trainingId: string) {
     return this.exerciseService.getTeamTrainingExerciseRefs(teamId, trainingId);

@@ -1,7 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="secondary">
-      <ion-button (click)="edit()">{{"common.edit" | translate}}</ion-button>
+      <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
+      <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.abbrechen" | translate}}</ion-button>
     </ion-buttons>
     <ion-title>Übungen</ion-title>
     <ion-buttons slot="primary">
@@ -29,7 +30,7 @@
 
       </ion-list-header>
 
-      <ion-reorder-group [disabled]="false" (ionItemReorder)="handleReorder($any($event))">
+      <ion-reorder-group [disabled]="false" (ionItemReorder)="handleReorder($any($event), teamTrainingExerciseList)">
         <ion-item-sliding #item *ngFor="let exercise of teamTrainingExerciseList; trackBy: trackItems">
           <ion-item type="button" detail="true">
             <ion-icon *ngIf="allowEdit==true" slot="icon-only" color="danger" slot="start" name="remove-circle-outline"
