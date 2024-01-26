@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, collectionData, docData } from '@angular/fire/firestore';
-import { addDoc, collection, deleteDoc, doc, orderBy, query, updateDoc, where } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, orderBy, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -56,13 +56,23 @@ export class ExerciseService {
   }
 
   addTeamTrainingExercise(teamId, trainingId, exercise) {
-    return addDoc(
-      collection(this.firestore, `teams/${teamId}/trainings/${trainingId}/exercises`),
+    return setDoc(
+      doc(this.firestore, `teams/${teamId}/trainings/${trainingId}/exercises/${exercise.id}`),
+      exercise
+    );
+  }
+  addTeamExercise(teamId, exercise) {
+    return setDoc(
+      doc(this.firestore, `teams/${teamId}/exercises/${exercise.id}`),
       exercise
     );
   }
   removeTeamTrainingExercise(teamId, trainingId, exercise) {
     const exercisesRef = doc(this.firestore, `teams/${teamId}/trainings/${trainingId}/exercises/${exercise.id}`);
+    return deleteDoc(exercisesRef);
+  }
+  removeTeamExercise(teamId, exercise) {
+    const exercisesRef = doc(this.firestore, `teams/${teamId}/exercises/${exercise.id}`);
     return deleteDoc(exercisesRef);
   }
 

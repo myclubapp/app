@@ -1,9 +1,11 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { Browser } from "@capacitor/browser";
-import { ItemReorderEventDetail, ModalController, NavParams } from "@ionic/angular";
-import { Observable, filter, first, map, pipe } from "rxjs";
+import { ItemReorderEventDetail, ModalController, NavParams, ToastController } from "@ionic/angular";
+import { Observable, filter, first, lastValueFrom, map, pipe, take } from "rxjs";
 import { Training } from "src/app/models/training";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
+import { TeamExercisesPage } from "../../team/team-exercises/team-exercises.page";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: "app-training-exercises",
@@ -27,32 +29,19 @@ export class TrainingExercisesPage implements OnInit {
     public navParams: NavParams,
     private exerciseService: ExerciseService,
     private modalCtrl: ModalController,
+    public toastCtrl: ToastController,
+    private translate: TranslateService,
   ) {
 
   }
 
   ngOnInit() {
     this.training = this.navParams.get("training");
-
-    this.exerciseListTemplate$ = this.getExercises("swissunihockey");
-    this.exerciseListTemplateBackup$ = this.getExercises("swissunihockey");
-
-    this.teamExerciseList$ = this.getTeamExercises(this.training.teamId);
-    this.teamTrainingExerciseList$ = this.getTeamTrainingExercises(this.training.teamId, this.training.id);
+    this.teamTrainingExerciseList$ = this.exerciseService.getTeamTrainingExerciseRefs(this.training.teamId, this.training.id);
 
   }
   ngOnDestroy(): void {
-    /*if (this.trainingListPastBackupSub){
-      this.trainingListPastBackupSub.unsubscribe();
-    }
-    if (this.trainingListBackupSub){
-      this.trainingListBackupSub.unsubscribe();
-    }
-
-    // Unsubscribe to prevent memory leaks
-    if (this.teamFilterSubscription) {
-      this.teamFilterSubscription.unsubscribe();
-    }*/
+  
   }
   handleReorder(ev: CustomEvent<ItemReorderEventDetail>, list) {
     // The `from` and `to` properties contain the index of the item
@@ -77,6 +66,7 @@ export class TrainingExercisesPage implements OnInit {
     console.log(event.detail.value);
 
     this.exerciseListTemplate$ = this.exerciseListTemplateBackup$.pipe(
+      take(1),
       map(items => {
         return items.filter(element => element.title.toLowerCase().includes(event.detail.value.toLowerCase()));
       })
@@ -84,7 +74,6 @@ export class TrainingExercisesPage implements OnInit {
   }
 
   edit() {
-
     if (this.allowEdit) {
       this.allowEdit = false;
     } else {
@@ -92,12 +81,9 @@ export class TrainingExercisesPage implements OnInit {
     }
   }
 
-  addExercise(exercise){
-    exercise["order"] = 0;
-    this.exerciseService.addTeamTrainingExercise(this.training.teamId,this.training.id, exercise);
-  }
   removeExercise(exercise){
     this.exerciseService.removeTeamTrainingExercise(this.training.teamId,this.training.id, exercise);
+    this.toastActionCanceled();
   }
 
   trackItems(index: number, itemNumber) {
@@ -106,22 +92,61 @@ export class TrainingExercisesPage implements OnInit {
     return itemNumber;
   }
 
-
-  getTeamTrainingExercises(teamId: string, trainingId: string) {
-    return this.exerciseService.getTeamTrainingExerciseRefs(teamId, trainingId);
-  }
-  getTeamExercises(teamId: string) {
-    return this.exerciseService.getTeamExerciseRefs(teamId);
-  }
-  getExercises(type: string = "swissunihockey") {
-    return this.exerciseService.getExerciseRefs(type);
-  }
-
   openExercise(exercise) {
     Browser.open({
       url: exercise.video
     })
+  }
 
+  async openTeamTrainingExercise(){
+      const modal = await this.modalCtrl.create({
+        component: TeamExercisesPage,
+        presentingElement: await this.modalCtrl.getTop(),
+        canDismiss: true,
+        showBackdrop: true,
+        componentProps: {
+          training: this.training
+        },
+      });
+      modal.present();
+  
+      const { data, role } = await modal.onWillDismiss();
+  
+      if (role === "confirm") {
+      }
+  
+  }
+
+  async toastActionSaved() {
+    const toast = await this.toastCtrl.create({
+      message: await lastValueFrom(this.translate.get("common.success__saved")),
+      duration: 1500,
+      position: "bottom",
+      color: "success",
+    });
+
+    await toast.present();
+  }
+
+  async toastActionCanceled() {
+    const toast = await this.toastCtrl.create({
+      message: await lastValueFrom(this.translate.get("team.action__canceled")),
+      duration: 1500,
+      position: "bottom",
+      color: "danger",
+    });
+    await toast.present();
+  }
+
+  async toastActionError(error) {
+    const toast = await this.toastCtrl.create({
+      message: error.message,
+      duration: 2000,
+      position: "bottom",
+      color: "danger",
+    });
+
+    await toast.present();
   }
   async close() {
     return await this.modalCtrl.dismiss(null, "close");

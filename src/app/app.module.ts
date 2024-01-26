@@ -54,6 +54,7 @@ import { TeamMemberListPage } from "./pages/team-member-list/team-member-list.pa
 import { ClubAdminListPage } from "./pages/club-admin-list/club-admin-list.page";
 import { TeamAdminListPage } from "./pages/team-admin-list/team-admin-list.page";
 import { ClubTeamListPage } from "./pages/club-team-list/club-team-list.page";
+import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.page";
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { ClubTeamListPage } from "./pages/club-team-list/club-team-list.page";
 
     TeamPage,
     TeamMemberListPage,
-    TeamAdminListPage
+    TeamAdminListPage,
+    TeamExercisesPage
   ],
   imports: [
     BrowserModule,
