@@ -24,8 +24,8 @@ export class TeamExercisesPage implements OnInit {
   constructor(
     public navParams: NavParams,
     public toastCtrl: ToastController,
-    private exerciseService: ExerciseService,
     private translate: TranslateService,
+    private exerciseService: ExerciseService,
     private modalCtrl: ModalController,
   ) {
 
