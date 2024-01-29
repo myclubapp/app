@@ -1,7 +1,7 @@
 <ng-container *ngIf="event$ | async as event">
   <ion-header [translucent]="true">
     <ion-toolbar>
-      <ion-title></ion-title>
+      <ion-title>{{"common.details" | translate}} </ion-title>
       <ion-buttons slot="primary">
         <ion-button (click)="close()"
           >{{"common.close" | translate}}</ion-button
@@ -12,9 +12,12 @@
   <!-- class="ion-padding" -->
 
   <ion-content>
-    <ion-list [inset]="true">
-      <ion-list-header> {{"common.details" | translate}} </ion-list-header>
 
+
+
+
+
+    <ion-list [inset]="true">
       <ion-item>
         <ion-icon slot="start" name="home-outline"></ion-icon>
         <ion-label class="ion-text-wrap">

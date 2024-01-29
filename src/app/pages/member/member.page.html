@@ -16,52 +16,21 @@
 
   <ng-container *ngIf="userProfile$ | async as userProfile; else loading">
     <ion-list lines="full" [inset]="true">
-      <ion-list-header>
-        <ion-label> {{"profile.generally" | translate}} </ion-label>
-      </ion-list-header>
 
-      <ion-item *ngIf="!isRequest">
+
+      <ion-item>
         <ion-avatar slot="start">
-          <img
-            alt="{{userProfile.firstName}}"
-            src="{{userProfile.profilePicture}}"
-          />
+          <img alt="{{userProfile.firstName}} {{userProfile.lastName}}" src="{{userProfile.profilePicture}}" />
         </ion-avatar>
-        <ion-label></ion-label>
-      </ion-item>
-
-      <ion-item>
-        <ion-input
-          readonly
-          labelPlacement="stacked"
-          [label]='"common.first__name" | translate'
-          attr.aria-label='{{"common.first__name" | translate}}'
-          [(ngModel)]="userProfile.firstName"
-          value="{{userProfile.firstName}}"
-        >
-        </ion-input>
+        <ion-label>{{userProfile.firstName}} {{userProfile.lastName}}</ion-label>
       </ion-item>
       <ion-item>
-        <ion-input
-          readonly
-          labelPlacement="stacked"
-          [label]='"common.last__name" | translate'
-          attr.aria-label='{{"common.last__name" | translate}}'
-          [(ngModel)]="userProfile.lastName"
-          value="{{userProfile.lastName}}"
-        >
-        </ion-input>
+        <ion-icon slot="start" name="mail"></ion-icon>
+          <ion-label>{{userProfile.email}}</ion-label>
       </ion-item>
       <ion-item>
-        <ion-input
-          readonly
-          labelPlacement="stacked"
-          [label]='"common.email" | translate'
-          attr.aria-label='{{"common.email" | translate}}'
-          [(ngModel)]="userProfile.email"
-          value="{{userProfile.email}}"
-        >
-        </ion-input>
+        <ion-icon slot="start" name="call"></ion-icon>
+          <ion-label>{{userProfile.phonenumber}}</ion-label>
       </ion-item>
     </ion-list>
 

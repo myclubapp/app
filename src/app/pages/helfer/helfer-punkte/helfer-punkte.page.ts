@@ -1,5 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ModalController } from "@ionic/angular";
+import { Observable } from "rxjs";
+import { HelferService } from "src/app/services/firebase/helfer.service";
 
 @Component({
   selector: "app-helfer-punkte",
@@ -7,9 +9,26 @@ import { ModalController } from "@ionic/angular";
   styleUrls: ["./helfer-punkte.page.scss"],
 })
 export class HelferPunktePage implements OnInit {
-  constructor(private readonly modalCtrl: ModalController) {}
+  helferPunkteList$: Observable<any[]>;
+  groupArray = [];
+  constructor(private readonly modalCtrl: ModalController,
+    private readonly helferService: HelferService) {
 
-  ngOnInit() {}
+    this.helferPunkteList$ = this.helferService.getHelferPunkteList();
+
+  }
+
+  ngOnInit() {
+
+    const currentYear = new Date().getFullYear();
+
+    this.groupArray.push(currentYear);
+    this.groupArray.push(currentYear - 1);
+    this.groupArray.push(currentYear - 2);
+    this.groupArray.push(currentYear - 3);
+
+
+  }
 
   async close() {
     return await this.modalCtrl.dismiss(null, "close");

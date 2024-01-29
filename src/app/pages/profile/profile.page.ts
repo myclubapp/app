@@ -79,7 +79,6 @@ export class ProfilePage implements OnInit, AfterViewInit {
     private translate: TranslateService,
     private readonly modalCtrl: ModalController,
     private readonly routerOutlet: IonRouterOutlet,
-    private cdr: ChangeDetectorRef
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -87,7 +86,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
   async ngOnInit() {
     this.userProfile$ = this.getUserProfile();
 
-    this.teamList$ = this.fbService.getTeamList();
+    /*this.teamList$ = this.fbService.getTeamList();
     this.teamList$.subscribe({
       next: (data) => {
         console.log("Team Data received");
@@ -105,7 +104,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
       },
       error: (err) => console.error("Cluh Error in subscription:", err),
       complete: () => console.log("Club Observable completed"),
-    });
+    });*/
 
     this.deviceId = await Device.getId();
     this.deviceInfo = await Device.getInfo();
