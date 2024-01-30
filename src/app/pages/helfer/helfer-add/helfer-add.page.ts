@@ -68,7 +68,15 @@ export class HelferAddPage implements OnInit {
     this.eventCopy = this.navParams.get("data");
     if (this.eventCopy.id) {
       this.event = this.eventCopy;
-      // this.event.schichten = <any>[];
+      console.log( this.event);
+      
+
+      // TODO READ SCHICHTEN, if available
+      
+    }
+
+    if (!this.event.schichten){
+      this.event.schichten = <any>[];
     }
 
     this.clubAdminList$ = this.fbService.getClubAdminList();

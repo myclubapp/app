@@ -74,14 +74,7 @@
         <ion-label> Teams </ion-label>
         <ion-note slot="end">5</ion-note>
       </ion-item>
-    </ion-list>
-
-    <ion-list lines="full" [inset]="true">
-      <ion-list-header>
-        <ion-label> {{ "common.others" | translate}} </ion-label>
-      </ion-list-header>
-
-      <ion-item detail="true">
+      <ion-item detail="true" (click)="openHelferPunkte()">
         <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
         <ion-label> Helferpunkte </ion-label>
       </ion-item>

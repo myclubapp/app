@@ -32,6 +32,7 @@ import { ClubMemberListPage } from "../club-member-list/club-member-list.page";
 import { ClubAdminListPage } from "../club-admin-list/club-admin-list.page";
 import { TeamListPage } from "../team-list/team-list.page";
 import { ClubTeamListPage } from "../club-team-list/club-team-list.page";
+import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
 
 @Component({
   selector: "app-club",
@@ -251,6 +252,26 @@ async openAdminList(){
     if (role === "confirm") {
     }
   }*/
+
+  async openHelferPunkte(){
+    console.log("open HelferPunkte List");
+    const modal = await this.modalCtrl.create({
+      component: HelferPunktePage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        clubId: this.club.id,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }  
+
+  }
 
 
   async openTeamList(){
