@@ -243,9 +243,9 @@
           <div slot="content">
             <ion-item>
               <ion-icon *ngIf="userProfile.settingsEmail" slot="start" color="success"
-                name="notifications-circle"></ion-icon>
+                name="mail"></ion-icon>
               <ion-icon *ngIf="!userProfile.settingsEmail" slot="start" color="danger"
-                name="notifications-off-circle"></ion-icon>
+                name="mail-outline"></ion-icon>
 
               <ion-toggle color="secondary"
                 attr.aria-label='{{"profile.email__messages" | translate}}' value="{{userProfile?.settingsEmail}}"

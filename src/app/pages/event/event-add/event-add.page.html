@@ -12,6 +12,12 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{"event-add.new__event" | translate}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
   <ion-list [inset]="true">
     <div *ngIf="clubAdminList$ | async as clubList">
       <ion-item *ngIf="clubList.length > 1">
