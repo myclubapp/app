@@ -64,8 +64,8 @@ export class HelferPage implements OnInit {
     private activatedRoute: ActivatedRoute,
   ) {
     this.menuCtrl.enable(true, "menu");
-    this.activatedRoute.url.subscribe(data=>{
-      if ( this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "helferEvent") {
+    this.activatedRoute.url.subscribe(data => {
+      if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "helferEvent") {
         const pushData = this.router.getCurrentNavigation().extras.state;
         console.log("PUSHDATA " + JSON.stringify(pushData));
         let helferEvent: HelferEvent = {
@@ -96,35 +96,10 @@ export class HelferPage implements OnInit {
 
   ngOnInit() {
     this.helferList$ = this.getHelferEvent();
-    /*this.helferList$.subscribe({
-      next: (data) => {
-        console.log("HELFER Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("HELFER Error in subscription:", err),
-      complete: () => console.log("HELFER Observable completed"),
-    });*/
-
     this.helferListPast$ = this.getHelferEventPast();
-    /*this.helferListPast$.subscribe({
-      next: () => {
-        console.log("HELFER PAST Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("HELFER PAST Error in subscription:", err),
-      complete: () => console.log("HELFER PAST Observable completed"),
-    });*/
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
-    /*this.clubAdminList$.subscribe({
-      next: () => {
-        console.log("Club Admin Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Club Admin Error in subscription:", err),
-      complete: () => console.log("Club Admin Observable completed"),
-    });*/
   }
 
   getHelferEvent() {
@@ -138,17 +113,17 @@ export class HelferPage implements OnInit {
         return this.fbService.getUserClubRefs(user);
       }),
       tap((clubs) => console.log("Teams:", clubs)),
-      mergeMap((teams) => {
-        if (teams.length === 0) return of([]);
+      mergeMap((clubs) => {
+        if (clubs.length === 0) return of([]);
         return combineLatest(
-          teams.map((team) =>
-            this.eventService.getClubHelferEventRefs(team.id).pipe(
-              switchMap((teamevents) => {
-                if (teamevents.length === 0) return of([]);
+          clubs.map((club) =>
+            this.eventService.getClubHelferEventRefs(club.id).pipe(
+              switchMap((clubevents) => {
+                if (clubevents.length === 0) return of([]);
                 return combineLatest(
-                  teamevents.map((game) =>
+                  clubevents.map((game) =>
                     this.eventService
-                      .getClubHelferEventAttendeesRef(team.id, game.id)
+                      .getClubHelferEventAttendeesRef(club.id, game.id)
                       .pipe(
                         map((attendees) => {
                           const userAttendee = attendees.find(
@@ -164,7 +139,7 @@ export class HelferPage implements OnInit {
                             countAttendees: attendees.filter(
                               (att) => att.status == true
                             ).length,
-                            teamId: team.id,
+                            clubId: club.id,
                           };
                         }),
                         catchError(() =>
@@ -173,19 +148,19 @@ export class HelferPage implements OnInit {
                             attendees: [],
                             status: null,
                             countAttendees: 0,
-                            teamId: team.id,
+                            clubId: club.id,
                           })
                         ) // If error, return game with empty attendees
                       )
                   )
                 );
               }),
-              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
+              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each club
               catchError(() => of([])) // If error in fetching events, return empty array
             )
           )
         ).pipe(
-          map((teamsevents) => teamsevents.flat()), // Flatten to get all events across all teams
+          map((clubsevents) => clubsevents.flat()), // Flatten to get all events across all clubs
           map(
             (allevents) =>
               allevents.sort(
@@ -215,17 +190,17 @@ export class HelferPage implements OnInit {
         return this.fbService.getUserClubRefs(user);
       }),
       tap((clubs) => console.log("Teams:", clubs)),
-      mergeMap((teams) => {
-        if (teams.length === 0) return of([]);
+      mergeMap((clubs) => {
+        if (clubs.length === 0) return of([]);
         return combineLatest(
-          teams.map((team) =>
-            this.eventService.getClubHelferEventPastRefs(team.id).pipe(
-              switchMap((teamevents) => {
-                if (teamevents.length === 0) return of([]);
+          clubs.map((club) =>
+            this.eventService.getClubHelferEventPastRefs(club.id).pipe(
+              switchMap((clubevents) => {
+                if (clubevents.length === 0) return of([]);
                 return combineLatest(
-                  teamevents.map((game) =>
+                  clubevents.map((game) =>
                     this.eventService
-                      .getClubHelferEventAttendeesRef(team.id, game.id)
+                      .getClubHelferEventAttendeesRef(club.id, game.id)
                       .pipe(
                         map((attendees) => {
                           const userAttendee = attendees.find(
@@ -241,7 +216,7 @@ export class HelferPage implements OnInit {
                             countAttendees: attendees.filter(
                               (att) => att.status == true
                             ).length,
-                            teamId: team.id,
+                            clubId: club.id,
                           };
                         }),
                         catchError(() =>
@@ -250,19 +225,19 @@ export class HelferPage implements OnInit {
                             attendees: [],
                             status: null,
                             countAttendees: 0,
-                            teamId: team.id,
+                            clubId: club.id,
                           })
                         ) // If error, return game with empty attendees
                       )
                   )
                 );
               }),
-              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
+              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each club
               catchError(() => of([])) // If error in fetching events, return empty array
             )
           )
         ).pipe(
-          map((teamsevents) => teamsevents.flat()), // Flatten to get all events across all teams
+          map((clubsevents) => clubsevents.flat()), // Flatten to get all events across all clubs
           map(
             (allevents) =>
               allevents.sort(
@@ -282,7 +257,7 @@ export class HelferPage implements OnInit {
   }
   async toggle(status: boolean, event: HelferEvent) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${event.clubId} and training ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and training ${event.id}`
     );
     await this.eventService.setClubHelferEventAttendeeStatus(
       status,
@@ -300,7 +275,7 @@ export class HelferPage implements OnInit {
     slidingItem.closeOpened();
 
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${event.clubId} and training ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and training ${event.id}`
     );
     await this.eventService.setClubHelferEventAttendeeStatus(
       status,
@@ -395,22 +370,40 @@ export class HelferPage implements OnInit {
   async copyEvent(slidingItem: IonItemSliding, event) {
     slidingItem.closeOpened();
 
-    // const presentingElement = await this.modalCtrl.getTop();
-    const modal = await this.modalCtrl.create({
-      component: HelferAddPage,
-      presentingElement: this.routerOutlet.nativeEl,
-      canDismiss: true,
-      showBackdrop: true,
-      componentProps: {
-        data: event,
-      },
-    });
-    modal.present();
+    this.eventService.getClubHelferEventSchichtenRef(event.clubId, event.id).pipe(
+      take(1),
+      map((schichten) => {
+        // Sort schichten by timeFrom in ascending order
+        return schichten.sort((a, b) => a.timeFrom.localeCompare(b.timeFrom));
+      }),
+      catchError((err) => {
+        console.error("Error in getHelferEventSchichten:", err);
+        return of([]); // Return an empty array on error
+      })
+    ).subscribe(async schichten => {
 
-    const { data, role } = await modal.onWillDismiss();
+      // const presentingElement = await this.modalCtrl.getTop();
+      event["schichten"] = schichten;
 
-    if (role === "confirm") {
-    }
+      const modal = await this.modalCtrl.create({
+        component: HelferAddPage,
+        presentingElement: this.routerOutlet.nativeEl,
+        canDismiss: true,
+        showBackdrop: true,
+        componentProps: {
+          data: event,
+        },
+      });
+      modal.present();
+
+      const { data, role } = await modal.onWillDismiss();
+
+      if (role === "confirm") {
+      }
+
+    })
+
+
   }
 
   async deleteEvent(slidingItem: IonItemSliding, event) {

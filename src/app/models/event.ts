@@ -36,6 +36,7 @@ export interface HelferEvent extends Veranstaltung {
 export interface Schicht {
   id: number;
   name: string;
+  points: number;
   timeFrom: any;
   timeTo: any;
   countNeeded: number;

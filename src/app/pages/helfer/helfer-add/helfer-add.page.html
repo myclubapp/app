@@ -123,15 +123,31 @@
       <ion-label> {{"helper.schichten" | translate}} </ion-label>
       <ion-button (click)="addSchicht()">hinzufügen</ion-button>
     </ion-list-header>
-    <ion-item *ngFor="let schicht of event.schichten" (click)="editSchicht(schicht)">
-      <ion-label>
-        <h3>{{schicht.name}}</h3>
-        <h2>{{schicht.timeFrom}} {{schicht.timeTo}}</h2>
-      </ion-label>
-      <ion-badge>{{schicht.countNeeded}}</ion-badge>
-    </ion-item>
+    <ng-container *ngIf="event.schichten.length > 0; else schichtenTemplate">
+
+      <ion-item *ngFor="let schicht of event.schichten" (click)="editSchicht(schicht)">
+     
+          <ion-icon color="danger" slot="start" name="trash" size="large"></ion-icon>
+        
+        <ion-label>
+          <h3>{{schicht.name}}</h3>
+          <h2>{{schicht.timeFrom}} {{schicht.timeTo}}</h2>
+        </ion-label>
+        <ion-badge slot="end">{{schicht.countNeeded}}</ion-badge>
+      </ion-item>
+    </ng-container>
   </ion-list>
 </ion-content>
+
+<ng-template #schichtenTemplate>
+  <ion-item>
+    <ion-label>
+      <h3><ion-skeleton-text style="width: 60%"></ion-skeleton-text></h3>
+      <h2><ion-skeleton-text style="width: 30%"></ion-skeleton-text> <ion-skeleton-text style="width: 40%"></ion-skeleton-text></h2>
+    </ion-label>
+    
+  </ion-item>
+</ng-template>
 
 <ng-template #loading>
   <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>

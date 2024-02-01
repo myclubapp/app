@@ -72,7 +72,7 @@ export class HelferAddPage implements OnInit {
       
 
       // TODO READ SCHICHTEN, if available
-      
+
     }
 
     if (!this.event.schichten){
@@ -104,7 +104,7 @@ export class HelferAddPage implements OnInit {
 
   async editSchicht(schicht: Schicht) {
     const alert = await this.alertController.create({
-      header: "Helferschicht bearbeiten",
+      header: "Schicht bearbeiten",
       subHeader: " ",
       message: "Eine Helferschicht bearbeiten.",
       inputs: [
@@ -123,6 +123,14 @@ export class HelferAddPage implements OnInit {
           placeholder: "Anzahl Helfer",
           type: "number",
           value: schicht.countNeeded,
+        },
+        {
+          id: "points",
+          name: "points",
+          label: "Anzahl Helferpunkte",
+          placeholder: "1",
+          type: "number",
+          value: schicht.points,
         },
         {
           id: "timeFrom",
@@ -174,7 +182,7 @@ export class HelferAddPage implements OnInit {
   async addSchicht() {
     console.log(this.event.timeTo);
     const alert = await this.alertController.create({
-      header: "Neue Helferschicht",
+      header: "Schicht erstellen",
       subHeader: " ",
       message: "Eine neue Helferschicht erstellen.",
       inputs: [
@@ -191,6 +199,14 @@ export class HelferAddPage implements OnInit {
           label: "Anzahl Helfer",
           placeholder: "Anzahl Helfer",
           type: "number",
+        },
+        {
+          id: "points",
+          name: "points",
+          label: "Anzahl Helferpunkte",
+          placeholder: "Anzahl Helferpunkte",
+          type: "number",
+          value: "",
         },
         {
           id: "timeFrom",
