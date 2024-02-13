@@ -72,7 +72,7 @@ export class NewsPage implements OnInit {
   shareSocialShareOptions: any;
   showSocialShare = false;
 
-  faTwitter: any = faTwitter;
+  faTwitter: any = faTwitter; 
   faFacebook: any = faFacebook;
   faWhatsapp: any = faWhatsapp;
   faLinkedin: any = faLinkedin;
