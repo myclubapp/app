@@ -52,7 +52,6 @@ export class LoginPage implements OnInit {
         authForm.value.email,
         authForm.value.password
       );
-
       this.router.navigateByUrl("/").catch((error) => {
         console.error(error.message);
         this.router.navigateByUrl("");

@@ -59,7 +59,7 @@
     "@fortawesome/fontawesome-svg-core": "6.4.2",
     "@fortawesome/free-brands-svg-icons": "6.4.2",
     "@fortawesome/free-solid-svg-icons": "6.4.2",
-    "@ionic/angular": "7.7.1",
+    "@ionic/angular": "7.7.2",
     "@ionic/pwa-elements": "^3.1.1",
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
@@ -72,7 +72,7 @@
     "husky": "^7.0.4",
     "husky-init": "^8.0.0",
     "rxjs": "7.8.1",
-    "web-social-share": "10.0.0",
+    "web-social-share": "9.1.0",
     "zone.js": "0.13.0"
   },
   "devDependencies": {
