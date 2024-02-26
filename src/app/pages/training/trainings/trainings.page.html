@@ -84,6 +84,10 @@
               <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
               {{training.liga}} {{training.teamName}}
             </h3>
+            <h3>
+              <ion-icon slot="icon-only" name="barbell-outline"></ion-icon>
+              exercises available
+            </h3>
           </ion-label>
           <ion-note slot="end" (click)="openTrainingDetailModal(training,true)">
             <ion-badge color="primary">{{training.countAttendees}}</ion-badge>
