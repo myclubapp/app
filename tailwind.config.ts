@@ -6,7 +6,7 @@ export default {
   ],
   theme: {
     fontFamily: {
-      sans: ["Roboto", '"Segoe UI"', "sans-serif"],
+      // sans: ["Roboto", '"Segoe UI"', "sans-serif"],
     },
     extend: {
       colors: {
@@ -15,6 +15,9 @@ export default {
       },
     },
   },
-  plugins: [require("@tailwindcss/forms"), require("@tailwindcss/typography")],
+  plugins: [
+    require("@tailwindcss/forms"),
+   // require("@tailwindcss/typography")
+  ],
 } satisfies Config
 
