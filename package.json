@@ -82,7 +82,7 @@
     "@angular/language-service": "^16.2.12",
     "@angular/localize": "^16.2.12",
     "@capacitor/cli": "5.7.0",
-    "@ionic/angular-toolkit": "9.0.0",
+    "@ionic/angular-toolkit": "11.0.1",
     "@ionic/cli": "7.2.0",
     "@ionic/lab": "3.2.15",
     "@tailwindcss/typography": "^0.5.10",
