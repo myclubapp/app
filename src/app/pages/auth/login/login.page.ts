@@ -75,6 +75,12 @@ export class LoginPage implements OnInit {
         message = await lastValueFrom(
           this.translate.get("login.error__no_acount_found")
         );
+
+      } else if (err.code == "auth/invalid-email") {
+        message = await lastValueFrom(
+          this.translate.get("login.error__no_acount_found")
+        );
+        
       } else if (err.code == "auth/network-request-failed") {
         message = await lastValueFrom(
           this.translate.get("login.error__network_connection")
