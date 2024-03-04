@@ -50,17 +50,17 @@ export class ChampionshipDetailPage implements OnInit {
 
   mode = "yes";
 
-  user$: Observable<User>;
+//   user$: Observable<User>;
   user: User;
 
   coordinates: Position;
 
   constructor(
     private readonly modalCtrl: ModalController,
-    private navController: NavController,
+    // private navController: NavController,
     private navParams: NavParams,
     private readonly userProfileService: UserProfileService,
-    private readonly route: ActivatedRoute,
+    // private readonly route: ActivatedRoute,
     private readonly championshipService: ChampionshipService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
