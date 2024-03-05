@@ -32,4 +32,5 @@ export interface Training {
   status: boolean;
   countAttendees: number;
   attendees: any;
+  exercises: any;
 }

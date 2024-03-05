@@ -32,6 +32,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { Team } from "src/app/models/team";
 import { FilterService } from "src/app/services/filter.service";
 import { ActivatedRoute, Router } from "@angular/router";
+import { ExerciseService } from "src/app/services/firebase/exercise.service";
 
 @Component({
   selector: "app-trainings",
@@ -72,7 +73,8 @@ export class TrainingsPage implements OnInit {
     private translate: TranslateService,
     private filterService: FilterService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private exerciseService: ExerciseService
   ) {
     this.menuCtrl.enable(true, "menu");
 
@@ -99,7 +101,8 @@ export class TrainingsPage implements OnInit {
           liga: "",
           status: false,
           countAttendees: 0,
-          attendees: undefined
+          attendees: undefined,
+          exercises: undefined,
         };
         this.openTrainingDetailModal(training, true);
       } else {
@@ -195,10 +198,12 @@ export class TrainingsPage implements OnInit {
                 if (teamTrainings.length === 0) return of([]);
                 return combineLatest(
                   teamTrainings.map((training) =>
-                    this.trainingService
-                      .getTeamTrainingsAttendeesRef(team.id, training.id)
-                      .pipe(
-                        map((attendees) => {
+                    combineLatest([
+                      this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id),
+                      this.exerciseService.getTeamTrainingExerciseRefs(team.id, training.id),
+                    ]).pipe(
+                    
+                        map(([attendees, exercises]) => {
                           const userAttendee = attendees.find(
                             (att) => att.id == this.user.uid
                           );
@@ -208,6 +213,7 @@ export class TrainingsPage implements OnInit {
                           return {
                             ...training,
                             attendees,
+                            exercises,
                             status: status,
                             countAttendees: attendees.filter(
                               (att) => att.status == true
@@ -219,6 +225,7 @@ export class TrainingsPage implements OnInit {
                           of({
                             ...training,
                             attendees: [],
+                            exercises: [],
                             status: null,
                             countAttendees: 0,
                             teamId: team.id,
@@ -333,6 +340,7 @@ export class TrainingsPage implements OnInit {
     );
   }
 
+  
   async openTrainingDetailModal(training: Training, isFuture: boolean) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalController.create({

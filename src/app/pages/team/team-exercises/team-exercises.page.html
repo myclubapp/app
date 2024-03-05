@@ -18,11 +18,11 @@
 
   <ng-container *ngIf="teamExerciseList$ | async as teamExerciseList; else loading">
     <ion-list *ngIf="teamExerciseList.length > 0" lines="full">
-      <ion-list class="ion-padding" *ngIf="teamExerciseList.length > 0">
+  
         <ion-list-header>
-          <ion-label>Team Favoriten</ion-label>
+          <ion-label>Favoriten</ion-label>
         </ion-list-header>
-      </ion-list>
+
       <ion-item-sliding #item *ngFor="let exercise of teamExerciseList">
         <ion-item type="button" detail="true">
           <ion-icon slot="icon-only" color="success" slot="start" name="add-circle-outline"

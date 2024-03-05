@@ -53,11 +53,13 @@
         <ion-label>
           Training vom:
         </ion-label>
-
+        <ion-button *ngIf="allowEdit" (click)="openTeamTrainingExercise()">
+          hinzufügen
+        </ion-button>
       </ion-list-header>
       <ion-item>
         <ion-note>
-          Keine Übungen
+          Keine Übungen vorhanden
         </ion-note>
       </ion-item>
     </ion-list>

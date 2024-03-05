@@ -68,6 +68,7 @@ export class TrainingCreatePage implements OnInit {
 
       status: true,
       attendees: [],
+      exercises: [],
       countAttendees: 0,
     };
   }
