@@ -6,16 +6,35 @@
     <ion-title>{{"common.championship" | translate}}</ion-title>
 
     <ion-buttons slot="end">
-      <!--  <ng-container *ngIf="teamList$ | async as teamList">
-        <ng-container *ngIf="teamList.length > 0">
-          <ion-button *ngIf="!filterValue" (click)="openFilter($event)">
-            <ion-icon slot="icon-only" name="filter"></ion-icon>
-          </ion-button>
-          <ion-button *ngIf="filterValue" (click)="openFilter($event)">
-            <ion-icon slot="icon-only" name="filter-circle"></ion-icon>
-          </ion-button>
-        </ng-container>
-      </ng-container>-->
+      <ion-button id="championshipMoreButton">
+        <ion-icon slot="icon-only" name="ellipsis-horizontal-outline"></ion-icon>
+      </ion-button>
+      <ion-popover trigger="championshipMoreButton" size="auto">
+        <ng-template>
+          <ion-content class="ion-padding">
+            <ion-list>
+              <ion-list-header>
+                <ion-note>
+                  Alle Spiele
+                </ion-note>
+              </ion-list-header>
+              <ion-item type="button" detail="true">
+                <ion-icon slot="start" name="checkmark-circle" color="success">
+                </ion-icon>
+                <ion-label>
+                  zusagen
+                </ion-label></ion-item>
+              <ion-item type="button" detail="true">
+                <ion-icon slot="start" name="close-circle" color="danger">
+                </ion-icon>
+                <ion-label>
+                  absagen
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-content>
+        </ng-template>
+      </ion-popover>
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
