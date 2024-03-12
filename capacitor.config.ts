@@ -7,7 +7,6 @@ const config: CapacitorConfig = {
   "server": {
     "allowNavigation": ["http://developers.google.com/*"]
   },
-  bundledWebRuntime: false,
   android: {
     buildOptions: {
       keystorePath: 'undefined',
