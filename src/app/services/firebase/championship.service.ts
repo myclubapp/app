@@ -16,6 +16,7 @@ import {
   query,
   where,
 } from "@angular/fire/firestore";
+import { orderBy } from "firebase/firestore";
 import { Observable, Observer } from "rxjs";
 import { Game } from "src/app/models/game";
 
@@ -55,7 +56,8 @@ export class ChampionshipService {
         "dateTime",
         ">=",
         Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
-      )
+      ),
+      orderBy('dateTime','asc')
     ); // heute - 1 Tag
     return collectionData(q, { idField: "id" }) as Observable<
       Game[]
@@ -73,7 +75,8 @@ export class ChampionshipService {
         "<",
         Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
       ),
-      limit(20)
+      limit(20),
+      orderBy('dateTime','desc')
     ); // heute - 1 Tag
     return collectionData(q, { idField: "id" }) as Observable<
       Game[]
