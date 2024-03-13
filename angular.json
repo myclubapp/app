@@ -441,7 +441,7 @@
               "buildTarget": "app:build:production"
             },
             "ci": {
-             
+              "progress": false
             }
           }
         },

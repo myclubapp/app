@@ -1,13 +1,12 @@
 {
 	"appId": "app.myclub.defaultapp",
 	"appName": "myclub",
-	"webDir": "www",
+	"webDir": "www/browser",
 	"server": {
 		"allowNavigation": [
 			"http://developers.google.com/*"
 		]
 	},
-	"bundledWebRuntime": false,
 	"android": {},
 	"plugins": {
 		"PushNotifications": {
