@@ -58,8 +58,7 @@
             "sourceMap": true,
             "optimization": false,
             "namedChunks": true,
-            "serviceWorker": true,
-            "ngswConfigPath": "ngsw-config.json",
+            "serviceWorker": "ngsw-config.json",
             "browser": "src/main.ts"
           },
           "configurations": {
