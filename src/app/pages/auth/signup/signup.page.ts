@@ -10,6 +10,9 @@ import {
   LoadingController,
   MenuController,
 } from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
+import { UserCredential } from "firebase/auth";
+import { lastValueFrom } from "rxjs";
 import { UserCredentialLogin, Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 
@@ -29,7 +32,8 @@ export class SignupPage implements OnInit {
     // private afs: AngularFirestore,
     public menuCtrl: MenuController,
     private readonly loadingCtrl: LoadingController,
-    private readonly router: Router
+    private readonly router: Router,
+    private translate: TranslateService
   ) {
     this.authForm = this.formBuilder.group({
       email: ["", Validators.compose([Validators.required, Validators.email])],
@@ -40,75 +44,132 @@ export class SignupPage implements OnInit {
   }
 
   ngOnInit() {
+    this.menuCtrl.enable(false, "menu");
     this.user = {
       email: "",
       password: "",
     };
-
-    this.menuCtrl.enable(false, "menu");
   }
 
-  submitCredentials(authForm: UntypedFormGroup): void {
+  async submitCredentials(authForm: UntypedFormGroup): Promise<void> {
     if (!authForm.valid) {
-      // console.log('Form is not valid yet, current value:', authForm.value);
       this.alertCtrl
         .create({
-          message: "Formular ist noch fehlerhaft",
-          buttons: [{ text: "Ok", role: "cancel" }],
+          message: await lastValueFrom(
+            this.translate.get("common.error__invalid_form")
+          ),
+          buttons: [
+            {
+              text: await lastValueFrom(this.translate.get("common.ok")),
+              role: "cancel",
+            },
+          ],
         })
         .then((alert) => {
           alert.present();
         });
     } else {
-      this.presentLoading();
+      const loading = await this.loadingCtrl.create({
+        cssClass: "my-custom-class",
+        message:
+          (await lastValueFrom(this.translate.get("common.please__wait"))) +
+          "...",
+        // duration: 10000,
+      });
+      await loading.present();
+
       const credentials: UserCredentialLogin = {
         email: authForm.value.email,
         password: authForm.value.password,
       };
 
-      this.signupUser(credentials, {
-        firstName: authForm.value.firstName,
-        lastName: authForm.value.lastName,
-      });
+      try {
+        const signupUserResponse: UserCredential = await this.signupUser(
+          credentials,
+          {
+            firstName: authForm.value.firstName,
+            lastName: authForm.value.lastName,
+          }
+        );
+
+        if (signupUserResponse.operationType !== "signIn") {
+          console.log(signupUserResponse.operationType);
+        }
+
+        /*await this.authService.logout();
+        await this.router.navigateByUrl("login");*/
+
+        const alert = await this.alertCtrl.create({
+          header: await lastValueFrom(
+            this.translate.get("signup.account__created")
+          ),
+          message: "signup.account__created_description",
+          buttons: [
+            {
+              text: await lastValueFrom(this.translate.get("common.ok")),
+              role: "confirm",
+            },
+          ],
+        });
+        await loading.dismiss();
+        alert.present();
+        const { data, role } = await alert.onDidDismiss();
+        if (role === "confirm") {
+        }
+        this.authService.login(credentials.email, credentials.password);
+        // await this.router.navigateByUrl(""); // --> this should trigger appcomponent?
+      } catch (err) {
+        let message =
+          (await lastValueFrom(
+            this.translate.get("common.general__error_occurred")
+          )) +
+          ": " +
+          err.code +
+          " / " +
+          err.message;
+        console.error(err.code);
+
+        if (err.code == "auth/email-already-in-use") {
+          message = await lastValueFrom(
+            this.translate.get("signup.email__already_in_use")
+          );
+        } else {
+          console.log("Error");
+        }
+        await loading.dismiss();
+        const alert = await this.alertCtrl.create({
+          header: await lastValueFrom(this.translate.get("common.mistake")),
+          message: message,
+          buttons: [
+            {
+              text: await lastValueFrom(this.translate.get("common.ok")),
+              role: "cancel",
+            },
+          ],
+        });
+        alert.present();
+      }
     }
   }
 
-  async presentLoading() {
+  /* async presentLoading() {
     const loading = await this.loadingCtrl.create({
       cssClass: "my-custom-class",
-      message: "Bitte warten...",
+      message: await lastValueFrom(this.translate.get("please__wait"))+"...",
       duration: 2000,
     });
     await loading.present();
 
     const { role, data } = await loading.onDidDismiss();
     console.log("Loading dismissed!");
-  }
+  }*/
 
-  async signupUser(
-    credentials: UserCredentialLogin,
-    userData: any
-  ): Promise<void> {
-    console.log("signup user: " + credentials.email);
-
-    try {
-      const userCredential = await this.authService.signup(
-        credentials.email,
-        credentials.password,
-        userData.firstName,
-        userData.lastName
-      );
-
-      await this.router.navigateByUrl("login");
-    } catch (err) {
-      this.alertCtrl
-        .create({
-          message: err.message,
-          buttons: [{ text: "Ok", role: "cancel" }],
-        })
-        .then((alert) => {
-          alert.present();
-        });
-    }
+  async signupUser(credentials: UserCredentialLogin, userData: any) {
+    return this.authService.signup(
+      credentials.email,
+      credentials.password,
+      userData.firstName,
+      userData.lastName
+    );
   }
 }

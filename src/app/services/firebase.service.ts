@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import {
   Firestore,
   addDoc,
@@ -13,14 +13,17 @@ import {
 } from "@angular/fire/firestore";
 
 import {
-  Storage,
-  ref,
-  uploadString,
-  getDownloadURL,
-} from "@angular/fire/storage";
-
-
-import { Observable, Observer } from "rxjs";
+  Observable,
+  Observer,
+  catchError,
+  combineLatest,
+  map,
+  mergeMap,
+  of,
+  switchMap,
+  take,
+  tap,
+} from "rxjs";
 import {
   Club,
   SwissHandballClub,
@@ -33,17 +36,178 @@ import { User, UserProfile } from "@angular/fire/auth";
 
 import { AuthService } from "src/app/services/auth.service";
 import { DocumentData, query, where } from "@angular/fire/firestore";
+import { Profile } from "../models/user";
 
 @Injectable({
   providedIn: "root",
 })
 export class FirebaseService {
-  inviteList: any = [];
+  user: User;
   constructor(
-    private readonly firestore: Firestore,
-    private readonly storage: Storage,
+    private readonly firestore: Firestore = inject(Firestore),
     private readonly authService: AuthService
-  ) {}
+  ) { }
+
+  getClubList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.getUserClubRefs(user);
+      }),
+      tap((clubs) => console.log("Clubs:", clubs)),
+      mergeMap((clubs) => {
+        if (clubs.length === 0) return of([]);
+        return combineLatest(
+          clubs.map((club) =>
+            this.getClubRef(club.id).pipe(
+              catchError(() => of(null)) // In case of error, return null for this club
+            )
+          )
+        );
+      }),
+      map((clubsWithDetails) =>
+        clubsWithDetails.filter((club) => club !== null)
+      ), // Filter out null (error cases)
+      tap((results) => console.log("Final results with all clubs:", results)),
+      catchError((err) => {
+        console.error("Error in getClubList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+  getClubAdminList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.getUserClubAdminRefs(user);
+      }),
+      tap((clubs) => console.log("Admin Clubs:", clubs)),
+      mergeMap((clubs) => {
+        if (clubs.length === 0) return of([]);
+        return combineLatest(
+          clubs.map((club) =>
+            this.getClubRef(club.id).pipe(
+              catchError(() => of(null)) // In case of error, return null for this club
+            )
+          )
+        );
+      }),
+      map((clubsWithDetails) =>
+        clubsWithDetails.filter((club) => club !== null)
+      ), // Filter out null (error cases)
+      tap((results) => console.log("Final results with all clubs:", results)),
+      catchError((err) => {
+        console.error("Error in getClubList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+
+  getTeamList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.getUserTeamRefs(user);
+      }),
+      tap((teams) => console.log("Teams:", teams)),
+      mergeMap((teams) => {
+        if (teams.length === 0) return of([]);
+        return combineLatest(
+          teams.map((team) =>
+            this.getTeamRef(team.id).pipe(
+              catchError(() => of(null)) // In case of error, return null for this team
+            )
+          )
+        );
+      }),
+      map((teamsWithDetails) =>
+        teamsWithDetails.filter((team) => team !== null)
+      ), // Filter out null (error cases)
+      tap((results) => console.log("Final results with all teams:", results)),
+      catchError((err) => {
+        console.error("Error in getTeamList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+
+  getClubTeamList(clubId) {
+    return this.getClubTeamsRef(clubId).pipe(
+      tap((teams) => console.log("Teams for club:", teams)),
+      mergeMap((teams) => {
+        if (teams.length === 0) {
+          console.log("No teams found for club");
+          return of([]);
+        }
+        return combineLatest(
+          teams.map((team) =>
+            this.getTeamRef(team.id).pipe(
+              catchError((error) => {
+                console.error(`Error fetching details for team ${team.id}:`, error);
+                return of(null); // In case of error, return null for this team
+              })
+            )
+          )
+        );
+      }),
+      map((teamsWithDetails) => {
+        const filteredTeams = teamsWithDetails.filter((team) => team !== null); // Filter out null (error cases)
+        console.log("Filtered teams:", filteredTeams);
+        return filteredTeams;
+      }),
+      tap((results) => console.log("Final results with all teams for club:", results)),
+      catchError((err) => {
+        console.error("Error in getClubTeamsWithDetails:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+
+
+
+  getTeamAdminList() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.getUserTeamAdminRefs(user);
+      }),
+      tap((teams) => console.log("Teams:", teams)),
+      mergeMap((teams) => {
+        if (teams.length === 0) return of([]);
+        return combineLatest(
+          teams.map((team) =>
+            this.getTeamRef(team.id).pipe(
+              catchError(() => of(null)) // In case of error, return null for this team
+            )
+          )
+        );
+      }),
+      map((teamsWithDetails) =>
+        teamsWithDetails.filter((team) => team !== null)
+      ), // Filter out null (error cases)
+      tap((results) => console.log("Final results with all teams:", results)),
+      catchError((err) => {
+        console.error("Error in getTeamList:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
 
   /* CLUBS */
   getClubRef(clubId: string) {
@@ -54,22 +218,20 @@ export class FirebaseService {
   searchClubListRef(searchString: string): Observable<Club[]> {
     const clubRefList = collection(this.firestore, `club/`);
 
-    const q = query(clubRefList, where("name", "==", searchString)); // heute - 1 Woche
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
-      Club[]
-    >;
+    // const q = query(clubRefList, where("name", "==", searchString));
+    return collectionData(clubRefList, { idField: "id" }) as Observable<Club[]>;
   }
 
   getActiveClubList(): Observable<Club[]> {
     const clubRefList = collection(this.firestore, `club/`);
 
-    const q = query(clubRefList, where("active", "==", true)); // heute - 1 Woche
+    const q = query(clubRefList, where("active", "==", true));
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       Club[]
     >;
   }
 
-  getUserClubRefs(user: User): Observable<DocumentData[]> {
+  getUserClubRefs(user: User): Observable<Club[]> {
     //console.log(user);
     const clubRefList = collection(
       this.firestore,
@@ -77,47 +239,57 @@ export class FirebaseService {
     );
     return collectionData(clubRefList, {
       idField: "id",
-    });
+    }) as Observable<Club[]>;
   }
 
-  getClubMemberRefs(clubId: string): Observable<any> {
+  getClubTeamsRef(clubId: string): Observable<Team[]> {
+    const clubTeamRefList = collection(
+      this.firestore,
+      `club/${clubId}/teams`
+    );
+    return collectionData(clubTeamRefList, {
+      idField: "id",
+    }) as Observable<Team[]>;
+  }
+
+  getClubMemberRefs(clubId: string): Observable<Profile[]> {
     const clubMemberRefList = collection(
       this.firestore,
       `club/${clubId}/members`
     );
     return collectionData(clubMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<any>;
+    }) as unknown as Observable<Profile[]>;
   }
 
-  getClubAdminRefs(clubId: string): Observable<any> {
+  getClubAdminRefs(clubId: string): Observable<Profile[]> {
     const clubMemberRefList = collection(
       this.firestore,
       `club/${clubId}/admins`
     );
     return collectionData(clubMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<any>;
+    }) as unknown as Observable<Profile[]>;
   }
 
-  getClubRequestRefs(clubId: string): Observable<any> {
+  getClubRequestRefs(clubId: string): Observable<Profile[]> {
     const clubRequestRefList = collection(
       this.firestore,
       `club/${clubId}/requests`
     );
     return collectionData(clubRequestRefList, {
       idField: "id",
-    }) as unknown as Observable<any>;
+    }) as unknown as Observable<Profile[]>;
   }
 
-  getTeamRequestRefs(teamId: string): Observable<any> {
+  getTeamRequestRefs(teamId: string): Observable<Profile[]> {
     const teamRequestRefList = collection(
       this.firestore,
       `teams/${teamId}/requests`
     );
     return collectionData(teamRequestRefList, {
       idField: "id",
-    }) as unknown as Observable<any>;
+    }) as unknown as Observable<Profile[]>;
   }
 
   /* TEAMS */
@@ -127,14 +299,34 @@ export class FirebaseService {
     return docData(teamRef, { idField: "id" }) as Observable<Team>;
   }
 
-  getUserTeamRefs(user: User): Observable<DocumentData[]> {
+  getUserTeamRefs(user: User): Observable<Team[]> {
     const teamRefLIst = collection(
       this.firestore,
       `userProfile/${user.uid}/teams`
     );
     return collectionData(teamRefLIst, {
       idField: "id",
-    });
+    }) as Observable<Team[]>;
+  }
+
+  getUserTeamAdminRefs(user: User): Observable<Team[]> {
+    const teamRefLIst = collection(
+      this.firestore,
+      `userProfile/${user.uid}/teamAdmin`
+    );
+    return collectionData(teamRefLIst, {
+      idField: "id",
+    }) as Observable<Team[]>;
+  }
+
+  getUserClubAdminRefs(user: User): Observable<Club[]> {
+    const clubRefList = collection(
+      this.firestore,
+      `userProfile/${user.uid}/clubAdmin`
+    );
+    return collectionData(clubRefList, {
+      idField: "id",
+    }) as Observable<Club[]>;
   }
 
   getUserClubRequestRefs(user: User): Observable<any> {
@@ -171,79 +363,127 @@ export class FirebaseService {
     return docData(requestRef, { idField: "id" }) as Observable<any>;
   }
 
-  setApproveUserClubRequest(clubId: string, requestId: string): Promise<any> {
-    return setDoc(doc(this.firestore, `club/${clubId}/requests`, requestId), {
-      approve: true,
-    });
-  }
-
-  setApproveUserTeamRequest(teamId: string, requestId: string): Promise<any> {
-    return setDoc(doc(this.firestore, `teams/${teamId}/requests`, requestId), {
-      approve: true,
-    });
-  }
-
-  async deleteUserClubRequest(clubId: string, requestId: string) {
-    const requestRef = doc(
-      this.firestore,
-      `/userProfile/${requestId}/clubRequests/${clubId}`
+  approveUserClubRequest(clubId: string, userId: string): Promise<any> {
+    console.log("club " + clubId, " / userid " + userId);
+    return setDoc(
+      doc(this.firestore, `/club/${clubId}/requests/${userId}`),
+      {
+        approve: true,
+      },
+      {
+        merge: true,
+      }
     );
-    return deleteDoc(requestRef);
   }
-
-  async deleteUserTeamRequest(teamId: string, requestId: string) {
-    const requestRef = doc(
-      this.firestore,
-      `/userProfile/${requestId}/teamRequests/${teamId}`
+  async approveUserTeamRequest(teamId: string, userId: string): Promise<any> {
+    // trigger create event on backend -> not handled, because no status field for approve
+    await setDoc(
+      doc(this.firestore, `teams/${teamId}/requests/${userId}`),
+      {},
+      {
+        merge: true,
+      }
     );
-    return deleteDoc(requestRef);
+    // then trigger update event on backend --> handled
+    // --> only "modify" event is handled
+    return setDoc(
+      doc(this.firestore, `teams/${teamId}/requests/${userId}`),
+      {
+        approve: true,
+      },
+      {
+        merge: true,
+      }
+    );
   }
 
-  getClubTeamRefs(clubId: string): Observable<Team> {
+  async deleteUserClubRequest(clubId: string, userId: string) {
+    return setDoc(
+      doc(this.firestore, `club/${clubId}/requests/${userId}`),
+      {
+        approve: false,
+      },
+      {
+        merge: true,
+      }
+    );
+  }
+
+  async deleteUserTeamRequest(teamId: string, userId: string) {
+    return setDoc(
+      doc(this.firestore, `teams/${teamId}/requests/${userId}`),
+      {
+        approve: false,
+      },
+      {
+        merge: true,
+      }
+    );
+  }
+
+  getClubTeamRefs(clubId: string): Observable<Team[]> {
     const teamRefLIst = collection(this.firestore, `club/${clubId}/teams`);
     return collectionData(teamRefLIst, {
       idField: "id",
-    }) as unknown as Observable<Team>;
+    }) as unknown as Observable<Team[]>;
   }
 
-  getTeamMemberRefs(teamId: string): Observable<any> {
+  getTeamMemberRefs(teamId: string): Observable<Profile[]> {
     const teamMemberRefList = collection(
       this.firestore,
       `teams/${teamId}/members`
     );
     return collectionData(teamMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<any>;
+    }) as unknown as Observable<Profile[]>;
   }
 
-  getTeamAdminRefs(teamId: string): Observable<any> {
+  getTeamAdminRefs(teamId: string): Observable<Profile[]> {
     const teamMemberRefList = collection(
       this.firestore,
       `teams/${teamId}/admins`
     );
     return collectionData(teamMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<any>;
+    }) as unknown as Observable<Profile[]>;
   }
 
-  async setClubRequest(clubId: string) {
-    const user = await this.authService.getUser();
+  async setClubRequest(clubId: string, userId: string) {
+    // const user = await this.authService.getUser();
     const clubRef = doc(this.firestore, `/club/${clubId}`);
     return setDoc(
-      doc(this.firestore, `userProfile/${user.uid}/clubRequests`, clubId),
+      doc(this.firestore, `userProfile/${userId}/clubRequests`, clubId),
       {
         clubRef: clubRef,
       }
     );
   }
-  async setTeamRequest(teamId: string) {
-    const user = await this.authService.getUser();
+  async setTeamRequest(teamId: string, userId: string) {
+    // const user = await this.authService.getUser();
     const teamRef = doc(this.firestore, `/teams/${teamId}`);
     return setDoc(
-      doc(this.firestore, `userProfile/${user.uid}/teamRequests`, teamId),
+      doc(this.firestore, `userProfile/${userId}/teamRequests`, teamId),
       {
         teamRef: teamRef,
       }
+    );
+  }
+
+  async deleteTeamMember(teamId: string, userId: string): Promise<any> {
+    return deleteDoc(doc(this.firestore, `teams/${teamId}/members/${userId}`));
+  }
+  async deleteTeamAdmin(teamId: string, userId: string): Promise<any> {
+    await deleteDoc(doc(this.firestore, `teams/${teamId}/admins/${userId}`));
+  }
+
+  async deleteClubember(clubId: string, userId: string): Promise<any> {
+    await deleteDoc(
+      doc(this.firestore, `club/${clubId}/members/${userId}`),
+    );
+  }
+  async deleteClubAdmin(clubId: string, userId: string): Promise<any> {
+    await deleteDoc(
+      doc(this.firestore, `club/${clubId}/admins/${userId}`),
     );
   }
 }

@@ -7,9 +7,10 @@ import { IonicModule } from '@ionic/angular';
 import { ClubListPageRoutingModule } from './club-list-routing.module';
 
 import { ClubListPage } from './club-list.page';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, ClubListPageRoutingModule],
+  imports: [CommonModule, FormsModule, IonicModule, ClubListPageRoutingModule, TranslateModule],
   declarations: [ClubListPage]
 })
 export class ClubListPageModule {}

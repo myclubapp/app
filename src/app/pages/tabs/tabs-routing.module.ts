@@ -5,7 +5,7 @@ import { TabsPage } from './tabs.page';
 
 const routes: Routes = [
   {
-    path: 'tabs',
+    path: 't',
     component: TabsPage,
     children: [
       {
@@ -33,17 +33,23 @@ const routes: Routes = [
            import('../event/events/events.module').then(
             (m) => m.EventsPageModule
           )
+      },      {
+        path: 'helfer',
+        loadChildren:  () =>
+           import('../helfer/helfer/helfer.module').then(
+            (m) => m.HelferPageModule
+          )
       },
       {
         path: '',
-        redirectTo: '/tabs/news',
+        redirectTo: '/t/news',
         pathMatch: 'full',
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/tabs/news',
+    redirectTo: '/t/news',
     pathMatch: 'full',
   }
 ]

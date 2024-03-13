@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 
 import { User } from "@angular/fire/auth";
 import {
@@ -33,12 +33,10 @@ import { DeviceId, DeviceInfo } from "@capacitor/device";
 })
 export class UserProfileService {
   constructor(
-    private readonly firestore: Firestore,
+    private firestore: Firestore = inject(Firestore),
     private readonly storage: Storage,
     private readonly authService: AuthService
-  ) {
-
-  }
+  ) {}
 
   getUserProfile(user: User): Observable<Profile> {
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
@@ -83,23 +81,38 @@ export class UserProfileService {
     });
   }
 
-  async addPushSubscriber(sub: PushSubscription, deviceId: DeviceId, deviceInfo: DeviceInfo) {
+  async addPushSubscriber(
+    sub: PushSubscription, // WebPush
+    deviceId: DeviceId,
+    deviceInfo: DeviceInfo,
+    token: string // native
+  ) {
     const user = this.authService.auth.currentUser;
     const pushObject = JSON.stringify(sub);
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}/push/${deviceId.uuid}`);
-    return setDoc(userProfileRef, 
-      { pushObject : pushObject, 
-        updated: new Date(), 
-        model: deviceInfo.model  || "", 
-        operatingSystem: deviceInfo.operatingSystem  || "", 
-        osVersion: deviceInfo.osVersion || "", 
-        platform: deviceInfo.platform || ""
-      });
+    const userProfileRef: DocumentReference<DocumentData> = doc(
+      this.firestore,
+      // `userProfile/${user.uid}/push/${deviceId.identifier}`
+      `userProfile/${user.uid}/push/${deviceInfo.model}`
+    );
+
+    return setDoc(userProfileRef, {
+      identifier: deviceId.identifier,
+      token: token || "", // Set token for native Web Push
+      pushObject: pushObject || "{}", // Set token for web push
+      model: deviceInfo.model || "",
+      operatingSystem: deviceInfo.operatingSystem || "",
+      osVersion: deviceInfo.osVersion || "",
+      platform: deviceInfo.platform || "", // --> set to "Web" for Web Push from Backend or "Native" for Native Push from firebase
+      updated: new Date(),
+    });
   }
 
   async deletePushDevice(deviceId) {
     const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}/push/${deviceId}`);
+    const userProfileRef = doc(
+      this.firestore,
+      `userProfile/${user.uid}/push/${deviceId}`
+    );
     return deleteDoc(userProfileRef);
   }
 
@@ -107,6 +120,11 @@ export class UserProfileService {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { settingsPush: state });
+  }
+  async changeSettingsPushModule(state: boolean, module) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { ["settingsPush" + module]: state });
   }
 
   async changeSettingsEmail(state: boolean) {
@@ -120,4 +138,29 @@ export class UserProfileService {
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { settingsEmailReporting: state });
   }
+
+  changeProfileAttribute(value: any, fieldname) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { [fieldname]: value });
+  }
+
+  /*
+  async changeLanguage(state: string) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { language: state });
+  }
+
+  async changeFavTeam(state: string) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { favTeam: state });
+  }
+
+  async changeFavClub(state: string) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { favClub: state });
+  }*/
 }

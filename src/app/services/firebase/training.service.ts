@@ -1,6 +1,7 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import {
-  limit, Timestamp ,
+  limit,
+  Timestamp,
   Firestore,
   addDoc,
   collection,
@@ -9,34 +10,68 @@ import {
   setDoc,
   query,
   where,
+  docData,
 } from "@angular/fire/firestore";
 
 // import firebase from 'firebase/compat/app';
-import { Observable, Observer } from "rxjs";
+import {
+  Observable,
+  Observer,
+  Subscription,
+  catchError,
+  concatMap,
+  defaultIfEmpty,
+  finalize,
+  forkJoin,
+  from,
+  map,
+  of,
+  switchMap,
+  take,
+  tap,
+} from "rxjs";
 
 import { AuthService } from "src/app/services/auth.service";
 import { Training } from "src/app/models/training";
+import { User } from "firebase/auth";
+import { FirebaseService } from "../firebase.service";
+import { Team } from "src/app/models/team";
+import { deleteDoc } from "firebase/firestore";
 
 @Injectable({
   providedIn: "root",
 })
 export class TrainingService {
+  private subscription: Subscription;
+
+  teamList: any[] = [];
   constructor(
-    private readonly firestore: Firestore,
-    private readonly authService: AuthService
+    private firestore: Firestore = inject(Firestore),
+    private readonly authService: AuthService,
+    private readonly fbService: FirebaseService
   ) {}
 
   async setCreateTraining(training: Training) {
+    const user = this.authService.auth.currentUser;
     console.log("training");
-    const user = await this.authService.getUser();
+    console.log(training);
     return addDoc(
       collection(this.firestore, `userProfile/${user.uid}/trainings`),
       training
     );
   }
 
+  getTeamTrainingRef(teamId: string, trainingId: string): Observable<Training> {
+    // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
+    const gameRef = doc(
+      this.firestore,
+      `teams/${teamId}/trainings/${trainingId}`
+    );
+    return docData(gameRef, { idField: "id" }) as Observable<Training>;
+  }
+
   /* TEAM TrainingS */
-  getTeamTrainingsRef(teamId: string): Observable<Training[]> {
+  getTeamTrainingsRefs(teamId: string): Observable<Training[]> {
     // console.log(`Read Team Trainings List Ref ${teamId}`)
     const trainingsRefList = collection(
       this.firestore,
@@ -47,7 +82,7 @@ export class TrainingService {
       where(
         "date",
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 7))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
       )
     ); // heute - 1 Woche
     return collectionData(q, { idField: "id" }) as unknown as Observable<
@@ -56,7 +91,7 @@ export class TrainingService {
   }
 
   // PAST 20 Entries
-  getTeamTrainingsRefPast(teamId: string): Observable<Training[]> {
+  getTeamTrainingsPastRefs(teamId: string): Observable<Training[]> {
     // console.log(`Read Team Trainings List Ref ${teamId}`)
     const trainingsRefList = collection(
       this.firestore,
@@ -67,7 +102,7 @@ export class TrainingService {
       where(
         "date",
         "<",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 7))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
       ),
       limit(20)
     ); // heute - 1 Woche
@@ -76,7 +111,7 @@ export class TrainingService {
     >;
   }
 
-  /* CLUB TrainingS */
+  /* CLUB TrainingS
   getClubTrainingsRef(clubId: string): Observable<Training> {
     const trainingsRefList = collection(
       this.firestore,
@@ -85,7 +120,7 @@ export class TrainingService {
     return collectionData(trainingsRefList, {
       idField: "id",
     }) as unknown as Observable<Training>;
-  }
+  } */
 
   /* TEAM TrainingS ATTENDEES */
   getTeamTrainingsAttendeesRef(
@@ -104,15 +139,23 @@ export class TrainingService {
 
   /* TEAM TrainingS ATTENDEE Status */
   async setTeamTrainingAttendeeStatus(
-    userId: string,
     status: boolean,
     teamId: string,
     trainingId: string
   ) {
+    const user = this.authService.auth.currentUser;
     const statusRef = doc(
       this.firestore,
-      `teams/${teamId}/trainings/${trainingId}/attendees/${userId}`
+      `teams/${teamId}/trainings/${trainingId}/attendees/${user.uid}`
     );
     return await setDoc(statusRef, { status });
+  }
+
+  deleteTeamTraining(teamId: string, trainingId: string) {
+    const gameRef = doc(
+      this.firestore,
+      `teams/${teamId}/trainings/${trainingId}`
+    );
+    return deleteDoc(gameRef);
   }
 }

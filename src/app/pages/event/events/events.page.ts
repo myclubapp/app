@@ -7,13 +7,30 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { of, combineLatest } from "rxjs";
-import { switchMap, map } from "rxjs/operators";
-import { Event } from "src/app/models/event";
+import {
+  Observable,
+  catchError,
+  combineLatest,
+  first,
+  lastValueFrom,
+  map,
+  mergeMap,
+  of,
+  switchMap,
+  take,
+  tap,
+} from "rxjs";
+import { Veranstaltung } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { EventService } from "src/app/services/firebase/event.service";
+import { EventAddPage } from "../event-add/event-add.page";
+import { Timestamp } from "firebase/firestore";
+import { EventDetailPage } from "../event-detail/event-detail.page";
+import { TranslateService } from "@ngx-translate/core";
+import { Club } from "src/app/models/club";
+import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
   selector: "app-events",
@@ -22,56 +39,244 @@ import { EventService } from "src/app/services/firebase/event.service";
 })
 export class EventsPage implements OnInit {
   skeleton = new Array(12);
-
+  user$: Observable<User>;
   user: User;
 
-  eventsList: Event[];
-  eventsListPast: Event[];
+  eventList$: Observable<Veranstaltung[]>;
+  eventListPast$: Observable<Veranstaltung[]>;
+
+  clubAdminList$: Observable<Club[]>;
+
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
-    private readonly modalController: ModalController,
+    private readonly modalCtrl: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly eventService: EventService,
-    private readonly menuCtrl: MenuController
+    private readonly menuCtrl: MenuController,
+    private translate: TranslateService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
   ) {
     this.menuCtrl.enable(true, "menu");
+
+    this.activatedRoute.url.subscribe(data=>{
+      if ( this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "clubEvent") {
+        const pushData = this.router.getCurrentNavigation().extras.state;
+        console.log("PUSHDATA " + JSON.stringify(pushData));
+        let clubEvent: Veranstaltung = {
+          id: pushData.id,
+          name: "",
+          description: "",
+          location: "",
+          streetAndNumber: "",
+          postalCode: "",
+          city: "",
+          date:  Timestamp.now(),
+          startDate: "",
+          endDate: "",
+          timeFrom: "",
+          timeTo: "",
+          clubId: pushData.clubId,
+          clubName: "",
+          status: false,
+          attendees: undefined,
+          countAttendees: 0
+        };
+        this.openEventDetailModal(clubEvent, true);
+      } else {
+        console.log("no data");
+      }
+    });
   }
 
   ngOnInit() {
-    this.getUser();
-    this.getEventsList();
-    this.getEventsListPast();
-  }
+    this.eventList$ = this.getClubEvent();
+    this.eventListPast$ = this.getClubEventPast();
 
-  async getUser() {
-    this.user = await this.authService.getUser();
+    //Create Events, Helfer, News
+    this.clubAdminList$ = this.fbService.getClubAdminList();
   }
-
-  async toggle(status: boolean, event: Event) {
-    console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${event.teamId} and event ${event.id}`
+  getClubEvent() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.fbService.getUserClubRefs(user);
+      }),
+      tap((clubs) => console.log("Clubs:", clubs)),
+      mergeMap((clubs) => {
+        if (clubs.length === 0) return of([]);
+        return combineLatest(
+          clubs.map((team) =>
+            this.eventService.getClubEventsRef(team.id).pipe(
+              switchMap((clubEvents) => {
+                if (clubEvents.length === 0) return of([]);
+                return combineLatest(
+                  clubEvents.map((game) =>
+                    this.eventService
+                      .getClubEventAttendeesRef(team.id, game.id)
+                      .pipe(
+                        map((attendees) => {
+                          const userAttendee = attendees.find(
+                            (att) => att.id == this.user.uid
+                          );
+                          const status = userAttendee
+                            ? userAttendee.status
+                            : null; // default to false if user is not found in attendees list
+                          return {
+                            ...game,
+                            attendees,
+                            status: status,
+                            countAttendees: attendees.filter(
+                              (att) => att.status == true
+                            ).length,
+                            teamId: team.id,
+                          };
+                        }),
+                        catchError(() =>
+                          of({
+                            ...game,
+                            attendees: [],
+                            status: null,
+                            countAttendees: 0,
+                            teamId: team.id,
+                          })
+                        ) // If error, return game with empty attendees
+                      )
+                  )
+                );
+              }),
+              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
+              catchError(() => of([])) // If error in fetching events, return empty array
+            )
+          )
+        ).pipe(
+          map((teamsevents) => teamsevents.flat()), // Flatten to get all events across all teams
+          map(
+            (allevents) =>
+              allevents.sort(
+                (a, b) =>
+                  Timestamp.fromMillis(a.dateTime).seconds -
+                  Timestamp.fromMillis(b.dateTime).seconds
+              ) // Sort events by date
+          )
+        );
+      }),
+      tap((results) => console.log("Final results with all events:", results)),
+      catchError((err) => {
+        console.error("Error in getClubEvent:", err);
+        return of([]); // Return an empty array on error
+      })
     );
-    await this.eventService.setTeamEventAttendeeStatus(
-      this.user.uid,
+  }
+
+  getClubEventPast() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.fbService.getUserClubRefs(user);
+      }),
+      tap((clubs) => console.log("Teams:", clubs)),
+      mergeMap((teams) => {
+        if (teams.length === 0) return of([]);
+        return combineLatest(
+          teams.map((team) =>
+            this.eventService.getClubEventsPastRef(team.id).pipe(
+              switchMap((teamevents) => {
+                if (teamevents.length === 0) return of([]);
+                return combineLatest(
+                  teamevents.map((game) =>
+                    this.eventService
+                      .getClubEventAttendeesRef(team.id, game.id)
+                      .pipe(
+                        map((attendees) => {
+                          const userAttendee = attendees.find(
+                            (att) => att.id == this.user.uid
+                          );
+                          const status = userAttendee
+                            ? userAttendee.status
+                            : null; // default to false if user is not found in attendees list
+                          return {
+                            ...game,
+                            attendees,
+                            status: status,
+                            countAttendees: attendees.filter(
+                              (att) => att.status == true
+                            ).length,
+                            teamId: team.id,
+                          };
+                        }),
+                        catchError(() =>
+                          of({
+                            ...game,
+                            attendees: [],
+                            status: null,
+                            countAttendees: 0,
+                            teamId: team.id,
+                          })
+                        ) // If error, return game with empty attendees
+                      )
+                  )
+                );
+              }),
+              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
+              catchError(() => of([])) // If error in fetching events, return empty array
+            )
+          )
+        ).pipe(
+          map((teamsevents) => teamsevents.flat()), // Flatten to get all events across all teams
+          map(
+            (allevents) =>
+              allevents.sort(
+                (a, b) =>
+                  Timestamp.fromMillis(a.dateTime).seconds -
+                  Timestamp.fromMillis(b.dateTime).seconds
+              ) // Sort events by date
+          )
+        );
+      }),
+      tap((results) => console.log("Final results with all events:", results)),
+      catchError((err) => {
+        console.error("Error in getClubEventPast:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+  async toggle(status: boolean, event: Veranstaltung) {
+    console.log(
+      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
+    );
+
+    await this.eventService.setClubEventAttendeeStatus(
       status,
-      event.teamId,
+      event.clubId,
       event.id
     );
     this.presentToast();
   }
 
-  async toggleItem(slidingItem: IonItemSliding, status: boolean, event: Event) {
+  async toggleItem(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    event: Veranstaltung
+  ) {
     slidingItem.closeOpened();
 
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${event.teamId} and event ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
     );
-    await this.eventService.setTeamEventAttendeeStatus(
-      this.user.uid,
+    await this.eventService.setClubEventAttendeeStatus(
       status,
-      event.teamId,
+      event.clubId,
       event.id
     );
     this.presentToast();
@@ -79,7 +284,7 @@ export class EventsPage implements OnInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: "changes has been saved",
+      message: await lastValueFrom(this.translate.get("common.changes__saved")),
       color: "primary",
       duration: 2000,
       position: "top",
@@ -87,149 +292,169 @@ export class EventsPage implements OnInit {
     toast.present();
   }
 
-  getEventsList() {
-    this.authService
-      .getUser$()
-      .pipe(
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserTeamRefs(user)),
-        // Loop Over Teams
-        switchMap((allTeams: any) =>
-          combineLatest(
-            allTeams.map((team) =>
-              combineLatest(
-                of(team),
-                // Loop over Events
-                // this.eventService.getTeamEventsRef(team.id),
-                this.eventService
-                  .getTeamEventsRef(team.id)
-                  .pipe(
-                    switchMap((allEvents: any) =>
-                      combineLatest(
-                        allEvents.map((event) =>
-                          combineLatest(
-                            of(event),
-                            this.eventService.getTeamEventsAttendeesRef(
-                              team.id,
-                              event.id
-                            )
-                          )
-                        )
-                      )
-                    )
-                  ),
-                this.fbService.getTeamRef(team.id)
-              )
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        const eventsListNew = [];
-        for (const team of data) {
-          // loop over teams
+  async copyEvent(slidingItem: IonItemSliding, event: Veranstaltung) {
+    slidingItem.closeOpened();
 
-          const events = team[1];
-          const teamDetails = team[2];
-          for (const eventObject of events) {
-            const event = eventObject[0];
-            const attendees = eventObject[1];
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalCtrl.create({
+      component: EventAddPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: event,
+      },
+    });
+    modal.present();
 
-            event.teamName = teamDetails.name;
-            event.teamId = teamDetails.id;
-            event.attendees = attendees.filter((e) => e.status === true).length;
+    const { data, role } = await modal.onWillDismiss();
 
-            if (
-              attendees &&
-              attendees.filter((e) => e.id === this.user.uid).length === 1
-            ) {
-              event.status = attendees.filter(
-                (e) => e.id === this.user.uid
-              )[0].status;
-            } else {
-              event.status = null;
-            }
-
-            eventsListNew.push(event);
-          }
-        }
-        this.eventsList = [...new Set([].concat(...eventsListNew))];
-        this.eventsList = this.eventsList.sort(
-          (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis()
-        );
-      });
+    if (role === "confirm") {
+    }
   }
 
-  getEventsListPast() {
-    this.authService
-      .getUser$()
-      .pipe(
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserTeamRefs(user)),
-        // Loop Over Teams
-        switchMap((allTeams: any) =>
-          combineLatest(
-            allTeams.map((team) =>
-              combineLatest(
-                of(team),
-                // Loop over Events
-                // this.eventService.getTeamEventsRef(team.id),
-                this.eventService
-                  .getTeamEventsRefPast(team.id)
-                  .pipe(
-                    switchMap((allEvents: any) =>
-                      combineLatest(
-                        allEvents.map((event) =>
-                          combineLatest(
-                            of(event),
-                            this.eventService.getTeamEventsAttendeesRef(
-                              team.id,
-                              event.id
-                            )
-                          )
-                        )
-                      )
-                    )
-                  ),
-                this.fbService.getTeamRef(team.id)
-              )
-            )
-          )
+  async createHelferEvent(slidingItem: IonItemSliding, event: Veranstaltung) {
+    slidingItem.closeOpened();
+
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalCtrl.create({
+      component: HelferAddPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: event,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+  async deleteEvent(slidingItem: IonItemSliding, event) {
+    slidingItem.closeOpened();
+    await this.eventService.deleteClubEvent(event.clubId, event.id);
+    const toast = await this.toastController.create({
+      message: await lastValueFrom(this.translate.get("common.delete")),
+      color: "primary",
+      duration: 2000,
+      position: "top",
+    });
+    toast.present();
+  }
+
+  async openFilter(ev: Event) {
+    /*
+    let filterList = [];
+
+    const clubs$ = this.authService.getUser$().pipe(
+      take(1),
+      switchMap(user => this.fbService.getUserClubRefs(user).pipe(take(1))),  
+      concatMap(clubArray => from(clubArray)),
+      tap((club:Club)=>console.log(club.id)),
+      concatMap(club => 
+        this.fbService.getClubRef(club.id).pipe(
+          take(1),
+          defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
+          map(result => [result]),
+          catchError(error => {
+            console.error('Error fetching ClubDetail:', error);
+            return of([]);
+          })
         )
-      )
-      .subscribe(async (data: any) => {
-        const eventsListNew = [];
-        for (const team of data) {
-          // loop over teams
+      ),
+      tap(clubList => clubList.forEach(club => {
+        // filterList.push({id: club.type, name: club.type}); // Verband Infos
+        return filterList.push(club);
+      })),
+      finalize(() => console.log("Get Club completed"))
+  );
 
-          const events = team[1];
-          const teamDetails = team[2];
-          for (const eventObject of events) {
-            const event = eventObject[0];
-            const attendees = eventObject[1];
-
-            event.teamName = teamDetails.name;
-            event.teamId = teamDetails.id;
-            event.attendees = attendees.filter((e) => e.status === true).length;
-
-            if (
-              attendees &&
-              attendees.filter((e) => e.id === this.user.uid).length === 1
-            ) {
-              event.status = attendees.filter(
-                (e) => e.id === this.user.uid
-              )[0].status;
-            } else {
-              event.status = null;
-            }
-
-            eventsListNew.push(event);
+  this.subscription = forkJoin([clubs$]).subscribe({
+    next: () => {
+      const alertInputs = [];
+      for (const item of filterList){
+        alertInputs.push({
+          label: item.name,
+          type: 'radio',
+          checked: item.id == this.filterValue,
+          value: item.id,
+        });
+      }
+    
+      this.alertCtrl.create({
+        header: 'Veranstaltungen filtern',
+        message: 'Nach Verein filtern.',
+       // subHeader: 'Nach Verein oder Teams filtern.',
+        inputs: alertInputs,
+        buttons: [
+          { text: "OK",
+            role: "confirm",
+            handler: (value)=>{
+              console.log(value)
+              this.filterValue = value;
+              this.eventsList$ = of(this.eventsList.filter((news: any) => news.filterable == value));
+            } 
+          },
+          { text: "abbrechen",
+            role: "cancel",
+            handler: (value)=>{
+              console.log(value);
+              this.filterValue = "";
+              this.eventsList$ = of(this.eventsList);
+            } 
           }
-        }
-        this.eventsListPast = [...new Set([].concat(...eventsListNew))];
-        this.eventsListPast = this.eventsListPast.sort(
-          (a, b) => b.dateTime.toMillis() - a.dateTime.toMillis()
-        );
+        ],
+        htmlAttributes: { 'aria-label': 'alert dialog' },
+      }).then(alert => {
+        alert.present();
       });
+    },
+    error: err => console.error('Error in the observable chain:', err)
+  });
+   */
+  }
+
+  async openEventCreateModal() {
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalCtrl.create({
+      component: EventAddPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: "",
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+  async openEventDetailModal(event: Veranstaltung, isFuture: boolean) {
+    console.log("Open Modal");
+    console.log(JSON.stringify(event));
+    const modal = await this.modalCtrl.create({
+      component: EventDetailPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: event,
+        isFuture: isFuture,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
   }
 }

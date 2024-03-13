@@ -3,34 +3,42 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Veranstaltungen</ion-title>
+    <ion-title>{{"events.event" | translate}}</ion-title>
+    <!-- <ion-buttons slot="end">
+      <ion-button *ngIf="!filterValue" (click)="openFilter($event)">
+        <ion-icon slot="icon-only" name="filter"></ion-icon>
+      </ion-button>
+      <ion-button *ngIf="filterValue" (click)="openFilter($event)">
+        <ion-icon slot="icon-only" name="filter-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>-->
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Veranstaltungen</ion-title>
+      <ion-title size="large">{{"events.event" | translate}}</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="eventsList; else loading">
-    <ion-list>
+  <ng-container *ngIf="eventList$ | async as eventsList; else loading">
+    <ion-list *ngIf="eventsList.length > 0" lines="full">
       <ion-list-header>
-        <ion-label>Kommende Veranstaltungen</ion-label>
+        <ion-label>{{"events.upcomming__events" | translate}}</ion-label>
       </ion-list-header>
 
       <ion-item>
         <ion-label slot="start">
-          <p>Status</p>
+          <p>{{"common.status" | translate}}</p>
         </ion-label>
         <ion-label slot="end">
-          <p>Teilnehmer</p>
+          <p>{{"common.participant" | translate}}</p>
         </ion-label>
       </ion-item>
 
       <ion-item-sliding #item *ngFor="let event of eventsList">
-        <ion-item>
+        <ion-item type="button" detail="true">
           <ion-icon
             *ngIf="event.status === null"
             slot="icon-only"
@@ -55,18 +63,20 @@
             name="checkmark-circle"
             (click)="toggle(false, event)"
           ></ion-icon>
-          <ion-label>
+          <ion-label (click)="openEventDetailModal(event, true)">
+            <h2>{{event.name}}</h2>
             <h3>
-              <ion-icon slot="icon-only" name="home"></ion-icon>:
-              {{event.location}} {{event.city}}
+              <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+              {{event.date.toDate() | date:'dd.MM.YYYY '}} {{event.timeFrom |
+              date:'HH:mm'}} Uhr - {{event.timeTo | date:'HH:mm'}} Uhr
             </h3>
             <h3>
-              <ion-icon slot="icon-only" name="time"></ion-icon> {{event.date}}
-              {{event.time}}
+              <ion-icon slot="icon-only" name="location-outline"></ion-icon>
+              {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
           </ion-label>
-          <ion-note slot="end">
-            <ion-badge color="primary">{{event.attendees}}</ion-badge>
+          <ion-note slot="end" (click)="openEventDetailModal(event, true)">
+            <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
           </ion-note>
         </ion-item>
 
@@ -87,40 +97,57 @@
           </ion-item-option>
         </ion-item-options>
 
-        <!--<ion-item-options side="end" *ngIf="user && user.">
-          <ion-item-option>
-            <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
-          </ion-item-option>
-          <ion-item-option color="danger">
-            <ion-icon slot="icon-only" name="trash"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>-->
+        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+          <ion-item-options side="end" *ngIf="clubAdminList.length > 0">
+            <ion-item-option
+              color="primary"
+              (click)="createHelferEvent(item, event)"
+            >
+              <ion-icon slot="icon-only" name="help-buoy-outline"></ion-icon>
+            </ion-item-option>
+
+            <ion-item-option color="medium" (click)="copyEvent(item, event)">
+              <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+            </ion-item-option>
+
+            <ion-item-option color="danger" (click)="deleteEvent(item, event)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ng-container>
       </ion-item-sliding>
+    </ion-list>
+    <ion-list *ngIf="eventsList.length==0">
+      <ion-list-header>
+        <ion-label>{{"events.upcomming__events" | translate}}</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-note> {{"common.no_event__found" | translate}} </ion-note>
+      </ion-item>
     </ion-list>
   </ng-container>
 
-  <ng-container *ngIf="eventsListPast">
-    <ion-list>
+  <ng-container *ngIf="eventListPast$ | async as eventsListPast; else loading">
+    <ion-list *ngIf="eventsListPast.length > 0" lines="full">
       <ion-list-header>
-        <ion-label>Vergangene Veranstaltungen</ion-label>
+        <ion-label>{{"events.past__events" | translate}}</ion-label>
       </ion-list-header>
       <ion-item>
         <ion-label slot="start">
-          <p>Status</p>
+          <p>{{"common.status" | translate}}</p>
         </ion-label>
         <ion-label slot="end">
-          <p>Teilnehmer</p>
+          <p>{{"common.participant" | translate}}</p>
         </ion-label>
       </ion-item>
       <ion-item-sliding #item *ngFor="let event of eventsListPast">
-        <ion-item>
+        <ion-item type="button" detail="true">
           <ion-icon
             *ngIf="event.status === null"
             slot="icon-only"
             color="warning"
             slot="start"
             name="help-circle"
-            (click)="toggle(true, event)"
           ></ion-icon>
           <ion-icon
             *ngIf="event.status === false"
@@ -128,7 +155,6 @@
             color="danger"
             slot="start"
             name="close-circle"
-            (click)="toggle( true, event)"
           ></ion-icon>
           <ion-icon
             *ngIf="event.status === true"
@@ -136,57 +162,70 @@
             color="success"
             slot="start"
             name="checkmark-circle"
-            (click)="toggle(false, event)"
           ></ion-icon>
-          <ion-label>
+          <ion-label (click)="openEventDetailModal(event, false)">
+            <h2>{{event.name}}</h2>
             <h3>
-              <ion-icon slot="icon-only" name="home"></ion-icon>:
-              {{event.location}} {{event.city}}
+              <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+              {{event.date.toDate() | date:'dd.MM.YYYY '}} {{event.timeFrom |
+              date:'HH:mm'}} Uhr - {{event.timeTo | date:'HH:mm'}} Uhr
             </h3>
             <h3>
-              <ion-icon slot="icon-only" name="time"></ion-icon> {{event.date}}
-              {{event.time}}
+              <ion-icon slot="icon-only" name="location-outline"></ion-icon>
+              {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
           </ion-label>
-          <ion-note slot="end">
-            <ion-badge color="primary">{{event.attendees}}</ion-badge>
+          <ion-note slot="end" (click)="openEventDetailModal(event, false)">
+            <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
           </ion-note>
         </ion-item>
 
-        <ion-item-options side="start">
-          <ion-item-option
-            color="success"
-            *ngIf="event.status === false || event.status === null"
-            (click)="toggleItem(item, true, event)"
-          >
-            <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-          </ion-item-option>
-          <ion-item-option
-            color="danger"
-            *ngIf="event.status === true || event.status === null"
-            (click)="toggleItem(item, false, event)"
-          >
-            <ion-icon slot="icon-only" name="close-circle"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
+        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+          
+          <ion-item-options side="end" *ngIf="clubAdminList.length > 0">
 
-        <!--<ion-item-options side="end" *ngIf="user && user.isAdmin">
-        <ion-item-option>
-          <ion-icon slot="icon-only" name="ellipsis-horizontal-circle"></ion-icon>
-        </ion-item-option>
-        <ion-item-option color="danger">
-          <ion-icon slot="icon-only" name="trash"></ion-icon>
-        </ion-item-option>
-      </ion-item-options>-->
+            <ion-item-option
+              color="primary"
+              (click)="createHelferEvent(item, event)"
+            >
+              <ion-icon slot="icon-only" name="help-buoy-outline"></ion-icon>
+            </ion-item-option>
+
+            <ion-item-option color="medium" (click)="copyEvent(item, event)">
+              <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+            </ion-item-option>
+
+            <ion-item-option color="danger" (click)="deleteEvent(item, event)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ng-container>
       </ion-item-sliding>
     </ion-list>
+    <ion-list *ngIf="eventsListPast.length==0">
+      <ion-list-header>
+        <ion-label>{{"events.past__events" | translate}}</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-note> {{"common.no_event__found" | translate}} </ion-note>
+      </ion-item>
+    </ion-list>
   </ng-container>
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button>
-      <ion-icon name="add-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+
+  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+    <ion-fab
+      *ngIf="clubAdminList.length > 0"
+      vertical="bottom"
+      horizontal="end"
+      slot="fixed"
+    >
+      <ion-fab-button (click)="openEventCreateModal()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ng-container>
 </ion-content>
+
 <ng-template #loading>
   <ion-list *ngIf="loading">
     <ion-grid>

@@ -1,7 +1,8 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 
 import {
-  limit, Timestamp,
+  limit,
+  Timestamp,
   Firestore,
   addDoc,
   collection,
@@ -15,6 +16,7 @@ import {
   query,
   where,
 } from "@angular/fire/firestore";
+import { orderBy } from "firebase/firestore";
 import { Observable, Observer } from "rxjs";
 import { Game } from "src/app/models/game";
 
@@ -22,18 +24,30 @@ import { Game } from "src/app/models/game";
   providedIn: "root",
 })
 export class ChampionshipService {
-  constructor(private readonly firestore: Firestore) {}
+  constructor(private firestore: Firestore = inject(Firestore)) {
+
+  }
 
   /* TEAM GAME */
+
+  getTeamRankingTable(teamId: string, year: string): Observable<any[]> {
+    const tableRef = collection(this.firestore, `teams/${teamId}/ranking/${year}/table`);
+    return collectionData(tableRef, { idField: "id" }) as Observable<any[]>;
+  }
+
+  getTeamRanking(teamId: string, year: string): Observable<any> {
+    const tableRef = doc(this.firestore, `teams/${teamId}/ranking/${year}`);
+    return docData(tableRef, { idField: "id" }) as Observable<any>;
+  }
 
   getTeamGameRef(teamId: string, gameId: string): Observable<Game> {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const gameRef = doc(this.firestore, `teams/${teamId}/games/${gameId}`);
-    return docData(gameRef, { idField: "id" }) as unknown as Observable<Game>;
+    return docData(gameRef, { idField: "id" }) as Observable<Game>;
   }
 
   /* TEAM GAMES */
-  getTeamGamesRef(teamId: string): Observable<Game[]> {
+  getTeamGamesRefs(teamId: string): Observable<Game[]> {
     // console.log(`Read Team Games List Ref ${teamId}`)
     const gamesRefList = collection(this.firestore, `teams/${teamId}/games`);
     const q = query(
@@ -41,16 +55,17 @@ export class ChampionshipService {
       where(
         "dateTime",
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 40))
-      )
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+      ),
+      orderBy('dateTime','asc')
     ); // heute - 1 Tag
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
+    return collectionData(q, { idField: "id" }) as Observable<
       Game[]
     >;
   }
 
   // PAST 20 Entries
-  getTeamGamesRefPast(teamId: string): Observable<Game[]> {
+  getTeamGamesPastRefs(teamId: string): Observable<Game[]> {
     // console.log(`Read Team Games List Ref ${teamId}`)
     const gamesRefList = collection(this.firestore, `teams/${teamId}/games`);
     const q = query(
@@ -60,19 +75,20 @@ export class ChampionshipService {
         "<",
         Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
       ),
-      limit(20)
+      limit(20),
+      orderBy('dateTime','desc')
     ); // heute - 1 Tag
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
+    return collectionData(q, { idField: "id" }) as Observable<
       Game[]
     >;
   }
 
   /* CLUB GAMES */
-  getClubGamesRef(clubId: string): Observable<Game> {
+  getClubGamesRef(clubId: string): Observable<Game[]> {
     const gamesRefList = collection(this.firestore, `club/${clubId}/games`);
     return collectionData(gamesRefList, {
       idField: "id",
-    }) as unknown as Observable<Game>;
+    }) as Observable<Game[]>;
   }
 
   /* TEAM GAMES ATTENDEES */
@@ -84,7 +100,7 @@ export class ChampionshipService {
     );
     return collectionData(attendeesRefList, {
       idField: "id",
-    }) as unknown as Observable<any[]>;
+    }) as Observable<any[]>;
   }
 
   /* SET TEAM GAMES ATTENDEE Status */

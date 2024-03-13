@@ -11,6 +11,7 @@ export interface News {
   author: string
   authorImage: string
   url: string
+  filterable: string
 }
 export interface SwissUnihockeyNews extends News {}
 

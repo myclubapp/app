@@ -8,6 +8,7 @@ import { IonicModule } from '@ionic/angular';
 import { NewsDetailPageRoutingModule } from './news-detail-routing.module';
 
 import { NewsDetailPage } from './news-detail.page';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { NewsDetailPage } from './news-detail.page';
     FontAwesomeModule,
     FormsModule,
     IonicModule,
-    NewsDetailPageRoutingModule
+    NewsDetailPageRoutingModule,
+    TranslateModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [NewsDetailPage]

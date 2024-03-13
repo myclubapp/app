@@ -1,11 +1,11 @@
 <ion-app>
   <ion-split-pane contentId="main-content">
-    <ion-menu menuId="menu" contentId="main-content" type="overlay">
+    <ion-menu menuId="menu" contentId="main-content" type="push">
       <ion-content>
         <!-- Open Accordion -->
         <ion-accordion-group value="colors">
           <ion-accordion value="colors">
-            <ion-item slot="header">
+            <ion-item slot="header" class="notch-padding">
               <ion-thumbnail slot="start">
                 <img src="assets/logo_trans.png" />
               </ion-thumbnail>
@@ -16,99 +16,60 @@
               <ion-note>{{ email }}</ion-note>
 
               <ion-menu-toggle auto-hide="false">
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/tabs/news']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
+                <ion-item routerDirection="root" [routerLink]="['/t/news']" lines="none" detail="true"
+                  routerLinkActive="selected">
                   <ion-icon slot="start" name="newspaper-outline"></ion-icon>
-                  <ion-label>News</ion-label>
+                  <ion-label>{{"common.news" | translate}}</ion-label>
                 </ion-item>
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/tabs/training']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
+                <ion-item routerDirection="root" [routerLink]="['/t/training']" lines="none" detail="true"
+                  routerLinkActive="selected">
                   <ion-icon slot="start" name="barbell-outline"></ion-icon>
-                  <ion-label>Training</ion-label>
+                  <ion-label>{{"common.training" | translate}}</ion-label>
                 </ion-item>
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/tabs/championship']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
+                <ion-item routerDirection="root" [routerLink]="['/t/championship']" lines="none" detail="true"
+                  routerLinkActive="selected">
                   <ion-icon slot="start" name="trophy-outline"></ion-icon>
-                  <ion-label>Meisterschaft</ion-label>
+                  <ion-label>{{"common.championship" | translate}}</ion-label>
                 </ion-item>
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/tabs/events']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
+                <ion-item routerDirection="root" [routerLink]="['/t/events']" lines="none" detail="true"
+                  routerLinkActive="selected">
                   <ion-icon slot="start" name="calendar-outline"></ion-icon>
-                  <ion-label>Events</ion-label>
+                  <ion-label>{{"common.events" | translate}}</ion-label>
                 </ion-item>
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/profile']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
-                  <ion-icon
-                    slot="start"
-                    name="person-circle-outline"
-                  ></ion-icon>
-                  <ion-label>Profil</ion-label>
+                <ion-item routerDirection="root" [routerLink]="['/t/helfer']" lines="none" detail="true"
+                  routerLinkActive="selected">
+                  <ion-icon slot="start" name="help-buoy-outline"></ion-icon>
+                  <ion-label>{{"common.helper" | translate}}</ion-label>
                 </ion-item>
-                <ion-item
-                routerDirection="root"
-                [routerLink]="['/info']"
-                lines="none"
-                detail="true"
-                routerLinkActive="selected"
-              >
-                <ion-icon
-                  slot="start"
-                  name="information-circle-outline"
-                ></ion-icon>
-                <ion-label>Infos & Hilfe</ion-label>
-              </ion-item>
+
+                <ion-item routerDirection="root" [routerLink]="['/profile']" lines="none" detail="true"
+                  routerLinkActive="selected">
+                  <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+                  <ion-label>{{"common.profile" | translate}}</ion-label>
+                </ion-item>
+                <ion-item routerDirection="root" [routerLink]="['/info']" lines="none" detail="true"
+                  routerLinkActive="selected">
+                  <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+                  <ion-label>{{"side_bar.info__and__help" | translate}}</ion-label>
+                </ion-item>
               </ion-menu-toggle>
             </ion-list>
           </ion-accordion>
           <ion-accordion value="administration">
             <ion-item slot="header">
-              <ion-label>Administration</ion-label>
+              <ion-icon name="home" slot="start" color="primary"></ion-icon>
+              <ion-label>{{"side_bar.administration" | translate}}</ion-label>
             </ion-item>
 
             <ion-list slot="content">
               <ion-menu-toggle auto-hide="false">
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/club-list']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
-                  <ion-label>Mein Club</ion-label>
+                <ion-item routerDirection="root" [routerLink]="['/club-list']" lines="none" detail="true"
+                  routerLinkActive="selected">
+                  <ion-label>{{"side_bar.my__club" | translate}}</ion-label>
                 </ion-item>
-                <ion-item
-                  routerDirection="root"
-                  [routerLink]="['/team-list']"
-                  lines="none"
-                  detail="true"
-                  routerLinkActive="selected"
-                >
-                  <ion-label>Mein Team</ion-label>
+                <ion-item routerDirection="root" [routerLink]="['/team-list']" lines="none" detail="true"
+                  routerLinkActive="selected">
+                  <ion-label>{{"side_bar.my__team" | translate}}</ion-label>
                 </ion-item>
               </ion-menu-toggle>
             </ion-list>
@@ -117,12 +78,12 @@
 
         <ion-list>
           <ion-item (click)="logout()">
-            <ion-icon slot="start" name="exit-outline"></ion-icon>
-            <ion-label>Logout</ion-label>
-            <ion-button (click)="logout()">Logout</ion-button>
+            <ion-icon slot="start" name="exit-outline" color="danger"></ion-icon>
+            <ion-label> {{"common.logout" | translate}}</ion-label>
+            <ion-button (click)="logout()">{{"common.logout" | translate}}</ion-button>
           </ion-item>
         </ion-list>
-        <ion-note> Version {{ appVersion }} </ion-note>
+        <ion-note> {{"side_bar.version" | translate}} {{ appVersion }} </ion-note>
         <!--
 
         <ion-list id="inbox-list">

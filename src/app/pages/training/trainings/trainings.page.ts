@@ -1,5 +1,6 @@
-import { Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import {
+  AlertController,
   IonItemSliding,
   IonRouterOutlet,
   MenuController,
@@ -7,13 +8,31 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
-import { of, combineLatest } from "rxjs";
-import { switchMap, map } from "rxjs/operators";
+import {
+  Observable,
+  Subscription,
+  catchError,
+  combineLatest,
+  lastValueFrom,
+  map,
+  mergeMap,
+  of,
+  switchMap,
+  take,
+  tap,
+} from "rxjs";
 import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
 import { TrainingCreatePage } from "../training-create/training-create.page";
+import { Timestamp } from "firebase/firestore";
+import { TrainingDetailPage } from "../training-detail/training-detail.page";
+import { TranslateService } from "@ngx-translate/core";
+import { Team } from "src/app/models/team";
+import { FilterService } from "src/app/services/filter.service";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ExerciseService } from "src/app/services/firebase/exercise.service";
 
 @Component({
   selector: "app-trainings",
@@ -22,10 +41,25 @@ import { TrainingCreatePage } from "../training-create/training-create.page";
 })
 export class TrainingsPage implements OnInit {
   skeleton = new Array(12);
-  user: User;
 
-  trainingList: Training[];
-  trainingListPast: Training[];
+  user: User;
+  user$: Observable<User>;
+
+  trainingList$: Observable<Training[]>;
+  trainingListPast$: Observable<Training[]>;
+
+  teamAdminList$: Observable<Team[]>;
+
+  // teamList$: Observable<Team[]>;
+  // filterList: any[] = [];
+  // filterValue: string = "";
+  // private teamFilterSubscription: Subscription;
+  // trainingListBackup$: Observable<Training[]>;
+  // trainingListPastBackup$: Observable<Training[]>;
+
+  // trainingListBackupSub: Subscription;
+  // trainingListPastBackupSub: Subscription;
+
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
@@ -33,15 +67,298 @@ export class TrainingsPage implements OnInit {
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly trainingService: TrainingService,
-    private readonly menuCtrl: MenuController
+    private readonly menuCtrl: MenuController,
+    private readonly alertCtrl: AlertController,
+    private cdr: ChangeDetectorRef,
+    private translate: TranslateService,
+    private filterService: FilterService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private exerciseService: ExerciseService
   ) {
     this.menuCtrl.enable(true, "menu");
+
+    this.activatedRoute.url.subscribe(data=>{
+      if ( this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "training") {
+        const pushData = this.router.getCurrentNavigation().extras.state;
+        console.log("PUSHDATA " + pushData);
+        let training: Training = {
+          id: pushData.id,
+          name: "",
+          description: "",
+          streetAndNumber: "",
+          postalCode: "",
+          city: "",
+          date: Timestamp.now(),
+          timeFrom: "",
+          timeTo: "",
+          startDate: "",
+          endDate: "",
+          repeatAmount: "",
+          repeatFrequency: "",
+          teamId: pushData.teamId,
+          teamName: "",
+          liga: "",
+          status: false,
+          countAttendees: 0,
+          attendees: undefined,
+          exercises: undefined,
+        };
+        this.openTrainingDetailModal(training, true);
+      } else {
+        console.log("no data");
+      }
+    });
   }
 
   ngOnInit() {
-    this.getUser();
-    this.getTrainingsList();
-    this.getTrainingsListPast();
+    // DATA
+    this.trainingList$ = this.getTeamTraining();
+    this.trainingListPast$ = this.getTeamTrainingPast();
+    // CREATE
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+
+    /*this.trainingListBackup$ = this.getTeamTraining();
+    this.trainingListBackupSub = this.trainingListBackup$.subscribe({
+      next: () => {
+        console.log("Training Backup Data received");
+
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Training Error in subscription:", err),
+      complete: () => console.log("Training Observable completed"),
+    });
+
+
+    this.trainingListPastBackup$ = this.getTeamTrainingPast();
+    this.trainingListPastBackup$.subscribe({
+      next: () => {
+        console.log("Training PAST Backup Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) =>
+        console.error("Training PAST Backup Error in subscription:", err),
+      complete: () => console.log("Training PAST Backup Observable completed"),
+    });
+    */
+
+    // Filterlist
+    /*
+    this.teamList$ = this.fbService.getTeamList();
+    this.teamList$.subscribe({
+      next: (data) => {
+        this.filterList = data;
+        console.log("Team Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Team Error in subscription:", err),
+      complete: () => console.log("Team Observable completed"),
+    });
+
+    //Filter
+    this.teamFilterSubscription = this.filterService.teamFilter$.subscribe(
+      (newTeamFilterValue) => {
+        console.log("Set new filter value: " + newTeamFilterValue);
+        this.filterValue = newTeamFilterValue;
+      }
+    );*/
+  }
+
+  ngOnDestroy(): void {
+    /*if (this.trainingListPastBackupSub){
+      this.trainingListPastBackupSub.unsubscribe();
+    }
+    if (this.trainingListBackupSub){
+      this.trainingListBackupSub.unsubscribe();
+    }
+
+    // Unsubscribe to prevent memory leaks
+    if (this.teamFilterSubscription) {
+      this.teamFilterSubscription.unsubscribe();
+    }*/
+  }
+
+  getTeamTraining() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.fbService.getUserTeamRefs(user);
+      }),
+      tap((teams) => console.log("Teams:", teams)),
+      mergeMap((teams) => {
+        if (teams.length === 0) return of([]);
+        return combineLatest(
+          teams.map((team) =>
+            this.trainingService.getTeamTrainingsRefs(team.id).pipe(
+              switchMap((teamTrainings) => {
+                if (teamTrainings.length === 0) return of([]);
+                return combineLatest(
+                  teamTrainings.map((training) =>
+                    combineLatest([
+                      this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id),
+                      this.exerciseService.getTeamTrainingExerciseRefs(team.id, training.id),
+                    ]).pipe(
+                    
+                        map(([attendees, exercises]) => {
+                          const userAttendee = attendees.find(
+                            (att) => att.id == this.user.uid
+                          );
+                          const status = userAttendee
+                            ? userAttendee.status
+                            : null; // default to false if user is not found in attendees list
+                          return {
+                            ...training,
+                            attendees,
+                            exercises,
+                            status: status,
+                            countAttendees: attendees.filter(
+                              (att) => att.status == true
+                            ).length,
+                            teamId: team.id,
+                          };
+                        }),
+                        catchError(() =>
+                          of({
+                            ...training,
+                            attendees: [],
+                            exercises: [],
+                            status: null,
+                            countAttendees: 0,
+                            teamId: team.id,
+                          })
+                        ) // If error, return training with empty attendees
+                      )
+                  )
+                );
+              }),
+              map((trainingsWithAttendees) => trainingsWithAttendees), // Flatten trainings array for each team
+              catchError(() => of([])) // If error in fetching trainings, return empty array
+            )
+          )
+        ).pipe(
+          map((teamsTrainings) => teamsTrainings.flat()), // Flatten to get all trainings across all teams
+          map(
+            (allTrainings) =>
+              allTrainings.sort(
+                (a, b) =>
+                  Timestamp.fromMillis(a.dateTime).seconds -
+                  Timestamp.fromMillis(b.dateTime).seconds
+              ) // Sort trainings by date
+          )
+        );
+      }),
+      tap((results) =>
+        console.log("Final results with all trainings:", results)
+      ),
+      catchError((err) => {
+        console.error("Error in getTeamTrainingsUpcoming:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+
+  getTeamTrainingPast() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        return this.fbService.getUserTeamRefs(user);
+      }),
+      tap((teams) => console.log("Teams:", teams)),
+      mergeMap((teams) => {
+        if (teams.length === 0) return of([]);
+        return combineLatest(
+          teams.map((team) =>
+            this.trainingService.getTeamTrainingsPastRefs(team.id).pipe(
+              switchMap((teamTrainings) => {
+                if (teamTrainings.length === 0) return of([]);
+                return combineLatest(
+                  teamTrainings.map((training) =>
+                    this.trainingService
+                      .getTeamTrainingsAttendeesRef(team.id, training.id)
+                      .pipe(
+                        map((attendees) => {
+                          const userAttendee = attendees.find(
+                            (att) => att.id == this.user.uid
+                          );
+                          const status = userAttendee
+                            ? userAttendee.status
+                            : null; // default to false if user is not found in attendees list
+                          return {
+                            ...training,
+                            attendees,
+                            status: status,
+                            countAttendees: attendees.filter(
+                              (att) => att.status == true
+                            ).length,
+                            teamId: team.id,
+                          };
+                        }),
+                        catchError(() =>
+                          of({
+                            ...training,
+                            attendees: [],
+                            status: null,
+                            countAttendees: 0,
+                            teamId: team.id,
+                          })
+                        ) // If error, return training with empty attendees
+                      )
+                  )
+                );
+              }),
+              map((trainingsWithAttendees) => trainingsWithAttendees), // Flatten trainings array for each team
+              catchError(() => of([])) // If error in fetching trainings, return empty array
+            )
+          )
+        ).pipe(
+          map((teamsTrainings) => teamsTrainings.flat()), // Flatten to get all trainings across all teams
+          map(
+            (allTrainings) =>
+              allTrainings.sort(
+                (b, a) =>
+                  Timestamp.fromMillis(a.dateTime).seconds -
+                  Timestamp.fromMillis(b.dateTime).seconds
+              ) // Sort trainings by date
+          )
+        );
+      }),
+      tap((results) =>
+        console.log("Final results with all trainings:", results)
+      ),
+      catchError((err) => {
+        console.error("Error in getTeamTrainingsUpcoming:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+
+  
+  async openTrainingDetailModal(training: Training, isFuture: boolean) {
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalController.create({
+      component: TrainingDetailPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: training,
+        isFuture: isFuture,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
   }
 
   async openTrainingCreateModal() {
@@ -63,8 +380,37 @@ export class TrainingsPage implements OnInit {
     }
   }
 
-  async getUser() {
-    this.user = await this.authService.getUser();
+  async copyTraining(slidingItem: IonItemSliding, training) {
+    slidingItem.closeOpened();
+
+    // const presentingElement = await this.modalCtrl.getTop();
+    const modal = await this.modalController.create({
+      component: TrainingCreatePage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: training,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+  async deleteTraining(slidingItem: IonItemSliding, training) {
+    slidingItem.closeOpened();
+    await this.trainingService.deleteTeamTraining(training.teamId, training.id);
+    const toast = await this.toastController.create({
+      message: await lastValueFrom(this.translate.get("common.delete")),
+      color: "primary",
+      duration: 2000,
+      position: "top",
+    });
+    toast.present();
   }
 
   async toggle(status: boolean, training: Training) {
@@ -72,7 +418,6 @@ export class TrainingsPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
     );
     await this.trainingService.setTeamTrainingAttendeeStatus(
-      this.user.uid,
       status,
       training.teamId,
       training.id
@@ -91,7 +436,6 @@ export class TrainingsPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
     );
     await this.trainingService.setTeamTrainingAttendeeStatus(
-      this.user.uid,
       status,
       training.teamId,
       training.id
@@ -101,7 +445,7 @@ export class TrainingsPage implements OnInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: "changes has been saved",
+      message: await lastValueFrom(this.translate.get("common.success__saved")),
       color: "primary",
       duration: 2000,
       position: "top",
@@ -109,153 +453,58 @@ export class TrainingsPage implements OnInit {
     toast.present();
   }
 
-  getTrainingsList() {
-    this.authService
-      .getUser$()
-      .pipe(
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserTeamRefs(user)),
-        // Loop Over Teams
-        switchMap((allTeams: any) =>
-          combineLatest(
-            allTeams.map((team) =>
-              combineLatest(
-                of(team),
-                // Loop over Trainings
-                // this.trainingService.getTeamTrainingsRef(team.id),
-                this.trainingService
-                  .getTeamTrainingsRef(team.id)
-                  .pipe(
-                    switchMap((allTrainings: any) =>
-                      combineLatest(
-                        allTrainings.map((training) =>
-                          combineLatest(
-                            of(training),
-                            this.trainingService.getTeamTrainingsAttendeesRef(
-                              team.id,
-                              training.id
-                            )
-                          )
-                        )
-                      )
-                    )
-                  ),
-                this.fbService.getTeamRef(team.id)
-              )
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        const trainingListNew = [];
-        for (const team of data) {
-          // loop over teams
-
-          const trainings = team[1];
-          const teamDetails = team[2];
-          for (const trainingObject of trainings) {
-            const training = trainingObject[0];
-            const attendees = trainingObject[1];
-
-            training.teamName = teamDetails.name;
-            training.teamId = teamDetails.id;
-            training.attendees = attendees.filter(
-              (e) => e.status === true
-            ).length;
-
-            if (
-              attendees &&
-              attendees.filter((e) => e.id === this.user.uid).length === 1
-            ) {
-              training.status = attendees.filter(
-                (e) => e.id === this.user.uid
-              )[0].status;
-            } else {
-              training.status = null;
-            }
-
-            trainingListNew.push(training);
-          }
-        }
-        this.trainingList = [...new Set([].concat(...trainingListNew))];
-        this.trainingList = this.trainingList.sort(
-          (a, b) => a.date.getMilliseconds() - b.date.getMilliseconds()
-        );
+  /* async openFilter(ev: Event) {
+    const alertInputs = [];
+    for (const item of this.filterList) {
+      alertInputs.push({
+        label: item.name,
+        type: "radio",
+        checked: item.id == this.filterValue,
+        value: item.id,
       });
-  }
+    }
 
-  getTrainingsListPast() {
-    this.authService
-      .getUser$()
-      .pipe(
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserTeamRefs(user)),
-        // Loop Over Teams
-        switchMap((allTeams: any) =>
-          combineLatest(
-            allTeams.map((team) =>
-              combineLatest(
-                of(team),
-                // Loop over Trainings
-                // this.trainingService.getTeamTrainingsRef(team.id),
-                this.trainingService
-                  .getTeamTrainingsRefPast(team.id)
-                  .pipe(
-                    switchMap((allTrainings: any) =>
-                      combineLatest(
-                        allTrainings.map((training) =>
-                          combineLatest(
-                            of(training),
-                            this.trainingService.getTeamTrainingsAttendeesRef(
-                              team.id,
-                              training.id
-                            )
-                          )
-                        )
-                      )
-                    )
-                  ),
-                this.fbService.getTeamRef(team.id)
-              )
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        const trainingListNew = [];
-        for (const team of data) {
-          // loop over teams
+    let alert = await this.alertCtrl.create({
+      header: await lastValueFrom(this.translate.get("training.news__filter")),
+      message: await lastValueFrom(
+        this.translate.get("training.news__filer__desc")
+      ),
+      // subHeader: 'Nach Verein oder Teams filtern.',
+      inputs: alertInputs,
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.ok")),
+          role: "confirm",
+          handler: async (value) => {
+            console.log("update filter " + value);
+            this.filterService.updateTeamFilter(value);
 
-          const trainings = team[1];
-          const teamDetails = team[2];
-          for (const trainingObject of trainings) {
-            const training = trainingObject[0];
-            const attendees = trainingObject[1];
+            this.trainingList$ = this.trainingListBackup$.pipe(
+              map((items) => {
+                return items.filter((element) => element.teamId == value);
+              })
+            );
+            this.trainingListPast$ = this.trainingListPastBackup$.pipe(
+              map((items) => {
+                return items.filter((element) => element.teamId == value);
+              })
+            );
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "cancel",
+          handler: async (value) => {
+            console.log("update filter " + value);
+            this.filterService.updateTeamFilter(value);
 
-            training.teamName = teamDetails.name;
-            training.teamId = teamDetails.id;
-            training.attendees = attendees.filter(
-              (e) => e.status === true
-            ).length;
-
-            if (
-              attendees &&
-              attendees.filter((e) => e.id === this.user.uid).length === 1
-            ) {
-              training.status = attendees.filter(
-                (e) => e.id === this.user.uid
-              )[0].status;
-            } else {
-              training.status = null;
-            }
-
-            trainingListNew.push(training);
-          }
-        }
-        this.trainingListPast = [...new Set([].concat(...trainingListNew))];
-        this.trainingListPast = this.trainingListPast.sort(
-          (a, b) => b.date.getMilliseconds() - a.date.getMilliseconds()
-        );
-      });
-  }
+            this.trainingList$ = this.trainingListBackup$;
+            this.trainingListPast$ = this.trainingListPastBackup$;
+          },
+        },
+      ],
+      htmlAttributes: { "aria-label": "alert dialog" },
+    });
+    alert.present();
+  }*/
 }

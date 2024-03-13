@@ -8,6 +8,7 @@ import {
 
 // https://github.com/angular/angularfire/blob/master/docs/auth/router-guards.md
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(["login"]);
+// const emailVerifiedToLogout = () => emailVerified(["logout"]);
 
 const routes: Routes = [
   {
@@ -94,13 +95,13 @@ const routes: Routes = [
         (m) => m.ChampionshipPageModule
       ),
   },
-  {
+  /*{
     path: "onboarding",
     loadChildren: () =>
       import("./pages/onboarding/onboarding.module").then(
         (m) => m.OnboardingPageModule
       ),
-  },
+  },*/
   {
     path: "onboarding-team",
     loadChildren: () =>
@@ -109,9 +110,33 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'info',
-    loadChildren: () => import('./pages/info/info.module').then( m => m.InfoPageModule)
+    path: "info",
+    loadChildren: () =>
+      import("./pages/info/info.module").then((m) => m.InfoPageModule),
   },
+  {
+    path: "championship-details",
+    loadChildren: () =>
+      import(
+        "./pages/championship/championship-detail/championship-detail.module"
+      ).then((m) => m.ChampionshipDetailPageModule),
+  },
+
+  {
+    path: "helfer",
+    loadChildren: () =>
+      import("./pages/helfer/helfer/helfer.module").then(
+        (m) => m.HelferPageModule
+      ),
+  },
+  {
+    path: "lineup",
+    loadChildren: () =>
+      import("./pages/championship/lineup/lineup.module").then(
+        (m) => m.LineupPageModule
+      ),
+  },
+
   {
     path: "**",
     loadChildren: () =>

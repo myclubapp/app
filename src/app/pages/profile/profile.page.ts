@@ -1,14 +1,26 @@
-import { Component, OnInit, AfterViewInit } from "@angular/core";
-import { combineLatest, Observable, of, Subscription } from "rxjs";
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  ChangeDetectorRef,
+} from "@angular/core";
+import {
+  combineLatest,
+  lastValueFrom,
+  Observable,
+  of,
+  Subscription,
+} from "rxjs";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
 import { User } from "@angular/fire/auth";
+import { PushNotifications } from "@capacitor/push-notifications";
 
 // Services
 import { FirebaseService } from "src/app/services/firebase.service";
 import { AuthService } from "src/app/services/auth.service";
 
 // Push
-import { SwPush } from "@angular/service-worker";
+// import { SwPush } from "@angular/service-worker";
 
 // models
 import { Profile } from "src/app/models/user";
@@ -21,13 +33,20 @@ import {
   Photo,
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { switchMap } from "rxjs/operators";
+import { catchError, switchMap, take, tap } from "rxjs/operators";
 import {
   AlertController,
+  IonRouterOutlet,
+  LoadingController,
   MenuController,
+  ModalController,
   ToastController,
 } from "@ionic/angular";
 import { Router } from "@angular/router";
+import { TranslateService } from "@ngx-translate/core";
+import { Team } from "src/app/models/team";
+import { Club } from "src/app/models/club";
+import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
 
 @Component({
   selector: "app-profile",
@@ -37,15 +56,10 @@ import { Router } from "@angular/router";
 export class ProfilePage implements OnInit, AfterViewInit {
   userProfile$: Observable<Profile>;
 
-  clubRequestList: any[] = [];
-  clubRequestListSub: Subscription;
+  teamList$: Observable<Team[]>;
+  clubList$: Observable<Club[]>;
 
-  teamRequestList: any[] = [];
-  teamRequestListSub: Subscription;
-
-  pushDeviceList: any[] = [];
-  pushDeviceListSub: Subscription;
-
+  user$: Observable<User>;
   user: User;
 
   private readonly VAPID_PUBLIC_KEY =
@@ -53,23 +67,45 @@ export class ProfilePage implements OnInit, AfterViewInit {
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
   constructor(
-    private readonly swPush: SwPush,
+    // private readonly swPush: SwPush,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly profileService: UserProfileService,
     private readonly toastController: ToastController,
+    private readonly loadingController: LoadingController,
     private readonly alertController: AlertController,
     private readonly router: Router,
-    private readonly menuCtrl: MenuController
+    private readonly menuCtrl: MenuController,
+    private translate: TranslateService,
+    private readonly modalCtrl: ModalController,
+    private readonly routerOutlet: IonRouterOutlet,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
 
   async ngOnInit() {
-    await this.getUser();
-    this.getClubRequestList();
-    this.getTeamRequestList();
-    this.getPushDeviceList();
+    this.userProfile$ = this.getUserProfile();
+
+    /*this.teamList$ = this.fbService.getTeamList();
+    this.teamList$.subscribe({
+      next: (data) => {
+        console.log("Team Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Team Error in subscription:", err),
+      complete: () => console.log("Team Observable completed"),
+    });
+
+    this.clubList$ = this.fbService.getClubList();
+    this.clubList$.subscribe({
+      next: (data) => {
+        console.log("Club Data received");
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Cluh Error in subscription:", err),
+      complete: () => console.log("Club Observable completed"),
+    });*/
+
     this.deviceId = await Device.getId();
     this.deviceInfo = await Device.getInfo();
     // console.log(this.deviceInfo);
@@ -79,109 +115,41 @@ export class ProfilePage implements OnInit, AfterViewInit {
     // this.getClubList();
     // this.getTeamList();
   }
-  ngOnDestroy() {
-    this.pushDeviceListSub.unsubscribe();
-    this.clubRequestListSub.unsubscribe();
-    this.teamRequestListSub.unsubscribe();
-    this.swPush.unsubscribe();
-  }
+  ngOnDestroy() {}
 
-  getClubRequestList() {
-    this.clubRequestList = [];
-    this.clubRequestListSub = this.authService
-      .getUser$()
-      .pipe(
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserClubRequestRefs(user)),
-        // Loop Over Teams
-        switchMap((allRequests: any) =>
-          combineLatest(
-            allRequests.map((request) =>
-              combineLatest(of(request), this.fbService.getClubRef(request.id))
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        console.log(data);
-        this.clubRequestList = [];
-        const requestListNew = [];
-        for (const request of data) {
-          const requestDetail = request[1];
-
-          // const detailRef: DocumentReference = request[0].clubRef;
-          // const clubData = await this.fbService.getClubRef(requestDetail.id).toPromise();
-          requestListNew.push(requestDetail);
+  getUserProfile(): Observable<any> {
+    // Replace 'any' with the actual type of the user profile
+    return this.authService.getUser$().pipe(
+      switchMap((user: User) => {
+        if (!user || !user.uid) {
+          console.log("No user found");
+          return of(null); // Return null or appropriate default value if user is not logged in
         }
-        this.clubRequestList = this.clubRequestList.sort(
-          (a, b) => Number(a.id) - Number(b.id)
-        );
-        this.clubRequestList = [...new Set([].concat(...requestListNew))];
-      });
-  }
-  getTeamRequestList() {
-    this.teamRequestList = [];
-    this.teamRequestListSub = this.authService
-      .getUser$()
-      .pipe(
-        // GET TEAMS
-        switchMap((user: User) => this.fbService.getUserTeamRequestRefs(user)),
-        // Loop Over Teams
-        switchMap((allRequests: any) =>
-          combineLatest(
-            allRequests.map((request) =>
-              combineLatest(of(request), this.fbService.getTeamRef(request.id))
-            )
-          )
-        )
-      )
-      .subscribe(async (data: any) => {
-        console.log(data);
-        this.teamRequestList = [];
-        const requestListNew = [];
-        for (const request of data) {
-          const requestDetail = request[1];
-
-          // const detailRef: DocumentReference = request[0].clubRef;
-          // const clubData = await this.fbService.getClubRef(requestDetail.id).toPromise();
-          requestListNew.push(requestDetail);
-        }
-        this.teamRequestList = this.teamRequestList.sort(
-          (a, b) => Number(a.id) - Number(b.id)
-        );
-        this.teamRequestList = [...new Set([].concat(...requestListNew))];
-      });
+        return this.profileService.getUserProfile(user);
+      }),
+      catchError((err) => {
+        console.error("Error fetching user profile", err);
+        return of(null); // Handle the error and return a default value
+      })
+    );
   }
 
-  async getPushDeviceList() {
-    this.pushDeviceListSub = this.profileService
-      .getPushDeviceList()
-      .subscribe((pushDeviceData) => {
-        this.pushDeviceList = [];
-        pushDeviceData.map((element) => {
-          this.pushDeviceList.push(element);
-        });
-      });
-  }
-  /*
-  async getClubList(){
-    const user: User = await this.authService.getUser();
-    // this.clubList$ =
-    this.clubList$ = this.fbService.getClubRefs(user);
-  }
-
-  async getTeamList(){
-    const user: User = await this.authService.getUser();
-    this.teamList$ = this.fbService.getTeamRefs(user);
-  }
-*/
-  async getUser() {
-    this.user = await this.authService.getUser();
-    this.userProfile$ = this.profileService.getUserProfile(this.user);
-  }
+  getClubRequestList() {}
+  getTeamRequestList() {}
+  getPushDeviceList() {}
 
   async takePicture() {
-    const image = await Camera.getPhoto({
+    const loading = await this.loadingController.create({
+      message: await lastValueFrom(
+        this.translate.get("profile.profile_pic__uploaded")
+      ),
+      showBackdrop: true,
+      backdropDismiss: false,
+      translucent: true,
+      spinner: "circular",
+    });
+
+    const image: Photo = await Camera.getPhoto({
       quality: 90,
       allowEditing: true,
       resultType: CameraResultType.Base64,
@@ -191,55 +159,79 @@ export class ProfilePage implements OnInit, AfterViewInit {
       direction: CameraDirection.Front,
     });
 
+    loading.present();
     // image.webPath will contain a path that can be set as an image src.
     // You can access the original file using image.path, which can be
     // passed to the Filesystem API to read the raw data of the image,
     // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-    var imageUrl = image.base64String;
-    console.log(image);
+    // var imageUrl = image.base64String;
+    // console.log(image);
 
     // const user: User = await this.authService.getUser();
     await this.profileService.setUserProfilePicture(image);
+    loading.dismiss();
     await this.presentToastTakePicture();
   }
 
   async deleteClubRequest(request) {
-    const user: User = await this.authService.getUser();
-    await this.fbService.deleteUserClubRequest(request.id, user.uid);
+    await this.fbService.deleteUserClubRequest(request.id, this.user.uid);
     await this.presentToast();
     this.getClubRequestList();
   }
   async deleteTeamRequest(request) {
-    const user: User = await this.authService.getUser();
-    await this.fbService.deleteUserTeamRequest(request.id, user.uid);
+    await this.fbService.deleteUserTeamRequest(request.id, this.user.uid);
     await this.presentToast();
     this.getTeamRequestList();
   }
   async deleteProfile() {
     const alert = await this.alertController.create({
-      message: "Möchtest du das Profil wirklich löschen?",
+      message: await lastValueFrom(
+        this.translate.get("profile.delete_profile__confirm")
+      ),
       buttons: [
         {
-          text: "Ja",
+          text: await lastValueFrom(this.translate.get("common.yes")),
           handler: async () => {
             await this.authService.deleteProfile().catch((error) => {
               this.presentErrorDeleteProfile();
-            });;
+            });
             await this.presentDeleteProfile();
             await this.router.navigateByUrl("/logout");
           },
         },
         {
-          text: "Nein",
+          text: await lastValueFrom(this.translate.get("common.no")),
         },
       ],
     });
     alert.present();
   }
 
+  async openHelferPunkte() {
+    console.log("openHelferPunkte");
+    const modal = await this.modalCtrl.create({
+      component: HelferPunktePage,
+      // presentingElement: await this.modalCtrl.getTop(),
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: this.user,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
   async presentToast() {
     const toast = await this.toastController.create({
-      message: "Anfrage erfolgreich gelöscht",
+      message: await lastValueFrom(
+        this.translate.get("profile.request_success__deleted")
+      ),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -249,7 +241,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
   async presentToastTakePicture() {
     const toast = await this.toastController.create({
-      message: "Profilbild erfolgreich geändert",
+      message: await lastValueFrom(
+        this.translate.get("profile.success__profile_pic_changed")
+      ),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -261,11 +255,28 @@ export class ProfilePage implements OnInit, AfterViewInit {
   async togglePush(event) {
     // console.log(event);
     await this.profileService.changeSettingsPush(event.detail.checked);
+
     if (event.detail.checked) {
-      this.alertAskForPush();
+      if (
+        this.deviceInfo.platform == "android" ||
+        this.deviceInfo.platform == "ios"
+      ) {
+        this.registerPushDevice();
+      } else {
+        console.log("implement web push");
+        // this.alertAskForPush();
+      }
     } else {
       console.log("disable push");
     }
+    this.toastActionSaved();
+  }
+  async togglePushModule(event, module) {
+    await this.profileService.changeSettingsPushModule(
+      event.detail.checked,
+      module
+    );
+    this.toastActionSaved();
   }
 
   async toggleEmail(event) {
@@ -282,6 +293,25 @@ export class ProfilePage implements OnInit, AfterViewInit {
     this.toastActionSaved();
   }
 
+  async deletePushDevice(id) {
+    await this.profileService.deletePushDevice(id);
+    await this.toastActionSaved();
+  }
+
+  registerPushDevice() {
+    PushNotifications.requestPermissions().then((result) => {
+      if (result.receive === "granted") {
+        // Register with Apple / Google to receive push via APNS/FCM
+        PushNotifications.register();
+        // --> this should trigger listener in app.component.ts to save token
+      } else {
+        // Show some error
+      }
+    });
+  }
+
+  /* WEB PUSH STUFF
+
   async askForPush() {
     if (this.swPush.isEnabled) {
       // Push is available
@@ -290,51 +320,39 @@ export class ProfilePage implements OnInit, AfterViewInit {
       this.alertPushNotSupported();
     }
   }
-
-  registerDevice() {
-    this.subscribeToNotifications();
-  }
-
   async alertPushNotSupported() {
     const alert = await this.alertController.create({
-      header: "Push-Benachrichtugung nicht verfügbar",
-      message:
-        "Leider unterstützt ihr Gerät/Browser keine Push-Benachrichtugen.",
-      buttons: [{ text: "OK" }],
+      header: await lastValueFrom(
+        this.translate.get("profile.error__push_notification_not_available")
+      ),
+      message: await lastValueFrom(
+        this.translate.get(
+          "profile.error_device_not_support_push_notifications"
+        )
+      ),
+      buttons: [{ text: await lastValueFrom(this.translate.get("common.ok")) }],
     });
     alert.present();
   }
-
-  async errorPushMessageEnable(error) {
-    const alert = await this.alertController.create({
-      header: "Push-Benachrichtugung nicht verfügbar",
-      message: "Leider ist ein Fehler aufgetreten: " + error,
-      buttons: [{ text: "OK" }],
-    });
-    alert.present();
-  }
-
   async alertAskForPush() {
     const alert = await this.alertController.create({
-      header: "Push-Benachrichtugung",
-      message:
-        "Sollen Push-Benachrichtigungen für dieses Gerät aktiviert werden?",
+      header: await lastValueFrom(
+        this.translate.get("profile.push__notifications")
+      ),
+      message: await lastValueFrom(
+        this.translate.get("profile.push_notification__permission_desc")
+      ),
       buttons: [
         {
-          text: "Ja",
+          text: await lastValueFrom(this.translate.get("common.yes")),
           handler: () => {
             this.subscribeToNotifications();
           },
         },
-        { text: "Nein" },
+        { text: await lastValueFrom(this.translate.get("common.no")) },
       ],
     });
     alert.present();
-  }
-
-  async deletePushDevice(id) {
-    await this.profileService.deletePushDevice(id);
-    await this.toastActionSaved();
   }
 
   async subscribeToNotifications() {
@@ -345,7 +363,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
       console.log(sub.toJSON());
       if (sub && this.deviceId) {
         const profileUpdate = await this.profileService
-          .addPushSubscriber(sub, this.deviceId, this.deviceInfo)
+          .addPushSubscriber(sub, this.deviceId, this.deviceInfo, "")
           .catch((err) => {
             console.error("Could not subscribe to notifications", err);
             this.errorPushMessageEnable("Could not subscribe to notifications");
@@ -353,18 +371,23 @@ export class ProfilePage implements OnInit, AfterViewInit {
         this.toastActionSaved();
       } else {
         console.log("error push token register");
-        this.errorPushMessageEnable("Error push token register");
+        this.errorPushMessageEnable(
+          await lastValueFrom(this.translate.get("profile.error_push_token"))
+        );
       }
     } catch (err) {
+      console.log(err);
       this.alertPushNotSupported();
     }
-  }
+  }*/
   async presentDeleteProfile() {
     const toast = await this.toastController.create({
-      message: "Profil erfolgreich gelöscht",
+      message: await lastValueFrom(
+        this.translate.get("profile.success__profile_deleted")
+      ),
       duration: 1500,
       position: "bottom",
-      color: "success",
+      color: "danger",
     });
 
     await toast.present();
@@ -372,10 +395,12 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async presentErrorDeleteProfile() {
     const toast = await this.toastController.create({
-      message: "Fehler beim löschen des Profils",
+      message: await lastValueFrom(
+        this.translate.get("profile.error__while_deleting_msg")
+      ),
       duration: 1500,
       position: "bottom",
-      color: "error",
+      color: "danger",
     });
 
     await toast.present();
@@ -383,7 +408,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
   async toastActionSaved() {
     const toast = await this.toastController.create({
-      message: "Änderungen erfolgreich gespeichert",
+      message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
       position: "bottom",
       color: "success",
@@ -391,4 +416,116 @@ export class ProfilePage implements OnInit, AfterViewInit {
 
     await toast.present();
   }
+
+  async profileChange(event, fieldname) {
+    console.log(event);
+    await this.profileService.changeProfileAttribute(
+      event.detail.value,
+      fieldname
+    );
+  }
+
+  async changeEmail(oldEmail: string) {
+    const alert = await this.alertController.create({
+      message: "Change Email",
+      header: "Change Email Header",
+      inputs: [
+        {
+          label: "Old E-Mail",
+          name: "oldEmail",
+          type: "email",
+          value: oldEmail,
+        },
+        {
+          label: "New E-Mail",
+          name: "newEmail",
+          type: "email",
+        },
+      ],
+      buttons: [
+        {
+          text: "Save",
+          role: "",
+          handler: async (data) => {
+            console.log(data);
+            await this.authService.updateEmail(data.newEmail);
+            await this.profileChange(
+              { detail: { value: data.newEmail } },
+              "email"
+            );
+            alert.dismiss();
+          },
+        },
+        {
+          text: "Cancel",
+          handler: () => {
+            alert.dismiss();
+          },
+        },
+      ],
+    });
+    alert.present();
+    // alert.onDidDismiss
+  }
+
+  async changeAddress(profile: Profile) {
+    const alert = await this.alertController.create({
+      message: "Change Address",
+      header: "Change Address Header",
+      inputs: [
+        {
+          label: "Street and Number",
+          name: "streetAndNumber",
+          type: "text",
+          value: profile.streetAndNumber,
+        },
+        {
+          label: "Postalcode",
+          name: "postalcode",
+          type: "number",
+          value: profile.postalcode,
+        },
+        {
+          label: "City",
+          name: "city",
+          type: "text",
+          value: profile.city,
+        },
+      ],
+      buttons: [
+        {
+          text: "Save",
+          role: "",
+          handler: () => {
+            alert.dismiss();
+          },
+        },
+        {
+          text: "Cancel",
+          handler: () => {
+            alert.dismiss();
+          },
+        },
+      ],
+    });
+    alert.present();
+  }
+
+  /*
+  async languageChange(event) {
+    console.log(event.target.value);
+    if (event.target.value) {
+      if (event.target.value.length > 0) {
+        await this.profileService.changeLanguage(event.detail.value);
+      }
+    }
+  }
+
+  async setFavTeam(event) {
+    await this.profileService.changeFavTeam(event.detail.value);
+  }
+
+  async setFavClub(event) {
+    await this.profileService.changeFavClub(event.detail.value);
+  }*/
 }

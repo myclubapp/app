@@ -1,8 +1,8 @@
-img {
-  margin-top: 10px;
-  margin-bottom: 10px;
+ion-thumbnail {
+  img{
+    object-fit: contain;
+  }
 }
-
 ion-menu ion-note {
   margin-bottom: 30px;
 }
@@ -10,4 +10,9 @@ ion-menu ion-note {
 ion-menu ion-list-header,
 ion-menu ion-note {
   padding-left: 20px;
+}
+.ios{
+  .notch-padding{
+    padding-top: 40px !important;
+  }
 }

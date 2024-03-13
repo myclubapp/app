@@ -45,7 +45,7 @@ export class NewsDetailPage implements OnInit {
     return await this.modalCtrl.dismiss(null, 'close');
   }
 
-  async confirm () {
+  async confirm () { 
     return await this.modalCtrl.dismiss(this.news, 'confirm');
   }
 

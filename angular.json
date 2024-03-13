@@ -4,18 +4,18 @@
   "newProjectRoot": "projects",
   "projects": {
     "app": {
-      "i18n":{
+      "i18n": {
         "sourceLocale": "de-CH",
         "locales": {
           "fr-CH": {
             "translation": "src/locale/messages.fr.xlf",
             "baseHref": "fr"
           },
-          "it-CH":  {
+          "it-CH": {
             "translation": "src/locale/messages.it.xlf",
             "baseHref": "it"
           },
-          "en-US":  {
+          "en-US": {
             "translation": "src/locale/messages.en.xlf",
             "baseHref": "en"
           }
@@ -28,13 +28,13 @@
       "schematics": {},
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            
             "outputPath": "www",
             "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": [
+              "src/polyfills.ts"
+            ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
@@ -49,21 +49,27 @@
               },
               "src/manifest.webmanifest"
             ],
-            "styles": ["src/theme/variables.scss", "src/global.scss"],
+            "styles": [
+              "src/theme/variables.scss",
+              "src/global.scss"
+            ],
             "scripts": [],
-            "vendorChunk": true,
             "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
             "namedChunks": true,
-            "serviceWorker": true,
-            "ngswConfigPath": "ngsw-config.json"
+            "serviceWorker": "ngsw-config.json",
+            "browser": "src/main.ts"
           },
           "configurations": {
             "beta": {
               "index": "src/custom-themes/default/index.html",
               "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
                 {
                   "glob": "**/*.svg",
                   "input": "node_modules/ionicons/dist/ionicons/svg",
@@ -84,6 +90,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "tailwind.config.ts",
+                  "with": "src/custom-themes/default/tailwind.config.ts"
                 }
               ],
               "styles": [
@@ -96,8 +106,6 @@
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -110,6 +118,11 @@
               "index": "src/custom-themes/default/index.html",
               "assets": [
                 {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
+                {
                   "glob": "**/*.svg",
                   "input": "node_modules/ionicons/dist/ionicons/svg",
                   "output": "./svg"
@@ -129,6 +142,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "tailwind.config.ts",
+                  "with": "src/custom-themes/default/tailwind.config.ts"
                 }
               ],
               "styles": [
@@ -141,8 +158,6 @@
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -154,6 +169,11 @@
             "app-kadetten-unihockey": {
               "index": "src/custom-themes/app-kadetten-unihockey/index.html",
               "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
                 {
                   "glob": "**/*.svg",
                   "input": "node_modules/ionicons/dist/ionicons/svg",
@@ -174,6 +194,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "tailwind.config.ts",
+                  "with": "src/custom-themes/app-kadetten-unihockey/tailwind.config.ts"
                 }
               ],
               "styles": [
@@ -186,8 +210,6 @@
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -199,6 +221,11 @@
             "app-uhc-win-u": {
               "index": "src/custom-themes/app-uhc-win-u/index.html",
               "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
                 {
                   "glob": "**/*.svg",
                   "input": "node_modules/ionicons/dist/ionicons/svg",
@@ -219,6 +246,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "tailwind.config.ts",
+                  "with": "src/custom-themes/app-uhc-win-u/tailwind.config.ts"
                 }
               ],
               "styles": [
@@ -231,8 +262,6 @@
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -244,6 +273,11 @@
             "app-stv-spreitenbach": {
               "index": "src/custom-themes/app-stv-spreitenbach/index.html",
               "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
                 {
                   "glob": "**/*.svg",
                   "input": "node_modules/ionicons/dist/ionicons/svg",
@@ -264,6 +298,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "tailwind.config.ts",
+                  "with": "src/custom-themes/app-stv-spreitenbach/tailwind.config.ts"
                 }
               ],
               "styles": [
@@ -276,8 +314,6 @@
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -289,6 +325,11 @@
             "app-vbc-schaffhausen": {
               "index": "src/custom-themes/app-vbc-schaffhausen/index.html",
               "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
                 {
                   "glob": "**/*.svg",
                   "input": "node_modules/ionicons/dist/ionicons/svg",
@@ -309,6 +350,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "tailwind.config.ts",
+                  "with": "src/custom-themes/app-vbc-schaffhausen/tailwind.config.ts"
                 }
               ],
               "styles": [
@@ -321,8 +366,58 @@
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            },
+            "app-kadetten-handball": {
+              "index": "src/custom-themes/app-kadetten-handball/index.html",
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
+                {
+                  "glob": "**/*.svg",
+                  "input": "node_modules/ionicons/dist/ionicons/svg",
+                  "output": "./svg"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "src/custom-themes/app-kadetten-handball/assets",
+                  "output": "./assets"
+                },
+                {
+                  "glob": "manifest.webmanifest",
+                  "input": "src/custom-themes/app-kadetten-handball",
+                  "output": "./"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "tailwind.config.ts",
+                  "with": "src/custom-themes/app-kadetten-handball/tailwind.config.ts"
+                }
+              ],
+              "styles": [
+                "src/custom-themes/app-kadetten-handball/variables.scss",
+                "src/custom-themes/app-kadetten-handball/global.scss"
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -336,15 +431,14 @@
             }
           }
         },
-
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "app:build"
+            "buildTarget": "app:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "app:build:production"
+              "buildTarget": "app:build:production"
             },
             "ci": {
               "progress": false
@@ -354,7 +448,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "app:build"
+            "buildTarget": "app:build"
           }
         },
         "test": {
@@ -390,7 +484,10 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         },
         "e2e": {
@@ -422,7 +519,9 @@
     }
   },
   "cli": {
-    "schematicCollections": ["@ionic/angular-toolkit"],
+    "schematicCollections": [
+      "@ionic/angular-toolkit"
+    ],
     "analytics": false
   },
   "schematics": {

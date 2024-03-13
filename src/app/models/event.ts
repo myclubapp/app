@@ -1,22 +1,44 @@
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from "firebase/firestore";
 
-export interface Event {
-  id: string
-  name: string
-  description: string
-  dateTime: Timestamp
-  location: string
-  city: string
-  date: string
-  time: string
-  teamId: string
+export interface Veranstaltung {
+  id: string;
+  name: string;
+  description: string;
 
+  location: string;
+  streetAndNumber: string;
+  postalCode: string;
+  city: string;
+
+  date: Timestamp;
+
+  startDate: string;
+  endDate: string;
+
+  timeFrom: string;
+  timeTo: string;
+
+  /*teamId: string
+  teamName: string
+  liga: string*/
+
+  clubId: string;
+  clubName: string;
   // Business Logic Fields
-  status: boolean
-  attendees: any
+  status: boolean;
+  attendees: any;
+  countAttendees: number;
 }
-export interface HelferEvent extends Event {
-  schichten: [Schicht]
+export interface HelferEvent extends Veranstaltung {
+  schichten?: [Schicht];
 }
 
-interface Schicht {}
+export interface Schicht {
+  id: number;
+  name: string;
+  points: number;
+  timeFrom: any;
+  timeTo: any;
+  countNeeded: number;
+  count: number;
+}

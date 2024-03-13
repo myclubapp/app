@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { Router } from "@angular/router";
 import { first } from "rxjs/operators";
 // import { AngularFireAuth } from '@angular/fire/compat/auth';
@@ -7,11 +7,13 @@ import {
   Auth,
   getAuth,
   authState,
+  verifyBeforeUpdateEmail,
   // connectAuthEmulator,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   sendEmailVerification,
   signInWithEmailAndPassword,
+  updateEmail,
   signOut,
   updateProfile,
   UserCredential,
@@ -21,11 +23,7 @@ import {
 import { Observable } from "rxjs";
 
 // import firebase from 'firebase/compat/app';
-import {
-  Firestore,
-  doc,
-  setDoc,
-} from "@angular/fire/firestore";
+import { Firestore, doc, setDoc } from "@angular/fire/firestore";
 
 /******************************************************************************************
  *  DOCS https://github.com/angular/angularfire/blob/master/docs/auth/getting-started.md
@@ -37,22 +35,17 @@ import {
 export class AuthService {
   user$: Observable<User | null>;
   constructor(
-    private readonly firestore: Firestore,
-    public auth: Auth,
+    // private readonly firestore: Firestore,
+    private readonly firestore: Firestore = inject(Firestore),
+    // public auth: Auth,
+    public auth: Auth = inject(Auth),
+
     private readonly router: Router
   ) {
     // or use this version...
-    this.user$ = authState(auth);
+    this.user$ = authState(this.auth);
     this.auth = getAuth();
     // connectAuthEmulator(this.auth, 'http://localhost:8100')
-  }
-
-  /* getUser(): Promise<User> {
-    return authState(this.auth).pipe(first()).toPromise();
-  } */
-  async getUser(): Promise<User | null> {
-    // console.log("getUser auth service");
-    return await this.user$.pipe(first()).toPromise();
   }
 
   getUser$() {
@@ -103,6 +96,11 @@ export class AuthService {
     return await sendPasswordResetEmail(this.auth, email);
   }
 
+  async updateEmail(newEmail: string): Promise<void> {
+    // verifyBeforeUpdateEmail
+    return updateEmail(this.auth.currentUser, newEmail);
+  }
+
   async logout(): Promise<void> {
     await signOut(this.auth);
     // firebase.firestore().clearPersistence();
@@ -113,6 +111,5 @@ export class AuthService {
     const user = this.auth.currentUser;
 
     return deleteUser(user);
-
   }
 }

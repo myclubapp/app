@@ -1,9 +1,4 @@
-@config "../tailwind.config.js";
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+@config "../tailwind.config.ts";
 /*
  * App Global CSS
  * ----------------------------------------------------------------------------
@@ -30,3 +25,52 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+
+ion-content {
+    --background: transparent;
+}
+
+body {
+    background: transparent;
+}
+
+ion-content {
+    --ion-background-color: transparent;
+}
+
+html {
+    background-color: transparent;
+}
+
+// ion-header {
+//     --background: transparent;
+// }
+// ion-modal {
+//     --ion-background-color: transparent;
+// }
+
+.myclubStatus {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+ion-spinner {
+    left: 50%;
+    right: 50%;
+    top: 30%;
+}
+
+// Alert iOS Popup
+@media (prefers-color-scheme: dark) {
+    .ios input {
+        --ion-text-color: #FFFFFF;
+        --ion-text-color-rgb: 255, 255, 255;
+        color: var(--ion-text-color);
+    }
+
+    .md input {
+        --ion-text-color: #FFFFFF;
+        --ion-text-color-rgb: 255, 255, 255;
+        color: var(--ion-text-color);
+    }
+}

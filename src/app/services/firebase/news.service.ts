@@ -1,20 +1,12 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 
 import {
   Firestore,
-  addDoc,
   collection,
   collectionData,
-  doc,
-  docData,
-  deleteDoc,
-  updateDoc,
-  DocumentReference,
-  setDoc,
   query,
   where,
   orderBy,
-  QueryConstraint,
 } from "@angular/fire/firestore";
 import { Observable, Observer } from "rxjs";
 import { News } from "src/app/models/news";
@@ -23,9 +15,9 @@ import { News } from "src/app/models/news";
   providedIn: "root",
 })
 export class NewsService {
-  twentyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 40);
+  twentyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 30);
 
-  constructor(private readonly firestore: Firestore) {}
+  constructor(private firestore: Firestore = inject(Firestore)) {}
 
   getNewsRef(type: string): Observable<News[]> {
     // console.log('getNewsRef');
@@ -81,7 +73,7 @@ export class NewsService {
       News[]
     >;
   }
-
+  /*
   private getDocData<T>(path: string, idField = "id"): Observable<T> {
     const reference = doc(this.firestore, path);
     return docData(reference, { idField }) as Observable<T>;
@@ -96,4 +88,5 @@ export class NewsService {
     const q = query(reference, ...queryConstraints);
     return collectionData(q, { idField }) as Observable<T[]>;
   }
+  */
 }

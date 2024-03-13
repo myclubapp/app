@@ -1,0 +1,157 @@
+<ng-container *ngIf="team$ | async as team; else header">
+  <ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-buttons slot="secondary">
+        <ion-button *ngIf="!allowEdit" (click)="edit()"
+          >{{"common.edit" | translate}}</ion-button
+        >
+        <ion-button *ngIf="allowEdit" (click)="edit()"
+          >{{"common.cancel" | translate}}</ion-button
+        >
+      </ion-buttons>
+      <ion-title>{{team?.name}}</ion-title>
+      <ion-buttons slot="primary">
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">{{team.name}}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-list lines="full" [inset]="true">
+      <ion-list-header>
+        <ion-label> {{ "common.Mitgliederverwaltung" | translate}} </ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+        <ion-label> {{"common.average__age" | translate}} </ion-label>
+        <ion-note  slot="end"> {{team.averageAge}}</ion-note>
+      </ion-item>
+      
+      <ion-item detail="true" (click)="openMemberList()">
+        <ion-icon name="people-circle-outline" slot="start"></ion-icon>
+        <ion-label> Mitglieder </ion-label>
+        <ion-note slot="end">{{team['teamMembers'].length}}</ion-note>
+      </ion-item>
+
+      <ion-item detail="true" (click)="openAdminList()">
+        <ion-icon name="shield-half-outline" slot="start"></ion-icon>
+        <ion-label> Administratoren </ion-label>
+        <ion-note slot="end">{{team['teamAdmins'].length}}</ion-note>
+      </ion-item>
+
+    </ion-list>
+
+   <!-- <ion-list [inset]="true" *ngIf="team['teamRequests'].length > 0">
+      <ion-list-header>
+        <ion-label> {{"common.requests" | translate}} </ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="let request of team['teamRequests']" detail="true">
+        <ion-avatar slot="start">
+          <img src="{{request?.profilePicture}}" />
+        </ion-avatar>
+        <ion-label (click)="openMember(request)"
+          >{{request.firstName}} {{request.lastName}}</ion-label
+        >
+        <ion-label> {{request?.email}} </ion-label>
+      </ion-item>
+    </ion-list>-->
+
+    <!--
+  <ng-container *ngIf="requestList$ | async as requests; else noRequests">
+    <ion-list [inset]="true" *ngIf="requests.length > 0">
+      <ion-list-header> Anfragen </ion-list-header>
+      <ion-item *ngFor="let request of requests">
+        <ion-avatar slot="start">
+          <img [src]="request?.profilePicture" />
+        </ion-avatar>
+        <ion-label> {{request?.firstName}} {{request?.lastName}} </ion-label>
+        <ion-button color="danger" (click)="deleteTeamRequest(request)" slot="end">
+          <ion-icon icon-only name="trash"></ion-icon>
+        </ion-button>
+        <ion-button color="success" (click)="approveTeamRequest(request)" slot="end">
+          <ion-icon icon-only name="checkmark-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+  <ion-list [inset]="true">
+    <ion-list-header> Mitglieder </ion-list-header>
+    <ion-item *ngFor="let member of memberList$ | async">
+      
+      <ion-icon
+      *ngIf="allowEdit === true"
+      slot="icon-only"
+      color="danger"
+      slot="start"
+      (click)="removeMember(member)"
+      name="person-remove-outline"
+    ></ion-icon>
+      
+      <ion-avatar slot="start">
+        <img src="{{member?.profilePicture}}" />
+      </ion-avatar>
+      <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-list [inset]="true">
+    <ion-list-header> Administratoren </ion-list-header>
+    <ion-item *ngFor="let admin of adminList$ | async">
+      <ion-icon
+      *ngIf="allowEdit === true"
+      slot="icon-only"
+      color="danger"
+      slot="start"
+      name="person-remove"
+    ></ion-icon>
+      <ion-avatar slot="start">
+        <img src="{{admin?.profilePicture}}" />
+      </ion-avatar>
+      <ion-label> {{admin?.firstName}} {{admin?.lastName}} </ion-label>
+    </ion-item>
+  </ion-list>
+  -->
+    <!-- fab placed to the bottom end 
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addTeamMember()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>-->
+  </ion-content>
+</ng-container>
+<ng-template #noRequests>
+  <!-- You can put any placeholder or message here if needed when there are no requests -->
+</ng-template>
+<ng-template #header>
+  <ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-title>Keine Berechtigung</ion-title>
+      <ion-buttons slot="primary">
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">Keine Berechtigung</ion-title>
+      </ion-toolbar>
+    </ion-header>
+  </ion-content>
+
+
+</ng-template>
+

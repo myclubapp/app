@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { ChampionshipPageRoutingModule } from './championship-routing.module';
 
 import { ChampionshipPage } from './championship.page';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ChampionshipPageRoutingModule
+    ChampionshipPageRoutingModule,
+    TranslateModule
   ],
   declarations: [ChampionshipPage]
 })

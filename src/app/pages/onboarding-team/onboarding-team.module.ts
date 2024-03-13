@@ -7,6 +7,7 @@ import { IonicModule } from "@ionic/angular";
 import { OnboardingTeamPageRoutingModule } from "./onboarding-team-routing.module";
 
 import { OnboardingTeamPage } from "./onboarding-team.page";
+import { TranslateModule } from "@ngx-translate/core";
 
 @NgModule({
   imports: [
@@ -14,6 +15,7 @@ import { OnboardingTeamPage } from "./onboarding-team.page";
     FormsModule,
     IonicModule,
     OnboardingTeamPageRoutingModule,
+    TranslateModule
   ],
   declarations: [OnboardingTeamPage],
 })

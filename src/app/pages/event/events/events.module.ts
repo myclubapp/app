@@ -7,9 +7,10 @@ import { IonicModule } from '@ionic/angular';
 import { EventsPageRoutingModule } from './events-routing.module';
 
 import { EventsPage } from './events.page';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, EventsPageRoutingModule],
+  imports: [CommonModule, FormsModule, IonicModule, EventsPageRoutingModule,TranslateModule],
   declarations: [EventsPage]
 })
 export class EventsPageModule {}

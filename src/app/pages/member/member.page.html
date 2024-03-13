@@ -1,0 +1,110 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Member</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Member</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ng-container *ngIf="userProfile$ | async as userProfile; else loading">
+    <ion-list lines="full" [inset]="true">
+
+
+      <ion-item>
+        <ion-avatar slot="start">
+          <img alt="{{userProfile.firstName}} {{userProfile.lastName}}" src="{{userProfile.profilePicture}}" />
+        </ion-avatar>
+        <ion-label>{{userProfile.firstName}} {{userProfile.lastName}}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-icon slot="start" name="mail"></ion-icon>
+          <ion-label>{{userProfile.email}}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-icon slot="start" name="call"></ion-icon>
+          <ion-label>{{userProfile.phonenumber}}</ion-label>
+      </ion-item>
+    </ion-list>
+
+
+    <ng-container *ngIf="isRequest">
+
+      <ion-button expand="block" shape="round" color="success" (click)="approveClubRequest(userProfile)">
+        Approve Request
+      </ion-button>
+  
+      <ion-button expand="block" shape="round" color="danger" (click)="deleteClubRequest(userProfile)">
+        Delete Request
+      </ion-button>
+  
+    </ng-container>
+
+
+
+  </ng-container>
+
+</ion-content>
+
+<ng-template #loading>
+  <ion-list *ngIf="loading">
+    <ion-grid>
+      <ion-row>
+        <ion-col
+          size-lg="4"
+          size-md="6"
+          size-sm="6"
+          size="12"
+          *ngFor="let item of skeleton"
+        >
+          <ion-card>
+            <ion-card-header>
+              <ion-card-subtitle>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%"
+                ></ion-skeleton-text>
+              </ion-card-subtitle>
+              <ion-card-title>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%"
+                ></ion-skeleton-text>
+              </ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-list>
+</ng-template>
