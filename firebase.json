@@ -2,7 +2,7 @@
   "hosting": [
     {
       "target": "beta",
-      "public": "www",
+      "public": "www/browser",
       "ignore": [
         "**/.*"
       ],
@@ -35,7 +35,7 @@
     },
     {
       "target": "app-unihockey",
-      "public": "www",
+      "public": "www/browser",
       "ignore": [
         "**/.*"
       ],
@@ -68,7 +68,7 @@
     },
     {
       "target": "app-turnverein",
-      "public": "www",
+      "public": "www/browser",
       "ignore": [
         "**/.*"
       ],
@@ -101,7 +101,7 @@
     },
     {
       "target": "app-volleyball",
-      "public": "www",
+      "public": "www/browser",
       "ignore": [
         "**/.*"
       ],
@@ -134,7 +134,7 @@
     },
     {
       "target": "app-handball",
-      "public": "www",
+      "public": "www/browser",
       "ignore": [
         "**/.*"
       ],
@@ -167,7 +167,7 @@
     },
     {
       "target": "app-fussball",
-      "public": "www",
+      "public": "www/browser",
       "ignore": [
         "**/.*"
       ],
@@ -200,7 +200,7 @@
     },
     {
       "target": "app-kadetten-unihockey",
-      "public": "www",
+      "public": "www/browser",
       "ignore": [
         "**/.*"
       ],
@@ -233,7 +233,7 @@
     },
     {
       "target": "app-uhc-win-u",
-      "public": "www",
+      "public": "www/browser",
       "ignore": [
         "**/.*"
       ],
@@ -266,7 +266,7 @@
     },
     {
       "target": "app-stv-spreitenbach",
-      "public": "www",
+      "public": "www/browser",
       "ignore": [
         "**/.*"
       ],
@@ -299,7 +299,7 @@
     },
     {
       "target": "app-vbc-schaffhausen",
-      "public": "www",
+      "public": "www/browser",
       "ignore": [
         "**/.*"
       ],
@@ -332,7 +332,7 @@
     },
     {
       "target": "app-kadetten-handball",
-      "public": "www",
+      "public": "www/browser",
       "ignore": [
         "**/.*"
       ],
