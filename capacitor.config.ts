@@ -3,7 +3,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'app.myclub.defaultapp',
   appName: 'myclub',
-  webDir: 'www/browser',
+  webDir: 'www',
   "server": {
     "allowNavigation": ["http://developers.google.com/*"]
   },
