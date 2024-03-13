@@ -36,7 +36,7 @@ jobs:
       - name: Config Node Version because of npm login issues.
         uses: actions/setup-node@master
         with:
-          node-version: 16
+          node-version: 18
       - name: Install Dependencies
         run: |
           npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
