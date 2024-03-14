@@ -22,6 +22,7 @@ use [conventionalcommits](https://www.conventionalcommits.org/en/)
 
 ## Prettier Setup
 
+use [how to guide](https://typicode.github.io/husky/get-started.html)
 Install husky & Prettier
 `npm install — save-dev husky prettier pretty-quick`
 `npx husky init`
@@ -48,10 +49,10 @@ modify file: .husky/pre_commit and set pre-commit hook in husky
 
 ## Installed packages
 
-- Ionicframework (v 7)
-- Capacitor JS (v 4)
+- Ionicframework (v7)
+- Capacitor JS (v5)
 - Trapeze for native configuration
-- Angular v 15.2 & Angular PWA (`ng add @angular/pwa --project _project-name_`)
+- Angular v 17.2 & Angular PWA (`ng add @angular/pwa --project _project-name_`)
 - Angular Fire v 7.5 `ng add @angular/fire`
 - [Angular Localize](https://angular.io/guide/i18n-common-locale-id)
   -- de-CH German (Switzerland)
@@ -61,6 +62,7 @@ modify file: .husky/pre_commit and set pre-commit hook in husky
 - Tailwind CSS (`npm install -D tailwindcss@latest postcss autoprefixer`)
 - Fontawesome Icons
 - Ionicons v 5
+- Lottie Files
 
 # MY-CLUB-PREMIUM
 
