@@ -24,7 +24,7 @@
     "build-deploy:app-stv-spreitenbach": "ng build --configuration app-stv-spreitenbach && firebase deploy --only hosting:app-stv-spreitenbach",
     "build-deploy:app-vbc-schaffhausen": "ng build --configuration app-vbc-schaffhausen && firebase deploy --only hosting:app-vbc-schaffhausen",
     "build-deploy:app-kadetten-handball": "ng build --configuration app-kadetten-handball && firebase deploy --only hosting:app-kadetten-handball",
-    "prepare": "husky install",
+    "prepare": "husky",
     "lint": "ng lint"
   },
   "private": true,
@@ -92,7 +92,7 @@
     "@types/node": "18.8.5",
     "autoprefixer": "^10.4.17",
     "cordova-res": "0.15.4",
-    "husky": "9.0.11",
+    "husky": "^8.0.0",
     "jasmine-core": "4.0.1",
     "jasmine-spec-reporter": "7.0.0",
     "karma": "^6.4.0",

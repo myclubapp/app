@@ -22,8 +22,12 @@ use [conventionalcommits](https://www.conventionalcommits.org/en/)
 
 ## Prettier Setup
 
-`npm i husky-init`
-`npx husky-init; npm install --save-dev pretty-quick; npx husky set .husky/pre-commit "npx pretty-quick --staged";`
+Install husky & Prettier
+`npm install — save-dev husky prettier pretty-quick`
+`npx husky init`
+
+modify file: .husky/pre_commit and set pre-commit hook in husky
+`npx pretty-quick --staged`
 
 ## Create App Icon & Splash Screen
 
