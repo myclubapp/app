@@ -1,20 +1,17 @@
 {
-	"appId": "app.myclub.defaultapp",
-	"appName": "myclub",
-	"webDir": "www/browser",
-	"server": {
-		"allowNavigation": [
-			"http://developers.google.com/*"
-		]
-	},
-	"android": {},
-	"plugins": {
-		"PushNotifications": {
-			"presentationOptions": [
-				"badge",
-				"sound",
-				"alert"
-			]
-		}
-	}
+  "appId": "app.myclub.defaultapp",
+  "appName": "myclub",
+  "webDir": "www/browser",
+  "server": {
+    "allowNavigation": ["http://developers.google.com/*"]
+  },
+  "android": {},
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  },
+  "ios": {
+    "scheme": "App"
+  }
 }

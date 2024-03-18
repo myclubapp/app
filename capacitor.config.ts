@@ -18,6 +18,10 @@ const config: CapacitorConfig = {
       presentationOptions: ["badge", "sound", "alert"],
     },
   },
+  // Add this:
+  ios: {
+    scheme: "App",
+  },
   // ios: {
   //   contentInset: "always"
   // }
