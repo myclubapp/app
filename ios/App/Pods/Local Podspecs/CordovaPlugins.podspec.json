@@ -19,7 +19,9 @@
     "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) COCOAPODS=1 WK_WEB_VIEW_ONLY=1"
   },
   "dependencies": {
-    "CapacitorCordova": []
+    "CapacitorCordova": [
+
+    ]
   },
   "swift_versions": "5.1",
   "swift_version": "5.1"
