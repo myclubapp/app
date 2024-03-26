@@ -1,6 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
+
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/NOTICE', 'META-INF/LICENSE']
+        }
+    }
     namespace "app.myclub.defaultapp"
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {

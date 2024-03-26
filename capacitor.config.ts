@@ -9,8 +9,8 @@ const config: CapacitorConfig = {
   },
   android: {
     buildOptions: {
-      keystorePath: "undefined",
-      keystoreAlias: "undefined",
+      keystorePath: "KeyStore",
+      keystoreAlias: "myclub",
     },
   },
   plugins: {

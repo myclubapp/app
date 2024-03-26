@@ -11,15 +11,10 @@ import { ServiceWorkerModule } from "@angular/service-worker";
 import { environment } from "../environments/environment";
 import { HttpClientModule, HttpClient } from "@angular/common/http";
 
-// import { GraphQLModule } from './graphql.module';
-
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 import { provideFirebaseApp, getApp, initializeApp } from "@angular/fire/app";
-import {
-  getFirestore,
-  provideFirestore,
-} from "@angular/fire/firestore";
+import { getFirestore, provideFirestore } from "@angular/fire/firestore";
 import { provideAuth, getAuth, initializeAuth } from "@angular/fire/auth";
 import {
   setPersistence,
@@ -69,7 +64,7 @@ import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.pa
     TrainingExercisesPage,
     TrainingDetailPage,
     TrainingCreatePage,
-    
+
     EventAddPage,
     EventDetailPage,
 
@@ -82,7 +77,7 @@ import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.pa
     TeamPage,
     TeamMemberListPage,
     TeamAdminListPage,
-    TeamExercisesPage
+    TeamExercisesPage,
   ],
   imports: [
     BrowserModule,
@@ -96,7 +91,6 @@ import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.pa
       // or after 30 seconds (whichever comes first).
       registrationStrategy: "registerWhenStable:30000",
     }),
-    // GraphQLModule,
     HttpClientModule,
     TranslateModule.forRoot({
       // <--- add this

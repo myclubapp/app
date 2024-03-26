@@ -1,1 +1,10 @@
 /.angular
+/.github
+/.husky
+/.vscode
+/android
+/docs
+/e2e
+/icons
+/ios
+/node_modules
