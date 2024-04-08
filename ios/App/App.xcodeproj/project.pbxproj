@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E02955C03A443E6A04F4797 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E91C90B297E54436833C6ED7 /* PrivacyInfo.xcprivacy */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		36C267BE5E491DFF2E2F5222 /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 221965E08A7D8675FE10D56A /* Pods_App.framework */; };
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
@@ -16,7 +17,6 @@
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		696C52B52B20E1CC0056E9C4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 696C52B42B20E1CC0056E9C4 /* GoogleService-Info.plist */; };
-		0E02955C03A443E6A04F4797 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E91C90B297E54436833C6ED7 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,7 +35,7 @@
 		696C52B62B20E5A90056E9C4 /* AppRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppRelease.entitlements; sourceTree = "<group>"; };
 		AAA6C13C2B20EC0900E0FF27 /* AppDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppDebug.entitlements; sourceTree = "<group>"; };
 		E55BD740173AD78B07A75E55 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
-		E91C90B297E54436833C6ED7 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; name = "PrivacyInfo.xcprivacy"; path = "PrivacyInfo.xcprivacy"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		E91C90B297E54436833C6ED7 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,7 +65,7 @@
 				504EC3051FED79650016851F /* Products */,
 				8EC49720DF18D1B2D9AC3330 /* Pods */,
 				4308247656FF59D741757C06 /* Frameworks */,
-				E91C90B297E54436833C6ED7 /* Resources */,
+				E91C90B297E54436833C6ED7 /* PrivacyInfo.xcprivacy */,
 			);
 			sourceTree = "<group>";
 		};
@@ -102,15 +102,6 @@
 				E55BD740173AD78B07A75E55 /* Pods-App.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		057A4344E1094B589CD2B4C4 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				E91C90B297E54436833C6ED7 /* PrivacyInfo.xcprivacy */,
-			);
-			name = Resources;
-			path = undefined;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

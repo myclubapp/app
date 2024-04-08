@@ -1,11 +1,11 @@
 PODS:
-  - Capacitor (5.7.3):
+  - Capacitor (5.7.4):
     - CapacitorCordova
   - CapacitorBrowser (5.2.0):
     - Capacitor
   - CapacitorCamera (5.0.9):
     - Capacitor
-  - CapacitorCordova (5.7.3)
+  - CapacitorCordova (5.7.4)
   - CapacitorDevice (5.0.7):
     - Capacitor
   - CapacitorDialog (5.0.7):
@@ -32,7 +32,7 @@ PODS:
     - Capacitor
   - CapacitorStatusBar (5.0.7):
     - Capacitor
-  - CordovaPlugins (5.7.3):
+  - CordovaPlugins (5.7.4):
     - CapacitorCordova
   - Firebase/CoreOnly (7.11.0):
     - FirebaseCore (= 7.11.0)
@@ -191,10 +191,10 @@ EXTERNAL SOURCES:
     :path: "../capacitor-cordova-ios-plugins"
 
 SPEC CHECKSUMS:
-  Capacitor: 7b5eb47c6125e9b58a3e3cd02fe366fc58adc89c
+  Capacitor: 4fe9adf012caceb4c71ffea2f1f4d005cdcbeea7
   CapacitorBrowser: a6deae9e5bf87f62b62a753cff7992c5def9e771
   CapacitorCamera: 4892c5c392f60039d853dde78bc50ba19fbd113e
-  CapacitorCordova: a377c52a28dbb3b895c0f71187f7b1777fee69db
+  CapacitorCordova: a6e87fccc0307dee7aec1560ec9398485f2b0ce7
   CapacitorDevice: fc91bdb484dc0e70755e9b621cd557afe642613a
   CapacitorDialog: ea1beaccb7f825191aa18b72cba8981b881b3b2d
   CapacitorGeolocation: 918a292459542bcce98433f9e7c7909f8c72838a
@@ -207,7 +207,7 @@ SPEC CHECKSUMS:
   CapacitorShare: c6a1ebbf0114ff9e863b966cd6052678fa25d480
   CapacitorSplashScreen: dd3de3f3644710fa2a697cfb91ec262eece4d242
   CapacitorStatusBar: f390fbb49b82ffb754ea4b3cf71dc8b048baf3e7
-  CordovaPlugins: 2b7f7fbc42cc2ab42c5ee1a4cb1fabcf1ac7bca2
+  CordovaPlugins: 040a75bd71cbe58a9a5d4c14de66c29a6bb5869a
   Firebase: c121feb35e4126c0b355e3313fa9b487d47319fd
   FirebaseCore: 907447d8917a4d3eb0cce2829c5a0ad21d90b432
   FirebaseCoreDiagnostics: 68ad972f99206cef818230f3f3179d52ccfb7f8c
