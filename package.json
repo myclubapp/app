@@ -71,7 +71,7 @@
     "husky-init": "^8.0.0",
     "lottie-web": "^5.12.2",
     "ngx-lottie": "^11.0.1",
-    "rxjs": "7.4.0",
+    "rxjs": "^7.4.0",
     "web-social-share": "9.1.0",
     "zone.js": "0.14.4"
   },
