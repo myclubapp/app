@@ -34,11 +34,11 @@
 
           <ng-container *ngFor="let member of club['clubAdmins']">
             <ion-item-sliding *ngIf="member.groupBy == groupBy">
-              <ion-item-options side="end">
+              <!--<ion-item-options side="end">
                 <ion-item-option color="danger" (click)="deleteClubAdmin(member)">
                   <ion-icon name="trash"></ion-icon>
                 </ion-item-option>
-              </ion-item-options>
+              </ion-item-options>-->
 
               <ion-item detail="true">
                 <ion-icon *ngIf="allowEdit==true" slot="icon-only" color="danger" slot="start" name="trash"
