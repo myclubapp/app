@@ -201,7 +201,7 @@ export class NewsPage implements OnInit {
     );
 
     // Team observable
-    const teamNews$ = this.authService.getUser$().pipe(
+    /*const teamNews$ = this.authService.getUser$().pipe(
       take(1),
       switchMap((user) => this.fbService.getUserTeamRefs(user)),
       concatMap((teamsArray) => from(teamsArray)),
@@ -223,19 +223,19 @@ export class NewsPage implements OnInit {
       ),
       tap((news) => news.forEach((n) => teamNewsList.push(n))),
       finalize(() => console.log("Team news fetching completed"))
-    );
+    );*/
 
     // Use combineLatest to get results when both observables have emitted
     this.subscriptionFilter = combineLatest([
       clubNews$,
-      teamNews$,
+      //teamNews$,
       verbandNews$,
     ]).subscribe({
       next: () => {
         this.newsList = [
           ...this.newsList,
           ...clubNewsList,
-          ...teamNewsList,
+          //...teamNewsList,
           ...verbandNewsList,
         ].sort((a, b): any => {
           // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
