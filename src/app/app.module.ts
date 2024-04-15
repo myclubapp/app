@@ -27,7 +27,7 @@ import { provideStorage, getStorage } from "@angular/fire/storage";
 import { provideMessaging, getMessaging } from "@angular/fire/messaging";
 
 // MODALs
-import { OnboardingPage } from "./pages/onboarding/onboarding.page";
+// import { OnboardingPage } from "./pages/onboarding/onboarding.page";
 import { NewsDetailPage } from "./pages/news/news-detail/news-detail.page";
 import { MemberPage } from "./pages/member/member.page";
 import { HelferPunktePage } from "./pages/helfer/helfer-punkte/helfer-punkte.page";
@@ -68,7 +68,7 @@ import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.pa
     EventAddPage,
     EventDetailPage,
 
-    OnboardingPage,
+    // OnboardingPage,
     ClubPage,
     ClubMemberListPage,
     ClubAdminListPage,

@@ -8,7 +8,7 @@ android {
         }
     }
     namespace "app.myclub.defaultapp"
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "app.myclub.defaultapp"
         minSdkVersion rootProject.ext.minSdkVersion

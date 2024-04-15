@@ -28,8 +28,6 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Need camera access to select profile image.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Need your location access for Navigation for sports venue</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Need your location access for Navigation for sports venue</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

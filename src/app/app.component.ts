@@ -28,7 +28,7 @@ import {
   Token,
 } from "@capacitor/push-notifications";
 import { ConfirmResult, Dialog } from "@capacitor/dialog";
-import { OnboardingPage } from "./pages/onboarding/onboarding.page";
+import { OnboardingPage } from "./pages/onboarding/onboarding/onboarding.page";
 
 @Component({
   selector: "app-root",
@@ -128,36 +128,41 @@ export class AppComponent implements OnInit {
         this.setDefaultLanguage();
 
         if (!user.emailVerified) {
-          this.doOnboarding(user);
+          this.router.navigateByUrl("/onboarding-email");
         }
-        this.clubListSub = this.clubList$
+
+       this.clubListSub = this.clubList$
           .pipe(
             take(1),
             tap((data) => {
               if (data.length == 0) {
                 console.log("NO! Club Data received ");
-                this.doOnboarding(user);
+                this.router.navigateByUrl("/onboarding-club");
               }
             })
           )
           .subscribe();
 
+          // SEt DEVICE INFOS
+          this.deviceInfo = await Device.getInfo();
+          this.deviceId = await Device.getId();
+          console.log(this.deviceInfo);
+          // Register Native Push
+          if (
+            this.deviceInfo.platform == "android" ||
+            this.deviceInfo.platform == "ios"
+          ) {
+            // this.subscribeMobileNotifications();
+            this.registerNotifications();
+          } else {
+            // Register Web Push, if available
+          }
+
+ 
+
         // this.platform.ready().then(async () => {
 
-        // SEt DEVICE INFOS
-        this.deviceInfo = await Device.getInfo();
-        this.deviceId = await Device.getId();
-        console.log(this.deviceInfo);
-        // Register Native Push
-        if (
-          this.deviceInfo.platform == "android" ||
-          this.deviceInfo.platform == "ios"
-        ) {
-          // this.subscribeMobileNotifications();
-          this.registerNotifications();
-        } else {
-          // Register Web Push, if available
-        }
+
         // })
         // READ USER LANGUAGE FROM DATABASE if AVAILABLE
 
@@ -250,12 +255,12 @@ export class AppComponent implements OnInit {
     });
   }
 
-  async doOnboarding(user) {
+  /*async doOnboardingEmail(user) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: OnboardingPage,
       presentingElement: await this.modalCtrl.getTop(), //  this.routerOutlet.nativeEl,
-      canDismiss: true,
+      canDismiss: false,
       showBackdrop: true,
       componentProps: {
         data: user,
@@ -268,7 +273,7 @@ export class AppComponent implements OnInit {
     if (role === "close") {
       console.log(">>> close onboarding modal" + data);
     }
-  }
+  }*/
 
   setFallbackLanguage() {
     Device.getLanguageTag().then((result: LanguageTag) => {
@@ -281,8 +286,8 @@ export class AppComponent implements OnInit {
         console.log("Set Fallback Language to " + result.value);
         this.translate.setDefaultLang(result.value);
       } else {
-        console.log("Set Fallback Language to EN");
-        this.translate.setDefaultLang("en");
+        console.log("Set Fallback Language to DE");
+        this.translate.setDefaultLang("de");
       }
     });
   }

@@ -104,7 +104,7 @@ export class AuthService {
   async logout(): Promise<void> {
     await signOut(this.auth);
     // firebase.firestore().clearPersistence();
-    await this.router.navigateByUrl("/logout");
+    await this.router.navigateByUrl("/login");
   }
 
   async deleteProfile() {

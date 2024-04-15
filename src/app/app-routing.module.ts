@@ -95,17 +95,25 @@ const routes: Routes = [
         (m) => m.ChampionshipPageModule
       ),
   },
-  /*{
+  {
     path: "onboarding",
     loadChildren: () =>
-      import("./pages/onboarding/onboarding.module").then(
+      import("./pages/onboarding/onboarding/onboarding.module").then(
         (m) => m.OnboardingPageModule
       ),
-  },*/
+  },
+  {
+    path: 'onboarding-club',
+    loadChildren: () => import('./pages/onboarding/onboarding-club/onboarding-club.module').then( m => m.OnboardingClubPageModule)
+  },
+  {
+    path: 'onboarding-email',
+    loadChildren: () => import('./pages/onboarding/onboarding-email/onboarding-email.module').then( m => m.OnboardingEmailPageModule)
+  },
   {
     path: "onboarding-team",
     loadChildren: () =>
-      import("./pages/onboarding-team/onboarding-team.module").then(
+      import("./pages/onboarding/onboarding-team/onboarding-team.module").then(
         (m) => m.OnboardingTeamPageModule
       ),
   },
@@ -144,6 +152,7 @@ const routes: Routes = [
         (m) => m.NotFoundPageModule
       ),
   },
+
 
 ];
 
