@@ -140,3 +140,7 @@ then, have a look in the directory or copy icons to src/custom_themes/app-CUSTOM
 Also upload login.jpg to /bg and create favicon.
 
 https://favicon.io/favicon-converter/
+
+
+# Licenses used
+run: `license-report --only=prod --output=json`
