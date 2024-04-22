@@ -59,7 +59,8 @@
     "@fortawesome/fontawesome-svg-core": "6.5.2",
     "@fortawesome/free-brands-svg-icons": "6.5.2",
     "@fortawesome/free-solid-svg-icons": "6.5.2",
-    "@ionic/angular": "7.8.3",
+    "@ionic/angular": "^8.0.0-rc.2",
+    "@ionic/angular-server": "^8.0.0-rc.2",
     "@ionic/pwa-elements": "^3.1.1",
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
@@ -82,7 +83,7 @@
     "@angular/compiler-cli": "^17.3.5",
     "@angular/localize": "^17.3.5",
     "@capacitor/cli": "6.0.0",
-    "@ionic/angular-toolkit": "11.0.1",
+    "@ionic/angular-toolkit": "^11.0.1",
     "@ionic/cli": "7.2.0",
     "@ionic/lab": "3.2.15",
     "@tailwindcss/typography": "^0.5.10",
@@ -111,11 +112,11 @@
     "defaultOptIn": false
   },
   "browserslist": [
-    "Chrome >=79",
-    "ChromeAndroid >=79",
-    "Firefox >=70",
-    "Edge >=79",
-    "Safari >=14",
-    "iOS >=14"
+    "Chrome >=89",
+    "ChromeAndroid >=89",
+    "Firefox >=75",
+    "Edge >=89",
+    "Safari >=15",
+    "iOS >=15"
   ]
 }

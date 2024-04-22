@@ -1,10 +1,11 @@
 <ion-content>
   <ion-fab vertical="top" horizontal="end">
-    <ion-fab-button size="small" (click)="logout()">
+    <ion-fab-button size="small">
       <ion-icon name="log-out-outline" size="small"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-  <!-- VERIFY EMAIL FIRST! -->
+  <!--
+
   <ion-card *ngIf="!user.emailVerified || !this.emailSkip">
     <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="570" height="350" viewBox="0 0 570 511.67482"
       xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -52,9 +53,11 @@
       </ion-col>
       <ion-col size="3"> </ion-col>
     </ion-row>
-  </ion-card>
+  </ion-card>-->
+<!--
 
   <ng-container *ngIf="userProfile$ | async as userProfile">
+  -->
     <!-- NOTIFICATION & PROFILE-->
     <!-- <ion-card *ngIf="user.emailVerified && this.emailSkip && !this.notificationSkip">
       <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="905.71938" height="350"
@@ -527,6 +530,6 @@
       <ion-icon name="barcode"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-  -->
-  </ng-container>
+
+  </ng-container>  -->
 </ion-content>

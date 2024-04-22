@@ -137,6 +137,7 @@ export class AppComponent implements OnInit {
             tap((data) => {
               if (data.length == 0) {
                 console.log("NO! Club Data received ");
+                
                 this.router.navigateByUrl("/onboarding-club");
               }
             })
