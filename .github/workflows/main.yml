@@ -15,8 +15,7 @@ jobs:
         with:
           node-version: 20
       - name: Install Dependencies
-        run: |
-          npm ci
+        run: npm i --force
       - name: Build (Default Unihockey)
         run: npm run build:prod
       - name: Deploy to Firebase
@@ -37,8 +36,7 @@ jobs:
         with:
           node-version: 20
       - name: Install Dependencies
-        run: |
-          npm ci
+        run: npm i --force
       - name: Build app-kadetten-unihockey
         run: npm run build:app-kadetten-unihockey
       - name: Deploy to Firebase
@@ -59,8 +57,7 @@ jobs:
         with:
           node-version: 20
       - name: Install Dependencies
-        run: |
-          npm ci
+        run: npm i --force
       - name: Build app-uhc-win-u
         run: npm run build:app-uhc-win-u
       - name: Deploy to Firebase
@@ -81,8 +78,7 @@ jobs:
         with:
           node-version: 20
       - name: Install Dependencies
-        run: |
-          npm ci
+        run: npm i --force
       - name: Build app-stv-spreitenbach
         run: npm run build:app-stv-spreitenbach
       - name: Deploy to Firebase
@@ -103,8 +99,7 @@ jobs:
         with:
           node-version: 20
       - name: Install Dependencies
-        run: |
-          npm ci
+        run: npm i --force
       - name: Build app-vbc-schaffhausen
         run: npm run build:app-vbc-schaffhausen
       - name: Deploy to Firebase
@@ -125,8 +120,7 @@ jobs:
         with:
           node-version: 20
       - name: Install Dependencies
-        run: |
-          npm ci
+        run: npm i --force
       - name: Build app-kadetten-handball
         run: npm run build:app-kadetten-handball
       - name: Deploy to Firebase
