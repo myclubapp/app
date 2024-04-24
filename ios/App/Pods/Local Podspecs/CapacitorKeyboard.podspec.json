@@ -1,17 +1,17 @@
 {
   "name": "CapacitorKeyboard",
-  "version": "5.0.8",
+  "version": "6.0.0",
   "summary": "The Keyboard API provides keyboard display and visibility control, along with event tracking when the keyboard shows and hides.",
   "license": "MIT",
   "homepage": "https://capacitorjs.com",
   "authors": "Ionic <hi@ionicframework.com>",
   "source": {
     "git": "https://github.com/ionic-team/capacitor-plugins.git",
-    "tag": "@capacitor/keyboard@5.0.8"
+    "tag": "@capacitor/keyboard@6.0.0"
   },
   "source_files": [
-    "ios/Plugin/**/*.{swift,h,m,c,cc,mm,cpp}",
-    "keyboard/ios/Plugin/**/*.{swift,h,m,c,cc,mm,cpp}"
+    "ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}",
+    "keyboard/ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}"
   ],
   "platforms": {
     "ios": "13.0"

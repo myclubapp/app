@@ -10,7 +10,6 @@
 #endif
 #endif
 
-#import "NetworkPlugin.h"
 
 FOUNDATION_EXPORT double CapacitorNetworkVersionNumber;
 FOUNDATION_EXPORT const unsigned char CapacitorNetworkVersionString[];

@@ -10,7 +10,6 @@
 #endif
 #endif
 
-#import "HapticsPlugin.h"
 
 FOUNDATION_EXPORT double CapacitorHapticsVersionNumber;
 FOUNDATION_EXPORT const unsigned char CapacitorHapticsVersionString[];

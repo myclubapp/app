@@ -19,5 +19,23 @@
 	},
 	"ios": {
 		"scheme": "App"
-	}
+	},
+	"packageClassList": [
+		"CAPBrowserPlugin",
+		"CAPCameraPlugin",
+		"DevicePlugin",
+		"DialogPlugin",
+		"GeolocationPlugin",
+		"CapacitorGoogleMapsPlugin",
+		"CapacitorGoogleMapsPlugin",
+		"HapticsPlugin",
+		"KeyboardPlugin",
+		"CAPNetworkPlugin",
+		"PreferencesPlugin",
+		"PushNotificationsPlugin",
+		"SharePlugin",
+		"SplashScreenPlugin",
+		"StatusBarPlugin",
+		"CDVPlugin"
+	]
 }

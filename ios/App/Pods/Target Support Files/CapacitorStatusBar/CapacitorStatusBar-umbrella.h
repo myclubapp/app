@@ -10,7 +10,6 @@
 #endif
 #endif
 
-#import "StatusBarPlugin.h"
 
 FOUNDATION_EXPORT double CapacitorStatusBarVersionNumber;
 FOUNDATION_EXPORT const unsigned char CapacitorStatusBarVersionString[];

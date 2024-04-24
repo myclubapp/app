@@ -10,7 +10,6 @@
 #endif
 #endif
 
-#import "BrowserPlugin.h"
 
 FOUNDATION_EXPORT double CapacitorBrowserVersionNumber;
 FOUNDATION_EXPORT const unsigned char CapacitorBrowserVersionString[];
