@@ -13,10 +13,9 @@ jobs:
       - name: Config Node Version because of npm login issues.
         uses: actions/setup-node@master
         with:
-          node-version: 18
+          node-version: 20
       - name: Install Dependencies
         run: |
-          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
           npm ci
       - name: Build (Default Unihockey)
         run: npm run build:prod
@@ -36,10 +35,9 @@ jobs:
       - name: Config Node Version because of npm login issues.
         uses: actions/setup-node@master
         with:
-          node-version: 18
+          node-version: 20
       - name: Install Dependencies
         run: |
-          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
           npm ci
       - name: Build app-kadetten-unihockey
         run: npm run build:app-kadetten-unihockey
@@ -59,10 +57,9 @@ jobs:
       - name: Config Node Version because of npm login issues.
         uses: actions/setup-node@master
         with:
-          node-version: 18
+          node-version: 20
       - name: Install Dependencies
         run: |
-          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
           npm ci
       - name: Build app-uhc-win-u
         run: npm run build:app-uhc-win-u
@@ -82,10 +79,9 @@ jobs:
       - name: Config Node Version because of npm login issues.
         uses: actions/setup-node@master
         with:
-          node-version: 18
+          node-version: 20
       - name: Install Dependencies
         run: |
-          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
           npm ci
       - name: Build app-stv-spreitenbach
         run: npm run build:app-stv-spreitenbach
@@ -105,10 +101,9 @@ jobs:
       - name: Config Node Version because of npm login issues.
         uses: actions/setup-node@master
         with:
-          node-version: 18
+          node-version: 20
       - name: Install Dependencies
         run: |
-          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
           npm ci
       - name: Build app-vbc-schaffhausen
         run: npm run build:app-vbc-schaffhausen
@@ -128,10 +123,9 @@ jobs:
       - name: Config Node Version because of npm login issues.
         uses: actions/setup-node@master
         with:
-          node-version: 18
+          node-version: 20
       - name: Install Dependencies
         run: |
-          npm config set '//npm.fontawesome.com/:_authToken' "${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}"
           npm ci
       - name: Build app-kadetten-handball
         run: npm run build:app-kadetten-handball
