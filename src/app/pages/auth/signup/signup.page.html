@@ -1,4 +1,63 @@
 <ion-content>
+
+  <ion-grid class="ion-no-padding" style="height: 100vh;">
+    <ion-row style="height: 100%;">
+      <!-- Signup Form Column -->
+      <ion-col size-md="6" size-lg="5" style="display: flex; align-items: center; justify-content: center;">
+        <ion-card class="ion-no-margin" style="max-width: 500px; width: 100%;">
+          <ion-card-content class="ion-text-center">
+            <ion-img src="assets/logo_trans.png" alt="Logo" style="max-height: 50px; max-width: 100px;"></ion-img>
+            <ion-card-title>{{'signup.signup__title' | translate}}</ion-card-title>
+            <p>
+              {{'common.or' | translate}}
+              <ion-router-link routerLink="/login" class="ion-text-primary">
+                {{'signup.already_have__acount' | translate}}
+              </ion-router-link>
+            </p>
+            <!-- Signup Form Content Here -->
+            <form [formGroup]="authForm">
+              <ion-item lines="full">
+                <ion-input labelPlacement="floating" label="{{'common.email__address' | translate}}" type="email"
+                  formControlName="email" required></ion-input>
+              </ion-item>
+
+              <ion-item lines="full">
+                <ion-input labelPlacement="floating" label="{{'common.password' | translate}}" type="password"
+                  formControlName="password" required></ion-input>
+              </ion-item>
+
+              <ion-item lines="full">
+                <ion-input labelPlacement="floating" label="{{'common.first__name' | translate}}" type="text"
+                  formControlName="firstName" required></ion-input>
+              </ion-item>
+
+              <ion-item lines="full">
+                <ion-input labelPlacement="floating" label="{{'common.last__name' | translate}}" type="text"
+                  formControlName="lastName" required></ion-input>
+              </ion-item>
+
+              <ion-button (click)="submitCredentials(authForm)" expand="block" type="submit" class="ion-margin-top">
+                {{'signup.to__register' | translate}}
+              </ion-button>
+            </form>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <!-- Image Column -->
+      <ion-col size-md="6" size-lg="7" style="padding: 0;" class="ion-hide-md-down">
+        <ion-img src="assets/bg/mountain-4.jpg" alt="{{'common.mountain_background__alt' | translate}}"
+          style="height: 100%; width: 100%; object-fit: cover;">
+        </ion-img>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+
+
+
+  <!--
+
   <div class="min-h-screen bg-white flex">
     <div
       class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24"
@@ -114,17 +173,7 @@
               </div>
 
               <div class="flex items-center justify-between">
-                <!--<div class="flex items-center">
-                  <input id="remember_me" name="remember_me" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                  <label for="remember_me" class="ml-2 block text-sm text-gray-900">
-                    Remember me
-                  </label>
-                </div>-->
-
-                <!--      <div class="text-sm">
-                  <a href="/reset-password" class="font-medium text-myclublight hover:text-myclubdark"> Passwort vergessen? </a>
-                </div>
-              --></div>
+         </div>
 
               <div>
                 <button
@@ -146,5 +195,5 @@
         [alt]='"common.mountain_background__alt " | translate'
       />
     </div>
-  </div>
+  </div>-->
 </ion-content>
