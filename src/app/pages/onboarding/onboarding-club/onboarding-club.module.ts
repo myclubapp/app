@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { OnboardingClubPageRoutingModule } from './onboarding-club-routing.module';
 
 import { OnboardingClubPage } from './onboarding-club.page';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    OnboardingClubPageRoutingModule
+    OnboardingClubPageRoutingModule,
+    TranslateModule
   ],
   declarations: [OnboardingClubPage]
 })

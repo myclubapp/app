@@ -1,9 +1,58 @@
 <ion-content>
   <ion-fab vertical="top" horizontal="end">
-    <ion-fab-button size="small">
+    <ion-fab-button size="small" (click)="logout()">
       <ion-icon name="log-out-outline" size="small"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Club beitreten</ion-card-title>
+      <ion-card-subtitle>Onboarding</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-searchbar [debounce]="1000" (ionInput)="handleChange($event)" animated="true" search-icon="search-circle"
+        [placeholder]='"onboarding.search_by_club__pholder" |  translate'></ion-searchbar>
+      <ion-list [inset]="true">
+        <ion-list-header *ngIf="clubListSU.length > 0">
+          Unihockey
+        </ion-list-header>
+        <ion-item lines="full" *ngFor="let club of clubListSU" (click)="joinClub(club)" button>
+          <ion-avatar slot="start">
+            <img alt="{{club.name}}" src="{{club.logo}}" />
+          </ion-avatar>
+          <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
+        </ion-item>
+
+        <ion-list-header *ngIf="clubListSV.length > 0">
+          Volleyball
+        </ion-list-header>
+        <ion-item lines="full" *ngFor="let club of clubListSV" (click)="joinClub(club)" button>
+          <ion-avatar slot="start">
+            <img alt="{{club.name}}" src="{{club.logo}}" />
+          </ion-avatar>
+          <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
+        </ion-item>
+
+        <ion-list-header *ngIf="clubListSH.length > 0">
+          Handball
+        </ion-list-header>
+        <ion-item lines="full" *ngFor="let club of clubListSH" (click)="joinClub(club)" button>
+          <ion-avatar slot="start">
+            <img alt="{{club.name}}" src="{{club.logo}}" />
+          </ion-avatar>
+          <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
+        </ion-item>
+
+     
+      </ion-list>
+    </ion-card-content>
+
+
+  </ion-card>
+
+
   <!--
 
   <ion-card *ngIf="!user.emailVerified || !this.emailSkip">

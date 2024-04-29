@@ -125,41 +125,48 @@ export class AppComponent implements OnInit {
         // 0. LOGIN
         this.email = user.email;
         this.user = user;
-        this.setDefaultLanguage();
 
-        if (!user.emailVerified) {
+        // this.authService.auth.currentUser.getIdToken(true);
+        // await this.authService.auth.currentUser.reload();
+        // console.log(user);
+
+        if (!this.user.emailVerified) {
+          console.log("E-Mail is NOT verfied");
+          console.log(user.email, user.displayName, user.emailVerified);
           this.router.navigateByUrl("/onboarding-email");
+        } else {
+          console.log("E-Mail IS verified. Go ahead..")
+          console.log(user.email, user.displayName, user.emailVerified)
+          this.clubListSub = this.clubList$
+            .pipe(
+              take(1),
+              tap((data) => {
+                if (data.length == 0) {
+                  console.log("NO! Club Data received. > Call Club Onboarding");
+                  this.router.navigateByUrl("/onboarding-club");
+                }
+              })
+            )
+            .subscribe();
         }
 
-       this.clubListSub = this.clubList$
-          .pipe(
-            take(1),
-            tap((data) => {
-              if (data.length == 0) {
-                console.log("NO! Club Data received ");
-                
-                this.router.navigateByUrl("/onboarding-club");
-              }
-            })
-          )
-          .subscribe();
 
-          // SEt DEVICE INFOS
-          this.deviceInfo = await Device.getInfo();
-          this.deviceId = await Device.getId();
-          console.log(this.deviceInfo);
-          // Register Native Push
-          if (
-            this.deviceInfo.platform == "android" ||
-            this.deviceInfo.platform == "ios"
-          ) {
-            // this.subscribeMobileNotifications();
-            this.registerNotifications();
-          } else {
-            // Register Web Push, if available
-          }
+        // SEt DEVICE INFOS
+        this.deviceInfo = await Device.getInfo();
+        this.deviceId = await Device.getId();
+        console.log(this.deviceInfo);
+        // Register Native Push
+        if (
+          this.deviceInfo.platform == "android" ||
+          this.deviceInfo.platform == "ios"
+        ) {
+          // this.subscribeMobileNotifications();
+          this.registerNotifications();
+        } else {
+          // Register Web Push, if available
+        }
 
- 
+
 
         // this.platform.ready().then(async () => {
 
@@ -284,7 +291,7 @@ export class AppComponent implements OnInit {
         result.value == "en" ||
         result.value == "it"
       ) {
-        console.log("Set Fallback Language to " + result.value);
+        console.log("Set Fallback Language to Device Language: " + result.value);
         this.translate.setDefaultLang(result.value);
       } else {
         console.log("Set Fallback Language to DE");

@@ -4,18 +4,19 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { OnboardingEmailPageRoutingModule } from './onboarding-email-routing.module';
+import { ClubRequestListPageRoutingModule } from './club-request-list-routing.module';
 
-import { OnboardingEmailPage } from './onboarding-email.page';
+import { ClubRequestListPage } from './club-request-list.page';
 import { TranslateModule } from '@ngx-translate/core';
+
 @NgModule({
   imports: [
-    TranslateModule,
     CommonModule,
+    TranslateModule,
     FormsModule,
     IonicModule,
-    OnboardingEmailPageRoutingModule
+    ClubRequestListPageRoutingModule
   ],
-  declarations: [OnboardingEmailPage]
+  declarations: [ClubRequestListPage]
 })
-export class OnboardingEmailPageModule {}
+export class ClubRequestListPageModule {}

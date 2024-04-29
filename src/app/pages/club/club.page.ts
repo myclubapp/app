@@ -33,6 +33,7 @@ import { ClubAdminListPage } from "../club-admin-list/club-admin-list.page";
 import { TeamListPage } from "../team-list/team-list.page";
 import { ClubTeamListPage } from "../club-team-list/club-team-list.page";
 import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
+import { ClubRequestListPage } from "../club-request-list/club-request-list.page";
 
 @Component({
   selector: "app-club",
@@ -105,11 +106,11 @@ export class ClubPage implements OnInit {
         return combineLatest({
           clubMembers: this.fbService.getClubMemberRefs(clubId),
           clubAdmins: this.fbService.getClubAdminRefs(clubId),
-          // clubRequests: this.fbService.getClubRequestRefs(clubId),
+          clubRequests: this.fbService.getClubRequestRefs(clubId),
         }).pipe(
           switchMap(({ clubMembers,
             clubAdmins, 
-            // clubRequests
+            clubRequests
              }) => {
             const memberProfiles$ = clubMembers.map((member) =>
               this.userProfileService.getUserProfileById(member.id).pipe(
@@ -127,18 +128,18 @@ export class ClubPage implements OnInit {
                 )
               )
             );
-            /*const clubRequests$ = clubRequests.map((request) =>
+            const clubRequests$ = clubRequests.map((request) =>
               this.userProfileService.getUserProfileById(request.id).pipe(
                 take(1),
                 catchError(() =>
                   of({ ...request, firstName: "Unknown", lastName: "Unknown" })
                 )
               )
-            );*/
+            );
             return forkJoin({
               clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
               clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
-              // clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
+              clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
             }).pipe(
               map(({ 
                   clubMembers, 
@@ -149,7 +150,7 @@ export class ClubPage implements OnInit {
                   (member) => member !== undefined
                 ), // Filter out undefined
                 clubAdmins: clubAdmins.filter((admin) => admin !== undefined), // Filter out undefined
-                /*clubRequests: clubRequests.filter(
+                clubRequests: clubRequests.filter(
                   (request) => request !== undefined
                 ), // Filter out undefined*/
               }))
@@ -157,7 +158,7 @@ export class ClubPage implements OnInit {
           }),
           map(({ clubMembers, 
             clubAdmins, 
-          //  clubRequests
+            clubRequests
            }) => {
 
             const ages = clubMembers
@@ -179,7 +180,7 @@ export class ClubPage implements OnInit {
               averageAge: averageAge.toFixed(1), // Keep two decimal places
               clubMembers,
               clubAdmins,
-            //  clubRequests,
+              clubRequests,
             };
           })
         );
@@ -190,6 +191,24 @@ export class ClubPage implements OnInit {
         return of(null);
       })
     );
+  }
+  async openRequestList() {
+    console.log("open Club Request List");
+    const modal = await this.modalCtrl.create({
+      component: ClubRequestListPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        club: this.club
+      },
+    });
+    modal.present();
+  
+    const { data, role } = await modal.onWillDismiss();
+  
+    if (role === "confirm") {
+    }
   }
 
 
