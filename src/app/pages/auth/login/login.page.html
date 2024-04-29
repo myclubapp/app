@@ -6,12 +6,14 @@
       <ion-col size-md="6" size-lg="5" style="display: flex; align-items: center; justify-content: center;">
         <ion-card class="ion-no-margin" style="max-width: 500px; width: 100%;">
           <ion-card-content>
-            <ion-img src="assets/logo_trans.png" alt="Logo" style="max-height: 50px; max-width: 100px;"></ion-img>
+            <ion-img src="assets/logo_trans.png" alt="Logo" style="max-height: 100px; max-width: 100px;"></ion-img>
             <ion-card-title>Melden Dich mit deinem Konto an</ion-card-title>
-            <p>
-              Oder <ion-router-link routerLink="/signup" class="ion-text-primary">erstelle einen neuen
-                Account</ion-router-link>
-            </p>
+            <ion-text>
+              <p>
+                Oder <ion-router-link routerLink="/signup" class="ion-text-primary">erstelle einen neuen
+                  Account</ion-router-link>
+              </p>
+            </ion-text>
             <!-- Form Content Here -->
             <form [formGroup]="authForm">
               <ion-list [inset]="true">
@@ -24,7 +26,9 @@
                 <ion-item lines="full">
                   <ion-input label="Passwort" labelPlacement="floating" formControlName="password" type="password"
                     required placeholder="Gib dein Passwort ein">
-                    <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+                    <!--
+                      NOT YET WORKING
+                      <ion-input-password-toggle slot="end"></ion-input-password-toggle>-->
                   </ion-input>
                 </ion-item>
               </ion-list>

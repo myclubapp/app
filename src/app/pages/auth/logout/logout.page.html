@@ -5,14 +5,17 @@
       <!-- Logout Message Column -->
       <ion-col size-md="6" size-lg="5" style="display: flex; align-items: center; justify-content: center;">
         <ion-card class="ion-no-margin" style="max-width: 500px; width: 100%;">
-          <ion-card-content class="ion-text-center">
-            <ion-img src="assets/logo_trans.png" alt="Logo" style="max-height: 50px; max-width: 100px;"></ion-img>
+          <ion-card-content>
+            <ion-img src="assets/logo_trans.png" alt="Logo" style="max-height: 100px; max-width: 100px;"></ion-img>
             <ion-card-title>{{"logout.logout__success"|translate}}</ion-card-title>
-            <p>
-              <ion-router-link routerLink="/login" class="ion-text-primary">
-                {{"logout.back_to__login"|translate}}
-              </ion-router-link>
-            </p>
+            <ion-text>
+
+              <p>
+                <ion-router-link routerLink="/login" class="ion-text-primary">
+                  {{"logout.back_to__login"|translate}}
+                </ion-router-link>
+              </p>
+            </ion-text>
           </ion-card-content>
         </ion-card>
       </ion-col>
