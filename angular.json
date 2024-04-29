@@ -71,7 +71,8 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/default/variables.scss"
+                "src/custom-themes/default/variables.scss",
+                "src/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -118,7 +119,8 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/default/variables.scss"
+                "src/custom-themes/default/variables.scss",
+                "src/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -165,7 +167,8 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/app-kadetten-unihockey/variables.scss"
+                "src/custom-themes/app-kadetten-unihockey/variables.scss",
+                "src/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -212,7 +215,8 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/app-uhc-win-u/variables.scss"
+                "src/custom-themes/app-uhc-win-u/variables.scss",
+                "src/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -259,7 +263,8 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/app-stv-spreitenbach/variables.scss"
+                "src/custom-themes/app-stv-spreitenbach/variables.scss",
+                "src/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -306,7 +311,8 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/app-vbc-schaffhausen/variables.scss"
+                "src/custom-themes/app-vbc-schaffhausen/variables.scss",
+                "src/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -353,7 +359,8 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/app-kadetten-handball/variables.scss"
+                "src/custom-themes/app-kadetten-handball/variables.scss",
+                "src/global.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
