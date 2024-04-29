@@ -71,8 +71,7 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/default/variables.scss",
-                "src/custom-themes/default/global.scss"
+                "src/custom-themes/default/variables.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -119,8 +118,7 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/default/variables.scss",
-                "src/custom-themes/default/global.scss"
+                "src/custom-themes/default/variables.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -167,8 +165,7 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/app-kadetten-unihockey/variables.scss",
-                "src/custom-themes/app-kadetten-unihockey/global.scss"
+                "src/custom-themes/app-kadetten-unihockey/variables.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -215,8 +212,7 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/app-uhc-win-u/variables.scss",
-                "src/custom-themes/app-uhc-win-u/global.scss"
+                "src/custom-themes/app-uhc-win-u/variables.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -263,8 +259,7 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/app-stv-spreitenbach/variables.scss",
-                "src/custom-themes/app-stv-spreitenbach/global.scss"
+                "src/custom-themes/app-stv-spreitenbach/variables.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -311,8 +306,7 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/app-vbc-schaffhausen/variables.scss",
-                "src/custom-themes/app-vbc-schaffhausen/global.scss"
+                "src/custom-themes/app-vbc-schaffhausen/variables.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
@@ -359,8 +353,7 @@
                 }
               ],
               "styles": [
-                "src/custom-themes/app-kadetten-handball/variables.scss",
-                "src/custom-themes/app-kadetten-handball/global.scss"
+                "src/custom-themes/app-kadetten-handball/variables.scss"
               ],
               "optimization": true,
               "outputHashing": "all",
