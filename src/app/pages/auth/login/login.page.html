@@ -14,25 +14,29 @@
             </p>
             <!-- Form Content Here -->
             <form [formGroup]="authForm">
-              <ion-item lines="full">
-                <ion-input label="E-Mail Adresse" labelPlacement="floating" formControlName="email" type="email" required placeholder="Gib deine E-Mail Adresse ein"></ion-input>
-              </ion-item>
-            
-              <ion-item lines="full">
-                <ion-input label="Passwort" labelPlacement="floating" formControlName="password" type="password" required placeholder="Gib dein Passwort ein">
-                  <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-                </ion-input>
-              </ion-item>
-            
-              <ion-item lines="none">
-                <ion-router-link routerLink="/reset-password" slot="end" class="ion-text-primary">
-                  Passwort vergessen?
-                </ion-router-link>
-              </ion-item>
-            
-              <ion-button (click)="submitCredentials(authForm)" expand="block" type="submit" class="ion-margin-top">Anmelden</ion-button>
+              <ion-list [inset]="true">
+
+                <ion-item lines="full">
+                  <ion-input label="E-Mail Adresse" labelPlacement="floating" formControlName="email" type="email"
+                    required placeholder="Gib deine E-Mail Adresse ein"></ion-input>
+                </ion-item>
+
+                <ion-item lines="full">
+                  <ion-input label="Passwort" labelPlacement="floating" formControlName="password" type="password"
+                    required placeholder="Gib dein Passwort ein">
+                    <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+                  </ion-input>
+                </ion-item>
+              </ion-list>
+
+              <ion-router-link routerLink="/reset-password" slot="end" class="ion-text-primary">
+                Passwort vergessen?
+              </ion-router-link>
+
+              <ion-button (click)="submitCredentials(authForm)" expand="block" type="submit"
+                class="ion-margin-top">Anmelden</ion-button>
             </form>
-            
+
           </ion-card-content>
         </ion-card>
       </ion-col>
