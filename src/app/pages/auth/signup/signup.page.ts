@@ -103,7 +103,7 @@ export class SignupPage implements OnInit {
           header: await lastValueFrom(
             this.translate.get("signup.account__created")
           ),
-          message: "signup.account__created_description",
+          message: await lastValueFrom(this.translate.get("signup.account__created_description")),
           buttons: [
             {
               text: await lastValueFrom(this.translate.get("common.ok")),
