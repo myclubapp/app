@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, MenuController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { User } from 'firebase/auth';
 import { Observable, Subscription, catchError, lastValueFrom, map, of, switchMap, take, tap } from 'rxjs';
@@ -32,9 +32,11 @@ export class OnboardingClubPage implements OnInit {
     private readonly toastController: ToastController,
     private readonly alertController: AlertController,
     private readonly profileService: UserProfileService,
+    public readonly menuCtrl: MenuController,
   ) { }
 
   ngOnInit() {
+    this.menuCtrl.enable(false, "menu");
     this.clubListSU = [];
     this.clubListSV = [];
     this.clubListSH = [];

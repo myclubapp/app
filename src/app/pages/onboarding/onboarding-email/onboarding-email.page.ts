@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MenuController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { User } from 'firebase/auth';
 import { Observable, Subscription, catchError, of, switchMap, take, tap } from 'rxjs';
@@ -22,10 +23,12 @@ export class OnboardingEmailPage implements OnInit {
     private readonly authService: AuthService,
     private readonly profileService: UserProfileService,
     private translate: TranslateService,
+    public readonly menuCtrl: MenuController,
     private readonly router: Router
-  ) { }
+  ) { } 
 
   ngOnInit() {
+    this.menuCtrl.enable(false, "menu");
     this.subscription = this.authService.getUser$().pipe(
       take(1),
       tap(user => this.user = user),

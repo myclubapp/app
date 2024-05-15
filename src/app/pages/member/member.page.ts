@@ -121,7 +121,7 @@ export class MemberPage implements OnInit {
         message: await lastValueFrom(
           this.translate.get("club.success__user_added")
         ),
-        color: "primary",
+        color: "success",
         duration: 1500,
         position: "bottom",
       });
@@ -185,7 +185,7 @@ export class MemberPage implements OnInit {
   async deleteClubRequest(user) {
     console.log(user);
     await this.fbService.deleteUserClubRequest(this.clubId, user.id);
-    await this.toastActionSaved();
+    await this.toastActionCanceled();
     this.close();
   }
 

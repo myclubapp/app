@@ -11,7 +11,7 @@ import {
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
-import { Router } from "@angular/router";
+import { Router, NavigationBehaviorOptions } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { Observable, Subscription, of, switchMap, take, tap } from "rxjs";
 import { User, onAuthStateChanged } from "@angular/fire/auth";
@@ -133,17 +133,29 @@ export class AppComponent implements OnInit {
         if (!this.user.emailVerified) {
           console.log("E-Mail is NOT verfied");
           console.log(user.email, user.displayName, user.emailVerified);
-          this.router.navigateByUrl("/onboarding-email");
+
+          const navOnboardingEmail = await this.router.navigateByUrl("/onboarding-email");
+          if (navOnboardingEmail) {
+            console.log("Navigation succecss to onboarding Email Page");
+          } else {
+            console.error("Navigation error to onboarding Email Page");
+          }
+          
         } else {
           console.log("E-Mail IS verified. Go ahead..")
           console.log(user.email, user.displayName, user.emailVerified)
           this.clubListSub = this.clubList$
             .pipe(
               take(1),
-              tap((data) => {
+              tap(async (data) => {
                 if (data.length == 0) {
                   console.log("NO! Club Data received. > Call Club Onboarding");
-                  this.router.navigateByUrl("/onboarding-club");
+                  const navOnboardingClub = await this.router.navigateByUrl("/onboarding-club");
+                  if (navOnboardingClub) {
+                    console.log("Navigation succecss to onboarding Club Page");
+                  } else {
+                    console.error("Navigation error to onboarding Club Page");
+                  }
                 }
               })
             )

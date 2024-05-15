@@ -10,7 +10,7 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Member</ion-title>
+      <ion-title size="large">{{"common.member" | translate}}</ion-title>
     </ion-toolbar>
   </ion-header>
 
@@ -34,11 +34,11 @@
 
     <div *ngIf="isRequest" style="margin: 16px !important;">
       <ion-button expand="block" color="success" (click)="approveClubRequest(userProfile)">
-        Approve Request
-      </ion-button>
+        {{ "common.approve_request" | translate}}
+      </ion-button> 
 
       <ion-button expand="block" color="danger" (click)="deleteClubRequest(userProfile)">
-        Delete Request
+        {{ "common.delete_request" | translate}}
       </ion-button>
     </div>
 
