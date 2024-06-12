@@ -4,7 +4,7 @@ android {
 
     packagingOptions {
         resources {
-            excludes += ['META-INF/NOTICE', 'META-INF/LICENSE']
+            excludes += ['META-INF/NOTICE', 'META-INF/LICENSE', 'META-INF/NOTICE', 'META-INF/LICENSE']
         }
     }
     namespace "app.myclub.defaultapp"
@@ -13,8 +13,8 @@ android {
         applicationId "app.myclub.defaultapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 31
-        versionName "1.4.13"
+        versionCode 32
+        versionName "1.4.14"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

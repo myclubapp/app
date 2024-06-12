@@ -108,7 +108,8 @@ export class ClubPage implements OnInit {
           clubAdmins: this.fbService.getClubAdminRefs(clubId),
           clubRequests: this.fbService.getClubRequestRefs(clubId),
         }).pipe(
-          switchMap(({ clubMembers,
+          switchMap(({ 
+            clubMembers,
             clubAdmins, 
             clubRequests
              }) => {
@@ -144,7 +145,7 @@ export class ClubPage implements OnInit {
               map(({ 
                   clubMembers, 
                   clubAdmins, 
-              //  clubRequests
+                  clubRequests
                }) => ({
                 clubMembers: clubMembers.filter(
                   (member) => member !== undefined
@@ -156,7 +157,8 @@ export class ClubPage implements OnInit {
               }))
             );
           }),
-          map(({ clubMembers, 
+          map(({ 
+            clubMembers, 
             clubAdmins, 
             clubRequests
            }) => {

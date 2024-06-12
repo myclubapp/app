@@ -59,7 +59,7 @@
     "@fortawesome/fontawesome-svg-core": "6.5.2",
     "@fortawesome/free-brands-svg-icons": "6.5.2",
     "@fortawesome/free-solid-svg-icons": "6.5.2",
-    "@ionic/angular": "8.2.0",
+    "@ionic/angular": "8.2.1",
     "@ionic/angular-server": "8.2.0",
     "@ionic/pwa-elements": "3.3.0",
     "@ngx-translate/core": "^15.0.0",
