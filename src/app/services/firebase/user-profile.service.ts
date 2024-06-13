@@ -67,6 +67,7 @@ export class UserProfileService {
   setUserProfile(userProfile: Profile) {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+   
     return updateDoc(userProfileRef, { userProfile });
   }
 

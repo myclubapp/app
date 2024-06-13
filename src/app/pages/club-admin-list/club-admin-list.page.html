@@ -1,10 +1,13 @@
 <ng-container *ngIf="club$ | async as club">
   <ion-header [translucent]="true">
     <ion-toolbar>
-      <ion-buttons slot="secondary">
-        <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
-        <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.cancel" | translate}}</ion-button>
-      </ion-buttons>
+
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-buttons *ngIf="clubAdminList.length > 0" slot="secondary">
+          <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
+          <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.cancel" | translate}}</ion-button>
+        </ion-buttons>
+      </ng-container>
       <ion-title>Administratoren</ion-title>
       <ion-buttons slot="primary">
         <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
@@ -57,11 +60,13 @@
         </ng-container>
       </ion-item-group>
     </ion-list>
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button (click)="addAdministrator()">
-        <ion-icon name="add-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
+    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+      <ion-fab *ngIf="clubAdminList.length > 0" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="addAdministrator()">
+          <ion-icon name="add-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ng-container>
 
 
   </ion-content>

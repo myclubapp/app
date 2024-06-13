@@ -59,8 +59,8 @@
 
         <ion-modal [keepContentsMounted]="true">
           <ng-template>
-            <ion-datetime [firstDayOfWeek]="1" presentation="date" id="dateOfBirth"
-              value="{{userProfile.dateOfBirth.toDate().toISOString()}}"></ion-datetime>
+            <ion-datetime (ionChange)="onDateChange($event)" [firstDayOfWeek]="1" presentation="date" id="dateOfBirth"
+              value="{{localDateString}}"></ion-datetime>
           </ng-template>
         </ion-modal>
       </ion-item>
@@ -108,25 +108,24 @@
       </ion-list-header>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" [label]='"common.license__number" | translate'
-          attr.aria-label='{{"common.license__number" | translate}}'
+        <ion-input labelPlacement="stacked" [label]='"profile.license__number" | translate'
+          attr.aria-label='{{"profile.license__number" | translate}}'
           (ionChange)="profileChange($event, 'licenseNumber')" [(ngModel)]="userProfile.licenseNumber"
           value="{{userProfile.licenseNumber}}">
         </ion-input>
       </ion-item>
     </ion-list>
 
-    <ion-list lines="full" [inset]="true">
+      <!--<ion-list lines="full" [inset]="true">
       <ion-list-header>
-        <ion-label> {{ "profile.Diverses" | translate}} </ion-label>
+        <ion-label> {{ "profile.diverses" | translate}} </ion-label>
       </ion-list-header>
 
-      <ion-item detail="true" (click)="openHelferPunkte()">
+    <ion-item detail="true" (click)="openHelferPunkte()">
         <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
         <ion-label> Helferpunkte </ion-label>
-        
       </ion-item>
-    </ion-list>
+    </ion-list>-->
 
     <!--
     <ion-list *ngIf="clubRequestList.length > 0" lines="full" [inset]="true">
@@ -187,9 +186,9 @@
                 value="{{userProfile?.settingsPush}}" [checked]="userProfile.settingsPush"
                 [enableOnOffLabels]="true" (ionChange)="togglePush($event)">
                 <ion-label>
-                  {{"profile.push__message__aktivate" | translate}}
+                  {{"profile.push__message__activate" | translate}}
                 </ion-label>
-                <ion-note *ngIf="userProfile.settingsPush" color="medium">Unsubscribe at any time</ion-note>
+                <ion-note *ngIf="userProfile.settingsPush" color="medium"> {{"profile.push__message__deactivate" | translate}}</ion-note>
 
               </ion-toggle>
 

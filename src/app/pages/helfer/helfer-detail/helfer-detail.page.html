@@ -9,10 +9,9 @@
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
-  <!-- class="ion-padding" -->
 
   <ion-content>
-    <ion-header collapse="condense">
+<!--    <ion-header collapse="condense">
       <ion-toolbar>
         <ion-title size="large">{{"common.details" | translate}}</ion-title>
       </ion-toolbar>
@@ -49,7 +48,7 @@
         </ion-label>
       </ion-item>
     </ion-list>
-    <!-- SCHICHTEN-->
+
     <ng-container *ngIf="schichten$ | async as schichten">
       <ion-list lines="full" [inset]="true" *ngIf="schichten.length > 0">
         <ion-list-header>
@@ -117,7 +116,6 @@
         </ion-item>
       </ion-list>
 
-      <!-- OHNE SCHICHTEN-->
       <ion-list
         [inset]="true"
         lines="none"
@@ -215,7 +213,7 @@
           </ion-accordion>
         </ion-accordion-group>
       </ion-list>
-    </ng-container>
+    </ng-container>-->
   </ion-content>
 </ng-container>
 

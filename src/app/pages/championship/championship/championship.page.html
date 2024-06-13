@@ -37,7 +37,7 @@
       </ion-popover>
     </ion-buttons>-->
   </ion-toolbar>
-  <ion-toolbar>
+ <ion-toolbar>
     <ion-segment [(ngModel)]="mode">
       <ion-segment-button value="games">
         <ion-label>{{"championship.games" | translate}}</ion-label>
@@ -45,9 +45,7 @@
       <ion-segment-button value="ranking">
         <ion-label>{{"championship.table" | translate}}</ion-label>
       </ion-segment-button>
-      <!-- <ion-segment-button value="stats">
-        <ion-label>Statistik</ion-label>
-      </ion-segment-button>-->
+
     </ion-segment>
   </ion-toolbar>
 </ion-header>
@@ -313,44 +311,6 @@
       </ion-accordion-group>
       </ion-list>
 
-      <!--<ion-list *ngFor="let entry of teamRankings" lines="full">
-        <ion-list-header>
-          <ion-label>{{entry.details.title}}</ion-label>
-        </ion-list-header>
-
-        <ion-item>
-          <ion-grid>
-            <ion-row>
-              <ion-col size="1">#</ion-col>
-              <ion-col size="5">{{"common.name" | translate}}</ion-col>
-              <ion-col size="3">Sp/S/N</ion-col>
-              <ion-col size="2">T</ion-col>
-              <ion-col size="1">P</ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-item>
-
-        <ion-item *ngFor="let ranking of entry.rankings">
-          <ion-grid>
-            <ion-row class="ion-align-items-center">
-              <ion-col size="1">
-                <ion-badge> {{ranking.ranking}} </ion-badge>
-              </ion-col>
-              <ion-col size="5">
-                <ion-avatar>
-                  <img alt="{{ranking.name}}" src="{{ranking.image}}" />
-                </ion-avatar>
-                {{ranking.name}}
-              </ion-col>
-              <ion-col size="3">
-                {{ranking.games}}/{{ranking.wins}}/{{ranking.loss}}
-              </ion-col>
-              <ion-col size="2"> {{ranking.goals}} </ion-col>
-              <ion-col size="1"> {{ranking.points}} </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-item>
-      </ion-list>-->
     </ng-container>
     <div class="ion-padding">
       <ion-text>

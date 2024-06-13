@@ -47,6 +47,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
 import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
+import { Timestamp } from "firebase/firestore";
 
 @Component({
   selector: "app-profile",
@@ -66,6 +67,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
+  localDateString: string;
+
   constructor(
     // private readonly swPush: SwPush,
     private readonly authService: AuthService,
@@ -125,7 +128,15 @@ export class ProfilePage implements OnInit, AfterViewInit {
           console.log("No user found");
           return of(null); // Return null or appropriate default value if user is not logged in
         }
-        return this.profileService.getUserProfile(user);
+        return this.profileService.getUserProfile(user).pipe(
+          tap((profile: Profile) => {
+            if (profile && profile.dateOfBirth) {
+              this.localDateString = this.convertToLocalDateString(profile.dateOfBirth.toDate());
+            } else {
+              this.localDateString = '1970-01-01T00:00:00.000Z'
+            }
+          })
+        );
       }),
       catchError((err) => {
         console.error("Error fetching user profile", err);
@@ -133,10 +144,22 @@ export class ProfilePage implements OnInit, AfterViewInit {
       })
     );
   }
-
+  convertToLocalDateString(date: Date): string {
+    const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+    return localDate.toISOString();
+  }
   getClubRequestList() {}
   getTeamRequestList() {}
   getPushDeviceList() {}
+
+  async onDateChange(event: CustomEvent) {
+ 
+    event.detail.value = Timestamp.fromDate(new Date(event.detail.value)) 
+
+    this.profileChange(event, "dateOfBirth");
+
+  }
+
 
   async takePicture() {
     const loading = await this.loadingController.create({
