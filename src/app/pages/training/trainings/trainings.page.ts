@@ -177,6 +177,9 @@ export class TrainingsPage implements OnInit {
       this.teamFilterSubscription.unsubscribe();
     }*/
   }
+  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
+    return teamAdminList && teamAdminList.some(team => team.id === teamId);
+  }
 
   getTeamTraining() {
     return this.authService.getUser$().pipe(

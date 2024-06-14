@@ -53,7 +53,9 @@
       <ion-list lines="full" [inset]="true" *ngIf="schichten.length > 0">
         <ion-list-header>
           <ion-label> {{"helper.schichten" | translate}} </ion-label>
-          <ion-button (click)="confirmSchichten()"> bestätigen </ion-button>
+          <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+            <ion-button (click)="confirmSchichten()" *ngIf="isClubAdmin(clubAdminList, event.clubId)"> bestätigen </ion-button>
+          </ng-container>
         </ion-list-header>
         <ion-item *ngFor="let schicht of schichten">
           <ng-container *ngIf="schicht.confirmed !== true">

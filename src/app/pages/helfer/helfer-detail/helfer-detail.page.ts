@@ -29,6 +29,8 @@ import { AuthService } from "src/app/services/auth.service";
 import { EventService } from "src/app/services/firebase/event.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { MemberPage } from "../../member/member.page";
+import { Club } from "src/app/models/club";
+import { FirebaseService } from "src/app/services/firebase.service";
 
 @Component({
   selector: "app-helfer-detail",
@@ -47,11 +49,14 @@ export class HelferDetailPage implements OnInit {
   user$: Observable<User>;
   user: User;
 
+  clubAdminList$: Observable<Club[]>;
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
     private readonly userProfileService: UserProfileService,
     private readonly eventService: EventService,
+    private readonly fbService: FirebaseService,
     private readonly toastController: ToastController,
     private readonly alertController: AlertController,
     private readonly authService: AuthService,
@@ -64,10 +69,18 @@ export class HelferDetailPage implements OnInit {
     this.event$ = of(this.event);
     this.event$ = this.getHelferEvent(this.event.clubId, this.event.id);
 
+
     this.schichten$ = this.getHelferEventSchichtenWithAttendees(
       this.event.clubId,
       this.event.id
     );
+
+    //Create Events, Helfer, News
+    this.clubAdminList$ = this.fbService.getClubAdminList();
+  }
+
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
   }
 
   getHelferEvent(clubId: string, eventId: string) {

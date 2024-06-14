@@ -19,6 +19,8 @@ import {
   UserCredential,
   deleteUser,
   User,
+  ActionCodeOperation,
+  applyActionCode,
 } from "@angular/fire/auth";
 import { Observable } from "rxjs";
 
@@ -59,6 +61,12 @@ export class AuthService {
 
   async sendVerifyEmail() {
     return await sendEmailVerification(this.auth.currentUser);
+  }
+
+  async verifyBeforeUpdateEmail(email) {
+    this.auth.currentUser.getIdToken(true);
+    return await verifyBeforeUpdateEmail(this.auth.currentUser, email)
+    
   }
 
   async signup(

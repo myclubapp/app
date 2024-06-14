@@ -56,9 +56,7 @@ export class HelferPage implements OnInit {
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly eventService: EventService,
-    private readonly alertCtrl: AlertController,
     private readonly menuCtrl: MenuController,
-    private cdr: ChangeDetectorRef,
     private translate: TranslateService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -101,7 +99,9 @@ export class HelferPage implements OnInit {
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
   }
-
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
   getHelferEvent() {
     return this.authService.getUser$().pipe(
       take(1),

@@ -131,14 +131,16 @@
           </ion-item-option>
         </ion-item-options>
 
-        <ion-item-options side="end">
-          <ion-item-option color="medium" (click)="copyTraining(item, training)">
-            <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
-          </ion-item-option>
-          <ion-item-option color="danger" (click)="deleteTraining(item, training)">
-            <ion-icon slot="icon-only" name="trash"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
+        <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+          <ion-item-options side="end" *ngIf="isTeamAdmin(teamAdminList, training.teamId)">
+            <ion-item-option color="medium" (click)="copyTraining(item, training)">
+              <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="deleteTraining(item, training)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ng-container>
       </ion-item-sliding>
     </ion-list>
 

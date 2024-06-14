@@ -66,8 +66,10 @@
       </ion-item>
 
       <ion-item>
-        <ion-select [label]="'profile.language' | translate" [(ngModel)]="userProfile.language"
-          (ionChange)="profileChange($event, 'language')" [placeholder]="'profile.select__language' | translate">
+        <ion-select aria-label="'profile.language' | translate" [label]="'profile.language' | translate"
+          [(ngModel)]="userProfile.language" (ionChange)="profileChange($event, 'language')"
+          [placeholder]="'profile.select__language' | translate" [cancelText]="'common.cancel' | translate"
+          [okText]="'common.save' | translate">
           <ion-select-option value="de">{{"common.language__german" | translate}}</ion-select-option>
           <ion-select-option value="fr">{{"common.language__french" | translate}}</ion-select-option>
           <ion-select-option value="it">{{"common.language__italian" | translate}}</ion-select-option>
@@ -86,20 +88,43 @@
           value="{{userProfile.phonenumber}}" (ionChange)="profileChange($event, 'phonenumber')">
         </ion-input>
       </ion-item>
-
-      <ion-item type="button" detail="true">
+      <!--
+      <ion-item detail="true" (click)="changeEmail(userProfile.email)">
         <ion-input labelPlacement="stacked" [label]='"profile.email" | translate' email
           attr.aria-label='{{"profile.email" | translate}}' readonly [(ngModel)]="userProfile.email"
-          value="{{userProfile.email}}" (click)="changeEmail(userProfile.email)">
+          value="{{userProfile.email}}">
+        </ion-input>
+      </ion-item> -->
+
+      <ion-item  id="present-alert-email" detail="true">
+        <ion-input labelPlacement="stacked" [label]='"profile.email" | translate' email
+          attr.aria-label='{{"profile.email" | translate}}' readonly [(ngModel)]="userProfile.email"
+          value="{{userProfile.email}}">
         </ion-input>
       </ion-item>
+ 
+      <ion-alert trigger="present-alert-email" [header]='"profile.change_email_header" | translate'
+      [message]='"profile.change_email_message" | translate'   [buttons]="alertButtonsEmail"
+        [inputs]="alertInputsEmail"></ion-alert>  
 
-      <ion-item (click)="changeAddress(userProfile)" type="button" detail="true">
+
+      <!--<ion-item (click)="changeAddress(userProfile)" detail="true">
+        <ion-input labelPlacement="stacked" [label]='"profile.address" | translate'
+          attr.aria-label='{{"profile.address" | translate}}'
+          value="{{userProfile.streetAndNumber}}, {{userProfile.postalcode}} {{userProfile.city}}">
+        </ion-input>
+      </ion-item>-->
+
+      <ion-item id="present-alert-address" detail="true">
         <ion-input labelPlacement="stacked" [label]='"profile.address" | translate'
           attr.aria-label='{{"profile.address" | translate}}'
           value="{{userProfile.streetAndNumber}}, {{userProfile.postalcode}} {{userProfile.city}}">
         </ion-input>
       </ion-item>
+      <ion-alert trigger="present-alert-address" [header]='"profile.change_address_header" | translate'
+      [message]='"profile.change_address_message" | translate'   [buttons]="alertButtonsAddress"
+        [inputs]="alertInputsAddress"></ion-alert>  
+
     </ion-list>
 
     <ion-list lines="full" [inset]="true">
@@ -116,7 +141,7 @@
       </ion-item>
     </ion-list>
 
-      <!--<ion-list lines="full" [inset]="true">
+    <!--<ion-list lines="full" [inset]="true">
       <ion-list-header>
         <ion-label> {{ "profile.diverses" | translate}} </ion-label>
       </ion-list-header>
@@ -183,12 +208,13 @@
                 name="notifications-off-circle"></ion-icon>
 
               <ion-toggle attr.aria-label='{{"profile.push__message" | translate}}'
-                value="{{userProfile?.settingsPush}}" [checked]="userProfile.settingsPush"
-                [enableOnOffLabels]="true" (ionChange)="togglePush($event)">
+                value="{{userProfile?.settingsPush}}" [checked]="userProfile.settingsPush" [enableOnOffLabels]="true"
+                (ionChange)="togglePush($event)">
                 <ion-label>
                   {{"profile.push__message__activate" | translate}}
                 </ion-label>
-                <ion-note *ngIf="userProfile.settingsPush" color="medium"> {{"profile.push__message__deactivate" | translate}}</ion-note>
+                <ion-note *ngIf="userProfile.settingsPush" color="medium"> {{"profile.push__message__deactivate" |
+                  translate}}</ion-note>
 
               </ion-toggle>
 
@@ -241,14 +267,11 @@
           </ion-item>
           <div slot="content">
             <ion-item>
-              <ion-icon *ngIf="userProfile.settingsEmail" slot="start" color="success"
-                name="mail"></ion-icon>
-              <ion-icon *ngIf="!userProfile.settingsEmail" slot="start" color="danger"
-                name="mail-outline"></ion-icon>
+              <ion-icon *ngIf="userProfile.settingsEmail" slot="start" color="success" name="mail"></ion-icon>
+              <ion-icon *ngIf="!userProfile.settingsEmail" slot="start" color="danger" name="mail-outline"></ion-icon>
 
-              <ion-toggle color="secondary"
-                attr.aria-label='{{"profile.email__messages" | translate}}' value="{{userProfile?.settingsEmail}}"
-               [checked]="userProfile.settingsEmail" [enableOnOffLabels]="true"
+              <ion-toggle color="secondary" attr.aria-label='{{"profile.email__messages" | translate}}'
+                value="{{userProfile?.settingsEmail}}" [checked]="userProfile.settingsEmail" [enableOnOffLabels]="true"
                 (ionChange)="toggleEmail($event)">
                 <ion-label> {{"profile.email__messages" | translate}} </ion-label>
               </ion-toggle>

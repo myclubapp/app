@@ -3,6 +3,7 @@ import {
   OnInit,
   AfterViewInit,
   ChangeDetectorRef,
+  OnDestroy,
 } from "@angular/core";
 import {
   combineLatest,
@@ -54,14 +55,26 @@ import { Timestamp } from "firebase/firestore";
   templateUrl: "./profile.page.html",
   styleUrls: ["./profile.page.scss"],
 })
-export class ProfilePage implements OnInit, AfterViewInit {
+export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   userProfile$: Observable<Profile>;
+  
+  profileSubscription: Subscription;
+
 
   teamList$: Observable<Team[]>;
   clubList$: Observable<Club[]>;
 
   user$: Observable<User>;
   user: User;
+
+  public alertButtonsEmail = [];
+  public alertInputsEmail = [];
+  public alertButtonsAddress = [];
+  public alertInputsAddress= [];
+
+
+
+
 
   private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
@@ -87,27 +100,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
+    console.log("ngOnInit");
     this.userProfile$ = this.getUserProfile();
-
-    /*this.teamList$ = this.fbService.getTeamList();
-    this.teamList$.subscribe({
-      next: (data) => {
-        console.log("Team Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Team Error in subscription:", err),
-      complete: () => console.log("Team Observable completed"),
-    });
-
-    this.clubList$ = this.fbService.getClubList();
-    this.clubList$.subscribe({
-      next: (data) => {
-        console.log("Club Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Cluh Error in subscription:", err),
-      complete: () => console.log("Club Observable completed"),
-    });*/
 
     this.deviceId = await Device.getId();
     this.deviceInfo = await Device.getInfo();
@@ -115,10 +109,119 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // this.getClubList();
-    // this.getTeamList();
+    console.log("ngAfterViewInit called");
+
+    this.profileSubscription = this.userProfile$.subscribe(async profile => {
+      if (profile) {
+        this.setupAlerts(profile);
+      }
+    });
   }
-  ngOnDestroy() {}
+  setupAlerts(profile: Profile) {
+    this.alertInputsEmail = [
+      {
+        label: this.translate.instant("profile.change_email_old_label"),
+        placeholder: this.translate.instant("profile.change_email_old_label"),
+        name: "oldEmail",
+        type: "email",
+        value: profile.email
+      },
+      {
+        label: this.translate.instant("profile.change_email_new_label"),
+        placeholder: this.translate.instant("profile.change_email_new_label"),
+        name: "newEmail",
+        type: "email",
+      },
+    ];
+
+    this.alertButtonsEmail = [
+      {
+        text: this.translate.instant("common.cancel"),
+        role: "destructive",
+        handler: (data) => {
+          console.log(data);
+        },
+      },
+      {
+        text: this.translate.instant("common.save"),
+        handler: async (data) => {
+          console.log(data);
+          if (data.oldEmail !== data.newEmail && data.oldEmail.length > 0 && data.newEmail.length > 0) {
+            try {
+              const verifyEmail = await this.authService.verifyBeforeUpdateEmail(data.newEmail);
+              console.log(verifyEmail);
+              const updatedProfile = await this.profileChange(
+                { detail: { value: data.newEmail } },
+                "email"
+              );
+              await this.authService.logout();
+            } catch (e) {
+              if (e.code == "auth/operation-not-allowed") {
+                console.log(e.message);
+              } else if (e.code == "auth/requires-recent-login") {
+                alert("bitte ausloggen und nochmals probieren.");
+              } else {
+                console.log(JSON.stringify(e));
+              }
+            }
+          } else {
+            console.log("error");
+          }
+        },
+      },
+    ];
+
+    this.alertInputsAddress = [
+      {
+        label: this.translate.instant("profile.change_address_streetandnumber"),
+        placeholder: this.translate.instant("profile.change_address_streetandnumber"),
+        name: "streetAndNumber",
+        type: "text",
+        value: profile.streetAndNumber,
+      },
+      {
+        label: this.translate.instant("profile.change_address_postalcode"),
+        placeholder: this.translate.instant("profile.change_address_postalcode"),
+        name: "postalcode",
+        type: "number",
+        value: profile.postalcode,
+      },
+      {
+        label: this.translate.instant("profile.change_address_city"),
+        placeholder: this.translate.instant("profile.change_address_city"),
+        name: "city",
+        type: "text",
+        value: profile.city,
+      },
+    ];
+
+    this.alertButtonsAddress = [
+      {
+        text: this.translate.instant("common.cancel"),
+        role: "destructive",
+        handler: (data) => {
+          console.log(data);
+        },
+      },
+      {
+        text: this.translate.instant("common.save"),
+        role: "",
+        handler: async (data) => {
+          console.log(data);
+          await this.profileChange({ detail: { value: data.city } }, "city");
+          await this.profileChange({ detail: { value: data.postalcode } }, "postalcode");
+          await this.profileChange({ detail: { value: data.streetAndNumber } }, "streetAndNumber");
+        },
+      },
+    ];
+  }
+
+
+  ngOnDestroy() { 
+    if (this.profileSubscription){
+      this.profileSubscription.unsubscribe();
+    }
+  }
 
   getUserProfile(): Observable<any> {
     // Replace 'any' with the actual type of the user profile
@@ -148,13 +251,13 @@ export class ProfilePage implements OnInit, AfterViewInit {
     const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
     return localDate.toISOString();
   }
-  getClubRequestList() {}
-  getTeamRequestList() {}
-  getPushDeviceList() {}
+  getClubRequestList() { }
+  getTeamRequestList() { }
+  getPushDeviceList() { }
 
   async onDateChange(event: CustomEvent) {
- 
-    event.detail.value = Timestamp.fromDate(new Date(event.detail.value)) 
+
+    event.detail.value = Timestamp.fromDate(new Date(event.detail.value))
 
     this.profileChange(event, "dateOfBirth");
 
@@ -447,28 +550,39 @@ export class ProfilePage implements OnInit, AfterViewInit {
       fieldname
     );
   }
-
+  /*
   async changeEmail(oldEmail: string) {
+    console.log("changeEmail start")
     const alert = await this.alertController.create({
-      message: "Change Email",
-      header: "Change Email Header",
+      header: await lastValueFrom(this.translate.get("profile.change_email_header")),
+      message: await lastValueFrom(this.translate.get("profile.change_email_message")),
       inputs: [
         {
-          label: "Old E-Mail",
+          label: await lastValueFrom(this.translate.get("profile.change_email_old_label")),
+          placeholder: await lastValueFrom(this.translate.get("profile.change_email_old_label")),
           name: "oldEmail",
           type: "email",
           value: oldEmail,
         },
         {
-          label: "New E-Mail",
+          label: await lastValueFrom(this.translate.get("profile.change_email_new_label")),
+          placeholder: await lastValueFrom(this.translate.get("profile.change_email_new_label")),
           name: "newEmail",
           type: "email",
         },
       ],
       buttons: [
+
         {
-          text: "Save",
-          role: "",
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "destructive",
+          handler: (data) => {
+            console.log(data);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.save")),
+
           handler: async (data) => {
             console.log(data);
             await this.authService.updateEmail(data.newEmail);
@@ -476,19 +590,17 @@ export class ProfilePage implements OnInit, AfterViewInit {
               { detail: { value: data.newEmail } },
               "email"
             );
-            alert.dismiss();
-          },
-        },
-        {
-          text: "Cancel",
-          handler: () => {
-            alert.dismiss();
+
           },
         },
       ],
     });
-    alert.present();
-    // alert.onDidDismiss
+    console.log("alert.present start")
+    await alert.present();
+    console.log("alert.present end")
+    const { role } = await alert.onDidDismiss();
+    console.log("onDidDismiss resolved with role", role);
+    console.log("changeEmail end")
   }
 
   async changeAddress(profile: Profile) {
@@ -517,23 +629,26 @@ export class ProfilePage implements OnInit, AfterViewInit {
       ],
       buttons: [
         {
-          text: "Save",
-          role: "",
-          handler: () => {
-            alert.dismiss();
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "destructive",
+          handler: (data) => {
+            console.log(data);
           },
         },
         {
-          text: "Cancel",
-          handler: () => {
-            alert.dismiss();
+          text: await lastValueFrom(this.translate.get("common.save")),
+          role: "",
+          handler: (data) => {
+            console.log(data);
           },
         },
       ],
     });
-    alert.present();
+    await alert.present();
+    const { role } = await alert.onDidDismiss();
+    console.log("onDidDismiss resolved with role", role);
   }
-
+*/
   /*
   async languageChange(event) {
     console.log(event.target.value);
