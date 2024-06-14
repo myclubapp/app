@@ -29,19 +29,17 @@ export class HelferPunktePage implements OnInit {
   }
 
   async openHelferEinsatz(helfereinsatz){
-    console.log("helfereinsatz");
-    const helferEvent = {
-      id: helfereinsatz.eventRef.id,
-      clubId: helfereinsatz.clubRef.id
-    }
-    // TODO event: HelferEvent,
+    console.log("helfereinsatz " + helfereinsatz);
+
+    console.log(helfereinsatz);
+
     const modal = await this.modalCtrl.create({
       component: HelferDetailPage,
       presentingElement: await this.modalCtrl.getTop(),
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        data: helferEvent,
+        data: helfereinsatz,
         isFuture: false,
       },
     });

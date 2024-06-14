@@ -64,8 +64,9 @@ export class HelferDetailPage implements OnInit {
     private translate: TranslateService
   ) {}
 
-  ngOnInit() {
-    this.event = this.navParams.get("data");
+  async ngOnInit() {
+    this.event = await this.navParams.get("data");
+    console.log("data here:   " + this.event);
     this.event$ = of(this.event);
     this.event$ = this.getHelferEvent(this.event.clubId, this.event.id);
 

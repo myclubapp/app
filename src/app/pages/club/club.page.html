@@ -30,7 +30,7 @@
         </ion-thumbnail>
         <ion-label>{{club.name}}</ion-label>
       </ion-item>
-      <ion-item>
+   <!--   <ion-item>
         <ion-label>type</ion-label>
         <ion-badge slot="end">{{club.type}}</ion-badge>
       </ion-item>
@@ -39,7 +39,7 @@
       </ion-item>
       <ion-item>
         <ion-label> {{club.wordpress}} </ion-label>
-      </ion-item>
+      </ion-item>-->
 
       <!--
   <ion-item>
@@ -50,7 +50,7 @@
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
-        <ion-label> {{ "common.Mitgliederverwaltung" | translate}} </ion-label>
+        <ion-label> {{ "common.manage_members" | translate}} </ion-label>
       </ion-list-header>
       <ion-item>
         <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
@@ -86,17 +86,18 @@
         <ion-label> Helferpunkte </ion-label>
       </ion-item>
     </ion-list>
-
-    <ion-list lines="full" [inset]="true">
-      <ion-list-header>
-        <ion-label> {{ "common.settings" | translate}} </ion-label>
-      </ion-list-header>
-
-      <ion-item>
-        <ion-icon name="hammer-outline" slot="start"></ion-icon>
-        <ion-label> API KEY </ion-label>
-      </ion-item>
-    </ion-list>
+<!--
+  <ion-list lines="full" [inset]="true">
+    <ion-list-header>
+      <ion-label> {{ "common.settings" | translate}} </ion-label>
+    </ion-list-header>
+    
+    <ion-item>
+      <ion-icon name="hammer-outline" slot="start"></ion-icon>
+      <ion-label> API KEY </ion-label>
+    </ion-item>
+  </ion-list>
+-->
 
     <!--
   
