@@ -215,15 +215,15 @@ export class TeamAdminListPage implements OnInit {
         finalize(async () => {
           if (memberSelect.length > 0) {
             const alert = await this.alertCtrl.create({
-              header: "Administrator hinzufügen",
+              header: await lastValueFrom(this.translate.get("common.addAdministrator")),
               inputs: memberSelect,
               buttons: [
                 {
-                  text: "Abbrechen",
+                  text: await lastValueFrom(this.translate.get("common.cancel")),
                   handler: () => console.log("Cancel clicked"),
                 },
                 {
-                  text: "Hinzufügen",
+                  text: await lastValueFrom(this.translate.get("common.add")),
                   handler: (data) => {
                     for (let member of data){
                       this.fbService.addTeamAdmin(this.team.id, member.id).catch(e=>{

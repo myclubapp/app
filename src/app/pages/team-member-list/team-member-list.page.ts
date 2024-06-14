@@ -223,15 +223,15 @@ export class TeamMemberListPage implements OnInit {
     ).subscribe(async (memberSelect: any) => {
       if (memberSelect && memberSelect.length > 0) {
         const alert = await this.alertCtrl.create({
-          header: 'Mitglied hinzufügen',
+          header: await lastValueFrom(this.translate.get("common.addMember")),
           inputs: memberSelect,
           buttons: [
             {
-              text: 'Abbrechen',
+              text: await lastValueFrom(this.translate.get("common.cancel")),
               handler: () => console.log('Cancel clicked'),
             },
             {
-              text: 'Hinzufügen',
+              text: await lastValueFrom(this.translate.get("common.add")),
               handler: (teamMemberList) => {
                 console.log(teamMemberList);
                 for (const member of teamMemberList) {
