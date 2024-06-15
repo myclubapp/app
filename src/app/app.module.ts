@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA, APP_INITIALIZER, Injector } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy } from "@angular/router";
 
@@ -40,7 +40,10 @@ import { EventDetailPage } from "./pages/event/event-detail/event-detail.page";
 import { ClubPage } from "./pages/club/club.page";
 import { TeamPage } from "./pages/team/team-detail/team.page";
 import { Capacitor } from "@capacitor/core";
-import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
+import { TranslateModule, TranslateLoader, MissingTranslationHandler, MissingTranslationHandlerParams } from "@ngx-translate/core";
+import { TranslateService } from '@ngx-translate/core';
+import { LOCATION_INITIALIZED } from '@angular/common';
+
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 import { HelferDetailPage } from "./pages/helfer/helfer-detail/helfer-detail.page";
 import { HelferAddPage } from "./pages/helfer/helfer-add/helfer-add.page";
@@ -52,6 +55,31 @@ import { ClubTeamListPage } from "./pages/club-team-list/club-team-list.page";
 import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.page";
 import { ClubRequestListPage } from "./pages/club-request-list/club-request-list.page";
 import { TeamCreatePage } from "./pages/team/team-create/team-create.page";
+import { of, switchMap, take } from "rxjs";
+
+export function HttpLoaderFactory(httpClient: HttpClient) {
+  return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
+}
+export class TranslateHandler implements MissingTranslationHandler {
+  handle(params: MissingTranslationHandlerParams) {
+    /* some logic */
+  }
+}
+
+export function appInitializerFactory(translateService: TranslateService, injector: Injector): () => Promise<any> {
+  // tslint:disable-next-line:no-any
+  return () => new Promise<any>((resolve: any) => {
+    const locationInitialized = injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
+    locationInitialized.then(() => {
+      translateService.use("de")
+        // here u can change language loaded before reander enything
+        .pipe(take(1))
+        .subscribe(() => { },
+          err => console.error(err), () => resolve(null));
+    })
+
+  });
+}
 
 @NgModule({
   declarations: [
@@ -97,6 +125,15 @@ import { TeamCreatePage } from "./pages/team/team-create/team-create.page";
     }),
     HttpClientModule,
     TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (HttpLoaderFactory),
+        deps: [HttpClient]
+      },
+      isolate: false,
+      missingTranslationHandler: [{ provide: MissingTranslationHandler, useClass: TranslateHandler }]
+    }),
+    /*TranslateModule.forRoot({
       // <--- add this
       loader: {
         // <--- add this
@@ -104,7 +141,7 @@ import { TeamCreatePage } from "./pages/team/team-create/team-create.page";
         useFactory: createTranslateLoader, // <--- add this
         deps: [HttpClient], // <--- add this
       }, // <--- add this
-    }),
+    }),*/
     provideFirebaseApp(() => {
       const init = initializeApp(environment.firebase);
       return init;
@@ -128,11 +165,14 @@ import { TeamCreatePage } from "./pages/team/team-create/team-create.page";
     provideStorage(() => getStorage()),
     provideMessaging(() => getMessaging()),
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, {
+    provide: APP_INITIALIZER,
+    useFactory: appInitializerFactory,
+    deps: [TranslateService, Injector],
+    multi: true
+  }],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class AppModule {}
-export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, "./assets/lang/", ".json");
-}
+export class AppModule { }
+

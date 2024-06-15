@@ -549,7 +549,11 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
       event.detail.value,
       fieldname
     );
-  }
+    if (fieldname == 'language'){
+      // console.log(event.detail.value)
+      this.translate.resetLang(event.detail.value);
+    }
+  } 
   /*
   async changeEmail(oldEmail: string) {
     console.log("changeEmail start")

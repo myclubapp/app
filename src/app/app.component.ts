@@ -304,10 +304,11 @@ export class AppComponent implements OnInit {
         result.value == "it"
       ) {
         console.log("Set Fallback Language to Device Language: " + result.value);
-        this.translate.setDefaultLang(result.value);
+        this.translate.use(result.value);
       } else {
         console.log("Set Fallback Language to DE");
-        this.translate.setDefaultLang("de");
+        this.translate.use("de");
+        // this.translate.resetLang("de");
       }
     });
   }
@@ -326,7 +327,8 @@ export class AppComponent implements OnInit {
         if (profile) {
           if (profile.language) {
             if (profile.language.length > 0) {
-              this.translate.setDefaultLang(profile.language);
+              console.log("set user langauge: " + profile.language);
+              this.translate.use(profile.language);
               return;
             }
           }
