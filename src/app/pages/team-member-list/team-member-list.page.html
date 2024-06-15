@@ -1,19 +1,17 @@
 <ng-container *ngIf="team$ | async as team">
   <ion-header [translucent]="true">
     <ion-toolbar>
-      <ion-buttons slot="secondary">
-        <ion-button *ngIf="!allowEdit" (click)="edit()"
-          >{{"common.edit" | translate}}</ion-button
-        >
-        <ion-button *ngIf="allowEdit" (click)="edit()"
-          >{{"common.done" | translate}}</ion-button
-        >
-      </ion-buttons>
-      <ion-title >Mitglieder</ion-title>
+      <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+          <ion-buttons slot="secondary" *ngIf="team['teamMembers'].length > 0 && ( isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId))">
+            <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
+            <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
+          </ion-buttons>
+        </ng-container>
+      </ng-container>
+      <ion-title>Mitglieder</ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()"
-          >{{"common.close" | translate}}</ion-button
-        >
+        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -25,12 +23,8 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-searchbar
-      [debounce]="1000"
-      (ionChange)="handleChange($event)"
-      animated="true"
-      search-icon="search-circle"
-    ></ion-searchbar>
+    <ion-searchbar [debounce]="1000" (ionChange)="handleChange($event)" animated="true" search-icon="search-circle"
+      placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
 
     <ion-list [inset]="true">
       <!-- <ion-list-header>
@@ -44,48 +38,39 @@
 
           <ng-container *ngFor="let member of team['teamMembers']">
             <ion-item-sliding *ngIf="member.groupBy == groupBy">
-             <!--<ion-item-options side="end">
+              <!--<ion-item-options side="end">
                 <ion-item-option color="danger" (click)="deleteTeamMember(member)">
                   <ion-icon name="trash"></ion-icon>
                 </ion-item-option>
               </ion-item-options>-->
 
               <ion-item detail="true">
-                <ion-icon
-                *ngIf="allowEdit==true"
-                slot="icon-only"
-                color="danger"
-                slot="start"
-                name="trash"
-                (click)="deleteTeamMember(member)"
-              ></ion-icon>
+                <ion-icon *ngIf="allowEdit==true" slot="icon-only" color="danger" slot="start" name="trash"
+                  (click)="deleteTeamMember(member)"></ion-icon>
 
 
 
                 <ion-avatar slot="start">
                   <img src="{{member?.profilePicture}}" />
                 </ion-avatar>
-                <ion-label class="ion-text-wrap" (click)="openMember(member)"
-                  >{{member.firstName}} {{member.lastName}}</ion-label
-                >
+                <ion-label class="ion-text-wrap" (click)="openMember(member)">{{member.firstName}}
+                  {{member.lastName}}</ion-label>
               </ion-item>
             </ion-item-sliding>
           </ng-container>
         </ng-container>
       </ion-item-group>
     </ion-list>
-    <!--<ng-container *ngIf="teamAdminList$ | async as teamAdminList">-->
-      <ion-fab
-        
-        vertical="bottom"
-        horizontal="end"
-        slot="fixed"
-      >
-        <ion-fab-button (click)="addMember()">
-          <ion-icon name="add-outline"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
-    <!--</ng-container>-->
+    <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-fab *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
+          vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addMember()">
+            <ion-icon name="add-outline"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+      </ng-container>
+    </ng-container>
   </ion-content>
 </ng-container>
 <ng-template #noRequests>

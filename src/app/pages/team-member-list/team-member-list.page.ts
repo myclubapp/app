@@ -27,6 +27,8 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { MemberPage } from "../member/member.page";
 import { Profile } from "src/app/models/user";
 import { User } from "firebase/auth";
+import { Team } from "src/app/models/team";
+import { Club } from "src/app/models/club";
 @Component({
   selector: 'app-team-member-list',
   templateUrl: './team-member-list.page.html',
@@ -45,6 +47,9 @@ export class TeamMemberListPage implements OnInit {
 
   subscribeMember: Subscription;
 
+  teamAdminList$: Observable<Team[]>;
+  clubAdminList$: Observable<Club[]>;
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -61,6 +66,9 @@ export class TeamMemberListPage implements OnInit {
 
     this.team$ = of(this.team);
     this.team$ = this.getTeam(this.team.id);
+
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    this.clubAdminList$ = this.fbService.getClubAdminList();
   }
 
   ngOnDestroy() {
@@ -245,6 +253,15 @@ export class TeamMemberListPage implements OnInit {
       }
     });
   }
+
+  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
+    return teamAdminList && teamAdminList.some(team => team.id === teamId);
+  }
+
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
+
   async approveTeamRequest(request) {
     console.log(request);
     await this.fbService.approveUserTeamRequest(request.teamId, request.id).then(() => {

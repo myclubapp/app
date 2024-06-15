@@ -419,7 +419,7 @@
       </ion-card-header>
 
       <ion-card-content>
-        <ion-searchbar [debounce]="1000" (ionInput)="handleChange($event)" animated="true" search-icon="search-circle"
+        <ion-searchbar [debounce]="1000" (ionInput)="handleChange($event)" animated="true" search-icon="search-circle" placeholder='{{"common.searchfield" | translate}}'
           [placeholder]='"onboarding.search_by_club__pholder" |  translate'></ion-searchbar>
         <ion-list [inset]="true">
           <ion-list-header *ngIf="clubListSU.length > 0">
