@@ -26,16 +26,18 @@
         <ion-icon slot="start" name="mail"></ion-icon>
         <ion-label>{{userProfile.email}}</ion-label>
       </ion-item>
-      <ion-item>
+      <ion-item *ngIf="!isRequest">
         <ion-icon slot="start" name="call"></ion-icon>
         <ion-label>{{userProfile.phonenumber}}</ion-label>
       </ion-item>
     </ion-list>
 
     <div *ngIf="isRequest" style="margin: 16px !important;">
-      <ion-button expand="block" color="success" (click)="approveClubRequest(userProfile)">
+      <ion-button expand="block" color="success" id="present-alert-approve">
         {{ "common.approve_request" | translate}}
-      </ion-button> 
+      </ion-button>
+      <ion-alert trigger="present-alert-approve" [header]="'club.request_approve_header' | translate" [subHeader]="'club.request_approve_subheader' | translate"
+        [message]="'club.request_add_user_to_club' | translate" [buttons]="alertButtonsApproveClub"></ion-alert>
 
       <ion-button expand="block" color="danger" (click)="deleteClubRequest(userProfile)">
         {{ "common.delete_request" | translate}}

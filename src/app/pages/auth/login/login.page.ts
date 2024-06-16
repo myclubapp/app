@@ -9,7 +9,7 @@ import {
   Validators,
   UntypedFormBuilder,
 } from "@angular/forms";
-import { AlertController, MenuController } from "@ionic/angular";
+import { AlertController, LoadingController, MenuController } from "@ionic/angular";
 import { AuthService } from "src/app/services/auth.service";
 import { TranslateService } from "@ngx-translate/core";
 import { lastValueFrom } from "rxjs";
@@ -25,6 +25,7 @@ export class LoginPage implements OnInit {
 
   constructor(
     private readonly alertCtrl: AlertController,
+    private readonly loadingCtrl: LoadingController,
     private readonly authService: AuthService,
     private readonly router: Router,
     private readonly formBuilder: UntypedFormBuilder,
@@ -47,16 +48,24 @@ export class LoginPage implements OnInit {
   }
 
   async submitCredentials(authForm: any) {
+    const loading = await this.loadingCtrl.create({
+      message: 'Login...',
+      duration: 0,
+      backdropDismiss: false,
+    });
+    loading.present();
     try {
       const userCredential: UserCredential = await this.authService.login(
         authForm.value.email,
         authForm.value.password
       );
+      loading.dismiss();
       this.router.navigateByUrl("/").catch((error) => {
         console.error(error.message);
         this.router.navigateByUrl("");
       });
     } catch (err) {
+      loading.dismiss();
       let message =
         (await lastValueFrom(
           this.translate.get("common.general__error_occurred")

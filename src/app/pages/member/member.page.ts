@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { AlertController, ModalController, NavParams, ToastController } from "@ionic/angular";
+import { AlertController, AlertInput, ModalController, NavParams, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import {
   Observable,
@@ -38,6 +38,8 @@ export class MemberPage implements OnInit {
 
   alertTeamSelection = [];
 
+  alertButtonsApproveClub = [];
+
   constructor(
     private readonly modalCtrl: ModalController,
     private readonly alertCtrl: AlertController,
@@ -46,7 +48,7 @@ export class MemberPage implements OnInit {
     private readonly fbService: FirebaseService,
     private navParams: NavParams,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.isRequest = this.navParams.get("isRequest");
@@ -55,6 +57,17 @@ export class MemberPage implements OnInit {
     this.userProfile$ = of(this.userProfile);
     this.userProfile$ = this.getUserProfile(this.userProfile.id);
 
+    this.setupAlerts();
+
+
+    // CHANGE ThIS To CLUBadMIN AND / OR TEAM ADMIN LIST
+    // this.getTeamAndClubTeamsAsAdmin();
+    // Get Array of all Clubs, that user is Admin
+    /*this.fbService.getClubAdminList()
+    // Get all Teams of that club.
+    this.fbService.getClubTeamList(club.id)
+
+    // Get all Teams, that user is admin.
     this.teamAdminList$ = this.fbService.getTeamAdminList();
     this.teamAdminList$.forEach((teamList) => {
       for (const team of teamList) {
@@ -69,11 +82,41 @@ export class MemberPage implements OnInit {
       }
       return teamList;
     });
-
+  */
   }
 
   getUserProfile(id) {
     return this.profileService.getUserProfileById(id);
+  }
+
+  setupAlerts() {
+    this.alertButtonsApproveClub = [
+      {
+        text: this.translate.instant("common.cancel"),
+        role: "destructive",
+        handler: (data) => {
+          console.log(data);
+        },
+      },
+      {
+        text: this.translate.instant("common.add"),
+        handler: async (data) => {
+          console.log(data);
+          await this.fbService.approveUserClubRequest(this.clubId, this.userProfile.id);
+          const toast = await this.toastCtrl.create({
+            message: await lastValueFrom(
+              this.translate.get("club.success__user_added")
+            ),
+            color: "success",
+            duration: 1500,
+            position: "bottom",
+          });
+          await toast.present();
+          // this.assignTeamAlert(this.userProfile);
+          this.getTeamAndClubTeamsAsAdmin();
+        },
+      },
+    ];
   }
 
   async close() {
@@ -91,49 +134,150 @@ export class MemberPage implements OnInit {
     });*/
   }
 
-  async approveClubRequest(user) {
-    console.log(user);
-    const alert = await this.alertCtrl.create({
-      message: (
-        (await lastValueFrom(
-          this.translate.get("club.want_to_add__user__to_club_string")
-        )) ?? ""
-      ).replace("{userName}", `${user.firstName} ${user.lastName}`),
-      subHeader: "",
-      buttons: [
-        {
-          text: await lastValueFrom(this.translate.get("common.yes")),
-          role: "confirm",
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: "cancel",
-        },
-      ],
-      htmlAttributes: { "aria-label": "alert dialog" },
-    });
-    await alert.present();
-    const { role, data } = await alert.onDidDismiss();
+  getTeamAndClubTeamsAsAdmin() {
 
-    if (role == "confirm") {
-      await this.fbService.approveUserClubRequest(this.clubId, user.id);
-      const toast = await this.toastCtrl.create({
-        message: await lastValueFrom(
-          this.translate.get("club.success__user_added")
-        ),
-        color: "success",
-        duration: 1500,
-        position: "bottom",
-      });
-      await toast.present();
 
-      await this.assignTeamAlert(user);
-    } else {
-      await this.toastActionCanceled();
-    }
+    const teamAdmins$ = this.fbService.getTeamAdminList().pipe(
+      tap(teams => console.log("Direct Admin Teams:", teams)),
+      catchError(error => {
+        console.error("Failed to fetch direct admin teams", error);
+        return of([]);
+      })
+    );
+
+    const clubTeams$ = this.fbService.getClubAdminList().pipe(
+      tap(clubs => console.log("Admin Clubs:", clubs)),
+      switchMap(clubs => {
+        if (clubs.length === 0) {
+          console.log("No clubs found where user is admin.");
+          return of([]);
+        }
+        return combineLatest(
+          clubs.map(club => this.fbService.getClubTeamList(club.id).pipe(
+            tap(teams => console.log(`Teams for club ${club.id}:`, teams)),
+            catchError(error => {
+              console.error(`Failed to fetch teams for club ${club.id}`, error);
+              return of([]);
+            })
+          ))
+        ).pipe(
+          map(teamsList => teamsList.flat())
+        );
+      }),
+      catchError(error => {
+        console.error("Failed to fetch clubs or club teams", error);
+        return of([]);
+      })
+    );
+
+    this.teamAdminList$ = combineLatest({ teamAdmins: teamAdmins$, clubTeams: clubTeams$ }).pipe(
+      map(({ teamAdmins, clubTeams }) => {
+        const combinedTeams = [...teamAdmins, ...clubTeams];
+        console.log("Combined Teams:", combinedTeams);
+        return combinedTeams.filter((team, index, self) =>
+          index === self.findIndex(t => t.id === team.id)
+        );
+      }),
+      tap(async teams => {
+        if (!teams.length) {
+          console.log("No teams found for alert preparation.");
+        } else {
+
+          console.log("Prepared teams for alert:");
+
+          const alert = await this.alertCtrl.create({
+            header: await lastValueFrom(this.translate.get("club.select_team_header")),
+            subHeader: await lastValueFrom(this.translate.get("club.select_team_subheader")),
+            message: (
+              (await lastValueFrom(
+                this.translate.get("club.want_to_add__user__to_team_string")
+              )) ?? ""
+            ).replace("{userName}", `${this.userProfile.firstName} ${this.userProfile.lastName}`),
+            inputs: teams.map(team => ({
+              label: team.name,
+              type: 'checkbox',
+              value: team.id,
+              checked: false
+            })),
+            buttons: [
+              {
+                text: this.translate.instant("common.cancel"),
+                role: "destructive",
+                handler: (data) => {
+                  console.log(data);
+                },
+              },
+              {
+                text: await lastValueFrom(this.translate.get("club.add")),
+                role: "confirm",
+                handler: async (data) => {
+                  console.log(data);
+                  for (const team of data) {
+                    await this.fbService.approveUserTeamRequest(team, this.userProfile.id)
+                  }
+                }
+              }
+            ],
+            htmlAttributes: { "aria-label": "alert dialog selcting teams" },
+          });
+          await alert.present();
+        }
+      }),
+      catchError(error => {
+        console.error('Error combining team data:', error);
+        return of([]);
+      })
+    );
+
+    // Debugging subscription
+    this.teamAdminList$.subscribe(results => console.log("Final results:", results),
+      error => console.error("Error in final subscription:", error)
+    );
   }
+  /*
+    async approveClubRequest(user) {
+      console.log(user);
+      const alert = await this.alertCtrl.create({
+        message: (
+          (await lastValueFrom(
+            this.translate.get("club.want_to_add__user__to_club_string")
+          )) ?? ""
+        ).replace("{userName}", `${user.firstName} ${user.lastName}`),
+        subHeader: "",
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("common.yes")),
+            role: "confirm",
+          },
+          {
+            text: await lastValueFrom(this.translate.get("common.cancel")),
+            role: "distructive",
+          },
+        ],
+        htmlAttributes: { "aria-label": "alert dialog" },
+      });
+      await alert.present();
+      const { role, data } = await alert.onDidDismiss();
+  
+      if (role == "confirm") {
+        await this.fbService.approveUserClubRequest(this.clubId, user.id);
+        const toast = await this.toastCtrl.create({
+          message: await lastValueFrom(
+            this.translate.get("club.success__user_added")
+          ),
+          color: "success",
+          duration: 1500,
+          position: "bottom",
+        });
+        await toast.present();
+  
+        await this.assignTeamAlert(user);
+      } else {
+        await this.toastActionCanceled();
+      }
+    }*/
 
-  async assignTeamAlert(user) {
+ /* async assignTeamAlert(user) {
     console.log(user);
     const alert = await this.alertCtrl.create({
       header: await lastValueFrom(this.translate.get("club.select__team")),
@@ -180,7 +324,7 @@ export class MemberPage implements OnInit {
     } else {
       await this.toastActionCanceled();
     }
-  }
+  }*/
 
   async deleteClubRequest(user) {
     console.log(user);
