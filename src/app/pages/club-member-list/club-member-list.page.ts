@@ -26,6 +26,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { MemberPage } from "../member/member.page";
 import { Profile } from "src/app/models/user";
 import { User } from "firebase/auth";
+import { Club } from "src/app/models/club";
 
 @Component({
   selector: "app-club-member-list",
@@ -43,6 +44,8 @@ export class ClubMemberListPage implements OnInit {
 
   groupArray = [];
 
+  clubAdminList$: Observable<Club[]>;
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -59,7 +62,10 @@ export class ClubMemberListPage implements OnInit {
 
     this.club$ = of(this.club);
     this.club$ = this.getClub(this.club.id);
+
+    this.clubAdminList$ = this.fbService.getClubAdminList(); 
   }
+
   edit() {
 
     if (this.allowEdit) {
