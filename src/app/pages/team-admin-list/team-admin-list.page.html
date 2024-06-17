@@ -52,7 +52,8 @@
 
 
                 <ion-avatar slot="start">
-                  <img src="{{member?.profilePicture}}" />
+                  <img  *ngIf="!member.profilePicture"  alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+                  <img   *ngIf="member.profilePicture"  src="{{member?.profilePicture}}" />
                 </ion-avatar>
                 <ion-label class="ion-text-wrap" (click)="openMember(member)">{{member.firstName}}
                   {{member.lastName}}</ion-label>

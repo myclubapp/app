@@ -191,6 +191,7 @@
         "version": "Version"
     },
     "common": {
+        "confirm": "bestätigen",
         "or": "Oder",
         "email__address": "E-Mail Adresse",
         "password": "Passwort",
@@ -235,7 +236,7 @@
         "add": "hinzufügen",
         "club": "Club",
         "description": "Beschreibung",
-        "location": "Location",
+        "location": "Name/Halle/Bezeichnung",
         "street__house_number": "Strasse & Hausnummer",
         "postal__code": "Postleitzahl",
         "locality": "Ortschaft",

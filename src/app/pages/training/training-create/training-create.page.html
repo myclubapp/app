@@ -47,6 +47,11 @@
   </ion-list>
   <ion-list [inset]="true">
     <ion-item>
+      <ion-input [label]='"common.location" | translate' label-placement="stacked"
+        value="{{training.location}}" [(ngModel)]="training.location">
+      </ion-input>
+    </ion-item>
+    <ion-item>
       <ion-input [label]='"common.street__house_number" | translate' label-placement="stacked"
         value="{{training.streetAndNumber}}" [(ngModel)]="training.streetAndNumber">
       </ion-input>

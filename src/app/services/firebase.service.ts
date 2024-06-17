@@ -449,7 +449,7 @@ export class FirebaseService {
       idField: "id",
     }) as unknown as Observable<Profile[]>;
   }
-
+  // User Perspective via Requests
   async setClubRequest(clubId: string, userId: string) {
     // const user = await this.authService.getUser();
     const clubRef = doc(this.firestore, `/club/${clubId}`);
@@ -471,6 +471,7 @@ export class FirebaseService {
     );
   }
 
+  // ADMIN PERSPECTIVE via direct add/delete -> Backend handels other assignments.
   async deleteTeamMember(teamId: string, userId: string): Promise<any> {
     return deleteDoc(doc(this.firestore, `teams/${teamId}/members/${userId}`));
   }

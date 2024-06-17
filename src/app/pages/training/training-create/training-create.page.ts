@@ -47,6 +47,7 @@ export class TrainingCreatePage implements OnInit {
       name: "",
       description: "",
 
+      location: "",
       streetAndNumber: "",
       postalCode: "",
       city: "",

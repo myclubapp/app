@@ -86,6 +86,7 @@ export class TrainingsPage implements OnInit {
           id: pushData.id,
           name: "",
           description: "",
+          location:"",
           streetAndNumber: "",
           postalCode: "",
           city: "",

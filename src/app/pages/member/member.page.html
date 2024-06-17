@@ -18,8 +18,10 @@
     <ion-list lines="full" [inset]="true">
       <ion-item>
         <ion-avatar slot="start">
-          <img alt="{{userProfile.firstName}} {{userProfile.lastName}}" src="{{userProfile.profilePicture}}" />
+          <img  *ngIf="!userProfile.profilePicture"  alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+          <img *ngIf="userProfile.profilePicture" alt="{{userProfile.firstName}} {{userProfile.lastName}}" src="{{userProfile.profilePicture}}" />
         </ion-avatar>
+   
         <ion-label>{{userProfile.firstName}} {{userProfile.lastName}}</ion-label>
       </ion-item>
       <ion-item>

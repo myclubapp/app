@@ -62,7 +62,7 @@ export class HelferDetailPage implements OnInit {
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.event = await this.navParams.get("data");
@@ -261,7 +261,7 @@ export class HelferDetailPage implements OnInit {
     this.getHelferEventSchichtenWithAttendees(this.event.clubId, this.event.id)
       .pipe(
         take(1),
-        map((schichten) => {
+        map(async (schichten) => {
           let alertInputs = [];
 
           schichten.map((schicht) => {
@@ -288,20 +288,20 @@ export class HelferDetailPage implements OnInit {
           });
 
           if (alertInputs.length > 0) {
-            this.alertController
+            const alert = await this.alertController
               .create({
                 header: "Helfereinsätze bestätigen",
                 message: "Bitte wählen Sie die Mitglieder aus:",
                 inputs: alertInputs,
                 buttons: [
                   {
-                    text: "Abbrechen",
+                    text: await lastValueFrom(this.translate.get("common.cancel")),
                     handler: () => {
                       console.log("abbrechen");
                     },
                   },
                   {
-                    text: "bestätigen",
+                    text:  await lastValueFrom(this.translate.get("common.confirm")),
                     handler: async (event) => {
                       // console.log(event);
 
@@ -319,9 +319,8 @@ export class HelferDetailPage implements OnInit {
                   },
                 ],
               })
-              .then((alert) => {
-                alert.present();
-              });
+            alert.present();
+
           } else {
             this.toastController
               .create({

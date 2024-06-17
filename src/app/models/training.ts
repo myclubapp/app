@@ -6,6 +6,7 @@ export interface Training {
   description: string;
 
   // Location
+  location: string;
   streetAndNumber: string;
   postalCode: string;
   city: string;
