@@ -144,7 +144,7 @@ export class MemberPage implements OnInit {
 
   getTeamAndClubTeamsAsAdmin() {
     const teamAdmins$ = this.fbService.getTeamAdminList().pipe(
-      first(),
+      take(1),
       tap(teams => console.log("Direct Admin Teams:", teams)),
       catchError(error => {
         console.error("Failed to fetch direct admin teams", error);
@@ -153,7 +153,7 @@ export class MemberPage implements OnInit {
     );
 
     const clubTeams$ = this.fbService.getClubAdminList().pipe(
-      first(),
+      take(1),
       tap(clubs => console.log("Admin Clubs:", clubs)),
       switchMap(clubs => {
         if (clubs.length === 0) {
@@ -241,7 +241,7 @@ export class MemberPage implements OnInit {
     this.teamAdminListSubscription = this.teamAdminList$.subscribe(results => console.log("Final results:", results),
       error => console.error("Error in final subscription:", error)
     );
-    this.teamAdminListSubscription.unsubscribe()
+    //this.teamAdminListSubscription.unsubscribe()
   }
   /*
     async approveClubRequest(user) {
