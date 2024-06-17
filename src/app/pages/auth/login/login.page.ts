@@ -96,14 +96,18 @@ export class LoginPage implements OnInit {
         );
       } else if (err.code == "auth/invalid-login-credentials") {
         message = await lastValueFrom(
-          this.translate.get("login.error__invalid-login-credentials")
+          this.translate.get("login.error__invalid_login_credentials")
+        );
+      } else if (err.code == "auth/invalid-credentials") {
+        message = await lastValueFrom(
+          this.translate.get("login.error__invalid_credentials")
         );
       } else {
         console.log("Error");
       }
 
       const alert = await this.alertCtrl.create({
-        header: await lastValueFrom(this.translate.get("login.mistake")),
+        header: await lastValueFrom(this.translate.get("login.error")),
         message: message,
         buttons: [
           {

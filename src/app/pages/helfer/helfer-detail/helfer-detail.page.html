@@ -52,7 +52,7 @@
     <ng-container *ngIf="schichten$ | async as schichten">
       <ion-list lines="full" [inset]="true" *ngIf="schichten.length > 0">
         <ion-list-header>
-          <ion-label> {{"helper.schichten" | translate}} </ion-label>
+          <ion-label> {{"helfer.schichten" | translate}} </ion-label>
           <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
             <ion-button (click)="confirmSchichten()" *ngIf="isClubAdmin(clubAdminList, event.clubId)"> bestätigen </ion-button>
           </ng-container>

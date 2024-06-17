@@ -138,7 +138,7 @@ export class SignupPage implements OnInit {
         }
         await loading.dismiss();
         const alert = await this.alertCtrl.create({
-          header: await lastValueFrom(this.translate.get("common.mistake")),
+          header: await lastValueFrom(this.translate.get("common.error")),
           message: message,
           buttons: [
             {

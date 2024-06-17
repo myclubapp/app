@@ -10,6 +10,7 @@ import {
   updateDoc,
   DocumentReference,
   setDoc,
+  Timestamp,
 } from "@angular/fire/firestore";
 
 import {
@@ -367,7 +368,8 @@ export class FirebaseService {
     console.log("club " + clubId, " / userid " + userId);
     return setDoc(
       doc(this.firestore, `/club/${clubId}/requests/${userId}`),
-      {
+      { 
+        approveDateTime: Timestamp.now(),
         approve: true,
       },
       {

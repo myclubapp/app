@@ -6,8 +6,10 @@
         "register": "Anmelden",
         "error__no_acount_found": "Kein Account mit dieser E-Mail-Adresse gefunden",
         "error__invalid_username_password": "Die Kombination aus Benutzername und Passwort ist falsch.",
+        "error__invalid_login_credentials": "Die Kombination aus Benutzername und Passwort ist falsch.",
+        "error__invalid_credentials": "Die Kombination aus Benutzername und Passwort ist ungültig.",
         "error__network_connection": "Es gibt ein Problem mit der Netzwerkverbindung",
-        "mistake": "Fehler"
+        "error": "Fehler"
     },
     "logout": {
         "logout__success": "Logout war erfolgreich!",
@@ -25,7 +27,7 @@
         "to__register": "Registrieren",
         "account__created": "Account erstellt",
         "account__created_description": "Dein Account wurde erfolgreich erstellt. Bitte bestätige deine E-Mail Adresse.",
-        "email__already_in_use": "E-Mail already in use"
+        "email__already_in_use": "E-Mail wird bereits verwendet"
     },
     "championship": {
         "past__games": "Vergangene Spiele",
@@ -71,7 +73,8 @@
     },
     "helfer": {
         "upcomming__helper_event": "Kommende Helferevents",
-        "past__helper_events": "Vergangene Helferevents"
+        "past__helper_events": "Vergangene Helferevents",
+        "schichten": "Helferschichten"
     },
     "helfer-add": {
         "new__helper_event": "Neuer Helferevent"
