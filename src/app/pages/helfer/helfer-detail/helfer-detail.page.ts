@@ -105,7 +105,6 @@ export class HelferDetailPage implements OnInit {
                 // If no attendees, return event data immediately
                 return of({
                   ...event,
-
                   attendees: [],
                   attendeeListTrue: [],
                   attendeeListFalse: [],
@@ -126,6 +125,7 @@ export class HelferDetailPage implements OnInit {
                 )
               );
               return forkJoin(attendeeProfiles$).pipe(
+
                 map((attendeesWithDetails) => ({
                   ...event,
                   attendees: attendeesWithDetails,
@@ -137,10 +137,8 @@ export class HelferDetailPage implements OnInit {
                   ),
                   status: attendeesWithDetails.find(
                     (att) => att.id == this.user.uid
-                  )?.status || null,
-                  confirmed: attendeesWithDetails.find(
-                    (att) => att.id == this.user.uid
-                  )?.confirmed,
+                  )?.status,
+
                 }))
               );
             }),
@@ -149,7 +147,7 @@ export class HelferDetailPage implements OnInit {
                 ...event,
                 attendees: [],
                 status: null,
-                confirmed: null,
+
               })
             )
           );

@@ -49,7 +49,7 @@ export class TrainingDetailPage implements OnInit {
     private readonly authService: AuthService,
     private translate: TranslateService,
     private readonly exerciseService: ExerciseService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.training = this.navParams.get("data");
@@ -81,9 +81,7 @@ export class TrainingDetailPage implements OnInit {
                   attendees: [],
                   attendeeListTrue: [],
                   attendeeListFalse: [],
-                  attendeeListNoAnswer: [],
                   status: null,
-                  teamMembers: [],
                 });
               }
               const attendeeProfiles$ = attendees.map((attendee) =>
@@ -100,21 +98,29 @@ export class TrainingDetailPage implements OnInit {
                 )
               );
               return forkJoin(attendeeProfiles$).pipe(
-                map((attendeesWithDetails) => ({
-                  ...training,
-                  attendees: attendeesWithDetails,
-                  attendeeListTrue: attendeesWithDetails.filter(
-                    (e) => e.status == true
-                  ),
-                  attendeeListFalse: attendeesWithDetails.filter(
-                    (e) => e.status == false
-                  ),
-                  status: attendeesWithDetails.find(
-                    (att) => att.id == this.user.uid
-                  )?.status || null,
-                  teamMembers: [],
-                  attendeeListNoAnswer: [],
-                }))
+
+                map((attendeesWithDetails) => {
+                  // Find the attendee that matches the current user's ID
+                  const userAttendee = attendeesWithDetails.find(
+                    (att) => att.id === this.user.uid
+                  );
+
+                  // If userAttendee is undefined, status will default to null
+                  const status = userAttendee ? userAttendee.status : null;
+
+                  return {
+                    ...training,
+                    attendees: attendeesWithDetails,
+                    attendeeListTrue: attendeesWithDetails.filter(
+                      (e) => e.status === true
+                    ),
+                    attendeeListFalse: attendeesWithDetails.filter(
+                      (e) => e.status === false
+                    ),
+                    status: status, // use the variable set above
+                  };
+                })
+
               );
             }),
             catchError(() =>
