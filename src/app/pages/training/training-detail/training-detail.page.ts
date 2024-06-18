@@ -81,7 +81,9 @@ export class TrainingDetailPage implements OnInit {
                   attendees: [],
                   attendeeListTrue: [],
                   attendeeListFalse: [],
+                  attendeeListNoAnswer: [],
                   status: null,
+                  teamMembers: [],
                 });
               }
               const attendeeProfiles$ = attendees.map((attendee) =>
@@ -110,6 +112,8 @@ export class TrainingDetailPage implements OnInit {
                   status: attendeesWithDetails.find(
                     (att) => att.id == this.user.uid
                   )?.status,
+                  teamMembers: [],
+                  attendeeListNoAnswer: [],
                 }))
               );
             }),

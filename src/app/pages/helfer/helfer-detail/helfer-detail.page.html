@@ -3,15 +3,13 @@
     <ion-toolbar>
       <ion-title>{{"common.details" | translate}} </ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()"
-          >{{"common.close" | translate}}</ion-button
-        >
+        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
   <ion-content>
- <ion-header collapse="condense">
+    <ion-header collapse="condense">
       <ion-toolbar>
         <ion-title size="large">{{"common.details" | translate}}</ion-title>
       </ion-toolbar>
@@ -50,111 +48,85 @@
     </ion-list>
 
     <ng-container *ngIf="schichten$ | async as schichten">
+      <!-- Helfereinsätze MIT Schichten -->
       <ion-list lines="full" [inset]="true" *ngIf="schichten.length > 0">
         <ion-list-header>
           <ion-label> {{"helfer.schichten" | translate}} </ion-label>
           <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-            <ion-button (click)="confirmSchichten()" *ngIf="isClubAdmin(clubAdminList, event.clubId)"> bestätigen </ion-button>
+            <ion-button (click)="confirmSchichten()" *ngIf="isClubAdmin(clubAdminList, event.clubId)"> bestätigen
+            </ion-button>
           </ng-container>
         </ion-list-header>
-        <ion-item *ngFor="let schicht of schichten">
-          <ng-container *ngIf="schicht.confirmed !== true">
-            <ion-icon
-              *ngIf="schicht.status === null"
-              slot="icon-only"
-              color="warning"
-              slot="start"
-              name="help-circle"
-              (click)="toggleSchicht(true, schicht)"
-            ></ion-icon>
-            <ion-icon
-              *ngIf="schicht.status === false"
-              slot="icon-only"
-              color="danger"
-              slot="start"
-              name="close-circle"
-              (click)="toggleSchicht( true, schicht)"
-            ></ion-icon>
-            <ion-icon
-              *ngIf="schicht.status === true"
-              slot="icon-only"
-              color="success"
-              slot="start"
-              name="checkmark-circle"
-              (click)="toggleSchicht(false, schicht)"
-            ></ion-icon>
-          </ng-container>
-          <ng-container *ngIf="schicht.confirmed">
-            <ion-icon
-              *ngIf="schicht.status === null"
-              slot="icon-only"
-              color="warning"
-              slot="start"
-              name="help-circle"
-            ></ion-icon>
-            <ion-icon
-              *ngIf="schicht.status === false"
-              slot="icon-only"
-              color="danger"
-              slot="start"
-              name="close-circle"
-            ></ion-icon>
-            <ion-icon
-              *ngIf="schicht.status === true"
-              slot="icon-only"
-              color="success"
-              slot="start"
-              name="checkmark-circle"
-            ></ion-icon>
-          </ng-container>
-          <ion-label>
-            <h3>{{schicht.name}}</h3>
-            <h2>{{schicht.timeFrom}} {{schicht.timeTo}}</h2>
-          </ion-label>
-          <ion-badge
-            >{{schicht.attendeeListTrue.length}} /
-            {{schicht.countNeeded}}</ion-badge
-          >
-        </ion-item>
+        <ng-container *ngFor="let schicht of schichten">
+
+
+          <ion-item>
+            <ng-container *ngIf="schicht.confirmed !== true">
+              <ion-icon *ngIf="schicht.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
+                (click)="toggleSchicht(true, schicht)"></ion-icon>
+              <ion-icon *ngIf="schicht.status === false" slot="icon-only" color="danger" slot="start"
+                name="close-circle" (click)="toggleSchicht( true, schicht)"></ion-icon>
+              <ion-icon *ngIf="schicht.status === true" slot="icon-only" color="success" slot="start"
+                name="checkmark-circle" (click)="toggleSchicht(false, schicht)"></ion-icon>
+            </ng-container>
+            <ng-container *ngIf="schicht.confirmed">
+              <ion-icon *ngIf="schicht.status === null" slot="icon-only" color="warning" slot="start"
+                name="help-circle"></ion-icon>
+              <ion-icon *ngIf="schicht.status === false" slot="icon-only" color="danger" slot="start"
+                name="close-circle"></ion-icon>
+              <ion-icon *ngIf="schicht.status === true" slot="icon-only" color="success" slot="start"
+                name="checkmark-circle"></ion-icon>
+            </ng-container>
+            <ion-label>
+              <h3>{{schicht.name}}</h3>
+              <h2>{{schicht.timeFrom}} {{schicht.timeTo}}</h2>
+            </ion-label>
+            <ion-badge>{{schicht.attendeeListTrue.length}} /
+              {{schicht.countNeeded}}
+            </ion-badge>
+
+          </ion-item>
+          <ion-accordion-group expand="inset" *ngIf="schicht['attendeeListTrue'].length > 0" [multiple]="true" [value]="['yes']">
+            <ion-accordion value="yes">
+              <ion-item slot="header" color="light">
+                <ion-label>{{"helfer-detail.helfer_innen_for" | translate}} {{schicht.name}}</ion-label>
+              </ion-item>
+              <div slot="content">
+                <!-- class="ion-padding"-->
+                <ion-list>
+                  <ion-item *ngFor="let member of schicht['attendeeListTrue']" detail="true">
+                    <ion-icon color="success" slot="start" name="checkmark-circle">
+                    </ion-icon>
+
+                    <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
+                  </ion-item>
+                </ion-list>
+              </div>
+
+            </ion-accordion>
+          </ion-accordion-group>
+        </ng-container>
       </ion-list>
 
-      <ion-list
-        [inset]="true"
-        lines="none"
-        *ngIf="schichten.length == 0 && isFuture"
-      >
+      <!-- Helfereinsätze OHNE Schichten FUTURE-->
+      <ion-list [inset]="true" lines="none" *ngIf="schichten.length == 0 && isFuture">
         <ion-list-header>
           {{"common.attendances__absences" | translate}}
         </ion-list-header>
         <ion-item class="myclubStatus">
           <ng-container *ngIf="event.hasOwnProperty('status'); else loading">
-            <ion-fab-button
-              (click)="toggle(true, event)"
-              size="small"
-              color="warning"
-              slot="start"
-              *ngIf="event.status === null"
-            >
+            <ion-fab-button (click)="toggle(true, event)" size="small" color="warning" slot="start"
+              *ngIf="event.status === null">
               <ion-icon name="help-circle"> </ion-icon>
             </ion-fab-button>
 
-            <ion-fab-button
-              (click)="toggle(true, event)"
-              size="small"
-              color="danger"
-              slot="start"
-              *ngIf="event.status === false"
-            >
+            <ion-fab-button (click)="toggle(true, event)" size="small" color="danger" slot="start"
+              *ngIf="event.status === false">
               <ion-icon name="close-circle"> </ion-icon>
             </ion-fab-button>
 
-            <ion-fab-button
-              (click)="toggle(false, event)"
-              size="small"
-              color="success"
-              slot="start"
-              *ngIf="event.status === true"
-            >
+            <ion-fab-button (click)="toggle(false, event)" size="small" color="success" slot="start"
+              *ngIf="event.status === true">
               <ion-icon name="checkmark-circle"> </ion-icon>
             </ion-fab-button>
 
@@ -162,53 +134,36 @@
           </ng-container>
         </ion-item>
       </ion-list>
-      <ion-list [inset]="true" *ngIf="schichten.length == 0">
+
+      <ion-list [inset]="true" *ngIf="schichten.length == 0 && !isFuture">
         <ion-accordion-group [multiple]="true" [value]="['yes']">
           <ion-accordion value="yes">
             <ion-item slot="header" color="light">
-              <ion-label
-                >{{"common.present" | translate}}:
-                {{event['attendeeListTrue']?.length}}</ion-label
-              >
+              <ion-label>{{"common.present" | translate}}:
+                {{event['attendeeListTrue']?.length}}</ion-label>
             </ion-item>
             <div slot="content">
               <ion-list>
-                <ion-item
-                  *ngFor="let member of event['attendeeListTrue']"
-                  detail="true"
-                >
-                  <ion-icon
-                    color="success"
-                    slot="start"
-                    name="checkmark-circle"
-                  >
+                <ion-item *ngFor="let member of event['attendeeListTrue']" detail="true">
+                  <ion-icon color="success" slot="start" name="checkmark-circle">
                   </ion-icon>
-                  <ion-label (click)="openMember(member)"
-                    >{{member.firstName}} {{member.lastName}}</ion-label
-                  >
+                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
                 </ion-item>
               </ion-list>
             </div>
           </ion-accordion>
           <ion-accordion value="no">
             <ion-item slot="header" color="light">
-              <ion-label
-                >{{"common.absent" | translate}}:
-                {{event['attendeeListFalse']?.length}}</ion-label
-              >
+              <ion-label>{{"common.absent" | translate}}:
+                {{event['attendeeListFalse']?.length}}</ion-label>
             </ion-item>
             <div slot="content">
               <ion-list>
-                <ion-item
-                  *ngFor="let member of event['attendeeListFalse']"
-                  detail="true"
-                >
+                <ion-item *ngFor="let member of event['attendeeListFalse']" detail="true">
                   <ion-icon color="danger" slot="start" name="close-circle">
                   </ion-icon>
 
-                  <ion-label (click)="openMember(member)"
-                    >{{member.firstName}} {{member.lastName}}</ion-label
-                  >
+                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
                 </ion-item>
               </ion-list>
             </div>

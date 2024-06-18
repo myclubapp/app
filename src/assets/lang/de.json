@@ -79,7 +79,9 @@
     "helfer-add": {
         "new__helper_event": "Neuer Helferevent"
     },
-    "helfer-detail": {},
+    "helfer-detail": {
+        "helfer_innen_for": "Helfer:innen für "
+    },
     "info": {
         "information": "Informationen",
         "terms__and_conditions": "Geschäftsbedingungen",
