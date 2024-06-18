@@ -137,7 +137,7 @@ export class HelferDetailPage implements OnInit {
                   ),
                   status: attendeesWithDetails.find(
                     (att) => att.id == this.user.uid
-                  )?.status,
+                  )?.status || null,
                   confirmed: attendeesWithDetails.find(
                     (att) => att.id == this.user.uid
                   )?.confirmed,
@@ -229,7 +229,7 @@ export class HelferDetailPage implements OnInit {
                       ),
                       status: attendeesWithDetails.find(
                         (att) => att.id == this.user.uid
-                      )?.status,
+                      )?.status  || null,
                       confirmed: attendeesWithDetails.find(
                         (att) => att.id == this.user.uid
                       )?.confirmed,

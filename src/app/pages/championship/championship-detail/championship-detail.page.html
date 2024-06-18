@@ -15,7 +15,7 @@
         <ion-icon name="close" size="small"></ion-icon>
       </ion-fab-button>
     </ion-fab>
-    <capacitor-google-map #map></capacitor-google-map>
+    <capacitor-google-map #map *ngIf="game.location && game.latitude && game.longitude"></capacitor-google-map>
     <ion-list [inset]="true">
    
       <ion-item>
@@ -89,10 +89,11 @@
         </ion-label>
       </ion-item>
     </ion-list>
-
-    <ion-list [inset]="true" lines="none">
-      <ion-item (click)="openLineup(game)" detail="true"> Lineup </ion-item>
-    </ion-list>
+    <!--
+      <ion-list [inset]="true" lines="none">
+        <ion-item (click)="openLineup(game)" detail="true"> Lineup </ion-item>
+      </ion-list>
+    -->
 
     <ion-list [inset]="true" lines="none" *ngIf="isFuture">
       <ion-list-header>

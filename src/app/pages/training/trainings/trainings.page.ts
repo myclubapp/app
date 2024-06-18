@@ -213,7 +213,7 @@ export class TrainingsPage implements OnInit {
                           );
                           const status = userAttendee
                             ? userAttendee.status
-                            : null; // default to false if user is not found in attendees list
+                            : null; // default to null if user is not found in attendees list
                           return {
                             ...training,
                             attendees,

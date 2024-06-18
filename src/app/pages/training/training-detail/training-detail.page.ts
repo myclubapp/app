@@ -111,7 +111,7 @@ export class TrainingDetailPage implements OnInit {
                   ),
                   status: attendeesWithDetails.find(
                     (att) => att.id == this.user.uid
-                  )?.status,
+                  )?.status || null,
                   teamMembers: [],
                   attendeeListNoAnswer: [],
                 }))

@@ -58,11 +58,10 @@
           </ng-container>
         </ion-list-header>
         <ng-container *ngFor="let schicht of schichten">
-
-
           <ion-item>
             <ng-container *ngIf="schicht.confirmed !== true">
-              <ion-icon *ngIf="schicht.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
+              <ion-icon *ngIf="schicht.status === null" slot="icon-only" color="warning" slot="start" 
+              name="help-circle"
                 (click)="toggleSchicht(true, schicht)"></ion-icon>
               <ion-icon *ngIf="schicht.status === false" slot="icon-only" color="danger" slot="start"
                 name="close-circle" (click)="toggleSchicht( true, schicht)"></ion-icon>
@@ -84,13 +83,12 @@
             <ion-badge>{{schicht.attendeeListTrue.length}} /
               {{schicht.countNeeded}}
             </ion-badge>
-
           </ion-item>
           <ion-accordion-group expand="inset" *ngIf="schicht['attendeeListTrue'].length > 0" [multiple]="true" [value]="['yes']">
             <ion-accordion value="yes">
-              <ion-item slot="header" color="light">
-                <ion-label>{{"helfer-detail.helfer_innen_for" | translate}} {{schicht.name}}</ion-label>
-              </ion-item>
+                <ion-item slot="header" color="light">
+                  <ion-label>{{"helfer-detail.helfer_innen_for" | translate}} {{schicht.name}}</ion-label>
+                </ion-item>
               <div slot="content">
                 <!-- class="ion-padding"-->
                 <ion-list>
@@ -108,7 +106,7 @@
         </ng-container>
       </ion-list>
 
-      <!-- Helfereinsätze OHNE Schichten FUTURE-->
+      <!-- Helfereinsätze OHNE Schichten MY STATUS-->
       <ion-list [inset]="true" lines="none" *ngIf="schichten.length == 0 && isFuture">
         <ion-list-header>
           {{"common.attendances__absences" | translate}}
@@ -135,7 +133,7 @@
         </ion-item>
       </ion-list>
 
-      <ion-list [inset]="true" *ngIf="schichten.length == 0 && !isFuture">
+      <ion-list [inset]="true" *ngIf="schichten.length == 0">
         <ion-accordion-group [multiple]="true" [value]="['yes']">
           <ion-accordion value="yes">
             <ion-item slot="header" color="light">
