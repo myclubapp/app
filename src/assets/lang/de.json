@@ -222,6 +222,7 @@
         "my__status": "Mein Status",
         "present": "Anwesend",
         "absent": "Abwesend",
+        "noreply": "Keine Antwort",
         "close": "schliessen",
         "success__saved": "Änderungen erfolgreich gespeichert",
         "no_of__members": "Anzahl Mitglieder",

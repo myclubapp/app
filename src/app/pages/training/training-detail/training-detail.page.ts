@@ -6,6 +6,7 @@ import { User } from "firebase/auth";
 import {
   Observable,
   catchError,
+  combineLatest,
   forkJoin,
   lastValueFrom,
   map,
@@ -22,6 +23,7 @@ import { TrainingExercisesPage } from "../training-exercises/training-exercises.
 import { MemberPage } from "../../member/member.page";
 import { Profile } from "src/app/models/user";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
+import { FirebaseService } from "src/app/services/firebase.service";
 
 @Component({
   selector: "app-training-detail",
@@ -44,6 +46,7 @@ export class TrainingDetailPage implements OnInit {
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
     private readonly userProfileService: UserProfileService,
+    private readonly fbService: FirebaseService,
     private readonly trainingService: TrainingService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
@@ -60,84 +63,75 @@ export class TrainingDetailPage implements OnInit {
 
   getTraining(teamId: string, trainingId: string) {
     return this.authService.getUser$().pipe(
-      take(1),
-      tap((user) => {
-        this.user = user;
-        if (!user) throw new Error("User not found");
-      }),
-      switchMap(() =>
-        this.trainingService.getTeamTrainingRef(teamId, trainingId)
-      ),
-      switchMap((training) => {
-        if (!training) return of(null);
-        return this.trainingService
-          .getTeamTrainingsAttendeesRef(teamId, trainingId)
-          .pipe(
-            switchMap((attendees) => {
-              if (attendees.length === 0) {
-                // If no attendees, return event data immediately
-                return of({
-                  ...training,
-                  attendees: [],
-                  attendeeListTrue: [],
-                  attendeeListFalse: [],
-                  status: null,
-                });
-              }
-              const attendeeProfiles$ = attendees.map((attendee) =>
-                this.userProfileService.getUserProfileById(attendee.id).pipe(
-                  take(1),
-                  map((profile) => ({ ...profile, ...attendee })), // Combine attendee object with profile
-                  catchError(() =>
-                    of({
-                      ...attendee,
-                      firstName: "Unknown",
-                      lastName: "Unknown",
-                    })
-                  )
-                )
-              );
-              return forkJoin(attendeeProfiles$).pipe(
+        take(1),
+        tap((user) => {
+            this.user = user;
+            if (!user) throw new Error("User not found");
+        }),
+        switchMap(() =>
+            this.trainingService.getTeamTrainingRef(teamId, trainingId)
+        ),
+        switchMap((training) => {
+            if (!training) return of(null);
 
-                map((attendeesWithDetails) => {
-                  // Find the attendee that matches the current user's ID
-                  const userAttendee = attendeesWithDetails.find(
-                    (att) => att.id === this.user.uid
-                  );
+            // Get both attendees and team members in parallel
+            return combineLatest([
+                this.trainingService.getTeamTrainingsAttendeesRef(teamId, trainingId),
+                this.fbService.getTeamMemberRefs(teamId)
+            ]).pipe(
+                switchMap(([attendees, teamMembers]) => {
+                    const attendeeProfiles$ = attendees.map(attendee =>
+                        this.userProfileService.getUserProfileById(attendee.id).pipe(
+                            take(1),
+                            map(profile => ({ ...profile, ...attendee })),
+                            catchError(() => of({ ...attendee, firstName: "Unknown", lastName: "Unknown", status: null }))
+                        )
+                    );
 
-                  // If userAttendee is undefined, status will default to null
-                  const status = userAttendee ? userAttendee.status : null;
+                    // Fetch profiles for all team members
+                    const teamMemberProfiles$ = teamMembers.map(member =>
+                        this.userProfileService.getUserProfileById(member.id).pipe(
+                            take(1),
+                            catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
+                        )
+                    );
 
-                  return {
+                    return combineLatest([forkJoin(attendeeProfiles$), forkJoin(teamMemberProfiles$)]).pipe(
+                        map(([attendeesWithDetails, teamMembersWithDetails]) => {
+                            const userAttendee = attendeesWithDetails.find(att => att.id === this.user.uid);
+                            const status = userAttendee ? userAttendee.status : null;
+
+                            // Determine members who have not responded
+                            const respondedIds = new Set(attendeesWithDetails.map(att => att.id));
+                            const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id));
+
+                            return {
+                                ...training,
+                                attendees: attendeesWithDetails,
+                                attendeeListTrue: attendeesWithDetails.filter(e => e.status === true),
+                                attendeeListFalse: attendeesWithDetails.filter(e => e.status === false),
+                                unrespondedMembers: unrespondedMembers,
+                                status: status,
+                            };
+                        })
+                    );
+                }),
+                catchError(() => of({
                     ...training,
-                    attendees: attendeesWithDetails,
-                    attendeeListTrue: attendeesWithDetails.filter(
-                      (e) => e.status === true
-                    ),
-                    attendeeListFalse: attendeesWithDetails.filter(
-                      (e) => e.status === false
-                    ),
-                    status: status, // use the variable set above
-                  };
-                })
-
-              );
-            }),
-            catchError(() =>
-              of({
-                ...training,
-                attendees: [],
-                status: null,
-              })
-            )
-          );
-      }),
-      catchError((err) => {
-        console.error("Error in getTrainingWithAttendees:", err);
-        return of(null);
-      })
+                    attendees: [],
+                    attendeeListTrue: [],
+                    attendeeListFalse: [],
+                    unrespondedMembers: [],
+                    status: null
+                }))
+            );
+        }),
+        catchError(err => {
+            console.error("Error in getTrainingWithAttendees:", err);
+            return of(null);
+        })
     );
-  }
+}
 
   async toggle(status: boolean, training: Training) {
     console.log(
@@ -205,3 +199,4 @@ export class TrainingDetailPage implements OnInit {
     return await this.modalCtrl.dismiss(this.training, "confirm");
   }
 }
+
