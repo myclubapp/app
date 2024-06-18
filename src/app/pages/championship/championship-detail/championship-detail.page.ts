@@ -162,7 +162,7 @@ export class ChampionshipDetailPage implements OnInit {
                   ),
                   status: attendeesWithDetails.find(
                     (att) => att.id == this.user.uid
-                  )?.status,
+                  )?.status || null,
                 }))
               );
             }),
