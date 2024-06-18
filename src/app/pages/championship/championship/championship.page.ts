@@ -253,7 +253,7 @@ export class ChampionshipPage implements OnInit {
           )
         );
       }),
-      tap((results) => console.log("Final results with all games:", results)),
+      // tap((results) => console.log("Final results with all games:", results)),
       catchError((err) => {
         console.error("Error in getTeamGamesUpcoming:", err);
         return of([]); // Return an empty array on error

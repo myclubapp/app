@@ -21,7 +21,7 @@ import {
   Position,
 } from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import { forkJoin, lastValueFrom, Observable, of } from "rxjs";
+import { combineLatest, forkJoin, lastValueFrom, Observable, of } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "@angular/fire/auth";
 import { catchError, map, switchMap, take, tap } from "rxjs/operators";
@@ -32,6 +32,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { LineupPage } from "../lineup/lineup.page";
 import { Profile } from "src/app/models/user";
 import { MemberPage } from "../../member/member.page";
+import { FirebaseService } from "src/app/services/firebase.service";
 
 @Component({
   selector: "app-championship-detail",
@@ -64,6 +65,7 @@ export class ChampionshipDetailPage implements OnInit {
     private readonly championshipService: ChampionshipService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
+    private readonly fbService: FirebaseService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService
   ) {
@@ -123,10 +125,16 @@ export class ChampionshipDetailPage implements OnInit {
       switchMap(() => this.championshipService.getTeamGameRef(teamId, gameId)),
       switchMap((game) => {
         if (!game) return of(null);
-        return this.championshipService
+        // Get both attendees and team members in parallel
+        return combineLatest([
+          this.championshipService.getTeamGameAttendeesRef(teamId, gameId),
+          this.fbService.getTeamMemberRefs(teamId)
+      ]).pipe(
+        /*return this.championshipService
           .getTeamGameAttendeesRef(teamId, gameId)
           .pipe(
-            switchMap((attendees) => {
+            switchMap((attendees) => {*/
+              switchMap(([attendees, teamMembers]) => {
               if (attendees.length === 0) {
                 // If no attendees, return event data immediately
                 return of({
@@ -150,8 +158,17 @@ export class ChampionshipDetailPage implements OnInit {
                   )
                 )
               );
-              return forkJoin(attendeeProfiles$).pipe(
-                map((attendeesWithDetails) => {
+              // Fetch profiles for all club members
+              const teamMemberProfiles$ = teamMembers.map(member =>
+                this.userProfileService.getUserProfileById(member.id).pipe(
+                    take(1),
+                    catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
+                )
+            );
+              //return forkJoin(attendeeProfiles$).pipe(
+                //map((attendeesWithDetails) => {
+              return combineLatest([forkJoin(attendeeProfiles$), forkJoin(teamMemberProfiles$)]).pipe(
+                map(([attendeesWithDetails, teamMembersWithDetails]) => {
                   // Find the attendee that matches the current user's ID
                   const userAttendee = attendeesWithDetails.find(
                     (att) => att.id === this.user.uid
@@ -159,6 +176,10 @@ export class ChampionshipDetailPage implements OnInit {
 
                   // If userAttendee is undefined, status will default to null
                   const status = userAttendee ? userAttendee.status : null;
+
+                  // Determine members who have not responded
+                  const respondedIds = new Set(attendeesWithDetails.map(att => att.id));
+                  const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id));
 
                   return {
                     ...game,
@@ -169,6 +190,7 @@ export class ChampionshipDetailPage implements OnInit {
                     attendeeListFalse: attendeesWithDetails.filter(
                       (e) => e.status === false
                     ),
+                    unrespondedMembers: unrespondedMembers,
                     status: status, // use the variable set above
                   };
                 })
@@ -178,6 +200,9 @@ export class ChampionshipDetailPage implements OnInit {
               of({
                 ...game,
                 attendees: [],
+                attendeeListTrue: [],
+                attendeeListFalse: [],
+                unrespondedMembers: [],
                 status: null,
               })
             )
