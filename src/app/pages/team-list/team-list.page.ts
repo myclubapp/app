@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Team } from "src/app/models/team";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { Observable } from "rxjs";
+import { Observable, take } from "rxjs";
 import { User } from "@angular/fire/auth";
 import {
   AlertController,
@@ -24,11 +24,12 @@ export class TeamListPage implements OnInit {
   availableTeamList$: Observable<Team[]>;
 
   skeleton = new Array(12);
-  userProfile$: Observable<Profile>;
-  user: User;
+
+  allowEdit: boolean = false;
 
   constructor(
     private readonly fbService: FirebaseService,
+    private readonly authService: AuthService,
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
 
@@ -40,6 +41,20 @@ export class TeamListPage implements OnInit {
 
   ngOnDestroy() {}
 
+  async leaveTeam(team){
+    this.authService.getUser$().subscribe(userProfile=>{
+      this.fbService.leaveTeam(team.id, userProfile.uid);
+    })
+  }
+
+  edit() {
+
+    if (this.allowEdit) {
+      this.allowEdit = false;
+    } else {
+      this.allowEdit = true;
+    }
+  }
   async openModal(team: Team) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({

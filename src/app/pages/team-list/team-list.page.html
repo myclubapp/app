@@ -11,7 +11,14 @@
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">{{"team-list.my__teams" | translate}}</ion-title>
+      <ion-buttons slot="end">
+
+        <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
+        <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
+
+      </ion-buttons>
     </ion-toolbar>
+
   </ion-header>
 
   <ion-list>
@@ -24,16 +31,17 @@
           size="12"
           *ngFor="let team of teamList$ | async"
         >
-          <ion-card (click)="openModal(team)">
-            <img src="{{team.logo}}" />
-            <ion-card-header>
+          <ion-card>
+            <img (click)="openModal(team)" src="{{team.logo}}" />
+            <ion-card-header (click)="openModal(team)">
               <ion-card-subtitle> {{team.name}} </ion-card-subtitle>
               <ion-card-title> {{team.liga}} </ion-card-title>
             </ion-card-header>
 
-            <ion-card-content>
+            <ion-card-content (click)="openModal(team)">
               <ion-badge> {{team.type}} </ion-badge>
             </ion-card-content>
+            <ion-button   *ngIf="allowEdit"  (click)="leaveTeam(team)" color="danger" fill="clear">Team verlassen</ion-button>
           </ion-card>
         </ion-col>
       </ion-row>

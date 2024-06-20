@@ -471,6 +471,11 @@ export class FirebaseService {
     );
   }
 
+  // User Perspective
+  async leaveTeam(teamId: string, userId: string){
+    return deleteDoc(doc(this.firestore, `userProfile/${userId}/teams/${teamId}`));
+  }
+
   // ADMIN PERSPECTIVE via direct add/delete -> Backend handels other assignments.
   async deleteTeamMember(teamId: string, userId: string): Promise<any> {
     return deleteDoc(doc(this.firestore, `teams/${teamId}/members/${userId}`));
