@@ -8,7 +8,7 @@ import {
 } from "@angular/core";
 import {
   ModalController,
-  NavController,
+  // NavController,
   NavParams,
   ToastController,
 } from "@ionic/angular";
@@ -27,7 +27,7 @@ import { User } from "@angular/fire/auth";
 import { catchError, map, switchMap, take, tap } from "rxjs/operators";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { environment } from "src/environments/environment";
-import { ActivatedRoute } from "@angular/router";
+// import { ActivatedRoute } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { LineupPage } from "../lineup/lineup.page";
 import { Profile } from "src/app/models/user";
@@ -111,105 +111,88 @@ export class ChampionshipDetailPage implements OnInit {
     }
   }
   // ng
-
   getGame(teamId: string, gameId: string) {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => {
+        this.setMap();
         this.user = user;
-        if (!user) {
-          console.log("No user found");
-          throw new Error("User not found");
-        }
+        if (!user) throw new Error("User not found");
       }),
       switchMap(() => this.championshipService.getTeamGameRef(teamId, gameId)),
       switchMap((game) => {
         if (!game) return of(null);
-        // Get both attendees and team members in parallel
-        return combineLatest([
-          this.championshipService.getTeamGameAttendeesRef(teamId, gameId),
-          this.fbService.getTeamMemberRefs(teamId)
-      ]).pipe(
-        /*return this.championshipService
-          .getTeamGameAttendeesRef(teamId, gameId)
-          .pipe(
-            switchMap((attendees) => {*/
-              switchMap(([attendees, teamMembers]) => {
-              if (attendees.length === 0) {
-                // If no attendees, return event data immediately
-                return of({
-                  ...game,
-                  attendees: [],
-                  attendeeListTrue: [],
-                  attendeeListFalse: [],
-                  status: null,
-                });
-              }
-              const attendeeProfiles$ = attendees.map((attendee) =>
-                this.userProfileService.getUserProfileById(attendee.id).pipe(
-                  take(1),
-                  map((profile) => ({ ...profile, ...attendee })), // Combine attendee object with profile
-                  catchError(() =>
-                    of({
-                      ...attendee,
-                      firstName: "Unknown",
-                      lastName: "Unknown",
-                    })
-                  )
-                )
-              );
-              // Fetch profiles for all club members
-              const teamMemberProfiles$ = teamMembers.map(member =>
-                this.userProfileService.getUserProfileById(member.id).pipe(
-                    take(1),
-                    catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
-                )
-            );
-              //return forkJoin(attendeeProfiles$).pipe(
-                //map((attendeesWithDetails) => {
-              return combineLatest([forkJoin(attendeeProfiles$), forkJoin(teamMemberProfiles$)]).pipe(
-                map(([attendeesWithDetails, teamMembersWithDetails]) => {
-                  // Find the attendee that matches the current user's ID
-                  const userAttendee = attendeesWithDetails.find(
-                    (att) => att.id === this.user.uid
-                  );
 
-                  // If userAttendee is undefined, status will default to null
-                  const status = userAttendee ? userAttendee.status : null;
-
-                  // Determine members who have not responded
-                  const respondedIds = new Set(attendeesWithDetails.map(att => att.id));
-                  const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id));
-
-                  return {
-                    ...game,
-                    attendees: attendeesWithDetails,
-                    attendeeListTrue: attendeesWithDetails.filter(
-                      (e) => e.status === true
-                    ),
-                    attendeeListFalse: attendeesWithDetails.filter(
-                      (e) => e.status === false
-                    ),
-                    unrespondedMembers: unrespondedMembers,
-                    status: status, // use the variable set above
-                  };
+        // Fetch all team members first
+        return this.fbService.getTeamMemberRefs(teamId).pipe(
+          switchMap(teamMembers => {
+            const teamMemberProfiles$ = teamMembers.map(member =>
+              this.userProfileService.getUserProfileById(member.id).pipe(
+                take(1),
+                catchError(err => {
+                  console.log(`Failed to fetch profile for team member ${member.id}:`, err);
+                  return of({ ...member, firstName: "Unknown", lastName: "Unknown", status: null });
                 })
-              );
-            }),
-            catchError(() =>
-              of({
-                ...game,
-                attendees: [],
-                attendeeListTrue: [],
-                attendeeListFalse: [],
-                unrespondedMembers: [],
-                status: null,
-              })
-            )
-          );
+              )
+            );
+            // Fetch all attendees next
+            return forkJoin(teamMemberProfiles$).pipe(
+              switchMap(teamMembersWithDetails => {
+                // Fetch all game attendees next
+                return this.championshipService.getTeamGameAttendeesRef(teamId, gameId).pipe(
+                  map(attendees => {
+                    const attendeeDetails = attendees.map(attendee => {
+                      const detail = teamMembersWithDetails.find(member => member.id === attendee.id);
+                      return detail ? { ...detail, status: attendee.status } : null;
+                    }).filter(item => item !== null);
+
+                    const attendeeListTrue = attendeeDetails.filter(att => att.status === true);
+                    const attendeeListFalse = attendeeDetails.filter(att => att.status === false);
+                    const respondedIds = new Set(attendeeDetails.map(att => att.id));
+                    const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id));
+
+                    const userAttendee = attendeeDetails.find(att => att.id === this.user.uid);
+                    const status = userAttendee ? userAttendee.status : null;
+
+                    return {
+                      ...game,
+                      attendees: attendeeDetails,
+                      attendeeListTrue,
+                      attendeeListFalse,
+                      unrespondedMembers,
+                      status,
+                    };
+                  }),
+                  catchError(err => {
+                    console.error("Error fetching attendees:", err);
+                    return of({
+                      ...game,
+                      attendees: [],
+                      attendeeListTrue: [],
+                      attendeeListFalse: [],
+                      unrespondedMembers: teamMembers,
+                      status: null
+                    });
+                  })
+                );
+              }),
+            );
+          }),
+          catchError(err => {
+            console.error("Error fetching team members:", err);
+            return of({
+              ...game,
+              attendees: [],
+              attendeeListTrue: [],
+              attendeeListFalse: [],
+              unrespondedMembers: [],
+              status: null
+            });
+          })
+        );
       }),
-      catchError((err) => {
-        console.error("Error in getTrainingWithAttendees:", err);
+      catchError(err => {
+        console.error("Error in getGameWithAttendees:", err);
         return of(null);
       })
     );
@@ -378,3 +361,4 @@ export class ChampionshipDetailPage implements OnInit {
     }
   }
 }
+

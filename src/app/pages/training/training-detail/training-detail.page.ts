@@ -7,6 +7,7 @@ import {
   Observable,
   catchError,
   combineLatest,
+  defaultIfEmpty,
   forkJoin,
   lastValueFrom,
   map,
@@ -61,69 +62,84 @@ export class TrainingDetailPage implements OnInit {
     this.exerciseList$ = this.exerciseService.getTeamTrainingExerciseRefs(this.training.teamId, this.training.id);
   }
 
-  getTraining(teamId: string, trainingId: string) {
+
+ getTraining(teamId: string, trainingId: string) {
     return this.authService.getUser$().pipe(
         take(1),
         tap((user) => {
             this.user = user;
             if (!user) throw new Error("User not found");
         }),
-        switchMap(() =>
-            this.trainingService.getTeamTrainingRef(teamId, trainingId)
-        ),
+        switchMap(() => this.trainingService.getTeamTrainingRef(teamId, trainingId)),
         switchMap((training) => {
             if (!training) return of(null);
 
-            // Get both attendees and team members in parallel
-            return combineLatest([
-                this.trainingService.getTeamTrainingsAttendeesRef(teamId, trainingId),
-                this.fbService.getTeamMemberRefs(teamId)
-            ]).pipe(
-                switchMap(([attendees, teamMembers]) => {
-                    const attendeeProfiles$ = attendees.map(attendee =>
-                        this.userProfileService.getUserProfileById(attendee.id).pipe(
-                            take(1),
-                            map(profile => ({ ...profile, ...attendee })),
-                            catchError(() => of({ ...attendee, firstName: "Unknown", lastName: "Unknown", status: null }))
-                        )
-                    );
-
-                    // Fetch profiles for all team members
+            // Fetch all team members first
+            return this.fbService.getTeamMemberRefs(teamId).pipe(
+                switchMap(teamMembers => {
                     const teamMemberProfiles$ = teamMembers.map(member =>
                         this.userProfileService.getUserProfileById(member.id).pipe(
                             take(1),
-                            catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
+                            catchError(err => {
+                                console.log(`Failed to fetch profile for team member ${member.id}:`, err);
+                                return of({ ...member, firstName: "Unknown", lastName: "Unknown", status: null });
+                            })
                         )
                     );
 
-                    return combineLatest([forkJoin(attendeeProfiles$), forkJoin(teamMemberProfiles$)]).pipe(
-                        map(([attendeesWithDetails, teamMembersWithDetails]) => {
-                            const userAttendee = attendeesWithDetails.find(att => att.id === this.user.uid);
-                            const status = userAttendee ? userAttendee.status : null;
+                    // Fetch all attendees next
+                    return forkJoin(teamMemberProfiles$).pipe(
+                        switchMap(teamMembersWithDetails => {
+                            return this.trainingService.getTeamTrainingsAttendeesRef(teamId, trainingId).pipe(
+                                map(attendees => {
+                                    const attendeeDetails = attendees.map(attendee => {
+                                        const detail = teamMembersWithDetails.find(member => member.id === attendee.id);
+                                        return detail ? { ...detail, status: attendee.status } : null;
+                                    }).filter(item => item !== null);
 
-                            // Determine members who have not responded
-                            const respondedIds = new Set(attendeesWithDetails.map(att => att.id));
-                            const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id));
+                                    const attendeeListTrue = attendeeDetails.filter(att => att.status === true);
+                                    const attendeeListFalse = attendeeDetails.filter(att => att.status === false);
+                                    const respondedIds = new Set(attendeeDetails.map(att => att.id));
+                                    const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id));
 
-                            return {
-                                ...training,
-                                attendees: attendeesWithDetails,
-                                attendeeListTrue: attendeesWithDetails.filter(e => e.status === true),
-                                attendeeListFalse: attendeesWithDetails.filter(e => e.status === false),
-                                unrespondedMembers: unrespondedMembers,
-                                status: status,
-                            };
+                                    const userAttendee = attendeeDetails.find(att => att.id === this.user.uid);
+                                    const status = userAttendee ? userAttendee.status : null;
+
+                                    return {
+                                        ...training,
+                                        attendees: attendeeDetails,
+                                        attendeeListTrue,
+                                        attendeeListFalse,
+                                        unrespondedMembers,
+                                        status,
+                                    };
+                                }),
+                                catchError(err => {
+                                    console.error("Error fetching attendees:", err);
+                                    return of({
+                                        ...training,
+                                        attendees: [],
+                                        attendeeListTrue: [],
+                                        attendeeListFalse: [],
+                                        unrespondedMembers: teamMembersWithDetails,
+                                        status: null
+                                    });
+                                })
+                            );
                         })
                     );
                 }),
-                catchError(() => of({
-                    ...training,
-                    attendees: [],
-                    attendeeListTrue: [],
-                    attendeeListFalse: [],
-                    unrespondedMembers: [],
-                    status: null
-                }))
+                catchError(err => {
+                    console.error("Error fetching team members:", err);
+                    return of({
+                        ...training,
+                        attendees: [],
+                        attendeeListTrue: [],
+                        attendeeListFalse: [],
+                        unrespondedMembers: [],
+                        status: null
+                    });
+                })
             );
         }),
         catchError(err => {
@@ -132,6 +148,7 @@ export class TrainingDetailPage implements OnInit {
         })
     );
 }
+
 
   async toggle(status: boolean, training: Training) {
     console.log(
@@ -147,7 +164,7 @@ export class TrainingDetailPage implements OnInit {
 
   async presentToast() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("success__saved")),
+      message: await lastValueFrom(this.translate.get("common.success__saved")),
       color: "primary",
       duration: 2000,
       position: "top",
@@ -199,4 +216,5 @@ export class TrainingDetailPage implements OnInit {
     return await this.modalCtrl.dismiss(this.training, "confirm");
   }
 }
+
 
