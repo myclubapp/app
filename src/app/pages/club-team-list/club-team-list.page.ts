@@ -15,6 +15,7 @@ import { Club } from 'src/app/models/club';
 })
 export class ClubTeamListPage implements OnInit {
   @Input("clubId") clubId: any;
+  
   teamList$: Observable<Team[]>;
 
   clubAdminList$: Observable<Club[]>;

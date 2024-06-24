@@ -74,6 +74,7 @@ export class EventAddPage implements OnInit {
       status: true,
       attendees: [],
       countAttendees: 0,
+      countNeeded: 0,
     };
   }
 

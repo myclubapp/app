@@ -32,9 +32,10 @@ import { ClubMemberListPage } from "../club-member-list/club-member-list.page";
 import { ClubAdminListPage } from "../club-admin-list/club-admin-list.page";
 import { TeamListPage } from "../team-list/team-list.page";
 import { ClubTeamListPage } from "../club-team-list/club-team-list.page";
-import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
 import { ClubRequestListPage } from "../club-request-list/club-request-list.page";
 import { Timestamp } from "firebase/firestore";
+import { HelferPunkteClubPage } from "../helfer/helfer-punkte-club/helfer-punkte-club.page";
+import { Club } from "src/app/models/club";
 
 @Component({
   selector: "app-club",
@@ -50,6 +51,8 @@ export class ClubPage implements OnInit {
   user$: Observable<User>;
   user: User;
 
+  clubAdminList$: Observable<Club[]>;
+  
 // alertTeamSelection = [];
 
   allowEdit: boolean = false;
@@ -71,6 +74,8 @@ export class ClubPage implements OnInit {
 
     this.club$ = of(this.club);
     this.club$ = this.getClub(this.club.id);
+    
+    this.clubAdminList$ = this.fbService.getClubAdminList();
   }
 
   ngOnDestroy() {
@@ -84,6 +89,10 @@ export class ClubPage implements OnInit {
     } else {
       this.allowEdit = true;
     }
+  }
+
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
   }
 
   getClub(clubId: string) {
@@ -276,10 +285,11 @@ async openAdminList(){
     }
   }*/
 
-  async openHelferPunkte(){
-    console.log("open HelferPunkte List");
+
+  async openHelferPunkteClub(){
+    console.log("open HelferPunkte CLUB");
     const modal = await this.modalCtrl.create({
-      component: HelferPunktePage,
+      component: HelferPunkteClubPage,
       presentingElement: await this.modalCtrl.getTop(),
       canDismiss: true,
       showBackdrop: true,

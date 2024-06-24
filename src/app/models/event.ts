@@ -27,6 +27,7 @@ export interface Veranstaltung {
   // Business Logic Fields
   status: boolean;
   attendees: any;
+  countNeeded: number;
   countAttendees: number;
 }
 export interface HelferEvent extends Veranstaltung {
@@ -40,5 +41,5 @@ export interface Schicht {
   timeFrom: any;
   timeTo: any;
   countNeeded: number;
-  count: number;
+  countAttendees: number;
 }

@@ -7,6 +7,7 @@ import { IonicModule } from "@ionic/angular";
 import { HelferPunktePageRoutingModule } from "./helfer-punkte-routing.module";
 
 import { HelferPunktePage } from "./helfer-punkte.page";
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import { HelferPunktePage } from "./helfer-punkte.page";
     FormsModule,
     IonicModule,
     HelferPunktePageRoutingModule,
+    TranslateModule
   ],
   declarations: [HelferPunktePage],
 })
-export class HelferPunktePageModule {}
+export class HelferPunktePageModule { }

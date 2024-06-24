@@ -56,6 +56,7 @@ import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.pa
 import { ClubRequestListPage } from "./pages/club-request-list/club-request-list.page";
 import { TeamCreatePage } from "./pages/team/team-create/team-create.page";
 import { of, switchMap, take } from "rxjs";
+import { HelferPunkteClubPage } from "./pages/helfer/helfer-punkte-club/helfer-punkte-club.page";
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
@@ -88,8 +89,10 @@ export function appInitializerFactory(translateService: TranslateService, inject
     MemberPage,
 
     HelferPunktePage,
+    HelferPunkteClubPage,
     HelferDetailPage,
     HelferAddPage,
+
     // ChampionshipDetailPage,
     TrainingExercisesPage,
     TrainingDetailPage,

@@ -82,9 +82,7 @@
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
           </ion-label>
-
-            <ion-badge slot="end" color="primary">{{event.countAttendees}}</ion-badge>
-
+            <ion-badge *ngIf="event.schichten.length>0" slot="end" color="primary">{{event.countAttendees}} / {{event.countNeeded}}</ion-badge>
         </ion-item>
 
         <!--<ion-item-options side="start">

@@ -258,6 +258,7 @@ export class FirebaseService {
   }
 
   getClubMemberRefs(clubId: string): Observable<Profile[]> {
+    console.log(clubId);
     const clubMemberRefList = collection(
       this.firestore,
       `club/${clubId}/members`

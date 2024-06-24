@@ -82,7 +82,8 @@ export class EventsPage implements OnInit {
           clubName: "",
           status: false,
           attendees: undefined,
-          countAttendees: 0
+          countAttendees: 0,
+          countNeeded: 0,
         };
         this.openEventDetailModal(clubEvent, true);
       } else {
@@ -112,14 +113,14 @@ export class EventsPage implements OnInit {
       mergeMap((clubs) => {
         if (clubs.length === 0) return of([]);
         return combineLatest(
-          clubs.map((team) =>
-            this.eventService.getClubEventsRef(team.id).pipe(
+          clubs.map((club) =>
+            this.eventService.getClubEventsRef(club.id).pipe(
               switchMap((clubEvents) => {
                 if (clubEvents.length === 0) return of([]);
                 return combineLatest(
                   clubEvents.map((game) =>
                     this.eventService
-                      .getClubEventAttendeesRef(team.id, game.id)
+                      .getClubEventAttendeesRef(club.id, game.id)
                       .pipe(
                         map((attendees) => {
                           const userAttendee = attendees.find(
@@ -135,7 +136,7 @@ export class EventsPage implements OnInit {
                             countAttendees: attendees.filter(
                               (att) => att.status == true
                             ).length,
-                            teamId: team.id,
+                            clubId: club.id,
                           };
                         }),
                         catchError(() =>
@@ -144,7 +145,7 @@ export class EventsPage implements OnInit {
                             attendees: [],
                             status: null,
                             countAttendees: 0,
-                            teamId: team.id,
+                            clubId: club.id,
                           })
                         ) // If error, return game with empty attendees
                       )

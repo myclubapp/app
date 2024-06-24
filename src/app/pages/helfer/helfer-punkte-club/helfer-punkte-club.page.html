@@ -1,0 +1,41 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ "common.helper_points" | translate}}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<!-- class="ion-padding" -->
+
+<ion-content>
+
+
+  <ng-container *ngIf="helferPunkteList$ | async as helferPunkteList">
+    <ion-list>
+      <ng-container *ngFor="let memberPunkte of helferPunkteList">
+        <ion-item >
+          <ion-label>{{memberPunkte.profile.firstName}} {{memberPunkte.profile.lastName}}</ion-label>
+          <ion-badge color="primary" slot="end">{{memberPunkte.totalPoints}}</ion-badge>
+        </ion-item>
+        <ion-list>
+          <ion-item *ngFor="let helferPunkt of memberPunkte.helferPunkte" detail="true" (click)="openHelferEvent(helferPunkt)">
+            <ion-label>
+              <h3>
+                {{helferPunkt.name}} - {{helferPunkt.schichtName}} 
+              </h3>
+            </ion-label>
+            <ion-badge color="medium" slot="end">{{helferPunkt.points}}</ion-badge>
+          </ion-item>
+    
+    
+        </ion-list>
+  
+      </ng-container>
+    
+
+    </ion-list>
+
+  </ng-container>
+  
+</ion-content>

@@ -64,6 +64,7 @@ export class HelferAddPage implements OnInit {
       status: true,
       attendees: [],
       countAttendees: 0,
+      countNeeded: 0,
     };
   }
 
