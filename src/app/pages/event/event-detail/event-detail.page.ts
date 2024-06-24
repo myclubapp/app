@@ -20,6 +20,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { EventService } from "src/app/services/firebase/event.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { MemberPage } from "../../member/member.page";
+import { FirebaseService } from "src/app/services/firebase.service";
 
 @Component({
   selector: "app-event-detail",
@@ -42,6 +43,7 @@ export class EventDetailPage implements OnInit {
     public navParams: NavParams,
     private readonly userProfileService: UserProfileService,
     private readonly eventService: EventService,
+    private readonly fbService: FirebaseService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
     private translate: TranslateService
@@ -59,73 +61,87 @@ export class EventDetailPage implements OnInit {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => {
-        this.user = user;
-        if (!user) throw new Error("User not found");
+          this.user = user;
+          if (!user) throw new Error("User not found");
       }),
       switchMap(() => this.eventService.getClubEventRef(clubId, eventId)),
       switchMap((event) => {
         if (!event) return of(null);
-        return this.eventService.getClubEventAttendeesRef(clubId, eventId).pipe(
-          switchMap((attendees) => {
-            if (attendees.length === 0) {
-              // If no attendees, return event data immediately
-              return of({
-                ...event,
-                attendees: [],
-                attendeeListTrue: [],
-                attendeeListFalse: [],
-                status: null,
-              });
-            }
-            const attendeeProfiles$ = attendees.map((attendee) =>
-              this.userProfileService.getUserProfileById(attendee.id).pipe(
-                take(1),
-                map((profile) => ({ ...profile, ...attendee })), // Combine attendee object with profile
-                catchError(() =>
-                  of({ ...attendee, firstName: "Unknown", lastName: "Unknown" })
-                )
-              )
-            );
-            return forkJoin(attendeeProfiles$).pipe(
 
-              map((attendeesWithDetails) => {
-                // Find the attendee that matches the current user's ID
-                const userAttendee = attendeesWithDetails.find(
-                  (att) => att.id === this.user.uid
+        // Fetch all club members first
+        return this.fbService.getClubMemberRefs(clubId).pipe(
+            switchMap(clubMembers => {
+                const clubMemberProfiles$ = clubMembers.map(member =>
+                    this.userProfileService.getUserProfileById(member.id).pipe(
+                        take(1),
+                        catchError(err => {
+                            console.log(`Failed to fetch profile for club member ${member.id}:`, err);
+                            return of({ id: member.id, firstName: "Unknown", lastName: "Unknown", status: null });
+                        })
+                    )
                 );
 
-                // If userAttendee is undefined, status will default to null
-                const status = userAttendee ? userAttendee.status : null;
+                // Fetch all attendees next
+                return forkJoin(clubMemberProfiles$).pipe(
+                    switchMap(clubMembersWithDetails => {
+                        return this.eventService.getClubEventAttendeesRef(clubId, eventId).pipe(
+                            map(attendees => {
+                                const attendeeDetails = attendees.map(attendee => {
+                                    const detail = clubMembersWithDetails.find(member => member && member.id === attendee.id);
+                                    return detail ? { ...detail, status: attendee.status } : null;
+                                }).filter(item => item !== null);
 
-                return {
-                  ...event,
-                  attendees: attendeesWithDetails,
-                  attendeeListTrue: attendeesWithDetails.filter(
-                    (e) => e.status === true
-                  ),
-                  attendeeListFalse: attendeesWithDetails.filter(
-                    (e) => e.status === false
-                  ),
-                  status: status, // use the variable set above
-                };
-              })
-            );
-          }),
-          catchError(() =>
-            of({
-              ...event,
-              attendees: [],
-              status: null,
+                                const attendeeListTrue = attendeeDetails.filter(att => att && att.status === true);
+                                const attendeeListFalse = attendeeDetails.filter(att => att && att.status === false);
+                                const respondedIds = new Set(attendeeDetails.map(att => att.id));
+                                const unrespondedMembers = clubMembersWithDetails.filter(member => member && !respondedIds.has(member.id));
+
+                                const userAttendee = attendeeDetails.find(att => att && att.id === this.user.uid);
+                                const status = userAttendee ? userAttendee.status : null;
+                                console.log(status)
+                                return {
+                                    ...event,
+                                    attendees: attendeeDetails,
+                                    attendeeListTrue,
+                                    attendeeListFalse,
+                                    unrespondedMembers,
+                                    status,
+                                };
+                            }),
+                            catchError(err => {
+                                console.error("Error fetching attendees:", err);
+                                return of({
+                                    ...event,
+                                    attendees: [],
+                                    attendeeListTrue: [],
+                                    attendeeListFalse: [],
+                                    unrespondedMembers: clubMembersWithDetails.filter(member => member !== null),
+                                    status: null
+                                });
+                            })
+                        );
+                    })
+                );
+            }),
+            catchError(err => {
+                console.error("Error fetching club members:", err);
+                return of({
+                    ...event,
+                    attendees: [],
+                    attendeeListTrue: [],
+                    attendeeListFalse: [],
+                    unrespondedMembers: [],
+                    status: null
+                });
             })
-          )
         );
-      }),
-      catchError((err) => {
-        console.error("Error in getEventWithAttendees:", err);
+    }),
+    catchError(err => {
+        console.error("Error in getHelferEventWithAttendees:", err);
         return of(null);
-      })
-    );
-  }
+    })
+);
+}
   async openMember(member: Profile) {
     console.log("openMember");
     const modal = await this.modalCtrl.create({

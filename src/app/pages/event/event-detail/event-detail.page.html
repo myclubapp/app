@@ -141,6 +141,30 @@
             </ion-list>
           </div>
         </ion-accordion>
+        <ion-accordion value="null">
+          <ion-item slot="header" color="light">
+            <ion-label
+              >{{"common.noreply" | translate}}:
+              {{event['unrespondedMembers'].length}}</ion-label
+            >
+          </ion-item>
+          <div slot="content">
+            <!-- class="ion-padding"-->
+            <ion-list>
+              <ion-item
+                *ngFor="let member of event['unrespondedMembers']"
+                detail="true"
+              >
+                <ion-icon color="warning" slot="start" name="help-circle">
+                </ion-icon>
+
+                <ion-label (click)="openMember(member)"
+                  >{{member.firstName}} {{member.lastName}}</ion-label
+                >
+              </ion-item>
+            </ion-list>
+          </div>
+        </ion-accordion>
       </ion-accordion-group>
     </ion-list>
   </ion-content>

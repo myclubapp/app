@@ -44,9 +44,9 @@ export class EventService {
       where(
         "date",
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 12 * 1))
       )
-    ); // heute - 1 Tag
+    ); // StartDatum der Veranstaltung - 12h
     return collectionData(q, {
       idField: "id",
     }) as unknown as Observable<Veranstaltung[]>;
@@ -58,10 +58,10 @@ export class EventService {
       where(
         "date",
         "<",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now()))
       ),
       limit(20)
-    ); // heute - 1 Tag
+    ); // heute - 1 Tag = gestern
 
     return collectionData(q, {
       idField: "id",
@@ -123,9 +123,9 @@ export class EventService {
       where(
         "date",
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 12 * 1))
       )
-    ); // heute - 1 Tag
+    ); // StartDatum der Veranstaltung - 12h
     return collectionData(q, {
       idField: "id",
     }) as unknown as Observable<HelferEvent[]>;
@@ -140,7 +140,7 @@ export class EventService {
       where(
         "date",
         "<",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now()))
       ),
       limit(20)
     ); // heute - 1 Tag
@@ -221,7 +221,8 @@ export class EventService {
     clubId: string,
     eventId: string,
     schichtId: string,
-    userId: string
+    userId: string,
+    points: number,
   ) {
     const user = this.authService.auth.currentUser;
     const userRef = doc(this.firestore, `userProfile/${user.uid}`);
@@ -231,7 +232,7 @@ export class EventService {
     );
     return setDoc(
       statusRef,
-      { confirmed: true, date: new Date(), confirmedBy: userRef },
+      { confirmed: true, date: new Date(), confirmedBy: userRef, points: points },
       { merge: true }
     );
   }
@@ -253,7 +254,7 @@ export class EventService {
     const user = this.authService.auth.currentUser;
     console.log("Helferevent");
     console.log(event);
-    const newHelferevent = await addDoc(
+    return addDoc(
       collection(this.firestore, `userProfile/${user.uid}/helferEvents`),
       event
     );

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
-import { AlertController, ModalController, NavParams } from "@ionic/angular";
+import { AlertController, ModalController, NavParams, ToastController } from "@ionic/angular";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import { Observable, Subscription } from "rxjs";
@@ -25,6 +25,9 @@ export class HelferAddPage implements OnInit {
   constructor(
     private readonly modalCtrl: ModalController,
     private eventService: EventService,
+
+    private readonly toastController: ToastController,
+
     private cdr: ChangeDetectorRef,
     private readonly authService: AuthService,
     private fbService: FirebaseService,
@@ -68,14 +71,14 @@ export class HelferAddPage implements OnInit {
     this.eventCopy = this.navParams.get("data");
     if (this.eventCopy.id) {
       this.event = this.eventCopy;
-      console.log( this.event);
-      
+      console.log(this.event);
+
 
       // TODO READ SCHICHTEN, if available
 
     }
 
-    if (!this.event.schichten){
+    if (!this.event.schichten) {
       this.event.schichten = <any>[];
     }
 
@@ -291,10 +294,28 @@ export class HelferAddPage implements OnInit {
 
     delete this.event.attendees;
 
-    this.eventService.setCreateHelferEvent(this.event);
-    return this.modalCtrl.dismiss({}, "confirm");
-  }
+    const helferEvent = await this.eventService.setCreateHelferEvent(this.event).catch(e => {
+      console.log(e.message);
+      this.toastActionError(e);
+    })
+    if (helferEvent) {
+      console.log(helferEvent.id);
+      return this.modalCtrl.dismiss({}, "confirm");
+    } else {
 
+    }
+
+  }
+  async toastActionError(error) {
+    const toast = await this.toastController.create({
+      message: error.message,
+      duration: 2000,
+      position: "bottom",
+      color: "danger",
+    });
+
+    await toast.present();
+  }
   changeTimeFrom(ev) {
     console.log(ev.detail.value);
     if (this.event.timeFrom > this.event.timeTo) {

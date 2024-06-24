@@ -138,7 +138,6 @@ export class ChampionshipDetailPage implements OnInit {
             // Fetch all attendees next
             return forkJoin(teamMemberProfiles$).pipe(
               switchMap(teamMembersWithDetails => {
-                // Fetch all game attendees next
                 return this.championshipService.getTeamGameAttendeesRef(teamId, gameId).pipe(
                   map(attendees => {
                     const attendeeDetails = attendees.map(attendee => {
@@ -170,7 +169,7 @@ export class ChampionshipDetailPage implements OnInit {
                       attendees: [],
                       attendeeListTrue: [],
                       attendeeListFalse: [],
-                      unrespondedMembers: teamMembers,
+                      unrespondedMembers: teamMembersWithDetails.filter(member => member !== null),
                       status: null
                     });
                   })

@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface Team {
   id: string
   name: string
@@ -6,6 +8,7 @@ export interface Team {
   portrait: string
   liga: string
   type: string
+  updated: Timestamp;
 }
 export interface SwissUnihockeyTeam extends Team {}
 

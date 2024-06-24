@@ -66,15 +66,14 @@ export class HelferDetailPage implements OnInit {
 
   async ngOnInit() {
     this.event = await this.navParams.get("data");
-    console.log("data here:   " + this.event);
+    console.log("data here:   " + JSON.stringify(this.event));
     this.event$ = of(this.event);
+
+    // GET HELFEREVENT && BASIC ATTENDEE
     this.event$ = this.getHelferEvent(this.event.clubId, this.event.id);
 
-
-    this.schichten$ = this.getHelferEventSchichtenWithAttendees(
-      this.event.clubId,
-      this.event.id
-    );
+    // GET SCHICHTEN
+    this.schichten$ = this.getHelferEventSchichtenWithAttendees(this.event.clubId, this.event.id);
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
@@ -89,170 +88,170 @@ export class HelferDetailPage implements OnInit {
       take(1),
       tap((user) => {
         this.user = user;
-        if (!user) {
-          console.log("No user found");
-          throw new Error("User not found");
-        }
+        if (!user) throw new Error("User not found");
       }),
       switchMap(() => this.eventService.getClubHelferEventRef(clubId, eventId)),
       switchMap((event) => {
         if (!event) return of(null);
-        return this.eventService
-          .getClubHelferEventAttendeesRef(clubId, eventId)
-          .pipe(
-            switchMap((attendees) => {
-              if (attendees.length === 0) {
-                // If no attendees, return event data immediately
-                return of({
-                  ...event,
-                  attendees: [],
-                  attendeeListTrue: [],
-                  attendeeListFalse: [],
-                  status: null,
-                });
-              }
-              const attendeeProfiles$ = attendees.map((attendee) =>
-                this.userProfileService.getUserProfileById(attendee.id).pipe(
-                  take(1),
-                  map((profile) => ({ ...profile, ...attendee })), // Combine attendee object with profile
-                  catchError(() =>
-                    of({
-                      ...attendee,
-                      firstName: "Unknown",
-                      lastName: "Unknown",
-                    })
-                  )
-                )
-              );
-              return forkJoin(attendeeProfiles$).pipe(
 
-                map((attendeesWithDetails) => ({
-                  ...event,
-                  attendees: attendeesWithDetails,
-                  attendeeListTrue: attendeesWithDetails.filter(
-                    (e) => e.status == true
-                  ),
-                  attendeeListFalse: attendeesWithDetails.filter(
-                    (e) => e.status == false
-                  ),
-                  status: attendeesWithDetails.find(
-                    (att) => att.id == this.user.uid
-                  )?.status,
+        // Fetch all club members first
+        return this.fbService.getClubMemberRefs(clubId).pipe(
+          switchMap(clubMembers => {
+            const clubMemberProfiles$ = clubMembers.map(member =>
+              this.userProfileService.getUserProfileById(member.id).pipe(
+                take(1),
+                catchError(err => {
+                  console.log(`Failed to fetch profile for club member ${member.id}:`, err);
+                  return of({ id: member.id, firstName: "Unknown", lastName: "Unknown", status: null });
+                })
+              )
+            );
 
-                }))
-              );
-            }),
-            catchError(() =>
-              of({
-                ...event,
-                attendees: [],
-                status: null,
+            // Fetch all attendees next
+            return forkJoin(clubMemberProfiles$).pipe(
+              switchMap(clubMembersWithDetails => {
+                return this.eventService.getClubHelferEventAttendeesRef(clubId, eventId).pipe(
+                  map(attendees => {
+                    const attendeeDetails = attendees.map(attendee => {
+                      const detail = clubMembersWithDetails.find(member => member && member.id === attendee.id);
+                      return detail ? { ...detail, status: attendee.status } : null;
+                    }).filter(item => item !== null);
 
+                    const attendeeListTrue = attendeeDetails.filter(att => att && att.status === true);
+                    const attendeeListFalse = attendeeDetails.filter(att => att && att.status === false);
+                    const respondedIds = new Set(attendeeDetails.map(att => att.id));
+                    const unrespondedMembers = clubMembersWithDetails.filter(member => member && !respondedIds.has(member.id));
+
+                    const userAttendee = attendeeDetails.find(att => att && att.id === this.user.uid);
+                    const status = userAttendee ? userAttendee.status : null;
+
+                    return {
+                      ...event,
+                      attendees: attendeeDetails,
+                      attendeeListTrue,
+                      attendeeListFalse,
+                      unrespondedMembers,
+                      status,
+                    };
+                  }),
+                  catchError(err => {
+                    console.error("Error fetching attendees:", err);
+                    return of({
+                      ...event,
+                      attendees: [],
+                      attendeeListTrue: [],
+                      attendeeListFalse: [],
+                      unrespondedMembers: clubMembersWithDetails.filter(member => member !== null),
+                      status: null
+                    });
+                  })
+                );
               })
-            )
-          );
+            );
+          }),
+          catchError(err => {
+            console.error("Error fetching club members:", err);
+            return of({
+              ...event,
+              attendees: [],
+              attendeeListTrue: [],
+              attendeeListFalse: [],
+              unrespondedMembers: [],
+              status: null
+            });
+          })
+        );
       }),
-      catchError((err) => {
-        console.error("Error in getTrainingWithAttendees:", err);
+      catchError(err => {
+        console.error("Error in getHelferEventWithAttendees:", err);
         return of(null);
       })
     );
   }
 
   getHelferEventSchichtenWithAttendees(clubId: string, eventId: string) {
-    return this.eventService
-      .getClubHelferEventSchichtenRef(clubId, eventId)
-      .pipe(
-        switchMap((schichten) => {
-          if (schichten.length === 0) {
-            return of([]); // Return an empty array if no schichten are found
-          }
-          // Sort schichten by ID in ascending order
-          const sortedSchichten = schichten.sort((a, b) =>
-            a.timeFrom.localeCompare(b.timeFrom)
-          );
-          console.log(schichten);
-          console.log(sortedSchichten);
-          // Fetch attendees for each schicht
-          const schichtenWithAttendees$ = sortedSchichten.map((schicht) =>
-            this.eventService
-              .getClubHelferEventSchichtAttendeesRef(
-                clubId,
-                eventId,
-                schicht.id
+    return this.eventService.getClubHelferEventSchichtenRef(clubId, eventId).pipe(
+      switchMap((schichten) => {
+        if (schichten.length === 0) return of([]); // No schichten found
+        return this.fbService.getClubMemberRefs(clubId).pipe(
+          switchMap(clubMembers => {
+            const clubMemberProfiles$ = clubMembers.map(member =>
+              this.userProfileService.getUserProfileById(member.id).pipe(
+                take(1),
+                catchError(err => {
+                  console.error(`Failed to fetch profile for club member ${member.id}:`, err);
+                  return of({ id: member.id, firstName: "Unknown", lastName: "Unknown", status: null, confirmed: null });
+                })
               )
-              .pipe(
-                switchMap((attendees) => {
-                  console.log(attendees); // <- this line is never called
-                  if (attendees.length === 0) {
-                    return of({
-                      ...schicht,
-                      attendees: [],
-                      attendeeListTrue: [],
-                      attendeeListFalse: [],
-                      status: null,
-                      confirmed: null,
-                    }); // Return schicht with empty attendees array
-                  }
+            );
+            return forkJoin(clubMemberProfiles$).pipe(
+              switchMap(clubMembersWithDetails => {
+                const schichtenWithAttendees$ = schichten.map(schicht =>
+                  this.eventService.getClubHelferEventSchichtAttendeesRef(clubId, eventId, schicht.id).pipe(
+                    map(attendees => {
+                      const attendeeDetails = attendees.map(attendee => {
+                        const detail = clubMembersWithDetails.find(member => member && member.id === attendee.id);
+                        return detail ? { ...detail, status: attendee.status, confirmed: attendee.confirmed } : null;
+                      }).filter(item => item);  // Ensure nulls are removed
 
-                  // Fetch profiles for each attendee
-                  const attendeeProfiles$ = attendees.map((attendee) =>
-                    this.userProfileService
-                      .getUserProfileById(attendee.id)
-                      .pipe(
-                        take(1),
-                        map((profile) => ({
-                          ...profile,
-                          ...attendee,
-                        })), // Combine attendee object with profile
-                        catchError(() =>
-                          of({
-                            ...attendee,
-                            firstName: "Unknown",
-                            lastName: "Unknown",
-                          })
-                        ) // Fallback for unknown profiles
-                      )
-                  );
+                      const attendeeListTrue = attendeeDetails.filter(att => att.status === true);
+                      const attendeeListFalse = attendeeDetails.filter(att => att.status === false);
+                      const respondedIds = new Set(attendeeDetails.map(att => att.id));
+                      const unrespondedMembers = clubMembersWithDetails.filter(member => member && !respondedIds.has(member.id));
 
-                  return forkJoin(attendeeProfiles$).pipe(
-                    map((attendeesWithDetails) => ({
-                      ...schicht,
-                      attendees: attendeesWithDetails,
-                      attendeeListTrue: attendeesWithDetails.filter(
-                        (e) => e.status == true
-                      ),
-                      attendeeListFalse: attendeesWithDetails.filter(
-                        (e) => e.status == false
-                      ),
-                      status: attendeesWithDetails.find(
-                        (att) => att.id == this.user.uid
-                      )?.status  || null,
-                      confirmed: attendeesWithDetails.find(
-                        (att) => att.id == this.user.uid
-                      )?.confirmed,
-                    }))
-                  );
-                }),
-                catchError((err) => {
-                  console.log(err);
-                  return of({
-                    ...schicht,
-                    attendees: [],
-                    status: null,
-                    confirmed: null,
-                  });
-                }) // Fallback for error in fetching attendees
-              )
-          );
+                      // Find the user's attendee details to get the user's status
+                      const userAttendee = attendeeDetails.find(att => att.id === this.user.uid);
+                      const userStatus = userAttendee ? userAttendee.status : null;
+                      const userConfirmed = userAttendee ? userAttendee.confirmed : null;
 
-          return combineLatest(schichtenWithAttendees$);
-        }),
-        catchError((err) => {
-          console.error("Error in getHelferEventSchichtenWithAttendees:", err);
-          return of([]); // Return an empty array on error
-        })
-      );
+                      return {
+                        ...schicht,
+                        attendees: attendeeDetails,
+                        attendeeListTrue,
+                        attendeeListFalse,
+                        unrespondedMembers,
+                        status: userStatus,  // Status of the logged-in user as an attendee
+                        confirmed: userConfirmed
+                      };
+                    }),
+                    catchError(err => {
+                      console.error("Error fetching attendees for schicht:", err);
+                      return of({
+                        ...schicht,
+                        attendees: [],
+                        attendeeListTrue: [],
+                        attendeeListFalse: [],
+                        unrespondedMembers: clubMembersWithDetails,
+                        status: null,
+                        confirmed: null
+
+                      });
+                    })
+                  )
+                );
+                return combineLatest(schichtenWithAttendees$);
+              })
+            );
+          }),
+          catchError(err => {
+            console.error("Error fetching club members:", err);
+            return of(schichten.map(schicht => ({
+              ...schicht,
+              attendees: [],
+              attendeeListTrue: [],
+              attendeeListFalse: [],
+              unrespondedMembers: [],
+              status: null,
+              confirmed: null
+            })));
+          })
+        );
+      }),
+      catchError(err => {
+        console.error("Error in getHelferEventSchichtenWithAttendees:", err);
+        return of([]);
+      })
+    );
   }
 
   async confirmSchichten() {
@@ -272,6 +271,7 @@ export class HelferDetailPage implements OnInit {
                   value: {
                     memberId: member.id,
                     schichtId: schicht.id,
+                    points: schicht.points,
                     eventId: this.event.id,
                   },
                   label:
@@ -299,7 +299,7 @@ export class HelferDetailPage implements OnInit {
                     },
                   },
                   {
-                    text:  await lastValueFrom(this.translate.get("common.confirm")),
+                    text: await lastValueFrom(this.translate.get("common.confirm")),
                     handler: async (event) => {
                       // console.log(event);
 
@@ -310,7 +310,8 @@ export class HelferDetailPage implements OnInit {
                           this.event.clubId,
                           el.eventId,
                           el.schichtId,
-                          el.memberId
+                          el.memberId,
+                          el.points,
                         );
                       }
                     },
@@ -348,7 +349,8 @@ export class HelferDetailPage implements OnInit {
     );
     this.presentToast();
 
-    this.toggle(status, this.event);
+    // Set "global status" as well.. ? Doesn't make sense..
+    // this.toggle(status, this.event);
   }
 
   async openMember(member: Profile) {

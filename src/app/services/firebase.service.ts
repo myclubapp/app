@@ -176,8 +176,12 @@ export class FirebaseService {
     );
   }
 
-
-
+  addClubTeam(team, clubId){
+    return addDoc(
+      collection(this.firestore, `/club/${clubId}/teams/`),
+      team
+    );
+  }
   getTeamAdminList() {
     return this.authService.getUser$().pipe(
       take(1),

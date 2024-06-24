@@ -96,16 +96,16 @@
         </ion-input>
       </ion-item> -->
 
-      <ion-item  id="present-alert-email" detail="true">
+      <ion-item id="present-alert-email" detail="true">
         <ion-input labelPlacement="stacked" [label]='"profile.email" | translate' email
           attr.aria-label='{{"profile.email" | translate}}' readonly [(ngModel)]="userProfile.email"
           value="{{userProfile.email}}">
         </ion-input>
       </ion-item>
- 
+
       <ion-alert trigger="present-alert-email" [header]='"profile.change_email_header" | translate'
-      [message]='"profile.change_email_message" | translate'   [buttons]="alertButtonsEmail"
-        [inputs]="alertInputsEmail"></ion-alert>  
+        [message]='"profile.change_email_message" | translate' [buttons]="alertButtonsEmail"
+        [inputs]="alertInputsEmail"></ion-alert>
 
 
       <!--<ion-item (click)="changeAddress(userProfile)" detail="true">
@@ -122,8 +122,8 @@
         </ion-input>
       </ion-item>
       <ion-alert trigger="present-alert-address" [header]='"profile.change_address_header" | translate'
-      [message]='"profile.change_address_message" | translate'   [buttons]="alertButtonsAddress"
-        [inputs]="alertInputsAddress"></ion-alert>  
+        [message]='"profile.change_address_message" | translate' [buttons]="alertButtonsAddress"
+        [inputs]="alertInputsAddress"></ion-alert>
 
     </ion-list>
 
@@ -141,16 +141,16 @@
       </ion-item>
     </ion-list>
 
-    <!--<ion-list lines="full" [inset]="true">
+    <ion-list lines="full" [inset]="true">
       <ion-list-header>
         <ion-label> {{ "profile.diverses" | translate}} </ion-label>
       </ion-list-header>
 
-    <ion-item detail="true" (click)="openHelferPunkte()">
+      <ion-item detail="true" (click)="openHelferPunkte()">
         <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
-        <ion-label> Helferpunkte </ion-label>
+        <ion-label> {{ "common.helper_points" | translate}} </ion-label>
       </ion-item>
-    </ion-list>-->
+    </ion-list>
 
     <!--
     <ion-list *ngIf="clubRequestList.length > 0" lines="full" [inset]="true">
@@ -213,7 +213,8 @@
                 <ion-label>
                   {{"profile.push__message__activate" | translate}}
                 </ion-label>
-                <ion-note class="ion-text-wrap" *ngIf="userProfile.settingsPush" color="medium"> {{"profile.push__message__deactivate" |
+                <ion-note class="ion-text-wrap" *ngIf="userProfile.settingsPush" color="medium">
+                  {{"profile.push__message__deactivate" |
                   translate}}</ion-note>
 
               </ion-toggle>

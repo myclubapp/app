@@ -86,7 +86,6 @@ export class TrainingDetailPage implements OnInit {
                             })
                         )
                     );
-
                     // Fetch all attendees next
                     return forkJoin(teamMemberProfiles$).pipe(
                         switchMap(teamMembersWithDetails => {
@@ -121,7 +120,7 @@ export class TrainingDetailPage implements OnInit {
                                         attendees: [],
                                         attendeeListTrue: [],
                                         attendeeListFalse: [],
-                                        unrespondedMembers: teamMembersWithDetails,
+                                        unrespondedMembers: teamMembersWithDetails.filter(member => member !== null),
                                         status: null
                                     });
                                 })

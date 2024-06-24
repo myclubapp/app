@@ -79,12 +79,35 @@
       <ion-item detail="true" (click)="openTeamList()">
         <ion-icon name="people-outline" slot="start"></ion-icon>
         <ion-label> Teams </ion-label>
-        <ion-note slot="end">5</ion-note>
+        <ion-note slot="end"></ion-note>
       </ion-item>
-      <ion-item detail="true" (click)="openHelferPunkte()">
+      <!--<ion-item detail="true" (click)="openHelferPunkte()">
         <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
         <ion-label> Helferpunkte </ion-label>
+      </ion-item>-->
+    </ion-list>
+
+    <ion-list lines="full" [inset]="true">
+      <ion-list-header>
+        <ion-label> {{ "common.details" | translate}} </ion-label>
+      </ion-list-header>
+      <ion-item *ngIf="club.wordpress" >
+        <ion-icon name="logo-wordpress" slot="start"></ion-icon>
+        <ion-label> {{club.wordpress}} </ion-label>
       </ion-item>
+      <ion-item >
+        <ion-icon name="heart-circle-outline" slot="start"></ion-icon>
+        <ion-label> {{club.type}} </ion-label>
+      </ion-item>
+      <ion-item >
+        <ion-icon name="time" slot="start" color="medium"></ion-icon>
+        <ion-note> {{club.updated | date:'dd.MM.YYYY HH:mm'}} Uhr</ion-note>
+      </ion-item>
+
+      <!--<ion-item >
+        <ion-icon name="key" slot="start"></ion-icon>
+        <ion-label> {{club.apiKey}} </ion-label>
+      </ion-item>-->
     </ion-list>
 <!--
   <ion-list lines="full" [inset]="true">

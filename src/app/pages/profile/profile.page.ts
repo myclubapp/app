@@ -72,10 +72,6 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   public alertButtonsAddress = [];
   public alertInputsAddress= [];
 
-
-
-
-
   private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
   deviceId: DeviceId;

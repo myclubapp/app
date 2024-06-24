@@ -34,6 +34,7 @@ import { TeamListPage } from "../team-list/team-list.page";
 import { ClubTeamListPage } from "../club-team-list/club-team-list.page";
 import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
 import { ClubRequestListPage } from "../club-request-list/club-request-list.page";
+import { Timestamp } from "firebase/firestore";
 
 @Component({
   selector: "app-club",
@@ -49,7 +50,7 @@ export class ClubPage implements OnInit {
   user$: Observable<User>;
   user: User;
 
-  alertTeamSelection = [];
+// alertTeamSelection = [];
 
   allowEdit: boolean = false;
 
@@ -179,6 +180,7 @@ export class ClubPage implements OnInit {
 
             return {
               ...club,
+              updated: Timestamp.fromMillis(club.updated.seconds*1000).toDate().toISOString(),
               averageAge: averageAge.toFixed(1), // Keep two decimal places
               clubMembers,
               clubAdmins,

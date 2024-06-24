@@ -40,6 +40,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { MemberPage } from "../../member/member.page";
 import { TeamAdminListPage } from "../../team-admin-list/team-admin-list.page";
 import { TeamMemberListPage } from "../../team-member-list/team-member-list.page";
+import { Timestamp } from "firebase/firestore";
 
 @Component({
   selector: "app-team",
@@ -170,6 +171,7 @@ export class TeamPage implements OnInit {
                 : 0; // Calculate average or set to 0 if no valid ages
             return {
               ...team,
+              updated: Timestamp.fromMillis(team.updated.seconds*1000).toDate().toISOString(),
               averageAge: averageAge.toFixed(1), // Keep two decimal places
               teamMembers,
               teamAdmins,
