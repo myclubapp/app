@@ -55,7 +55,7 @@ export class ChampionshipService {
       where(
         "dateTime",
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)) // 2h lang das "alte Spiel" anzeigen
       ),
       orderBy('dateTime','asc')
     ); // heute - 1 Tag
@@ -73,7 +73,7 @@ export class ChampionshipService {
       where(
         "dateTime",
         "<",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now())) // sofort in "vergangen" anzeigen
       ),
       limit(20),
       orderBy('dateTime','desc')

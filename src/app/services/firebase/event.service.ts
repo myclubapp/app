@@ -44,7 +44,7 @@ export class EventService {
       where(
         "date",
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 12 * 1))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)) // 2h lang anzeigen lassen
       )
     ); // StartDatum der Veranstaltung - 12h
     return collectionData(q, {
@@ -58,7 +58,7 @@ export class EventService {
       where(
         "date",
         "<",
-        Timestamp.fromDate(new Date(Date.now()))
+        Timestamp.fromDate(new Date(Date.now())) // sofort als vergangen auflisten
       ),
       limit(20)
     ); // heute - 1 Tag = gestern
@@ -121,9 +121,9 @@ export class EventService {
     const q = query(
       eventsRefList,
       where(
-        "date",
+        "date", // muss auf Event End Date umgestellt werden.
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 12 * 1))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)) // 2h lang noch anzeigen
       )
     ); // StartDatum der Veranstaltung - 12h
     return collectionData(q, {
@@ -140,7 +140,7 @@ export class EventService {
       where(
         "date",
         "<",
-        Timestamp.fromDate(new Date(Date.now()))
+        Timestamp.fromDate(new Date(Date.now())) // sofort anzeigen
       ),
       limit(20)
     ); // heute - 1 Tag

@@ -80,11 +80,11 @@ export class TrainingService {
     const q = query(
       trainingsRefList,
       where(
-        "date",
+        "date", // date = endDate
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600  * 1)) // 1 Hour after training ends
       )
-    ); // heute - 1 Woche
+    );
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       Training[]
     >;
@@ -100,12 +100,12 @@ export class TrainingService {
     const q = query(
       trainingsRefList,
       where(
-        "date",
+        "date", //  date = endDate of training
         "<",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now())) // sofort als "vergangen" anzeigen
       ),
-      limit(20)
-    ); // heute - 1 Woche
+      limit(20) 
+    ); 
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       Training[]
     >;
