@@ -58,7 +58,7 @@ export class HelferService {
   }*/
 
   getUserHelferPunkteRefs(userId: any, clubId: string): Observable<any[]> {
-    console.log(userId, clubId)
+    // console.log(userId, clubId)
     const helferPunkteRefList = collection(
       this.firestore,
       `club/${clubId}/helferPunkte`

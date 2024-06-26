@@ -59,7 +59,7 @@ export class FirebaseService {
         if (!user) return of([]);
         return this.getUserClubRefs(user);
       }),
-      tap((clubs) => console.log("Clubs:", clubs)),
+      // tap((clubs) => console.log("Clubs:", clubs)),
       mergeMap((clubs) => {
         if (clubs.length === 0) return of([]);
         return combineLatest(
@@ -73,7 +73,7 @@ export class FirebaseService {
       map((clubsWithDetails) =>
         clubsWithDetails.filter((club) => club !== null)
       ), // Filter out null (error cases)
-      tap((results) => console.log("Final results with all clubs:", results)),
+      // tap((results) => console.log("Final results with all clubs:", results)),
       catchError((err) => {
         console.error("Error in getClubList:", err);
         return of([]); // Return an empty array on error
@@ -90,7 +90,7 @@ export class FirebaseService {
         if (!user) return of([]);
         return this.getUserClubAdminRefs(user);
       }),
-      tap((clubs) => console.log("Admin Clubs:", clubs)),
+      // tap((clubs) => console.log("Admin Clubs:", clubs)),
       mergeMap((clubs) => {
         if (clubs.length === 0) return of([]);
         return combineLatest(
@@ -104,7 +104,7 @@ export class FirebaseService {
       map((clubsWithDetails) =>
         clubsWithDetails.filter((club) => club !== null)
       ), // Filter out null (error cases)
-      tap((results) => console.log("Final results with all clubs:", results)),
+      // tap((results) => console.log("Final results with all clubs:", results)),
       catchError((err) => {
         console.error("Error in getClubList:", err);
         return of([]); // Return an empty array on error
@@ -122,7 +122,7 @@ export class FirebaseService {
         if (!user) return of([]);
         return this.getUserTeamRefs(user);
       }),
-      tap((teams) => console.log("Teams:", teams)),
+      // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         if (teams.length === 0) return of([]);
         return combineLatest(
@@ -136,7 +136,7 @@ export class FirebaseService {
       map((teamsWithDetails) =>
         teamsWithDetails.filter((team) => team !== null)
       ), // Filter out null (error cases)
-      tap((results) => console.log("Final results with all teams:", results)),
+      // tap((results) => console.log("Final results with all teams:", results)),
       catchError((err) => {
         console.error("Error in getTeamList:", err);
         return of([]); // Return an empty array on error
@@ -146,7 +146,7 @@ export class FirebaseService {
 
   getClubTeamList(clubId) {
     return this.getClubTeamsRef(clubId).pipe(
-      tap((teams) => console.log("Teams for club:", teams)),
+      // /tap((teams) => console.log("Teams for club:", teams)),
       mergeMap((teams) => {
         if (teams.length === 0) {
           console.log("No teams found for club");
@@ -165,10 +165,10 @@ export class FirebaseService {
       }),
       map((teamsWithDetails) => {
         const filteredTeams = teamsWithDetails.filter((team) => team !== null); // Filter out null (error cases)
-        console.log("Filtered teams:", filteredTeams);
+        // console.log("Filtered teams:", filteredTeams);
         return filteredTeams;
       }),
-      tap((results) => console.log("Final results with all teams for club:", results)),
+      // tap((results) => console.log("Final results with all teams for club:", results)),
       catchError((err) => {
         console.error("Error in getClubTeamsWithDetails:", err);
         return of([]); // Return an empty array on error
@@ -192,7 +192,7 @@ export class FirebaseService {
         if (!user) return of([]);
         return this.getUserTeamAdminRefs(user);
       }),
-      tap((teams) => console.log("Teams:", teams)),
+      // log("Teams:", teams)),
       mergeMap((teams) => {
         if (teams.length === 0) return of([]);
         return combineLatest(
@@ -206,7 +206,7 @@ export class FirebaseService {
       map((teamsWithDetails) =>
         teamsWithDetails.filter((team) => team !== null)
       ), // Filter out null (error cases)
-      tap((results) => console.log("Final results with all teams:", results)),
+      // tap((results) => console.log("Final results with all teams:", results)),
       catchError((err) => {
         console.error("Error in getTeamList:", err);
         return of([]); // Return an empty array on error
@@ -258,7 +258,7 @@ export class FirebaseService {
   }
 
   getClubMemberRefs(clubId: string): Observable<Profile[]> {
-    console.log(clubId);
+    // console.log(clubId);
     const clubMemberRefList = collection(
       this.firestore,
       `club/${clubId}/members`
@@ -370,7 +370,7 @@ export class FirebaseService {
   }
 
   approveUserClubRequest(clubId: string, userId: string): Promise<any> {
-    console.log("club " + clubId, " / userid " + userId);
+    // console.log("club " + clubId, " / userid " + userId);
     return setDoc(
       doc(this.firestore, `/club/${clubId}/requests/${userId}`),
       { 

@@ -92,8 +92,8 @@ export class EventService {
 
   async setCreateClubEvent(event: Veranstaltung) {
     const user = this.authService.auth.currentUser;
-    console.log("event");
-    console.log(event);
+    // console.log("event");
+    // console.log(event);
     return addDoc(
       collection(this.firestore, `userProfile/${user.uid}/clubEvents`),
       event
@@ -181,17 +181,17 @@ export class EventService {
     eventId: string,
     schichtId: string
   ): Observable<any[]> {
-    console.log(
+    /*console.log(
       "getClubHelferEventSchichtAttendeesRef",
       clubId,
       eventId,
       schichtId
-    );
+    );*/
     const schichtAttendeesListRef = collection(
       this.firestore,
       `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}/attendees`
     );
-    console.log(schichtAttendeesListRef.id, schichtAttendeesListRef.path);
+    // console.log(schichtAttendeesListRef.id, schichtAttendeesListRef.path);
     return collectionData(schichtAttendeesListRef, {
       idField: "id",
     }) as Observable<any[]>;
@@ -252,8 +252,8 @@ export class EventService {
 
   async setCreateHelferEvent(event: HelferEvent) {
     const user = this.authService.auth.currentUser;
-    console.log("Helferevent");
-    console.log(event);
+    // console.log("Helferevent");
+    // console.log(event);
     return addDoc(
       collection(this.firestore, `userProfile/${user.uid}/helferEvents`),
       event

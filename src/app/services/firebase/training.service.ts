@@ -53,8 +53,8 @@ export class TrainingService {
 
   async setCreateTraining(training: Training) {
     const user = this.authService.auth.currentUser;
-    console.log("training");
-    console.log(training);
+    // console.log("training");
+    // console.log(training);
     return addDoc(
       collection(this.firestore, `userProfile/${user.uid}/trainings`),
       training
