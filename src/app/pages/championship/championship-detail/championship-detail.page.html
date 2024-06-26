@@ -186,12 +186,13 @@
             </ion-list>
           </div>
         </ion-accordion>
-        <ion-accordion value="null">
+        <ion-accordion value="null" *ngIf="game['unrespondedMembers'].length > 0">
           <ion-item slot="header" color="light">
             <ion-label
               >{{"common.noreply" | translate}}:
               {{game['unrespondedMembers'].length}}</ion-label
             >
+            <ion-button *ngIf="game['unrespondedMembers'].length > 0" fill="clear" slot="end" (click)="toggleAll(true, game)">alle anmelden</ion-button>
           </ion-item>
           <div slot="content">
             <!-- class="ion-padding"-->

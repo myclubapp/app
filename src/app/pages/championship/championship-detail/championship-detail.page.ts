@@ -196,6 +196,25 @@ export class ChampionshipDetailPage implements OnInit {
       })
     );
   }
+  async toggleAll(status: boolean, game: Game) {
+
+    for (let member of game['unrespondedMembers']) {
+      console.log(
+        `Set Status ${status} for user ${this.user.uid} and team ${this.game.teamId} and game ${game.id}`
+      );
+      await this.championshipService.setTeamGameAttendeeStatusAdmin(
+        this.user.uid,
+        status,
+        this.game.teamId,
+        game.id,
+        member.id,
+      ).catch(e => {
+        console.log(e.message);
+        this.toastActionError(e);
+      })
+    }
+    this.presentToast();
+  }
 
   async toggle(status: boolean, game: Game) {
     console.log(
@@ -210,6 +229,16 @@ export class ChampionshipDetailPage implements OnInit {
     this.presentToast();
   }
 
+  async toastActionError(error) {
+    const toast = await this.toastController.create({
+      message: error.message,
+      duration: 2000,
+      position: "bottom",
+      color: "danger",
+    });
+
+    await toast.present();
+  }
   async presentToast() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),

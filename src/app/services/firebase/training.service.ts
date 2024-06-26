@@ -151,6 +151,20 @@ export class TrainingService {
     return await setDoc(statusRef, { status });
   }
 
+  async setTeamTrainingAttendeeStatusAdmin(
+    status: boolean,
+    teamId: string,
+    trainingId: string,
+    memberId: string,
+  ) {
+    //const user = this.authService.auth.currentUser;
+    const statusRef = doc(
+      this.firestore,
+      `teams/${teamId}/trainings/${trainingId}/attendees/${memberId}`
+    );
+    return await setDoc(statusRef, { status });
+  }
+
   deleteTeamTraining(teamId: string, trainingId: string) {
     const gameRef = doc(
       this.firestore,

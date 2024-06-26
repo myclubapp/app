@@ -65,7 +65,9 @@ export class ClubMemberListPage implements OnInit {
 
     this.clubAdminList$ = this.fbService.getClubAdminList(); 
   }
-
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
   edit() {
 
     if (this.allowEdit) {

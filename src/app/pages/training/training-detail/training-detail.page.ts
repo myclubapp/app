@@ -63,91 +63,120 @@ export class TrainingDetailPage implements OnInit {
   }
 
 
- getTraining(teamId: string, trainingId: string) {
+  getTraining(teamId: string, trainingId: string) {
     return this.authService.getUser$().pipe(
-        take(1),
-        tap((user) => {
-            this.user = user;
-            if (!user) throw new Error("User not found");
-        }),
-        switchMap(() => this.trainingService.getTeamTrainingRef(teamId, trainingId)),
-        switchMap((training) => {
-            if (!training) return of(null);
+      take(1),
+      tap((user) => {
+        this.user = user;
+        if (!user) throw new Error("User not found");
+      }),
+      switchMap(() => this.trainingService.getTeamTrainingRef(teamId, trainingId)),
+      switchMap((training) => {
+        if (!training) return of(null);
 
-            // Fetch all team members first
-            return this.fbService.getTeamMemberRefs(teamId).pipe(
-                switchMap(teamMembers => {
-                    const teamMemberProfiles$ = teamMembers.map(member =>
-                        this.userProfileService.getUserProfileById(member.id).pipe(
-                            take(1),
-                            catchError(err => {
-                                console.log(`Failed to fetch profile for team member ${member.id}:`, err);
-                                return of({ ...member, firstName: "Unknown", lastName: "Unknown", status: null });
-                            })
-                        )
-                    );
-                    // Fetch all attendees next
-                    return forkJoin(teamMemberProfiles$).pipe(
-                        switchMap(teamMembersWithDetails => {
-                            return this.trainingService.getTeamTrainingsAttendeesRef(teamId, trainingId).pipe(
-                                map(attendees => {
-                                    const attendeeDetails = attendees.map(attendee => {
-                                        const detail = teamMembersWithDetails.find(member => member.id === attendee.id);
-                                        return detail ? { ...detail, status: attendee.status } : null;
-                                    }).filter(item => item !== null);
-
-                                    const attendeeListTrue = attendeeDetails.filter(att => att.status === true);
-                                    const attendeeListFalse = attendeeDetails.filter(att => att.status === false);
-                                    const respondedIds = new Set(attendeeDetails.map(att => att.id));
-                                    const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id));
-
-                                    const userAttendee = attendeeDetails.find(att => att.id === this.user.uid);
-                                    const status = userAttendee ? userAttendee.status : null;
-
-                                    return {
-                                        ...training,
-                                        attendees: attendeeDetails,
-                                        attendeeListTrue,
-                                        attendeeListFalse,
-                                        unrespondedMembers,
-                                        status,
-                                    };
-                                }),
-                                catchError(err => {
-                                    console.error("Error fetching attendees:", err);
-                                    return of({
-                                        ...training,
-                                        attendees: [],
-                                        attendeeListTrue: [],
-                                        attendeeListFalse: [],
-                                        unrespondedMembers: teamMembersWithDetails.filter(member => member !== null),
-                                        status: null
-                                    });
-                                })
-                            );
-                        })
-                    );
-                }),
+        // Fetch all team members first
+        return this.fbService.getTeamMemberRefs(teamId).pipe(
+          switchMap(teamMembers => {
+            const teamMemberProfiles$ = teamMembers.map(member =>
+              this.userProfileService.getUserProfileById(member.id).pipe(
+                take(1),
                 catchError(err => {
-                    console.error("Error fetching team members:", err);
-                    return of({
-                        ...training,
-                        attendees: [],
-                        attendeeListTrue: [],
-                        attendeeListFalse: [],
-                        unrespondedMembers: [],
-                        status: null
-                    });
+                  console.log(`Failed to fetch profile for team member ${member.id}:`, err);
+                  return of({ ...member, firstName: "Unknown", lastName: "Unknown", status: null });
                 })
+              )
             );
-        }),
-        catchError(err => {
-            console.error("Error in getTrainingWithAttendees:", err);
-            return of(null);
-        })
-    );
-}
+            // Fetch all attendees next
+            return forkJoin(teamMemberProfiles$).pipe(
+              switchMap(teamMembersWithDetails => {
+                return this.trainingService.getTeamTrainingsAttendeesRef(teamId, trainingId).pipe(
+                  map(attendees => {
+                    const attendeeDetails = attendees.map(attendee => {
+                      const detail = teamMembersWithDetails.find(member => member.id === attendee.id);
+                      return detail ? { ...detail, status: attendee.status } : null;
+                    }).filter(item => item !== null);
 
+                    const attendeeListTrue = attendeeDetails.filter(att => att.status === true);
+                    const attendeeListFalse = attendeeDetails.filter(att => att.status === false);
+                    const respondedIds = new Set(attendeeDetails.map(att => att.id));
+                    const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id));
+
+                    const userAttendee = attendeeDetails.find(att => att.id === this.user.uid);
+                    const status = userAttendee ? userAttendee.status : null;
+
+                    return {
+                      ...training,
+                      attendees: attendeeDetails,
+                      attendeeListTrue,
+                      attendeeListFalse,
+                      unrespondedMembers,
+                      status,
+                    };
+                  }),
+                  catchError(err => {
+                    console.error("Error fetching attendees:", err);
+                    return of({
+                      ...training,
+                      attendees: [],
+                      attendeeListTrue: [],
+                      attendeeListFalse: [],
+                      unrespondedMembers: teamMembersWithDetails.filter(member => member !== null),
+                      status: null
+                    });
+                  })
+                );
+              })
+            );
+          }),
+          catchError(err => {
+            console.error("Error fetching team members:", err);
+            return of({
+              ...training,
+              attendees: [],
+              attendeeListTrue: [],
+              attendeeListFalse: [],
+              unrespondedMembers: [],
+              status: null
+            });
+          })
+        );
+      }),
+      catchError(err => {
+        console.error("Error in getTrainingWithAttendees:", err);
+        return of(null);
+      })
+    );
+  }
+
+  async toggleAll(status: boolean, training: Training) {
+
+    for (let member of training['unrespondedMembers']) {
+      console.log(
+        `Set Status ${status} for user ${this.user.uid} and team ${this.training.teamId} and training ${training.id}`
+      );
+      await this.trainingService.setTeamTrainingAttendeeStatusAdmin(
+        status,
+        this.training.teamId,
+        training.id,
+        member.id,
+      ).catch(e => {
+        console.log(e.message);
+        this.toastActionError(e);
+      })
+    }
+    this.presentToast();
+  }
+  
+  async toastActionError(error) {
+    const toast = await this.toastController.create({
+      message: error.message,
+      duration: 2000,
+      position: "bottom",
+      color: "danger",
+    });
+
+    await toast.present();
+  }
 
   async toggle(status: boolean, training: Training) {
     console.log(

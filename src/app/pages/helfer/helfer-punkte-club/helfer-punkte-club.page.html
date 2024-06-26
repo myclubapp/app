@@ -1,5 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+      <ion-buttons *ngIf="clubAdminList.length > 0" slot="secondary">
+        <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
+        <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
+      </ion-buttons>
+    </ng-container>
     <ion-title>{{ "common.helper_points" | translate}}</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
@@ -8,11 +14,54 @@
 </ion-header>
 <!-- class="ion-padding" -->
 
-<ion-content>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ "common.helper_points" | translate}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-searchbar
+  [debounce]="1000"
+
+  animated="true"
+  search-icon="search-circle" placeholder='{{"common.searchfield" | translate}}'>
+</ion-searchbar>
+
+  <ion-list inset="true">
+    <ion-list-header>
+      Auswertung
+    </ion-list-header>
+    <ion-item>
+      <ion-icon name="calendar" slot="start"></ion-icon>
+      <ion-label>Datum von</ion-label>
+      <ion-datetime-button datetime="dateFrom"></ion-datetime-button>
+
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime id="dateFrom" presentation="date" value="{{dateFrom}}"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="calendar" slot="start"></ion-icon>
+      <ion-label>Datum bis</ion-label>
+      <ion-datetime-button datetime="dateTo" ></ion-datetime-button>
+
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime id="dateTo" presentation="date" value="{{dateTo}}"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+  </ion-list>
 
 
   <ng-container *ngIf="helferPunkteList$ | async as helferPunkteList">
-    <ion-list>
+    <ion-list inset="true">
+      <ion-list-header>
+        Mitglieder
+      </ion-list-header>
       <ng-container *ngFor="let memberPunkte of helferPunkteList">
         <ion-item >
           <ion-label>{{memberPunkte.profile.firstName}} {{memberPunkte.profile.lastName}}</ion-label>

@@ -5,6 +5,7 @@ import { FirebaseService } from 'src/app/services/firebase.service';
 import { HelferService } from 'src/app/services/firebase/helfer.service';
 import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
 import { HelferDetailPage } from '../helfer-detail/helfer-detail.page';
+import { Club } from 'src/app/models/club';
 
 @Component({
   selector: 'app-helfer-punkte-club',
@@ -13,9 +14,15 @@ import { HelferDetailPage } from '../helfer-detail/helfer-detail.page';
 })
 export class HelferPunkteClubPage implements OnInit {
   @Input("clubId") clubId: any;
+  clubAdminList$: Observable<Club[]>;
+  allowEdit: boolean = false;
 
   helferPunkteList$: Observable<any[]>;
   groupArray = [];
+
+  dateFrom: any;
+  dateTo: any;
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -30,6 +37,11 @@ export class HelferPunkteClubPage implements OnInit {
   }
 
   ngOnInit() {
+
+    this.dateFrom = new Date(Date.now() - 1000 * 60 * 60 * 24 * 365).toISOString() ;
+    this.dateTo = new Date().toISOString();
+
+    this.clubAdminList$ = this.fbService.getClubAdminList(); 
     const currentYear = new Date().getFullYear();
 
     this.groupArray.push(currentYear);
@@ -37,7 +49,17 @@ export class HelferPunkteClubPage implements OnInit {
     this.groupArray.push(currentYear - 2);
     this.groupArray.push(currentYear - 3);
   }
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
+  edit() {
 
+    if (this.allowEdit) {
+      this.allowEdit = false;
+    } else {
+      this.allowEdit = true;
+    }
+  }
   getClubMembersWithHelferPunkte(clubId: string) {
     return this.fbService.getClubRef(clubId).pipe(
         tap(club => console.log("Fetched club:", club)),

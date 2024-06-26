@@ -168,12 +168,13 @@
             </ion-list>
           </div>
         </ion-accordion>
-        <ion-accordion value="null">
+        <ion-accordion value="null" *ngIf="training['unrespondedMembers'].length > 0">
           <ion-item slot="header" color="light">
             <ion-label
               >{{"common.noreply" | translate}}:
               {{training['unrespondedMembers'].length}}</ion-label
             >
+            <ion-button *ngIf="training['unrespondedMembers'].length > 0" fill="clear" slot="end" (click)="toggleAll(true, training)">alle anmelden</ion-button>
           </ion-item>
           <div slot="content">
             <!-- class="ion-padding"-->

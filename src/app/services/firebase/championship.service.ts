@@ -119,4 +119,20 @@ export class ChampionshipService {
       status: status,
     });
   }
+  setTeamGameAttendeeStatusAdmin(
+    userId: string,
+    status: boolean,
+    teamId: string,
+    gameId: string,
+    memberId: string,
+  ) {
+    const statusRef = doc(
+      this.firestore,
+      `teams/${teamId}/games/${gameId}/attendees/${memberId}`
+    );
+    return setDoc(statusRef, {
+      id: userId,
+      status: status,
+    });
+  }
 }
