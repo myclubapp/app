@@ -23,6 +23,7 @@ import {
   take,
   tap,
 } from "rxjs";
+import { Browser } from "@capacitor/browser";
 import { HelferEvent } from "src/app/models/event";
 import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
@@ -337,6 +338,13 @@ export class HelferDetailPage implements OnInit {
       .subscribe((data) => {
         console.log(data);
       });
+  }
+
+
+  async openUrl(url: string) {
+    Browser.open({
+      url: url
+    });
   }
 
   async toggleSchicht(status: boolean, schicht) {

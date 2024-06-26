@@ -61,6 +61,20 @@
       </ion-input>
     </ion-item>
   </ion-list>
+
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-input [label]="'common.link__web' | translate" label-placement="stacked" type="url"
+        value="{{event.link_web}}" [(ngModel)]="event.link_web" [placeholder]="'common.link__placeholder' | translate" >
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input [label]="'common.link__poll' | translate" label-placement="stacked" type="url"
+        value="{{event.link_poll}}" [(ngModel)]="event.link_poll" [placeholder]="'common.link__placeholder' | translate">
+      </ion-input>
+    </ion-item>
+  </ion-list>
+
   <ion-list [inset]="true">
     <ion-item id="timeFromItem">
       <ion-label position="">
@@ -117,6 +131,8 @@
       </ion-modal>
     </ion-item>
   </ion-list>
+
+
 
   <ion-list lines="full" [inset]="true">
     <ion-list-header>

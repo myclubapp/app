@@ -22,6 +22,9 @@ export interface Veranstaltung {
   teamName: string
   liga: string*/
 
+  link_web: string;
+  link_poll: string;
+
   clubId: string;
   clubName: string;
   // Business Logic Fields

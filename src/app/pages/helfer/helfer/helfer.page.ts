@@ -81,6 +81,8 @@ export class HelferPage implements OnInit {
           timeTo: "",
           clubId: "",
           clubName: "",
+          link_poll: "", 
+          link_web: "",
           status: false,
           attendees: undefined,
           countAttendees: 0,

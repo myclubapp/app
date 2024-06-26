@@ -68,6 +68,9 @@ export class EventAddPage implements OnInit {
       teamName: "",
       liga: "",*/
 
+      link_poll: "", 
+      link_web: "",
+
       clubId: "",
       clubName: "",
 

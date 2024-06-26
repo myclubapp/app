@@ -80,6 +80,8 @@ export class EventsPage implements OnInit {
           timeTo: "",
           clubId: pushData.clubId,
           clubName: "",
+          link_poll: "", 
+          link_web: "",
           status: false,
           attendees: undefined,
           countAttendees: 0,

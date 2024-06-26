@@ -192,6 +192,9 @@
         "version": "Version"
     },
     "common": {
+        "link__web": "Webseite / Weitere Informationen",
+        "link__poll": "Umfrage",
+        "link__placeholder": "https://",
         "confirm": "bestätigen",
         "or": "Oder",
         "email__address": "E-Mail Adresse",

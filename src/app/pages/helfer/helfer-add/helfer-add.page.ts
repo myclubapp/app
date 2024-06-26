@@ -55,7 +55,9 @@ export class HelferAddPage implements OnInit {
       /*teamId: "",
       teamName: "",
       liga: "",*/
-
+      link_poll: "", 
+      link_web: "",
+      
       clubId: "",
       clubName: "",
 

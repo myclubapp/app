@@ -14,6 +14,7 @@ import {
   take,
   tap,
 } from "rxjs";
+import { Browser } from "@capacitor/browser";
 import { Veranstaltung } from "src/app/models/event";
 import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
@@ -160,6 +161,14 @@ export class EventDetailPage implements OnInit {
     if (role === "confirm") {
     }
   }
+
+  async openUrl(url: string) {
+    Browser.open({
+      url: url
+    });
+  }
+
+
   async toggle(status: boolean, event: Veranstaltung) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and club ${this.event.clubId} and event ${event.id}`
