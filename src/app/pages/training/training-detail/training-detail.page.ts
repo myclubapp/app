@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
-import { ModalController, NavParams, ToastController } from "@ionic/angular";
+import { IonItemSliding, ModalController, NavParams, ToastController } from "@ionic/angular";
 
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
@@ -25,6 +25,7 @@ import { MemberPage } from "../../member/member.page";
 import { Profile } from "src/app/models/user";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { FirebaseService } from "src/app/services/firebase.service";
+import { Team } from "src/app/models/team";
 
 @Component({
   selector: "app-training-detail",
@@ -42,6 +43,8 @@ export class TrainingDetailPage implements OnInit {
 
   user$: Observable<User>;
   user: User;
+  teamAdminList$: Observable<Team[]>;
+
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -60,8 +63,13 @@ export class TrainingDetailPage implements OnInit {
     this.training$ = of(this.training);
     this.training$ = this.getTraining(this.training.teamId, this.training.id);
     this.exerciseList$ = this.exerciseService.getTeamTrainingExerciseRefs(this.training.teamId, this.training.id);
-  }
 
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+
+  }
+  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
+    return teamAdminList && teamAdminList.some(team => team.id === teamId);
+  }
 
   getTraining(teamId: string, trainingId: string) {
     return this.authService.getUser$().pipe(
@@ -99,7 +107,9 @@ export class TrainingDetailPage implements OnInit {
                     const attendeeListTrue = attendeeDetails.filter(att => att.status === true);
                     const attendeeListFalse = attendeeDetails.filter(att => att.status === false);
                     const respondedIds = new Set(attendeeDetails.map(att => att.id));
-                    const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id));
+                    // Modify here to add 'status: null' for each unresponded member
+                    const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id))
+                      .map(member => ({ ...member, status: null })); // Ensuring 'status: null' is explicitly set
 
                     const userAttendee = attendeeDetails.find(att => att.id === this.user.uid);
                     const status = userAttendee ? userAttendee.status : null;
@@ -120,7 +130,8 @@ export class TrainingDetailPage implements OnInit {
                       attendees: [],
                       attendeeListTrue: [],
                       attendeeListFalse: [],
-                      unrespondedMembers: teamMembersWithDetails.filter(member => member !== null),
+                      unrespondedMembers: teamMembersWithDetails.filter(member => member !== null)
+                        .map(member => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
                       status: null
                     });
                   })
@@ -166,7 +177,7 @@ export class TrainingDetailPage implements OnInit {
     }
     this.presentToast();
   }
-  
+
   async toastActionError(error) {
     const toast = await this.toastController.create({
       message: error.message,
@@ -186,6 +197,26 @@ export class TrainingDetailPage implements OnInit {
       status,
       this.training.teamId,
       training.id
+    );
+    this.presentToast();
+  }
+
+  async toggleItem(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    training: Training,
+    memberId: string,
+  ) {
+    slidingItem.closeOpened();
+
+    console.log(
+      `Set Status ${status} for user ${memberId} and team ${training.teamId} and training ${training.id}`
+    );
+    await this.trainingService.setTeamTrainingAttendeeStatusAdmin(
+      status,
+      training.teamId,
+      training.id,
+      memberId,
     );
     this.presentToast();
   }

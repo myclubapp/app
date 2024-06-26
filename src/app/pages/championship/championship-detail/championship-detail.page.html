@@ -138,7 +138,7 @@
 
     <ion-list [inset]="true">
       <ion-accordion-group [multiple]="true" [value]="['yes']">
-        <ion-accordion value="yes">
+        <ion-accordion value="yes"  *ngIf="game['attendeeListTrue'].length > 0">>
           <ion-item slot="header" color="light">
             <ion-label
               >{{"common.present" | translate}}:
@@ -162,7 +162,7 @@
             </ion-list>
           </div>
         </ion-accordion>
-        <ion-accordion value="no">
+        <ion-accordion value="no"  *ngIf="game['attendeeListFalse'].length > 0">>
           <ion-item slot="header" color="light">
             <ion-label
               >{{"common.absent" | translate}}:
@@ -192,7 +192,7 @@
               >{{"common.noreply" | translate}}:
               {{game['unrespondedMembers'].length}}</ion-label
             >
-            <ion-button *ngIf="game['unrespondedMembers'].length > 0" fill="clear" slot="end" (click)="toggleAll(true, game)">alle anmelden</ion-button>
+            <ion-button *ngIf="game['unrespondedMembers'].length > 0" fill="clear" slot="end" (click)="toggleAll(true, game)">{{"common.alle_anmelden" | translate}}</ion-button>
           </ion-item>
           <div slot="content">
             <!-- class="ion-padding"-->

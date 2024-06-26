@@ -192,6 +192,7 @@
         "version": "Version"
     },
     "common": {
+        "alle_anmelden": "alle anmelden",
         "link__web": "Webseite / Weitere Informationen",
         "link__poll": "Umfrage",
         "link__placeholder": "https://",
