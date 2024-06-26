@@ -5,6 +5,7 @@ import {
   NavParams,
   ToastController,
 } from "@ionic/angular";
+import { Browser } from "@capacitor/browser";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
@@ -94,7 +95,11 @@ export class ClubPage implements OnInit {
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
     return clubAdminList && clubAdminList.some(club => club.id === clubId);
   }
-
+  async openUrl(url: string) {
+    Browser.open({
+      url: url
+    });
+  }
   getClub(clubId: string) {
     const calculateAge = (dateOfBirth) => {
       // console.log("DoB: " + JSON.stringify(dateOfBirth));

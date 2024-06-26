@@ -32,6 +32,7 @@ import {
   timeout,
   toArray,
 } from "rxjs";
+import { Browser } from "@capacitor/browser";
 import { Team } from "src/app/models/team";
 import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
@@ -186,6 +187,12 @@ export class TeamPage implements OnInit {
         return of(null);
       })
     );
+  }
+
+  async openUrl(url: string) {
+    Browser.open({
+      url: url
+    });
   }
 
   async openMemberList() {

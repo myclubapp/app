@@ -71,7 +71,10 @@
       </ion-item>
       <ion-item *ngIf="team.website" >
         <ion-icon name="globe-outline" slot="start"></ion-icon>
-        <ion-label> {{team.website}} </ion-label>
+        <ion-label class="ion-text-wrap"> {{team.website}} </ion-label>
+        <ion-button (click)="openUrl(team.website)" fill="clear">
+          <ion-icon slot="icon-only" name="open-outline"></ion-icon>
+        </ion-button> 
       </ion-item>
 
       <ion-item >

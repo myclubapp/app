@@ -96,7 +96,10 @@
       </ion-list-header>
       <ion-item *ngIf="club.wordpress">
         <ion-icon name="logo-wordpress" slot="start"></ion-icon>
-        <ion-label> {{club.wordpress}} </ion-label>
+        <ion-label class="ion-text-wrap"> {{club.wordpress}} </ion-label>
+        <ion-button (click)="openUrl(club.wordpress)" fill="clear">
+          <ion-icon slot="icon-only" name="open-outline"></ion-icon>
+        </ion-button> 
       </ion-item>
       <ion-item>
         <ion-icon name="heart-circle-outline" slot="start"></ion-icon>
