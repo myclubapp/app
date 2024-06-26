@@ -53,9 +53,9 @@
 
       <ion-item *ngIf="event.link_web">
         <ion-icon slot="start" name="link-outline"></ion-icon>
-        <ion-label >
+        <ion-label class="ion-text-wrap">
           <h2>{{event.link_web}}</h2>
-        </ion-label>
+        </ion-label >
         <ion-button (click)="openUrl(event.link_web)" fill="clear">
           <ion-icon slot="icon-only" name="open-outline"></ion-icon>
         </ion-button> 
@@ -63,7 +63,7 @@
 
       <ion-item *ngIf="event.link_poll">
         <ion-icon slot="start" name="help-circle-outline"></ion-icon>
-        <ion-label >
+        <ion-label class="ion-text-wrap">
           <h2>{{event.link_poll}}</h2>
         </ion-label>
         <ion-button (click)="openUrl(event.link_poll)" fill="clear">
