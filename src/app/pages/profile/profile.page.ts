@@ -547,7 +547,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     );
     if (fieldname == 'language'){
       // console.log(event.detail.value)
-      this.translate.resetLang(event.detail.value);
+      this.translate.use(event.detail.value);
     }
   } 
   /*
