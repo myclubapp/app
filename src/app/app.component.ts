@@ -130,18 +130,21 @@ export class AppComponent implements OnInit {
         // await this.authService.auth.currentUser.reload();
         // console.log(user);
 
-        if (!this.user.emailVerified) {
+        /*if (!this.user.emailVerified) {
           console.log("E-Mail is NOT verfied");
           console.log(user.email, user.displayName, user.emailVerified);
 
           const navOnboardingEmail = await this.router.navigateByUrl("/onboarding-email");
-          if (navOnboardingEmail) {
+          if (navOnboardingEmail) {
             console.log("Navigation succecss to onboarding Email Page");
           } else {
             console.error("Navigation error to onboarding Email Page");
           }
-          
-        } else {
+
+        } else {*/
+         if (user.emailVerified){
+
+
           console.log("E-Mail IS verified. Go ahead..")
           console.log(user.email, user.displayName, user.emailVerified)
           this.clubListSub = this.clubList$
@@ -151,7 +154,7 @@ export class AppComponent implements OnInit {
                 if (data.length == 0) {
                   console.log("NO! Club Data received. > Call Club Onboarding");
                   const navOnboardingClub = await this.router.navigateByUrl("/onboarding-club");
-                  if (navOnboardingClub) {
+                  if (navOnboardingClub) {
                     console.log("Navigation succecss to onboarding Club Page");
                   } else {
                     console.error("Navigation error to onboarding Club Page");
@@ -160,7 +163,8 @@ export class AppComponent implements OnInit {
               })
             )
             .subscribe();
-        }
+          }
+        // }
 
 
         // SEt DEVICE INFOS
@@ -197,6 +201,8 @@ export class AppComponent implements OnInit {
         this.email = "";
       }
     });
+
+
   }
   ngOnInit(): void {
     Network.addListener(

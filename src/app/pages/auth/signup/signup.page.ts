@@ -116,7 +116,9 @@ export class SignupPage implements OnInit {
         const { data, role } = await alert.onDidDismiss();
         if (role === "confirm") {
         }
-        this.authService.login(credentials.email, credentials.password);
+        const usercredentials = await this.authService.login(credentials.email, credentials.password);
+        console.log("user signed up " + usercredentials.user.email);
+        
         // await this.router.navigateByUrl(""); // --> this should trigger appcomponent?
       } catch (err) {
         let message =

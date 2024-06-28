@@ -33,7 +33,9 @@ export class OnboardingClubPage implements OnInit {
     private readonly alertController: AlertController,
     private readonly profileService: UserProfileService,
     public readonly menuCtrl: MenuController,
-  ) { }
+  ) { 
+    this.menuCtrl.enable(false, "menu");
+  }
 
   ngOnInit() {
     this.menuCtrl.enable(false, "menu");

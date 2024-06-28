@@ -60,6 +60,8 @@ export class AuthService {
   }
 
   async sendVerifyEmail() {
+    this.auth.currentUser.getIdToken(true);
+    console.log("resend verification for user " + this.auth.currentUser.email)
     return await sendEmailVerification(this.auth.currentUser);
   }
 

@@ -207,6 +207,8 @@
         "cancel": "abbrechen",
         "create": "erstellen",
         "forget__password": "Passwort vergessen?",
+        "email_sent": "E-Mail versendet",
+        "error": "Fehler",
         "error__invalid_form": "Formular ist noch fehlerhaft",
         "please__wait": "Bitte warten",
         "first__name": "Vorname",

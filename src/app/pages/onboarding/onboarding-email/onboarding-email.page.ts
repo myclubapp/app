@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MenuController } from '@ionic/angular';
+import { MenuController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { User } from 'firebase/auth';
-import { Observable, Subscription, catchError, of, switchMap, take, tap } from 'rxjs';
+import { Observable, Subscription, catchError, lastValueFrom, of, switchMap, take, tap } from 'rxjs';
 import { Profile } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
@@ -23,6 +23,7 @@ export class OnboardingEmailPage implements OnInit {
     private readonly authService: AuthService,
     private readonly profileService: UserProfileService,
     private translate: TranslateService,
+    private readonly toastCtrl: ToastController,
     public readonly menuCtrl: MenuController,
     private readonly router: Router
   ) { } 
@@ -37,6 +38,13 @@ export class OnboardingEmailPage implements OnInit {
       this.userProfile$ = of(profile);
     })
   }
+
+  ngOnDestroy(): void {
+   if (this.subscription) {
+        this.subscription.unsubscribe();
+    }
+  }
+
 
   getUserProfile(): Observable<any> {
     // Replace 'any' with the actual type of the user profile
@@ -55,14 +63,26 @@ export class OnboardingEmailPage implements OnInit {
     );
   }
 
-  resendEmailActivation() {
-    this.authService.sendVerifyEmail();
+  async resendEmailActivation() {
+    await this.authService.sendVerifyEmail();
+    await this.toastActionSaved();
   }
 
   async verified() {
     this.authService.auth.currentUser.getIdToken(true);
     await this.authService.auth.currentUser.reload();
     window.location.reload();
+  }
+
+  async toastActionSaved() {
+    const toast = await this.toastCtrl.create({
+      message: await lastValueFrom(this.translate.get("common.email_sent")),
+      duration: 1500,
+      position: "bottom",
+      color: "success",
+    });
+
+    await toast.present();
   }
 
   async logout() {

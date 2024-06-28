@@ -5,18 +5,18 @@ import {
   redirectUnauthorizedTo,
   emailVerified,
 } from "@angular/fire/auth-guard";
+import { map, pipe } from "rxjs";
 
-// https://github.com/angular/angularfire/blob/master/docs/auth/router-guards.md
-const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(["login"]);
-// const emailVerifiedToLogout = () => emailVerified(["logout"]);
-
+const redirectUnverifiedTo = (redirect: any[]) => pipe(emailVerified, map(emailVerified => emailVerified || redirect));
+const redirectUnauthorizedToLogin = () => redirectUnverifiedTo(['/onboarding-email']);
+const redirectToLogin = () => redirectUnauthorizedTo(["login"]);
 const routes: Routes = [
   {
     path: "",
     loadChildren: () =>
       import("./pages/tabs/tabs.module").then((m) => m.TabsPageModule),
     canActivate: [AuthGuard],
-    data: { authGuardPipe: redirectUnauthorizedToLogin },
+    data: { authGuardPipe: redirectToLogin },
   },
   {
     path: "login",
@@ -61,6 +61,8 @@ const routes: Routes = [
     path: "news",
     loadChildren: () =>
       import("./pages/news/news/news.module").then((m) => m.NewsPageModule),
+
+
   },
   {
     path: "reset-password",
@@ -104,11 +106,14 @@ const routes: Routes = [
   },
   {
     path: 'onboarding-club',
-    loadChildren: () => import('./pages/onboarding/onboarding-club/onboarding-club.module').then( m => m.OnboardingClubPageModule)
+    loadChildren: () => import('./pages/onboarding/onboarding-club/onboarding-club.module').then( m => m.OnboardingClubPageModule),
+    canActivate: [AuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
   },
   {
     path: 'onboarding-email',
-    loadChildren: () => import('./pages/onboarding/onboarding-email/onboarding-email.module').then( m => m.OnboardingEmailPageModule)
+    loadChildren: () => import('./pages/onboarding/onboarding-email/onboarding-email.module').then( m => m.OnboardingEmailPageModule),
+  
   },
   {
     path: "onboarding-team",
@@ -116,6 +121,8 @@ const routes: Routes = [
       import("./pages/onboarding/onboarding-team/onboarding-team.module").then(
         (m) => m.OnboardingTeamPageModule
       ),
+      canActivate: [AuthGuard],
+      data: { authGuardPipe: redirectUnauthorizedToLogin },
   },
   {
     path: "info",
@@ -144,7 +151,6 @@ const routes: Routes = [
         (m) => m.LineupPageModule
       ),
   },
-
   {
     path: "**",
     loadChildren: () =>
