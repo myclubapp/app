@@ -107,8 +107,7 @@ const routes: Routes = [
   {
     path: 'onboarding-club',
     loadChildren: () => import('./pages/onboarding/onboarding-club/onboarding-club.module').then( m => m.OnboardingClubPageModule),
-    canActivate: [AuthGuard],
-    data: { authGuardPipe: redirectUnauthorizedToLogin },
+    
   },
   {
     path: 'onboarding-email',
@@ -121,8 +120,7 @@ const routes: Routes = [
       import("./pages/onboarding/onboarding-team/onboarding-team.module").then(
         (m) => m.OnboardingTeamPageModule
       ),
-      canActivate: [AuthGuard],
-      data: { authGuardPipe: redirectUnauthorizedToLogin },
+      
   },
   {
     path: "info",

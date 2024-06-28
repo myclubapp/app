@@ -142,9 +142,14 @@ export class AppComponent implements OnInit {
           }
 
         } else {*/
-         if (user.emailVerified){
-
-
+         if (!user.emailVerified){
+          const navOnboardingEmail = await this.router.navigateByUrl('/onboarding-email');
+          if (navOnboardingEmail) {
+            console.log('Navigation success to onboarding Email Page');
+          } else {
+            console.error('Navigation ERROR to onboarding Email Page');
+          }
+         } else {
           console.log("E-Mail IS verified. Go ahead..")
           console.log(user.email, user.displayName, user.emailVerified)
           this.clubListSub = this.clubList$
@@ -153,11 +158,22 @@ export class AppComponent implements OnInit {
               tap(async (data) => {
                 if (data.length == 0) {
                   console.log("NO! Club Data received. > Call Club Onboarding");
-                  const navOnboardingClub = await this.router.navigateByUrl("/onboarding-club");
-                  if (navOnboardingClub) {
-                    console.log("Navigation succecss to onboarding Club Page");
-                  } else {
-                    console.error("Navigation error to onboarding Club Page");
+                  // console.log(this.router.url);
+                  try {
+                    //this.router.createUrlTree(["/onboarding-club"]);
+                    /*his.router.navigateByUrl("/").catch((error) => {
+                      console.error(error.message);
+                      this.router.navigateByUrl("");
+                    });*/
+
+                    const navOnboardingClub = await this.router.navigateByUrl('/onboarding-club');
+                    if (navOnboardingClub) {
+                      console.log('Navigation success to onboarding Club Page');
+                    } else {
+                      console.error('Navigation ERROR to onboarding Club Page');
+                    }
+                  } catch (error) {
+                    console.error('Navigation Exception:', error);
                   }
                 }
               })
@@ -199,6 +215,12 @@ export class AppComponent implements OnInit {
         console.log("User is signed out");
         this.menuCtrl.enable(false, "menu");
         this.email = "";
+        const navLogout = await this.router.navigateByUrl('/logout');
+        if (navLogout) {
+          console.log('Navigation SUCCESS to Logout Page');
+        } else {
+          console.error('Navigation ERROR to Logout Page');
+        }
       }
     });
 

@@ -102,9 +102,7 @@ export class OnboardingClubPage implements OnInit {
                   this.presentErrorAlert();
                 }
               }
-             
 
-              // await this.router.navigateByUrl("logout", {});
             },
           },
           {

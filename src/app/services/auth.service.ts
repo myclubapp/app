@@ -111,10 +111,16 @@ export class AuthService {
     return updateEmail(this.auth.currentUser, newEmail);
   }
 
-  async logout(): Promise<void> {
-    await signOut(this.auth);
+  async logout(): Promise<any> {
+    return signOut(this.auth);
+  
     // firebase.firestore().clearPersistence();
-    await this.router.navigateByUrl("/login");
+    /*const navLogout = await this.router.navigateByUrl("/logout");
+    if (navLogout) {
+      console.log('Navigation success to Logout Page');
+    } else {
+      console.error('Navigation ERROR to Logout Page');
+    }*/
   }
 
   async deleteProfile() {

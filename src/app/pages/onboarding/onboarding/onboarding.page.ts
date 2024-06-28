@@ -276,9 +276,6 @@ export class OnboardingPage implements OnInit {
                   this.presentErrorAlert();
                 }
               }
-             
-
-              // await this.router.navigateByUrl("logout", {});
             },
           },
           {

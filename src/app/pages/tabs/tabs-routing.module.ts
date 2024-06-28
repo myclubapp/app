@@ -29,8 +29,8 @@ const routes: Routes = [
           import('../training/trainings/trainings.module').then(
             (m) => m.TrainingsPageModule
           ),
-          canActivate: [AuthGuard],
-          data: { authGuardPipe: redirectUnauthorizedToLogin },
+        canActivate: [AuthGuard],
+        data: { authGuardPipe: redirectUnauthorizedToLogin },
       },
       {
         path: 'championship',
@@ -38,8 +38,8 @@ const routes: Routes = [
           import('../championship/championship/championship.module').then(
             (m) => m.ChampionshipPageModule
           ),
-          canActivate: [AuthGuard],
-          data: { authGuardPipe: redirectUnauthorizedToLogin },
+        canActivate: [AuthGuard],
+        data: { authGuardPipe: redirectUnauthorizedToLogin },
       },
       {
         path: 'events',
@@ -47,22 +47,22 @@ const routes: Routes = [
           import('../event/events/events.module').then(
             (m) => m.EventsPageModule
           ),
-          canActivate: [AuthGuard],
-          data: { authGuardPipe: redirectUnauthorizedToLogin },
+        canActivate: [AuthGuard],
+        data: { authGuardPipe: redirectUnauthorizedToLogin },
       }, {
         path: 'helfer',
         loadChildren: () =>
           import('../helfer/helfer/helfer.module').then(
             (m) => m.HelferPageModule
           ),
-          canActivate: [AuthGuard],
-          data: { authGuardPipe: redirectUnauthorizedToLogin },
+        canActivate: [AuthGuard],
+        data: { authGuardPipe: redirectUnauthorizedToLogin },
       },
       {
         path: '',
         redirectTo: '/t/news',
         pathMatch: 'full',
-       
+
       }
     ]
   },
@@ -70,7 +70,7 @@ const routes: Routes = [
     path: '',
     redirectTo: '/t/news',
     pathMatch: 'full',
-   
+
   }
 ]
 

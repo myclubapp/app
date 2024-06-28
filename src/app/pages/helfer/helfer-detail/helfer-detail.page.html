@@ -51,7 +51,7 @@
         <ion-label class="ion-text-wrap" >
           <h2>{{event.link_web}}</h2>
         </ion-label>
-        <ion-button (click)="openUrl(event.link_web)" fill="clear">
+        <ion-button slot="end" (click)="openUrl(event.link_web)" fill="clear">
           <ion-icon slot="icon-only" name="open-outline"></ion-icon>
         </ion-button> 
       </ion-item>
@@ -61,7 +61,7 @@
         <ion-label class="ion-text-wrap">
           <h2>{{event.link_poll}}</h2>
         </ion-label>
-        <ion-button (click)="openUrl(event.link_poll)" fill="clear">
+        <ion-button slot="end" (click)="openUrl(event.link_poll)" fill="clear">
           <ion-icon slot="icon-only" name="open-outline"></ion-icon>
         </ion-button> 
       </ion-item>

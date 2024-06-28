@@ -96,9 +96,6 @@ export class SignupPage implements OnInit {
           console.log(signupUserResponse.operationType);
         }
 
-        /*await this.authService.logout();
-        await this.router.navigateByUrl("login");*/
-
         const alert = await this.alertCtrl.create({
           header: await lastValueFrom(
             this.translate.get("signup.account__created")
@@ -118,8 +115,8 @@ export class SignupPage implements OnInit {
         }
         const usercredentials = await this.authService.login(credentials.email, credentials.password);
         console.log("user signed up " + usercredentials.user.email);
-        
-        // await this.router.navigateByUrl(""); // --> this should trigger appcomponent?
+        await this.router.navigateByUrl("/"); // --> this should trigger appcomponent?
+
       } catch (err) {
         let message =
           (await lastValueFrom(

@@ -82,6 +82,9 @@ export class NewsPage implements OnInit {
   private subscription: Subscription;
   private subscriptionFilter: Subscription;
 
+  clubNews$: Observable<News[]>;
+  verbandNews$: Observable<News[]>;
+
   newsList: News[] = [];
   newsList$: Observable<News[]>;
 
@@ -152,7 +155,24 @@ export class NewsPage implements OnInit {
     // Club observable
     const clubNews$ = this.authService.getUser$().pipe(
       take(1),
+      tap(async user=>{
+        this.user = user;
+        if (this.user.uid !== this.authService.auth.currentUser.uid){
+          await this.router.navigateByUrl('/logout');
+        }
+        // this.user.getIdToken(true);
+        // console.log(this.authService.auth.currentUser)
+      }),
       switchMap((user) => this.fbService.getUserClubRefs(user)),
+      tap(async clubs=>{
+        if (clubs.length == 0 && !this.authService.auth.currentUser == null){
+          console.log("user "  + this.user.email);
+          console.log("navigate to clubselection");
+          await this.router.navigateByUrl('/onboarding-club');
+        }else if ( this.authService.auth.currentUser == null) {
+          await this.router.navigateByUrl('/logout');
+        }
+      }), 
       concatMap((clubsArray) => from(clubsArray)),
       tap((club) => console.log(club.id)),
       concatMap((club) =>
@@ -177,7 +197,18 @@ export class NewsPage implements OnInit {
     // Verband observable
     const verbandNews$ = this.authService.getUser$().pipe(
       take(1),
+      tap(user=>{
+        this.user = user;
+        // this.user.getIdToken(true);
+      }),
       switchMap((user) => this.fbService.getUserClubRefs(user)),
+      /*tap(async clubs=>{
+        if (clubs.length == 0){
+          console.log("user "  + this.user.email);
+          console.log("navigate to clubselection");
+          await this.router.navigateByUrl('/onboarding-club');
+        }
+      }),*/ 
       concatMap((clubsArray) => from(clubsArray)),
       switchMap((club) => this.fbService.getClubRef(club.id)),
       tap((clubDetail) => console.log(clubDetail.type)),
@@ -250,7 +281,11 @@ export class NewsPage implements OnInit {
         this.newsList$ = of(this.newsList);
         console.log("Combined news list created");
       },
-      error: (err) => console.error("Error in the observable chain:", err),
+      error: (err) => {
+
+        console.log(this.authService.auth.currentUser)
+        return console.error("Error in the observable chain:", err);
+      },
     });
   }
 
