@@ -79,13 +79,7 @@ export class NewsPage implements OnInit {
   faEnvelope: any = faEnvelope;
   faCopy: any = faCopy;
 
-  private subscription: Subscription;
-  private subscriptionFilter: Subscription;
 
-  clubNews$: Observable<News[]>;
-  verbandNews$: Observable<News[]>;
-
-  newsList: News[] = [];
   newsList$: Observable<News[]>;
 
   constructor(
@@ -144,158 +138,87 @@ export class NewsPage implements OnInit {
   }
 
   ngOnInit() {
-    const clubNewsList: News[] = [];
-    const teamNewsList: News[] = [];
-    const verbandNewsList: News[] = [];
 
-    clubNewsList.length = 0;
-    teamNewsList.length = 0;
-    verbandNewsList.length = 0;
+    this.newsList$ = this.getNews();
 
-    // Club observable
-    const clubNews$ = this.authService.getUser$().pipe(
-      take(1),
-      tap(async user=>{
-        this.user = user;
-        if (this.user.uid !== this.authService.auth.currentUser.uid){
-          await this.router.navigateByUrl('/logout');
-        }
-        // this.user.getIdToken(true);
-        // console.log(this.authService.auth.currentUser)
-      }),
-      switchMap((user) => this.fbService.getUserClubRefs(user)),
-      tap(async clubs=>{
-        if (clubs.length == 0 && !this.authService.auth.currentUser == null){
-          console.log("user "  + this.user.email);
-          console.log("navigate to clubselection");
-          await this.router.navigateByUrl('/onboarding-club');
-        }else if ( this.authService.auth.currentUser == null) {
-          await this.router.navigateByUrl('/logout');
-        }
-      }), 
-      concatMap((clubsArray) => from(clubsArray)),
-      tap((club) => console.log(club.id)),
-      concatMap((club) =>
-        this.newsService.getClubNewsRef(club.id).pipe(
-          take(1),
-          map((newsArray) =>
-            newsArray.map((newsItem) => ({
-              ...newsItem,
-              filterable: club.id,
-            }))
-          ),
-          catchError((error) => {
-            console.error("Error fetching club news:", error);
-            return of([]);
-          })
-        )
-      ),
-      tap((news) => news.forEach((n) => clubNewsList.push(n))),
-      finalize(() => console.log("Club news fetching completed"))
-    );
-
-    // Verband observable
-    const verbandNews$ = this.authService.getUser$().pipe(
-      take(1),
-      tap(user=>{
-        this.user = user;
-        // this.user.getIdToken(true);
-      }),
-      switchMap((user) => this.fbService.getUserClubRefs(user)),
-      /*tap(async clubs=>{
-        if (clubs.length == 0){
-          console.log("user "  + this.user.email);
-          console.log("navigate to clubselection");
-          await this.router.navigateByUrl('/onboarding-club');
-        }
-      }),*/ 
-      concatMap((clubsArray) => from(clubsArray)),
-      switchMap((club) => this.fbService.getClubRef(club.id)),
-      tap((clubDetail) => console.log(clubDetail.type)),
-      concatMap((clubDetail) =>
-        this.newsService.getNewsRef(clubDetail.type).pipe(
-          take(1),
-          map((newsArray) =>
-            newsArray.map((newsItem) => ({
-              ...newsItem,
-              filterable: clubDetail.type,
-            }))
-          ),
-          catchError((error) => {
-            console.error("Error fetching verband news:", error);
-            return of([]);
-          })
-        )
-      ),
-      tap((news) => news.forEach((n) => verbandNewsList.push(n))),
-      finalize(() => console.log("Verband news fetching completed"))
-    );
-
-    // Team observable
-    /*const teamNews$ = this.authService.getUser$().pipe(
-      take(1),
-      switchMap((user) => this.fbService.getUserTeamRefs(user)),
-      concatMap((teamsArray) => from(teamsArray)),
-      tap((team) => console.log(team.id)),
-      concatMap((team) =>
-        this.newsService.getTeamNewsRef(team.id).pipe(
-          take(1),
-          map((newsArray) =>
-            newsArray.map((newsItem) => ({
-              ...newsItem,
-              filterable: team.id,
-            }))
-          ),
-          catchError((error) => {
-            console.error("Error fetching team news:", error);
-            return of([]);
-          })
-        )
-      ),
-      tap((news) => news.forEach((n) => teamNewsList.push(n))),
-      finalize(() => console.log("Team news fetching completed"))
-    );*/
-
-    // Use combineLatest to get results when both observables have emitted
-    this.subscriptionFilter = combineLatest([
-      clubNews$,
-      //teamNews$,
-      verbandNews$,
-    ]).subscribe({
-      next: () => {
-        this.newsList = [
-          ...this.newsList,
-          ...clubNewsList,
-          //...teamNewsList,
-          ...verbandNewsList,
-        ].sort((a, b): any => {
-          // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
-          return new Date(a.date).getTime() < new Date(b.date).getTime();
-        });
-
-        this.newsList = this.newsList.filter(
-          (news, index, self) =>
-            index === self.findIndex((t) => t.id === news.id)
-        );
-
-        this.newsList$ = of(this.newsList);
-        console.log("Combined news list created");
-      },
-      error: (err) => {
-
-        console.log(this.authService.auth.currentUser)
-        return console.error("Error in the observable chain:", err);
-      },
-    });
   }
 
   ngAfterViewInit(): void {}
 
   ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    
   }
+
+  getNews() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap(user => {
+          if (!user) throw new Error("User not found");
+          this.user = user;
+      }),
+      switchMap(user => this.fbService.getUserClubRefs(user)), // Get user's club references
+      switchMap(clubs => {
+          if (!clubs.length) {
+              console.log("No clubs associated with the user.");
+              return of([]);
+          }
+          
+          // Fetch detailed information for each club
+          return combineLatest(
+              clubs.map(club => this.fbService.getClubRef(club.id).pipe(
+                  switchMap(clubDetail => {
+                      if (!clubDetail) {
+                          console.log(`No details found for club ID: ${club.id}`);
+                          return of({ clubNews: [], typeNews: [] });
+                      }
+                      
+                      const newsByClub$ = this.newsService.getClubNewsRef(club.id).pipe(
+                          catchError(error => {
+                              console.error(`Error fetching news for club ID ${club.id}:`, error);
+                              return of([]);
+                          })
+                      );
+                      
+                      const newsByType$ = this.newsService.getNewsRef(clubDetail.type).pipe(
+                          catchError(error => {
+                              console.error(`Error fetching news for type ${clubDetail.type}:`, error);
+                              return of([]);
+                          })
+                      );
+                      
+                      return combineLatest([newsByClub$, newsByType$]).pipe(
+                          map(([clubNews, typeNews]) => ({ clubNews, typeNews }))
+                      );
+                  })
+              ))
+          );
+      }),
+      map(newsArrays => {
+          const allNews = [];
+  
+          // Aggregate and flatten the news items
+          newsArrays.forEach(({ clubNews, typeNews }) => {
+              allNews.push(...clubNews);
+              allNews.push(...typeNews);
+          });
+  
+          // Remove duplicates and sort
+          return allNews
+              .filter((news, index, self) =>
+                  index === self.findIndex((t) => t.id === news.id)
+              )
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      }),
+      catchError(error => {
+          console.error("Error fetching news:", error);
+          return of([]);
+      })
+  );
+
+
+  }
+
+
   async openModal(news: News) {
     // const presentingElement = await this.modalCtrl.getTop();
 
