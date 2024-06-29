@@ -46,7 +46,7 @@ export class OnboardingEmailPage implements OnInit {
   }
 
 
-  getUserProfile(): Observable<any> {
+  /*getUserProfile(): Observable<any> {
     // Replace 'any' with the actual type of the user profile
     return this.authService.getUser$().pipe(
       switchMap((user: User) => {
@@ -61,17 +61,23 @@ export class OnboardingEmailPage implements OnInit {
         return of(null); // Handle the error and return a default value
       })
     );
-  }
+  }*/
 
   async resendEmailActivation() {
     await this.authService.sendVerifyEmail();
     await this.toastActionSaved();
   }
 
-  async verified() {
-    this.authService.auth.currentUser.getIdToken(true);
+  async next() {
+    // Click next and see if user is really verified?
+    const token = await this.authService.auth.currentUser.getIdToken(true);
+    console.log(token)
     await this.authService.auth.currentUser.reload();
-    window.location.reload();
+    console.log("is Email verified now? " + this.authService.auth.currentUser.emailVerified)
+    await this.router.navigateByUrl("/").catch(e=>{
+      this.router.navigateByUrl("")
+    });
+    // window.location.reload();
   }
 
   async toastActionSaved() {

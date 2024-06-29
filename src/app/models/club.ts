@@ -7,6 +7,10 @@ export interface Club {
   type: string;
   active: boolean;
   wordpress: string;
+  website: string;
+  link_location: string;
+  address: string;
+  phone: string;
   updated: Timestamp;
 
 }

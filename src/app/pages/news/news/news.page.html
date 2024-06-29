@@ -48,8 +48,8 @@
               <ion-card-title>{{news.title}}</ion-card-title>
             </ion-card-header>
 
-            <ion-card-content (click)="openModal(news)">
-              {{news.leadText}}
+            <ion-card-content (click)="openModal(news)" [innerHTML]="news.leadText">
+              
             </ion-card-content>
             <ion-row>
               <ion-col size="8">
