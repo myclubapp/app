@@ -1,19 +1,21 @@
-<ng-container *ngIf="event$ | async as event">
-  <ion-header [translucent]="true">
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{"common.details" | translate}} </ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title>{{"common.details" | translate}} </ion-title>
-      <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
-      </ion-buttons>
+      <ion-title size="large">{{"common.details" | translate}}</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <ion-content>
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-title size="large">{{"common.details" | translate}}</ion-title>
-      </ion-toolbar>
-    </ion-header>
+  <ng-container *ngIf="event$ | async as event; else noEvent">
+
     <ion-list [inset]="true">
       <ion-item>
         <ion-icon slot="start" name="home-outline"></ion-icon>
@@ -48,12 +50,12 @@
 
       <ion-item *ngIf="event.link_web">
         <ion-icon slot="start" name="link-outline"></ion-icon>
-        <ion-label class="ion-text-wrap" >
+        <ion-label class="ion-text-wrap">
           <h2>{{event.link_web}}</h2>
         </ion-label>
         <ion-button slot="end" (click)="openUrl(event.link_web)" fill="clear">
           <ion-icon slot="icon-only" name="open-outline"></ion-icon>
-        </ion-button> 
+        </ion-button>
       </ion-item>
 
       <ion-item *ngIf="event.link_poll">
@@ -63,7 +65,7 @@
         </ion-label>
         <ion-button slot="end" (click)="openUrl(event.link_poll)" fill="clear">
           <ion-icon slot="icon-only" name="open-outline"></ion-icon>
-        </ion-button> 
+        </ion-button>
       </ion-item>
     </ion-list>
 
@@ -194,24 +196,17 @@
           </ion-accordion>
           <ion-accordion value="null">
             <ion-item slot="header" color="light">
-              <ion-label
-                >{{"common.noreply" | translate}}:
-                {{event['unrespondedMembers'].length}}</ion-label
-              >
+              <ion-label>{{"common.noreply" | translate}}:
+                {{event['unrespondedMembers'].length}}</ion-label>
             </ion-item>
             <div slot="content">
               <!-- class="ion-padding"-->
               <ion-list>
-                <ion-item
-                  *ngFor="let member of event['unrespondedMembers']"
-                  detail="true"
-                >
+                <ion-item *ngFor="let member of event['unrespondedMembers']" detail="true">
                   <ion-icon color="warning" slot="start" name="help-circle">
                   </ion-icon>
-  
-                  <ion-label (click)="openMember(member)"
-                    >{{member.firstName}} {{member.lastName}}</ion-label
-                  >
+
+                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
                 </ion-item>
               </ion-list>
             </div>
@@ -219,8 +214,16 @@
         </ion-accordion-group>
       </ion-list>
     </ng-container>
+  </ng-container>
+</ion-content>
+
+<ng-template #noEvent>
+  <ion-content class="ion-padding">
+    <ion-text>
+      Nichts gefunden
+    </ion-text>
   </ion-content>
-</ng-container>
+</ng-template>
 
 <ng-template #loading>
   <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>

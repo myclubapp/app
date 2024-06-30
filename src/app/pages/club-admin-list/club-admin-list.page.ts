@@ -77,6 +77,10 @@ export class ClubAdminListPage implements OnInit {
       this.subscribeAdmin.unsubscribe();
     }
   }
+
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
   edit() {
 
     if (this.allowEdit) {

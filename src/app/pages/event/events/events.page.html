@@ -75,9 +75,8 @@
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
           </ion-label>
-          <ion-note slot="end" (click)="openEventDetailModal(event, true)">
-            <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
-          </ion-note>
+          <ion-badge slot="end" (click)="openEventDetailModal(event, true)" color="primary">{{event.countAttendees}}</ion-badge>
+
         </ion-item>
 
         <ion-item-options side="start">
@@ -175,9 +174,8 @@
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
           </ion-label>
-          <ion-note slot="end" (click)="openEventDetailModal(event, false)">
-            <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
-          </ion-note>
+          <ion-badge slot="end" (click)="openEventDetailModal(event, false)" color="primary">{{event.countAttendees}}</ion-badge>
+
         </ion-item>
 
         <ng-container *ngIf="clubAdminList$ | async as clubAdminList">

@@ -66,9 +66,9 @@ export class HelferDetailPage implements OnInit {
   ) { }
 
   async ngOnInit() {
-    this.event = await this.navParams.get("data");
-    console.log("data here:   " + JSON.stringify(this.event));
-    this.event$ = of(this.event);
+    this.event = this.navParams.get("data");
+    // console.log("data here:   " + this.event.clubId, this.event.id);
+    // this.event$ = of(this.event);
 
     // GET HELFEREVENT && BASIC ATTENDEE
     this.event$ = this.getHelferEvent(this.event.clubId, this.event.id);

@@ -22,6 +22,7 @@ import { EventService } from "src/app/services/firebase/event.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { MemberPage } from "../../member/member.page";
 import { FirebaseService } from "src/app/services/firebase.service";
+import { Club } from "src/app/models/club";
 
 @Component({
   selector: "app-event-detail",
@@ -36,8 +37,14 @@ export class EventDetailPage implements OnInit {
 
   mode = "yes";
 
+  allowEdit: boolean = false;
+
   user$: Observable<User>;
   user: User;
+
+
+  clubAdminList$: Observable<Club[]>;
+
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -56,6 +63,8 @@ export class EventDetailPage implements OnInit {
     this.event = this.navParams.get("data");
     this.event$ = of(this.event);
     this.event$ = this.getEvent(this.event.clubId, this.event.id);
+
+    this.clubAdminList$ = this.fbService.getClubAdminList(); 
   }
 
   getEvent(clubId: string, eventId: string) {
@@ -160,6 +169,22 @@ export class EventDetailPage implements OnInit {
 
     if (role === "confirm") {
     }
+  }
+
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
+  edit() {
+
+    if (this.allowEdit) {
+      this.allowEdit = false;
+    } else {
+      this.allowEdit = true;
+    }
+  }
+  updateEvent(event, field){
+    console.log(field, event.detail)
+    this.eventService.changeClubEvent(field, event.detail.value, this.event.clubId, this.event.id)
   }
 
   async openUrl(url: string) {

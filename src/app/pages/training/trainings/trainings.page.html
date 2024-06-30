@@ -118,9 +118,8 @@
               <ion-badge color="light">{{training.exercises.length}} Übungen vorhanden</ion-badge>
             </h3>
           </ion-label>
-          <ion-note slot="end" (click)="openTrainingDetailModal(training,true)">
-            <ion-badge color="primary">{{training.countAttendees}}</ion-badge>
-          </ion-note>
+          <ion-badge slot="end" (click)="openTrainingDetailModal(training,true)" color="primary">{{training.countAttendees}}</ion-badge>
+
         </ion-item>
 
         <ion-item-options side="start">
@@ -195,9 +194,8 @@
               {{training.liga}} {{training.teamName}}
             </h3>
           </ion-label>
-          <ion-note slot="end" (click)="openTrainingDetailModal(training,false)">
-            <ion-badge color="primary">{{training.countAttendees}}</ion-badge>
-          </ion-note>
+          <ion-badge slot="end" (click)="openTrainingDetailModal(training,false)" color="primary">{{training.countAttendees}}</ion-badge>
+
         </ion-item>
 
         <ion-item-options side="end">

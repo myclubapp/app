@@ -3,7 +3,7 @@
     <ion-toolbar>
 
       <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-buttons *ngIf="clubAdminList.length > 0" slot="secondary">
+        <ion-buttons  *ngIf="isClubAdmin(clubAdminList, this.club.id)" slot="secondary">
           <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
           <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
         </ion-buttons>

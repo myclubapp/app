@@ -31,6 +31,13 @@ export class EventService {
 
   /* CLUB EventS */
 
+  changeClubEvent(fieldname, value, clubId, eventId){
+    const clubEventRef = doc(this.firestore, `club/${clubId}/events/${eventId}`);
+    return updateDoc(clubEventRef, { [fieldname]: value });
+
+  }
+
+
   getClubEventRef(clubId: string, eventId: string): Observable<Veranstaltung> {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const eventRef = doc(this.firestore, `club/${clubId}/events/${eventId}`);
