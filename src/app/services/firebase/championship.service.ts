@@ -19,12 +19,15 @@ import {
 import { orderBy } from "firebase/firestore";
 import { Observable, Observer } from "rxjs";
 import { Game } from "src/app/models/game";
+import { AuthService } from "../auth.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class ChampionshipService {
-  constructor(private firestore: Firestore = inject(Firestore)) {
+  constructor(
+    private readonly authService: AuthService,
+    private firestore: Firestore = inject(Firestore)) {
 
   }
 
@@ -57,7 +60,7 @@ export class ChampionshipService {
         ">=",
         Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)) // 2h lang das "alte Spiel" anzeigen
       ),
-      orderBy('dateTime','asc')
+      orderBy('dateTime', 'asc')
     ); // heute - 1 Tag
     return collectionData(q, { idField: "id" }) as Observable<
       Game[]
@@ -76,7 +79,7 @@ export class ChampionshipService {
         Timestamp.fromDate(new Date(Date.now())) // sofort in "vergangen" anzeigen
       ),
       limit(20),
-      orderBy('dateTime','desc')
+      orderBy('dateTime', 'desc')
     ); // heute - 1 Tag
     return collectionData(q, { idField: "id" }) as Observable<
       Game[]
@@ -105,22 +108,18 @@ export class ChampionshipService {
 
   /* SET TEAM GAMES ATTENDEE Status */
   setTeamGameAttendeeStatus(
-    userId: string,
     status: boolean,
     teamId: string,
     gameId: string
   ) {
+    const user = this.authService.auth.currentUser;
     const statusRef = doc(
       this.firestore,
-      `teams/${teamId}/games/${gameId}/attendees/${userId}`
+      `teams/${teamId}/games/${gameId}/attendees/${user.uid}`
     );
-    return setDoc(statusRef, {
-      id: userId,
-      status: status,
-    });
+    return setDoc(statusRef, { status });
   }
   setTeamGameAttendeeStatusAdmin(
-    userId: string,
     status: boolean,
     teamId: string,
     gameId: string,
@@ -130,9 +129,6 @@ export class ChampionshipService {
       this.firestore,
       `teams/${teamId}/games/${gameId}/attendees/${memberId}`
     );
-    return setDoc(statusRef, {
-      id: userId,
-      status: status,
-    });
+    return setDoc(statusRef, { status });
   }
 }

@@ -7,6 +7,7 @@ import {
   ViewChild,
 } from "@angular/core";
 import {
+  IonItemSliding,
   ModalController,
   // NavController,
   NavParams,
@@ -33,6 +34,7 @@ import { LineupPage } from "../lineup/lineup.page";
 import { Profile } from "src/app/models/user";
 import { MemberPage } from "../../member/member.page";
 import { FirebaseService } from "src/app/services/firebase.service";
+import { Team } from "src/app/models/team";
 
 @Component({
   selector: "app-championship-detail",
@@ -55,6 +57,7 @@ export class ChampionshipDetailPage implements OnInit {
   user: User;
 
   coordinates: Position;
+  teamAdminList$: Observable<Team[]>;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -70,6 +73,7 @@ export class ChampionshipDetailPage implements OnInit {
     private translate: TranslateService
   ) {
     //  this.setMap();
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
   }
 
   ngOnInit() {
@@ -80,7 +84,7 @@ export class ChampionshipDetailPage implements OnInit {
       console.log(params);
       this.game = JSON.parse(params.data);
       */
-    this.game$ = of(this.game);
+      this.game$ = of(this.game);
 
     this.game$ = this.getGame(this.game.teamId, this.game.id);
     this.game$.subscribe({
@@ -101,6 +105,12 @@ export class ChampionshipDetailPage implements OnInit {
 
     // let this.mapRef =  @ViewChild('map') abc;
   }
+
+  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
+    // console.log(teamAdminList, teamId)
+    return teamAdminList && teamAdminList.some(team => team.id === teamId);
+  }
+
   ionViewDidEnter() {
     if (!this.newMap) this.setMap();
   }
@@ -125,6 +135,7 @@ export class ChampionshipDetailPage implements OnInit {
 
         // Fetch all team members first
         return this.fbService.getTeamMemberRefs(teamId).pipe(
+          
           switchMap(teamMembers => {
             const teamMemberProfiles$ = teamMembers.map(member =>
               this.userProfileService.getUserProfileById(member.id).pipe(
@@ -137,6 +148,7 @@ export class ChampionshipDetailPage implements OnInit {
             );
             // Fetch all attendees next
             return forkJoin(teamMemberProfiles$).pipe(
+              map(teamMembersWithDetails => teamMembersWithDetails.filter(member => member !== undefined)), // Filtering out undefined entries
               switchMap(teamMembersWithDetails => {
                 return this.championshipService.getTeamGameAttendeesRef(teamId, gameId).pipe(
                   map(attendees => {
@@ -148,13 +160,15 @@ export class ChampionshipDetailPage implements OnInit {
                     const attendeeListTrue = attendeeDetails.filter(att => att.status === true);
                     const attendeeListFalse = attendeeDetails.filter(att => att.status === false);
                     const respondedIds = new Set(attendeeDetails.map(att => att.id));
-                    const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id));
+                    // Modify here to add 'status: null' for each unresponded member
+                    const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id))
+                      .map(member => ({ ...member, status: null })); // Ensuring 'status: null' is explicitly set
 
                     const userAttendee = attendeeDetails.find(att => att.id === this.user.uid);
                     const status = userAttendee ? userAttendee.status : null;
-
                     return {
                       ...game,
+                      teamId: teamId,
                       attendees: attendeeDetails,
                       attendeeListTrue,
                       attendeeListFalse,
@@ -166,11 +180,13 @@ export class ChampionshipDetailPage implements OnInit {
                     console.error("Error fetching attendees:", err);
                     return of({
                       ...game,
+                      teamId: teamId,
                       attendees: [],
                       attendeeListTrue: [],
                       attendeeListFalse: [],
-                      unrespondedMembers: teamMembersWithDetails.filter(member => member !== null),
-                      status: null
+                      unrespondedMembers: teamMembersWithDetails.filter(member => member !== null)
+                      .map(member => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
+                    status: null
                     });
                   })
                 );
@@ -181,6 +197,7 @@ export class ChampionshipDetailPage implements OnInit {
             console.error("Error fetching team members:", err);
             return of({
               ...game,
+              teamId: teamId,
               attendees: [],
               attendeeListTrue: [],
               attendeeListFalse: [],
@@ -203,7 +220,6 @@ export class ChampionshipDetailPage implements OnInit {
         `Set Status ${status} for user ${this.user.uid} and team ${this.game.teamId} and game ${game.id}`
       );
       await this.championshipService.setTeamGameAttendeeStatusAdmin(
-        this.user.uid,
         status,
         this.game.teamId,
         game.id,
@@ -221,10 +237,28 @@ export class ChampionshipDetailPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${this.game.teamId} and game ${game.id}`
     );
     await this.championshipService.setTeamGameAttendeeStatus(
-      this.user.uid,
       status,
       this.game.teamId,
       game.id
+    );
+    this.presentToast();
+  }
+  async toggleItem(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    game: Game,
+    memberId: string,
+  ) {
+    slidingItem.closeOpened();
+
+    console.log(
+      `Set Status ${status} for user ${memberId} and team ${game.teamId} and game ${game.id}`
+    );
+    await this.championshipService.setTeamGameAttendeeStatusAdmin(
+      status,
+      game.teamId,
+      game.id,
+      memberId,
     );
     this.presentToast();
   }

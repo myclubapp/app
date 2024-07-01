@@ -96,14 +96,17 @@ export class TrainingDetailPage implements OnInit {
             );
             // Fetch all attendees next
             return forkJoin(teamMemberProfiles$).pipe(
+              map(teamMembersWithDetails => teamMembersWithDetails.filter(member => member !== undefined)), // Filtering out undefined entries
               switchMap(teamMembersWithDetails => {
                 return this.trainingService.getTeamTrainingsAttendeesRef(teamId, trainingId).pipe(
                   map(attendees => {
                     const attendeeDetails = attendees.map(attendee => {
-                      const detail = teamMembersWithDetails.find(member => member.id === attendee.id);
+                      const detail = teamMembersWithDetails.find(member => member && member.id === attendee.id);
                       return detail ? { ...detail, status: attendee.status } : null;
                     }).filter(item => item !== null);
 
+                    // console.log(attendeeDetails);
+                    // console.log(teamMembersWithDetails)
                     const attendeeListTrue = attendeeDetails.filter(att => att.status === true);
                     const attendeeListFalse = attendeeDetails.filter(att => att.status === false);
                     const respondedIds = new Set(attendeeDetails.map(att => att.id));

@@ -42,9 +42,9 @@ export class EventDetailPage implements OnInit {
   user$: Observable<User>;
   user: User;
 
-
   clubAdminList$: Observable<Club[]>;
 
+  eventHasChanged: any;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -65,6 +65,7 @@ export class EventDetailPage implements OnInit {
     this.event$ = this.getEvent(this.event.clubId, this.event.id);
 
     this.clubAdminList$ = this.fbService.getClubAdminList(); 
+    this.eventHasChanged = {};
   }
 
   getEvent(clubId: string, eventId: string) {
@@ -174,17 +175,28 @@ export class EventDetailPage implements OnInit {
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
     return clubAdminList && clubAdminList.some(club => club.id === clubId);
   }
-  edit() {
+  async edit() {
 
     if (this.allowEdit) {
       this.allowEdit = false;
+
+      if (Object.keys(this.eventHasChanged).length > 0) {
+        // alert("change")
+        const updatedEvent = await this.eventService.changeClubEvent(this.eventHasChanged, this.event.clubId, this.event.id).catch(e=>{
+          this.toastActionError(e);
+        });
+        // console.log(updatedEvent);
+        this.presentToast();
+      }
+      
     } else {
       this.allowEdit = true;
     }
   }
-  updateEvent(event, field){
-    console.log(field, event.detail)
-    this.eventService.changeClubEvent(field, event.detail.value, this.event.clubId, this.event.id)
+  async updateEvent(event, field){
+    console.log(field, event.detail)    
+    this.eventHasChanged[field] = event.detail.value;
+    
   }
 
   async openUrl(url: string) {
@@ -216,7 +228,32 @@ export class EventDetailPage implements OnInit {
     toast.present();
   }
 
+  async toastActionError(error) {
+    const toast = await this.toastController.create({
+      message: error.message,
+      duration: 2000,
+      position: "bottom",
+      color: "danger",
+    });
+
+    await toast.present();
+  }
+  changeTimeFrom(ev) {
+    console.log(ev.detail.value);
+    if (this.event.timeFrom > this.event.timeTo) {
+      this.event.timeTo = this.event.timeFrom;
+    }
+  }
+
+  changeStartDate(ev) {
+    console.log(ev.detail.value);
+    if (this.event.startDate > this.event.endDate) {
+      this.event.endDate = this.event.startDate;
+    }
+  }
+
   async close() {
+
     return await this.modalCtrl.dismiss(null, "close");
   }
 

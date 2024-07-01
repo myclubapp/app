@@ -192,6 +192,9 @@
         "version": "Version"
     },
     "common": {
+        "success__event_deleted": "Veranstaltung erfolgreich gelöscht",
+        "success__helfer_deleted": "Helferevent erfolgreich gelöscht",
+        "success__training_deleted": "Training erfolgreich gelöscht",
         "alle_anmelden": "alle anmelden",
         "link__web": "Webseite / Weitere Informationen",
         "link__poll": "Umfrage",
@@ -253,7 +256,7 @@
         "start__date": "Startdatum",
         "end__date": "Enddatum",
         "no_event__found": "keine Veranstaltungen gefunden",
-        "delete": "Delete",
+        "delete": "Löschen",
         "helper": "Helferevents",
         "helper_points": "Helferpunkte",
         "my_helper_points": "Meine Helferpunkte",

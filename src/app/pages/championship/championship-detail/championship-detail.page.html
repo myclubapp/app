@@ -17,7 +17,7 @@
     </ion-fab>
     <capacitor-google-map #map *ngIf="game.latitude && game.longitude"></capacitor-google-map>
     <ion-list [inset]="true">
-   
+
       <ion-item>
         <ion-avatar slot="start">
           <img src="{{game.teamHomeLogo}}" />
@@ -53,12 +53,7 @@
         <ion-label class="ion-text-wrap">
           <h2>{{game.location}} {{game.city}}</h2>
         </ion-label>
-        <ion-icon
-          color="primary"
-          (click)="openMaps(game)"
-          slot="end"
-          name="map-outline"
-        ></ion-icon>
+        <ion-icon color="primary" (click)="openMaps(game)" slot="end" name="map-outline"></ion-icon>
       </ion-item>
 
       <ion-item>
@@ -101,33 +96,18 @@
       </ion-list-header>
       <ion-item class="myclubStatus">
         <ng-container *ngIf="game.hasOwnProperty('status'); else loading">
-          <ion-fab-button
-            (click)="toggle(true, game)"
-            size="small"
-            color="warning"
-            slot="start"
-            *ngIf="game.status === null"
-          >
+          <ion-fab-button (click)="toggle(true, game)" size="small" color="warning" slot="start"
+            *ngIf="game.status === null">
             <ion-icon name="help-circle"> </ion-icon>
           </ion-fab-button>
 
-          <ion-fab-button
-            (click)="toggle(true, game)"
-            size="small"
-            color="danger"
-            slot="start"
-            *ngIf="game.status === false"
-          >
+          <ion-fab-button (click)="toggle(true, game)" size="small" color="danger" slot="start"
+            *ngIf="game.status === false">
             <ion-icon name="close-circle"> </ion-icon>
           </ion-fab-button>
 
-          <ion-fab-button
-            (click)="toggle(false, game)"
-            size="small"
-            color="success"
-            slot="start"
-            *ngIf="game.status === true"
-          >
+          <ion-fab-button (click)="toggle(false, game)" size="small" color="success" slot="start"
+            *ngIf="game.status === true">
             <ion-icon name="checkmark-circle"> </ion-icon>
           </ion-fab-button>
 
@@ -138,76 +118,101 @@
 
     <ion-list [inset]="true">
       <ion-accordion-group [multiple]="true" [value]="['yes']">
-        <ion-accordion value="yes"  *ngIf="game['attendeeListTrue'].length > 0">>
+        <ion-accordion value="yes" *ngIf="game['attendeeListTrue'].length > 0">>
           <ion-item slot="header" color="light">
-            <ion-label
-              >{{"common.present" | translate}}:
-              {{game['attendeeListTrue'].length}}</ion-label
-            >
+            <ion-label>{{"common.present" | translate}}:
+              {{game['attendeeListTrue'].length}}</ion-label>
           </ion-item>
           <div slot="content">
             <!-- class="ion-padding"-->
             <ion-list>
-              <ion-item
-                *ngFor="let member of game['attendeeListTrue']"
-                detail="true"
-              >
-                <ion-icon color="success" slot="start" name="checkmark-circle">
-                </ion-icon>
+              <ion-item-sliding #item *ngFor="let member of game['attendeeListTrue']">
+                <ion-item detail="true">
+                  <ion-icon color="success" slot="start" name="checkmark-circle">
+                  </ion-icon>
 
-                <ion-label (click)="openMember(member)"
-                  >{{member.firstName}} {{member.lastName}}</ion-label
-                >
-              </ion-item>
+                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
+                </ion-item>
+                <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+                  <ion-item-options *ngIf="isTeamAdmin(teamAdminList, game.teamId)" side="end">
+                    <ion-item-option color="success" *ngIf="member.status === false || member.status === null"
+                      (click)="toggleItem(item, true, game, member.id)">
+                      <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                    </ion-item-option>
+                    <ion-item-option color="danger" *ngIf="member.status === true || member.status === null"
+                      (click)="toggleItem(item, false, game, member.id)">
+                      <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                    </ion-item-option>
+                  </ion-item-options>
+                </ng-container>
+              </ion-item-sliding>
             </ion-list>
           </div>
         </ion-accordion>
-        <ion-accordion value="no"  *ngIf="game['attendeeListFalse'].length > 0">>
+        <ion-accordion value="no" *ngIf="game['attendeeListFalse'].length > 0">>
           <ion-item slot="header" color="light">
-            <ion-label
-              >{{"common.absent" | translate}}:
-              {{game['attendeeListFalse'].length}}</ion-label
-            >
+            <ion-label>{{"common.absent" | translate}}:
+              {{game['attendeeListFalse'].length}}</ion-label>
           </ion-item>
           <div slot="content">
             <!-- class="ion-padding"-->
             <ion-list>
-              <ion-item
-                *ngFor="let member of game['attendeeListFalse']"
-                detail="true"
-              >
-                <ion-icon color="danger" slot="start" name="close-circle">
-                </ion-icon>
-
-                <ion-label (click)="openMember(member)"
-                  >{{member.firstName}} {{member.lastName}}</ion-label
-                >
-              </ion-item>
+              <ion-item-sliding #item *ngFor="let member of game['attendeeListFalse']">
+                <ion-item detail="true">
+                  <ion-icon color="danger" slot="start" name="close-circle">
+                  </ion-icon>
+                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
+                </ion-item>
+                <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+                  <ion-item-options *ngIf="isTeamAdmin(teamAdminList, game.teamId)" side="end">
+                    <ion-item-option color="success" *ngIf="member.status === false || member.status === null"
+                      (click)="toggleItem(item, true, game, member.id)">
+                      <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                    </ion-item-option>
+                    <ion-item-option color="danger" *ngIf="member.status === true || member.status === null"
+                      (click)="toggleItem(item, false, game, member.id)">
+                      <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                    </ion-item-option>
+                  </ion-item-options>
+                </ng-container>
+              </ion-item-sliding>
             </ion-list>
           </div>
         </ion-accordion>
         <ion-accordion value="null" *ngIf="game['unrespondedMembers'].length > 0">
           <ion-item slot="header" color="light">
-            <ion-label
-              >{{"common.noreply" | translate}}:
-              {{game['unrespondedMembers'].length}}</ion-label
-            >
-            <ion-button *ngIf="game['unrespondedMembers'].length > 0" fill="clear" slot="end" (click)="toggleAll(true, game)">{{"common.alle_anmelden" | translate}}</ion-button>
+            <ion-label>{{"common.noreply" | translate}}:
+              {{game['unrespondedMembers'].length}}</ion-label>
+            <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+              <ion-button *ngIf="game['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList, game.teamId)"
+                fill="clear" slot="end" (click)="toggleAll(true, game)">{{"common.alle_anmelden" |
+                translate}}</ion-button>
+            </ng-container>
           </ion-item>
           <div slot="content">
             <!-- class="ion-padding"-->
             <ion-list>
-              <ion-item
-                *ngFor="let member of game['unrespondedMembers']"
-                detail="true"
-              >
-                <ion-icon color="warning" slot="start" name="help-circle">
-                </ion-icon>
+              <ion-item-sliding #item *ngFor="let member of game['unrespondedMembers']">
 
-                <ion-label (click)="openMember(member)"
-                  >{{member.firstName}} {{member.lastName}}</ion-label
-                >
-              </ion-item>
+                <ion-item detail="true">
+                  <ion-icon color="warning" slot="start" name="help-circle">
+                  </ion-icon>
+
+                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
+                </ion-item>
+                <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+                  <ion-item-options *ngIf="isTeamAdmin(teamAdminList, game.teamId)" side="end">
+                    <ion-item-option color="success" *ngIf="member.status === false || member.status === null"
+                      (click)="toggleItem(item, true, game, member.id)">
+                      <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                    </ion-item-option>
+                    <ion-item-option color="danger" *ngIf="member.status === true || member.status === null"
+                      (click)="toggleItem(item, false, game, member.id)">
+                      <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                    </ion-item-option>
+                  </ion-item-options>
+                </ng-container>
+              </ion-item-sliding>
             </ion-list>
           </div>
         </ion-accordion>

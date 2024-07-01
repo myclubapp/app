@@ -377,7 +377,6 @@ export class ChampionshipPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
     );
     await this.championshipService.setTeamGameAttendeeStatus(
-      this.user.uid,
       status,
       game.teamId,
       game.id
@@ -393,7 +392,6 @@ export class ChampionshipPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
     );*/
     await this.championshipService.setTeamGameAttendeeStatus(
-      this.user.uid,
       status,
       game.teamId,
       game.id

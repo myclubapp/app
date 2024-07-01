@@ -169,8 +169,11 @@
           <ion-item slot="header" color="light">
             <ion-label>{{"common.noreply" | translate}}:
               {{training['unrespondedMembers'].length}}</ion-label>
-            <ion-button *ngIf="training['unrespondedMembers'].length > 0" fill="clear" slot="end"
-              (click)="toggleAll(true, training)"> {{"common.alle_anmelden" | translate}}</ion-button>
+            <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+              <ion-button *ngIf="training['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList, training.teamId)"
+                fill="clear" slot="end" (click)="toggleAll(true, training)"> {{"common.alle_anmelden" |
+                translate}}</ion-button>
+            </ng-container>
           </ion-item>
           <div slot="content">
             <!-- class="ion-padding"-->

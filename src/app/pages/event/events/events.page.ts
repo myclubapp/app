@@ -341,8 +341,8 @@ export class EventsPage implements OnInit {
     slidingItem.closeOpened();
     await this.eventService.deleteClubEvent(event.clubId, event.id);
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.delete")),
-      color: "primary",
+      message: await lastValueFrom(this.translate.get("common.success__event_deleted")),
+      color: "danger",
       duration: 2000,
       position: "top",
     });

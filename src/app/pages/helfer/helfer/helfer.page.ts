@@ -503,8 +503,8 @@ export class HelferPage implements OnInit {
     slidingItem.closeOpened();
     await this.eventService.deleteHelferEvent(event.clubId, event.id);
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.delete")),
-      color: "primary",
+      message: await lastValueFrom(this.translate.get("common.success__helfer_deleted")),
+      color: "danger",
       duration: 2000,
       position: "top",
     });

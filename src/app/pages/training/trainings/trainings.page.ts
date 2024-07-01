@@ -245,12 +245,13 @@ export class TrainingsPage implements OnInit {
           )
         ).pipe(
           map((teamsTrainings) => teamsTrainings.flat()), // Flatten to get all trainings across all teams
+          tap(teamsTrainings => console.log(teamsTrainings)),
           map(
             (allTrainings) =>
               allTrainings.sort(
                 (a, b) =>
-                  Timestamp.fromMillis(a.dateTime).seconds -
-                  Timestamp.fromMillis(b.dateTime).seconds
+                  Timestamp.fromMillis(a.startDate).seconds -
+                  Timestamp.fromMillis(b.startDate).seconds
               ) // Sort trainings by date
           )
         );
@@ -327,9 +328,9 @@ export class TrainingsPage implements OnInit {
           map(
             (allTrainings) =>
               allTrainings.sort(
-                (b, a) =>
-                  Timestamp.fromMillis(a.dateTime).seconds -
-                  Timestamp.fromMillis(b.dateTime).seconds
+                (a, b) =>
+                  Timestamp.fromMillis(b.startDate).seconds -
+                  Timestamp.fromMillis(a.startDate).seconds
               ) // Sort trainings by date
           )
         );
@@ -409,8 +410,8 @@ export class TrainingsPage implements OnInit {
     slidingItem.closeOpened();
     await this.trainingService.deleteTeamTraining(training.teamId, training.id);
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.delete")),
-      color: "primary",
+      message: await lastValueFrom(this.translate.get("common.success__training_deleted")),
+      color: "danger",
       duration: 2000,
       position: "top",
     });

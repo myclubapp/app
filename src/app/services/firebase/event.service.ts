@@ -31,10 +31,9 @@ export class EventService {
 
   /* CLUB EventS */
 
-  changeClubEvent(fieldname, value, clubId, eventId){
+  changeClubEvent(eventData, clubId, eventId){
     const clubEventRef = doc(this.firestore, `club/${clubId}/events/${eventId}`);
-    return updateDoc(clubEventRef, { [fieldname]: value });
-
+    return updateDoc(clubEventRef, eventData);
   }
 
 

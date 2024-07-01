@@ -157,7 +157,6 @@ export class TrainingService {
     trainingId: string,
     memberId: string,
   ) {
-    //const user = this.authService.auth.currentUser;
     const statusRef = doc(
       this.firestore,
       `teams/${teamId}/trainings/${trainingId}/attendees/${memberId}`
