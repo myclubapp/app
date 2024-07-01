@@ -107,6 +107,11 @@ export class EventService {
   }
 
   /* HELFER EVENTS */
+
+  changeHelferEvent(eventData, clubId, eventId){
+    const helferEventRef = doc(this.firestore, `club/${clubId}/helferEvents/${eventId}`);
+    return updateDoc(helferEventRef, eventData);
+  }
   getClubHelferEventRef(
     clubId: string,
     eventId: string

@@ -196,7 +196,6 @@ export class EventDetailPage implements OnInit {
   async updateEvent(event, field){
     console.log(field, event.detail)    
     this.eventHasChanged[field] = event.detail.value;
-    
   }
 
   async openUrl(url: string) {
@@ -238,6 +237,8 @@ export class EventDetailPage implements OnInit {
 
     await toast.present();
   }
+
+
   changeTimeFrom(ev) {
     console.log(ev.detail.value);
     if (this.event.timeFrom > this.event.timeTo) {

@@ -1,22 +1,28 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>{{"common.details" | translate}} </ion-title>
-    <ion-buttons slot="primary">
-      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<ng-container *ngIf="event$ | async as event; else noEvent">
 
-<ion-content>
-  <ion-header collapse="condense">
+  <ion-header [translucent]="true">
     <ion-toolbar>
-      <ion-title size="large">{{"common.details" | translate}}</ion-title>
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-buttons *ngIf="isClubAdmin(clubAdminList, this.event.clubId)" slot="secondary">
+          <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
+          <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
+        </ion-buttons>
+      </ng-container>
+      <ion-title>{{"common.details" | translate}} </ion-title>
+      <ion-buttons slot="primary">
+        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="event$ | async as event; else noEvent">
+  <ion-content>
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">{{"common.details" | translate}}</ion-title>
+      </ion-toolbar>
+    </ion-header>
 
-    <ion-list [inset]="true">
+    <ion-list [inset]="true" *ngIf="!allowEdit">
       <ion-item>
         <ion-icon slot="start" name="home-outline"></ion-icon>
         <ion-label class="ion-text-wrap">
@@ -37,7 +43,9 @@
       <ion-item>
         <ion-icon slot="start" name="location-outline"></ion-icon>
         <ion-label class="ion-text-wrap">
-          <h2>{{event.streetAndNumber}} {{event.city}}</h2>
+          <h2>{{event.location}}</h2>
+          <h2>{{event.streetAndNumber}} </h2>
+          <h2>{{event.postalCode}} {{event.city}}</h2>
         </ion-label>
       </ion-item>
 
@@ -68,6 +76,7 @@
         </ion-button>
       </ion-item>
     </ion-list>
+    <ng-container *ngIf="!allowEdit">
 
     <ng-container *ngIf="schichten$ | async as schichten">
 
@@ -214,8 +223,126 @@
         </ion-accordion-group>
       </ion-list>
     </ng-container>
+      
   </ng-container>
-</ion-content>
+
+
+    <!-- CHANGE MODE-->
+    <ng-container *ngIf="allowEdit">
+      <ion-list [inset]="true">
+        <ion-item>
+          <ion-input [label]='"common.name" | translate' label-placement="stacked"
+            (ionChange)="updateEvent($event, 'name')" [value]="event.name">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-textarea [autoGrow]="true" (ionChange)="updateEvent($event, 'description')"
+            [label]='"common.description" | translate' label-placement="stacked" [value]="event.description">
+          </ion-textarea>
+        </ion-item>
+      </ion-list>
+
+      <ion-list [inset]="true">
+        <ion-item>
+          <ion-input (ionChange)="updateEvent($event, 'location')" [label]='"common.location" | translate'
+            label-placement="stacked" [value]="event.location">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input (ionChange)="updateEvent($event, 'streetAndNumber')"
+            [label]='"common.street__house_number" | translate' label-placement="stacked"
+            [value]="event.streetAndNumber">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input (ionChange)="updateEvent($event, 'postalCode')" [label]="'common.postal__code' | translate"
+            label-placement="stacked" [value]="event.postalCode">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input (ionChange)="updateEvent($event, 'city')" [label]='"common.locality" | translate'
+            label-placement="stacked" [value]="event.city">
+          </ion-input>
+        </ion-item>
+      </ion-list>
+
+
+      <ion-list [inset]="true">
+        <ion-item>
+          <ion-input (ionChange)="updateEvent($event, 'link_web')" [label]="'common.link__web' | translate" label-placement="stacked" type="url"
+            [value]="event.link_web" 
+            [placeholder]="'common.link__placeholder' | translate">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input (ionChange)="updateEvent($event, 'link_poll')" [label]="'common.link__poll' | translate" label-placement="stacked" type="url"
+            [value]="event.link_poll" 
+            [placeholder]="'common.link__placeholder' | translate">
+          </ion-input>
+        </ion-item>
+      </ion-list>
+
+      <ion-list [inset]="true">
+        <ion-item id="timeFromItem">
+          <ion-label position="">
+            {{"common.start__event" | translate}}:
+          </ion-label>
+          <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
+
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime presentation="time" id="timeFrom" (ionChange)="changeTimeFrom($event)" (ionChange)="updateEvent($event, 'timeFrom')" 
+                minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" [value]="event.timeFrom"
+                ></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+
+        <ion-item id="timeToItem">
+          <ion-label position=""> {{"common.end__event" | translate}}: </ion-label>
+          <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
+
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime (ionChange)="updateEvent($event, 'timeTo')"  presentation="time" id="timeTo" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+                [value]="event.timeTo"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+
+        <ion-item id="startDateItem">
+          <ion-label position="default">
+            {{"common.start__date" | translate}}:
+          </ion-label>
+          <ion-datetime-button slot="end" datetime="startDate"></ion-datetime-button>
+
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime (ionChange)="updateEvent($event, 'startDate')"  [firstDayOfWeek]="1" (ionChange)="changeStartDate($event)" presentation="date"
+                id="startDate" [value]="event.startDate"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+
+        <ion-item id="endDateItem">
+          <ion-label position="default">
+            {{"common.end__date" | translate}}:
+          </ion-label>
+          <ion-datetime-button slot="end" datetime="endDate"></ion-datetime-button>
+
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime (ionChange)="updateEvent($event, 'endDate')"  [firstDayOfWeek]="1" presentation="date" id="endDate" [value]="event.endDate"
+               ></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+      </ion-list>
+    </ng-container>
+
+
+  </ion-content>
+</ng-container>
 
 <ng-template #noEvent>
   <ion-content class="ion-padding">
