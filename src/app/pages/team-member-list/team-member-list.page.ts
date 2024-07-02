@@ -91,61 +91,74 @@ export class TeamMemberListPage implements OnInit {
     this.groupArray = [];
 
     const calculateAge = (dateOfBirth) => {
-      const birthday = new Date(dateOfBirth.seconds * 1000);
-      const ageDifMs = Date.now() - birthday.getTime();
-      const ageDate = new Date(ageDifMs);
-      return Math.abs(ageDate.getUTCFullYear() - 1970);
+        const birthday = new Date(dateOfBirth.seconds * 1000);
+        const ageDifMs = Date.now() - birthday.getTime();
+        const ageDate = new Date(ageDifMs);
+        return Math.abs(ageDate.getUTCFullYear() - 1970);
     };
 
     return this.authService.getUser$().pipe(
-      take(1),
-      tap((user) => {
-        this.user = user;
-        if (!user) throw new Error("User not found");
-      }),
-      switchMap(() => this.fbService.getTeamRef(teamId)),
-      switchMap((team) => {
-        if (!team) return of(null);
-        return this.fbService.getTeamMemberRefs(teamId).pipe(
-          switchMap(teamMembers => {
-            const memberProfiles$ = teamMembers.map(member =>
-              this.userProfileService.getUserProfileById(member.id).pipe(
-                take(1),
-                catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
-              )
-            );
-            return forkJoin(memberProfiles$).pipe(
-              map(teamMembers => {
-                this.groupArray = []; // Clear previous group array entries
-                return teamMembers
-                  .filter(member => member !== undefined)
-                  .sort((a, b) => a.firstName.localeCompare(b.firstName))
-                  .map(profile => {
-                    const groupByChar = profile.firstName.charAt(0);
-                    if (!this.groupArray.includes(groupByChar)) {
-                      this.groupArray.push(groupByChar);
+        take(1),
+        tap((user) => {
+            this.user = user;
+            if (!user) throw new Error("User not found");
+        }),
+        switchMap(() => this.fbService.getTeamRef(teamId)),
+        switchMap((team) => {
+            if (!team) return of(null);
+            return this.fbService.getTeamMemberRefs(teamId).pipe(
+                switchMap(teamMembers => {
+                    if (teamMembers.length === 0) {
+                        // Return team data with empty members if no members are found
+                        return of({
+                            ...team,
+                            teamMembers: []
+                        });
                     }
-                    return {
-                      ...profile,
-                      groupBy: groupByChar,
-                    };
-                  });
-              })
+                    const memberProfiles$ = teamMembers.map(member =>
+                        this.userProfileService.getUserProfileById(member.id).pipe(
+                            take(1),
+                            catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
+                        )
+                    );
+                    return forkJoin(memberProfiles$).pipe(
+                        map(teamMembersWithDetails => {
+                            this.groupArray = []; // Clear previous group array entries
+                            return teamMembersWithDetails
+                                .filter(member => member !== undefined)
+                                .sort((a, b) => a.firstName.localeCompare(b.firstName))
+                                .map(profile => {
+                                    const groupByChar = profile.firstName.charAt(0);
+                                    if (!this.groupArray.includes(groupByChar)) {
+                                        this.groupArray.push(groupByChar);
+                                    }
+                                    return {
+                                        ...profile,
+                                        groupBy: groupByChar,
+                                    };
+                                });
+                        }),
+                        map(processedMembers => ({
+                            ...team,
+                            teamMembers: processedMembers
+                        }))
+                    );
+                }),
+                catchError(err => {
+                    console.error("Error fetching team members:", err);
+                    return of({
+                        ...team,
+                        teamMembers: []
+                    }); // Return the team with empty members on error
+                })
             );
-          }),
-          map(teamMembers => ({
-            ...team,
-            teamMembers,
-          }))
-        );
-      }),
-      catchError(err => {
-        this.toastActionError(err);
-        console.error("Error in getTeamWithMembers:", err);
-        return of(null);
-      })
+        }),
+        catchError(err => {
+            console.error("Error in getTeamWithMembers:", err);
+            return of(null);
+        })
     );
-  }
+}
 
   handleChange(event: any) {
     console.log(event.detail.value);

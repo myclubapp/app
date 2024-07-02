@@ -80,7 +80,7 @@ export class ChampionshipPage implements OnInit {
   }
 
   ngOnInit() {
-    this.teamRankings$ = this.getTeamsWithRankingsForYear("2023");
+    this.teamRankings$ = this.getTeamsWithRankingsForYear("2024");
     this.gameList$ = this.getTeamGamesUpcoming();
     this.gameListPast$ = this.getTeamGamesPast();
 
@@ -137,7 +137,7 @@ export class ChampionshipPage implements OnInit {
     }*/
   }
 
-  getTeamsWithRankingsForYear(year: string = "2023") {
+  getTeamsWithRankingsForYear(year: string = "2024") {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => console.log("User:", user)),
@@ -206,7 +206,7 @@ export class ChampionshipPage implements OnInit {
                   teamGames.map((game) =>
                     this.championshipService
                       .getTeamGameAttendeesRef(team.id, game.id)
-                      .pipe(
+                      .pipe( 
                         map((attendees) => {
                           const userAttendee = attendees.find(
                             (att) => att.id == this.user.uid

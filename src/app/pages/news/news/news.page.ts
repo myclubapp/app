@@ -111,7 +111,7 @@ export class NewsPage implements OnInit {
         text: pushData.text,
         url: pushData.url,
         filterable: pushData.filterable,
-        tags: pushData.tags
+        tags: pushData.tags || []
       };
       this.openModal(news);
     }
@@ -131,7 +131,7 @@ export class NewsPage implements OnInit {
         text: pushData.text,
         url: pushData.url,
         filterable: pushData.filterable,
-        tags: pushData.tags
+        tags: pushData.tags || []
       };
       this.openModal(news);
     }
