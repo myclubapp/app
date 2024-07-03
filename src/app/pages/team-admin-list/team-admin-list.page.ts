@@ -59,7 +59,7 @@ export class TeamAdminListPage implements OnInit {
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.team = this.navParams.get("team");
@@ -95,6 +95,8 @@ export class TeamAdminListPage implements OnInit {
   }
 
   getTeam(teamId: string) {
+    this.groupArray = [];
+
     const calculateAge = (dateOfBirth) => {
         const birthday = new Date(dateOfBirth.seconds * 1000);
         const ageDifMs = Date.now() - birthday.getTime();
@@ -113,7 +115,7 @@ export class TeamAdminListPage implements OnInit {
             if (!team) return of(null);
             return combineLatest({
                 teamMembers: this.fbService.getTeamMemberRefs(teamId),
-                teamAdmins: this.fbService.getTeamAdminRefs(teamId),
+                teamAdmins: this.fbService.getTeamAdminRefs(teamId)
             }).pipe(
                 switchMap(({ teamMembers, teamAdmins }) => {
                     const memberProfiles$ = teamMembers.map(member =>
@@ -130,14 +132,27 @@ export class TeamAdminListPage implements OnInit {
                     );
                     return forkJoin({
                         teamMembers: forkJoin(memberProfiles$),
-                        teamAdmins: forkJoin(adminProfiles$),
+                        teamAdmins: forkJoin(adminProfiles$)
                     });
                 }),
                 map(({ teamMembers, teamAdmins }) => {
-                    // Reset the group array just before mapping profiles
-                    this.groupArray = [];
+                    this.groupArray = []; // Clear previous group array entries
 
-                    const sortedAdmins = teamAdmins
+                    const processedMembers = teamMembers
+                        .filter(member => member !== undefined)
+                        .sort((a, b) => a.firstName.localeCompare(b.firstName))
+                        .map(profile => {
+                            const groupByChar = profile.firstName.charAt(0);
+                            if (!this.groupArray.includes(groupByChar)) {
+                                this.groupArray.push(groupByChar);
+                            }
+                            return {
+                                ...profile,
+                                groupBy: groupByChar,
+                            };
+                        });
+
+                    const processedAdmins = teamAdmins
                         .filter(admin => admin !== undefined)
                         .sort((a, b) => a.firstName.localeCompare(b.firstName))
                         .map(profile => {
@@ -151,19 +166,25 @@ export class TeamAdminListPage implements OnInit {
                             };
                         });
 
-                    const filteredMembers = teamMembers.filter(member => member !== undefined);
-
                     return {
                         ...team,
-                        teamMembers: filteredMembers,
-                        teamAdmins: sortedAdmins,
+                        teamMembers: processedMembers,
+                        teamAdmins: processedAdmins
                     };
                 }),
                 catchError(err => {
                     console.error("Error in getTeamWithMembersAndAdmins:", err);
-                    return of(null);
+                    return of({
+                        ...team,
+                        teamMembers: [],
+                        teamAdmins: []
+                    });
                 })
             );
+        }),
+        catchError(err => {
+            console.error("Error in getTeam:", err);
+            return of(null);
         })
     );
 }
@@ -239,8 +260,8 @@ export class TeamAdminListPage implements OnInit {
                 {
                   text: await lastValueFrom(this.translate.get("common.add")),
                   handler: (data) => {
-                    for (let member of data){
-                      this.fbService.addTeamAdmin(this.team.id, member.id).catch(e=>{
+                    for (let member of data) {
+                      this.fbService.addTeamAdmin(this.team.id, member.id).catch(e => {
                         console.log(e.message, e.code, e.name);
                       });
                     }
@@ -258,11 +279,11 @@ export class TeamAdminListPage implements OnInit {
   }
 
 
-  async deleteTeamAdmin( member){
+  async deleteTeamAdmin(member) {
     try {
       await this.fbService.deleteTeamAdmin(this.team.id, member.id);
       await this.toastActionSaved();
-    } catch(e){
+    } catch (e) {
       this.toastActionError(e);
     }
   }

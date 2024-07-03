@@ -1,4 +1,4 @@
-<ng-container *ngIf="team$ | async as team; else noTeam">
+<ng-container *ngIf="team$ | async as team; else loading">
   <ion-header [translucent]="true">
     <ion-toolbar>
       <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
@@ -9,7 +9,7 @@
           </ion-buttons>
         </ng-container>
       </ng-container>
-      <ion-title>Mitglieder</ion-title>
+      <ion-title>{{"common.members" | translate}}</ion-title>
       <ion-buttons slot="primary">
         <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
       </ion-buttons>
@@ -19,7 +19,7 @@
   <ion-content [fullscreen]="true">
     <ion-header collapse="condense">
       <ion-toolbar>
-        <ion-title size="large">Mitglieder</ion-title>
+        <ion-title size="large">{{"common.members" | translate}}</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -76,11 +76,11 @@
 
 
 
-<ng-template #noTeam>
+<ng-template #loading>
   <ion-header [translucent]="true">
     <ion-toolbar>
       
-      <ion-title>Mitglieder</ion-title>
+      <ion-title>{{"common.members" | translate}}</ion-title>
       <ion-buttons slot="primary">
         <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
       </ion-buttons>

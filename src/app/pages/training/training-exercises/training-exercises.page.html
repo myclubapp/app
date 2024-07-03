@@ -1,9 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="secondary">
-      <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
-      <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
-    </ion-buttons>
+    <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+      <ion-buttons *ngIf="isTeamAdmin(teamAdminList, training.teamId)" slot="secondary">
+        <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
+        <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
+      </ion-buttons>
+    </ng-container>
     <ion-title>Übungen</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>

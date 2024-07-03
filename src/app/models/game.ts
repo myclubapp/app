@@ -6,8 +6,10 @@ export interface Game {
   date: string;
   time: string;
   dateTime: Timestamp;
+  
   location: string;
   city: string;
+  
   longitude: string;
   latitude: string;
   liga: string;

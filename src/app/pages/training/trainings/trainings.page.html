@@ -79,7 +79,7 @@
     <ion-list *ngIf="trainingList.length > 0" lines="full">
       <ion-list-header>
         <ion-label>{{"training.upcomming__training" | translate}}</ion-label>
-       <!-- <ion-button size="small" fill="clear"> {{"common.alle_anmelden" | translate}}</ion-button>-->
+        <ion-button (click)="toggleAll()" size="small" fill="clear"> {{"common.alle_anmelden" | translate}}</ion-button>
       </ion-list-header>
       <ion-item>
         <ion-label slot="start">
@@ -149,6 +149,7 @@
     <ion-list class="ion-padding" *ngIf="trainingList.length==0">
       <ion-list-header>
         <ion-label>{{"training.upcomming__training" | translate}}</ion-label>
+       
       </ion-list-header>
       <ion-item>
         <ion-note> {{"training.no_training__found" | translate}} </ion-note>

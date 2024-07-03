@@ -48,12 +48,12 @@
         </ion-label>
       </ion-item>
 
-      <ion-item>
+      <ion-item *ngIf="game.location">
         <ion-icon slot="start" name="location-outline"></ion-icon>
         <ion-label class="ion-text-wrap">
           <h2>{{game.location}} {{game.city}}</h2>
         </ion-label>
-        <ion-icon color="primary" (click)="openMaps(game)" slot="end" name="map-outline"></ion-icon>
+        <ion-icon *ngIf="game.longitude" color="primary" (click)="openMaps(game)" slot="end" name="map-outline"></ion-icon>
       </ion-item>
 
       <ion-item>
@@ -63,7 +63,7 @@
         </ion-label>
       </ion-item>
 
-      <ion-item *ngIf="game.result">
+      <ion-item *ngIf="game.result && game.result != '0:0(0:0)'">
         <ion-icon slot="start" name="podium-outline"></ion-icon>
         <ion-label class="ion-text-wrap">
           <h2>{{game.result}}</h2>

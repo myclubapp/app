@@ -6,6 +6,8 @@ import { Training } from "src/app/models/training";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { TeamExercisesPage } from "../../team/team-exercises/team-exercises.page";
 import { TranslateService } from "@ngx-translate/core";
+import { Team } from "src/app/models/team";
+import { FirebaseService } from "src/app/services/firebase.service";
 
 @Component({
   selector: "app-training-exercises",
@@ -25,14 +27,21 @@ export class TrainingExercisesPage implements OnInit {
 
   allowEdit: boolean = false;
 
+  teamAdminList$: Observable<Team[]>;
+
   constructor(
     public navParams: NavParams,
     private exerciseService: ExerciseService,
     private modalCtrl: ModalController,
+    private readonly fbService: FirebaseService,
     public toastCtrl: ToastController,
     private translate: TranslateService,
   ) {
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
 
+  }
+  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
+    return teamAdminList && teamAdminList.some(team => team.id === teamId);
   }
 
   ngOnInit() {

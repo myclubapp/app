@@ -105,7 +105,7 @@
                 <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
                 {{game.date}} {{game.time}} Uhr
               </h3>
-              <h3>
+              <h3 *ngIf="game.location">
                 <ion-icon slot="icon-only" name="location-outline"></ion-icon>
                 {{game.location}} {{game.city}}
               </h3>
@@ -115,7 +115,7 @@
                 {{game.liga}} {{game.teamName}}
               </h3>
 
-              <h3 *ngIf="game.result">
+              <h3 *ngIf="game.result && game.result != '0:0(0:0)'">
                 <ion-icon slot="icon-only" name="podium-outline"></ion-icon>
                 {{game.result}}
               </h3>

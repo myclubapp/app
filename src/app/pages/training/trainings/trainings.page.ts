@@ -13,6 +13,7 @@ import {
   Subscription,
   catchError,
   combineLatest,
+  first,
   lastValueFrom,
   map,
   mergeMap,
@@ -49,6 +50,7 @@ export class TrainingsPage implements OnInit {
   trainingListPast$: Observable<Training[]>;
 
   teamAdminList$: Observable<Team[]>;
+  toggleAllSubscription: Subscription;
 
   // teamList$: Observable<Team[]>;
   // filterList: any[] = [];
@@ -78,15 +80,15 @@ export class TrainingsPage implements OnInit {
   ) {
     this.menuCtrl.enable(true, "menu");
 
-    this.activatedRoute.url.subscribe(data=>{
-      if ( this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "training") {
+    this.activatedRoute.url.subscribe(data => {
+      if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "training") {
         const pushData = this.router.getCurrentNavigation().extras.state;
         console.log("PUSHDATA " + pushData);
         let training: Training = {
           id: pushData.id,
           name: "",
           description: "",
-          location:"",
+          location: "",
           streetAndNumber: "",
           postalCode: "",
           city: "",
@@ -166,6 +168,9 @@ export class TrainingsPage implements OnInit {
   }
 
   ngOnDestroy(): void {
+    if (this.toggleAllSubscription){
+      this.toggleAllSubscription.unsubscribe();
+    }
     /*if (this.trainingListPastBackupSub){
       this.trainingListPastBackupSub.unsubscribe();
     }
@@ -206,36 +211,36 @@ export class TrainingsPage implements OnInit {
                       this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id),
                       this.exerciseService.getTeamTrainingExerciseRefs(team.id, training.id),
                     ]).pipe(
-                    
-                        map(([attendees, exercises]) => {
-                          const userAttendee = attendees.find(
-                            (att) => att.id == this.user.uid
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null; // default to null if user is not found in attendees list
-                          return {
-                            ...training,
-                            attendees,
-                            exercises,
-                            status: status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true
-                            ).length,
-                            teamId: team.id,
-                          };
-                        }),
-                        catchError(() =>
-                          of({
-                            ...training,
-                            attendees: [],
-                            exercises: [],
-                            status: null,
-                            countAttendees: 0,
-                            teamId: team.id,
-                          })
-                        ) // If error, return training with empty attendees
-                      )
+
+                      map(([attendees, exercises]) => {
+                        const userAttendee = attendees.find(
+                          (att) => att.id == this.user.uid
+                        );
+                        const status = userAttendee
+                          ? userAttendee.status
+                          : null; // default to null if user is not found in attendees list
+                        return {
+                          ...training,
+                          attendees,
+                          exercises,
+                          status: status,
+                          countAttendees: attendees.filter(
+                            (att) => att.status == true
+                          ).length,
+                          teamId: team.id,
+                        };
+                      }),
+                      catchError(() =>
+                        of({
+                          ...training,
+                          attendees: [],
+                          exercises: [],
+                          status: null,
+                          countAttendees: 0,
+                          teamId: team.id,
+                        })
+                      ) // If error, return training with empty attendees
+                    )
                   )
                 );
               }),
@@ -345,7 +350,7 @@ export class TrainingsPage implements OnInit {
     );
   }
 
-  
+
   async openTrainingDetailModal(training: Training, isFuture: boolean) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalController.create({
@@ -416,6 +421,29 @@ export class TrainingsPage implements OnInit {
       position: "top",
     });
     toast.present();
+  }
+
+  async toggleAll() {
+
+    this.toggleAllSubscription = this.trainingList$.pipe(
+      take(1),
+      map(async (trainingList: any) => {
+        for (const training of trainingList) {
+          console.log(
+            `Set Status ${true} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
+          );
+          await this.trainingService.setTeamTrainingAttendeeStatus(
+            true,
+            training.teamId,
+            training.id
+          );
+        }
+        this.presentToast();
+      })
+
+    ).subscribe();
+   
+
   }
 
   async toggle(status: boolean, training: Training) {
