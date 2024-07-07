@@ -60,7 +60,8 @@ export class LoginPage implements OnInit {
         authForm.value.password
       );
       loading.dismiss();
-      this.router.navigateByUrl("/").catch((error) => {
+      this.menuCtrl.enable(true, "menu");
+      this.router.navigateByUrl("/t").catch((error) => {
         console.error(error.message);
         this.router.navigateByUrl("");
       });
@@ -98,7 +99,7 @@ export class LoginPage implements OnInit {
         message = await lastValueFrom(
           this.translate.get("login.error__invalid_login_credentials")
         );
-      } else if (err.code == "auth/invalid-credentials") {
+      } else if (err.code == "auth/invalid-credential") {
         message = await lastValueFrom(
           this.translate.get("login.error__invalid_credentials")
         );

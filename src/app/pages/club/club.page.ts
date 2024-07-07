@@ -37,6 +37,7 @@ import { ClubRequestListPage } from "../club-request-list/club-request-list.page
 import { Timestamp } from "firebase/firestore";
 import { HelferPunkteClubPage } from "../helfer/helfer-punkte-club/helfer-punkte-club.page";
 import { Club } from "src/app/models/club";
+import { ClubSubscriptionPage } from "../club-subscription/club-subscription.page";
 
 @Component({
   selector: "app-club",
@@ -53,8 +54,8 @@ export class ClubPage implements OnInit {
   user: User;
 
   clubAdminList$: Observable<Club[]>;
-  
-// alertTeamSelection = [];
+
+  // alertTeamSelection = [];
 
   allowEdit: boolean = false;
 
@@ -68,14 +69,14 @@ export class ClubPage implements OnInit {
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.club = this.navParams.get("data");
 
     this.club$ = of(this.club);
     this.club$ = this.getClub(this.club.id);
-    
+
     this.clubAdminList$ = this.fbService.getClubAdminList();
   }
 
@@ -123,11 +124,11 @@ export class ClubPage implements OnInit {
           clubAdmins: this.fbService.getClubAdminRefs(clubId),
           clubRequests: this.fbService.getClubRequestRefs(clubId),
         }).pipe(
-          switchMap(({ 
+          switchMap(({
             clubMembers,
-            clubAdmins, 
+            clubAdmins,
             clubRequests
-             }) => {
+          }) => {
             const memberProfiles$ = clubMembers.map((member) =>
               this.userProfileService.getUserProfileById(member.id).pipe(
                 take(1),
@@ -136,7 +137,7 @@ export class ClubPage implements OnInit {
                 )
               )
             );
-           const adminProfiles$ = clubAdmins.map((admin) =>
+            const adminProfiles$ = clubAdmins.map((admin) =>
               this.userProfileService.getUserProfileById(admin.id).pipe(
                 take(1),
                 catchError(() =>
@@ -157,11 +158,11 @@ export class ClubPage implements OnInit {
               clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
               clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
             }).pipe(
-              map(({ 
-                  clubMembers, 
-                  clubAdmins, 
-                  clubRequests
-               }) => ({
+              map(({
+                clubMembers,
+                clubAdmins,
+                clubRequests
+              }) => ({
                 clubMembers: clubMembers.filter(
                   (member) => member !== undefined
                 ), // Filter out undefined
@@ -172,11 +173,11 @@ export class ClubPage implements OnInit {
               }))
             );
           }),
-          map(({ 
-            clubMembers, 
-            clubAdmins, 
+          map(({
+            clubMembers,
+            clubAdmins,
             clubRequests
-           }) => {
+          }) => {
 
             const ages = clubMembers
               .map((member) =>
@@ -194,7 +195,7 @@ export class ClubPage implements OnInit {
 
             return {
               ...club,
-              updated: Timestamp.fromMillis(club.updated.seconds*1000).toDate().toISOString(),
+              updated: Timestamp.fromMillis(club.updated.seconds * 1000).toDate().toISOString(),
               averageAge: averageAge.toFixed(1), // Keep two decimal places
               clubMembers,
               clubAdmins,
@@ -222,9 +223,9 @@ export class ClubPage implements OnInit {
       },
     });
     modal.present();
-  
+
     const { data, role } = await modal.onWillDismiss();
-  
+
     if (role === "confirm") {
     }
   }
@@ -242,44 +243,23 @@ export class ClubPage implements OnInit {
       },
     });
     modal.present();
-  
+
     const { data, role } = await modal.onWillDismiss();
-  
+
     if (role === "confirm") {
     }
   }
 
 
-async openAdminList(){
-  console.log("open Club Admin");
-  const modal = await this.modalCtrl.create({
-    component: ClubAdminListPage,
-    presentingElement: await this.modalCtrl.getTop(),
-    canDismiss: true,
-    showBackdrop: true,
-    componentProps: {
-      club: this.club
-    },
-  });
-  modal.present();
-
-  const { data, role } = await modal.onWillDismiss();
-
-  if (role === "confirm") {
-  }
-}
-/*
-  async openRequestMember(member: Profile) {
-    console.log("open Request Member");
+  async openAdminList() {
+    console.log("open Club Admin");
     const modal = await this.modalCtrl.create({
-      component: MemberPage,
+      component: ClubAdminListPage,
       presentingElement: await this.modalCtrl.getTop(),
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        data: member,
-        isRequest: true,
-        clubId: this.club.id
+        club: this.club
       },
     });
     modal.present();
@@ -288,10 +268,50 @@ async openAdminList(){
 
     if (role === "confirm") {
     }
-  }*/
+  }
+  /*
+    async openRequestMember(member: Profile) {
+      console.log("open Request Member");
+      const modal = await this.modalCtrl.create({
+        component: MemberPage,
+        presentingElement: await this.modalCtrl.getTop(),
+        canDismiss: true,
+        showBackdrop: true,
+        componentProps: {
+          data: member,
+          isRequest: true,
+          clubId: this.club.id
+        },
+      });
+      modal.present();
+  
+      const { data, role } = await modal.onWillDismiss();
+  
+      if (role === "confirm") {
+      }
+    }*/
 
+  async openSubscription() {
+    console.log("open openSubscription CLUB");
+    const modal = await this.modalCtrl.create({
+      component: ClubSubscriptionPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        clubId: this.club.id,
+      },
+    });
+    modal.present();
 
-  async openHelferPunkteClub(){
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+
+  }
+
+  async openHelferPunkteClub() {
     console.log("open HelferPunkte CLUB");
     const modal = await this.modalCtrl.create({
       component: HelferPunkteClubPage,
@@ -307,12 +327,12 @@ async openAdminList(){
     const { data, role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
-    }  
+    }
 
   }
 
 
-  async openTeamList(){
+  async openTeamList() {
     console.log("open Team List");
     const modal = await this.modalCtrl.create({
       component: ClubTeamListPage,
@@ -328,7 +348,7 @@ async openAdminList(){
     const { data, role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
-    }  
+    }
   }
 
   /*async approveClubRequest(user) {

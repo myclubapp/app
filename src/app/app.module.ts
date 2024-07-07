@@ -57,6 +57,7 @@ import { ClubRequestListPage } from "./pages/club-request-list/club-request-list
 import { TeamCreatePage } from "./pages/team/team-create/team-create.page";
 import { of, switchMap, take } from "rxjs";
 import { HelferPunkteClubPage } from "./pages/helfer/helfer-punkte-club/helfer-punkte-club.page";
+import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
@@ -107,6 +108,7 @@ export function appInitializerFactory(translateService: TranslateService, inject
     ClubAdminListPage,
     ClubTeamListPage,
     ClubRequestListPage,
+    ClubSubscriptionPage,
 
     TeamPage,
     TeamMemberListPage,

@@ -40,7 +40,7 @@
               </ion-fab-button>
             </ion-fab>
 
-            <img (click)="openModal(news)" src="{{news.image}}" />
+            <ion-img (click)="openModal(news)" [src]="news.image" [alt]="news.title" />
             <ion-card-header (click)="openModal(news)">
               <ion-card-subtitle
                 >{{news.date | date:'dd.MM.YYYY HH:mm'}}</ion-card-subtitle

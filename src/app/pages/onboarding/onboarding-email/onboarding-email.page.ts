@@ -71,12 +71,23 @@ export class OnboardingEmailPage implements OnInit {
   async next() {
     // Click next and see if user is really verified?
     const token = await this.authService.auth.currentUser.getIdToken(true);
-    console.log(token)
+    // console.log(this.authService.auth.currentUser)
     await this.authService.auth.currentUser.reload();
-    console.log("is Email verified now? " + this.authService.auth.currentUser.emailVerified)
-    await this.router.navigateByUrl("/").catch(e=>{
+    console.log("is Email verified now? " + this.authService.auth.currentUser.emailVerified);
+    if (this.authService.auth.currentUser.emailVerified){
+      const navOnboardingClub = await this.router.navigateByUrl('/onboarding-club');
+      if (navOnboardingClub) {
+        console.log('Navigation success to onboarding Club Page');
+      } else {
+        console.error('Navigation ERROR to onboarding Club Page');
+      }
+    }else{
+      await this.toastEmailNotYetVerified();
+    }
+
+    /*await this.router.navigateByUrl("/t").catch(e=>{
       this.router.navigateByUrl("")
-    });
+    });*/
     // window.location.reload();
   }
 
@@ -84,8 +95,19 @@ export class OnboardingEmailPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("common.email_sent")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
+    });
+
+    await toast.present();
+  }
+
+  async toastEmailNotYetVerified() {
+    const toast = await this.toastCtrl.create({
+      message: await lastValueFrom(this.translate.get("common.email_not_yet_verified")),
+      duration: 3000,
+      position: "top",
+      color: "danger",
     });
 
     await toast.present();

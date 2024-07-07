@@ -29,6 +29,7 @@ import {
 } from "@capacitor/push-notifications";
 import { ConfirmResult, Dialog } from "@capacitor/dialog";
 import { OnboardingPage } from "./pages/onboarding/onboarding/onboarding.page";
+import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 
 @Component({
   selector: "app-root",
@@ -155,17 +156,10 @@ export class AppComponent implements OnInit {
           this.clubListSub = this.clubList$
             .pipe(
               take(1),
-              tap(async (data) => {
-                if (data.length == 0) {
+              tap(async (clubList) => {
+                if (clubList.length == 0) {
                   console.log("NO! Club Data received. > Call Club Onboarding");
-                  // console.log(this.router.url);
                   try {
-                    //this.router.createUrlTree(["/onboarding-club"]);
-                    /*his.router.navigateByUrl("/").catch((error) => {
-                      console.error(error.message);
-                      this.router.navigateByUrl("");
-                    });*/
-
                     const navOnboardingClub = await this.router.navigateByUrl('/onboarding-club');
                     if (navOnboardingClub) {
                       console.log('Navigation success to onboarding Club Page');
@@ -174,7 +168,34 @@ export class AppComponent implements OnInit {
                     }
                   } catch (error) {
                     console.error('Navigation Exception:', error);
+                    window.location.reload();
                   }
+                } else { 
+                  // CHECK SUBSCRIPTION FOR CLUB
+                  // console.log(clubList.find((club:any)=>club.subscriptionActive == false ))
+
+                  if (clubList.find((club:any)=>club.subscriptionActive == false )){
+                    console.log("NO SUBSCRIPTION FOUND")
+                    const modal = await this.modalCtrl.create({
+                      component: ClubSubscriptionPage,
+                      presentingElement: await this.modalCtrl.getTop(),
+                      canDismiss: true,
+                      showBackdrop: true,
+                      componentProps: {
+                        clubId: clubList.find((club:any)=>club.subscriptionActive == false).id,
+                      },
+                    });
+                    modal.present();
+                
+                    const { data, role } = await modal.onWillDismiss();
+                    console.log(role)
+                    if (role === "close" || role == "backdrop") {
+                      this.authService.logout();
+                    }
+                  } else {
+                    console.log("Club is active")
+                  }
+
                 }
               })
             )

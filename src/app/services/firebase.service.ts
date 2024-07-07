@@ -49,6 +49,60 @@ export class FirebaseService {
     private readonly authService: AuthService
   ) { }
 
+
+  getProduct(productId: string){
+    // console.log(productId)
+    // /stripeProducts/prod_QPZ8862s0O2Kli
+    const productRef = doc(this.firestore, `stripeProducts/${productId}`);
+    return docData(productRef, { idField: "id" }) as unknown as Observable<any>;
+  }
+
+
+  getProducts() {
+    const productListRef = collection(
+      this.firestore,
+      `stripeProducts`
+    );
+    const q = query(productListRef, where("active", "==", true));
+    return collectionData(q, {
+      idField: "id",
+    }) as Observable<any[]>;
+    
+  }
+  getPrices(productId: string) {
+    const productPricesListRef = collection(
+      this.firestore,
+      `stripeProducts/${productId}/prices`
+    );
+
+    const q = query(productPricesListRef, where("active", "==", true));
+
+    return collectionData(q, {
+      idField: "id",
+    }) as Observable<any[]>;
+    
+  }
+
+  checkout(clubId, price, product){
+    return addDoc(
+      collection(this.firestore, `/club/${clubId}/checkout_sessions/`),
+      {
+        userId: this.authService.auth.currentUser.uid,
+        subscriptionType: product.metadata["stripe-role"],
+        price: price.id,
+        allow_promotion_codes: true,
+        success_url: window.location.origin,
+        cancel_url: window.location.origin,
+      }
+    );
+
+  }
+
+  getCheckoutSession(clubId: string, checkout_session_id: string){
+    const checkoutSessionRef = doc(this.firestore, `club/${clubId}/checkout_sessions/${checkout_session_id}`);
+    return docData(checkoutSessionRef, { idField: "id" }) as unknown as Observable<any>;
+  }
+
   getClubList() {
     return this.authService.getUser$().pipe(
       take(1),
@@ -215,6 +269,48 @@ export class FirebaseService {
   }
 
   /* CLUBS */
+  getClubCheckoutSessionsList(clubId: string){
+    const clubCheckoutSessionListRef = collection(
+      this.firestore,
+      `club/${clubId}/checkout_sessions`
+    );
+    return collectionData(clubCheckoutSessionListRef, {
+      idField: "id",
+    }) as Observable<any[]>;
+    
+  }
+  getClubSubscriptionList(clubId: string){
+    const clubSubscriptionistRef = collection(
+      this.firestore,
+      `club/${clubId}/subscriptions`
+    );
+    return collectionData(clubSubscriptionistRef, {
+      idField: "id",
+    }) as Observable<any[]>;
+    
+  }
+
+  getClubSubscriptionInvoiceList(clubId: string, subscriptionId: string){
+    const clubSubscriptionInvoiceistRef = collection(
+      this.firestore,
+      `club/${clubId}/subscriptions/${subscriptionId}/invoices`
+    );
+    return collectionData(clubSubscriptionInvoiceistRef, {
+      idField: "id",
+    }) as Observable<any[]>;
+  }
+
+  getClubPaymentList(clubId: string){
+    const clubPaymentsListRef = collection(
+      this.firestore,
+      `club/${clubId}/payments`
+    );
+    return collectionData(clubPaymentsListRef, {
+      idField: "id",
+    }) as Observable<any[]>;
+  }
+
+
   getClubRef(clubId: string) {
     const clubRef = doc(this.firestore, `club/${clubId}`);
     return docData(clubRef, { idField: "id" }) as unknown as Observable<Club>;

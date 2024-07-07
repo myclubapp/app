@@ -9,7 +9,12 @@ import {
   AlertController,
 } from "@ionic/angular";
 import { News } from "src/app/models/news";
-
+import {
+  DomSanitizer,
+  SafeHtml,
+  SafeUrl,
+  SafeStyle
+} from '@angular/platform-browser';
 import { Share } from "@capacitor/share";
 import { Device } from "@capacitor/device";
 
@@ -84,6 +89,7 @@ export class NewsPage implements OnInit {
 
   constructor(
     private readonly newsService: NewsService,
+    // private readonly sanitization: DomSanitizer,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly routerOutlet: IonRouterOutlet,
@@ -102,7 +108,7 @@ export class NewsPage implements OnInit {
         id: pushData.id,
         title: pushData.title,
         slug: pushData.slug,
-        image: pushData.iamge,
+        image: pushData.image,
         leadText: pushData.leadText,
         author: pushData.author,
         authorImage: pushData.authorImage,
@@ -122,7 +128,7 @@ export class NewsPage implements OnInit {
         id: pushData.id,
         title: pushData.title,
         slug: pushData.slug,
-        image: pushData.iamge,
+        image: pushData.image,
         leadText: pushData.leadText,
         author: pushData.author,
         authorImage: pushData.authorImage,
@@ -157,9 +163,16 @@ export class NewsPage implements OnInit {
           this.user = user;
       }),
       switchMap(user => this.fbService.getUserClubRefs(user)), // Get user's club references
-      switchMap(clubs => {
+      switchMap( clubs => {
           if (!clubs.length) {
               console.log("No clubs associated with the user.");
+              /*this.router.navigateByUrl('/onboarding-club').then(navOnboardingClub=>{
+                if (navOnboardingClub) {
+                  console.log('Navigation success to onboarding Club Page');
+                } else {
+                  console.error('Navigation ERROR to onboarding Club Page');
+                }
+              })*/
               return of([]);
           }
           
@@ -198,6 +211,9 @@ export class NewsPage implements OnInit {
   
           // Aggregate and flatten the news items
           newsArrays.forEach(({ clubNews, typeNews }) => {
+              /*typeNews.map(news=>{
+                news.image = this.sanitization.bypassSecurityTrustResourceUrl(news.image);
+              })*/
               allNews.push(...clubNews);
               allNews.push(...typeNews);
           });
@@ -519,8 +535,11 @@ console.log(this.filterList)
   }
 
   async share(news: News) {
-    const device = await Device.getInfo();
-    if (device.platform === "web" && navigator && navigator.share) {
+    // const device = await Device.getInfo();
+    const { value } = await Share.canShare();
+
+    if (value) {
+    // if (device.platform === "web" && navigator && navigator.share) {
       const shareRet = await Share.share({
         title: news.title,
         text: news.leadText,

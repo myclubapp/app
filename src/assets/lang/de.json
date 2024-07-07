@@ -103,8 +103,10 @@
         "do_you_want_to_join__club": "Möchtest du dem Verein beitreten?",
         "success__request_sent": "Anfrage erfolgreich gesendet",
         "warning__action_canceled": "Aktion wurde abgebrochen",
-        "success__application_sent": "Antrag erfolgreich versendet",
-        "success__application_sent_desc": "Dein Antrag wurde erfolgreich an den Club gesendet. Sobald dein Antrag genehmigt wurde, informieren wir dich wieder."
+        "success__application_sent": "Anfrage erfolgreich gesendet",
+        "success__application_sent_desc": "Dein Antrag wurde erfolgreich an den Club gesendet. Sobald dein Antrag genehmigt wurde, informieren wir dich wieder per E-Mail.",
+        "success__activate_pplication_sent": "Aktivierungsantrag erfolgreich versendet",
+        "success__activate_application_sent_desc": "Dein Antrag wird von uns geprüft. Sobald dein Antrag genehmigt wurde, informieren wir dich wieder per E-Mail."
     },
     "onboarding-team": {
         "onboarding__team": "Onboarding-Team"
@@ -192,6 +194,16 @@
         "version": "Version"
     },
     "common": {
+        "month": "Monat", 
+        "year": "Jahr",
+        "paid":"bezahlt",
+        "created": "Gekauft am",
+        "current_period_end": "Läuft bis",
+        "current_period_start": "Beginnt ab",
+        "ended_at": "Beendet am",
+        "active": "aktiv",
+        "canceled": "beendet",
+        "subscription": "Abonnement",
         "success__event_deleted": "Veranstaltung erfolgreich gelöscht",
         "success__helfer_deleted": "Helferevent erfolgreich gelöscht",
         "success__training_deleted": "Training erfolgreich gelöscht",
@@ -211,6 +223,7 @@
         "create": "erstellen",
         "forget__password": "Passwort vergessen?",
         "email_sent": "E-Mail versendet",
+        "email_not_yet_verified": "E-Mail Adresse wurde noch nicht verifiziert",
         "error": "Fehler",
         "error__invalid_form": "Formular ist noch fehlerhaft",
         "please__wait": "Bitte warten",

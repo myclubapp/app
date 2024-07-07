@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Browser } from '@capacitor/browser';
 import { AlertController, MenuController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { User } from 'firebase/auth';
@@ -90,12 +91,20 @@ export class OnboardingClubPage implements OnInit {
         ),
         buttons: [
           {
+            text: await lastValueFrom(this.translate.get("common.no")),
+            role: "cancel",
+            handler: () => {
+              console.log("nein");
+              this.presentCancelToast();
+            },
+          },
+          {
             text: await lastValueFrom(this.translate.get("common.yes")),
             handler: async (data: any) => {
               try {
                 await this.fbService.setClubRequest(club.id, this.user.uid)
-                await this.presentRequestToast();
-                await this.presentRequestSentAlert(club.name);
+                await this.presentRequestToast(); // Anfrage gesendet
+                await this.presentRequestSentAlert(club.name);// Inform Admin and Logout alert
               } catch (err) {
                 console.log(err.message);
                 if (err.message === "Missing or insufficient permissions.") {
@@ -105,19 +114,37 @@ export class OnboardingClubPage implements OnInit {
 
             },
           },
-          {
-            text: await lastValueFrom(this.translate.get("common.no")),
-            role: "cancel",
-            handler: () => {
-              console.log("nein");
-              this.presentCancelToast();
-            },
-          },
+         
         ],
       });
       await alert.present();
     } else {
       console.log("dieser club existiert noch nicht");
+      const alert = await this.alertController.create({
+        header: "Club aktivieren",
+        message: "Dieser Club wurde noch nicht aktiviert. Möchtest du den Club aktivieren? Falls deine E-Mail Adresse bereits hinterlegt ist, werden wir deinen Club sofort aktivieren.",
+        // subHeader: "Fülle dazu ein Antragsformular aus",
+        buttons: [{
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "cancel",
+          handler: () => {
+            console.log("abbrechen");
+            this.presentCancelToast();
+            
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.ok")),
+        
+          handler: async () => {
+            console.log("OK");
+            await this.fbService.setClubRequest(club.id, this.user.uid)
+            await this.presentRequestToast(); // Anfrage gesendet
+            await this.presentActivatetSentAlert(club.name); 
+          },
+        }]
+      });
+      alert.present();
     }
   }
   async presentRequestToast() {
@@ -151,7 +178,7 @@ export class OnboardingClubPage implements OnInit {
       header: await lastValueFrom(
         this.translate.get("onboarding.success__application_sent")
       ),
-      subHeader: "",
+      // subHeader: "",
       message: await lastValueFrom(
         this.translate.get("onboarding.success__application_sent_desc")
       ),
@@ -170,6 +197,35 @@ export class OnboardingClubPage implements OnInit {
     const { role } = await alert.onDidDismiss();
     console.log("onDidDismiss resolved with role", role);
   }
+
+
+
+  async presentActivatetSentAlert(clubName: string) {
+    const alert = await this.alertController.create({
+      cssClass: "my-custom-class",
+      header: await lastValueFrom(
+        this.translate.get("onboarding.success__activate_pplication_sent")
+      ),
+      // subHeader: "",
+      message: await lastValueFrom(
+        this.translate.get("onboarding.success__activate_application_sent_desc")
+      ),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.logout")),
+          handler: async () => {
+            this.logout();
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+    console.log("onDidDismiss resolved with role", role);
+  }
+
 
   async presentErrorAlert() {
     const alert = await this.alertController.create({

@@ -12,6 +12,7 @@ import {
   faLinkedin,
 } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faCopy } from '@fortawesome/free-solid-svg-icons';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-news-detail',
@@ -34,6 +35,7 @@ export class NewsDetailPage implements OnInit {
 
   constructor (
     private readonly modalCtrl: ModalController,
+    // private readonly sanitization: DomSanitizer,
     public navParams: NavParams
   ) {}
 
@@ -50,8 +52,9 @@ export class NewsDetailPage implements OnInit {
   }
 
   async share (news: News) {
-    const device = await Device.getInfo();
-    if (device.platform === 'web' && navigator && navigator.share) {
+    // const device = await Device.getInfo();
+    const { value } = await Share.canShare();
+    if (value) {
       const shareRet = await Share.share({
         title: news.title,
         text: news.leadText,

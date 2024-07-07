@@ -13,7 +13,7 @@
         <ion-icon name="close" size="small"></ion-icon>
       </ion-fab-button>
     </ion-fab>
-    <img src="{{news.image}}" />
+    <ion-img [src]="news.image" [alt]="news.title"/>
     <ion-card-header>
       <ion-card-subtitle
         >{{news.date | date:'dd.MM.YYYY HH:mm'}}</ion-card-subtitle
