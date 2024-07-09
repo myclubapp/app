@@ -63,7 +63,7 @@ export class FirebaseService {
       this.firestore,
       `stripeProducts`
     );
-    const q = query(productListRef, where("active", "==", true), where("stripe_metadata_type", "!=", "module"));
+    const q = query(productListRef, where("active", "==", true), where("stripe_metadata_type", "==", "base"));
     return collectionData(q, {
       idField: "id",
     }) as Observable<any[]>;
