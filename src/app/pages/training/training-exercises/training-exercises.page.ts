@@ -103,7 +103,7 @@ export class TrainingExercisesPage implements OnInit {
 
   openExercise(exercise) {
     Browser.open({
-      url: exercise.video
+      url: exercise.link
     })
   }
 

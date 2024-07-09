@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
   public email: string;
   public appVersion: string = packagejson.version;
 
-  private clubList$: Observable<Club[]>;
+  clubList$: Observable<Club[]>;
   private teamList$: Observable<Team[]>;
   private clubAdminList$: Observable<Club[]>;
   private teamAdminList$: Observable<Team[]>;
@@ -74,8 +74,7 @@ export class AppComponent implements OnInit {
     private cdr: ChangeDetectorRef // private platform: Platform
   ) {
     this.initializeApp();
-    this.clubList$ = this.fbService.getClubList();
-
+  
     // https://fireship.io/lessons/sharing-data-between-angular-components-four-methods/
 
     //Filter for Events, Helfer, News
@@ -248,6 +247,7 @@ export class AppComponent implements OnInit {
 
   }
   ngOnInit(): void {
+    this.clubList$  = this.fbService.getClubList();
     Network.addListener(
       "networkStatusChange",
       async (status: ConnectionStatus) => {
@@ -572,6 +572,12 @@ export class AppComponent implements OnInit {
     const { role } = await alert.onDidDismiss();
     console.log("onDidDismiss resolved with role", role);
     */
+  }
+  enableHelferEvents(clubList){
+    return clubList && clubList.some(club => club.hasFeatureHelferEvent == true);
+  }
+  enableChampionship(clubList){
+    return clubList && clubList.some(club => club.hasFeatureChampionship == true);
   }
 
   async presentAlertUpdateVersion() {
