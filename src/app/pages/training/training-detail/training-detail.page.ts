@@ -26,6 +26,7 @@ import { Profile } from "src/app/models/user";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { Team } from "src/app/models/team";
+import { Club } from "src/app/models/club";
 
 @Component({
   selector: "app-training-detail",
@@ -44,7 +45,7 @@ export class TrainingDetailPage implements OnInit {
   user$: Observable<User>;
   user: User;
   teamAdminList$: Observable<Team[]>;
-
+  clubList$: Observable<Club[]>;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -60,15 +61,20 @@ export class TrainingDetailPage implements OnInit {
 
   ngOnInit() {
     this.training = this.navParams.get("data");
+    // console.log(this.training);
     this.training$ = of(this.training);
     this.training$ = this.getTraining(this.training.teamId, this.training.id);
     this.exerciseList$ = this.exerciseService.getTeamTrainingExerciseRefs(this.training.teamId, this.training.id);
 
+    this.clubList$  = this.fbService.getClubList();
     this.teamAdminList$ = this.fbService.getTeamAdminList();
 
   }
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
     return teamAdminList && teamAdminList.some(team => team.id === teamId);
+  }
+  enableTrainingExercise(clubList){
+    return clubList && clubList.some(club => club.hasFeatureTrainingExercise == true);
   }
 
   getTraining(teamId: string, trainingId: string) {
@@ -116,7 +122,7 @@ export class TrainingDetailPage implements OnInit {
 
                     const userAttendee = attendeeDetails.find(att => att.id === this.user.uid);
                     const status = userAttendee ? userAttendee.status : null;
-
+                    console.log(training)
                     return {
                       ...training,
                       attendees: attendeeDetails,

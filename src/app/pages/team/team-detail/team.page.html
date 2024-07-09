@@ -47,9 +47,16 @@
         <ion-label> Administratoren </ion-label>
         <ion-note slot="end">{{team['teamAdmins'].length}}</ion-note>
       </ion-item>
-
     </ion-list>
 
+    <ng-container *ngIf="clubList$ | async as clubList">
+      <ion-list *ngIf="enableTrainingExercise(clubList)" [inset]="true" lines="none">
+        <ion-item (click)="openTeamTrainingExercise()" detail="true">
+          <ion-icon name="barbell-outline" slot="start"></ion-icon>
+          <ion-label>Übungen</ion-label>
+        </ion-item>
+      </ion-list>
+    </ng-container>
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>

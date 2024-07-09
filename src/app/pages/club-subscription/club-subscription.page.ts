@@ -17,7 +17,9 @@ export class ClubSubscriptionPage implements OnInit {
   @Input("clubId") clubId: any;
   club$: Observable<any>;
 
+
   user$: Observable<User>;
+  modules$ : Observable<any>;
   products$: Observable<any>;
   user: User;
 
@@ -39,6 +41,7 @@ export class ClubSubscriptionPage implements OnInit {
     this.clubId = this.navParams.get("clubId");
     this.club$ = this.getClub(this.clubId);
     this.products$ = this.getProductsAndPrices();
+    this.modules$ = this.getModules();
   }
 
   getClub(clubId: string) {
@@ -115,6 +118,7 @@ export class ClubSubscriptionPage implements OnInit {
                 unit_amount: price.unit_amount ? (price.unit_amount / 100).toFixed(2) : "0.00" // Format to two decimal places
               })).sort((a, b) => a.unit_amount - b.unit_amount) // Sorting prices based on the adjusted amount
             })),
+            tap(prices=>console.log(prices)),
             catchError(err => {
               console.error(`Error fetching prices for product ${product.id}:`, err);
               return of({ ...product, prices: [] }); // Return product with empty price list on error
@@ -129,6 +133,39 @@ export class ClubSubscriptionPage implements OnInit {
       })
     );
   }
+
+  getModules() {
+    return this.fbService.getModules().pipe(
+      switchMap(products => {
+        if (products.length === 0) {
+          return of([]); // Return an empty array if no products are found
+        }
+        const productsWithPrices$ = products.map(product =>
+          this.fbService.getPrices(product.id).pipe(
+            map(prices => ({
+              ...product,
+              prices: prices.map(price => ({
+                ...price,
+                currency_upper: price.currency.toUpperCase(),
+                unit_amount: price.unit_amount ? (price.unit_amount / 100).toFixed(2) : "0.00" // Format to two decimal places
+              })).sort((a, b) => a.unit_amount - b.unit_amount) // Sorting prices based on the adjusted amount
+            })),
+            tap(prices=>console.log(prices)),
+            catchError(err => {
+              console.error(`Error fetching prices for product ${product.id}:`, err);
+              return of({ ...product, prices: [] }); // Return product with empty price list on error
+            })
+          )
+        );
+        return combineLatest(productsWithPrices$); // Combine all products with their prices into a single array
+      }),
+      catchError(err => {
+        console.error("Error fetching products and prices:", err);
+        return of([]); // Return an empty array on error
+      })
+    );
+  }
+
 
   async checkout(price, product) {
     console.log(price);
@@ -150,7 +187,59 @@ export class ClubSubscriptionPage implements OnInit {
           })
           loading.present();
       
-          from(this.fbService.checkout(this.clubId, price, product)).pipe(
+          from(this.fbService.checkoutSubscription(this.clubId, price, product)).pipe(
+            switchMap(checkout => {
+              console.log('Checkout session created with ID:', checkout.id);
+              return this.fbService.getCheckoutSession(this.clubId, checkout.id);
+            }),
+            catchError(error => {
+              console.error('Error during checkout process:', error);
+              return of(null); // Handle errors or provide a fallback value
+            })
+          ).subscribe(checkoutSession => {
+            if (checkoutSession) {
+              console.log('Received checkout session data:', checkoutSession);
+              if (checkoutSession && checkoutSession.url) {
+                loading.dismiss();
+                this.openUrl(checkoutSession.url);
+      
+              }
+            } else {
+              console.log('No checkout session data received.');
+            }
+          });
+        },
+      }
+     ],
+      header: "Abo kaufen",
+      message: "Möchtest du das Abo für " + price.currency_upper + " " + price.unit_amount + " kaufen?",
+    })
+    alert.present();
+
+
+    
+  }
+  async checkoutAddon(price, product) {
+    console.log(price);
+    console.log(product);
+
+    const alert = await this.alertCtrl.create({
+      buttons: [
+        {
+          id: "cancel",
+          text:  await lastValueFrom(this.translate.get("common.cancel")),
+          role: "cancel"
+        },{
+        id: "ok",
+        text: await lastValueFrom(this.translate.get("common.ok")),
+        handler: async ()=>{
+          const loading = await this.loadingCtrl.create({
+            showBackdrop: false,
+            message: "Bitte warten",
+          })
+          loading.present();
+      
+          from(this.fbService.checkoutAddon(this.clubId, price, product)).pipe(
             switchMap(checkout => {
               console.log('Checkout session created with ID:', checkout.id);
               return this.fbService.getCheckoutSession(this.clubId, checkout.id);

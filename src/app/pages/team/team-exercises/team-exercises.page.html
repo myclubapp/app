@@ -32,8 +32,9 @@
           <ion-thumbnail slot="start" (click)="openExercise(exercise)">
             <img alt="{{exercise.title}}" src="{{exercise.image}}" />
           </ion-thumbnail>
-          <ion-label (click)="openExercise(exercise)">
+          <ion-label  class="ion-text-wrap" (click)="openExercise(exercise)">
             <h2>{{exercise.title}}</h2>
+            <h3>{{exercise.category}}</h3>
             <h3>{{exercise.description}}</h3>
           </ion-label>
         </ion-item>
@@ -71,8 +72,9 @@
           <ion-thumbnail slot="start" (click)="openExercise(exercise)">
             <img alt="{{exercise.title}}" src="{{exercise.image}}" />
           </ion-thumbnail>
-          <ion-label (click)="openExercise(exercise)">
+          <ion-label  class="ion-text-wrap" (click)="openExercise(exercise)">
             <h2>{{exercise.title}}</h2>
+            <h3>{{exercise.category}}</h3>
             <h3>{{exercise.description}}</h3>
           </ion-label>
         </ion-item>

@@ -59,21 +59,22 @@
       </ion-item>
     </ion-list>
 
-    <ion-list [inset]="true" lines="none">
-      <ion-item (click)="openTrainingExerciseModal()" detail="true">
-        <ion-label>Übungen</ion-label>
-        <ng-container *ngIf="exerciseList$ | async as exerciseList">
-          <ion-badge *ngIf="exerciseList.length > 0" slot="end">
-            {{exerciseList.length}}
-          </ion-badge>
-          <ion-note *ngIf="exerciseList.length == 0">
-            Keine Übungen vorhanden
-          </ion-note>
 
-        </ng-container>
-      </ion-item>
-
-    </ion-list>
+    <ng-container *ngIf="clubList$ | async as clubList">
+      <ion-list *ngIf="enableTrainingExercise(clubList)" [inset]="true" lines="none">
+        <ion-item (click)="openTrainingExerciseModal()" detail="true">
+          <ion-label>Übungen</ion-label>
+          <ng-container *ngIf="exerciseList$ | async as exerciseList">
+            <ion-badge *ngIf="exerciseList.length > 0" slot="end">
+              {{exerciseList.length}}
+            </ion-badge>
+            <ion-note *ngIf="exerciseList.length == 0">
+              Keine Übungen vorhanden
+            </ion-note>
+          </ng-container>
+        </ion-item>
+      </ion-list>
+    </ng-container>
 
     <ion-list [inset]="true" lines="none" *ngIf="isFuture">
       <ion-list-header>
@@ -170,7 +171,8 @@
             <ion-label>{{"common.noreply" | translate}}:
               {{training['unrespondedMembers'].length}}</ion-label>
             <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-              <ion-button *ngIf="training['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList, training.teamId)"
+              <ion-button
+                *ngIf="training['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList, training.teamId)"
                 fill="clear" slot="end" (click)="toggleAll(true, training)"> {{"common.alle_anmelden" |
                 translate}}</ion-button>
             </ng-container>

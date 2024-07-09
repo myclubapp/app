@@ -63,7 +63,18 @@ export class FirebaseService {
       this.firestore,
       `stripeProducts`
     );
-    const q = query(productListRef, where("active", "==", true));
+    const q = query(productListRef, where("active", "==", true), where("stripe_metadata_type", "!=", "module"));
+    return collectionData(q, {
+      idField: "id",
+    }) as Observable<any[]>;
+    
+  }
+  getModules() {
+    const productListRef = collection(
+      this.firestore,
+      `stripeProducts`
+    );
+    const q = query(productListRef, where("active", "==", true), where("stripe_metadata_type", "==", "module"));
     return collectionData(q, {
       idField: "id",
     }) as Observable<any[]>;
@@ -83,19 +94,32 @@ export class FirebaseService {
     
   }
 
-  checkout(clubId, price, product){
+  checkoutSubscription(clubId, price, product){
     return addDoc(
       collection(this.firestore, `/club/${clubId}/checkout_sessions/`),
       {
         userId: this.authService.auth.currentUser.uid,
-        subscriptionType: product.metadata["stripe-role"],
+        subscriptionType: product.metadata.subscription,
         price: price.id,
         allow_promotion_codes: true,
         success_url: window.location.origin,
         cancel_url: window.location.origin,
       }
     );
-
+  }
+  checkoutAddon(clubId, price, product){
+    return addDoc(
+      collection(this.firestore, `/club/${clubId}/checkout_sessions/`),
+      {
+        userId: this.authService.auth.currentUser.uid,
+        subscriptionType: product.metadata.type,
+        addon: product.metadata.addon,
+        price: price.id,
+        allow_promotion_codes: true,
+        success_url: window.location.origin,
+        cancel_url: window.location.origin,
+      }
+    );
   }
 
   getCheckoutSession(clubId: string, checkout_session_id: string){

@@ -81,14 +81,16 @@
         <ion-label> Teams </ion-label>
         <ion-note slot="end"></ion-note>
       </ion-item>
-      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-item *ngIf="isClubAdmin(clubAdminList, this.club.id)" detail="true" (click)="openHelferPunkteClub()">
-          <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
-          <ion-label> Helferpunkte </ion-label>
-        </ion-item>
+      <ng-container *ngIf="club.hasFeatureHelferEvent">
+        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+          <ion-item *ngIf="isClubAdmin(clubAdminList, this.club.id)" detail="true" (click)="openHelferPunkteClub()">
+            <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
+            <ion-label> Helferpunkte </ion-label>
+          </ion-item>
+        </ng-container>
       </ng-container>
     </ion-list>
-    
+
     <ion-list [inset]="true">
       <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
         <ion-item *ngIf="isClubAdmin(clubAdminList, this.club.id)" detail="true" (click)="openSubscription()">

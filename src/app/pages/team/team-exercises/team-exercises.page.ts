@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Browser } from "@capacitor/browser";
-import { ItemReorderEventDetail, ModalController, NavParams, ToastController } from "@ionic/angular";
+import { AlertController, ItemReorderEventDetail, ModalController, NavParams, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
-import { Observable, filter, first, lastValueFrom, map, pipe, take } from "rxjs";
+import { Observable, catchError, filter, first, lastValueFrom, map, pipe, take } from "rxjs";
 import { Training } from "src/app/models/training";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 
@@ -24,6 +24,7 @@ export class TeamExercisesPage implements OnInit {
   constructor(
     public navParams: NavParams,
     public toastCtrl: ToastController,
+
     private translate: TranslateService,
     private exerciseService: ExerciseService,
     private modalCtrl: ModalController,
@@ -33,15 +34,44 @@ export class TeamExercisesPage implements OnInit {
 
   ngOnInit() {
     this.training = this.navParams.get("training");
-
-    this.exerciseListTemplate$ = this.exerciseService.getExerciseRefs("swissunihockey");
-    this.exerciseListTemplateBackup$ = this.exerciseService.getExerciseRefs("swissunihockey");
-
-    this.teamExerciseList$ = this.exerciseService.getTeamExerciseRefs(this.training.teamId);
-
+    // console.log(this.training)
+    try {
+      this.exerciseListTemplate$ = this.exerciseService.getExerciseRefs("swissunihockey").pipe(
+        catchError((err) => {
+          console.error("ERR1: " + err);
+          return [];
+        })
+      );
+      this.exerciseListTemplateBackup$ = this.exerciseService.getExerciseRefs("swissunihockey").pipe(
+        catchError((err) => {
+          console.error("ERR2: " + err);
+          return [];
+        })
+      );
+      this.teamExerciseList$ = this.exerciseService.getTeamExerciseRefs(this.training.teamId).pipe(
+        catchError(async (err) => {
+          const alert = await this.toastCtrl.create({
+            header: await lastValueFrom(this.translate.get("common.error")),
+            message: err.message,
+            color: "danger",
+            buttons: [
+              {
+                text: await lastValueFrom(this.translate.get("common.ok")),
+                role: "cancel",
+              },
+            ],
+          });
+          alert.present();
+          return [];
+        })
+      );
+    } catch (e) {
+      console.log("Sandro")
+      console.log(e);
+    }
   }
   ngOnDestroy(): void {
-  
+
   }
   /*handleReorder(ev: CustomEvent<ItemReorderEventDetail>, list) {
     // The `from` and `to` properties contain the index of the item
@@ -76,19 +106,33 @@ export class TeamExercisesPage implements OnInit {
       })
     )
   }
-  async addExercise(exercise){
+  async addExercise(exercise) {
     exercise["order"] = 0;
-    await this.exerciseService.addTeamTrainingExercise(this.training.teamId,this.training.id, exercise);
-    this.toastActionSaved();
+    try {
+      await this.exerciseService.addTeamTrainingExercise(this.training.teamId, this.training.id, exercise)
+      this.toastActionSaved();
+    } catch (err) {
+
+    }
   }
-  async addTeamExercise(exercise){
+  async addTeamExercise(exercise) {
     exercise["order"] = 0;
-    await this.exerciseService.addTeamExercise(this.training.teamId, exercise);
-    this.toastActionSaved();
+    try {
+      await this.exerciseService.addTeamExercise(this.training.teamId, exercise)
+      this.toastActionSaved();
+    } catch (err) {
+
+    }
+
   }
-  removeTeamExercise(exercise){
-    this.exerciseService.removeTeamExercise(this.training.teamId, exercise);
-    this.toastActionCanceled();
+  removeTeamExercise(exercise) {
+    try {
+
+      this.exerciseService.removeTeamExercise(this.training.teamId, exercise)
+      this.toastActionCanceled();
+    } catch (err) {
+
+    }
   }
 
   openExercise(exercise) {
@@ -137,3 +181,7 @@ export class TeamExercisesPage implements OnInit {
   }
 
 }
+function of(arg0: undefined[]): any {
+  throw new Error("Function not implemented.");
+}
+

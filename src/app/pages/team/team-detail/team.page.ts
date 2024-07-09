@@ -42,6 +42,8 @@ import { MemberPage } from "../../member/member.page";
 import { TeamAdminListPage } from "../../team-admin-list/team-admin-list.page";
 import { TeamMemberListPage } from "../../team-member-list/team-member-list.page";
 import { Timestamp } from "firebase/firestore";
+import { Club } from "src/app/models/club";
+import { TeamExercisesPage } from "../team-exercises/team-exercises.page";
 
 @Component({
   selector: "app-team",
@@ -64,6 +66,8 @@ export class TeamPage implements OnInit {
   adminList$: Observable<Profile[]>;
   requestList$: Observable<Profile[]>;
 
+  clubList$: Observable<Club[]>;
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -81,6 +85,8 @@ export class TeamPage implements OnInit {
     this.team$ = of(this.team);
 
     this.team$ = this.getTeam(this.team.id);
+    // TODO GET CLUB BASED ON TEAM
+    this.clubList$  = this.fbService.getClubList();
   }
 
   ngOnDestroy() {
@@ -91,7 +97,29 @@ export class TeamPage implements OnInit {
       this.subscribeAdmin.unsubscribe();
     }
   }
+  enableTrainingExercise(clubList){
+    return clubList && clubList.some(club => club.hasFeatureTrainingExercise == true);
+  }
 
+
+  async openTeamTrainingExercise(){
+    const modal = await this.modalCtrl.create({
+      component: TeamExercisesPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        training:  { teamId: this.team.id }
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+
+}
   getTeam(teamId: string) {
     const calculateAge = (dateOfBirth) => {
       // console.log("DoB: " + JSON.stringify(dateOfBirth));

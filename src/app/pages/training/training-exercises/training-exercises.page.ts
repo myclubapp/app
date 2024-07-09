@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Browser } from "@capacitor/browser";
-import { ItemReorderEventDetail, ModalController, NavParams, ToastController } from "@ionic/angular";
+import { IonItemSliding, ItemReorderEventDetail, ModalController, NavParams, ToastController } from "@ionic/angular";
 import { Observable, filter, first, lastValueFrom, map, pipe, take } from "rxjs";
 import { Training } from "src/app/models/training";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
@@ -90,7 +90,8 @@ export class TrainingExercisesPage implements OnInit {
     }
   }
 
-  removeExercise(exercise){
+  removeExercise(slidingItem: IonItemSliding, exercise){
+    slidingItem.closeOpened();
     this.exerciseService.removeTeamTrainingExercise(this.training.teamId,this.training.id, exercise);
     this.toastActionCanceled();
   }
@@ -139,7 +140,7 @@ export class TrainingExercisesPage implements OnInit {
 
   async toastActionCanceled() {
     const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("team.action__canceled")),
+      message: await lastValueFrom(this.translate.get("common.success__exercise_deleted")),
       duration: 1500,
       position: "bottom",
       color: "danger",

@@ -15,6 +15,49 @@
   </ion-header>
   <ng-container *ngIf="club$ | async as club">
 
+      <ion-list [inset]="true">
+        <ion-list-header>
+          Zusatzmodule kaufen
+        </ion-list-header>
+        <ion-item detail (click)="openUrl('https://my-club.app/pricing')">
+          <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+          <ion-label class="ion-text-wrap">
+            Du bezahlst nichts, was du nicht brauchst. Mit unseren Zusatzmodulen kannst du my club deinen persönlichen Bedürfnissen anpassen.
+          </ion-label>
+
+        </ion-item>
+      </ion-list>
+
+      <ng-container *ngIf="modules$ | async as moduleList">
+        <ng-container *ngFor="let module of moduleList">
+          <ion-list [inset]="true">
+            <ion-list-header>
+              <ion-label class="ion-text-wrap">
+                <ion-icon slot="start" [name]="module.stripe_metadata_icon"></ion-icon>
+                {{module.name}}
+              </ion-label>
+            </ion-list-header>
+            <ion-item>
+              <ion-label class="ion-text-wrap">{{module.description}}</ion-label>
+              <ion-badge slot="end"> </ion-badge>
+            </ion-item>
+            <ion-list>
+              <ion-item *ngFor="let price of module.prices" detail (click)="checkoutAddon(price, module)">
+                <ion-label *ngIf="price.stripe_metadata_payment=='month'">Preis / {{"common.month" | translate}} </ion-label>
+                <ion-label *ngIf="price.stripe_metadata_payment=='year'">Preis / {{"common.year" | translate}} </ion-label>
+                <ion-badge slot="end">{{price.currency_upper}} {{price.unit_amount}} </ion-badge>
+              </ion-item>
+            </ion-list>
+        
+
+          </ion-list>
+        </ng-container>
+
+      </ng-container>
+
+
+
+
     <ng-container *ngIf="hasAcitveSubscription(club['subscriptions']).length === 0">
 
       <ion-list [inset]="true">
@@ -49,8 +92,8 @@
             </ion-item>
             <ion-list>
               <ion-item *ngFor="let price of product.prices" detail (click)="checkout(price, product)">
-                <ion-label *ngIf="price.interval=='month'">Preis / {{"common.month" | translate}} </ion-label>
-                <ion-label *ngIf="price.interval=='year'">Preis / {{"common.year" | translate}} </ion-label>
+                <ion-label *ngIf="price.stripe_metadata_payment=='month'">Preis / {{"common.month" | translate}} </ion-label>
+                <ion-label *ngIf="price.stripe_metadata_payment=='year'">Preis / {{"common.year" | translate}} </ion-label>
                 <ion-badge slot="end">{{price.currency_upper}} {{price.unit_amount}} </ion-badge>
               </ion-item>
             </ion-list>
