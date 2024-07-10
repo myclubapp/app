@@ -235,7 +235,7 @@ export class AppComponent implements OnInit {
         console.log("User is signed out");
         this.menuCtrl.enable(false, "menu");
         this.email = "";
-        const navLogout = await this.router.navigateByUrl('/logout');
+        const navLogout = await this.router.navigateByUrl('/login');
         if (navLogout) {
           console.log('Navigation SUCCESS to Logout Page');
         } else {
