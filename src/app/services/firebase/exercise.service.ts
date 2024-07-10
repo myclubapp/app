@@ -36,8 +36,8 @@ export class ExerciseService {
 
   getTeamExerciseRefs(teamId: string): Observable<any[]> {
     const exercisesRefList = collection(this.firestore, `teams/${teamId}/exercises`);
-    
-    return collectionData(exercisesRefList , {
+
+    return collectionData(exercisesRefList, {
       idField: "id",
     }) as Observable<any[]>;
   }
@@ -56,6 +56,7 @@ export class ExerciseService {
   }
 
   addTeamTrainingExercise(teamId, trainingId, exercise) {
+    // console.log(teamId, trainingId, exercise.id)
     return setDoc(
       doc(this.firestore, `teams/${teamId}/trainings/${trainingId}/exercises/${exercise.id}`),
       exercise
