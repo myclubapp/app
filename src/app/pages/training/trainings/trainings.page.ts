@@ -417,7 +417,7 @@ export class TrainingsPage implements OnInit {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__training_deleted")),
       color: "danger",
-      duration: 2000,
+      duration: 1500,
       position: "top",
     });
     toast.present();
@@ -480,7 +480,7 @@ export class TrainingsPage implements OnInit {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       color: "primary",
-      duration: 2000,
+      duration: 1500,
       position: "top",
     });
     toast.present();

@@ -317,7 +317,7 @@ export class TeamMemberListPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
@@ -328,7 +328,7 @@ export class TeamMemberListPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("team.action__canceled")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
     await toast.present();
@@ -337,8 +337,8 @@ export class TeamMemberListPage implements OnInit {
   async toastActionError(error) {
     const toast = await this.toastCtrl.create({
       message: error.message,
-      duration: 2000,
-      position: "bottom",
+      duration: 1500,
+      position: "top",
       color: "danger",
     });
 

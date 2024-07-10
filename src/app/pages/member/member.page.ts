@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { AlertController, AlertInput, ModalController, NavParams, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
+import { Clipboard } from '@capacitor/clipboard';
 import {
   Observable,
   Subscription,
@@ -93,6 +94,13 @@ export class MemberPage implements OnInit {
     }
   }
 
+  async copy(value) {
+    await Clipboard.write({
+      string: value
+    });
+    this.toastActionClipboard();
+  }
+
   getUserProfile(id) {
     return this.profileService.getUserProfileById(id);
   }
@@ -104,6 +112,7 @@ export class MemberPage implements OnInit {
         role: "destructive",
         handler: (data) => {
           console.log(data);
+          this.close();
         },
       },
       {
@@ -117,11 +126,12 @@ export class MemberPage implements OnInit {
             ),
             color: "success",
             duration: 1500,
-            position: "bottom",
+            position: "top",
           });
           await toast.present();
           // this.assignTeamAlert(this.userProfile);
           this.getTeamAndClubTeamsAsAdmin();
+          this.close();
         },
       },
     ];
@@ -162,6 +172,7 @@ export class MemberPage implements OnInit {
         }
         return combineLatest(
           clubs.map(club => this.fbService.getClubTeamList(club.id).pipe(
+            take(1),
             tap(teams => console.log(`Teams for club ${club.id}:`, teams)),
             catchError(error => {
               console.error(`Failed to fetch teams for club ${club.id}`, error);
@@ -169,6 +180,7 @@ export class MemberPage implements OnInit {
             })
           ))
         ).pipe(
+          take(1),
           map(teamsList => teamsList.flat())
         );
       }),
@@ -236,7 +248,10 @@ export class MemberPage implements OnInit {
         return of([]);
       })
     );
-
+    // Before subscribing again, unsubscribe from any previous subscription
+    if (this.teamAdminListSubscription) {
+      this.teamAdminListSubscription.unsubscribe();
+    }
     // Debugging subscription
     this.teamAdminListSubscription = this.teamAdminList$.subscribe(results => console.log("Final results:", results),
       error => console.error("Error in final subscription:", error)
@@ -276,7 +291,7 @@ export class MemberPage implements OnInit {
           ),
           color: "success",
           duration: 1500,
-          position: "bottom",
+          position: "top",
         });
         await toast.present();
   
@@ -326,7 +341,7 @@ export class MemberPage implements OnInit {
            .replace("length", `${data.values.length}`),
          color: "primary",
          duration: 1500,
-         position: "bottom",
+         position: "top",
        });
        await toast.present();
        this.close();
@@ -346,7 +361,18 @@ export class MemberPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
+      color: "success",
+    });
+
+    await toast.present();
+  }
+
+  async toastActionClipboard() {
+    const toast = await this.toastCtrl.create({
+      message: await lastValueFrom(this.translate.get("common.success__copy")),
+      duration: 1500,
+      position: "top",
       color: "success",
     });
 
@@ -357,7 +383,7 @@ export class MemberPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("club.action__canceled")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
     await toast.present();

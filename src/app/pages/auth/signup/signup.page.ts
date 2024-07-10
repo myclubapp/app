@@ -155,7 +155,7 @@ export class SignupPage implements OnInit {
     const loading = await this.loadingCtrl.create({
       cssClass: "my-custom-class",
       message: await lastValueFrom(this.translate.get("please__wait"))+"...",
-      duration: 2000,
+      duration: 1500,
     });
     await loading.present();
 

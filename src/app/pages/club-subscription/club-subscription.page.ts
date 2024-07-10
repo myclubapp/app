@@ -22,6 +22,7 @@ export class ClubSubscriptionPage implements OnInit {
   modules$ : Observable<any>;
   products$: Observable<any>;
   user: User;
+  subscriptionStatus = "active";
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -54,7 +55,8 @@ export class ClubSubscriptionPage implements OnInit {
                     if (subscriptions.length === 0) {
                         return of({
                             ...club,
-                            subscriptions: []
+                            activeSubscriptions: [],
+                            inactiveSubscriptions: []
                         });
                     }
                     const subscriptionsWithDetails$ = subscriptions.map(subscription =>
@@ -66,7 +68,7 @@ export class ClubSubscriptionPage implements OnInit {
                                 defaultIfEmpty([]) // Ensure empty array if no invoices are found
                             ),
                             this.fbService.getProduct(subscription.product.path.split('/')[1]).pipe(
-                              take(1),
+                                take(1),
                                 catchError(() => of({ id: subscription.product, name: "Unknown Product" })) // Return a default product on error
                             )
                         ]).pipe(
@@ -80,7 +82,8 @@ export class ClubSubscriptionPage implements OnInit {
                     return combineLatest(subscriptionsWithDetails$).pipe(
                         map(subscriptionsWithDetails => ({
                             ...club,
-                            subscriptions: subscriptionsWithDetails
+                            activeSubscriptions: subscriptionsWithDetails.filter(sub => sub.status=='active'),
+                            inactiveSubscriptions: subscriptionsWithDetails.filter(sub => sub.status!=='active')
                         }))
                     );
                 }),
@@ -88,19 +91,23 @@ export class ClubSubscriptionPage implements OnInit {
                     console.error("Error fetching subscriptions:", err);
                     return of({
                         ...club,
-                        subscriptions: []
+                        activeSubscriptions: [],
+                        inactiveSubscriptions: []
                     });
                 })
             );
         }),
         catchError(err => {
-            console.error("Error in getClubWithSubscriptionsAndInvoices:", err);
+            console.error("Error in getClubWithSubscriptions:", err);
             return of(null);
         })
     );
 }
 
-
+changeSegment(event){
+  console.log(event)
+  this.subscriptionStatus = event.detail.value;
+}
 
   getProductsAndPrices() {
     return this.fbService.getProducts().pipe(
@@ -286,7 +293,7 @@ export class ClubSubscriptionPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
@@ -296,7 +303,7 @@ export class ClubSubscriptionPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("club.action__canceled")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
     await toast.present();
@@ -305,8 +312,8 @@ export class ClubSubscriptionPage implements OnInit {
   async toastActionError(error) {
     const toast = await this.toastCtrl.create({
       message: error.message,
-      duration: 2000,
-      position: "bottom",
+      duration: 1500,
+      position: "top",
       color: "danger",
     });
 

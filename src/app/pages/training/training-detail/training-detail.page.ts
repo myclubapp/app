@@ -190,8 +190,8 @@ export class TrainingDetailPage implements OnInit {
   async toastActionError(error) {
     const toast = await this.toastController.create({
       message: error.message,
-      duration: 2000,
-      position: "bottom",
+      duration: 1500,
+      position: "top",
       color: "danger",
     });
 
@@ -234,7 +234,7 @@ export class TrainingDetailPage implements OnInit {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       color: "primary",
-      duration: 2000,
+      duration: 1500,
       position: "top",
     });
     toast.present();

@@ -55,7 +55,7 @@ export class ClubMemberListPage implements OnInit {
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.club = this.navParams.get("club");
@@ -63,7 +63,7 @@ export class ClubMemberListPage implements OnInit {
     this.club$ = of(this.club);
     this.club$ = this.getClub(this.club.id);
 
-    this.clubAdminList$ = this.fbService.getClubAdminList(); 
+    this.clubAdminList$ = this.fbService.getClubAdminList();
   }
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
     return clubAdminList && clubAdminList.some(club => club.id === clubId);
@@ -80,60 +80,57 @@ export class ClubMemberListPage implements OnInit {
   getClub(clubId: string) {
     this.groupArray = [];  // Reset the group array at the start to avoid stale data.
 
-    const calculateAge = (dateOfBirth) => {
-        const birthday = new Date(dateOfBirth.seconds * 1000);
-        const ageDifMs = Date.now() - birthday.getTime();
-        const ageDate = new Date(ageDifMs);
-        return Math.abs(ageDate.getUTCFullYear() - 1970);
-    };
-
-    return this.authService.getUser$().pipe(
-        take(1),
-        tap((user) => {
-            this.user = user;
-            if (!user) throw new Error("User not found");
-        }),
-        switchMap(() => this.fbService.getClubRef(clubId)),
-        switchMap((club) => {
-            if (!club) return of(null);
-            return this.fbService.getClubMemberRefs(clubId).pipe(
-                switchMap((clubMembers) => {
-                    const memberProfiles$ = clubMembers.map((member) =>
-                        this.userProfileService.getUserProfileById(member.id).pipe(
-                            take(1),
-                            catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
-                        )
-                    );
-                    return forkJoin(memberProfiles$).pipe(
-                        map((clubMembers) => {
-                            this.groupArray = [];  // Clear groupArray before processing new members
-                            const sortedMembers = clubMembers
-                                .filter((member) => member !== undefined)
-                                .sort((a, b) => a.firstName.localeCompare(b.firstName))
-                                .map((profile) => {
-                                    const groupByChar = profile.firstName.charAt(0);
-                                    if (!this.groupArray.includes(groupByChar)) {
-                                        this.groupArray.push(groupByChar);
-                                    }
-                                    return {
-                                        ...profile,
-                                        groupBy: groupByChar,
-                                    };
-                                });
-
-                            return {
-                                ...club,
-                                clubMembers: sortedMembers,
-                            };
-                        })
-                    );
-                }),
-                catchError(err => {
-                    console.error("Error in getClubWithMembers:", err);
-                    return of(null);
-                })
+    return this.fbService.getClubRef(clubId).pipe(
+      switchMap((club) => {
+        if (!club) return of(null);
+        return this.fbService.getClubMemberRefs(clubId).pipe(
+          switchMap((clubMembers) => {
+            if (clubMembers.length === 0) {
+              return of({ ...club, clubMembers: [] });
+          }
+            const memberProfiles$ = clubMembers.map((member) =>
+              this.userProfileService.getUserProfileById(member.id).pipe(
+                take(1),
+                catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
+              )
             );
-        })
+            return forkJoin(memberProfiles$).pipe(
+              map((clubMembers) => {
+                this.groupArray = [];  // Clear groupArray before processing new members
+                const sortedMembers = clubMembers
+                  .filter((member) => member !== undefined)
+                  .sort((a, b) => a.firstName.localeCompare(b.firstName))
+                  .map((profile) => {
+                    const groupByChar = profile.firstName.charAt(0);
+                    if (!this.groupArray.includes(groupByChar)) {
+                      this.groupArray.push(groupByChar);
+                    }
+                    return {
+                      ...profile,
+                      groupBy: groupByChar,
+                    };
+                  });
+
+                return {
+                  ...club,
+                  clubMembers: sortedMembers,
+                };
+              })
+            );
+          }),
+          catchError(err => {
+            console.error("Error in getClubWithMembers:", err);
+            return of({
+              ...club,
+              clubMembers: []
+            });
+          })
+        );
+      }),
+      catchError(err => {
+        console.error("Error in getClub:", err);
+        return of(null);
+      })
     );
 }
   handleChange(event: any) {
@@ -173,11 +170,11 @@ export class ClubMemberListPage implements OnInit {
     }
   }
 
-  async deleteClubMember( member){
+  async deleteClubMember(member) {
     try {
       await this.fbService.deleteClubember(this.club.id, member.id);
       await this.toastActionSaved();
-    } catch(e){
+    } catch (e) {
       this.toastActionError(e);
     }
   }
@@ -205,7 +202,7 @@ export class ClubMemberListPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
@@ -216,7 +213,7 @@ export class ClubMemberListPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("club.action__canceled")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
     await toast.present();
@@ -225,8 +222,8 @@ export class ClubMemberListPage implements OnInit {
   async toastActionError(error) {
     const toast = await this.toastCtrl.create({
       message: error.message,
-      duration: 2000,
-      position: "bottom",
+      duration: 1500,
+      position: "top",
       color: "danger",
     });
 

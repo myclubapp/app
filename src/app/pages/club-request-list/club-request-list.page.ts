@@ -43,143 +43,59 @@ export class ClubRequestListPage implements OnInit {
     this.club$ = this.getClub(this.club.id);
   }
 
-
   getClub(clubId: string) {
-    this.groupArray = [];
+    this.groupArray = [];  // Reset the group array at the start to avoid stale data.
 
-    const calculateAge = (dateOfBirth) => {
-      // console.log("DoB: " + JSON.stringify(dateOfBirth));
-      const birthday = new Date(dateOfBirth.seconds * 1000);
-      const ageDifMs = Date.now() - birthday.getTime();
-      const ageDate = new Date(ageDifMs); // miliseconds from epoch
-      return Math.abs(ageDate.getUTCFullYear() - 1970);
-    };
-
-    return this.authService.getUser$().pipe(
-      take(1),
-      tap((user) => {
-        this.user = user;
-        if (!user) throw new Error("User not found");
-      }),
-      switchMap(() => this.fbService.getClubRef(clubId)),
+    return this.fbService.getClubRef(clubId).pipe(
       switchMap((club) => {
         if (!club) return of(null);
-        return combineLatest({
-          // clubMembers: this.fbService.getClubMemberRefs(clubId),
-          // clubAdmins: this.fbService.getClubAdminRefs(clubId),
-          clubRequests: this.fbService.getClubRequestRefs(clubId),
-        }).pipe(
-          switchMap(
-            ({
-              // clubMembers,
-              // clubAdmins,
-              clubRequests
-            }) => {
-             /* const memberProfiles$ = clubMembers.map((member) =>
-                this.userProfileService.getUserProfileById(member.id).pipe(
-                  take(1),
-
-                  catchError(() =>
-                    of({ ...member, firstName: "Unknown", lastName: "Unknown" })
-                  )
-                )
-              );
-             const adminProfiles$ = clubAdmins.map((admin) =>
-              this.userProfileService.getUserProfileById(admin.id).pipe(
-                take(1),
-                catchError(() =>
-                  of({ ...admin, firstName: "Unknown", lastName: "Unknown" })
-                )
-              )
-            );*/
+        return this.fbService.getClubRequestRefs(clubId).pipe(
+          switchMap(clubRequests => {
+            if (clubRequests.length === 0) {
+              this.groupArray = [];
+              return of({ ...club, clubRequests: [] });
+            }
             const clubRequests$ = clubRequests.map((request) =>
               this.userProfileService.getUserProfileById(request.id).pipe(
                 take(1),
-                catchError(() =>
-                  of({ ...request, firstName: "Unknown", lastName: "Unknown" })
-                )
+                catchError(() => of({ ...request, firstName: "Unknown", lastName: "Unknown" }))
               )
             );
-              return forkJoin({
-                //clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
-                //clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
-                clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
-              }).pipe(
-                map(
-                  ({
-                    // clubMembers,
-                    // clubAdmins,
-                    clubRequests
-                  }) => ({
-                    /*clubAdmins: clubAdmins
-                      .filter((member) => member !== undefined)
-                      .sort((a, b) => a.firstName.localeCompare(b.firstName))
-                      .map((profile) => {
-                        if (
-                          !this.groupArray.includes(profile.firstName.charAt(0))
-                        ) {
-                          this.groupArray.push(profile.firstName.charAt(0));
-                        }
-                        return {
-                          ...profile,
-                          groupBy: profile.firstName.charAt(0),
-                        };
-                      }), // Sort by firstName, // Filter out undefined
-                    clubMembers: clubMembers.filter((member) => member !== undefined),*/ // Filter out undefined
-                    clubRequests: clubRequests.filter((member) => member !== undefined)
-                    .sort((a, b) => a.firstName.localeCompare(b.firstName))
-                    .map((profile) => {
-                      if (
-                        !this.groupArray.includes(profile.firstName.charAt(0))
-                      ) {
-                        this.groupArray.push(profile.firstName.charAt(0));
-                      }
-                      return {
-                        ...profile,
-                        groupBy: profile.firstName.charAt(0),
-                      };
-                    }) // Sort by firstName, // Filter out undefined
+            return forkJoin(clubRequests$).pipe(
+              map((clubMembers) => {
+                this.groupArray = [];  // Clear groupArray before processing new members
+                const sortedMembers = clubMembers
+                  .filter((member) => member !== undefined)
+                  .sort((a, b) => a.firstName.localeCompare(b.firstName))
+                  .map((profile) => {
+                    const groupByChar = profile.firstName.charAt(0);
+                    if (!this.groupArray.includes(groupByChar)) {
+                      this.groupArray.push(groupByChar);
+                    }
+                    return {
+                      ...profile,
+                      groupBy: groupByChar,
+                    };
+                  });
 
-                  })
-                )
-              );
-            }
-          ),
-          map(
-            ({
-                // clubMembers,
-                // clubAdmins,
-                clubRequests
-            }) => {
-              /* const ages = clubMembers
-              .map((member) =>
-                member.hasOwnProperty("dateOfBirth")
-                  ? calculateAge(member.dateOfBirth)
-                  : 0
-              )
-              .filter((age) => age > 0); // Filter out invalid or 'Unknown' ages
-            // console.log(ages);
-
-            const averageAge =
-              ages.length > 0
-                ? ages.reduce((a, b) => a + b, 0) / ages.length
-                : 0; // Calculate average or set to 0 if no valid ages
-                */
-
-              return {
-                ...club,
-                // averageAge: averageAge.toFixed(1), // Keep two decimal places
-                  // clubMembers,
-                  // clubAdmins,
-                  clubRequests,
-              };
-            }
-          )
+                return {
+                  ...club,
+                  clubRequests: sortedMembers,
+                };
+              })
+            );
+          }),
+          catchError(err => {
+            console.error("Error in getClubWithMembers:", err);
+            return of({
+              ...club,
+              clubRequests: []
+            });
+          })
         );
       }),
-      catchError((err) => {
-        this.toastActionError(err);
-        console.error("Error in getClubWithMembersAndAdmins:", err);
+      catchError(err => {
+        console.error("Error in getClub:", err);
         return of(null);
       })
     );
@@ -246,7 +162,7 @@ export class ClubRequestListPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
@@ -256,7 +172,7 @@ export class ClubRequestListPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("club.action__canceled")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
     await toast.present();
@@ -265,8 +181,8 @@ export class ClubRequestListPage implements OnInit {
   async toastActionError(error) {
     const toast = await this.toastCtrl.create({
       message: error.message,
-      duration: 2000,
-      position: "bottom",
+      duration: 1500,
+      position: "top",
       color: "danger",
     });
 

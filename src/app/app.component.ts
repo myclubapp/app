@@ -447,7 +447,7 @@ export class AppComponent implements OnInit {
     // await SplashScreen.hide();
     // Show the splash for two seconds and then automatically hide it:
     await SplashScreen.show({
-      showDuration: 2000,
+      showDuration: 1500,
       autoHide: true,
     });
   }
@@ -665,7 +665,7 @@ export class AppComponent implements OnInit {
       /*this.toastController.create({
         message: "Push erfolgreich registriert",
         color: "primary",
-        duration: 2000,
+        duration: 1500,
         position: "top",
       }).then(toast=>{
         toast.present();

@@ -410,7 +410,7 @@ async openAdminList(){
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
@@ -420,8 +420,8 @@ async openAdminList(){
   async toastActionError(error) {
     const toast = await this.toastController.create({
       message: error.message,
-      duration: 2000,
-      position: "bottom",
+      duration: 1500,
+      position: "top",
       color: "danger",
     });
 

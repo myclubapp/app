@@ -383,7 +383,7 @@ export class ClubPage implements OnInit {
         ),
         color: "primary",
         duration: 1500,
-        position: "bottom",
+        position: "top",
       });
       await toast.present();
 
@@ -433,7 +433,7 @@ export class ClubPage implements OnInit {
           .replace("length", `${data.values.length}`),
         color: "primary",
         duration: 1500,
-        position: "bottom",
+        position: "top",
       });
       await toast.present();
     } else {
@@ -451,7 +451,7 @@ export class ClubPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
@@ -462,7 +462,7 @@ export class ClubPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("club.action__canceled")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
     await toast.present();
@@ -471,8 +471,8 @@ export class ClubPage implements OnInit {
   async toastActionError(error) {
     const toast = await this.toastCtrl.create({
       message: error.message,
-      duration: 2000,
-      position: "bottom",
+      duration: 1500,
+      position: "top",
       color: "danger",
     });
 

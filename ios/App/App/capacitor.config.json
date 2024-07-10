@@ -23,6 +23,7 @@
 	"packageClassList": [
 		"CAPBrowserPlugin",
 		"CAPCameraPlugin",
+		"ClipboardPlugin",
 		"DevicePlugin",
 		"DialogPlugin",
 		"GeolocationPlugin",

@@ -199,7 +199,7 @@ export class OnboardingPage implements OnInit {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 

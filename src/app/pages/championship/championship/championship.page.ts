@@ -402,7 +402,7 @@ export class ChampionshipPage implements OnInit {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.changes__saved")),
       color: "primary",
-      duration: 2000,
+      duration: 1500,
       position: "top",
     });
     toast.present();

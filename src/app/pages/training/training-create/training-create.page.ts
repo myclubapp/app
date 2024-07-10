@@ -183,8 +183,8 @@ export class TrainingCreatePage implements OnInit {
   async toastActionError(error) {
     const toast = await this.toastController.create({
       message: error.message,
-      duration: 2000,
-      position: "bottom",
+      duration: 1500,
+      position: "top",
       color: "danger",
     });
 

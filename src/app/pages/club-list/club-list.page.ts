@@ -93,7 +93,7 @@ export class ClubListPage implements OnInit {
                   message: "Anfrage an Club gesendet",
                   color: "primary",
                   duration: 1500,
-                  position: "bottom",
+                  position: "top",
                 });
 
                 await toast.present();

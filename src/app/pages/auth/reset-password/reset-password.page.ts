@@ -82,7 +82,7 @@ export class ResetPasswordPage implements OnInit {
       message:
         (await lastValueFrom(this.translate.get("common.please__wait"))) +
         "...",
-      duration: 2000,
+      duration: 1500,
     });
     await loading.present();
 

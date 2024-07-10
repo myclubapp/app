@@ -194,6 +194,7 @@
         "version": "Version"
     },
     "common": {
+        "success__copy": "Wert erfolgreich kopiert",
         "month": "Monat", 
         "year": "Jahr",
         "paid":"bezahlt",

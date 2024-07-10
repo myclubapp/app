@@ -355,7 +355,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         this.translate.get("profile.request_success__deleted")
       ),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
@@ -367,7 +367,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         this.translate.get("profile.success__profile_pic_changed")
       ),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
@@ -508,7 +508,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         this.translate.get("profile.success__profile_deleted")
       ),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
 
@@ -521,7 +521,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         this.translate.get("profile.error__while_deleting_msg")
       ),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
 
@@ -532,7 +532,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
