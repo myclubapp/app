@@ -12,6 +12,7 @@ export interface Club {
   address: string;
   phone: string;
   updated: Timestamp;
+  roles: [];
 
 }
 export interface SwissUnihockeyClub extends Club {}

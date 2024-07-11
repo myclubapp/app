@@ -260,6 +260,17 @@ export class FirebaseService {
       team
     );
   }
+  addClubRole(clubId, roleArray){
+    return setDoc(
+      doc(this.firestore, `club/${clubId}`),
+      {
+        roles: roleArray,
+      },
+      {
+        merge: true,
+      }
+    );
+  }
   getTeamAdminList() {
     return this.authService.getUser$().pipe(
       take(1),

@@ -66,6 +66,11 @@ export class ClubMemberListPage implements OnInit {
 
   ngOnInit() {
     this.club = this.navParams.get("club");
+    if (this.club.roles && this.club.roles.lenght > 0) {
+
+    } else {
+      this.club.roles = [];
+    }
 
     this.club$ = this.fbService.getClubRef(this.club.id);
 
@@ -86,6 +91,54 @@ export class ClubMemberListPage implements OnInit {
     } else {
       this.allowEdit = true;
     }
+  }
+  async addRole() {
+    const alert = await this.alertCtrl.create({
+        header: "Neue Rolle hinzufügen",
+        message: "Erstelle eine neue Rolle für deinen Verein.",
+        inputs: [{
+            name: "role",
+            value: "",
+            placeholder: "Vorstand, Sportchef,...",
+            id: "role"
+        }],
+        buttons: [
+            {
+                text: await lastValueFrom(this.translate.get("common.cancel")),
+                handler: (data) => {
+                    console.log("Cancelled", data);
+                },
+                role: "cancel",
+            },
+            {
+                text: await lastValueFrom(this.translate.get("common.ok")),
+                handler: (data) => {
+                    if (data.role.trim()) {  // Check if the role is not just empty spaces
+                        this.club$.pipe(
+                            take(1)
+                        ).subscribe(club => {
+                            if (club && club.roles) {
+                                club.roles.push(data.role);
+                                this.fbService.addClubRole(club.id, club.roles).then(() => {
+                                    console.log("Role added successfully");
+                                }).catch(error => {
+                                    console.error("Failed to add role", error);
+                                });
+                            } else {
+                                console.error("Club data is missing or invalid");
+                            }
+                        });
+                    }
+                },
+            }
+        ],
+    });
+
+    await alert.present();
+}
+
+  setFilter(role) {
+    this.handleSearch({detail: {value: role}})
   }
 
   async deleteClubMember(member) {
@@ -110,7 +163,19 @@ export class ClubMemberListPage implements OnInit {
         }
         const profiles$ = members.map(member =>
           this.userProfileService.getUserProfileById(member.id).pipe(
-            catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
+            map(profile => ({
+              ...member, // Spread member to retain all original attributes
+              ...profile, // Spread profile to overwrite and add profile attributes
+              firstName: profile.firstName || "Unknown",
+              lastName: profile.lastName || "Unknown",
+              role: member.role || ""
+            })),
+            catchError(() => of({ 
+              ...member, 
+              firstName: "Unknown", 
+              lastName: "Unknown", 
+              role: member.role || "" // Ensure role or other attributes are included even in error
+            }))
           )
         );
         return combineLatest(profiles$).pipe(
@@ -138,40 +203,51 @@ export class ClubMemberListPage implements OnInit {
 
 
     this.filteredClubMembers$ = this.searchTerm.pipe(
-      debounceTime(300), // Debounce to limit the number of searches
-      startWith(''), // Start with no filter
-      switchMap(term => this.filterClubMembers(term))  // Filter based on search term
+      debounceTime(300),
+      tap(term => console.log('Emitting searchTerm:', term)), // Debug emitted searchTerm
+      startWith(''), // This initializes the stream
+      switchMap(term => this.filterClubMembers(term)),
+      catchError(err => {
+        console.error("Error filtering members:", err);
+        return of([]);
+      })
     );
   }
 
   filterClubMembers(term: string) {
     return this.clubMembers$.pipe(
       map(members => {
-        // Filter members based on the term
-        const filteredMembers = members.filter(member =>
+        const filteredMembers = term ? members.filter(member =>
           member.firstName.toLowerCase().includes(term.toLowerCase()) ||
-          member.lastName.toLowerCase().includes(term.toLowerCase())
-        );
-
-        // Clear and update the groupArray based on the filtered members
-        this.groupArray = [];
-        filteredMembers.forEach(member => {
-          const groupByChar = member.firstName.charAt(0).toUpperCase();
-          if (!this.groupArray.includes(groupByChar)) {
-            this.groupArray.push(groupByChar);
-          }
-        });
-
+          member.lastName.toLowerCase().includes(term.toLowerCase()) ||
+          (member.role && member.role.toLowerCase().includes(term.toLowerCase()))
+        ) : members;  // If term is empty, return all members
+  
+        this.updateGroupArray(filteredMembers);  // Update the group array with filtered or all members
         return filteredMembers;
       })
     );
   }
+  
 
+  
+  updateGroupArray(filteredMembers) {
+    this.groupArray = [];  // Clear the existing array
+    filteredMembers.forEach(member => {
+      const groupByChar = member.firstName.charAt(0).toUpperCase();
+      if (!this.groupArray.includes(groupByChar)) {
+        this.groupArray.push(groupByChar);
+      }
+    });
+  }
+  
   handleSearch(event: any) {
     const searchTerm = event.detail.value || '';
-    this.searchTerm.next(searchTerm); // Update the BehaviorSubject with the new search term
+    console.log('Search term:', searchTerm);
+    console.log("value: " + this.searchTerm.getValue() + " clsoed: " + this.searchTerm.closed);
+    
+    this.searchTerm.next(searchTerm);
   }
-
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
     return clubAdminList && clubAdminList.some(club => club.id === clubId);

@@ -351,7 +351,7 @@ export class NewsPage implements OnInit {
        // subHeader: 'Nach Verein oder Teams filtern.',
         inputs: alertInputs,
         buttons: [
-          { text:  await lastValueFrom(this.translate.get("ok")),
+          { text:  await lastValueFrom(this.translate.get("common.ok")),
             role: "confirm",
             handler: (value)=>{
               console.log(value)

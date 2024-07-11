@@ -21,10 +21,25 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
-      placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
 
+
+    <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
+      [value]="searchTerm.value" placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
+
+    <div class="ion-padding">
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-button *ngIf="isClubAdmin(clubAdminList, club.id)" shape="round" size="small" (click)="addRole()">
+          hinzufügen
+          <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+        </ion-button>
+      </ng-container>
+      <ion-button (click)="setFilter(role)" shape="round" size="small" *ngFor="let role of club['roles']">
+        {{role}}
+      </ion-button>
+    </div>
     <ion-list [inset]="true" *ngIf="clubMembers$ | async as clubMemberDummyList">
+
+
 
       <ion-item-group>
         <ng-container *ngFor="let groupBy of groupArray">
@@ -32,7 +47,7 @@
             <ion-label> {{groupBy}} </ion-label>
           </ion-item-divider>
 
-          <ng-container *ngIf="filteredClubMembers$ | async as clubMemberList">
+          <ng-container *ngIf="(filteredClubMembers$ | async) as clubMemberList">
             <ng-container *ngFor="let member of clubMemberList">
               <ion-item-sliding *ngIf="member.groupBy == groupBy">
                 <ion-item detail="true">
@@ -45,6 +60,7 @@
                   </ion-avatar>
                   <ion-label class="ion-text-wrap" (click)="openMember(member)">{{member.firstName}}
                     {{member.lastName}}</ion-label>
+                  <ion-badge *ngIf="member.role" slot="end">{{member.role}}</ion-badge>
                 </ion-item>
               </ion-item-sliding>
             </ng-container>

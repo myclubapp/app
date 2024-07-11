@@ -89,14 +89,11 @@ export class ClubAdminListPage implements OnInit {
     }
   }
 
-
-
   initializeClubAdmins() {
     this.groupArray = [];  // Initialize or clear the group array
 
     this.clubAdmins$ = this.fbService.getClubAdminRefs(this.club.id).pipe(
       switchMap(members => {
-        //  console.log("Club Members:", members);
         if (members.length === 0) {
           this.groupArray = [];
           return of([]);
@@ -129,7 +126,6 @@ export class ClubAdminListPage implements OnInit {
       })
     );
 
-
     this.filteredClubAdmins$ = this.searchTerm.pipe(
       debounceTime(300), // Debounce to limit the number of searches
       startWith(''), // Start with no filter
@@ -140,7 +136,6 @@ export class ClubAdminListPage implements OnInit {
   filterClubAdmins(term: string) {
     return this.clubAdmins$.pipe(
       map(members => {
-        // Filter members based on the term
         const filteredMembers = members.filter(member =>
           member.firstName.toLowerCase().includes(term.toLowerCase()) ||
           member.lastName.toLowerCase().includes(term.toLowerCase())
@@ -165,11 +160,9 @@ export class ClubAdminListPage implements OnInit {
     this.searchTerm.next(searchTerm); // Update the BehaviorSubject with the new search term
   }
 
-
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
     return clubAdminList && clubAdminList.some(club => club.id === clubId);
   }
-
 
   addAdministratorToClub() {
     if (!this.club || !this.club.id) {
@@ -182,7 +175,6 @@ export class ClubAdminListPage implements OnInit {
       this.fbService.getClubMemberRefs(this.club.id),
       this.clubAdmins$
     ]).pipe(
-
       switchMap(([members, clubAdmins]) => {
         if (members.length === 0) {
           console.log('No club members found.');
@@ -196,7 +188,6 @@ export class ClubAdminListPage implements OnInit {
         );
   
         return combineLatest(profiles$).pipe(
-
           map(profiles => profiles.filter(profile => profile !== undefined)),
           map(profiles => this.filterNewAdmins(profiles, clubAdmins)),
           map(filteredMembers => this.prepareMemberSelectOptions(filteredMembers))
@@ -222,6 +213,7 @@ export class ClubAdminListPage implements OnInit {
       !clubAdmins.some(admin => admin.id === member.id)
     );
   }
+
   prepareMemberSelectOptions(filteredMembers) {
     // Sort members alphabetically by firstName, then by lastName
     const sortedMembers = filteredMembers.sort((a, b) => {
@@ -238,7 +230,8 @@ export class ClubAdminListPage implements OnInit {
         value: member.id,
         checked: false,
     }));
-}
+  }
+
   async showAddAdminAlert(adminSelect) {
     const alert = await this.alertCtrl.create({
       header: await lastValueFrom(this.translate.get("common.addAdministrator")),
@@ -261,8 +254,7 @@ export class ClubAdminListPage implements OnInit {
     });
     await alert.present();
   }
-  
- 
+
   async approveClubAdminRequest(clubId, adminId) {
     await this.fbService.addClubAdmin(clubId, adminId).then(() => {
       this.toastActionSaved();
@@ -271,9 +263,6 @@ export class ClubAdminListPage implements OnInit {
         this.toastActionError(err);
       });
   }
-
-
-
   async deleteClubAdmin( member){
     try {
       await this.fbService.deleteClubAdmin(this.club.id, member.id);

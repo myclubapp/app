@@ -112,7 +112,7 @@ export class LoginPage implements OnInit {
         message: message,
         buttons: [
           {
-            text: await lastValueFrom(this.translate.get("ok")),
+            text: await lastValueFrom(this.translate.get("common.ok")),
             role: "cancel",
           },
         ],
