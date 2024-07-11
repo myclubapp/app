@@ -552,7 +552,7 @@ export class FirebaseService {
     const teamRefLIst = collection(this.firestore, `club/${clubId}/teams`);
     return collectionData(teamRefLIst, {
       idField: "id",
-    }) as unknown as Observable<Team[]>;
+    }) as Observable<Team[]>;
   }
 
   getTeamMemberRefs(teamId: string): Observable<Profile[]> {
@@ -562,7 +562,7 @@ export class FirebaseService {
     );
     return collectionData(teamMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<Profile[]>;
+    }) as Observable<Profile[]>;
   }
 
   getTeamAdminRefs(teamId: string): Observable<Profile[]> {
@@ -572,7 +572,7 @@ export class FirebaseService {
     );
     return collectionData(teamMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<Profile[]>;
+    }) as Observable<Profile[]>;
   }
   // User Perspective via Requests
   async setClubRequest(clubId: string, userId: string) {

@@ -8,10 +8,12 @@ import {
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import {
+  BehaviorSubject,
   Observable,
   Subscription,
   catchError,
   combineLatest,
+  debounceTime,
   finalize,
   forkJoin,
   lastValueFrom,
@@ -46,10 +48,12 @@ export class ClubAdminListPage implements OnInit {
 
   groupArray = [];
 
-  subscribeAdmin: Subscription;
-
   clubAdminList$: Observable<Club[]>;
 
+
+  clubAdmins$: Observable<any[]>; // Observable for the full list of members
+  filteredClubAdmins$: Observable<any[]>; // Observable for filtered results
+  searchTerm = new BehaviorSubject<string>('');  // Initialized with an empty string
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -64,23 +68,18 @@ export class ClubAdminListPage implements OnInit {
 
   ngOnInit() {
     this.club = this.navParams.get("club");
+    this.club$ = this.fbService.getClubRef(this.club.id);
 
-    this.club$ = of(this.club);
-    this.club$ = this.getClub(this.club.id);
+    this.initializeClubAdmins();
 
     this.clubAdminList$ = this.fbService.getClubAdminList(); 
   }
 
   ngOnDestroy() {
 
-    if (this.subscribeAdmin) {
-      this.subscribeAdmin.unsubscribe();
-    }
+
   }
 
-  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some(club => club.id === clubId);
-  }
   edit() {
 
     if (this.allowEdit) {
@@ -90,167 +89,191 @@ export class ClubAdminListPage implements OnInit {
     }
   }
 
-  getClub(clubId: string) {
-    this.groupArray = [];  // Reset the group array before processing to ensure it's clean for each fetch
 
-    const calculateAge = (dateOfBirth) => {
-        const birthday = new Date(dateOfBirth.seconds * 1000);
-        const ageDifMs = Date.now() - birthday.getTime();
-        const ageDate = new Date(ageDifMs);
-        return Math.abs(ageDate.getUTCFullYear() - 1970);
-    };
 
-    return this.authService.getUser$().pipe(
-        take(1),
-        tap((user) => {
-            this.user = user;
-            if (!user) throw new Error("User not found");
-        }),
-        switchMap(() => this.fbService.getClubRef(clubId)),
-        switchMap((club) => {
-            if (!club) return of(null);
-            return combineLatest({
-                clubMembers: this.fbService.getClubMemberRefs(clubId),
-                clubAdmins: this.fbService.getClubAdminRefs(clubId),
-            }).pipe(
-                switchMap(({ clubMembers, clubAdmins }) => {
-                    const memberProfiles$ = clubMembers.map((member) =>
-                        this.userProfileService.getUserProfileById(member.id).pipe(
-                            take(1),
-                            catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
-                        )
-                    );
-                    const adminProfiles$ = clubAdmins.map((admin) =>
-                        this.userProfileService.getUserProfileById(admin.id).pipe(
-                            take(1),
-                            catchError(() => of({ ...admin, firstName: "Unknown", lastName: "Unknown" }))
-                        )
-                    );
-                    return forkJoin({
-                        clubMembers: forkJoin(memberProfiles$),
-                        clubAdmins: forkJoin(adminProfiles$),
-                    }).pipe(
-                        map(({ clubMembers, clubAdmins }) => {
-                            this.groupArray = [];  // Reset the group array just before mapping profiles
-                            const sortedAdmins = clubAdmins
-                                .filter(admin => admin !== undefined)
-                                .sort((a, b) => a.firstName.localeCompare(b.firstName))
-                                .map(profile => {
-                                    const groupByChar = profile.firstName.charAt(0);
-                                    if (!this.groupArray.includes(groupByChar)) {
-                                        this.groupArray.push(groupByChar);
-                                    }
-                                    return {
-                                        ...profile,
-                                        groupBy: groupByChar,
-                                    };
-                                });
+  initializeClubAdmins() {
+    this.groupArray = [];  // Initialize or clear the group array
 
-                            const filteredMembers = clubMembers.filter(member => member !== undefined);
-
-                            return {
-                                ...club,
-                                clubMembers: filteredMembers,
-                                clubAdmins: sortedAdmins,
-                            };
-                        })
-                    );
-                }),
-                catchError(err => {
-                    console.error("Error in getClubWithMembersAndAdmins:", err);
-                    return of(null);
-                })
-            );
-        })
-    );
-}
-  //Search
-  handleChange(event: any) {
-    console.log(event.detail.value);
-    if (event.detail.value) {
-      const sub = this.club$
-        .pipe(
-          take(1),
-          tap((club) => {
-            const searchResult = club.clubAdmins.filter(
-              (searchMember) =>
-                searchMember.firstName
-                  .toLowerCase()
-                  .includes(event.detail.value.toLowerCase()) ||
-                searchMember.lastName
-                  .toLowerCase()
-                  .includes(event.detail.value.toLowerCase())
-            );
-            console.log(searchResult);
-            this.groupArray = [];
-            for (const profile of searchResult) {
-              if (!this.groupArray.includes(profile.firstName.charAt(0))) {
-                this.groupArray.push(profile.firstName.charAt(0));
+    this.clubAdmins$ = this.fbService.getClubAdminRefs(this.club.id).pipe(
+      switchMap(members => {
+        //  console.log("Club Members:", members);
+        if (members.length === 0) {
+          this.groupArray = [];
+          return of([]);
+        }
+        const profiles$ = members.map(member =>
+          this.userProfileService.getUserProfileById(member.id).pipe(
+            catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
+          )
+        );
+        return combineLatest(profiles$).pipe(
+          map(profiles => profiles
+            .filter(profile => profile !== undefined)  // Ensure no undefined profiles
+            .sort((a, b) => a.firstName.localeCompare(b.firstName))  // Sort members by firstName
+            .map(profile => {
+              const groupByChar = profile.firstName.charAt(0).toUpperCase();  // Use the first character of firstName for grouping
+              if (!this.groupArray.includes(groupByChar)) {
+                this.groupArray.push(groupByChar);
               }
-            }
+              return {
+                ...profile,
+                groupBy: groupByChar,
+              };
+            })
+          )
+        );
+      }),
+      catchError(err => {
+        console.error("Error fetching Club members:", err);
+        return of([]);
+      })
+    );
 
-            this.club$ = of({
-              ...club,
-              clubMembers: searchResult,
-            });
-          })
-        )
-        .subscribe();
-    } else {
-      console.log("empty " + this.club.id);
-      this.club$ = this.getClub(this.club.id);
-    }
+
+    this.filteredClubAdmins$ = this.searchTerm.pipe(
+      debounceTime(300), // Debounce to limit the number of searches
+      startWith(''), // Start with no filter
+      switchMap(term => this.filterClubAdmins(term))  // Filter based on search term
+    );
   }
-  async addAdministrator() {
-    let memberSelect = [];
 
-    this.subscribeAdmin = this.club$
-      .pipe(
-        take(1),
-        tap((club) => {
-          //console.log(club);
-          club.clubMembers.forEach((member) => {
-            if (!club.clubAdmins.find((element) => element.id === member.id)) {
-              memberSelect.push({
-                type: "checkbox",
-                name: member.id,
-                label: `${member.firstName} ${member.lastName}`,
-                value: member,
-                checked: false,
-              });
-            }
-          });
-        }),
-        finalize(async () => {
-          if (memberSelect.length > 0) {
-            const alert = await this.alertCtrl.create({
-              header: await lastValueFrom(this.translate.get("common.addAdministrator")),
-              inputs: memberSelect,
-              buttons: [
-                {
-                  text: await lastValueFrom(this.translate.get("common.cancel")),
-                  handler: () => console.log("Cancel clicked"),
-                },
-                {
-                  text: await lastValueFrom(this.translate.get("common.add")),
-                  handler: (data) => {
-                    for (let member of data){     
-                      this.fbService.addClubAdmin(this.club.id, member.id).catch(e=>{
-                        console.log(e.message, e.code, e.name);
-                      });
-                    }
-                  }
-                },
-              ],
-            });
-            await alert.present();
-          } else {
-            alert("no members")
+  filterClubAdmins(term: string) {
+    return this.clubAdmins$.pipe(
+      map(members => {
+        // Filter members based on the term
+        const filteredMembers = members.filter(member =>
+          member.firstName.toLowerCase().includes(term.toLowerCase()) ||
+          member.lastName.toLowerCase().includes(term.toLowerCase())
+        );
+
+        // Clear and update the groupArray based on the filtered members
+        this.groupArray = [];
+        filteredMembers.forEach(member => {
+          const groupByChar = member.firstName.charAt(0).toUpperCase();
+          if (!this.groupArray.includes(groupByChar)) {
+            this.groupArray.push(groupByChar);
           }
-        })
-      )
-      .subscribe();
+        });
+
+        return filteredMembers;
+      })
+    );
   }
+
+  handleSearch(event: any) {
+    const searchTerm = event.detail.value || '';
+    this.searchTerm.next(searchTerm); // Update the BehaviorSubject with the new search term
+  }
+
+
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
+
+
+  addAdministratorToClub() {
+    if (!this.club || !this.club.id) {
+      console.error('No valid club or club reference found.');
+      return; // Exit if no valid club ID is found
+    }
+  
+    // Combine the fetching of club members and current club admins
+    const fetchClubAndAdmins$ = combineLatest([
+      this.fbService.getClubMemberRefs(this.club.id),
+      this.clubAdmins$
+    ]).pipe(
+
+      switchMap(([members, clubAdmins]) => {
+        if (members.length === 0) {
+          console.log('No club members found.');
+          return of([]); // Return empty array if no members
+        }
+  
+        const profiles$ = members.map(member =>
+          this.userProfileService.getUserProfileById(member.id).pipe(
+            catchError(() => of({ ...member, firstName: 'Unknown', lastName: 'Unknown' })) // Provide fallback data
+          )
+        );
+  
+        return combineLatest(profiles$).pipe(
+
+          map(profiles => profiles.filter(profile => profile !== undefined)),
+          map(profiles => this.filterNewAdmins(profiles, clubAdmins)),
+          map(filteredMembers => this.prepareMemberSelectOptions(filteredMembers))
+        );
+      }),
+      catchError(err => {
+        console.error('Error fetching club and club admins:', err);
+        return of([]); // Handle errors by returning an empty array
+      })
+    );
+  
+    fetchClubAndAdmins$.subscribe(async adminSelect => {
+      if (adminSelect.length > 0) {
+        await this.showAddAdminAlert(adminSelect); // Present the alert with admin selections
+      } else {
+        console.log('No new administrators available to add.');
+      }
+    });
+  }
+  
+  filterNewAdmins(profiles, clubAdmins) {
+    return profiles.filter(member =>
+      !clubAdmins.some(admin => admin.id === member.id)
+    );
+  }
+  prepareMemberSelectOptions(filteredMembers) {
+    // Sort members alphabetically by firstName, then by lastName
+    const sortedMembers = filteredMembers.sort((a, b) => {
+        const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+        const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
+
+    // Map sorted members to checkbox options
+    return sortedMembers.map(member => ({
+        type: 'checkbox',
+        name: member.id,
+        label: `${member.firstName} ${member.lastName}`,
+        value: member.id,
+        checked: false,
+    }));
+}
+  async showAddAdminAlert(adminSelect) {
+    const alert = await this.alertCtrl.create({
+      header: await lastValueFrom(this.translate.get("common.addAdministrator")),
+      inputs: adminSelect,
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: 'cancel',
+          handler: () => console.log('Cancel clicked'),
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.add")),
+          handler: (selectedAdmins) => {
+            selectedAdmins.forEach(adminId => {
+              this.approveClubAdminRequest(this.club.id, adminId); // Adjusted to admin-specific approval
+            });
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+  
+ 
+  async approveClubAdminRequest(clubId, adminId) {
+    await this.fbService.addClubAdmin(clubId, adminId).then(() => {
+      this.toastActionSaved();
+    })
+      .catch((err) => {
+        this.toastActionError(err);
+      });
+  }
+
+
+
   async deleteClubAdmin( member){
     try {
       await this.fbService.deleteClubAdmin(this.club.id, member.id);

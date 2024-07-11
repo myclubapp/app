@@ -8,9 +8,11 @@ import {
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import {
+  BehaviorSubject,
   Observable,
   catchError,
   combineLatest,
+  debounceTime,
   forkJoin,
   lastValueFrom,
   map,
@@ -46,6 +48,11 @@ export class ClubMemberListPage implements OnInit {
 
   clubAdminList$: Observable<Club[]>;
 
+  clubMembers$: Observable<any[]>; // Observable for the full list of members
+  filteredClubMembers$: Observable<any[]>; // Observable for filtered results
+  searchTerm = new BehaviorSubject<string>('');  // Initialized with an empty string
+
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -60,113 +67,24 @@ export class ClubMemberListPage implements OnInit {
   ngOnInit() {
     this.club = this.navParams.get("club");
 
-    this.club$ = of(this.club);
-    this.club$ = this.getClub(this.club.id);
+    this.club$ = this.fbService.getClubRef(this.club.id);
+
+    this.initializeClubMembers();
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
   }
-  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+
+
+  ngOnDestroy() {
+
   }
+
   edit() {
 
     if (this.allowEdit) {
       this.allowEdit = false;
     } else {
       this.allowEdit = true;
-    }
-  }
-
-  getClub(clubId: string) {
-    this.groupArray = [];  // Reset the group array at the start to avoid stale data.
-
-    return this.fbService.getClubRef(clubId).pipe(
-      switchMap((club) => {
-        if (!club) return of(null);
-        return this.fbService.getClubMemberRefs(clubId).pipe(
-          switchMap((clubMembers) => {
-            if (clubMembers.length === 0) {
-              return of({ ...club, clubMembers: [] });
-          }
-            const memberProfiles$ = clubMembers.map((member) =>
-              this.userProfileService.getUserProfileById(member.id).pipe(
-                take(1),
-                catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
-              )
-            );
-            return forkJoin(memberProfiles$).pipe(
-              map((clubMembers) => {
-                this.groupArray = [];  // Clear groupArray before processing new members
-                const sortedMembers = clubMembers
-                  .filter((member) => member !== undefined)
-                  .sort((a, b) => a.firstName.localeCompare(b.firstName))
-                  .map((profile) => {
-                    const groupByChar = profile.firstName.charAt(0);
-                    if (!this.groupArray.includes(groupByChar)) {
-                      this.groupArray.push(groupByChar);
-                    }
-                    return {
-                      ...profile,
-                      groupBy: groupByChar,
-                    };
-                  });
-
-                return {
-                  ...club,
-                  clubMembers: sortedMembers,
-                };
-              })
-            );
-          }),
-          catchError(err => {
-            console.error("Error in getClubWithMembers:", err);
-            return of({
-              ...club,
-              clubMembers: []
-            });
-          })
-        );
-      }),
-      catchError(err => {
-        console.error("Error in getClub:", err);
-        return of(null);
-      })
-    );
-}
-  handleChange(event: any) {
-    console.log(event.detail.value);
-    if (event.detail.value) {
-      const sub = this.club$
-        .pipe(
-          take(1),
-          tap((club) => {
-            const searchResult = club.clubMembers.filter(
-              (searchMember) =>
-                searchMember.firstName
-                  .toLowerCase()
-                  .includes(event.detail.value.toLowerCase()) ||
-                searchMember.lastName
-                  .toLowerCase()
-                  .includes(event.detail.value.toLowerCase())
-            );
-            console.log(searchResult);
-            this.groupArray = [];
-            for (const profile of searchResult) {
-              if (!this.groupArray.includes(profile.firstName.charAt(0))) {
-                this.groupArray.push(profile.firstName.charAt(0));
-              }
-            }
-
-            this.club$ = of({
-              ...club,
-              clubMembers: searchResult,
-            });
-          })
-        )
-        .subscribe();
-    } else {
-      console.log("empty " + this.club.id);
-      this.club$ = this.getClub(this.club.id);
     }
   }
 
@@ -177,6 +95,86 @@ export class ClubMemberListPage implements OnInit {
     } catch (e) {
       this.toastActionError(e);
     }
+  }
+
+
+  initializeClubMembers() {
+    this.groupArray = [];  // Initialize or clear the group array
+
+    this.clubMembers$ = this.fbService.getClubMemberRefs(this.club.id).pipe(
+      switchMap(members => {
+        //  console.log("Club Members:", members);
+        if (members.length === 0) {
+          this.groupArray = [];
+          return of([]);
+        }
+        const profiles$ = members.map(member =>
+          this.userProfileService.getUserProfileById(member.id).pipe(
+            catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
+          )
+        );
+        return combineLatest(profiles$).pipe(
+          map(profiles => profiles
+            .filter(profile => profile !== undefined)  // Ensure no undefined profiles
+            .sort((a, b) => a.firstName.localeCompare(b.firstName))  // Sort members by firstName
+            .map(profile => {
+              const groupByChar = profile.firstName.charAt(0).toUpperCase();  // Use the first character of firstName for grouping
+              if (!this.groupArray.includes(groupByChar)) {
+                this.groupArray.push(groupByChar);
+              }
+              return {
+                ...profile,
+                groupBy: groupByChar,
+              };
+            })
+          )
+        );
+      }),
+      catchError(err => {
+        console.error("Error fetching club members:", err);
+        return of([]);
+      })
+    );
+
+
+    this.filteredClubMembers$ = this.searchTerm.pipe(
+      debounceTime(300), // Debounce to limit the number of searches
+      startWith(''), // Start with no filter
+      switchMap(term => this.filterClubMembers(term))  // Filter based on search term
+    );
+  }
+
+  filterClubMembers(term: string) {
+    return this.clubMembers$.pipe(
+      map(members => {
+        // Filter members based on the term
+        const filteredMembers = members.filter(member =>
+          member.firstName.toLowerCase().includes(term.toLowerCase()) ||
+          member.lastName.toLowerCase().includes(term.toLowerCase())
+        );
+
+        // Clear and update the groupArray based on the filtered members
+        this.groupArray = [];
+        filteredMembers.forEach(member => {
+          const groupByChar = member.firstName.charAt(0).toUpperCase();
+          if (!this.groupArray.includes(groupByChar)) {
+            this.groupArray.push(groupByChar);
+          }
+        });
+
+        return filteredMembers;
+      })
+    );
+  }
+
+  handleSearch(event: any) {
+    const searchTerm = event.detail.value || '';
+    this.searchTerm.next(searchTerm); // Update the BehaviorSubject with the new search term
+  }
+
+
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
   }
 
   async openMember(member: Profile) {

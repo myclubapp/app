@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from "@angular/core";
 import { Browser } from "@capacitor/browser";
 import { AlertController, IonItemSliding, ItemReorderEventDetail, ModalController, NavParams, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
-import { BehaviorSubject, Observable, Subject, catchError, debounceTime, filter, first, lastValueFrom, map, pipe, startWith, switchMap, take } from "rxjs";
+import { BehaviorSubject, Observable, Subject, catchError, debounceTime, defaultIfEmpty, filter, first, lastValueFrom, map, pipe, startWith, switchMap, take } from "rxjs";
 import { Training } from "src/app/models/training";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 
@@ -16,6 +16,7 @@ export class TeamExercisesPage implements OnInit {
 
   exerciseList$: Observable<any[]>;
   filteredExerciseList$: Observable<any[]>;
+  
   teamExerciseList$: Observable<any[]>
 
   skeleton = new Array(12);
@@ -45,7 +46,7 @@ export class TeamExercisesPage implements OnInit {
       switchMap(term => this.filterExercises(term))
     );
 
-    this.teamExerciseList$ = this.fetchTeamExercises();
+    this.teamExerciseList$ = this.fetchTeamExercises() as Observable<any[]>;
   }
   ngOnDestroy(): void {
 
@@ -53,7 +54,13 @@ export class TeamExercisesPage implements OnInit {
 
   fetchTeamExercises() {
     return this.exerciseService.getTeamExerciseRefs(this.training.teamId).pipe(
-
+      map(exercises => exercises || []),  // Safeguard to ensure it always maps to an array
+      catchError(err => {
+        console.error("Error fetching team exercises:", err);
+        this.toastActionError(err);
+        return of([]);  // Return an empty array on error
+      }),
+      startWith([]),  // Immediately start with an empty array to ensure an emission
     );
   }
 
