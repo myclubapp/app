@@ -326,15 +326,23 @@
       <ion-button (click)="registerDevice()"> {{"profile.push__registeration" | translate}} </ion-button>
     </ion-item> -->
 
-    <ion-list lines="full" [inset]="true">
+    <!--<ion-list lines="full" [inset]="true">
       <ion-item>
         <ion-label color="danger">{{'profile.delete__profile' | translate}}</ion-label>
         <ion-button slot="end" color="danger" (click)="deleteProfile()">
           <ion-icon slot="icon-only" name="trash"> </ion-icon>
         </ion-button>
       </ion-item>
-    </ion-list>
+
+    </ion-list>-->
+    <div class="ion-padding">
+      <ion-button fill="outline" expand="block" color="danger" (click)="deleteProfile()">
+        <ion-icon slot="start" name="trash"></ion-icon>
+        {{'profile.delete__profile' | translate}}
+      </ion-button>
+    </div>
   </ng-container>
+ 
 
   <!-- 
   <ng-container *ngIf="clubList$ | async as clubList; else loadingClub">

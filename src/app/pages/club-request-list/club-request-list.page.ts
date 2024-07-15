@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { AlertController, ModalController, NavParams, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { User } from 'firebase/auth';
-import { Observable, catchError, combineLatest, forkJoin, lastValueFrom, map, of, startWith, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest, debounceTime, forkJoin, lastValueFrom, map, of, startWith, switchMap, take, tap } from 'rxjs';
 import { Profile } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
@@ -18,12 +18,13 @@ export class ClubRequestListPage implements OnInit {
   @Input("club") club: any;
   club$: Observable<any>;
 
-  user$: Observable<User>;
-  user: User;
-
   allowEdit: boolean = false;
 
   groupArray = [];
+
+  clubMembers$: Observable<any[]>; // Observable for the full list of members
+  filteredClubMembers$: Observable<any[]>; // Observable for filtered results
+  searchTerm = new BehaviorSubject<string>('');  // Initialized with an empty string
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -38,105 +39,100 @@ export class ClubRequestListPage implements OnInit {
 
   ngOnInit() {
     this.club = this.navParams.get("club");
-
-    this.club$ = of(this.club);
-    this.club$ = this.getClub(this.club.id);
+    this.club$ = this.club$ = this.fbService.getClubRef(this.club.id);
+    this.initializeClubMembers();
   }
 
-  getClub(clubId: string) {
-    this.groupArray = [];  // Reset the group array at the start to avoid stale data.
-
-    return this.fbService.getClubRef(clubId).pipe(
-      switchMap((club) => {
-        if (!club) return of(null);
-        return this.fbService.getClubRequestRefs(clubId).pipe(
-          switchMap(clubRequests => {
-            if (clubRequests.length === 0) {
-              this.groupArray = [];
-              return of({ ...club, clubRequests: [] });
-            }
-            const clubRequests$ = clubRequests.map((request) =>
-              this.userProfileService.getUserProfileById(request.id).pipe(
-                take(1),
-                catchError(() => of({ ...request, firstName: "Unknown", lastName: "Unknown" }))
-              )
-            );
-            return forkJoin(clubRequests$).pipe(
-              map((clubMembers) => {
-                this.groupArray = [];  // Clear groupArray before processing new members
-                const sortedMembers = clubMembers
-                  .filter((member) => member !== undefined)
-                  .sort((a, b) => a.firstName.localeCompare(b.firstName))
-                  .map((profile) => {
-                    const groupByChar = profile.firstName.charAt(0);
-                    if (!this.groupArray.includes(groupByChar)) {
-                      this.groupArray.push(groupByChar);
-                    }
-                    return {
-                      ...profile,
-                      groupBy: groupByChar,
-                    };
-                  });
-
-                return {
-                  ...club,
-                  clubRequests: sortedMembers,
-                };
-              })
-            );
-          }),
-          catchError(err => {
-            console.error("Error in getClubWithMembers:", err);
-            return of({
-              ...club,
-              clubRequests: []
-            });
-          })
+  initializeClubMembers() {
+    this.groupArray = [];  // Initialize or clear the group array
+  
+    this.clubMembers$ = this.fbService.getClubRequestRefs(this.club.id).pipe(
+      tap(() => console.log("Fetching club members")),
+      switchMap(members => {
+        if (members.length === 0) {
+          console.log("No club members found.");
+          this.groupArray = [];
+          return of([]); // Emit an empty array to keep the observable alive
+        }
+        const profiles$ = members.map(member =>
+          this.userProfileService.getUserProfileById(member.id).pipe(
+            map(profile => ({
+              ...member, // Spread member to retain all original attributes
+              ...profile, // Spread profile to overwrite and add profile attributes
+              firstName: profile.firstName || "Unknown",
+              lastName: profile.lastName || "Unknown",
+              roles: member.roles || []
+            })),
+            catchError(() => of({ 
+              ...member, 
+              firstName: "Unknown", 
+              lastName: "Unknown", 
+              roles: member.roles || [] // Ensure role or other attributes are included even in error
+            }))
+          )
+        );
+        return combineLatest(profiles$).pipe(
+          map(profiles => profiles
+            .filter(profile => profile !== undefined)
+            .sort((a, b) => a.firstName.localeCompare(b.firstName))
+            .map(profile => {
+              const groupByChar = profile.firstName.charAt(0).toUpperCase();
+              if (!this.groupArray.includes(groupByChar)) {
+                this.groupArray.push(groupByChar);
+              }
+              return {
+                ...profile,
+                groupBy: groupByChar,
+              };
+            })
+          )
         );
       }),
       catchError(err => {
-        console.error("Error in getClub:", err);
-        return of(null);
+        console.error("Error fetching Club members:", err);
+        return of([]); // Emit an empty array on error
+      }),
+    
+    );
+  
+  
+    this.filteredClubMembers$ = combineLatest([this.clubMembers$, this.searchTerm]).pipe(
+      debounceTime(300),
+      map(([members, term]) => {
+        if (!term) return members;
+  
+        const filtered = members.filter(member =>
+          member.firstName.toLowerCase().includes(term.toLowerCase()) ||
+          member.lastName.toLowerCase().includes(term.toLowerCase()) ||
+          member.roles.find(role=>role.toLowerCase().includes(term.toLowerCase()))
+        );
+        return filtered;
+      }),
+      map(filtered=>{
+        // Update the groupArray
+        this.groupArray = [];
+        filtered.forEach(member => {
+          const groupByChar = member.firstName.charAt(0).toUpperCase();
+          if (!this.groupArray.includes(groupByChar)) {
+            this.groupArray.push(groupByChar);
+          }
+        });
+        return filtered;
+      }),
+      tap(filtered => console.log("Filtered members:", filtered.length)),
+      catchError(err => {
+        console.error("Error filtering members:", err);
+        return of([]);
       })
     );
   }
 
-  handleChange(event: any) {
-    console.log(event.detail.value);
-    if (event.detail.value) {
-      const sub = this.club$
-        .pipe(
-          take(1),
-          tap((club) => {
-            const searchResult = club.clubRequests.filter(
-              (searchMember) =>
-                searchMember.firstName
-                  .toLowerCase()
-                  .includes(event.detail.value.toLowerCase()) ||
-                searchMember.lastName
-                  .toLowerCase()
-                  .includes(event.detail.value.toLowerCase())
-            );
-            console.log(searchResult);
-            this.groupArray = [];
-            for (const profile of searchResult) {
-              if (!this.groupArray.includes(profile.firstName.charAt(0))) {
-                this.groupArray.push(profile.firstName.charAt(0));
-              }
-            }
-
-            this.club$ = of({
-              ...club,
-              clubMembers: searchResult,
-            });
-          })
-        )
-        .subscribe();
-    } else {
-      console.log("empty " + this.club.id);
-      this.club$ = this.getClub(this.club.id);
-    }
+  handleSearch(event: any) {
+    const searchTerm = event.detail.value || '';
+    console.log('Handling Search Event:', searchTerm);
+    this.searchTerm.next(searchTerm.trim()); // Trim and update the search term
   }
+
 
   async openMember(member: Profile) {
     console.log("openMember");
@@ -170,7 +166,7 @@ export class ClubRequestListPage implements OnInit {
   }
   async toastActionCanceled() {
     const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("club.action__canceled")),
+      message: await lastValueFrom(this.translate.get("common.action__canceled")),
       duration: 1500,
       position: "top",
       color: "danger",

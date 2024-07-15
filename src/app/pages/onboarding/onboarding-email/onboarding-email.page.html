@@ -1,3 +1,4 @@
+<ng-container *ngIf="userProfile$ | async as userProfile">
 <ion-content>
   <ion-fab vertical="top" horizontal="end">
     <ion-fab-button size="small" (click)="logout()">
@@ -47,6 +48,7 @@
 
 
 </ion-content>
+</ng-container>
 
 <!--
 

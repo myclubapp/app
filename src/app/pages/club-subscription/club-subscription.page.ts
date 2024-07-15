@@ -301,7 +301,7 @@ changeSegment(event){
   }
   async toastActionCanceled() {
     const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("club.action__canceled")),
+      message: await lastValueFrom(this.translate.get("common.action__canceled")),
       duration: 1500,
       position: "top",
       color: "danger",

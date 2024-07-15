@@ -48,7 +48,6 @@ export class ClubPage implements OnInit {
   @Input("data") club: any;
 
   club$: Observable<any>;
-  subscribeMember: Subscription;
 
   user$: Observable<User>;
   user: User;
@@ -81,9 +80,7 @@ export class ClubPage implements OnInit {
   }
 
   ngOnDestroy() {
-    if (this.subscribeMember) {
-      this.subscribeMember.unsubscribe();
-    }
+
   }
   edit() {
     if (this.allowEdit) {
@@ -351,101 +348,6 @@ export class ClubPage implements OnInit {
     }
   }
 
-  /*async approveClubRequest(user) {
-    console.log(user);
-    const alert = await this.alertCtrl.create({
-      message: (
-        (await lastValueFrom(
-          this.translate.get("club.want_to_add__user__to_club_string")
-        )) ?? ""
-      ).replace("{userName}", `${user.firstName} ${user.lastName}`),
-      subHeader: "",
-      buttons: [
-        {
-          text: await lastValueFrom(this.translate.get("common.yes")),
-          role: "confirm",
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: "cancel",
-        },
-      ],
-      htmlAttributes: { "aria-label": "alert dialog" },
-    });
-    await alert.present();
-    const { role, data } = await alert.onDidDismiss();
-
-    if (role == "confirm") {
-      await this.fbService.approveUserClubRequest(user.clubId, user.id);
-      const toast = await this.toastCtrl.create({
-        message: await lastValueFrom(
-          this.translate.get("club.success__user_added")
-        ),
-        color: "primary",
-        duration: 1500,
-        position: "top",
-      });
-      await toast.present();
-
-      await this.assignTeamAlert(user);
-    } else {
-      await this.toastActionCanceled();
-    }
-  }
-
-  async assignTeamAlert(user) {
-    console.log(user);
-    const alert = await this.alertCtrl.create({
-      header: await lastValueFrom(this.translate.get("club.select__team")),
-      message: (
-        (await lastValueFrom(
-          this.translate.get("club.want_to_add__user__to_team_string")
-        )) ?? ""
-      ).replace("{userName}", `${user.firstName} ${user.lastName}`),
-      inputs: this.alertTeamSelection,
-      buttons: [
-        {
-          text: await lastValueFrom(this.translate.get("club.add")),
-          role: "confirm",
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: "cancel",
-        },
-      ],
-      htmlAttributes: { "aria-label": "alert dialog selcting teams" },
-    });
-    await alert.present();
-    const { role, data } = await alert.onDidDismiss();
-    console.log(data);
-
-    if (role == "confirm") {
-      for (const teamId of data.values) {
-        await this.fbService.approveUserTeamRequest(teamId, user.id);
-      }
-      const toast = await this.toastCtrl.create({
-        message: (
-          (await lastValueFrom(
-            this.translate.get("club.success__added_user_to_team_string")
-          )) ?? ""
-        )
-          .replace("{userName}", `${user.firstName} ${user.lastName}`)
-          .replace("length", `${data.values.length}`),
-        color: "primary",
-        duration: 1500,
-        position: "top",
-      });
-      await toast.present();
-    } else {
-      await this.toastActionCanceled();
-    }
-  }
-
-  async deleteClubRequest(user) {
-    console.log(user);
-    await this.fbService.deleteUserClubRequest(user.clubId, user.id);
-    await this.toastActionSaved();
-  }*/
 
   async toastActionSaved() {
     const toast = await this.toastCtrl.create({
@@ -460,7 +362,7 @@ export class ClubPage implements OnInit {
 
   async toastActionCanceled() {
     const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("club.action__canceled")),
+      message: await lastValueFrom(this.translate.get("common.action__canceled")),
       duration: 1500,
       position: "top",
       color: "danger",

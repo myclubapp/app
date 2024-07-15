@@ -98,6 +98,19 @@
       </ion-item>-->
     </ion-list>
 
+
+
+    <div class="ion-padding">
+    <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-button fill="outline" expand="block" color="danger" (click)="deleteTeam()">
+          <ion-icon slot="start" name="trash"></ion-icon>
+          {{ "team.delete" | translate}}
+        </ion-button>
+      </ng-container>
+    </ng-container>     
+    </div>
+
    <!-- <ion-list [inset]="true" *ngIf="team['teamRequests'].length > 0">
       <ion-list-header>
         <ion-label> {{"common.requests" | translate}} </ion-label>

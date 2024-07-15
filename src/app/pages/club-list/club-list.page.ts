@@ -38,9 +38,7 @@ export class ClubListPage implements OnInit {
 
   }
   ngOnDestroy(): void {
-   /* if (this.subscription) {
-        this.subscription.unsubscribe();
-    }*/
+
   }
   async openModal(club: Club) {
     // const presentingElement = await this.modalCtrl.getTop();

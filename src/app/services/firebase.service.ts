@@ -190,6 +190,36 @@ export class FirebaseService {
     );
   }
 
+  getClubAdminListByClubId(clubId) {
+    return this.authService.getUser$().pipe(
+        take(1),
+        tap((user) => {
+            this.user = user;
+        }),
+        switchMap((user) => {
+            if (!user) return of([]);
+            return this.getUserClubAdminRefs(user);
+        }),
+        mergeMap((clubs) => {
+            if (clubs.length === 0) return of([]);
+            return combineLatest(
+                clubs.map((club) =>
+                    this.getClubRef(club.id).pipe(
+                        catchError(() => of(null)) // In case of error, return null for this club
+                    )
+                )
+            );
+        }),
+        map((clubsWithDetails) => 
+            clubsWithDetails.filter((club) => club && club.clubId === clubId)
+        ), // Filter clubs by clubId and remove null entries
+        catchError((err) => {
+            console.error("Error in getClubAdminListByClubId:", err);
+            return of([]); // Return an empty array on error
+        })
+    );
+}
+
   getTeamList() {
     return this.authService.getUser$().pipe(
       take(1),
@@ -271,6 +301,42 @@ export class FirebaseService {
       }
     );
   }
+  addClubMemberRole(clubId, memberId, roleArray){
+    return setDoc(
+      doc(this.firestore, `club/${clubId}/members/${memberId}`),
+      {
+        roles: roleArray,
+      },
+      {
+        merge: true,
+      }
+    );
+  }
+
+  addTeamRole(teamId, roleArray){
+    return setDoc(
+      doc(this.firestore, `teams/${teamId}`),
+      {
+        roles: roleArray,
+      },
+      {
+        merge: true,
+      }
+    );
+  }
+  addTeamMemberRole(teamId, memberId, roleArray){
+    return setDoc(
+      doc(this.firestore, `teams/${teamId}/members/${memberId}`),
+      {
+        roles: roleArray,
+      },
+      {
+        merge: true,
+      }
+    );
+  }
+
+
   getTeamAdminList() {
     return this.authService.getUser$().pipe(
       take(1),
@@ -302,6 +368,36 @@ export class FirebaseService {
       })
     );
   }
+
+  getTeamAdminListByClubId(clubId) {
+    return this.authService.getUser$().pipe(
+        take(1),
+        tap((user) => {
+            this.user = user;
+        }),
+        switchMap((user) => {
+            if (!user) return of([]);
+            return this.getUserTeamAdminRefs(user);
+        }),
+        mergeMap((teams) => {
+            if (teams.length === 0) return of([]);
+            return combineLatest(
+                teams.map((team) =>
+                    this.getTeamRef(team.id).pipe(
+                        catchError(() => of(null)) // In case of error, return null for this team
+                    )
+                )
+            );
+        }),
+        map((teamsWithDetails) => 
+            teamsWithDetails.filter((team) => team && team.clubId === clubId)
+        ), // Filter teams by clubId and remove null entries
+        catchError((err) => {
+            console.error("Error in getTeamAdminListByClubId:", err);
+            return of([]); // Return an empty array on error
+        })
+    );
+}
 
   /* CLUBS */
   getClubCheckoutSessionsList(clubId: string){
@@ -396,7 +492,7 @@ export class FirebaseService {
     );
     return collectionData(clubMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<Profile[]>;
+    }) as Observable<Profile[]>;
   }
 
   getClubAdminRefs(clubId: string): Observable<Profile[]> {
@@ -406,7 +502,7 @@ export class FirebaseService {
     );
     return collectionData(clubMemberRefList, {
       idField: "id",
-    }) as unknown as Observable<Profile[]>;
+    }) as Observable<Profile[]>;
   }
 
   getClubRequestRefs(clubId: string): Observable<Profile[]> {
@@ -612,6 +708,9 @@ export class FirebaseService {
     return deleteDoc(doc(this.firestore, `userProfile/${userId}/teams/${teamId}`));
   }
 
+  async deleteTeam(teamId: string){
+      return deleteDoc(doc(this.firestore, `teams/${teamId}`));
+  }
   // ADMIN PERSPECTIVE via direct add/delete -> Backend handels other assignments.
   async deleteTeamMember(teamId: string, userId: string): Promise<any> {
     return deleteDoc(doc(this.firestore, `teams/${teamId}/members/${userId}`));

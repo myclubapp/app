@@ -92,7 +92,7 @@ export class OnboardingClubPage implements OnInit {
         buttons: [
           {
             text: await lastValueFrom(this.translate.get("common.no")),
-            role: "cancel",
+            role: "destructive",
             handler: () => {
               console.log("nein");
               this.presentCancelToast();

@@ -85,9 +85,9 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     private readonly profileService: UserProfileService,
     private readonly toastController: ToastController,
     private readonly loadingController: LoadingController,
-    private readonly alertController: AlertController,
     private readonly router: Router,
     private readonly menuCtrl: MenuController,
+    private readonly alertController: AlertController,
     private translate: TranslateService,
     private readonly modalCtrl: ModalController,
     private readonly routerOutlet: IonRouterOutlet,
@@ -312,6 +312,14 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
       ),
       buttons: [
         {
+          role: "destructive",
+          text: await lastValueFrom(this.translate.get("common.no")),
+          handler: () => {
+            console.log("nein");
+            this.presentCancelToast();
+          },
+        },
+        {
           text: await lastValueFrom(this.translate.get("common.yes")),
           handler: async () => {
             await this.authService.deleteProfile().catch((error) => {
@@ -321,9 +329,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
             await this.router.navigateByUrl("/logout");
           },
         },
-        {
-          text: await lastValueFrom(this.translate.get("common.no")),
-        },
+       
       ],
     });
     alert.present();
@@ -357,6 +363,18 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
       duration: 1500,
       position: "top",
       color: "success",
+    });
+
+    await toast.present();
+  }
+  async presentCancelToast() {
+    const toast = await this.toastController.create({
+      message: await lastValueFrom(
+        this.translate.get("onboarding.warning__action_canceled")
+      ),
+      duration: 1500,
+      position: "top",
+      color: "danger",
     });
 
     await toast.present();
@@ -550,120 +568,5 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
       this.translate.use(event.detail.value);
     }
   } 
-  /*
-  async changeEmail(oldEmail: string) {
-    console.log("changeEmail start")
-    const alert = await this.alertController.create({
-      header: await lastValueFrom(this.translate.get("profile.change_email_header")),
-      message: await lastValueFrom(this.translate.get("profile.change_email_message")),
-      inputs: [
-        {
-          label: await lastValueFrom(this.translate.get("profile.change_email_old_label")),
-          placeholder: await lastValueFrom(this.translate.get("profile.change_email_old_label")),
-          name: "oldEmail",
-          type: "email",
-          value: oldEmail,
-        },
-        {
-          label: await lastValueFrom(this.translate.get("profile.change_email_new_label")),
-          placeholder: await lastValueFrom(this.translate.get("profile.change_email_new_label")),
-          name: "newEmail",
-          type: "email",
-        },
-      ],
-      buttons: [
-
-        {
-          text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: "destructive",
-          handler: (data) => {
-            console.log(data);
-          },
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.save")),
-
-          handler: async (data) => {
-            console.log(data);
-            await this.authService.updateEmail(data.newEmail);
-            await this.profileChange(
-              { detail: { value: data.newEmail } },
-              "email"
-            );
-
-          },
-        },
-      ],
-    });
-    console.log("alert.present start")
-    await alert.present();
-    console.log("alert.present end")
-    const { role } = await alert.onDidDismiss();
-    console.log("onDidDismiss resolved with role", role);
-    console.log("changeEmail end")
-  }
-
-  async changeAddress(profile: Profile) {
-    const alert = await this.alertController.create({
-      message: "Change Address",
-      header: "Change Address Header",
-      inputs: [
-        {
-          label: "Street and Number",
-          name: "streetAndNumber",
-          type: "text",
-          value: profile.streetAndNumber,
-        },
-        {
-          label: "Postalcode",
-          name: "postalcode",
-          type: "number",
-          value: profile.postalcode,
-        },
-        {
-          label: "City",
-          name: "city",
-          type: "text",
-          value: profile.city,
-        },
-      ],
-      buttons: [
-        {
-          text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: "destructive",
-          handler: (data) => {
-            console.log(data);
-          },
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.save")),
-          role: "",
-          handler: (data) => {
-            console.log(data);
-          },
-        },
-      ],
-    });
-    await alert.present();
-    const { role } = await alert.onDidDismiss();
-    console.log("onDidDismiss resolved with role", role);
-  }
-*/
-  /*
-  async languageChange(event) {
-    console.log(event.target.value);
-    if (event.target.value) {
-      if (event.target.value.length > 0) {
-        await this.profileService.changeLanguage(event.detail.value);
-      }
-    }
-  }
-
-  async setFavTeam(event) {
-    await this.profileService.changeFavTeam(event.detail.value);
-  }
-
-  async setFavClub(event) {
-    await this.profileService.changeFavClub(event.detail.value);
-  }*/
+  
 }

@@ -15,6 +15,7 @@ import {
   combineLatest,
   defaultIfEmpty,
   first,
+  firstValueFrom,
   forkJoin,
   lastValueFrom,
   map,
@@ -281,88 +282,75 @@ export class HelferDetailPage implements OnInit {
   }
 
   async confirmSchichten() {
-    this.getHelferEventSchichtenWithAttendees(this.event.clubId, this.event.id)
-      .pipe(
-        take(1),
-        map(async (schichten) => {
-          let alertInputs = [];
-
-          schichten.map((schicht) => {
-            schicht.attendeeListTrue.map((member) => {
-              if (!member.confirmed && member.status) {
-                alertInputs.push({
-                  name: member.id,
-                  type: "checkbox",
-                  checked: true,
-                  value: {
-                    memberId: member.id,
-                    schichtId: schicht.id,
-                    points: schicht.points,
-                    eventId: this.event.id,
-                  },
-                  label:
-                    member.firstName +
-                    " " +
-                    member.lastName +
-                    " - " +
-                    schicht.name,
-                });
-              }
-            });
-          });
-
-          if (alertInputs.length > 0) {
-            const alert = await this.alertController
-              .create({
-                header: "Helfereinsätze bestätigen",
-                message: "Bitte wählen Sie die Mitglieder aus:",
-                inputs: alertInputs,
-                buttons: [
-                  {
-                    text: await lastValueFrom(this.translate.get("common.cancel")),
-                    handler: () => {
-                      console.log("abbrechen");
-                    },
-                  },
-                  {
-                    text: await lastValueFrom(this.translate.get("common.confirm")),
-                    handler: async (event) => {
-                      // console.log(event);
-
-                      for (const index in event) {
-                        const el = event[index];
-                        console.log(el);
-                        await this.eventService.setClubHelferEventSchichtAttendeeStatusConfirm(
-                          this.event.clubId,
-                          el.eventId,
-                          el.schichtId,
-                          el.memberId,
-                          el.points,
-                        );
-                      }
-                    },
-                  },
-                ],
-              })
-            alert.present();
-
-          } else {
-            this.toastController
-              .create({
-                message: "Keine Einsätze zum bestätigen verfügbar",
-                position: "top",
-                color: "primary",
-                duration: 1500,
-              })
-              .then((toast) => {
-                toast.present();
-              });
-          }
-        })
-      )
-      .subscribe((data) => {
-        console.log(data);
-      });
+    try {
+      const schichten = await firstValueFrom(
+        this.getHelferEventSchichtenWithAttendees(this.event.clubId, this.event.id)
+      );
+  
+      let alertInputs = schichten.reduce((acc, schicht) => {
+        const inputs = schicht.attendeeListTrue
+          .filter(member => !member.confirmed && member.status)
+          .map(member => ({
+            name: member.id,
+            type: "checkbox",
+            checked: true,
+            value: {
+              memberId: member.id,
+              schichtId: schicht.id,
+              points: schicht.points,
+              eventId: this.event.id,
+            },
+            label: `${member.firstName} ${member.lastName} - ${schicht.name}`
+          }));
+        return [...acc, ...inputs];
+      }, []);
+  
+      if (alertInputs.length > 0) {
+        const cancelText = await lastValueFrom(this.translate.get("common.cancel"));
+        const confirmText = await lastValueFrom(this.translate.get("common.confirm"));
+  
+        const alert = await this.alertController.create({
+          header: "Helfereinsätze bestätigen",
+          message: "Bitte wählen Sie die Mitglieder aus:",
+          inputs: alertInputs,
+          buttons: [
+            {
+              text: cancelText,
+              role: 'cancel',
+              handler: () => console.log("Operation cancelled"),
+            },
+            {
+              text: confirmText,
+              handler: (events) => this.handleConfirm(events),
+            },
+          ],
+        });
+        await alert.present();
+      } else {
+        const toast = await this.toastController.create({
+          message: "Keine Einsätze zum Bestätigen verfügbar",
+          position: "top",
+          color: "primary",
+          duration: 1500,
+        });
+        toast.present();
+      }
+    } catch (error) {
+      console.error("Error in confirmSchichten:", error);
+      // Handle error appropriately
+    }
+  }
+  
+  async handleConfirm(events) {
+    for (const event of events) {
+      await this.eventService.setClubHelferEventSchichtAttendeeStatusConfirm(
+        this.event.clubId,
+        event.eventId,
+        event.schichtId,
+        event.memberId,
+        event.points
+      );
+    }
   }
 
 

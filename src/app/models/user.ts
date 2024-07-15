@@ -27,7 +27,7 @@ export interface Profile {
   language: string;
   favTeam: string;
   favClub: string;
-  role: string;
+  roles: [string];
 
   // Business Logic Fields
   isAdmin: boolean;

@@ -15,9 +15,6 @@ import { UserProfileService } from 'src/app/services/firebase/user-profile.servi
 })
 export class OnboardingEmailPage implements OnInit {
   userProfile$: Observable<Profile>;
-  user: User;
-  private subscription: Subscription;
-
 
   constructor(
     private readonly authService: AuthService,
@@ -30,19 +27,14 @@ export class OnboardingEmailPage implements OnInit {
 
   ngOnInit() {
     this.menuCtrl.enable(false, "menu");
-    this.subscription = this.authService.getUser$().pipe(
+    this.userProfile$ = this.authService.getUser$().pipe(
       take(1),
-      tap(user => this.user = user),
       switchMap(user => user ? this.profileService.getUserProfile(user) : of(null))
-    ).subscribe(profile => {
-      this.userProfile$ = of(profile);
-    })
+    );
   }
 
   ngOnDestroy(): void {
-   if (this.subscription) {
-        this.subscription.unsubscribe();
-    }
+
   }
 
 

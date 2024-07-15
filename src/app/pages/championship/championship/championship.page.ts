@@ -83,58 +83,10 @@ export class ChampionshipPage implements OnInit {
     this.teamRankings$ = this.getTeamsWithRankingsForYear("2024");
     this.gameList$ = this.getTeamGamesUpcoming();
     this.gameListPast$ = this.getTeamGamesPast();
-
-    /*this.teamRankingsBackup$ = this.getTeamsWithRankingsForYear("2023");
-    this.teamRankingsBackup$.subscribe({
-      next: () => {
-        console.log("RANKING Backup Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("RANKING Backup Error in subscription:", err),
-      complete: () => console.log("RANKING Backup Observable completed"),
-    });
-
-   
-    this.gameListBackup$ = this.getTeamGamesUpcoming();
-    this.gameListBackup$.subscribe({
-      next: (data) => {
-        console.log("GAMES Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("GAMES Error in subscription:", err),
-      complete: () => console.log("GAMES Observable completed"),
-    });*/
-
-    /*this.gameListPastBackup$ = this.getTeamGamesPast();
-    this.gameListPastBackup$.subscribe({
-      next: () => {
-        console.log("GAMES PAST Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("GAMES PAST Error in subscription:", err),
-      complete: () => console.log("GAMES PAST Observable completed"),
-    });*/
-
-    // Filter
-    /* this.teamList$ = this.fbService.getTeamList();
-    this.teamList$.subscribe({
-      next: (data) => {
-       // this.filterList = data;
-        console.log("Team Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Team Error in subscription:", err),
-      complete: () => console.log("Team Observable completed"),
-    });*/
   }
 
   ngOnDestroy(): void {
-    /* if (this.subscription) {
-        this.subscription.unsubscribe();
-    }
-    if (this.subscriptionPast) {
-      this.subscriptionPast.unsubscribe();
-    }*/
+
   }
 
   getTeamsWithRankingsForYear(year: string = "2024") {

@@ -50,8 +50,7 @@ export class TrainingsPage implements OnInit {
   trainingListPast$: Observable<Training[]>;
 
   teamAdminList$: Observable<Team[]>;
-  toggleAllSubscription: Subscription;
-
+  activatedRouteSub: Subscription;
   // teamList$: Observable<Team[]>;
   // filterList: any[] = [];
   // filterValue: string = "";
@@ -80,7 +79,27 @@ export class TrainingsPage implements OnInit {
   ) {
     this.menuCtrl.enable(true, "menu");
 
-    this.activatedRoute.url.subscribe(data => {
+    
+  }
+
+  ngOnInit() {
+    // DATA
+    this.trainingList$ = this.getTeamTraining();
+    this.trainingListPast$ = this.getTeamTrainingPast();
+    // CREATE
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    this.handleNavigationData();
+  }
+
+
+  ngOnDestroy() {
+    if (this.activatedRouteSub) {
+      this.activatedRouteSub.unsubscribe();
+    }
+  }
+
+  handleNavigationData() {
+    this.activatedRouteSub = this.activatedRoute.url.subscribe(data => {
       if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "training") {
         const pushData = this.router.getCurrentNavigation().extras.state;
         console.log("PUSHDATA " + pushData);
@@ -114,75 +133,6 @@ export class TrainingsPage implements OnInit {
     });
   }
 
-  ngOnInit() {
-    // DATA
-    this.trainingList$ = this.getTeamTraining();
-    this.trainingListPast$ = this.getTeamTrainingPast();
-    // CREATE
-    this.teamAdminList$ = this.fbService.getTeamAdminList();
-
-    /*this.trainingListBackup$ = this.getTeamTraining();
-    this.trainingListBackupSub = this.trainingListBackup$.subscribe({
-      next: () => {
-        console.log("Training Backup Data received");
-
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Training Error in subscription:", err),
-      complete: () => console.log("Training Observable completed"),
-    });
-
-
-    this.trainingListPastBackup$ = this.getTeamTrainingPast();
-    this.trainingListPastBackup$.subscribe({
-      next: () => {
-        console.log("Training PAST Backup Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) =>
-        console.error("Training PAST Backup Error in subscription:", err),
-      complete: () => console.log("Training PAST Backup Observable completed"),
-    });
-    */
-
-    // Filterlist
-    /*
-    this.teamList$ = this.fbService.getTeamList();
-    this.teamList$.subscribe({
-      next: (data) => {
-        this.filterList = data;
-        console.log("Team Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Team Error in subscription:", err),
-      complete: () => console.log("Team Observable completed"),
-    });
-
-    //Filter
-    this.teamFilterSubscription = this.filterService.teamFilter$.subscribe(
-      (newTeamFilterValue) => {
-        console.log("Set new filter value: " + newTeamFilterValue);
-        this.filterValue = newTeamFilterValue;
-      }
-    );*/
-  }
-
-  ngOnDestroy(): void {
-    if (this.toggleAllSubscription){
-      this.toggleAllSubscription.unsubscribe();
-    }
-    /*if (this.trainingListPastBackupSub){
-      this.trainingListPastBackupSub.unsubscribe();
-    }
-    if (this.trainingListBackupSub){
-      this.trainingListBackupSub.unsubscribe();
-    }
-
-    // Unsubscribe to prevent memory leaks
-    if (this.teamFilterSubscription) {
-      this.teamFilterSubscription.unsubscribe();
-    }*/
-  }
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
     return teamAdminList && teamAdminList.some(team => team.id === teamId);
   }
@@ -424,26 +374,22 @@ export class TrainingsPage implements OnInit {
   }
 
   async toggleAll() {
-
-    this.toggleAllSubscription = this.trainingList$.pipe(
-      take(1),
-      map(async (trainingList: any) => {
-        for (const training of trainingList) {
-          console.log(
-            `Set Status ${true} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
-          );
-          await this.trainingService.setTeamTrainingAttendeeStatus(
-            true,
-            training.teamId,
-            training.id
-          );
-        }
-        this.presentToast();
-      })
-
-    ).subscribe();
-   
-
+    try {
+      const trainingList = await lastValueFrom(this.trainingList$.pipe(take(1)));
+  
+      for (const training of trainingList) {
+        console.log(`Set Status true for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`);
+        await this.trainingService.setTeamTrainingAttendeeStatus(
+          true,
+          training.teamId,
+          training.id
+        );
+      }
+      await this.presentToast();
+    } catch (error) {
+      console.error("Error during toggleAll operation:", error);
+      // Optionally handle the error, e.g., show an error message
+    }
   }
 
   async toggle(status: boolean, training: Training) {
@@ -486,58 +432,4 @@ export class TrainingsPage implements OnInit {
     toast.present();
   }
 
-  /* async openFilter(ev: Event) {
-    const alertInputs = [];
-    for (const item of this.filterList) {
-      alertInputs.push({
-        label: item.name,
-        type: "radio",
-        checked: item.id == this.filterValue,
-        value: item.id,
-      });
-    }
-
-    let alert = await this.alertCtrl.create({
-      header: await lastValueFrom(this.translate.get("training.news__filter")),
-      message: await lastValueFrom(
-        this.translate.get("training.news__filer__desc")
-      ),
-      // subHeader: 'Nach Verein oder Teams filtern.',
-      inputs: alertInputs,
-      buttons: [
-        {
-          text: await lastValueFrom(this.translate.get("common.ok")),
-          role: "confirm",
-          handler: async (value) => {
-            console.log("update filter " + value);
-            this.filterService.updateTeamFilter(value);
-
-            this.trainingList$ = this.trainingListBackup$.pipe(
-              map((items) => {
-                return items.filter((element) => element.teamId == value);
-              })
-            );
-            this.trainingListPast$ = this.trainingListPastBackup$.pipe(
-              map((items) => {
-                return items.filter((element) => element.teamId == value);
-              })
-            );
-          },
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: "cancel",
-          handler: async (value) => {
-            console.log("update filter " + value);
-            this.filterService.updateTeamFilter(value);
-
-            this.trainingList$ = this.trainingListBackup$;
-            this.trainingListPast$ = this.trainingListPastBackup$;
-          },
-        },
-      ],
-      htmlAttributes: { "aria-label": "alert dialog" },
-    });
-    alert.present();
-  }*/
 }

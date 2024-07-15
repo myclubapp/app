@@ -54,11 +54,6 @@ export class TeamPage implements OnInit {
   @Input("data") team: Team;
 
   team$: Observable<any>;
-  subscribeMember: Subscription;
-  subscribeAdmin: Subscription;
-
-  user$: Observable<User>;
-  user: User;
 
   allowEdit: boolean = false;
 
@@ -67,6 +62,8 @@ export class TeamPage implements OnInit {
   requestList$: Observable<Profile[]>;
 
   clubList$: Observable<Club[]>;
+  clubAdminList$: Observable<Club[]>;
+  teamAdminList$: Observable<Club[]>;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -86,30 +83,62 @@ export class TeamPage implements OnInit {
 
     this.team$ = this.getTeam(this.team.id);
     // TODO GET CLUB BASED ON TEAM
-    this.clubList$  = this.fbService.getClubList();
+    this.clubList$ = this.fbService.getClubList();
+    this.clubAdminList$ = this.fbService.getClubAdminList();
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+  }
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
+  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
+    // console.log(teamAdminList, teamId)
+    return teamAdminList && teamAdminList.some(team => team.id === teamId);
   }
 
   ngOnDestroy() {
-    if (this.subscribeMember) {
-      this.subscribeMember.unsubscribe();
-    }
-    if (this.subscribeAdmin) {
-      this.subscribeAdmin.unsubscribe();
-    }
+
   }
-  enableTrainingExercise(clubList){
+  enableTrainingExercise(clubList) {
     return clubList && clubList.some(club => club.hasFeatureTrainingExercise == true);
   }
 
 
-  async openTeamTrainingExercise(){
+  async deleteTeam() {
+
+    const alert = await this.alertCtrl.create({
+      message: await lastValueFrom(
+        this.translate.get("team.delete_team__confirm")
+      ),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.no")),
+          role: "destructive",
+          handler: () => {
+            console.log("nein");
+            this.presentCancelToast();
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.yes")),
+          handler: async () => {
+            await this.fbService.deleteTeam(this.team.id);
+            this.close();
+          },
+        },
+
+      ],
+    });
+    alert.present();
+  }
+
+  async openTeamTrainingExercise() {
     const modal = await this.modalCtrl.create({
       component: TeamExercisesPage,
       presentingElement: await this.modalCtrl.getTop(),
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        training:  { teamId: this.team.id }
+        training: { teamId: this.team.id }
       },
     });
     modal.present();
@@ -119,7 +148,7 @@ export class TeamPage implements OnInit {
     if (role === "confirm") {
     }
 
-}
+  }
   getTeam(teamId: string) {
     const calculateAge = (dateOfBirth) => {
       // console.log("DoB: " + JSON.stringify(dateOfBirth));
@@ -132,7 +161,7 @@ export class TeamPage implements OnInit {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => {
-        this.user = user;
+        // this.user = user;
         if (!user) throw new Error("User not found");
       }),
       switchMap(() => this.fbService.getTeamRef(teamId)),
@@ -200,7 +229,7 @@ export class TeamPage implements OnInit {
                 : 0; // Calculate average or set to 0 if no valid ages
             return {
               ...team,
-              updated: Timestamp.fromMillis(team.updated.seconds*1000).toDate().toISOString(),
+              updated: Timestamp.fromMillis(team.updated.seconds * 1000).toDate().toISOString(),
               averageAge: averageAge.toFixed(1), // Keep two decimal places
               teamMembers,
               teamAdmins,
@@ -235,32 +264,32 @@ export class TeamPage implements OnInit {
       },
     });
     modal.present();
-  
+
     const { data, role } = await modal.onWillDismiss();
-  
+
     if (role === "confirm") {
     }
   }
 
 
-async openAdminList(){
-  console.log("open Team Admin ");
-  const modal = await this.modalCtrl.create({
-    component: TeamAdminListPage,
-    presentingElement: await this.modalCtrl.getTop(),
-    canDismiss: true,
-    showBackdrop: true,
-    componentProps: {
-      team: this.team
-    },
-  });
-  modal.present();
+  async openAdminList() {
+    console.log("open Team Admin ");
+    const modal = await this.modalCtrl.create({
+      component: TeamAdminListPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        team: this.team
+      },
+    });
+    modal.present();
 
-  const { data, role } = await modal.onWillDismiss();
+    const { data, role } = await modal.onWillDismiss();
 
-  if (role === "confirm") {
+    if (role === "confirm") {
+    }
   }
-}
 
   async approveTeamRequest(request) {
     console.log(request);
@@ -297,12 +326,12 @@ async openAdminList(){
       switchMap(team => {
         // If team does not exist or there are no team members, complete the stream
         if (!team || !team.clubRef || !team.clubRef.id) return of(null);
-  
+
         // Fetch club members
         return this.fbService.getClubMemberRefs(team.clubRef.id).pipe(
           switchMap(members => {
             if (!members.length) return of([]);
-  
+
             // Fetch each member's user profile
             const memberDetails$ = members.map(member =>
               this.userProfileService.getUserProfileById(member.id).pipe(
@@ -312,13 +341,13 @@ async openAdminList(){
                 )
               )
             );
-  
+
             return combineLatest(memberDetails$);
           }),
           map(memberProfiles =>
             memberProfiles.filter(member => member !== undefined)
           ),
-          map(memberProfiles => memberProfiles.filter(member => 
+          map(memberProfiles => memberProfiles.filter(member =>
             !team.teamMembers.find(element => element.id === member.id)
           )),
           map(filteredMembers => filteredMembers.map(member => ({
@@ -334,7 +363,7 @@ async openAdminList(){
         console.error('Error in addMember:', err);
         return of(null);
       })
-    ).subscribe(async (memberSelect:any) => {
+    ).subscribe(async (memberSelect: any) => {
       if (memberSelect && memberSelect.length > 0) {
         const alert = await this.alertCtrl.create({
           header: 'Administrator hinzufügen',
@@ -359,59 +388,74 @@ async openAdminList(){
       }
     });
   }
-  
+
 
   async addAdministrator() {
-    let memberSelect = [];
+    try {
+      // Fetch the team data
+      const team = await lastValueFrom(this.team$.pipe(take(1)));
 
-    this.subscribeAdmin = this.team$
-      .pipe(
-        take(1),
-        tap((team) => {
-          console.log(team);
-          team.teamMembers.forEach((member) => {
-            if (!team.teamAdmins.find((element) => element.id === member.id)) {
-              memberSelect.push({
-                type: "checkbox",
-                name: member.id,
-                label: `${member.firstName} ${member.lastName}`,
-                value: member,
-                checked: false,
-              });
-            }
+      let memberSelect = [];
+
+      // Building the selection list for the alert
+      team.teamMembers.forEach((member) => {
+        if (!team.teamAdmins.find((element) => element.id === member.id)) {
+          memberSelect.push({
+            type: "checkbox",
+            name: member.id,
+            label: `${member.firstName} ${member.lastName}`,
+            value: member,
+            checked: false,
           });
-        }),
-        finalize(async () => {
-          if (memberSelect.length > 0) {
-            const alert = await this.alertCtrl.create({
-              header: "Administrator hinzufügen",
-              inputs: memberSelect,
-              buttons: [
-                {
-                  text: "Abbrechen",
-                  handler: () => console.log("Cancel clicked"),
-                },
-                {
-                  text: "Hinzufügen",
-                  handler: (data) => console.log(data),
-                },
-              ],
-            });
-            await alert.present();
-          } else {
-            alert("no members")
-          }
-        })
-      )
-      .subscribe();
-  }
+        }
+      });
 
+      // Display the alert with selectable members
+      if (memberSelect.length > 0) {
+        const alert = await this.alertCtrl.create({
+          header: "Administrator hinzufügen",
+          inputs: memberSelect,
+          buttons: [
+            {
+              text: "Abbrechen",
+              role: 'cancel',
+              handler: () => console.log("Cancel clicked"),
+            },
+            {
+              text: "Hinzufügen",
+              handler: (data) => {
+                console.log("Selected Data:", data);
+                // Here you could add your logic to handle the adding of selected administrators
+              },
+            },
+          ],
+        });
+        await alert.present();
+      } else {
+        console.log("No eligible members to add as administrators.");
+      }
+    } catch (error) {
+      console.error("Error in adding administrator:", error);
+    }
+  }
   async toastActionSaved() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
       position: "top",
       color: "success",
+    });
+
+    await toast.present();
+  }
+  async presentCancelToast() {
+    const toast = await this.toastController.create({
+      message: await lastValueFrom(
+        this.translate.get("onboarding.warning__action_canceled")
+      ),
+      duration: 1500,
+      position: "top",
+      color: "danger",
     });
 
     await toast.present();

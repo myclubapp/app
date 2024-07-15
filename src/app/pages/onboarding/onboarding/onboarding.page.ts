@@ -264,6 +264,14 @@ export class OnboardingPage implements OnInit {
         ),
         buttons: [
           {
+            text: await lastValueFrom(this.translate.get("common.no")),
+            role: "destructive",
+            handler: () => {
+              console.log("nein");
+              this.presentCancelToast();
+            },
+          },
+          {
             text: await lastValueFrom(this.translate.get("common.yes")),
             handler: async (data: any) => {
               try {
@@ -278,14 +286,7 @@ export class OnboardingPage implements OnInit {
               }
             },
           },
-          {
-            text: await lastValueFrom(this.translate.get("common.no")),
-            role: "cancel",
-            handler: () => {
-              console.log("nein");
-              this.presentCancelToast();
-            },
-          },
+         
         ],
       });
       await alert.present();

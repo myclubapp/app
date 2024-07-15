@@ -19,6 +19,7 @@ import {
   lastValueFrom,
   map,
   of,
+  shareReplay,
   startWith,
   switchMap,
   take,
@@ -41,15 +42,11 @@ export class ClubAdminListPage implements OnInit {
   @Input("club") club: any;
   club$: Observable<any>;
 
-  user$: Observable<User>;
-  user: User;
-
   allowEdit: boolean = false;
 
   groupArray = [];
 
   clubAdminList$: Observable<Club[]>;
-
 
   clubAdmins$: Observable<any[]>; // Observable for the full list of members
   filteredClubAdmins$: Observable<any[]>; // Observable for filtered results
@@ -68,6 +65,12 @@ export class ClubAdminListPage implements OnInit {
 
   ngOnInit() {
     this.club = this.navParams.get("club");
+    if (this.club.roles && this.club.roles.lenght > 0) {
+
+    } else {
+      this.club.roles = [];
+    }
+
     this.club$ = this.fbService.getClubRef(this.club.id);
 
     this.initializeClubAdmins();
@@ -91,24 +94,38 @@ export class ClubAdminListPage implements OnInit {
 
   initializeClubAdmins() {
     this.groupArray = [];  // Initialize or clear the group array
-
+  
     this.clubAdmins$ = this.fbService.getClubAdminRefs(this.club.id).pipe(
+      tap(() => console.log("Fetching club admins")),
       switchMap(members => {
         if (members.length === 0) {
+          console.log("No club admins found.");
           this.groupArray = [];
-          return of([]);
+          return of([]); // Emit an empty array to keep the observable alive
         }
         const profiles$ = members.map(member =>
           this.userProfileService.getUserProfileById(member.id).pipe(
-            catchError(() => of({ ...member, firstName: "Unknown", lastName: "Unknown" }))
+            map(profile => ({
+              ...member, // Spread member to retain all original attributes
+              ...profile, // Spread profile to overwrite and add profile attributes
+              firstName: profile.firstName || "Unknown",
+              lastName: profile.lastName || "Unknown",
+              roles: member.roles ||  []
+            })),
+            catchError(() => of({ 
+              ...member, 
+              firstName: "Unknown", 
+              lastName: "Unknown", 
+              roles: member.roles ||  [] // Ensure role or other attributes are included even in error
+            }))
           )
         );
         return combineLatest(profiles$).pipe(
           map(profiles => profiles
-            .filter(profile => profile !== undefined)  // Ensure no undefined profiles
-            .sort((a, b) => a.firstName.localeCompare(b.firstName))  // Sort members by firstName
+            .filter(profile => profile !== undefined)
+            .sort((a, b) => a.firstName.localeCompare(b.firstName))
             .map(profile => {
-              const groupByChar = profile.firstName.charAt(0).toUpperCase();  // Use the first character of firstName for grouping
+              const groupByChar = profile.firstName.charAt(0).toUpperCase();
               if (!this.groupArray.includes(groupByChar)) {
                 this.groupArray.push(groupByChar);
               }
@@ -121,44 +138,48 @@ export class ClubAdminListPage implements OnInit {
         );
       }),
       catchError(err => {
-        console.error("Error fetching Club members:", err);
-        return of([]);
-      })
+        console.error("Error fetching Club admins:", err);
+        return of([]); // Emit an empty array on error
+      }),
     );
-
-    this.filteredClubAdmins$ = this.searchTerm.pipe(
-      debounceTime(300), // Debounce to limit the number of searches
-      startWith(''), // Start with no filter
-      switchMap(term => this.filterClubAdmins(term))  // Filter based on search term
-    );
-  }
-
-  filterClubAdmins(term: string) {
-    return this.clubAdmins$.pipe(
-      map(members => {
-        const filteredMembers = members.filter(member =>
-          member.firstName.toLowerCase().includes(term.toLowerCase()) ||
-          member.lastName.toLowerCase().includes(term.toLowerCase())
+  
+    this.filteredClubAdmins$ = combineLatest([this.clubAdmins$, this.searchTerm]).pipe(
+      debounceTime(300),
+      map(([admins, term]) => {
+        if (!term) return admins;
+  
+        const filtered = admins.filter(admin =>
+          admin.firstName.toLowerCase().includes(term.toLowerCase()) ||
+          admin.lastName.toLowerCase().includes(term.toLowerCase()) ||
+          admin.roles.find(role=>role.toLowerCase().includes(term.toLowerCase()))
         );
-
-        // Clear and update the groupArray based on the filtered members
+        return filtered;
+      }),
+      map(filtered=>{
+        // Update the groupArray
         this.groupArray = [];
-        filteredMembers.forEach(member => {
-          const groupByChar = member.firstName.charAt(0).toUpperCase();
+        filtered.forEach(admin => {
+          const groupByChar = admin.firstName.charAt(0).toUpperCase();
           if (!this.groupArray.includes(groupByChar)) {
             this.groupArray.push(groupByChar);
           }
         });
-
-        return filteredMembers;
+        return filtered;
+      }),
+      tap(filtered => console.log("Filtered admins:", filtered.length)),
+      catchError(err => {
+        console.error("Error filtering admins:", err);
+        return of([]);
       })
     );
   }
-
+  
   handleSearch(event: any) {
     const searchTerm = event.detail.value || '';
-    this.searchTerm.next(searchTerm); // Update the BehaviorSubject with the new search term
+    console.log('Handling Search Event:', searchTerm);
+    this.searchTerm.next(searchTerm.trim()); // Trim and update the search term
   }
+
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
     return clubAdminList && clubAdminList.some(club => club.id === clubId);
@@ -175,6 +196,7 @@ export class ClubAdminListPage implements OnInit {
       this.fbService.getClubMemberRefs(this.club.id),
       this.clubAdmins$
     ]).pipe(
+      take(1),
       switchMap(([members, clubAdmins]) => {
         if (members.length === 0) {
           console.log('No club members found.');
@@ -188,6 +210,7 @@ export class ClubAdminListPage implements OnInit {
         );
   
         return combineLatest(profiles$).pipe(
+          take(1),
           map(profiles => profiles.filter(profile => profile !== undefined)),
           map(profiles => this.filterNewAdmins(profiles, clubAdmins)),
           map(filteredMembers => this.prepareMemberSelectOptions(filteredMembers))
@@ -304,7 +327,7 @@ export class ClubAdminListPage implements OnInit {
 
   async toastActionCanceled() {
     const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("club.action__canceled")),
+      message: await lastValueFrom(this.translate.get("common.action__canceled")),
       duration: 1500,
       position: "top",
       color: "danger",

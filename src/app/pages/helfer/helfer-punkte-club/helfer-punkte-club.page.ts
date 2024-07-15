@@ -32,8 +32,6 @@ export class HelferPunkteClubPage implements OnInit {
   ) {
     const clubId =  this.navParams.get("clubId");
     this.helferPunkteList$ = this.getClubMembersWithHelferPunkte(clubId);
-   
-    // this.helferPunkteList$.subscribe();
   }
 
   ngOnInit() {

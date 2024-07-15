@@ -9,6 +9,7 @@ import {
 import { User } from "@angular/fire/auth";
 import {
   Observable,
+  Subscription,
   catchError,
   combineLatest,
   first,
@@ -47,6 +48,8 @@ export class EventsPage implements OnInit {
 
   clubAdminList$: Observable<Club[]>;
 
+  activatedRouteSub: Subscription;
+
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
@@ -60,38 +63,6 @@ export class EventsPage implements OnInit {
     private activatedRoute: ActivatedRoute
   ) {
     this.menuCtrl.enable(true, "menu");
-
-    this.activatedRoute.url.subscribe(data=>{
-      if ( this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "clubEvent") {
-        const pushData = this.router.getCurrentNavigation().extras.state;
-        console.log("PUSHDATA " + JSON.stringify(pushData));
-        let clubEvent: Veranstaltung = {
-          id: pushData.id,
-          name: "",
-          description: "",
-          location: "",
-          streetAndNumber: "",
-          postalCode: "",
-          city: "",
-          date:  Timestamp.now(),
-          startDate: "",
-          endDate: "",
-          timeFrom: "",
-          timeTo: "",
-          clubId: pushData.clubId,
-          clubName: "",
-          link_poll: "", 
-          link_web: "",
-          status: false,
-          attendees: undefined,
-          countAttendees: 0,
-          countNeeded: 0,
-        };
-        this.openEventDetailModal(clubEvent, true);
-      } else {
-        console.log("no data");
-      }
-    });
   }
 
   ngOnInit() {
@@ -100,7 +71,52 @@ export class EventsPage implements OnInit {
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
+
+    this.handleNavigationData();
+    }
+  
+
+  ngOnDestroy() {
+    if (this.activatedRouteSub){
+      this.activatedRouteSub.unsubscribe();
+    }
   }
+
+  handleNavigationData() {
+    this.activatedRouteSub = this.activatedRoute.url.subscribe(() => {
+      const navigation = this.router.getCurrentNavigation();
+      if (navigation && navigation.extras.state && navigation.extras.state.type === 'clubEvent') {
+        const pushData = navigation.extras.state;
+        console.log('PUSHDATA', JSON.stringify(pushData));
+        const clubEvent: Veranstaltung = {
+          id: pushData.id,
+          name: '',
+          description: '',
+          location: '',
+          streetAndNumber: '',
+          postalCode: '',
+          city: '',
+          date: Timestamp.now(),
+          startDate: '',
+          endDate: '',
+          timeFrom: '',
+          timeTo: '',
+          clubId: pushData.clubId,
+          clubName: '',
+          link_poll: '',
+          link_web: '',
+          status: false,
+          attendees: undefined,
+          countAttendees: 0,
+          countNeeded: 0,
+        };
+        this.openEventDetailModal(clubEvent, true);
+      } else {
+        console.log('no data');
+      }
+    });
+  }
+
   getClubEvent() {
     return this.authService.getUser$().pipe(
       take(1),

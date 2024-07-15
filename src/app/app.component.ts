@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, NgZone, OnInit } from "@angular/core";
+import { Component, NgZone, OnInit } from "@angular/core";
 import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
 import {
   AlertController,
@@ -41,14 +41,10 @@ export class AppComponent implements OnInit {
   public appVersion: string = packagejson.version;
 
   clubList$: Observable<Club[]>;
-  private teamList$: Observable<Team[]>;
-  private clubAdminList$: Observable<Club[]>;
-  private teamAdminList$: Observable<Team[]>;
+
 
   private clubListSub: Subscription;
-  private teamListSub: Subscription;
-  private clubAdminListSub: Subscription;
-  private teamAdminListSub: Subscription;
+
 
   user: User;
   deviceId: DeviceId;
@@ -71,77 +67,16 @@ export class AppComponent implements OnInit {
     private translate: TranslateService,
     public toastController: ToastController,
     private ngZone: NgZone,
-    private cdr: ChangeDetectorRef // private platform: Platform
+
   ) {
     this.initializeApp();
   
-    // https://fireship.io/lessons/sharing-data-between-angular-components-four-methods/
-
-    //Filter for Events, Helfer, News
-    /*this.clubListSub = this.clubList$.subscribe({
-      next: (data) => {
-        console.log("Club Data received ");
-        if (data.length > 0){
-          this.userHasClub = true;
-        }
-      },
-      error: (err) => console.error("Club Error in subscription:", err),
-      complete: () => console.log("Club Observable completed"),
-    });*/
-    /*
-    //Filter for Trainings
-    this.teamList$ = this.fbService.getTeamList();
-    this.teamListSub = this.teamList$.subscribe({
-      next: (data) => {
-        console.log("Team Data received");
-      },
-      error: (err) => console.error("Team Error in subscription:", err),
-      complete: () => console.log("Team Observable completed"),
-    });*/
-
-    //Create Events, Helfer, News
-    /*this.clubAdminList$ = this.fbService.getClubAdminList();
-    this.clubAdminListSub = this.clubAdminList$.subscribe({
-      next: () => {
-        console.log("Club Admin Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Club Admin Error in subscription:", err),
-      complete: () => console.log("Club Admin Observable completed"),
-    });
-    // Create Trainings
-    this.teamAdminList$ = this.fbService.getTeamAdminList();
-    this.teamAdminListSub = this.teamAdminList$.subscribe({
-      next: () => {
-        console.log("Team Admin Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Team Admin Error in subscription:", err),
-      complete: () => console.log("Team Admin Observable completed"),
-    });*/
-
     onAuthStateChanged(this.authService.auth, async (user) => {
       if (user) {
         // 0. LOGIN
         this.email = user.email;
         this.user = user;
 
-        // this.authService.auth.currentUser.getIdToken(true);
-        // await this.authService.auth.currentUser.reload();
-        // console.log(user);
-
-        /*if (!this.user.emailVerified) {
-          console.log("E-Mail is NOT verfied");
-          console.log(user.email, user.displayName, user.emailVerified);
-
-          const navOnboardingEmail = await this.router.navigateByUrl("/onboarding-email");
-          if (navOnboardingEmail) {
-            console.log("Navigation succecss to onboarding Email Page");
-          } else {
-            console.error("Navigation error to onboarding Email Page");
-          }
-
-        } else {*/
          if (!user.emailVerified){
           const navOnboardingEmail = await this.router.navigateByUrl('/onboarding-email');
           if (navOnboardingEmail) {
@@ -283,12 +218,6 @@ export class AppComponent implements OnInit {
       }
     );
 
-    // this.requestSubscription();
-    /*this.swPush.messages.subscribe((message) => {
-      console.log(message);
-
-      this.alertPushMessage(message);
-    });*/
   }
 
   ngOnDestroy() {
@@ -297,21 +226,7 @@ export class AppComponent implements OnInit {
     if (this.clubListSub) {
       this.clubListSub.unsubscribe();
     }
-    if (this.teamListSub) {
-      this.teamListSub.unsubscribe();
-    }
-    if (this.clubAdminListSub) {
-      this.clubAdminListSub.unsubscribe();
-    }
-    if (this.teamAdminListSub) {
-      this.teamAdminListSub.unsubscribe();
-    }
 
-    //     this.pushNotificationClickSubscription.unsubscribe();
-    //    this.pushMessageSubscription.unsubscribe();
-    //    this.swPush.unsubscribe();
-    // this.userClubRefs.unsubscribe();
-    // this.userTeamRefs.unsubscribe();
   }
 
   initializeApp(): void {

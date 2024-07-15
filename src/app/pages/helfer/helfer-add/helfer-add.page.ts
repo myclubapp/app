@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { AlertController, ModalController, NavParams, ToastController } from "@ionic/angular";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subscription, catchError, map } from "rxjs";
 import { Club } from "src/app/models/club";
 import { HelferEvent, Schicht } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
@@ -20,7 +20,6 @@ export class HelferAddPage implements OnInit {
   user: User;
 
   clubAdminList$: Observable<Club[]>;
-  subscriptionClubAdminList: Subscription;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -85,23 +84,26 @@ export class HelferAddPage implements OnInit {
       this.event.schichten = <any>[];
     }
 
-    this.clubAdminList$ = this.fbService.getClubAdminList();
-
-    this.subscriptionClubAdminList = this.clubAdminList$.subscribe({
-      next: (data) => {
-        console.log("Club Admin Data received");
-        this.event.clubId = data[0].id;
-        this.event.clubName = data[0].name;
-      },
-      error: (err) => console.error("Club Admin Error in subscription:", err),
-      complete: () => console.log("Club Admin Observable completed"),
-    });
+    this.clubAdminList$ = this.fbService.getClubAdminList().pipe(
+      map(data => {
+        if (data && data.length > 0) {
+          this.event.clubId = data[0].id;
+          this.event.clubName = data[0].name;
+          return data;
+        } else {
+          console.log("No club admins found.");
+          return [];
+        }
+      }),
+      catchError(err => {
+        console.error("Club Admin Error in data fetching:", err);
+        return []; // Return an empty array to handle the error gracefully
+      })
+    );
   }
 
   ngOnDestroy(): void {
-    if (this.subscriptionClubAdminList) {
-      this.subscriptionClubAdminList.unsubscribe();
-    }
+
   }
 
   async close() {

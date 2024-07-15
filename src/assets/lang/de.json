@@ -53,11 +53,15 @@
         "want_to_add__user__to_team_string": "Möchtest das Mitglieds einem Team hinzufügen? Wähle ein Team in der Liste aus.",
         "add": "hinzufügen",
         "success__added_user_to_team_string": "{userName} wurde erfolgreich {length} Team(s) hinzugefügt",
-        "action__canceled": "Action was canceled",
+
+        "action__request_deleted": "Anfrage wurde abgelehnt",
         "trainaing__presence": "Trainingspräsenz"
     },
     "club-list": {
         "my__clubs": "Meine Clubs"
+    },
+    "club-member-list": {
+        "delete_member__confirm": "Möchtest du das Mitglied wirklich aus dem Club entfernen?"
     },
     "event-add": {
         "new__event": "Neue Veranstaltung"
@@ -162,9 +166,17 @@
         "select__language":"Sprache auswählen"
     },
     "tabs": {},
-    "team": {},
+    "team": {
+        "delete": "Team löschen",
+        "delete_team__confirm": "Möchtest du das Team wirklich löschen?"
+    },
     "team-list": {
-        "my__teams": "Meine Teams"
+        "my__teams": "Meine Teams", 
+        "leave_team__confirm": "Möchtest du das Team wirklich verlassen?"
+
+    },
+    "team-member-list": {
+        "delete_member__confirm": "Möchtest du das Mitglied wirklich aus dem Team entfernen?"
     },
     "training-create": {
         "new__training": "Neues Training",
@@ -196,6 +208,7 @@
     "common": {
         "success__copy": "Wert erfolgreich kopiert",
         "month": "Monat", 
+        "action__canceled": "Aktion wurde abgebrochen",
         "year": "Jahr",
         "paid":"bezahlt",
         "created": "Gekauft am",
