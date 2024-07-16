@@ -438,6 +438,12 @@ export class TeamPage implements OnInit {
       console.error("Error in adding administrator:", error);
     }
   }
+
+  onInput(ev, fieldname){
+    console.log(ev.detail.value);
+    this.fbService.setTeamTrainingThreshold(this.team.id, fieldname, ev.detail.value)
+  }
+
   async toastActionSaved() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),

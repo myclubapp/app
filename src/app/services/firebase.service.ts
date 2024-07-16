@@ -703,6 +703,19 @@ export class FirebaseService {
     );
   }
 
+  setTeamTrainingThreshold(teamId, fieldname, threshold: number){
+    const teamRef = doc(this.firestore, `/teams/${teamId}`);
+    return setDoc(
+      doc(this.firestore, `teams/${teamId}`),
+      {
+        [fieldname]: threshold,
+      },{
+        merge: true
+      }
+    );
+  }
+
+
   // User Perspective
   async leaveTeam(teamId: string, userId: string){
     return deleteDoc(doc(this.firestore, `userProfile/${userId}/teams/${teamId}`));

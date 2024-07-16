@@ -160,9 +160,10 @@ export class TrainingsPage implements OnInit {
                     combineLatest([
                       this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id),
                       this.exerciseService.getTeamTrainingExerciseRefs(team.id, training.id),
+                      this.fbService.getTeamRef(team.id),
                     ]).pipe(
 
-                      map(([attendees, exercises]) => {
+                      map(([attendees, exercises, teamDetails]) => {
                         const userAttendee = attendees.find(
                           (att) => att.id == this.user.uid
                         );
@@ -173,6 +174,7 @@ export class TrainingsPage implements OnInit {
                           ...training,
                           attendees,
                           exercises,
+                          team: teamDetails,
                           status: status,
                           countAttendees: attendees.filter(
                             (att) => att.status == true
@@ -183,6 +185,7 @@ export class TrainingsPage implements OnInit {
                       catchError(() =>
                         of({
                           ...training,
+                          team: {},
                           attendees: [],
                           exercises: [],
                           status: null,
@@ -255,6 +258,7 @@ export class TrainingsPage implements OnInit {
                             ...training,
                             attendees,
                             status: status,
+                          
                             countAttendees: attendees.filter(
                               (att) => att.status == true
                             ).length,
@@ -264,6 +268,7 @@ export class TrainingsPage implements OnInit {
                         catchError(() =>
                           of({
                             ...training,
+                      
                             attendees: [],
                             status: null,
                             countAttendees: 0,
@@ -392,16 +397,33 @@ export class TrainingsPage implements OnInit {
     }
   }
 
-  async toggle(status: boolean, training: Training) {
+  async toggle(status: boolean, training: any) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
     );
-    await this.trainingService.setTeamTrainingAttendeeStatus(
-      status,
-      training.teamId,
-      training.id
-    );
-    this.presentToast();
+    const newStartDate = training.date.toDate();
+    newStartDate.setHours(Number(training.timeFrom.substring(0,2)));
+    // console.log(newStartDate);
+
+    // Get team threshold via training.teamId
+    console.log("Grenzwert ")
+    const trainingThreshold = training.team.trainingThreshold || 0;
+    console.log(trainingThreshold);
+    // Verpätete Abmeldung?
+    if ( ((newStartDate.getTime() - new Date().getTime()) < ( 1000 * 60 * 60 * trainingThreshold)) && status == false && trainingThreshold){
+      console.log("too late");
+       await this.tooLateToggle();
+     
+    } else {
+      // OK
+      await this.trainingService.setTeamTrainingAttendeeStatus(
+        status,
+        training.teamId,
+        training.id
+      );
+      this.presentToast();
+    }
+
   }
 
   async toggleItem(
@@ -430,6 +452,21 @@ export class TrainingsPage implements OnInit {
       position: "top",
     });
     toast.present();
+  }
+
+  async tooLateToggle(){
+    const alert = await this.alertCtrl.create({
+      header: "Späte Abmeldung",
+      message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
+      buttons: [ {
+        role: "",
+        text: "OK",
+        handler: (data)=> {
+          console.log(data)  
+        }
+      }]
+    })
+    alert.present()
   }
 
 }
