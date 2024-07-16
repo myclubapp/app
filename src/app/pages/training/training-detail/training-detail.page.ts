@@ -94,9 +94,16 @@ export class TrainingDetailPage implements OnInit {
             const teamMemberProfiles$ = teamMembers.map(member =>
               this.userProfileService.getUserProfileById(member.id).pipe(
                 take(1),
+                map(profile => ({
+                  ...member, // Spread member to retain all original attributes
+                  ...profile, // Spread profile to overwrite and add profile attributes
+                  firstName: profile.firstName || "Unknown",
+                  lastName: profile.lastName || "Unknown",
+                  roles: member.roles || []
+                })),
                 catchError(err => {
                   console.log(`Failed to fetch profile for team member ${member.id}:`, err);
-                  return of({ ...member, firstName: "Unknown", lastName: "Unknown", status: null });
+                  return of({ ...member, firstName: "Unknown", lastName: "Unknown", roles: member.roles || [], status: null });
                 })
               )
             );

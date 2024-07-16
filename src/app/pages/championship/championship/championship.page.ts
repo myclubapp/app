@@ -31,6 +31,7 @@ import { NavigationExtras, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { ChampionshipDetailPage } from "../championship-detail/championship-detail.page";
 import { Team } from "src/app/models/team";
+import { GamePreviewPage } from "../game-preview/game-preview.page";
 
 @Component({
   selector: "app-championship",
@@ -360,6 +361,27 @@ export class ChampionshipPage implements OnInit {
     toast.present();
   }
 
+  async shareSocialMedia(slidingItem: IonItemSliding, game){
+    slidingItem.closeOpened();
+
+    const modal = await this.modalCtrl.create({
+      component: GamePreviewPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: game,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+
+
+  }
   /*  async openFilter(ev: Event) {
 
     const alertInputs = [];

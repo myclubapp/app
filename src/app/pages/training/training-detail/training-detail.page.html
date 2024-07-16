@@ -118,6 +118,7 @@
                   </ion-icon>
 
                   <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
+                  <ion-badge *ngFor="let role of member.roles" slot="end">{{role}}</ion-badge>
                 </ion-item>
                 <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
                   <ion-item-options *ngIf="isTeamAdmin(teamAdminList, training.teamId)" side="end">
@@ -149,6 +150,7 @@
                   </ion-icon>
 
                   <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
+                  <ion-badge *ngFor="let role of member.roles" slot="end">{{role}}</ion-badge>
                 </ion-item>
                 <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
                   <ion-item-options *ngIf="isTeamAdmin(teamAdminList, training.teamId)" side="end">
@@ -186,6 +188,7 @@
                   </ion-icon>
 
                   <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
+                  <ion-badge *ngFor="let role of member.roles" slot="end">{{role}}</ion-badge>
                 </ion-item>
                 <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
                   <ion-item-options *ngIf="isTeamAdmin(teamAdminList, training.teamId)" side="end">

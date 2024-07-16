@@ -19,6 +19,7 @@ export interface Game {
 
   teamName: string;
   teamId: string;
+  clubId: string;
 
   teamHomeId: string;
   teamHome: string;
