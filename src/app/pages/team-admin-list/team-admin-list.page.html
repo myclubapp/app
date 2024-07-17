@@ -106,7 +106,7 @@
     </ion-list>
     <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
       <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-fab *ngIf="isTeamAdmin(teamAdminList, team.id) ||isClubAdmin(clubAdminList, team.clubId)"
+        <ion-fab *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
           vertical="bottom" horizontal="end" slot="fixed">
           <ion-fab-button (click)="addAdministratorToTeam()">
             <ion-icon name="add-outline"></ion-icon>

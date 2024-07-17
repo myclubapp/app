@@ -100,7 +100,9 @@ export class EventAddPage implements OnInit {
   async close() {
     return this.modalCtrl.dismiss(null, "close");
   }
-
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
   async createEvent() {
     //Set Hours/Minutes of endDate to TimeFrom of training
     console.log(`Start Date before calculation: ${this.event.startDate}`);

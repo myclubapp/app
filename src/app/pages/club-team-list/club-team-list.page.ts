@@ -17,7 +17,7 @@ export class ClubTeamListPage implements OnInit {
   @Input("clubId") clubId: any;
   
   teamList$: Observable<Team[]>;
-
+  club$: Observable<any>;
   clubAdminList$: Observable<Club[]>;
   
   public alertButtonsAddTeam = [];
@@ -30,9 +30,10 @@ export class ClubTeamListPage implements OnInit {
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
   ) {
-    const clubId =  this.navParams.get("clubId");
+    this.clubId =  this.navParams.get("clubId");
+    this.teamList$ = this.fbService.getClubTeamList(this.clubId);
 
-    this.teamList$ = this.fbService.getClubTeamList(clubId);
+    this.club$ = this.fbService.getClubRef(this.clubId);
   }
 
   ngOnInit() {

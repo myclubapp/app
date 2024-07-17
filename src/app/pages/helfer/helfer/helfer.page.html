@@ -189,7 +189,7 @@
           </ion-note>
         </ion-item>
         <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-          <ion-item-options side="end" *ngIf="clubAdminList.length > 0">
+          <ion-item-options side="end" *ngIf="isClubAdmin(clubAdminList, event.clubId)">
             <ion-item-option color="medium" (click)="copyEvent(item, event)">
               <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
             </ion-item-option>
@@ -215,7 +215,7 @@
 
   <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
     <ion-fab
-      *ngIf="clubAdminList.length > 0"
+    *ngIf="clubAdminList.length > 0"
       vertical="bottom"
       horizontal="end"
       slot="fixed"

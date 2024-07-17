@@ -4,6 +4,7 @@ import { AlertController, IonItemSliding, ItemReorderEventDetail, ModalControlle
 import { TranslateService } from "@ngx-translate/core";
 import { BehaviorSubject, Observable, Subject, catchError, debounceTime, defaultIfEmpty, filter, first, lastValueFrom, map, pipe, startWith, switchMap, take } from "rxjs";
 import { Training } from "src/app/models/training";
+import { FirebaseService } from "src/app/services/firebase.service";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 
 @Component({
@@ -25,7 +26,7 @@ export class TeamExercisesPage implements OnInit {
   constructor(
     public navParams: NavParams,
     public toastCtrl: ToastController,
-
+    private readonly fbService: FirebaseService,
     private translate: TranslateService,
     private exerciseService: ExerciseService,
     private modalCtrl: ModalController,
@@ -35,10 +36,26 @@ export class TeamExercisesPage implements OnInit {
 
   ngOnInit() {
     this.training = this.navParams.get("training");
+    console.log(this.training)
+    
 
-    this.exerciseList$ = this.exerciseService.getExerciseRefs("swissunihockey").pipe(
-
+    this.exerciseList$ = this.fbService.getTeamRef(this.training.teamId).pipe(
+      take(1),  // Take only the first emission to prevent multiple subscriptions
+      switchMap(team => {
+        if (!team || !team.type) {
+          console.error('Team data is incomplete or missing.');
+          // return of([]);  // Return an empty observable array if no type is found
+        }
+        return this.exerciseService.getExerciseRefs(team.type);  // Fetch exercises based on the team type
+      }),
+      catchError(err => {
+        console.error('Error fetching exercises:', err);
+        return [];
+        // return of([]);  // Handle errors by returning an empty array
+      })
     );
+
+    // this.exerciseList$ = this.exerciseService.getExerciseRefs("swissunihockey")
 
     this.filteredExerciseList$ = this.searchTerm.pipe(
       debounceTime(300),
@@ -95,7 +112,7 @@ export class TeamExercisesPage implements OnInit {
       await this.exerciseService.addTeamTrainingExercise(this.training.teamId, this.training.id, exercise)
       this.toastActionSaved();
     } catch (err) {
-
+      console.log(err)
     }
   }
   async addTeamExercise(slidingItem: IonItemSliding, exercise) {
@@ -105,7 +122,7 @@ export class TeamExercisesPage implements OnInit {
       await this.exerciseService.addTeamExercise(this.training.teamId, exercise)
       this.toastActionSaved();
     } catch (err) {
-
+      console.log(err)
     }
 
   }
@@ -116,7 +133,7 @@ export class TeamExercisesPage implements OnInit {
       this.exerciseService.removeTeamExercise(this.training.teamId, exercise)
       this.toastActionCanceled();
     } catch (err) {
-
+      console.log(err)
     }
   }
 
@@ -128,7 +145,7 @@ export class TeamExercisesPage implements OnInit {
 
   async toastActionSaved() {
     const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("common.success__saved")),
+      message: await lastValueFrom(this.translate.get("common.success__exercise_added")),
       duration: 1500,
       position: "top",
       color: "success",
@@ -139,7 +156,7 @@ export class TeamExercisesPage implements OnInit {
 
   async toastActionCanceled() {
     const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("team.action__canceled")),
+      message: await lastValueFrom(this.translate.get("common.success__exercise_deleted")),
       duration: 1500,
       position: "top",
       color: "danger",

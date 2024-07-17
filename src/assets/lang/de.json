@@ -43,6 +43,7 @@
     },
     "championship-detail": {},
     "club": {
+        "details": "Club Details", 
         "request_approve_header": "Club Anfrage",
         "request_approve_subheader": "Mitglied dem Club hinzufügen?",
         "request_add_user_to_club": "Möchtest du die Anfrage des Mitglieds annehmen und dem Club hinzufügen?",
@@ -206,6 +207,7 @@
         "version": "Version"
     },
     "common": {
+        "teams": "Teams",
         "success__copy": "Wert erfolgreich kopiert",
         "month": "Monat", 
         "action__canceled": "Aktion wurde abgebrochen",
@@ -222,6 +224,7 @@
         "success__helfer_deleted": "Helferevent erfolgreich gelöscht",
         "success__training_deleted": "Training erfolgreich gelöscht",
         "success__exercise_deleted": "Übung erfolgreich entfernt",
+        "success__exercise_added": "Übung erfolgreich hinzugefügt",
         "alle_anmelden": "alle anmelden",
         "link__web": "Webseite / Weitere Informationen",
         "link__poll": "Umfrage",

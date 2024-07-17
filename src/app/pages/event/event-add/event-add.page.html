@@ -17,14 +17,14 @@
   </ion-header>
 
   <ion-list [inset]="true">
-    <div *ngIf="clubAdminList$ | async as clubList">
-      <ion-item *ngIf="clubList.length > 1">
+    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+      <ion-item *ngIf="clubAdminList.length > 1">
         <ion-select [label]='"common.club" | translate' label-placement="stacked" [(ngModel)]="event.clubId"
           value="{{event.clubId}}">
-          <ion-select-option *ngFor="let club of clubList" value="{{club.id}}">{{club.name}}</ion-select-option>
+          <ion-select-option *ngFor="let club of clubAdminList" value="{{club.id}}">{{club.name}}</ion-select-option>
         </ion-select>
       </ion-item>
-    </div>
+    </ng-container>
 
     <!--<ion-item *ngIf="clubList.length==0">
       <ion-select cancel-text="Abbrechen" ok-text="Auswählen" label="Club" label-placement="stacked" [(ngModel)]="event.clubId" value="{{event.clubId}}" >
@@ -71,12 +71,13 @@
   <ion-list [inset]="true">
     <ion-item>
       <ion-input [label]="'common.link__web' | translate" label-placement="stacked" type="url"
-        value="{{event.link_web}}" [(ngModel)]="event.link_web" [placeholder]="'common.link__placeholder' | translate" >
+        value="{{event.link_web}}" [(ngModel)]="event.link_web" [placeholder]="'common.link__placeholder' | translate">
       </ion-input>
     </ion-item>
     <ion-item>
       <ion-input [label]="'common.link__poll' | translate" label-placement="stacked" type="url"
-        value="{{event.link_poll}}" [(ngModel)]="event.link_poll" [placeholder]="'common.link__placeholder' | translate">
+        value="{{event.link_poll}}" [(ngModel)]="event.link_poll"
+        [placeholder]="'common.link__placeholder' | translate">
       </ion-input>
     </ion-item>
   </ion-list>

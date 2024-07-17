@@ -703,10 +703,23 @@ export class FirebaseService {
     );
   }
 
-  setTeamTrainingThreshold(teamId, fieldname, threshold: number){
+  setTeamThreshold(teamId, fieldname, threshold: number){
     const teamRef = doc(this.firestore, `/teams/${teamId}`);
     return setDoc(
-      doc(this.firestore, `teams/${teamId}`),
+      teamRef,
+      {
+        [fieldname]: threshold,
+      },{
+        merge: true
+      }
+    );
+  }
+
+
+  setClubThreshold(clubId, fieldname, threshold: number){
+    const clubRef = doc(this.firestore, `/club/${clubId}`);
+    return setDoc(
+      clubRef,
       {
         [fieldname]: threshold,
       },{

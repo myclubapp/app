@@ -94,12 +94,12 @@
           <ion-item>
             <ng-container *ngIf="!schicht.confirmed && isFuture">
               <ion-icon *ngIf="schicht.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
-                (click)="toggleSchicht(true, schicht)"></ion-icon>
+                (click)="toggleSchicht(true, event, schicht)"></ion-icon>
               <ion-icon *ngIf="schicht.status === true" slot="icon-only" color="success" slot="start"
-                name="checkmark-circle" (click)="toggleSchicht(false, schicht)"></ion-icon>
+                name="checkmark-circle" (click)="toggleSchicht(false, event, schicht)"></ion-icon>
 
               <ion-icon *ngIf="schicht.status === false" slot="icon-only" color="danger" slot="start"
-                name="close-circle" (click)="toggleSchicht(true, schicht)"></ion-icon>
+                name="close-circle" (click)="toggleSchicht(true, event, schicht)"></ion-icon>
             </ng-container>
             <ng-container *ngIf="!isFuture || schicht.confirmed">
               <ion-icon *ngIf="schicht.status === null" slot="icon-only" color="warning" slot="start"

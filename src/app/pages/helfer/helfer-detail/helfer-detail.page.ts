@@ -63,7 +63,7 @@ export class HelferDetailPage implements OnInit {
     private readonly eventService: EventService,
     private readonly fbService: FirebaseService,
     private readonly toastController: ToastController,
-    private readonly alertController: AlertController,
+    private readonly alertCtrl: AlertController,
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService
@@ -95,19 +95,19 @@ export class HelferDetailPage implements OnInit {
 
       if (Object.keys(this.eventHasChanged).length > 0) {
         // alert("change")
-        const updatedEvent = await this.eventService.changeHelferEvent(this.eventHasChanged, this.event.clubId, this.event.id).catch(e=>{
+        const updatedEvent = await this.eventService.changeHelferEvent(this.eventHasChanged, this.event.clubId, this.event.id).catch(e => {
           this.toastActionError(e);
         });
         // console.log(updatedEvent);
         this.presentToast();
       }
-      
+
     } else {
       this.allowEdit = true;
     }
   }
-  async updateEvent(event, field){
-    console.log(field, event.detail)    
+  async updateEvent(event, field) {
+    console.log(field, event.detail)
     this.eventHasChanged[field] = event.detail.value;
   }
   getHelferEvent(clubId: string, eventId: string) {
@@ -121,71 +121,81 @@ export class HelferDetailPage implements OnInit {
       switchMap((event) => {
         if (!event) return of(null);
 
-        // Fetch all club members first
-        return this.fbService.getClubMemberRefs(clubId).pipe(
-          switchMap(clubMembers => {
-            const clubMemberProfiles$ = clubMembers.map(member =>
-              this.userProfileService.getUserProfileById(member.id).pipe(
-                take(1),
-                catchError(err => {
-                  console.log(`Failed to fetch profile for club member ${member.id}:`, err);
-                  return of({ id: member.id, firstName: "Unknown", lastName: "Unknown", status: null });
-                })
-              )
-            );
+        // Fetch club details
+        return this.fbService.getClubRef(clubId).pipe(
+          switchMap(club => {
+            if (!club) return of(null);
 
-            // Fetch all attendees next
-            return forkJoin(clubMemberProfiles$).pipe(
-              switchMap(clubMembersWithDetails => {
-                return this.eventService.getClubHelferEventAttendeesRef(clubId, eventId).pipe(
-                  map(attendees => {
-                    const attendeeDetails = attendees.map(attendee => {
-                      const detail = clubMembersWithDetails.find(member => member && member.id === attendee.id);
-                      return detail ? { ...detail, status: attendee.status } : null;
-                    }).filter(item => item !== null);
+            // Fetch all club members first
+            return this.fbService.getClubMemberRefs(clubId).pipe(
+              switchMap(clubMembers => {
+                const clubMemberProfiles$ = clubMembers.map(member =>
+                  this.userProfileService.getUserProfileById(member.id).pipe(
+                    take(1),
+                    catchError(err => {
+                      console.log(`Failed to fetch profile for club member ${member.id}:`, err);
+                      return of({ id: member.id, firstName: "Unknown", lastName: "Unknown", status: null });
+                    })
+                  )
+                );
 
-                    const attendeeListTrue = attendeeDetails.filter(att => att && att.status === true);
-                    const attendeeListFalse = attendeeDetails.filter(att => att && att.status === false);
-                    const respondedIds = new Set(attendeeDetails.map(att => att.id));
-                    const unrespondedMembers = clubMembersWithDetails.filter(member => member && !respondedIds.has(member.id));
+                // Fetch all attendees next
+                return forkJoin(clubMemberProfiles$).pipe(
+                  switchMap(clubMembersWithDetails => {
+                    return this.eventService.getClubHelferEventAttendeesRef(clubId, eventId).pipe(
+                      map(attendees => {
+                        const attendeeDetails = attendees.map(attendee => {
+                          const detail = clubMembersWithDetails.find(member => member && member.id === attendee.id);
+                          return detail ? { ...detail, status: attendee.status } : null;
+                        }).filter(item => item !== null);
 
-                    const userAttendee = attendeeDetails.find(att => att && att.id === this.user.uid);
-                    const status = userAttendee ? userAttendee.status : null;
+                        const attendeeListTrue = attendeeDetails.filter(att => att && att.status === true);
+                        const attendeeListFalse = attendeeDetails.filter(att => att && att.status === false);
+                        const respondedIds = new Set(attendeeDetails.map(att => att.id));
+                        const unrespondedMembers = clubMembersWithDetails.filter(member => member && !respondedIds.has(member.id));
 
-                    return {
-                      ...event,
-                      attendees: attendeeDetails,
-                      attendeeListTrue,
-                      attendeeListFalse,
-                      unrespondedMembers,
-                      status,
-                    };
-                  }),
-                  catchError(err => {
-                    console.error("Error fetching attendees:", err);
-                    return of({
-                      ...event,
-                      attendees: [],
-                      attendeeListTrue: [],
-                      attendeeListFalse: [],
-                      unrespondedMembers: clubMembersWithDetails.filter(member => member !== null),
-                      status: null
-                    });
+                        const userAttendee = attendeeDetails.find(att => att && att.id === this.user.uid);
+                        const status = userAttendee ? userAttendee.status : null;
+
+                        return {
+                          ...event,
+                          club,
+                          attendees: attendeeDetails,
+                          attendeeListTrue,
+                          attendeeListFalse,
+                          unrespondedMembers,
+                          status,
+                        };
+                      }),
+                      catchError(err => {
+                        console.error("Error fetching attendees:", err);
+                        return of({
+                          ...event,
+                          club,
+                          attendees: [],
+                          attendeeListTrue: [],
+                          attendeeListFalse: [],
+                          unrespondedMembers: clubMembersWithDetails.filter(member => member !== null),
+                          status: null
+                        });
+                      })
+                    );
                   })
                 );
+              }),
+              catchError(err => {
+                console.error("Error fetching club members:", err);
+                return of({
+                  ...event,
+                  club,
+                  attendees: [],
+                  attendeeListTrue: [],
+                  attendeeListFalse: [],
+                  unrespondedMembers: [],
+                  status: null
+                });
               })
             );
-          }),
-          catchError(err => {
-            console.error("Error fetching club members:", err);
-            return of({
-              ...event,
-              attendees: [],
-              attendeeListTrue: [],
-              attendeeListFalse: [],
-              unrespondedMembers: [],
-              status: null
-            });
           })
         );
       }),
@@ -286,7 +296,7 @@ export class HelferDetailPage implements OnInit {
       const schichten = await firstValueFrom(
         this.getHelferEventSchichtenWithAttendees(this.event.clubId, this.event.id)
       );
-  
+
       let alertInputs = schichten.reduce((acc, schicht) => {
         const inputs = schicht.attendeeListTrue
           .filter(member => !member.confirmed && member.status)
@@ -304,12 +314,12 @@ export class HelferDetailPage implements OnInit {
           }));
         return [...acc, ...inputs];
       }, []);
-  
+
       if (alertInputs.length > 0) {
         const cancelText = await lastValueFrom(this.translate.get("common.cancel"));
         const confirmText = await lastValueFrom(this.translate.get("common.confirm"));
-  
-        const alert = await this.alertController.create({
+
+        const alert = await this.alertCtrl.create({
           header: "Helfereinsätze bestätigen",
           message: "Bitte wählen Sie die Mitglieder aus:",
           inputs: alertInputs,
@@ -340,7 +350,7 @@ export class HelferDetailPage implements OnInit {
       // Handle error appropriately
     }
   }
-  
+
   async handleConfirm(events) {
     for (const event of events) {
       await this.eventService.setClubHelferEventSchichtAttendeeStatusConfirm(
@@ -360,18 +370,41 @@ export class HelferDetailPage implements OnInit {
     });
   }
 
-  async toggleSchicht(status: boolean, schicht) {
+  async toggleSchicht(status: boolean, event, schicht) {
     console.log(`Set Status ${status}`);
-    await this.eventService.setClubHelferEventSchichtAttendeeStatus(
-      status,
-      this.event.clubId,
-      this.event.id,
-      schicht.id
-    );
-    this.presentToast();
+
 
     // Set "global status" as well.. ? Doesn't make sense..
     // this.toggle(status, this.event);
+
+    console.log(
+      `Set Status ${status} for user ${this.user.uid} and Club ${event.clubId} and event ${event.id}`
+    );
+    const newStartDate = event.date.toDate();
+    newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
+    // console.log(newStartDate);
+
+    // Get team threshold via training.teamId
+    console.log("Grenzwert ")
+    const helferThreshold = event.club.helferThreshold || 0;
+    console.log(helferThreshold);
+    // Verpätete Abmeldung?
+    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * helferThreshold)) && status == false && helferThreshold) {
+      console.log("too late");
+      await this.tooLateToggle();
+
+    } else {
+      // OK
+      await this.eventService.setClubHelferEventSchichtAttendeeStatus(
+        status,
+        event.clubId,
+        event.id,
+        schicht.id
+      );
+      this.presentToast();
+    }
+
+
   }
 
   async openMember(member: Profile) {
@@ -392,18 +425,49 @@ export class HelferDetailPage implements OnInit {
     if (role === "confirm") {
     }
   }
-  async toggle(status: boolean, event: HelferEvent) {
+
+  async toggle(status: boolean, event: HelferEvent | any) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and Club ${this.event.clubId} and event ${event.id}`
     );
-    await this.eventService.setClubHelferEventAttendeeStatus(
-      status,
-      this.event.clubId,
-      event.id
-    );
-    this.presentToast();
-  }
+    const newStartDate = event.date.toDate();
+    newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
+    // console.log(newStartDate);
 
+    // Get team threshold via training.teamId
+    console.log("Grenzwert ")
+    const helferThreshold = event.club.helferThreshold || 0;
+    console.log(helferThreshold);
+    // Verpätete Abmeldung?
+    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * helferThreshold)) && status == false && helferThreshold) {
+      console.log("too late");
+      await this.tooLateToggle();
+
+    } else {
+      // OK
+      await this.eventService.setClubHelferEventAttendeeStatus(
+        status,
+        this.event.clubId,
+        event.id
+      );
+      this.presentToast();
+    }
+
+  }
+  async tooLateToggle() {
+    const alert = await this.alertCtrl.create({
+      header: "Abmelden nicht möglich",
+      message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
+      buttons: [{
+        role: "",
+        text: "OK",
+        handler: (data) => {
+          console.log(data)
+        }
+      }]
+    })
+    alert.present()
+  }
   async presentToast() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),

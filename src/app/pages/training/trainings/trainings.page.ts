@@ -429,19 +429,35 @@ export class TrainingsPage implements OnInit {
   async toggleItem(
     slidingItem: IonItemSliding,
     status: boolean,
-    training: Training
+    training: any
   ) {
     slidingItem.closeOpened();
 
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
     );
-    await this.trainingService.setTeamTrainingAttendeeStatus(
-      status,
-      training.teamId,
-      training.id
-    );
-    this.presentToast();
+    const newStartDate = training.date.toDate();
+    newStartDate.setHours(Number(training.timeFrom.substring(0,2)));
+    // console.log(newStartDate);
+
+    // Get team threshold via training.teamId
+    console.log("Grenzwert ")
+    const trainingThreshold = training.team.trainingThreshold || 0;
+    console.log(trainingThreshold);
+    // Verpätete Abmeldung?
+    if ( ((newStartDate.getTime() - new Date().getTime()) < ( 1000 * 60 * 60 * trainingThreshold)) && status == false && trainingThreshold){
+      console.log("too late");
+       await this.tooLateToggle();
+     
+    } else {
+      // OK
+      await this.trainingService.setTeamTrainingAttendeeStatus(
+        status,
+        training.teamId,
+        training.id
+      );
+      this.presentToast();
+    }
   }
 
   async presentToast() {
@@ -456,7 +472,7 @@ export class TrainingsPage implements OnInit {
 
   async tooLateToggle(){
     const alert = await this.alertCtrl.create({
-      header: "Späte Abmeldung",
+      header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
       buttons: [ {
         role: "",

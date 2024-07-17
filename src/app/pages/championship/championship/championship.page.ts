@@ -136,7 +136,6 @@ export class ChampionshipPage implements OnInit {
       })
     );
   }
-
   getTeamGamesUpcoming() {
     return this.authService.getUser$().pipe(
       take(1),
@@ -157,36 +156,39 @@ export class ChampionshipPage implements OnInit {
                 if (teamGames.length === 0) return of([]);
                 return combineLatest(
                   teamGames.map((game) =>
-                    this.championshipService
-                      .getTeamGameAttendeesRef(team.id, game.id)
-                      .pipe( 
-                        map((attendees) => {
-                          const userAttendee = attendees.find(
-                            (att) => att.id == this.user.uid
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null; // default to false if user is not found in attendees list
-                          return {
-                            ...game,
-                            attendees,
-                            status: status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true
-                            ).length,
-                            teamId: team.id,
-                          };
-                        }),
-                        catchError(() =>
-                          of({
-                            ...game,
-                            attendees: [],
-                            status: null,
-                            countAttendees: 0,
-                            teamId: team.id,
-                          })
-                        ) // If error, return game with empty attendees
+                    combineLatest([
+                      this.championshipService.getTeamGameAttendeesRef(team.id, game.id),
+                      this.fbService.getTeamRef(team.id) // Fetching team details
+                    ]).pipe(
+                      map(([attendees, teamDetails]) => {
+                        const userAttendee = attendees.find(
+                          (att) => att.id == this.user.uid
+                        );
+                        const status = userAttendee
+                          ? userAttendee.status
+                          : null; // default to false if user is not found in attendees list
+                        return {
+                          ...game,
+                          team: teamDetails, // Include team details in the result
+                          attendees,
+                          status: status,
+                          countAttendees: attendees.filter(
+                            (att) => att.status == true
+                          ).length,
+                          teamId: team.id,
+                        };
+                      }),
+                      catchError(() =>
+                        of({
+                          ...game,
+                          team: null, // Provide default empty team details in case of error
+                          attendees: [],
+                          status: null,
+                          countAttendees: 0,
+                          teamId: team.id,
+                        })
                       )
+                    )
                   )
                 );
               }),
@@ -206,7 +208,6 @@ export class ChampionshipPage implements OnInit {
           )
         );
       }),
-      // tap((results) => console.log("Final results with all games:", results)),
       catchError((err) => {
         console.error("Error in getTeamGamesUpcoming:", err);
         return of([]); // Return an empty array on error
@@ -325,32 +326,74 @@ export class ChampionshipPage implements OnInit {
   }
 
   // List item
-  async toggle(status: boolean, game: Game) {
+  async toggle(status: boolean, game: any) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
     );
-    await this.championshipService.setTeamGameAttendeeStatus(
-      status,
-      game.teamId,
-      game.id
-    );
-    this.presentToast();
+    console.log(game)
+    const newStartDate = game.dateTime.toDate();
+    newStartDate.setHours(Number(game.time.substring(0, 2)));
+    console.log(newStartDate);
+
+    // Get team threshold via training.teamId
+    console.log("Grenzwert ")
+    const championshipTreshold = game.team.championshipThreshold || 0;
+    console.log(championshipTreshold);
+    // Verpätete Abmeldung?
+    if ( ((newStartDate.getTime() - new Date().getTime()) < ( 1000 * 60 * 60 * championshipTreshold)) && status == false && championshipTreshold){
+      console.log("too late");
+       await this.tooLateToggle();
+     
+    } else {
+      // OK
+      await this.championshipService.setTeamGameAttendeeStatus(
+        status,
+        game.teamId,
+        game.id
+      );
+      this.presentToast();
+    }
+
   }
 
   //Sliding
-  async toggleItem(slidingItem: IonItemSliding, status: boolean, game: Game) {
+  async toggleItem(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    game: any
+  ) {
     slidingItem.closeOpened();
 
-    /*console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
-    );*/
-    await this.championshipService.setTeamGameAttendeeStatus(
-      status,
-      game.teamId,
-      game.id
+    console.log(
+      `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and training ${game.id}`
     );
-    this.presentToast();
+    console.log(game)
+    const newStartDate = game.dateTime.toDate();
+    newStartDate.setHours(Number(game.time.substring(0, 2)));
+    console.log(newStartDate);
+
+    // Get team threshold via training.teamId
+    console.log("Grenzwert ")
+    const championshipTreshold = game.team.championshipThreshold || 0;
+    console.log(championshipTreshold);
+    // Verpätete Abmeldung?
+    if ( ((newStartDate.getTime() - new Date().getTime()) < ( 1000 * 60 * 60 * championshipTreshold)) && status == false && championshipTreshold){
+      console.log("too late");
+       await this.tooLateToggle();
+     
+    } else {
+      // OK
+      await this.championshipService.setTeamGameAttendeeStatus(
+        status,
+        game.teamId,
+        game.id
+      );
+      this.presentToast();
+    }
   }
+
+
+
   async presentToast() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.changes__saved")),
@@ -381,6 +424,21 @@ export class ChampionshipPage implements OnInit {
     }
 
 
+  }
+
+  async tooLateToggle(){
+    const alert = await this.alertCtrl.create({
+      header: "Abmelden nicht möglich",
+      message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
+      buttons: [ {
+        role: "",
+        text: "OK",
+        handler: (data)=> {
+          console.log(data)  
+        }
+      }]
+    })
+    alert.present()
   }
   /*  async openFilter(ev: Event) {
 

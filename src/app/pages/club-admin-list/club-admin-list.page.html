@@ -52,7 +52,7 @@
     </ion-list>
 
     <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-      <ion-fab *ngIf="clubAdminList.length > 0" vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab *ngIf="isClubAdmin(clubAdminList, club.id)" vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button (click)="addAdministratorToClub()">
           <ion-icon name="add-outline"></ion-icon>
         </ion-fab-button>

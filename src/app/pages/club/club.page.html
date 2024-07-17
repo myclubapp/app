@@ -9,7 +9,7 @@
           >{{"common.cancel" | translate}}</ion-button
         >
       </ion-buttons>-->
-      <ion-title>Club Details</ion-title>
+      <ion-title>{{"club.details" | translate}}</ion-title>
       <ion-buttons slot="primary">
         <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
       </ion-buttons>
@@ -19,7 +19,7 @@
   <ion-content [fullscreen]="true">
     <ion-header collapse="condense">
       <ion-toolbar>
-        <ion-title size="large">Club Details</ion-title>
+        <ion-title size="large">{{"club.details" | translate}}</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -60,26 +60,26 @@
 
       <ion-item detail="true" (click)="openRequestList()" *ngIf="club['clubRequests'].length > 0">
         <ion-icon name="alert-circle-outline" color="warning" slot="start"></ion-icon>
-        <ion-label> Anfragen </ion-label>
+        <ion-label> {{"common.requests" | translate}} </ion-label>
         <ion-note slot="end">{{club['clubRequests'].length}}</ion-note>
       </ion-item>
 
       <ion-item detail="true" (click)="openMemberList()">
         <ion-icon name="people-circle-outline" slot="start"></ion-icon>
-        <ion-label> Mitglieder </ion-label>
+        <ion-label> {{"common.members" | translate}} </ion-label>
         <ion-note slot="end">{{club['clubMembers'].length}}</ion-note>
       </ion-item>
 
       <ion-item detail="true" (click)="openAdminList()">
         <ion-icon name="shield-half-outline" slot="start"></ion-icon>
-        <ion-label> Administratoren </ion-label>
+        <ion-label> {{"common.admins" | translate}} </ion-label>
         <ion-note slot="end">{{club['clubAdmins'].length}}</ion-note>
       </ion-item>
 
       <ion-item detail="true" (click)="openTeamList()">
         <ion-icon name="people-outline" slot="start"></ion-icon>
-        <ion-label> Teams </ion-label>
-        <ion-note slot="end"></ion-note>
+        <ion-label> {{"common.teams" | translate}} </ion-label>
+        <ion-note slot="end">{{club['clubTeams'].length}}</ion-note>
       </ion-item>
       <ng-container *ngIf="club.hasFeatureHelferEvent">
         <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
@@ -101,6 +101,36 @@
       </ng-container>
     </ion-list>
 
+
+
+    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+      <ng-container *ngIf="isClubAdmin(clubAdminList, club.id)">
+        <ion-list lines="full" [inset]="true">
+          <ion-list-header>
+            <ion-label> Grenzwerte für Abmeldungen </ion-label>
+          </ion-list-header>
+          <ion-item>
+            <ion-icon name="calendar-outline" slot="start"></ion-icon>
+            <ion-input labelPlacement="fixed" label="Veranstaltungen" type="number" [value]="club.eventThreshold"
+              (ionInput)="onInput($event, 'eventThreshold')"></ion-input>
+          </ion-item>
+
+          <ng-container *ngIf="club.hasFeatureHelferEvent">
+            <ion-item>
+              <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
+              <ion-input labelPlacement="fixed" label="Helferevents" type="number" [value]="club.helferThreshold"
+                (ionInput)="onInput($event, 'helferThreshold')"></ion-input>
+            </ion-item>
+          </ng-container>
+
+        </ion-list>
+        <ion-note color="medium" style="display:block"
+          class="ion-margin-horizontal ion-padding-horizontal ion-text-wrap">
+          Anzahl Stunden vor Beginn des Spiels, Trainings oder Veranstaltung</ion-note>
+      </ng-container>
+    </ng-container>
+
+
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
         <ion-label> {{ "common.details" | translate}} </ion-label>
@@ -110,7 +140,7 @@
         <ion-label class="ion-text-wrap"> {{club.wordpress}} </ion-label>
         <ion-button (click)="openUrl(club.wordpress)" fill="clear">
           <ion-icon slot="icon-only" name="open-outline"></ion-icon>
-        </ion-button> 
+        </ion-button>
       </ion-item>
       <ion-item>
         <ion-icon name="heart-circle-outline" slot="start"></ion-icon>

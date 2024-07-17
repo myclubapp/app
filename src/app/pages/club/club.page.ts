@@ -38,6 +38,7 @@ import { Timestamp } from "firebase/firestore";
 import { HelferPunkteClubPage } from "../helfer/helfer-punkte-club/helfer-punkte-club.page";
 import { Club } from "src/app/models/club";
 import { ClubSubscriptionPage } from "../club-subscription/club-subscription.page";
+import { fork } from "child_process";
 
 @Component({
   selector: "app-club",
@@ -73,7 +74,6 @@ export class ClubPage implements OnInit {
   ngOnInit() {
     this.club = this.navParams.get("data");
 
-    this.club$ = of(this.club);
     this.club$ = this.getClub(this.club.id);
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
@@ -120,11 +120,13 @@ export class ClubPage implements OnInit {
           clubMembers: this.fbService.getClubMemberRefs(clubId),
           clubAdmins: this.fbService.getClubAdminRefs(clubId),
           clubRequests: this.fbService.getClubRequestRefs(clubId),
+          clubTeams: this.fbService.getClubTeamRefs(clubId),
         }).pipe(
           switchMap(({
             clubMembers,
             clubAdmins,
-            clubRequests
+            clubRequests,
+            clubTeams,
           }) => {
             const memberProfiles$ = clubMembers.map((member) =>
               this.userProfileService.getUserProfileById(member.id).pipe(
@@ -150,15 +152,19 @@ export class ClubPage implements OnInit {
                 )
               )
             );
+            console.log(clubTeams)
+            
             return forkJoin({
               clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
               clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
               clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
+              clubTeams: of(clubTeams) 
             }).pipe(
               map(({
                 clubMembers,
                 clubAdmins,
-                clubRequests
+                clubRequests,
+                clubTeams
               }) => ({
                 clubMembers: clubMembers.filter(
                   (member) => member !== undefined
@@ -167,13 +173,15 @@ export class ClubPage implements OnInit {
                 clubRequests: clubRequests.filter(
                   (request) => request !== undefined
                 ), // Filter out undefined*/
+                clubTeams:clubTeams,
               }))
             );
           }),
           map(({
             clubMembers,
             clubAdmins,
-            clubRequests
+            clubRequests,
+            clubTeams
           }) => {
 
             const ages = clubMembers
@@ -189,9 +197,10 @@ export class ClubPage implements OnInit {
               ages.length > 0
                 ? ages.reduce((a, b) => a + b, 0) / ages.length
                 : 0; // Calculate average or set to 0 if no valid ages
-
+            console.log(clubTeams)
             return {
               ...club,
+              clubTeams,
               updated: Timestamp.fromMillis(club.updated.seconds * 1000).toDate().toISOString(),
               averageAge: averageAge.toFixed(1), // Keep two decimal places
               clubMembers,
@@ -208,6 +217,12 @@ export class ClubPage implements OnInit {
       })
     );
   }
+
+  onInput(ev, fieldname){
+    console.log(ev.detail.value);
+    this.fbService.setClubThreshold(this.club.id, fieldname, ev.detail.value)
+  }
+
   async openRequestList() {
     console.log("open Club Request List");
     const modal = await this.modalCtrl.create({

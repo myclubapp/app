@@ -5,6 +5,7 @@ import {
   ModalController,
   MenuController,
   ToastController,
+  AlertController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
 import {
@@ -53,6 +54,7 @@ export class EventsPage implements OnInit {
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
+    private readonly alertCtrl: AlertController,
     private readonly modalCtrl: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -80,6 +82,10 @@ export class EventsPage implements OnInit {
     if (this.activatedRouteSub){
       this.activatedRouteSub.unsubscribe();
     }
+  }
+
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
   }
 
   handleNavigationData() {
@@ -132,41 +138,40 @@ export class EventsPage implements OnInit {
         if (clubs.length === 0) return of([]);
         return combineLatest(
           clubs.map((club) =>
-            this.eventService.getClubEventsRef(club.id).pipe(
-              switchMap((clubEvents) => {
+            combineLatest([
+              this.eventService.getClubEventsRef(club.id),
+              this.fbService.getClubRef(club.id) // Fetch the club details here
+            ]).pipe(
+              switchMap(([clubEvents, clubDetails]) => {
                 if (clubEvents.length === 0) return of([]);
                 return combineLatest(
-                  clubEvents.map((game) =>
-                    this.eventService
-                      .getClubEventAttendeesRef(club.id, game.id)
-                      .pipe(
-                        map((attendees) => {
-                          const userAttendee = attendees.find(
-                            (att) => att.id == this.user.uid
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null; // default to false if user is not found in attendees list
-                          return {
-                            ...game,
-                            attendees,
-                            status: status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true
-                            ).length,
-                            clubId: club.id,
-                          };
-                        }),
-                        catchError(() =>
-                          of({
-                            ...game,
-                            attendees: [],
-                            status: null,
-                            countAttendees: 0,
-                            clubId: club.id,
-                          })
-                        ) // If error, return game with empty attendees
+                  clubEvents.map((event) =>
+                    this.eventService.getClubEventAttendeesRef(club.id, event.id).pipe(
+                      map((attendees) => {
+                        const userAttendee = attendees.find(
+                          (att) => att.id == this.user.uid
+                        );
+                        const status = userAttendee ? userAttendee.status : null;
+                        return {
+                          ...event,
+                          attendees,
+                          status,
+                          countAttendees: attendees.filter((att) => att.status == true).length,
+                          clubId: club.id,
+                          club: clubDetails // Append club details to each event
+                        };
+                      }),
+                      catchError(() =>
+                        of({
+                          ...event,
+                          attendees: [],
+                          status: null,
+                          countAttendees: 0,
+                          clubId: club.id,
+                          club: clubDetails // Also provide club details here in case of error
+                        })
                       )
+                    )
                   )
                 );
               }),
@@ -175,14 +180,11 @@ export class EventsPage implements OnInit {
             )
           )
         ).pipe(
-          map((teamsevents) => teamsevents.flat()), // Flatten to get all events across all teams
-          map(
-            (allevents) =>
-              allevents.sort(
-                (a, b) =>
-                  Timestamp.fromMillis(a.dateTime).seconds -
-                  Timestamp.fromMillis(b.dateTime).seconds
-              ) // Sort events by date
+          map((clubsEvents) => clubsEvents.flat()), // Flatten to get all events across all clubs
+          map((allEvents) =>
+            allEvents.sort((a, b) =>
+              Timestamp.fromMillis(a.dateTime).seconds - Timestamp.fromMillis(b.dateTime).seconds
+            ) // Sort events by date
           )
         );
       }),
@@ -270,36 +272,73 @@ export class EventsPage implements OnInit {
       })
     );
   }
-  async toggle(status: boolean, event: Veranstaltung) {
+
+
+  async toggle(status: boolean, event: Veranstaltung | any) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
     );
+    const newStartDate = event.date.toDate();
+    newStartDate.setHours(Number(event.timeFrom.substring(0,2)));
+    // console.log(newStartDate);
 
-    await this.eventService.setClubEventAttendeeStatus(
-      status,
-      event.clubId,
-      event.id
-    );
-    this.presentToast();
+    // Get team threshold via training.teamId
+    console.log("Grenzwert ")
+    const eventThreshold = event.club.eventThreshold || 0;
+    console.log(eventThreshold);
+    // Verpätete Abmeldung?
+    if ( ((newStartDate.getTime() - new Date().getTime()) < ( 1000 * 60 * 60 * eventThreshold)) && status == false && eventThreshold){
+      console.log("too late");
+       await this.tooLateToggle();
+     
+    } else {
+      // OK
+      await this.eventService.setClubEventAttendeeStatus(
+        status,
+        event.clubId,
+        event.id
+      );
+      this.presentToast();
+    }
+
   }
+
 
   async toggleItem(
     slidingItem: IonItemSliding,
     status: boolean,
-    event: Veranstaltung
+    event: Veranstaltung | any
   ) {
     slidingItem.closeOpened();
 
     console.log(
       `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
     );
-    await this.eventService.setClubEventAttendeeStatus(
-      status,
-      event.clubId,
-      event.id
-    );
-    this.presentToast();
+    const newStartDate = event.date.toDate();
+    newStartDate.setHours(Number(event.timeFrom.substring(0,2)));
+    // console.log(newStartDate);
+
+    // Get team threshold via training.teamId
+    console.log("Grenzwert ")
+    const eventThreshold = event.club.eventThreshold || 0;
+    console.log(eventThreshold);
+
+    // Verpätete Abmeldung?
+    if ( ((newStartDate.getTime() - new Date().getTime()) < ( 1000 * 60 * 60 * eventThreshold)) && status == false && eventThreshold){
+      console.log("too late");
+       await this.tooLateToggle();
+     
+    } else {
+      // OK
+      await this.eventService.setClubEventAttendeeStatus(
+        status,
+        event.clubId,
+        event.id
+      );
+      this.presentToast();
+    }
   }
+
 
   async presentToast() {
     const toast = await this.toastController.create({
@@ -365,6 +404,20 @@ export class EventsPage implements OnInit {
     toast.present();
   }
 
+  async tooLateToggle(){
+    const alert = await this.alertCtrl.create({
+      header: "Abmelden nicht möglich",
+      message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
+      buttons: [ {
+        role: "",
+        text: "OK",
+        handler: (data)=> {
+          console.log(data)  
+        }
+      }]
+    })
+    alert.present()
+  }
   async openFilter(ev: Event) {
     /*
     let filterList = [];

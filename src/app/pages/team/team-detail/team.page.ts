@@ -441,7 +441,7 @@ export class TeamPage implements OnInit {
 
   onInput(ev, fieldname){
     console.log(ev.detail.value);
-    this.fbService.setTeamTrainingThreshold(this.team.id, fieldname, ev.detail.value)
+    this.fbService.setTeamThreshold(this.team.id, fieldname, ev.detail.value)
   }
 
   async toastActionSaved() {

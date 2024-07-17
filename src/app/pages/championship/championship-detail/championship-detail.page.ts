@@ -7,6 +7,7 @@ import {
   ViewChild,
 } from "@angular/core";
 import {
+  AlertController,
   IonItemSliding,
   ModalController,
   // NavController,
@@ -64,7 +65,7 @@ export class ChampionshipDetailPage implements OnInit {
     // private navController: NavController,
     private navParams: NavParams,
     private readonly userProfileService: UserProfileService,
-    // private readonly route: ActivatedRoute,
+    private readonly alertCtrl: AlertController,
     private readonly championshipService: ChampionshipService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
@@ -109,84 +110,96 @@ export class ChampionshipDetailPage implements OnInit {
       switchMap((game) => {
         if (!game) return of(null);
 
-        // Fetch all team members first
-        return this.fbService.getTeamMemberRefs(teamId).pipe(
-          
-          switchMap(teamMembers => {
-            const teamMemberProfiles$ = teamMembers.map(member =>
-              this.userProfileService.getUserProfileById(member.id).pipe(
-                take(1),
-                map(profile => ({
-                  ...member, // Spread member to retain all original attributes
-                  ...profile, // Spread profile to overwrite and add profile attributes
-                  firstName: profile.firstName || "Unknown",
-                  lastName: profile.lastName || "Unknown",
-                  roles: member.roles || []
-                })),
-                catchError(err => {
-                  console.log(`Failed to fetch profile for team member ${member.id}:`, err);
-                  return of({ ...member, firstName: "Unknown", lastName: "Unknown", roles: member.roles || [], status: null });
-                })
-              )
-            );
-            // Fetch all attendees next
-            return forkJoin(teamMemberProfiles$).pipe(
-              map(teamMembersWithDetails => teamMembersWithDetails.filter(member => member !== undefined)), // Filtering out undefined entries
-              switchMap(teamMembersWithDetails => {
-                return this.championshipService.getTeamGameAttendeesRef(teamId, gameId).pipe(
-                  map(attendees => {
-                    const attendeeDetails = attendees.map(attendee => {
-                      const detail = teamMembersWithDetails.find(member => member.id === attendee.id);
-                      return detail ? { ...detail, status: attendee.status } : null;
-                    }).filter(item => item !== null);
+        // Fetch team details
+        return this.fbService.getTeamRef(teamId).pipe(
+          switchMap(team => {
+            if (!team) return of(null);
 
-                    const attendeeListTrue = attendeeDetails.filter(att => att.status === true);
-                    const attendeeListFalse = attendeeDetails.filter(att => att.status === false);
-                    const respondedIds = new Set(attendeeDetails.map(att => att.id));
-                    // Modify here to add 'status: null' for each unresponded member
-                    const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id))
-                      .map(member => ({ ...member, status: null })); // Ensuring 'status: null' is explicitly set
 
-                    const userAttendee = attendeeDetails.find(att => att.id === this.user.uid);
-                    const status = userAttendee ? userAttendee.status : null;
-                    return {
-                      ...game,
-                      teamId: teamId,
-                      attendees: attendeeDetails,
-                      attendeeListTrue,
-                      attendeeListFalse,
-                      unrespondedMembers,
-                      status,
-                    };
+            // Fetch all team members first
+            return this.fbService.getTeamMemberRefs(teamId).pipe(
+              switchMap(teamMembers => {
+                const teamMemberProfiles$ = teamMembers.map(member =>
+                  this.userProfileService.getUserProfileById(member.id).pipe(
+                    take(1),
+                    map(profile => ({
+                      ...member, // Spread member to retain all original attributes
+                      ...profile, // Spread profile to overwrite and add profile attributes
+                      firstName: profile.firstName || "Unknown",
+                      lastName: profile.lastName || "Unknown",
+                      roles: member.roles || []
+                    })),
+                    catchError(err => {
+                      console.log(`Failed to fetch profile for team member ${member.id}:`, err);
+                      return of({ ...member, firstName: "Unknown", lastName: "Unknown", roles: member.roles || [], status: null });
+                    })
+                  )
+                );
+                // Fetch all attendees next
+                return forkJoin(teamMemberProfiles$).pipe(
+                  map(teamMembersWithDetails => teamMembersWithDetails.filter(member => member !== undefined)), // Filtering out undefined entries
+                  switchMap(teamMembersWithDetails => {
+                    return this.championshipService.getTeamGameAttendeesRef(teamId, gameId).pipe(
+                      map(attendees => {
+                        const attendeeDetails = attendees.map(attendee => {
+                          const detail = teamMembersWithDetails.find(member => member.id === attendee.id);
+                          return detail ? { ...detail, status: attendee.status } : null;
+                        }).filter(item => item !== null);
+
+                        const attendeeListTrue = attendeeDetails.filter(att => att.status === true)
+                          .sort((a, b) => a.firstName.localeCompare(b.firstName));
+                        const attendeeListFalse = attendeeDetails.filter(att => att.status === false)
+                          .sort((a, b) => a.firstName.localeCompare(b.firstName));
+                        const respondedIds = new Set(attendeeDetails.map(att => att.id));
+                        // Modify here to add 'status: null' for each unresponded member
+                        const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id))
+                          .map(member => ({ ...member, status: null })).sort((a, b) => a.firstName.localeCompare(b.firstName)); // Ensuring 'status: null' is explicitly set
+
+                        const userAttendee = attendeeDetails.find(att => att.id === this.user.uid);
+                        const status = userAttendee ? userAttendee.status : null;
+                        return {
+                          ...game,
+                          team, // Add team details here
+                          teamId: teamId,
+                          attendees: attendeeDetails,
+                          attendeeListTrue,
+                          attendeeListFalse,
+                          unrespondedMembers,
+                          status,
+                        };
+                      }),
+                      catchError(err => {
+                        console.error("Error fetching attendees:", err);
+                        return of({
+                          ...game,
+                          team, // Add team details here
+                          teamId: teamId,
+                          attendees: [],
+                          attendeeListTrue: [],
+                          attendeeListFalse: [],
+                          unrespondedMembers: teamMembersWithDetails.filter(member => member !== null)
+                            .map(member => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
+                          status: null
+                        });
+                      })
+                    );
                   }),
-                  catchError(err => {
-                    console.error("Error fetching attendees:", err);
-                    return of({
-                      ...game,
-                      teamId: teamId,
-                      attendees: [],
-                      attendeeListTrue: [],
-                      attendeeListFalse: [],
-                      unrespondedMembers: teamMembersWithDetails.filter(member => member !== null)
-                      .map(member => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
-                    status: null
-                    });
-                  })
                 );
               }),
+              catchError(err => {
+                console.error("Error fetching team members:", err);
+                return of({
+                  ...game,
+                  team, // Add team details here
+                  teamId: teamId,
+                  attendees: [],
+                  attendeeListTrue: [],
+                  attendeeListFalse: [],
+                  unrespondedMembers: [],
+                  status: null
+                });
+              })
             );
-          }),
-          catchError(err => {
-            console.error("Error fetching team members:", err);
-            return of({
-              ...game,
-              teamId: teamId,
-              attendees: [],
-              attendeeListTrue: [],
-              attendeeListFalse: [],
-              unrespondedMembers: [],
-              status: null
-            });
           })
         );
       }),
@@ -215,16 +228,34 @@ export class ChampionshipDetailPage implements OnInit {
     this.presentToast();
   }
 
-  async toggle(status: boolean, game: Game) {
+  async toggle(status: boolean, game: any) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${this.game.teamId} and game ${game.id}`
+      `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
     );
-    await this.championshipService.setTeamGameAttendeeStatus(
-      status,
-      this.game.teamId,
-      game.id
-    );
-    this.presentToast();
+    console.log(game)
+    const newStartDate = game.dateTime.toDate();
+    newStartDate.setHours(Number(game.time.substring(0, 2)));
+    console.log(newStartDate);
+
+    // Get team threshold via training.teamId
+    console.log("Grenzwert ")
+    const championshipTreshold = game.team.championshipThreshold || 0;
+    console.log(championshipTreshold);
+    // Verpätete Abmeldung?
+    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * championshipTreshold)) && status == false && championshipTreshold) {
+      console.log("too late");
+      await this.tooLateToggle();
+
+    } else {
+      // OK
+      await this.championshipService.setTeamGameAttendeeStatus(
+        status,
+        game.teamId,
+        game.id
+      );
+      this.presentToast();
+    }
+
   }
   async toggleItem(
     slidingItem: IonItemSliding,
@@ -380,6 +411,20 @@ export class ChampionshipDetailPage implements OnInit {
 
     if (role === "confirm") {
     }
+  }
+  async tooLateToggle() {
+    const alert = await this.alertCtrl.create({
+      header: "Abmelden nicht möglich",
+      message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
+      buttons: [{
+        role: "",
+        text: "OK",
+        handler: (data) => {
+          console.log(data)
+        }
+      }]
+    })
+    alert.present()
   }
 
   openMaps(game: Game) {
