@@ -25,7 +25,7 @@ import {
   tap,
 } from "rxjs";
 import { User } from 'firebase/auth';
-import { orderBy, query, where } from 'firebase/firestore';
+import { orderBy, query, Timestamp, where } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -73,4 +73,22 @@ export class HelferService {
     }) as Observable<any[]>;
   }
 
+
+  getUserHelferPunkteRefsWithFilter(userId: any, clubId: string, dateFrom:Timestamp, dateTo: Timestamp): Observable<any[]> {
+    console.log(userId, clubId, dateFrom, dateTo)
+    const helferPunkteRefList = collection(
+      this.firestore,
+      `club/${clubId}/helferPunkte`
+    );
+    const q = query(
+      helferPunkteRefList,
+      where("userId", "==", userId),
+      where("eventDate", ">=", dateFrom),
+      where("eventDate", "<=", dateTo),
+      orderBy("eventDate", "desc")
+    )
+    return collectionData(q, {
+      idField: "id",
+    }) as Observable<any[]>;
+  }
 }

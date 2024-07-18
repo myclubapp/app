@@ -75,7 +75,7 @@
               (ionInput)="onInput($event, 'championshipThreshold')"></ion-input>
           </ion-item>
         </ion-list>
-        <ion-note color="medium" style="display:block" class="ion-margin-horizontal ion-padding-horizontal ion-text-wrap">
+        <ion-note  *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)" color="medium" style="display:block" class="ion-margin-horizontal ion-padding-horizontal ion-text-wrap">
           Anzahl Stunden vor Beginn des Spiels, Trainings oder Veranstaltung</ion-note>
       </ng-container>
     </ng-container>

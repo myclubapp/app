@@ -527,7 +527,7 @@ export class FirebaseService {
 
   /* TEAMS */
   getTeamRef(teamId) {
-    // console.log(`Read team ${teamId}`);
+    // console.log(`Read Team ${teamId}`);
     const teamRef = doc(this.firestore, `/teams/${teamId}`);
     return docData(teamRef, { idField: "id" }) as Observable<Team>;
   }
@@ -702,6 +702,20 @@ export class FirebaseService {
       }
     );
   }
+
+  setClubHelferReportingDate(clubId, fieldname, date){
+    const teamRef = doc(this.firestore, `/club/${clubId}`);
+    return setDoc(
+      teamRef,
+      {
+        [fieldname]: date,
+      },{
+        merge: true
+      }
+    );
+
+  }
+
 
   setTeamThreshold(teamId, fieldname, threshold: number){
     const teamRef = doc(this.firestore, `/teams/${teamId}`);

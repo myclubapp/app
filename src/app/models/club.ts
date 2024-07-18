@@ -13,6 +13,9 @@ export interface Club {
   phone: string;
   updated: Timestamp;
   roles: [];
+  helferReportingDateFrom: string;
+  helferReportingDateTo: string;
+
 
 }
 export interface SwissUnihockeyClub extends Club {}

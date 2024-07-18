@@ -79,7 +79,7 @@ export class TrainingsPage implements OnInit {
   ) {
     this.menuCtrl.enable(true, "menu");
 
-    
+
   }
 
   ngOnInit() {
@@ -96,6 +96,14 @@ export class TrainingsPage implements OnInit {
     if (this.activatedRouteSub) {
       this.activatedRouteSub.unsubscribe();
     }
+  }
+
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
+  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
+    // console.log(teamAdminList, teamId)
+    return teamAdminList && teamAdminList.some(team => team.id === teamId);
   }
 
   handleNavigationData() {
@@ -133,10 +141,6 @@ export class TrainingsPage implements OnInit {
     });
   }
 
-  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
-    return teamAdminList && teamAdminList.some(team => team.id === teamId);
-  }
-
   getTeamTraining() {
     return this.authService.getUser$().pipe(
       take(1),
@@ -147,79 +151,58 @@ export class TrainingsPage implements OnInit {
         if (!user) return of([]);
         return this.fbService.getUserTeamRefs(user);
       }),
-      tap((teams) => console.log("Teams:", teams)),
+      // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         if (teams.length === 0) return of([]);
         return combineLatest(
-          teams.map((team) =>
-            this.trainingService.getTeamTrainingsRefs(team.id).pipe(
+          teams.map((team) => {
+            // console.log("Fetching trainings for team ID:", team.id);
+            return this.trainingService.getTeamTrainingsRefs(team.id).pipe(
               switchMap((teamTrainings) => {
                 if (teamTrainings.length === 0) return of([]);
                 return combineLatest(
-                  teamTrainings.map((training) =>
-                    combineLatest([
-                      this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id),
-                      this.exerciseService.getTeamTrainingExerciseRefs(team.id, training.id),
-                      this.fbService.getTeamRef(team.id),
-                    ]).pipe(
-
-                      map(([attendees, exercises, teamDetails]) => {
-                        const userAttendee = attendees.find(
-                          (att) => att.id == this.user.uid
-                        );
-                        const status = userAttendee
-                          ? userAttendee.status
-                          : null; // default to null if user is not found in attendees list
-                        return {
-                          ...training,
-                          attendees,
-                          exercises,
-                          team: teamDetails,
-                          status: status,
-                          countAttendees: attendees.filter(
-                            (att) => att.status == true
-                          ).length,
-                          teamId: team.id,
-                        };
-                      }),
-                      catchError(() =>
-                        of({
-                          ...training,
-                          team: {},
-                          attendees: [],
-                          exercises: [],
-                          status: null,
-                          countAttendees: 0,
-                          teamId: team.id,
-                        })
-                      ) // If error, return training with empty attendees
-                    )
-                  )
+                  teamTrainings.map((training) => combineLatest([
+                    this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id),
+                    this.exerciseService.getTeamTrainingExerciseRefs(team.id, training.id),
+                    this.fbService.getTeamRef(team.id),
+                  ]).pipe(
+                    map(([attendees, exercises, teamDetails]) => {
+                      // console.log("TEAM DETAILS for " + team.id + ":", teamDetails);  // Detailed log
+                      const userAttendee = attendees.find((att) => att.id == this.user.uid);
+                      const status = userAttendee ? userAttendee.status : null;
+                      return {
+                        ...training,
+                        attendees,
+                        exercises,
+                        team: teamDetails || {}, // Use empty object as a fallback
+                        status,
+                        countAttendees: attendees.filter((att) => att.status == true).length,
+                        teamId: team.id,
+                      };
+                    }),
+                    catchError(() => of({
+                      ...training,
+                      team: {},
+                      attendees: [],
+                      exercises: [],
+                      status: null,
+                      countAttendees: 0,
+                      teamId: team.id,
+                    })),
+                  ))
                 );
               }),
-              map((trainingsWithAttendees) => trainingsWithAttendees), // Flatten trainings array for each team
-              catchError(() => of([])) // If error in fetching trainings, return empty array
+              catchError(() => of([]))
             )
-          )
+          })
         ).pipe(
-          map((teamsTrainings) => teamsTrainings.flat()), // Flatten to get all trainings across all teams
-          tap(teamsTrainings => console.log(teamsTrainings)),
-          map(
-            (allTrainings) =>
-              allTrainings.sort(
-                (a, b) =>
-                  Timestamp.fromMillis(a.startDate).seconds -
-                  Timestamp.fromMillis(b.startDate).seconds
-              ) // Sort trainings by date
-          )
+          map((teamsTrainings) => teamsTrainings.flat()),
+          map((allTrainings) => allTrainings.sort((a, b) => Timestamp.fromMillis(a.startDate).seconds - Timestamp.fromMillis(b.startDate).seconds))
         );
       }),
-      tap((results) =>
-        console.log("Final results with all trainings:", results)
-      ),
       catchError((err) => {
         console.error("Error in getTeamTrainingsUpcoming:", err);
-        return of([]); // Return an empty array on error
+        return of([]);
       })
     );
   }
@@ -254,25 +237,27 @@ export class TrainingsPage implements OnInit {
                           const status = userAttendee
                             ? userAttendee.status
                             : null; // default to false if user is not found in attendees list
+
+
                           return {
                             ...training,
                             attendees,
                             status: status,
-                          
+
                             countAttendees: attendees.filter(
                               (att) => att.status == true
                             ).length,
-                            teamId: team.id,
+
                           };
                         }),
                         catchError(() =>
                           of({
                             ...training,
-                      
+
                             attendees: [],
                             status: null,
                             countAttendees: 0,
-                            teamId: team.id,
+
                           })
                         ) // If error, return training with empty attendees
                       )
@@ -295,9 +280,9 @@ export class TrainingsPage implements OnInit {
           )
         );
       }),
-      tap((results) =>
+      /*tap((results) =>
         console.log("Final results with all trainings:", results)
-      ),
+      ),*/
       catchError((err) => {
         console.error("Error in getTeamTrainingsUpcoming:", err);
         return of([]); // Return an empty array on error
@@ -381,7 +366,7 @@ export class TrainingsPage implements OnInit {
   async toggleAll() {
     try {
       const trainingList = await lastValueFrom(this.trainingList$.pipe(take(1)));
-  
+
       for (const training of trainingList) {
         console.log(`Set Status true for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`);
         await this.trainingService.setTeamTrainingAttendeeStatus(
@@ -402,7 +387,7 @@ export class TrainingsPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
     );
     const newStartDate = training.date.toDate();
-    newStartDate.setHours(Number(training.timeFrom.substring(0,2)));
+    newStartDate.setHours(Number(training.timeFrom.substring(0, 2)));
     // console.log(newStartDate);
 
     // Get team threshold via training.teamId
@@ -410,10 +395,10 @@ export class TrainingsPage implements OnInit {
     const trainingThreshold = training.team.trainingThreshold || 0;
     console.log(trainingThreshold);
     // Verpätete Abmeldung?
-    if ( ((newStartDate.getTime() - new Date().getTime()) < ( 1000 * 60 * 60 * trainingThreshold)) && status == false && trainingThreshold){
+    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * trainingThreshold)) && status == false && trainingThreshold) {
       console.log("too late");
-       await this.tooLateToggle();
-     
+      await this.tooLateToggle();
+
     } else {
       // OK
       await this.trainingService.setTeamTrainingAttendeeStatus(
@@ -437,7 +422,7 @@ export class TrainingsPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
     );
     const newStartDate = training.date.toDate();
-    newStartDate.setHours(Number(training.timeFrom.substring(0,2)));
+    newStartDate.setHours(Number(training.timeFrom.substring(0, 2)));
     // console.log(newStartDate);
 
     // Get team threshold via training.teamId
@@ -445,10 +430,10 @@ export class TrainingsPage implements OnInit {
     const trainingThreshold = training.team.trainingThreshold || 0;
     console.log(trainingThreshold);
     // Verpätete Abmeldung?
-    if ( ((newStartDate.getTime() - new Date().getTime()) < ( 1000 * 60 * 60 * trainingThreshold)) && status == false && trainingThreshold){
+    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * trainingThreshold)) && status == false && trainingThreshold) {
       console.log("too late");
-       await this.tooLateToggle();
-     
+      await this.tooLateToggle();
+
     } else {
       // OK
       await this.trainingService.setTeamTrainingAttendeeStatus(
@@ -470,15 +455,15 @@ export class TrainingsPage implements OnInit {
     toast.present();
   }
 
-  async tooLateToggle(){
+  async tooLateToggle() {
     const alert = await this.alertCtrl.create({
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
-      buttons: [ {
+      buttons: [{
         role: "",
         text: "OK",
-        handler: (data)=> {
-          console.log(data)  
+        handler: (data) => {
+          console.log(data)
         }
       }]
     })

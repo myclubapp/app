@@ -1,10 +1,11 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { AlertController, IonItemSliding, ModalController, NavParams, ToastController } from "@ionic/angular";
-
+import { Platform } from '@ionic/angular';
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
   Observable,
+  Subscription,
   catchError,
   combineLatest,
   defaultIfEmpty,
@@ -37,6 +38,8 @@ export class TrainingDetailPage implements OnInit {
   @Input("data") training: Training;
   @Input("isFuture") isFuture: boolean;
 
+  private backButtonSub: Subscription;
+
   training$: Observable<any>;
   exerciseList$: Observable<any[]>;
 
@@ -50,6 +53,7 @@ export class TrainingDetailPage implements OnInit {
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
+    private platform: Platform,
     private readonly userProfileService: UserProfileService,
     private readonly fbService: FirebaseService,
     private readonly trainingService: TrainingService,
@@ -58,7 +62,10 @@ export class TrainingDetailPage implements OnInit {
     private readonly authService: AuthService,
     private translate: TranslateService,
     private readonly exerciseService: ExerciseService,
-  ) { }
+  ) {
+
+
+  }
 
   ngOnInit() {
     this.training = this.navParams.get("data");
@@ -69,6 +76,20 @@ export class TrainingDetailPage implements OnInit {
     this.teamAdminList$ = this.fbService.getTeamAdminList();
 
   }
+
+  ionViewDidEnter() {
+    this.backButtonSub = this.platform.backButton.subscribeWithPriority(5, (data) => {
+      console.log('Handler was called!');
+      this.close();
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.backButtonSub) {
+      this.backButtonSub.unsubscribe();
+    }
+  }
+
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
     return teamAdminList && teamAdminList.some(team => team.id === teamId);
   }
