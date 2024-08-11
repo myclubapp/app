@@ -211,7 +211,7 @@ export class FirebaseService {
             );
         }),
         map((clubsWithDetails) => 
-            clubsWithDetails.filter((club) => club && club.clubId === clubId)
+            clubsWithDetails.filter((club) => club && club.id === clubId)
         ), // Filter clubs by clubId and remove null entries
         catchError((err) => {
             console.error("Error in getClubAdminListByClubId:", err);
@@ -254,18 +254,23 @@ export class FirebaseService {
 
   getClubTeamList(clubId) {
     return this.getClubTeamsRef(clubId).pipe(
-      // /tap((teams) => console.log("Teams for club:", teams)),
-      mergeMap((teams) => {
+      tap((teams) => {
         if (teams.length === 0) {
           console.log("No teams found for club");
+        } else {
+          console.log("Fetching details for teams in club:", teams.map(team => team.id));
+        }
+      }),
+      mergeMap((teams) => {
+        if (teams.length === 0) {
           return of([]);
         }
         return combineLatest(
           teams.map((team) =>
             this.getTeamRef(team.id).pipe(
               catchError((error) => {
-                console.error(`Error fetching details for team ${team.id}:`, error);
-                return of(null); // In case of error, return null for this team
+                console.error(`Error fetching details for team ${team.id}:`, error.message);
+                return of(null); // Return null for this team in case of an error
               })
             )
           )
@@ -273,16 +278,14 @@ export class FirebaseService {
       }),
       map((teamsWithDetails) => {
         const filteredTeams = teamsWithDetails.filter((team) => team !== null); // Filter out null (error cases)
-        // console.log("Filtered teams:", filteredTeams);
         return filteredTeams;
       }),
-      // tap((results) => console.log("Final results with all teams for club:", results)),
       catchError((err) => {
         console.error("Error in getClubTeamsWithDetails:", err);
         return of([]); // Return an empty array on error
       })
     );
-  }
+}
 
   addClubTeam(team, clubId){
     return addDoc(

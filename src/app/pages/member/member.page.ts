@@ -142,24 +142,43 @@ export class MemberPage implements OnInit {
     }
   }
 
-  getTeamAndClubTeamsAsAdmin() {
+  async getTeamAndClubTeamsAsAdmin() {
     const teamAdmins$ = this.getUserTeamAdminList();
     const clubTeams$ = this.getUserClubTeamList();
 
-    this.teamAdminListSubscription = combineLatest([teamAdmins$, clubTeams$]).pipe(
-      tap(([teamAdmins, clubTeams]) => { console.log(teamAdmins, clubTeams) }),
-      map(([teamAdmins, clubTeams]) => [...teamAdmins, ...clubTeams].filter(
+    try {
+      const [teamAdmins, clubTeams] = await lastValueFrom(combineLatest([teamAdmins$, clubTeams$]).pipe(take(1)));
+      console.log(teamAdmins, clubTeams);
+
+      const teams = [...teamAdmins, ...clubTeams].filter(
         (team, index, self) => index === self.findIndex(t => t.id === team.id)
-      )),
-      tap(teams => this.prepareAlertForTeams(teams)),
-      catchError(error => {
-        console.error('Error combining team data:', error);
-        return of([]);
-      })
-    ).subscribe(data => {
-      // this.teamAdminList = data;
-    });
+      );
+
+      await this.prepareAlertForTeams(teams);
+    } catch (error) {
+      console.error('Error combining team data:', error);
+    }
   }
+
+  /*
+    getTeamAndClubTeamsAsAdmin() {
+      const teamAdmins$ = this.getUserTeamAdminList();
+      const clubTeams$ = this.getUserClubTeamList();
+  
+      this.teamAdminListSubscription = combineLatest([teamAdmins$, clubTeams$]).pipe(
+        tap(([teamAdmins, clubTeams]) => { console.log(teamAdmins, clubTeams) }),
+        map(([teamAdmins, clubTeams]) => [...teamAdmins, ...clubTeams].filter(
+          (team, index, self) => index === self.findIndex(t => t.id === team.id)
+        )),
+        tap(teams => this.prepareAlertForTeams(teams)),
+        catchError(error => {
+          console.error('Error combining team data:', error);
+          return of([]);
+        })
+      ).subscribe(data => {
+        // this.teamAdminList = data;
+      });
+    }*/
 
   getUserTeamAdminList() {
     // Get all Teams, where user is Team Admin, but only for given club
@@ -173,6 +192,7 @@ export class MemberPage implements OnInit {
   }
 
   getUserClubTeamList() {
+
     return this.fbService.getClubAdminListByClubId(this.clubId).pipe(
       take(1),
       switchMap(clubs => clubs.length ? this.fetchTeamsForClubs(clubs) : of([])),

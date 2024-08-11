@@ -206,21 +206,44 @@ export class TrainingDetailPage implements OnInit {
 
   async toggleAll(status: boolean, training: Training) {
 
-    for (let member of training['unrespondedMembers']) {
-      console.log(
-        `Set Status ${status} for user ${this.user.uid} and team ${this.training.teamId} and training ${training.id}`
-      );
-      await this.trainingService.setTeamTrainingAttendeeStatusAdmin(
-        status,
-        this.training.teamId,
-        training.id,
-        member.id,
-      ).catch(e => {
-        console.log(e.message);
-        this.toastActionError(e);
-      })
-    }
-    this.presentToast();
+    const alert = await this.alertCtrl.create({
+      message: "Sollen alle angemeldet werden?",
+      header: "Alle anmelden",
+      buttons: [
+        {
+          text: "Nein",
+          role: "cancel",
+          handler: ()=>{
+            
+          }
+        },
+        {
+          role: "",
+          text: "OK",
+          handler: async ()=>{
+            for (let member of training['unrespondedMembers']) {
+              console.log(
+                `Set Status ${status} for user ${this.user.uid} and team ${this.training.teamId} and training ${training.id}`
+              );
+              await this.trainingService.setTeamTrainingAttendeeStatusAdmin(
+                status,
+                this.training.teamId,
+                training.id,
+                member.id,
+              ).catch(e => {
+                console.log(e.message);
+                this.toastActionError(e);
+              })
+            }
+            this.presentToast();
+          }
+        },
+       
+      ]
+    })
+    alert.present();
+
+    
   }
 
   async toastActionError(error) {

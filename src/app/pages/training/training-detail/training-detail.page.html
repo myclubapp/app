@@ -100,6 +100,16 @@
           <ion-label>{{"common.my__status" | translate}}</ion-label>
         </ng-container>
       </ion-item>
+      <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+        <ion-item *ngIf="training['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList, training.teamId)">
+          <ion-icon color="warning" slot="start" name="help-circle">
+          </ion-icon>
+          <ion-label>{{"common.noreply" | translate}}: {{training['unrespondedMembers'].length}}</ion-label>
+
+          <ion-button fill="clear" (click)="toggleAll(true, training)"> {{"common.alle_anmelden" |
+            translate}}</ion-button>
+        </ion-item>
+      </ng-container>
     </ion-list>
 
     <ion-list [inset]="true">
@@ -172,12 +182,12 @@
           <ion-item slot="header" color="light">
             <ion-label>{{"common.noreply" | translate}}:
               {{training['unrespondedMembers'].length}}</ion-label>
-            <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+            <!--            <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
               <ion-button
                 *ngIf="training['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList, training.teamId)"
                 fill="clear" slot="end" (click)="toggleAll(true, training)"> {{"common.alle_anmelden" |
                 translate}}</ion-button>
-            </ng-container>
+            </ng-container>-->
           </ion-item>
           <div slot="content">
             <!-- class="ion-padding"-->
