@@ -32,6 +32,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { ChampionshipDetailPage } from "../championship-detail/championship-detail.page";
 import { Team } from "src/app/models/team";
 import { GamePreviewPage } from "../game-preview/game-preview.page";
+import { Club } from "src/app/models/club";
 
 @Component({
   selector: "app-championship",
@@ -60,6 +61,9 @@ export class ChampionshipPage implements OnInit {
 
   teamList$: Observable<Team[]>;
 
+  clubAdminList$: Observable<Club[]>;
+  teamAdminList$: Observable<Team[]>;
+
   /*filterList: any[] = [];
   filterValue: string = "";
   */
@@ -84,10 +88,20 @@ export class ChampionshipPage implements OnInit {
     this.teamRankings$ = this.getTeamsWithRankingsForYear("2024");
     this.gameList$ = this.getTeamGamesUpcoming();
     this.gameListPast$ = this.getTeamGamesPast();
+
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    this.clubAdminList$ = this.fbService.getClubAdminList();
   }
 
   ngOnDestroy(): void {
 
+  }
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
+  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
+    // console.log(teamAdminList, teamId)
+    return teamAdminList && teamAdminList.some(team => team.id === teamId);
   }
 
   getTeamsWithRankingsForYear(year: string = "2024") {
@@ -424,6 +438,18 @@ export class ChampionshipPage implements OnInit {
     }
 
 
+  }
+
+  async deleteGame(slidingItem: IonItemSliding, game) {
+    slidingItem.closeOpened();
+    await this.championshipService.deleteTeamGame(game.teamId, game.id);
+    const toast = await this.toastController.create({
+      message: await lastValueFrom(this.translate.get("common.success__training_deleted")),
+      color: "danger",
+      duration: 1500,
+      position: "top",
+    });
+    toast.present();
   }
 
   async tooLateToggle(){

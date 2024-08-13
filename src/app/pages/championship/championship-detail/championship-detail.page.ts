@@ -210,22 +210,43 @@ export class ChampionshipDetailPage implements OnInit {
     );
   }
   async toggleAll(status: boolean, game: Game) {
+    const alert = await this.alertCtrl.create({
+      message: "Sollen alle angemeldet werden?",
+      header: "Alle anmelden",
+      buttons: [
+        {
+          text: "Nein",
+          role: "cancel",
+          handler: () => {
 
-    for (let member of game['unrespondedMembers']) {
-      console.log(
-        `Set Status ${status} for user ${this.user.uid} and team ${this.game.teamId} and game ${game.id}`
-      );
-      await this.championshipService.setTeamGameAttendeeStatusAdmin(
-        status,
-        this.game.teamId,
-        game.id,
-        member.id,
-      ).catch(e => {
-        console.log(e.message);
-        this.toastActionError(e);
-      })
-    }
-    this.presentToast();
+          }
+        },
+        {
+          role: "",
+          text: "OK",
+          handler: async () => {
+            for (let member of game['unrespondedMembers']) {
+              console.log(
+                `Set Status ${status} for user ${this.user.uid} and team ${this.game.teamId} and game ${game.id}`
+              );
+              await this.championshipService.setTeamGameAttendeeStatusAdmin(
+                status,
+                this.game.teamId,
+                game.id,
+                member.id,
+              ).catch(e => {
+                console.log(e.message);
+                this.toastActionError(e);
+              })
+            }
+            this.presentToast();
+          }
+        },
+
+      ]
+    })
+    alert.present();
+
   }
 
   async toggle(status: boolean, game: any) {

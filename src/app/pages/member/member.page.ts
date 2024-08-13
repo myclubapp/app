@@ -242,8 +242,8 @@ export class MemberPage implements OnInit {
       },
       {
         text: this.translate.instant("common.add"),
-        handler: () => {
-          this.addTeams(teams);
+        handler: (data) => {
+          this.addTeams(data);
           this.toastActionSaved();
         }
       },

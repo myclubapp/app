@@ -34,6 +34,7 @@ import { Team } from "src/app/models/team";
 import { FilterService } from "src/app/services/filter.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
+import { Club } from "src/app/models/club";
 
 @Component({
   selector: "app-trainings",
@@ -49,6 +50,7 @@ export class TrainingsPage implements OnInit {
   trainingList$: Observable<Training[]>;
   trainingListPast$: Observable<Training[]>;
 
+  
   teamAdminList$: Observable<Team[]>;
   activatedRouteSub: Subscription;
   // teamList$: Observable<Team[]>;
@@ -88,6 +90,7 @@ export class TrainingsPage implements OnInit {
     this.trainingListPast$ = this.getTeamTrainingPast();
     // CREATE
     this.teamAdminList$ = this.fbService.getTeamAdminList();
+   
     this.handleNavigationData();
   }
 
@@ -98,9 +101,7 @@ export class TrainingsPage implements OnInit {
     }
   }
 
-  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some(club => club.id === clubId);
-  }
+
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
     // console.log(teamAdminList, teamId)
     return teamAdminList && teamAdminList.some(team => team.id === teamId);

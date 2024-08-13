@@ -15,6 +15,7 @@ import {
   setDoc,
   query,
   where,
+  collectionSnapshots,
 } from "@angular/fire/firestore";
 import { orderBy } from "firebase/firestore";
 import { Observable, Observer } from "rxjs";
@@ -130,5 +131,19 @@ export class ChampionshipService {
       `teams/${teamId}/games/${gameId}/attendees/${memberId}`
     );
     return setDoc(statusRef, { status });
+  }
+
+  deleteTeamGame(teamId: string, gameId: string) {
+    const gameRef = doc(
+      this.firestore,
+      `teams/${teamId}/games/${gameId}`
+    );
+
+    const attendeesRefList = collection(
+      this.firestore,
+      `teams/${teamId}/games/${gameId}/attendees`
+    );
+
+    return deleteDoc(gameRef);
   }
 }
