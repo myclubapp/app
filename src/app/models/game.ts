@@ -45,6 +45,8 @@ export interface Game {
   status: boolean;
   countAttendees: number;
   attendees: any;
+
+  gameStatus: any;
 }
 export interface SwissUnihockeyGame extends Game {}
 

@@ -100,6 +100,10 @@
                 <ion-icon slot="icon-only" name="podium-outline"></ion-icon>
                 {{game.result}}
               </h3>
+              <h3 *ngIf="game.gameStatus && game.gameStatus=='deleted'">
+                <ion-icon slot="icon-only" color="danger" name="close-circle-outline"></ion-icon>
+                Spiel gelöscht
+              </h3>
             </ion-label>
             <ion-note slot="end" (click)="openChampionshipDetailModal(game, true)">
               <ion-badge color="primary">{{game.countAttendees}}</ion-badge>
