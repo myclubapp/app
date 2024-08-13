@@ -243,6 +243,7 @@ export class MemberPage implements OnInit {
       {
         text: this.translate.instant("common.add"),
         handler: (data) => {
+          //console.log(data)
           this.addTeams(data);
           this.toastActionSaved();
         }
@@ -253,8 +254,8 @@ export class MemberPage implements OnInit {
   async addTeams(teams) {
     for (const team of teams) {
       // Add user to team
-      console.log("add user " + this.userProfile.id + " to team: " + team.id);
-      await this.fbService.approveUserTeamRequest(team.id, this.userProfile.id);
+      console.log("add user " + this.userProfile.id + " to team: " + team);
+      await this.fbService.approveUserTeamRequest(team, this.userProfile.id);
     }
     console.log("Teams added");
   }
