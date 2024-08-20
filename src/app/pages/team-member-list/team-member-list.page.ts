@@ -200,7 +200,7 @@ export class TeamMemberListPage implements OnInit {
     this.groupArray = [];  // Initialize or clear the group array
 
     this.teamMembers$ = this.fbService.getTeamMemberRefs(this.team.id).pipe(
-      tap(() => console.log("Fetching team members")),
+      // tap(() => console.log("Fetching team members")),
       switchMap(members => {
         if (members.length === 0) {
           console.log("No team members found.");

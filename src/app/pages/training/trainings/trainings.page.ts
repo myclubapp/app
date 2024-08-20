@@ -227,7 +227,7 @@ export class TrainingsPage implements OnInit {
         if (!user) return of([]);
         return this.fbService.getUserTeamRefs(user);
       }),
-      tap((teams) => console.log("Teams:", teams)),
+      // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         if (teams.length === 0) return of([]);
         const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;

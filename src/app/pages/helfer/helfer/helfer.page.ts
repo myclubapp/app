@@ -129,7 +129,7 @@ export class HelferPage implements OnInit {
         if (!user) return of([]);
         return this.fbService.getUserClubRefs(user);
       }),
-      tap((clubs) => console.log("Clubs:", clubs)),
+      // tap((clubs) => console.log("Clubs:", clubs)),
       mergeMap((clubs) => {
         if (clubs.length === 0) return of([]);
         return combineLatest(

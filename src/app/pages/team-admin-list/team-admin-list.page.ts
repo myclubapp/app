@@ -97,7 +97,7 @@ export class TeamAdminListPage implements OnInit {
     this.groupArray = [];  // Initialize or clear the group array
 
     this.teamAdmins$ = this.fbService.getTeamAdminRefs(this.team.id).pipe(
-      tap(() => console.log("Fetching team admins")),
+      // tap(() => console.log("Fetching team admins")),
       switchMap(members => {
         if (members.length === 0) {
           console.log("No team admins found.");

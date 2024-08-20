@@ -47,7 +47,7 @@ export class ClubRequestListPage implements OnInit {
     this.groupArray = [];  // Initialize or clear the group array
   
     this.clubMembers$ = this.fbService.getClubRequestRefs(this.club.id).pipe(
-      tap(() => console.log("Fetching club members")),
+      // tap(() => console.log("Fetching club members")),
       switchMap(members => {
         if (members.length === 0) {
           console.log("No club members found.");

@@ -114,7 +114,7 @@ export class ChampionshipPage implements OnInit {
         if (!user) return of([]); // If no user, return an empty array
         return this.fbService.getUserTeamRefs(user);
       }),
-      tap((teams) => console.log("Teams:", teams)),
+      // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         if (teams.length === 0) return of([]);
 
@@ -143,14 +143,12 @@ export class ChampionshipPage implements OnInit {
                 }),
                 details: rankingDetails,
               })),
-              tap((result) =>
-                console.log("Team with rankings and details:", result)
-              )
+              // tap((result) => console.log("Team with rankings and details:", result))
             )
           )
         );
       }),
-      tap((results) => console.log("Final results:", results)),
+      // tap((results) => console.log("Final results:", results)),
       catchError((err) => {
         console.error("Error in getTeamsWithRankingsForYear:", err);
         return of([]); // Return an empty array on error
@@ -167,7 +165,7 @@ export class ChampionshipPage implements OnInit {
         if (!user) return of([]);
         return this.fbService.getUserTeamRefs(user);
       }),
-      tap((teams) => console.log("Teams:", teams)),
+      // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         if (teams.length === 0) return of([]);
               // Filtering to get only the specific team if this.team.id is set
@@ -252,7 +250,7 @@ export class ChampionshipPage implements OnInit {
         if (!user) return of([]);
         return this.fbService.getUserTeamRefs(user);
       }),
-      tap((teams) => console.log("Teams:", teams)),
+      // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         if (teams.length === 0) return of([]);
         const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
@@ -313,7 +311,7 @@ export class ChampionshipPage implements OnInit {
           )
         );
       }),
-      tap((results) => console.log("Final results with all games:", results)),
+      // tap((results) => console.log("Final results with all games:", results)),
       catchError((err) => {
         console.error("Error in getTeamGamesUpcoming:", err);
         return of([]); // Return an empty array on error
