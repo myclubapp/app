@@ -252,6 +252,7 @@ export class MemberPage implements OnInit {
   }
 
   async addTeams(teams) {
+    console.log(teams);
     for (const team of teams) {
       // Add user to team
       console.log("add user " + this.userProfile.id + " to team: " + team);

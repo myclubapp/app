@@ -200,7 +200,7 @@ export class HelferPage implements OnInit {
           )
         );
       }),
-      tap((results) => console.log("Final results with all events:", results)),
+      // tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
         console.error("Error in getHelferEvent:", err);
         return of([]); // Return an empty array on error
@@ -277,7 +277,7 @@ export class HelferPage implements OnInit {
           )
         );
       }),
-      tap((results) => console.log("Final results with all events:", results)),
+      // tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
         console.error("Error in getTeameventsUpcoming:", err);
         return of([]); // Return an empty array on error
@@ -354,7 +354,7 @@ export class HelferPage implements OnInit {
           )
         );
       }),
-      tap((results) => console.log("Final results with all events:", results)),
+      // tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
         console.error("Error in getTeameventsUpcoming:", err);
         return of([]); // Return an empty array on error

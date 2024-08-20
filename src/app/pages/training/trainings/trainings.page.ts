@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
-  IonRouterOutlet,
+  // IonRouterOutlet,
   MenuController,
   ModalController,
   ToastController,
@@ -42,6 +42,8 @@ import { Club } from "src/app/models/club";
   styleUrls: ["./trainings.page.scss"],
 })
 export class TrainingsPage implements OnInit {
+  @Input("team") team: Team;
+  @Input("isModal") isModal: boolean;
   skeleton = new Array(12);
 
   user: User;
@@ -65,7 +67,7 @@ export class TrainingsPage implements OnInit {
 
   constructor(
     public toastController: ToastController,
-    private readonly routerOutlet: IonRouterOutlet,
+    // private readonly routerOutlet: IonRouterOutlet,
     private readonly modalController: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -107,6 +109,11 @@ export class TrainingsPage implements OnInit {
     return teamAdminList && teamAdminList.some(team => team.id === teamId);
   }
 
+
+  async close() {
+
+    return await this.modalController.dismiss(null, "close");
+  }
   handleNavigationData() {
     this.activatedRouteSub = this.activatedRoute.url.subscribe(data => {
       if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "training") {
@@ -155,8 +162,10 @@ export class TrainingsPage implements OnInit {
       // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         if (teams.length === 0) return of([]);
+        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+        // console.log("relevant teams : ", relevantTeams);
         return combineLatest(
-          teams.map((team) => {
+          relevantTeams.map((team) => {
             // console.log("Fetching trainings for team ID:", team.id);
             return this.trainingService.getTeamTrainingsRefs(team.id).pipe(
               switchMap((teamTrainings) => {
@@ -221,8 +230,10 @@ export class TrainingsPage implements OnInit {
       tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         if (teams.length === 0) return of([]);
+        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+        // console.log("relevant teams : ", relevantTeams);
         return combineLatest(
-          teams.map((team) =>
+          relevantTeams.map((team) => 
             this.trainingService.getTeamTrainingsPastRefs(team.id).pipe(
               switchMap((teamTrainings) => {
                 if (teamTrainings.length === 0) return of([]);
@@ -296,7 +307,8 @@ export class TrainingsPage implements OnInit {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalController.create({
       component: TrainingDetailPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement:  await this.modalController.getTop(),
+      //presentingElement: this.routerOutlet.nativeEl,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -316,7 +328,8 @@ export class TrainingsPage implements OnInit {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalController.create({
       component: TrainingCreatePage,
-      presentingElement: this.routerOutlet.nativeEl,
+      // presentingElement: this.routerOutlet.nativeEl,
+      presentingElement:  await this.modalController.getTop(),
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -337,7 +350,8 @@ export class TrainingsPage implements OnInit {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalController.create({
       component: TrainingCreatePage,
-      presentingElement: this.routerOutlet.nativeEl,
+      // presentingElement: this.routerOutlet.nativeEl,
+      presentingElement:  await this.modalController.getTop(),
       canDismiss: true,
       showBackdrop: true,
       componentProps: {

@@ -45,6 +45,21 @@
         <ion-label> Administratoren </ion-label>
         <ion-note slot="end">{{team['teamAdmins'].length}}</ion-note>
       </ion-item>
+
+      <ion-item detail="true" (click)="openTeamTrainings()">
+        <ion-icon name="barbell-outline" slot="start"></ion-icon>
+        <ion-label> Trainings </ion-label>
+        <ion-note slot="end"></ion-note>
+      </ion-item>
+
+      <ng-container *ngIf="clubList$ | async as clubList">
+        <ion-item *ngIf="enableChampionship(clubList)" detail="true" (click)="openTeamGames()">
+          <ion-icon name="trophy-outline" slot="start"></ion-icon>
+          <ion-label> Meisterschaftspiele </ion-label>
+          <ion-note slot="end"></ion-note>
+        </ion-item>
+      </ng-container>
+
     </ion-list>
 
     <ng-container *ngIf="clubList$ | async as clubList">
@@ -58,24 +73,26 @@
 
     <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
       <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-list  *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)" lines="full" [inset]="true">
+        <ion-list *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)" lines="full"
+          [inset]="true">
           <ion-list-header>
             <ion-label> Grenzwerte für Abmeldungen </ion-label>
           </ion-list-header>
           <ion-item>
             <ion-icon name="barbell-outline" slot="start"></ion-icon>
-            <ion-input labelPlacement="fixed" label="Training" type="number"
-              [value]="team.trainingThreshold"
+            <ion-input labelPlacement="fixed" label="Training" type="number" [value]="team.trainingThreshold"
               (ionInput)="onInput($event, 'trainingThreshold')"></ion-input>
           </ion-item>
-          <ion-item>
-            <ion-icon name="trophy-outline" slot="start"></ion-icon>
-            <ion-input labelPlacement="fixed" label="Meisterschaft" type="number"
-            [value]="team.championshipThreshold"
-              (ionInput)="onInput($event, 'championshipThreshold')"></ion-input>
-          </ion-item>
+          <ng-container *ngIf="clubList$ | async as clubList">
+            <ion-item *ngIf="enableChampionship(clubList)">
+              <ion-icon name="trophy-outline" slot="start"></ion-icon>
+              <ion-input labelPlacement="fixed" label="Meisterschaft" type="number" [value]="team.championshipThreshold"
+                (ionInput)="onInput($event, 'championshipThreshold')"></ion-input>
+            </ion-item>
+          </ng-container>
         </ion-list>
-        <ion-note  *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)" color="medium" style="display:block" class="ion-margin-horizontal ion-padding-horizontal ion-text-wrap">
+        <ion-note *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)" color="medium"
+          style="display:block" class="ion-margin-horizontal ion-padding-horizontal ion-text-wrap">
           Anzahl Stunden vor Beginn des Spiels, Trainings oder Veranstaltung</ion-note>
       </ng-container>
     </ng-container>
@@ -124,7 +141,8 @@
     <div class="ion-padding">
       <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
         <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-          <ion-button  *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)" fill="outline" expand="block" color="danger" (click)="deleteTeam()">
+          <ion-button *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
+            fill="outline" expand="block" color="danger" (click)="deleteTeam()">
             <ion-icon slot="start" name="trash"></ion-icon>
             {{ "team.delete" | translate}}
           </ion-button>

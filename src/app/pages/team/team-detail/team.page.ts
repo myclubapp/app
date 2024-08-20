@@ -7,6 +7,7 @@ import {
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
+import { Router, NavigationBehaviorOptions } from "@angular/router";
 import {
   Observable,
   Subscription,
@@ -44,6 +45,8 @@ import { TeamMemberListPage } from "../../team-member-list/team-member-list.page
 import { Timestamp } from "firebase/firestore";
 import { Club } from "src/app/models/club";
 import { TeamExercisesPage } from "../team-exercises/team-exercises.page";
+import { ChampionshipPage } from "../../championship/championship/championship.page";
+import { TrainingsPage } from "../../training/trainings/trainings.page";
 
 @Component({
   selector: "app-team",
@@ -67,6 +70,7 @@ export class TeamPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
+    // private readonly router: Router,
     public navParams: NavParams,
     private readonly alertCtrl: AlertController,
     private readonly toastController: ToastController,
@@ -99,7 +103,10 @@ export class TeamPage implements OnInit {
 
   }
   enableTrainingExercise(clubList) {
-    return clubList && clubList.some(club => club.hasFeatureTrainingExercise == true);
+    return clubList && clubList.some(club => club.hasFeatureTrainingExercise == true) && clubList.some(club => this.team.clubId == club.id);
+  }
+  enableChampionship(clubList) {
+    return clubList && clubList.some(club => club.hasFeatureChampionship == true) && clubList.some(club => this.team.clubId == club.id);
   }
 
 
@@ -281,6 +288,54 @@ export class TeamPage implements OnInit {
       showBackdrop: true,
       componentProps: {
         team: this.team
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+  async openTeamTrainings() {
+
+    /*const navOnboardingClub = await this.router.navigateByUrl('/t/training');
+    if (navOnboardingClub) {
+      console.log('Navigation success to onboarding Club Page');
+    } else {
+      console.error('Navigation ERROR to onboarding Club Page');
+    }*/
+    
+    console.log("open Team Trainings ");
+    const modal = await this.modalCtrl.create({
+      component: TrainingsPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        team: this.team,
+        isModal: true
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+  async openTeamGames() {
+    console.log("open Team Games ");
+    const modal = await this.modalCtrl.create({
+      component: ChampionshipPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        team: this.team,
+        isModal: true
       },
     });
     modal.present();

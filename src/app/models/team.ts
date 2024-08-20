@@ -2,6 +2,7 @@ import { Timestamp } from "firebase/firestore";
 
 export interface Team {
   id: string
+  clubId: string
   name: string
   logo: string
   website: string

@@ -188,7 +188,7 @@ export class EventsPage implements OnInit {
           )
         );
       }),
-      tap((results) => console.log("Final results with all events:", results)),
+      // tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
         console.error("Error in getClubEvent:", err);
         return of([]); // Return an empty array on error
@@ -265,7 +265,7 @@ export class EventsPage implements OnInit {
           )
         );
       }),
-      tap((results) => console.log("Final results with all events:", results)),
+      // tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
         console.error("Error in getClubEventPast:", err);
         return of([]); // Return an empty array on error

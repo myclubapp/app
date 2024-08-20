@@ -1,9 +1,9 @@
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { Preferences, GetResult } from "@capacitor/preferences";
 import {
   AlertController,
   IonItemSliding,
-  IonRouterOutlet,
+  // IonRouterOutlet,
   MenuController,
   ModalController,
   NavController,
@@ -40,6 +40,8 @@ import { Club } from "src/app/models/club";
   styleUrls: ["./championship.page.scss"],
 })
 export class ChampionshipPage implements OnInit {
+  @Input("team") team: Team;
+  @Input("isModal") isModal: boolean;
   skeleton = new Array(12);
   user$: Observable<User>;
   user: User;
@@ -70,7 +72,7 @@ export class ChampionshipPage implements OnInit {
 
   constructor(
     public toastController: ToastController,
-    private readonly routerOutlet: IonRouterOutlet,
+    // private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -107,7 +109,7 @@ export class ChampionshipPage implements OnInit {
   getTeamsWithRankingsForYear(year: string = "2024") {
     return this.authService.getUser$().pipe(
       take(1),
-      tap((user) => console.log("User:", user)),
+      // tap((user) => console.log("User:", user)),
       switchMap((user) => {
         if (!user) return of([]); // If no user, return an empty array
         return this.fbService.getUserTeamRefs(user);
@@ -115,8 +117,13 @@ export class ChampionshipPage implements OnInit {
       tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         if (teams.length === 0) return of([]);
+
+        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+        // console.log("relevant teams : ", relevantTeams);
         return combineLatest(
-          teams.map((team) =>
+          relevantTeams.map((team) => 
+        
+
             combineLatest({
               teamDetails: of(team),
               rankingsTable: this.championshipService.getTeamRankingTable(
@@ -163,11 +170,17 @@ export class ChampionshipPage implements OnInit {
       tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         if (teams.length === 0) return of([]);
-        return combineLatest(
-          teams.map((team) =>
+              // Filtering to get only the specific team if this.team.id is set
+      const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+      // console.log("relevant teams : ", relevantTeams);
+      return combineLatest(
+        relevantTeams.map((team) =>
+       /* return combineLatest(
+          teams.map((team) =>*/
             this.championshipService.getTeamGamesRefs(team.id).pipe(
               switchMap((teamGames) => {
                 if (teamGames.length === 0) return of([]);
+
                 return combineLatest(
                   teamGames.map((game) =>
                     combineLatest([
@@ -242,8 +255,10 @@ export class ChampionshipPage implements OnInit {
       tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         if (teams.length === 0) return of([]);
+        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+        // console.log("relevant teams : ", relevantTeams);
         return combineLatest(
-          teams.map((team) =>
+          relevantTeams.map((team) =>
             this.championshipService.getTeamGamesPastRefs(team.id).pipe(
               switchMap((teamGames) => {
                 if (teamGames.length === 0) return of([]);
@@ -323,7 +338,8 @@ export class ChampionshipPage implements OnInit {
 
     const modal = await this.modalCtrl.create({
       component: ChampionshipDetailPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement:  await this.modalCtrl.getTop(),
+      // presentingElement: this.routerOutlet.nativeEl,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -423,7 +439,8 @@ export class ChampionshipPage implements OnInit {
 
     const modal = await this.modalCtrl.create({
       component: GamePreviewPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      // presentingElement: this.routerOutlet.nativeEl,
+      presentingElement:  await this.modalCtrl.getTop(),
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -439,6 +456,13 @@ export class ChampionshipPage implements OnInit {
 
 
   }
+
+  async close() {
+
+    return await this.modalCtrl.dismiss(null, "close");
+  }
+
+
 
   async deleteGame(slidingItem: IonItemSliding, game) {
     slidingItem.closeOpened();
