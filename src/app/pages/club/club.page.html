@@ -135,6 +135,13 @@
       <ion-list-header>
         <ion-label> {{ "common.details" | translate}} </ion-label>
       </ion-list-header>
+      <ion-item>
+        <ion-icon slot="start" name="mail-outline">
+        </ion-icon>
+        <ion-input (ionChange)="changeEmail($event)" labelPlacement="stacked" [label]='"profile.email" | translate' type="email"
+          attr.aria-label='{{"common.email" | translate}}' [value]="club.email">
+        </ion-input>
+      </ion-item>
       <ion-item *ngIf="club.wordpress">
         <ion-icon name="logo-wordpress" slot="start"></ion-icon>
         <ion-label class="ion-text-wrap"> {{club.wordpress}} </ion-label>

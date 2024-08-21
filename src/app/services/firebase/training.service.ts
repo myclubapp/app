@@ -72,7 +72,7 @@ export class TrainingService {
 
   /* TEAM TrainingS */
   getTeamTrainingsRefs(teamId: string): Observable<Training[]> {
-    // console.log(`Read Team Trainings List Ref ${teamId}`)
+    console.log(`Read Team Trainings List Ref ${teamId}`)
     const trainingsRefList = collection(
       this.firestore,
       `teams/${teamId}/trainings`

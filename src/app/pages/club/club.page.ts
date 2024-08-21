@@ -342,6 +342,17 @@ export class ClubPage implements OnInit {
     }
 
   }
+  changeEmail(event){
+    console.log(event.detail.value)
+    //this.fbService.setClub
+  }
+
+ /* changeClubttribute(value: any, fieldname) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { [fieldname]: value });
+  }*/
+
 
 
   async openTeamList() {

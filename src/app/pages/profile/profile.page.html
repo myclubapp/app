@@ -97,9 +97,9 @@
       </ion-item> -->
 
       <ion-item id="present-alert-email" detail="true">
-        <ion-input labelPlacement="stacked" [label]='"profile.email" | translate' email
-          attr.aria-label='{{"profile.email" | translate}}' readonly [(ngModel)]="userProfile.email"
-          value="{{userProfile.email}}">
+        <ion-input labelPlacement="stacked" [label]='"profile.email" | translate' type="email"
+          attr.aria-label='{{"profile.email" | translate}}' readonly 
+          [value]="userProfile.email">
         </ion-input>
       </ion-item>
 
