@@ -78,153 +78,153 @@
     </ion-list>
     <ng-container *ngIf="!allowEdit">
 
-    <ng-container *ngIf="schichten$ | async as schichten">
+      <ng-container *ngIf="schichten$ | async as schichten">
 
-      <!-- Helfereinsätze MIT Schichten -->
-      <ion-list lines="full" [inset]="true" *ngIf="schichten.length > 0">
-        <ion-list-header>
-          <ion-label> {{"helfer.schichten" | translate}} </ion-label>
-          <!-- BESTàTIGEN, FALLS CLUBADMIN -->
-          <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-            <ion-button (click)="confirmSchichten()" *ngIf="isClubAdmin(clubAdminList, event.clubId)"> bestätigen
-            </ion-button>
+        <!-- Helfereinsätze MIT Schichten -->
+        <ion-list lines="full" [inset]="true" *ngIf="schichten.length > 0">
+          <ion-list-header>
+            <ion-label> {{"helfer.schichten" | translate}} </ion-label>
+            <!-- BESTàTIGEN, FALLS CLUBADMIN -->
+            <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+              <ion-button (click)="confirmSchichten()" *ngIf="isClubAdmin(clubAdminList, event.clubId)"> bestätigen
+              </ion-button>
+            </ng-container>
+          </ion-list-header>
+          <ng-container *ngFor="let schicht of schichten">
+            <ion-item>
+              <ng-container *ngIf="!schicht.confirmed && isFuture">
+                <ion-icon *ngIf="schicht.status === null" slot="icon-only" color="warning" slot="start"
+                  name="help-circle" (click)="toggleSchicht(true, event, schicht)"></ion-icon>
+                <ion-icon *ngIf="schicht.status === true" slot="icon-only" color="success" slot="start"
+                  name="checkmark-circle" (click)="toggleSchicht(false, event, schicht)"></ion-icon>
+
+                <ion-icon *ngIf="schicht.status === false" slot="icon-only" color="danger" slot="start"
+                  name="close-circle" (click)="toggleSchicht(true, event, schicht)"></ion-icon>
+              </ng-container>
+              <ng-container *ngIf="!isFuture || schicht.confirmed">
+                <ion-icon *ngIf="schicht.status === null" slot="icon-only" color="warning" slot="start"
+                  name="help-circle"></ion-icon>
+                <ion-icon *ngIf="schicht.status === true" slot="icon-only" color="success" slot="start"
+                  name="checkmark-circle"></ion-icon>
+                <ion-icon *ngIf="schicht.status === false" slot="icon-only" color="danger" slot="start"
+                  name="close-circle"></ion-icon>
+              </ng-container>
+              <ion-label>
+                <h2>{{schicht.name}}</h2>
+                <h3>{{schicht.timeFrom}} {{schicht.timeTo}}</h3>
+                <h3>{{'common.helper_points'| translate}}: {{schicht.points}}</h3>
+              </ion-label>
+              <ion-badge>{{schicht.attendeeListTrue.length}} /
+                {{schicht.countNeeded}}
+              </ion-badge>
+            </ion-item>
+            <ion-accordion-group expand="inset" *ngIf="schicht['attendeeListTrue'].length > 0">
+              <ion-accordion value="yes">
+                <ion-item slot="header" color="light">
+                  <ion-label>{{"helfer-detail.helfer_innen_for" | translate}} {{schicht.name}}</ion-label>
+                </ion-item>
+                <div slot="content">
+                  <!-- class="ion-padding"-->
+                  <ion-list>
+                    <ion-item *ngFor="let member of schicht['attendeeListTrue']" detail="true">
+                      <ion-icon *ngIf="member.confirmed" color="primary" slot="start" name="checkmark-circle-outline">
+                      </ion-icon>
+                      <!--<ion-icon *ngIf="!member.confirmed" color="primary" slot="start" name="help-buoy">
+                    </ion-icon>-->
+
+                      <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
+                    </ion-item>
+                  </ion-list>
+                </div>
+
+              </ion-accordion>
+            </ion-accordion-group>
+
           </ng-container>
-        </ion-list-header>
-        <ng-container *ngFor="let schicht of schichten">
-          <ion-item>
-            <ng-container *ngIf="!schicht.confirmed && isFuture">
-              <ion-icon *ngIf="schicht.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
-                (click)="toggleSchicht(true, event, schicht)"></ion-icon>
-              <ion-icon *ngIf="schicht.status === true" slot="icon-only" color="success" slot="start"
-                name="checkmark-circle" (click)="toggleSchicht(false, event, schicht)"></ion-icon>
+        </ion-list>
 
-              <ion-icon *ngIf="schicht.status === false" slot="icon-only" color="danger" slot="start"
-                name="close-circle" (click)="toggleSchicht(true, event, schicht)"></ion-icon>
+        <!-- Helfereinsätze OHNE Schichten MY STATUS-->
+        <ion-list [inset]="true" lines="none" *ngIf="schichten.length == 0 && isFuture">
+          <ion-list-header>
+            {{"common.attendances__absences" | translate}}
+          </ion-list-header>
+          <ion-item class="myclubStatus">
+            <ng-container *ngIf="event.hasOwnProperty('status'); else loading">
+              <ion-fab-button (click)="toggle(true, event)" size="small" color="warning" slot="start"
+                *ngIf="event.status === null">
+                <ion-icon name="help-circle"> </ion-icon>
+              </ion-fab-button>
+
+              <ion-fab-button (click)="toggle(true, event)" size="small" color="danger" slot="start"
+                *ngIf="event.status === false">
+                <ion-icon name="close-circle"> </ion-icon>
+              </ion-fab-button>
+
+              <ion-fab-button (click)="toggle(false, event)" size="small" color="success" slot="start"
+                *ngIf="event.status === true">
+                <ion-icon name="checkmark-circle"> </ion-icon>
+              </ion-fab-button>
             </ng-container>
-            <ng-container *ngIf="!isFuture || schicht.confirmed">
-              <ion-icon *ngIf="schicht.status === null" slot="icon-only" color="warning" slot="start"
-                name="help-circle"></ion-icon>
-              <ion-icon *ngIf="schicht.status === true" slot="icon-only" color="success" slot="start"
-                name="checkmark-circle"></ion-icon>
-              <ion-icon *ngIf="schicht.status === false" slot="icon-only" color="danger" slot="start"
-                name="close-circle"></ion-icon>
-            </ng-container>
-            <ion-label>
-              <h2>{{schicht.name}}</h2>
-              <h3>{{schicht.timeFrom}} {{schicht.timeTo}}</h3>
-              <h3>{{'common.helper_points'| translate}}: {{schicht.points}}</h3>
-            </ion-label>
-            <ion-badge>{{schicht.attendeeListTrue.length}} /
-              {{schicht.countNeeded}}
-            </ion-badge>
+            <ion-label>{{"common.my__status" | translate}}</ion-label>
+
           </ion-item>
-          <ion-accordion-group expand="inset" *ngIf="schicht['attendeeListTrue'].length > 0">
+        </ion-list>
+
+        <ion-list [inset]="true" *ngIf="schichten.length == 0">
+          <ion-accordion-group>
             <ion-accordion value="yes">
               <ion-item slot="header" color="light">
-                <ion-label>{{"helfer-detail.helfer_innen_for" | translate}} {{schicht.name}}</ion-label>
+                <ion-label>{{"common.present" | translate}}:
+                  {{event['attendeeListTrue']?.length}}</ion-label>
               </ion-item>
               <div slot="content">
-                <!-- class="ion-padding"-->
                 <ion-list>
-                  <ion-item *ngFor="let member of schicht['attendeeListTrue']" detail="true">
-                    <ion-icon *ngIf="member.confirmed" color="primary" slot="start" name="checkmark-circle-outline">
+                  <ion-item *ngFor="let member of event['attendeeListTrue']" detail="true">
+                    <ion-icon color="success" slot="start" name="checkmark-circle">
                     </ion-icon>
-                    <!--<ion-icon *ngIf="!member.confirmed" color="primary" slot="start" name="help-buoy">
-                    </ion-icon>-->
+                    <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
+                  </ion-item>
+                </ion-list>
+              </div>
+            </ion-accordion>
+            <ion-accordion value="no">
+              <ion-item slot="header" color="light">
+                <ion-label>{{"common.absent" | translate}}:
+                  {{event['attendeeListFalse']?.length}}</ion-label>
+              </ion-item>
+              <div slot="content">
+                <ion-list>
+                  <ion-item *ngFor="let member of event['attendeeListFalse']" detail="true">
+                    <ion-icon color="danger" slot="start" name="close-circle">
+                    </ion-icon>
 
                     <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
                   </ion-item>
                 </ion-list>
               </div>
+            </ion-accordion>
+            <ion-accordion value="null">
+              <ion-item slot="header" color="light">
+                <ion-label>{{"common.noreply" | translate}}:
+                  {{event['unrespondedMembers'].length}}</ion-label>
+              </ion-item>
+              <div slot="content">
+                <!-- class="ion-padding"-->
+                <ion-list>
+                  <ion-item *ngFor="let member of event['unrespondedMembers']" detail="true">
+                    <ion-icon color="warning" slot="start" name="help-circle">
+                    </ion-icon>
 
+                    <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
+                  </ion-item>
+                </ion-list>
+              </div>
             </ion-accordion>
           </ion-accordion-group>
+        </ion-list>
+      </ng-container>
 
-        </ng-container>
-      </ion-list>
-
-      <!-- Helfereinsätze OHNE Schichten MY STATUS-->
-      <ion-list [inset]="true" lines="none" *ngIf="schichten.length == 0 && isFuture">
-        <ion-list-header>
-          {{"common.attendances__absences" | translate}}
-        </ion-list-header>
-        <ion-item class="myclubStatus">
-          <ng-container *ngIf="event.hasOwnProperty('status'); else loading">
-            <ion-fab-button (click)="toggle(true, event)" size="small" color="warning" slot="start"
-              *ngIf="event.status === null">
-              <ion-icon name="help-circle"> </ion-icon>
-            </ion-fab-button>
-
-            <ion-fab-button (click)="toggle(true, event)" size="small" color="danger" slot="start"
-              *ngIf="event.status === false">
-              <ion-icon name="close-circle"> </ion-icon>
-            </ion-fab-button>
-
-            <ion-fab-button (click)="toggle(false, event)" size="small" color="success" slot="start"
-              *ngIf="event.status === true">
-              <ion-icon name="checkmark-circle"> </ion-icon>
-            </ion-fab-button>
-          </ng-container>
-          <ion-label>{{"common.my__status" | translate}}</ion-label>
-
-        </ion-item>
-      </ion-list>
-
-      <ion-list [inset]="true" *ngIf="schichten.length == 0">
-        <ion-accordion-group>
-          <ion-accordion value="yes">
-            <ion-item slot="header" color="light">
-              <ion-label>{{"common.present" | translate}}:
-                {{event['attendeeListTrue']?.length}}</ion-label>
-            </ion-item>
-            <div slot="content">
-              <ion-list>
-                <ion-item *ngFor="let member of event['attendeeListTrue']" detail="true">
-                  <ion-icon color="success" slot="start" name="checkmark-circle">
-                  </ion-icon>
-                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
-                </ion-item>
-              </ion-list>
-            </div>
-          </ion-accordion>
-          <ion-accordion value="no">
-            <ion-item slot="header" color="light">
-              <ion-label>{{"common.absent" | translate}}:
-                {{event['attendeeListFalse']?.length}}</ion-label>
-            </ion-item>
-            <div slot="content">
-              <ion-list>
-                <ion-item *ngFor="let member of event['attendeeListFalse']" detail="true">
-                  <ion-icon color="danger" slot="start" name="close-circle">
-                  </ion-icon>
-
-                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
-                </ion-item>
-              </ion-list>
-            </div>
-          </ion-accordion>
-          <ion-accordion value="null">
-            <ion-item slot="header" color="light">
-              <ion-label>{{"common.noreply" | translate}}:
-                {{event['unrespondedMembers'].length}}</ion-label>
-            </ion-item>
-            <div slot="content">
-              <!-- class="ion-padding"-->
-              <ion-list>
-                <ion-item *ngFor="let member of event['unrespondedMembers']" detail="true">
-                  <ion-icon color="warning" slot="start" name="help-circle">
-                  </ion-icon>
-
-                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
-                </ion-item>
-              </ion-list>
-            </div>
-          </ion-accordion>
-        </ion-accordion-group>
-      </ion-list>
     </ng-container>
-      
-  </ng-container>
 
 
     <!-- CHANGE MODE-->
@@ -269,14 +269,14 @@
 
       <ion-list [inset]="true">
         <ion-item>
-          <ion-input (ionChange)="updateEvent($event, 'link_web')" [label]="'common.link__web' | translate" label-placement="stacked" type="url"
-            [value]="event.link_web" 
+          <ion-input (ionChange)="updateEvent($event, 'link_web')" [label]="'common.link__web' | translate"
+            label-placement="stacked" type="url" [value]="event.link_web"
             [placeholder]="'common.link__placeholder' | translate">
           </ion-input>
         </ion-item>
         <ion-item>
-          <ion-input (ionChange)="updateEvent($event, 'link_poll')" [label]="'common.link__poll' | translate" label-placement="stacked" type="url"
-            [value]="event.link_poll" 
+          <ion-input (ionChange)="updateEvent($event, 'link_poll')" [label]="'common.link__poll' | translate"
+            label-placement="stacked" type="url" [value]="event.link_poll"
             [placeholder]="'common.link__placeholder' | translate">
           </ion-input>
         </ion-item>
@@ -291,9 +291,9 @@
 
           <ion-modal [keepContentsMounted]="true">
             <ng-template>
-              <ion-datetime presentation="time" id="timeFrom" (ionChange)="changeTimeFrom($event)" (ionChange)="updateEvent($event, 'timeFrom')" 
-                minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" [value]="event.timeFrom"
-                ></ion-datetime>
+              <ion-datetime presentation="time" id="timeFrom" (ionChange)="changeTimeFrom($event)"
+                (ionChange)="updateEvent($event, 'timeFrom')" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+                [value]="event.timeFrom"></ion-datetime>
             </ng-template>
           </ion-modal>
         </ion-item>
@@ -304,8 +304,8 @@
 
           <ion-modal [keepContentsMounted]="true">
             <ng-template>
-              <ion-datetime (ionChange)="updateEvent($event, 'timeTo')"  presentation="time" id="timeTo" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
-                [value]="event.timeTo"></ion-datetime>
+              <ion-datetime (ionChange)="updateEvent($event, 'timeTo')" presentation="time" id="timeTo"
+                minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" [value]="event.timeTo"></ion-datetime>
             </ng-template>
           </ion-modal>
         </ion-item>
@@ -318,8 +318,9 @@
 
           <ion-modal [keepContentsMounted]="true">
             <ng-template>
-              <ion-datetime (ionChange)="updateEvent($event, 'startDate')"  [firstDayOfWeek]="1" (ionChange)="changeStartDate($event)" presentation="date"
-                id="startDate" [value]="event.startDate"></ion-datetime>
+              <ion-datetime (ionChange)="updateEvent($event, 'startDate')" [firstDayOfWeek]="1"
+                (ionChange)="changeStartDate($event)" presentation="date" id="startDate"
+                [value]="event.startDate"></ion-datetime>
             </ng-template>
           </ion-modal>
         </ion-item>
@@ -332,8 +333,8 @@
 
           <ion-modal [keepContentsMounted]="true">
             <ng-template>
-              <ion-datetime (ionChange)="updateEvent($event, 'endDate')"  [firstDayOfWeek]="1" presentation="date" id="endDate" [value]="event.endDate"
-               ></ion-datetime>
+              <ion-datetime (ionChange)="updateEvent($event, 'endDate')" [firstDayOfWeek]="1" presentation="date"
+                id="endDate" [value]="event.endDate"></ion-datetime>
             </ng-template>
           </ion-modal>
         </ion-item>
@@ -343,6 +344,7 @@
 
   </ion-content>
 </ng-container>
+
 
 <ng-template #loading>
   <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>

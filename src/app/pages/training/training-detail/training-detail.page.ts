@@ -3,6 +3,7 @@ import { AlertController, IonItemSliding, ModalController, NavParams, ToastContr
 import { Platform } from '@ionic/angular';
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
+
 import {
   Observable,
   Subscription,
@@ -78,16 +79,11 @@ export class TrainingDetailPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.backButtonSub = this.platform.backButton.subscribeWithPriority(5, (data) => {
-      console.log('Handler was called!');
-      this.close();
-    });
+
   }
 
   ngOnDestroy() {
-    if (this.backButtonSub) {
-      this.backButtonSub.unsubscribe();
-    }
+    
   }
 
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
@@ -213,14 +209,14 @@ export class TrainingDetailPage implements OnInit {
         {
           text: "Nein",
           role: "cancel",
-          handler: ()=>{
-            
+          handler: () => {
+
           }
         },
         {
           role: "",
           text: "OK",
-          handler: async ()=>{
+          handler: async () => {
             for (let member of training['unrespondedMembers']) {
               console.log(
                 `Set Status ${status} for user ${this.user.uid} and team ${this.training.teamId} and training ${training.id}`
@@ -238,12 +234,12 @@ export class TrainingDetailPage implements OnInit {
             this.presentToast();
           }
         },
-       
+
       ]
     })
     alert.present();
 
-    
+
   }
 
   async toastActionError(error) {

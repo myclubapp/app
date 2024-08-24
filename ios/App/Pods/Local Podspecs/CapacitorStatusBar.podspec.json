@@ -1,13 +1,13 @@
 {
   "name": "CapacitorStatusBar",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "summary": "The StatusBar API Provides methods for configuring the style of the Status Bar, along with showing or hiding it.",
   "license": "MIT",
   "homepage": "https://capacitorjs.com",
   "authors": "Ionic <hi@ionicframework.com>",
   "source": {
     "git": "https://github.com/ionic-team/capacitor-plugins.git",
-    "tag": "@capacitor/status-bar@6.0.0"
+    "tag": "@capacitor/status-bar@6.0.1"
   },
   "source_files": [
     "ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}",

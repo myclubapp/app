@@ -14,6 +14,10 @@ const config: CapacitorConfig = {
     },
   },
   plugins: {
+    Badge: {
+      persist: true,
+      autoClear: false,
+    },
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"],
     },

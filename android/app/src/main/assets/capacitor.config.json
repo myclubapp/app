@@ -9,6 +9,10 @@
 	},
 	"android": {},
 	"plugins": {
+		"Badge": {
+			"persist": true,
+			"autoClear": false
+		},
 		"PushNotifications": {
 			"presentationOptions": [
 				"badge",

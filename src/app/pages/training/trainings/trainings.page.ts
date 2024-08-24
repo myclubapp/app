@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
+  IonRouterOutlet,
   // IonRouterOutlet,
   MenuController,
   ModalController,
@@ -353,7 +354,7 @@ export class TrainingsPage implements OnInit {
     const modal = await this.modalController.create({
       component: TrainingDetailPage,
       presentingElement: await this.modalController.getTop(),
-      //presentingElement: this.routerOutlet.nativeEl,
+      // presentingElement: this.routerOutlet.nativeEl,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {

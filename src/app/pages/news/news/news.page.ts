@@ -45,6 +45,8 @@ import { Club } from "src/app/models/club";
 import { Team } from "src/app/models/team";
 import { TranslateService } from "@ngx-translate/core";
 import { Router } from "@angular/router";
+import { NotificationPage } from "../notification/notification.page";
+import { NotificationService } from "src/app/services/firebase/notification.service";
 
 @Component({
   selector: "app-news",
@@ -62,17 +64,19 @@ export class NewsPage implements OnInit {
   shareSocialShareOptions: any;
   showSocialShare = false;
 
-  faTwitter: any = faTwitter; 
+  faTwitter: any = faTwitter;
   faFacebook: any = faFacebook;
   faWhatsapp: any = faWhatsapp;
   faLinkedin: any = faLinkedin;
   faEnvelope: any = faEnvelope;
   faCopy: any = faCopy;
 
+  notifications$: Observable<any[]>;
 
   newsList$: Observable<News[]>;
 
   constructor(
+    private readonly notificationService: NotificationService,
     private readonly newsService: NewsService,
     // private readonly sanitization: DomSanitizer,
     private readonly authService: AuthService,
@@ -129,94 +133,121 @@ export class NewsPage implements OnInit {
   }
 
   ngOnInit() {
-
     this.newsList$ = this.getNews();
-
+    this.notifications$ = this.getNotifications();
+    
   }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void { }
 
   ngOnDestroy(): void {
-    
+
   }
 
   getNews() {
     return this.authService.getUser$().pipe(
       take(1),
       tap(user => {
-          if (!user) throw new Error("User not found");
-          this.user = user;
+        if (!user) throw new Error("User not found");
+        this.user = user;
       }),
       switchMap(user => this.fbService.getUserClubRefs(user)), // Get user's club references
-      switchMap( clubs => {
-          if (!clubs.length) {
-              console.log("No clubs associated with the user.");
-              /*this.router.navigateByUrl('/onboarding-club').then(navOnboardingClub=>{
-                if (navOnboardingClub) {
-                  console.log('Navigation success to onboarding Club Page');
-                } else {
-                  console.error('Navigation ERROR to onboarding Club Page');
-                }
-              })*/
-              return of([]);
-          }
-          
-          // Fetch detailed information for each club
-          return combineLatest(
-              clubs.map(club => this.fbService.getClubRef(club.id).pipe(
-                  switchMap(clubDetail => {
-                      if (!clubDetail) {
-                          console.log(`No details found for club ID: ${club.id}`);
-                          return of({ clubNews: [], typeNews: [] });
-                      }
-                      
-                      const newsByClub$ = this.newsService.getClubNewsRef(club.id).pipe(
-                          catchError(error => {
-                              console.error(`Error fetching news for club ID ${club.id}:`, error);
-                              return of([]);
-                          })
-                      );
-                      
-                      const newsByType$ = this.newsService.getNewsRef(clubDetail.type).pipe(
-                          catchError(error => {
-                              console.error(`Error fetching news for type ${clubDetail.type}:`, error);
-                              return of([]);
-                          })
-                      );
-                      
-                      return combineLatest([newsByClub$, newsByType$]).pipe(
-                          map(([clubNews, typeNews]) => ({ clubNews, typeNews }))
-                      );
-                  })
-              ))
-          );
+      switchMap(clubs => {
+        if (!clubs.length) {
+          console.log("No clubs associated with the user.");
+          /*this.router.navigateByUrl('/onboarding-club').then(navOnboardingClub=>{
+            if (navOnboardingClub) {
+              console.log('Navigation success to onboarding Club Page');
+            } else {
+              console.error('Navigation ERROR to onboarding Club Page');
+            }
+          })*/
+          return of([]);
+        }
+
+        // Fetch detailed information for each club
+        return combineLatest(
+          clubs.map(club => this.fbService.getClubRef(club.id).pipe(
+            switchMap(clubDetail => {
+              if (!clubDetail) {
+                console.log(`No details found for club ID: ${club.id}`);
+                return of({ clubNews: [], typeNews: [] });
+              }
+
+              const newsByClub$ = this.newsService.getClubNewsRef(club.id).pipe(
+                catchError(error => {
+                  console.error(`Error fetching news for club ID ${club.id}:`, error);
+                  return of([]);
+                })
+              );
+
+              const newsByType$ = this.newsService.getNewsRef(clubDetail.type).pipe(
+                catchError(error => {
+                  console.error(`Error fetching news for type ${clubDetail.type}:`, error);
+                  return of([]);
+                })
+              );
+
+              return combineLatest([newsByClub$, newsByType$]).pipe(
+                map(([clubNews, typeNews]) => ({ clubNews, typeNews }))
+              );
+            })
+          ))
+        );
       }),
       map(newsArrays => {
-          const allNews = [];
-  
-          // Aggregate and flatten the news items
-          newsArrays.forEach(({ clubNews, typeNews }) => {
-              /*typeNews.map(news=>{
-                news.image = this.sanitization.bypassSecurityTrustResourceUrl(news.image);
-              })*/
-              allNews.push(...clubNews);
-              allNews.push(...typeNews);
-          });
-  
-          // Remove duplicates and sort
-          return allNews
-              .filter((news, index, self) =>
-                  index === self.findIndex((t) => t.id === news.id)
-              )
-              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        const allNews = [];
+
+        // Aggregate and flatten the news items
+        newsArrays.forEach(({ clubNews, typeNews }) => {
+          /*typeNews.map(news=>{
+            news.image = this.sanitization.bypassSecurityTrustResourceUrl(news.image);
+          })*/
+          allNews.push(...clubNews);
+          allNews.push(...typeNews);
+        });
+
+        // Remove duplicates and sort
+        return allNews
+          .filter((news, index, self) =>
+            index === self.findIndex((t) => t.id === news.id)
+          )
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       }),
       catchError(error => {
-          console.error("Error fetching news:", error);
-          return of([]);
+        console.error("Error fetching news:", error);
+        return of([]);
       })
-  );
+    );
+  }
+  getNotifications(): Observable<any[]> {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+      if (!user) throw new Error("User not found");
+      }),
+      switchMap((user) => {
+      return this.notificationService.getNotifications(user);
+      })
+    )
+  }
+  async openNotification() {
+    const modal = await this.modalCtrl.create({
+      component: NotificationPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+      },
+      //   enterAnimation,
+      //   leaveAnimation,
+    });
+    modal.present();
 
+    const { data, role } = await modal.onWillDismiss();
 
+    if (role === "confirm") {
+    }
   }
 
 
@@ -239,20 +270,19 @@ export class NewsPage implements OnInit {
     if (role === "confirm") {
     }
   }
-ß
 
   async share(news: News) {
     // const device = await Device.getInfo();
-    const { value } = await Share.canShare();
+    const { value } = await Share.canShare();
 
     if (value) {
-    // if (device.platform === "web" && navigator && navigator.share) {
+      // if (device.platform === "web" && navigator && navigator.share) {
       const shareRet = await Share.share({
         title: news.title,
         text: news.leadText,
         url: news.url,
         dialogTitle: news.title,
-      }).catch((onrejected) => {});
+      }).catch((onrejected) => { });
     } else {
       await this.shareFallback(news);
     }

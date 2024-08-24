@@ -207,6 +207,9 @@
         "version": "Version"
     },
     "common": {
+        "notifications": "Benachrichtigungen",
+        "notifications_open": "Ungelesene Benachrichtigungen",
+        "notifications_read": "Gelesene Benachrichtigungen",
         "teams": "Teams",
         "success__copy": "Wert erfolgreich kopiert",
         "month": "Monat", 

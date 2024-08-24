@@ -81,6 +81,7 @@ export class ChampionshipDetailPage implements OnInit {
     // console.log(this.navParams);
     this.game = this.navParams.get("data");
     this.game$ = this.getGame(this.game.teamId, this.game.id);
+
   }
 
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {

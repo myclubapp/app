@@ -9,6 +9,10 @@
 	},
 	"android": {},
 	"plugins": {
+		"Badge": {
+			"persist": true,
+			"autoClear": false
+		},
 		"PushNotifications": {
 			"presentationOptions": [
 				"badge",
@@ -21,6 +25,7 @@
 		"scheme": "App"
 	},
 	"packageClassList": [
+		"AppPlugin",
 		"CAPBrowserPlugin",
 		"CAPCameraPlugin",
 		"ClipboardPlugin",
@@ -36,6 +41,7 @@
 		"SharePlugin",
 		"SplashScreenPlugin",
 		"StatusBarPlugin",
+		"BadgePlugin",
 		"CDVPlugin"
 	]
 }

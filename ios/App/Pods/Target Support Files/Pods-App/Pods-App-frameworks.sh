@@ -177,6 +177,7 @@ code_sign_if_enabled() {
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/Capacitor/Capacitor.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorApp/CapacitorApp.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorBrowser/CapacitorBrowser.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorCamera/CapacitorCamera.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorClipboard/CapacitorClipboard.framework"
@@ -192,6 +193,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorShare/CapacitorShare.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorSplashScreen/CapacitorSplashScreen.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorStatusBar/CapacitorStatusBar.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/CapawesomeCapacitorBadge/CapawesomeCapacitorBadge.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CordovaPlugins/CordovaPlugins.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/FirebaseCore/FirebaseCore.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/FirebaseCoreDiagnostics/FirebaseCoreDiagnostics.framework"
@@ -205,6 +207,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/Capacitor/Capacitor.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorApp/CapacitorApp.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorBrowser/CapacitorBrowser.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorCamera/CapacitorCamera.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorClipboard/CapacitorClipboard.framework"
@@ -220,6 +223,7 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorShare/CapacitorShare.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorSplashScreen/CapacitorSplashScreen.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorStatusBar/CapacitorStatusBar.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/CapawesomeCapacitorBadge/CapawesomeCapacitorBadge.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CordovaPlugins/CordovaPlugins.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/FirebaseCore/FirebaseCore.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/FirebaseCoreDiagnostics/FirebaseCoreDiagnostics.framework"

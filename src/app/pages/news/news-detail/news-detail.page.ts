@@ -1,9 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, NavParams } from '@ionic/angular';
 import { News } from 'src/app/models/news';
-
 import { Share } from '@capacitor/share';
-import { Device } from '@capacitor/device';
 
 import {
   faTwitter,
@@ -33,40 +31,44 @@ export class NewsDetailPage implements OnInit {
   faEnvelope: any = faEnvelope;
   faCopy: any = faCopy;
 
-  constructor (
+  constructor(
     private readonly modalCtrl: ModalController,
     // private readonly sanitization: DomSanitizer,
     public navParams: NavParams
-  ) {}
+  ) { }
 
-  ngOnInit () {
+  ngOnInit() {
     this.news = this.navParams.get('data');
+
   }
 
-  async close () {
+  ngOnDestroy() {
+ 
+  }
+  async close() {
     return await this.modalCtrl.dismiss(null, 'close');
   }
 
-  async confirm () { 
+  async confirm() {
     return await this.modalCtrl.dismiss(this.news, 'confirm');
   }
 
-  async share (news: News) {
+  async share(news: News) {
     // const device = await Device.getInfo();
-    const { value } = await Share.canShare();
+    const { value } = await Share.canShare();
     if (value) {
       const shareRet = await Share.share({
         title: news.title,
         text: news.leadText,
         url: news.url,
         dialogTitle: news.title
-      }).catch((onrejected) => {})
+      }).catch((onrejected) => { })
     } else {
       await this.shareFallback(news);
     }
   }
 
-  async shareFallback (news: News) {
+  async shareFallback(news: News) {
     return await new Promise(async (resolve) => {
       // The configuration, set the share options
       this.shareSocialShareOptions = {

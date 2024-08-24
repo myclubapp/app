@@ -4,14 +4,14 @@ import {
   AlertController,
   MenuController,
   ModalController,
-  Platform,
   ToastController,
-  IonRouterOutlet,
 } from "@ionic/angular";
+import { App } from '@capacitor/app';
+import { ConfirmResult, Dialog } from "@capacitor/dialog";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
-import { Router, NavigationBehaviorOptions } from "@angular/router";
+import { Router } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { Observable, Subscription, of, switchMap, take, tap } from "rxjs";
 import { User, onAuthStateChanged } from "@angular/fire/auth";
@@ -20,15 +20,13 @@ import { Device, DeviceId, DeviceInfo, LanguageTag } from "@capacitor/device";
 import { Network, ConnectionStatus } from "@capacitor/network";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "./models/club";
-import { Team } from "./models/team";
+
 import {
   ActionPerformed,
   PushNotificationSchema,
   PushNotifications,
   Token,
 } from "@capacitor/push-notifications";
-import { ConfirmResult, Dialog } from "@capacitor/dialog";
-import { OnboardingPage } from "./pages/onboarding/onboarding/onboarding.page";
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 
 @Component({
@@ -70,21 +68,21 @@ export class AppComponent implements OnInit {
 
   ) {
     this.initializeApp();
-  
+
     onAuthStateChanged(this.authService.auth, async (user) => {
       if (user) {
         // 0. LOGIN
         this.email = user.email;
         this.user = user;
 
-         if (!user.emailVerified){
+        if (!user.emailVerified) {
           const navOnboardingEmail = await this.router.navigateByUrl('/onboarding-email');
           if (navOnboardingEmail) {
             console.log('Navigation success to onboarding Email Page');
           } else {
             console.error('Navigation ERROR to onboarding Email Page');
           }
-         } else {
+        } else {
           console.log("E-Mail IS verified. Go ahead..")
           console.log(user.email, user.displayName, user.emailVerified)
           this.clubListSub = this.clubList$
@@ -104,11 +102,11 @@ export class AppComponent implements OnInit {
                     console.error('Navigation Exception:', error);
                     window.location.reload();
                   }
-                } else { 
+                } else {
                   // CHECK SUBSCRIPTION FOR CLUB
                   // console.log(clubList.find((club:any)=>club.subscriptionActive == false ))
 
-                  if (clubList.find((club:any)=>club.subscriptionActive == false )){
+                  if (clubList.find((club: any) => club.subscriptionActive == false)) {
                     console.log("NO SUBSCRIPTION FOUND")
                     const modal = await this.modalCtrl.create({
                       component: ClubSubscriptionPage,
@@ -116,14 +114,14 @@ export class AppComponent implements OnInit {
                       canDismiss: true,
                       showBackdrop: true,
                       componentProps: {
-                        clubId: clubList.find((club:any)=>club.subscriptionActive == false).id,
+                        clubId: clubList.find((club: any) => club.subscriptionActive == false).id,
                       },
                     });
                     modal.present();
-                
-                    const { data, role } = await modal.onWillDismiss();
+
+                    const { role } = await modal.onWillDismiss();
                     console.log(role)
-                    if (role === "close" || role == "backdrop") {
+                    if (role === "close" || role == "backdrop") {
                       this.authService.logout();
                     }
                   } else {
@@ -134,7 +132,7 @@ export class AppComponent implements OnInit {
               })
             )
             .subscribe();
-          }
+        }
         // }
 
 
@@ -182,7 +180,11 @@ export class AppComponent implements OnInit {
 
   }
   ngOnInit(): void {
-    this.clubList$  = this.fbService.getClubList();
+    App.removeAllListeners().then(() => {
+      this.registerBackButton();
+    });
+
+    this.clubList$ = this.fbService.getClubList();
     Network.addListener(
       "networkStatusChange",
       async (status: ConnectionStatus) => {
@@ -222,7 +224,9 @@ export class AppComponent implements OnInit {
 
   ngOnDestroy() {
     Network.removeAllListeners();
-
+    
+    App.removeAllListeners();
+    
     if (this.clubListSub) {
       this.clubListSub.unsubscribe();
     }
@@ -235,6 +239,20 @@ export class AppComponent implements OnInit {
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
       if (event.type === "VERSION_READY") {
         this.presentAlertUpdateVersion();
+      }
+    });
+  }
+
+  private registerBackButton() {
+    App.addListener('backButton', ({ canGoBack }) => {
+      console.log("backbutton", canGoBack);
+      alert(canGoBack)
+      if (canGoBack) {
+        // Navigieren Sie zurück in der App-Historie
+        window.history.back();
+      } else {
+        // Beenden Sie die App, wenn keine vorherige Seite vorhanden ist
+        App.exitApp();
       }
     });
   }
@@ -488,10 +506,10 @@ export class AppComponent implements OnInit {
     console.log("onDidDismiss resolved with role", role);
     */
   }
-  enableHelferEvents(clubList){
+  enableHelferEvents(clubList) {
     return clubList && clubList.some(club => club.hasFeatureHelferEvent == true);
   }
-  enableChampionship(clubList){
+  enableChampionship(clubList) {
     return clubList && clubList.some(club => club.hasFeatureChampionship == true);
   }
 
