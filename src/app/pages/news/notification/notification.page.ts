@@ -165,7 +165,9 @@ export class NotificationPage implements OnInit {
     } else {
 
     }
-    this.toggle(notification);
+    if (!notification.opened) {
+      this.toggle(notification);
+    }
   }
   async close() {
     return await this.modalCtrl.dismiss(null, 'close');

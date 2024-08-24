@@ -48,11 +48,11 @@
       <ion-list-header>
         {{ "common.notifications_read" | translate }}
       </ion-list-header>
-      <ion-item *ngFor="let notification of notificationsReadList" detail>
+      <ion-item *ngFor="let notification of notificationsReadList" detail (click)="openNotification(notification)">
 
-        <ion-icon color="primary" *ngIf="notification.opened" name="notifications-outline" slot="start" (click)="toggle(notification)"></ion-icon>
+        <ion-icon color="primary" *ngIf="notification.opened" name="notifications-outline" slot="start" ></ion-icon>
 
-        <ion-label (click)="openNotification(notification)">
+        <ion-label >
           <h2>{{ notification.title }}</h2>
           <h3>{{ notification.message }}</h3>
           <h3>{{ notification.date.toDate() | date:'dd.MM.YYYY hh:mm'}}</h3>
