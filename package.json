@@ -1,6 +1,6 @@
 {
   "name": "myclub",
-  "version": "1.8.3",
+  "version": "1.8.4",
   "author": "liitu consulting gmbh",
   "homepage": "https://my-club.app/",
   "scripts": {
@@ -52,7 +52,7 @@
     "@capacitor/ios": "6.1.2",
     "@capacitor/keyboard": "6.0.2",
     "@capacitor/network": "6.0.2",
-    "@capacitor/preferences": "6.0.2",
+    "@capacitor/preferences": "^6.0.2",
     "@capacitor/push-notifications": "6.0.2",
     "@capacitor/share": "6.0.2",
     "@capacitor/splash-screen": "6.0.2",

@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { Preferences } from '@capacitor/preferences';
 import {
   IonItemSliding,
   IonRouterOutlet,
@@ -51,6 +52,8 @@ export class EventsPage implements OnInit {
 
   activatedRouteSub: Subscription;
 
+  subscription: Subscription;
+
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
@@ -71,6 +74,23 @@ export class EventsPage implements OnInit {
     this.eventList$ = this.getClubEvent();
     this.eventListPast$ = this.getClubEventPast();
 
+    this.subscription = this.eventList$.pipe(
+      tap(async (events) => {
+        const event = events[0];
+        // console.log('Events', events);
+        await Preferences.set({
+          key: 'widgetNextEventName',
+          value: event.name
+        });
+        await Preferences.set({
+          key: 'widgetNextEventDate',
+          value: event.date.toString()
+        });
+        console.log('Widget Next Event:', event.name, event.date.toString());
+      })
+    ).subscribe();
+  
+
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
 
@@ -81,6 +101,9 @@ export class EventsPage implements OnInit {
   ngOnDestroy() {
     if (this.activatedRouteSub){
       this.activatedRouteSub.unsubscribe();
+    }
+    if (this.subscription){
+      this.subscription.unsubscribe();
     }
   }
 
