@@ -1,3 +1,4 @@
+<ng-container *ngIf="news$ | async as news">
 <!--<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title></ion-title>
@@ -38,3 +39,8 @@
     </ion-row>
   </ion-card>
 </ion-content>
+</ng-container>
+<ng-template #loading>
+  <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>
+  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+</ng-template>

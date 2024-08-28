@@ -207,6 +207,7 @@
         "version": "Version"
     },
     "common": {
+        "all_read": "Alle gelesen",
         "notifications": "Benachrichtigungen",
         "notifications_open": "Ungelesene Benachrichtigungen",
         "notifications_read": "Gelesene Benachrichtigungen",

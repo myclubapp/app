@@ -8,6 +8,8 @@ import {
   AnimationController,
   AlertController,
 } from "@ionic/angular";
+import { Router } from '@angular/router';
+// import { ActivatedRoute } from '@angular/router';
 import { News } from "src/app/models/news";
 import {
   DomSanitizer,
@@ -44,7 +46,6 @@ import {
 import { Club } from "src/app/models/club";
 import { Team } from "src/app/models/team";
 import { TranslateService } from "@ngx-translate/core";
-import { Router } from "@angular/router";
 import { NotificationPage } from "../notification/notification.page";
 import { NotificationService } from "src/app/services/firebase/notification.service";
 
@@ -87,10 +88,11 @@ export class NewsPage implements OnInit {
     private readonly menuCtrl: MenuController,
     public animationCtrl: AnimationController,
     private translate: TranslateService,
+    // private route: ActivatedRoute,
     private router: Router
   ) {
     this.menuCtrl.enable(true, "menu");
-    if (this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "news") {
+    /* if (this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "news") {
       const pushData = this.router.getCurrentNavigation().extras.state;
       // It's a Push Message
       let news: News = {
@@ -128,17 +130,31 @@ export class NewsPage implements OnInit {
         filterable: pushData.filterable,
         tags: pushData.tags || []
       };
-      this.openModal(news);
-    }
+      this.openModal(news); 
+    }*/
+
+
   }
 
   ngOnInit() {
     this.newsList$ = this.getNews();
     this.notifications$ = this.getNotifications();
-    
+
+    /*this.route.snapshot.data['news'].subscribe((news) => {
+      console.log(news)
+    });*/
+
+    const navigation = this.router.getCurrentNavigation();
+    if (navigation) {
+      const state = navigation.extras.state;
+      if (state) {
+        console.log(state); // 'someValue'
+      } else {
+        console.log('No state provided');
+      }
+    }
   }
 
-  ngAfterViewInit(): void { }
 
   ngOnDestroy(): void {
 
@@ -224,10 +240,10 @@ export class NewsPage implements OnInit {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => {
-      if (!user) throw new Error("User not found");
+        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
-      return this.notificationService.getNotifications(user);
+        return this.notificationService.getNotifications(user);
       })
     )
   }
@@ -247,6 +263,12 @@ export class NewsPage implements OnInit {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
+      console.log('Notification', data);
+      // console.log("TYPE:  " + data.type);
+      if (data.type === "news" || data.type === "clubNews") {
+        this.openModal(data);
+      } else {
+      }
     }
   }
 

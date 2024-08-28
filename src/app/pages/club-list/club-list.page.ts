@@ -10,6 +10,7 @@ import {
   ModalController,
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-club-list",
@@ -17,27 +18,36 @@ import { TranslateService } from "@ngx-translate/core";
   styleUrls: ["./club-list.page.scss"],
 })
 export class ClubListPage implements OnInit {
-
+  subscription: Subscription;
   skeleton = new Array(12);
   user: User;
   clubList$: Observable<Club[]>;
 
   constructor(
     private readonly fbService: FirebaseService,
-    private readonly authService: AuthService,
+    private readonly router: Router,
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
-    private cdr: ChangeDetectorRef,
-    private translate: TranslateService
+
   ) {}
 
   ngOnInit() {
 
     this.clubList$  = this.fbService.getClubList();
-    
+    if (this.router.getCurrentNavigation().extras.state.type === 'clubRequestAdmin'){
+      this.subscription = this.fbService.getClubRef(this.router.getCurrentNavigation().extras.state.clubId).pipe(
+        take(1),
+        tap(club => {
+          this.openModal(club);
+        })
+      ).subscribe();
+    }
 
   }
   ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
 
   }
   async openModal(club: Club) {

@@ -7,6 +7,8 @@ import {
   query,
   where,
   orderBy,
+  docData,
+  doc,
 } from "@angular/fire/firestore";
 import { Observable, Observer } from "rxjs";
 import { News } from "src/app/models/news";
@@ -15,9 +17,26 @@ import { News } from "src/app/models/news";
   providedIn: "root",
 })
 export class NewsService {
-  twentyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 30);
+  twentyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 20);
+  sixtyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 60);
 
   constructor(private firestore: Firestore = inject(Firestore)) {}
+
+  getNewsDetail(newsId: string): Observable<News> {
+    const newsRef = doc(
+      this.firestore,
+      `news/${newsId}`
+    );
+    return docData(newsRef, { idField: "id" }) as Observable<News>;
+  }
+
+  getClubNewsDetail(clubId: string, newsId: string): Observable<News> {
+    const newsRef = doc(
+      this.firestore,
+      `club/${clubId}/news/${newsId}`
+    );
+    return docData(newsRef, { idField: "id" }) as Observable<News>;
+  }
 
   getNewsRef(type: string): Observable<News[]> {
     // console.log('getNewsRef');
@@ -41,7 +60,7 @@ export class NewsService {
     const q = query(
       newssRefList,
       orderBy("date", "desc"),
-      where("date", ">=", this.twentyDaysAgo.toISOString())
+      where("date", ">=", this.sixtyDaysAgo.toISOString())
     ); // heute - 20 Tage
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       News[]

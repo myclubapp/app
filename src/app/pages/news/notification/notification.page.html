@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title></ion-title>
+    <ion-title>{{"common.notifications" | translate}}</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
     </ion-buttons>
@@ -19,7 +19,8 @@
 
     <ion-list *ngIf="notificationsList.length > 0">
       <ion-list-header>
-        {{ "common.notifications_open" | translate }}
+        <ion-label>{{ "common.notifications_open" | translate }}</ion-label>
+        <ion-button (click)="markALlAsRead()" size="small" fill="clear"> {{"common.all_read" | translate}}</ion-button>
       </ion-list-header>
       <ion-item *ngFor="let notification of notificationsList" detail>
         <ion-icon color="primary" *ngIf="!notification.opened" name="notifications" slot="start" (click)="toggle(notification)"></ion-icon>

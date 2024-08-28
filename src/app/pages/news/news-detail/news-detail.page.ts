@@ -11,6 +11,8 @@ import {
 } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Observable, take, tap } from 'rxjs';
+import { NewsService } from 'src/app/services/firebase/news.service';
 
 @Component({
   selector: 'app-news-detail',
@@ -19,6 +21,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class NewsDetailPage implements OnInit {
   @Input('data') news: News;
+
+
+  news$: Observable<News>;
 
   // Social Share
   shareSocialShareOptions: any;
@@ -33,17 +38,42 @@ export class NewsDetailPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
+    private readonly newsService: NewsService,
     // private readonly sanitization: DomSanitizer,
     public navParams: NavParams
   ) { }
 
   ngOnInit() {
-    this.news = this.navParams.get('data');
 
+    this.news = this.navParams.get("data");
+    // console.log(this.news);
+    if (this.news && this.news.clubId){
+      this.news$ = this.getClubNewsDetail(this.news.clubId, this.news.id);
+    } else {
+      this.news$ = this.getNewsDetail(this.news.id);
+    }
   }
 
   ngOnDestroy() {
  
+  }
+
+  getNewsDetail(newsId: string): Observable<News> {
+    return this.newsService.getNewsDetail(newsId).pipe(
+      take(1),
+      tap((news) => {
+        // console.log('News', news);
+      })
+    );
+  }
+
+  getClubNewsDetail(clubId: string, newsId: string): Observable<News> {
+    return this.newsService.getClubNewsDetail(clubId, newsId).pipe(
+      take(1),
+      tap((news) => {
+        // console.log('News', news);
+      })
+    );
   }
   async close() {
     return await this.modalCtrl.dismiss(null, 'close');

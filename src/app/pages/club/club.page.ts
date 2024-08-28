@@ -152,7 +152,7 @@ export class ClubPage implements OnInit {
                 )
               )
             );
-            console.log(clubTeams)
+            // console.log(clubTeams)
             
             return forkJoin({
               clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
