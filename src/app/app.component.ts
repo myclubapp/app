@@ -246,13 +246,13 @@ export class AppComponent implements OnInit {
   private registerBackButton() {
     App.addListener('backButton', ({ canGoBack }) => {
       console.log("backbutton", canGoBack);
-      alert(canGoBack)
+      // alert(canGoBack)
       if (canGoBack) {
         // Navigieren Sie zurück in der App-Historie
         window.history.back();
       } else {
         // Beenden Sie die App, wenn keine vorherige Seite vorhanden ist
-        App.exitApp();
+        // App.exitApp();
       }
     });
   }
