@@ -40,34 +40,21 @@
       </ion-item>
 
 
-      <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-        <ng-container *ngIf="isTeamAdmin(teamAdminList, teamId)">
-          <ion-item *ngIf="!isRequest && userProfile.dateOfBirth">
-            <ion-icon slot="start" name="calendar"></ion-icon>
-            <ion-label>
-              {{userProfile.dateOfBirth?.toDate() | date:'dd.MM.YYYY '}}
-            </ion-label>
-            <ion-icon size="small" color="primary" name="copy-outline" slot="end"
-              (click)="copy(userProfile.dateOfBirth)"></ion-icon>
-          </ion-item>
-        </ng-container>
+      <ng-container *ngIf="isAdmin$ | async">
+        <ion-item *ngIf="!isRequest && userProfile.dateOfBirth">
+          <ion-icon slot="start" name="calendar"></ion-icon>
+          <ion-label>
+            {{ userProfile.dateOfBirth?.toDate() | date: 'dd.MM.YYYY ' }}
+          </ion-label>
+          <ion-icon
+            size="small"
+            color="primary"
+            name="copy-outline"
+            slot="end"
+            (click)="copy(userProfile.dateOfBirth)"
+          ></ion-icon>
+        </ion-item>
       </ng-container>
-
-
-      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ng-container *ngIf="isClubAdmin(clubAdminList, clubId)">
-          <ion-item *ngIf="!isRequest && userProfile.dateOfBirth">
-            <ion-icon slot="start" name="calendar"></ion-icon>
-            <ion-label>
-              {{userProfile.dateOfBirth?.toDate() | date:'dd.MM.YYYY '}}
-            </ion-label>
-            <ion-icon size="small" color="primary" name="copy-outline" slot="end"
-              (click)="copy(userProfile.dateOfBirth)"></ion-icon>
-          </ion-item>
-        </ng-container>
-      </ng-container>
-
-
 
     </ion-list>
 

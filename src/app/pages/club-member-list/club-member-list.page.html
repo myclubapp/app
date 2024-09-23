@@ -57,7 +57,7 @@
               <ion-item detail="true">
                 <ion-icon *ngIf="allowEdit==true" slot="icon-only" color="danger" slot="start" name="trash"
                   (click)="deleteClubMember(member)"></ion-icon>
-                <ion-avatar slot="start">
+                <ion-avatar (click)="openMember(member)" slot="start">
                   <img *ngIf="!member.profilePicture" alt="Silhouette of a person's head"
                     src="https://ionicframework.com/docs/img/demos/avatar.svg" />
                   <img *ngIf="member.profilePicture" src="{{member?.profilePicture}}" />
@@ -65,12 +65,12 @@
                 <ion-label class="ion-text-wrap" (click)="openMember(member)">{{member.firstName}}
                   {{member.lastName}}</ion-label>
                 <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                  <ion-label *ngIf="isClubAdmin(clubAdminList, club.id)">
+                  <ion-label (click)="openMember(member)" *ngIf="isClubAdmin(clubAdminList, club.id)">
                     {{member.dateOfBirth?.toDate() | date:'dd.MM.YYYY '}}
                   </ion-label>
                 </ng-container>
 
-                <ion-label *ngIf="member.roles.length > 0" slot="end">
+                <ion-label (click)="openMember(member)" *ngIf="member.roles.length > 0" slot="end">
                   <ion-badge *ngFor="let role of member.roles">{{role}}</ion-badge>
                 </ion-label>
               </ion-item>

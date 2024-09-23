@@ -39,6 +39,7 @@ export class MemberPage implements OnInit {
 
   teamAdminList$: Observable<Team[]>;
   clubAdminList$: Observable<Club[]>;
+  isAdmin$: Observable<boolean>;
 
   alertTeamSelection = [];
 
@@ -66,6 +67,12 @@ export class MemberPage implements OnInit {
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
     this.teamAdminList$ = this.fbService.getTeamAdminList();
+
+    this.isAdmin$ = combineLatest([this.teamAdminList$, this.clubAdminList$]).pipe(
+      map(([teamAdminList, clubAdminList]) => {
+        return this.isTeamAdmin(teamAdminList, this.teamId) || this.isClubAdmin(clubAdminList, this.clubId);
+      })
+    );
   }
 
   ngOnDestroy() {
