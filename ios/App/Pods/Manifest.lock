@@ -26,8 +26,6 @@ PODS:
     - Capacitor
   - CapacitorNetwork (6.0.2):
     - Capacitor
-  - CapacitorPreferences (6.0.2):
-    - Capacitor
   - CapacitorPushNotifications (6.0.2):
     - Capacitor
   - CapacitorShare (6.0.2):
@@ -35,8 +33,6 @@ PODS:
   - CapacitorSplashScreen (6.0.2):
     - Capacitor
   - CapacitorStatusBar (6.0.1):
-    - Capacitor
-  - CapawesomeCapacitorBadge (6.0.0):
     - Capacitor
   - CordovaPlugins (6.1.2):
     - CapacitorCordova
@@ -117,6 +113,8 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.11.5):
     - GoogleUtilities/Logger
+  - MyclubWidgetPlugin (1.0.5):
+    - Capacitor
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
     - nanopb/encode (= 2.30908.0)
@@ -138,15 +136,14 @@ DEPENDENCIES:
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorNetwork (from `../../node_modules/@capacitor/network`)"
-  - "CapacitorPreferences (from `../../node_modules/@capacitor/preferences`)"
   - "CapacitorPushNotifications (from `../../node_modules/@capacitor/push-notifications`)"
   - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
-  - "CapawesomeCapacitorBadge (from `../../node_modules/@capawesome/capacitor-badge`)"
   - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
   - Firebase/Messaging (= 7.11.0)
   - FirebaseCore (= 7.11.0)
+  - MyclubWidgetPlugin (from `../../node_modules/myclub-widget-plugin`)
 
 SPEC REPOS:
   trunk:
@@ -190,8 +187,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorNetwork:
     :path: "../../node_modules/@capacitor/network"
-  CapacitorPreferences:
-    :path: "../../node_modules/@capacitor/preferences"
   CapacitorPushNotifications:
     :path: "../../node_modules/@capacitor/push-notifications"
   CapacitorShare:
@@ -200,10 +195,10 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/splash-screen"
   CapacitorStatusBar:
     :path: "../../node_modules/@capacitor/status-bar"
-  CapawesomeCapacitorBadge:
-    :path: "../../node_modules/@capawesome/capacitor-badge"
   CordovaPlugins:
     :path: "../capacitor-cordova-ios-plugins"
+  MyclubWidgetPlugin:
+    :path: "../../node_modules/myclub-widget-plugin"
 
 SPEC CHECKSUMS:
   Capacitor: 679f9673fdf30597493a6362a5d5bf233d46abc2
@@ -219,12 +214,10 @@ SPEC CHECKSUMS:
   CapacitorHaptics: fe689ade56ef20ec9b041a753c6da70c5d8ec9a9
   CapacitorKeyboard: 2700f9b18687be021e28b5a09b59eb151a46d5e0
   CapacitorNetwork: 8796cf1f1104a00b289957b6150b7c60e1c2a8d3
-  CapacitorPreferences: e8284bf740cf8c6d3f25409af3c01df87dfeb5a1
   CapacitorPushNotifications: ccd797926c030acad3d5498ef452c735c90a2c89
   CapacitorShare: 591ae4693d85686ceb590db8e8b44aa014ec6490
   CapacitorSplashScreen: 250df9ef8014fac5c7c1fd231f0f8b1d8f0b5624
   CapacitorStatusBar: b81d4fb5d4e0064c712018071b3ab4b810b39a63
-  CapawesomeCapacitorBadge: 3d0f281ad8e4a4f8db8c3d88b7622a7f4c413342
   CordovaPlugins: 6636f4c58f1aef4d803c6ff3e8344eb39c00ba68
   Firebase: c121feb35e4126c0b355e3313fa9b487d47319fd
   FirebaseCore: 907447d8917a4d3eb0cce2829c5a0ad21d90b432
@@ -236,9 +229,10 @@ SPEC CHECKSUMS:
   GoogleDataTransport: cd9db2180fcecd8da1b561aea31e3e56cf834aa7
   GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleUtilities: 13e2c67ede716b8741c7989e26893d151b2b2084
+  MyclubWidgetPlugin: 8564007d0afd54bc914bfd8ef20da6954a2c961a
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
 
-PODFILE CHECKSUM: 26d20a6d06f972de3d2f3a3ce48e2132a0c09641
+PODFILE CHECKSUM: 6a9189ffdfa0d6c0368fbb22c7f1d9e737c3fe03
 
 COCOAPODS: 1.15.2

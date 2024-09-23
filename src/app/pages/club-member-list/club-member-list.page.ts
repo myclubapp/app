@@ -246,12 +246,14 @@ export class ClubMemberListPage implements OnInit {
               ...profile, // Spread profile to overwrite and add profile attributes
               firstName: profile.firstName || "Unknown",
               lastName: profile.lastName || "Unknown",
-              roles: member.roles || []
+              roles: member.roles || [],
+              dateOfBirth: profile.dateOfBirth || null,
             })),
             catchError(() => of({
               ...member,
               firstName: "Unknown",
               lastName: "Unknown",
+              dateOfBirth: null,
               roles: member.roles || [] // Ensure role or other attributes are included even in error
             }))
           )
@@ -331,6 +333,7 @@ export class ClubMemberListPage implements OnInit {
       showBackdrop: true,
       componentProps: {
         data: member,
+        clubId: this.club.id,
       },
     });
     modal.present();

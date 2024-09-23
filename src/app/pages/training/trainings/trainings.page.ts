@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import { MyClubAppWidget } from 'myclub-widget-plugin';
 import {
   AlertController,
   IonItemSliding,
@@ -53,6 +54,8 @@ export class TrainingsPage implements OnInit {
   trainingList$: Observable<Training[]>;
   trainingListPast$: Observable<Training[]>;
 
+  subscription: Subscription;
+
 
   teamAdminList$: Observable<Team[]>;
   activatedRouteSub: Subscription;
@@ -95,12 +98,41 @@ export class TrainingsPage implements OnInit {
     this.teamAdminList$ = this.fbService.getTeamAdminList();
 
     this.handleNavigationData();
+
+
+    this.subscription = this.trainingList$.pipe(
+      tap(async (trainings) => {
+        const training = trainings[0];
+        console.log('Widget Value for Key=nextTraining: ', training.name);
+        // MyClubAppWidget.echo({ value: event.name });
+
+        try {
+          await MyClubAppWidget.setItem({ key: 'nextTraining', value: training.name, group: 'group.app.myclub.default' }); 
+        } catch (error) { 
+          console.error('Widget Error setItem: ', error); 
+        }
+      
+        try {
+          await MyClubAppWidget.reloadAllTimelines();
+          await MyClubAppWidget.reloadTimelines({ ofKind: 'AppWidget' });
+
+        } catch (error) {
+          console.error('Widget Error reloadTimelines: ', error);
+        }
+
+      })
+    ).subscribe();
+
+
   }
 
 
   ngOnDestroy() {
     if (this.activatedRouteSub) {
       this.activatedRouteSub.unsubscribe();
+    }
+    if (this.subscription) {
+      this.subscription.unsubscribe();
     }
   }
 

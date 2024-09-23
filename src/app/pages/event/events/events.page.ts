@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { Preferences } from '@capacitor/preferences';
+import { MyClubAppWidget } from 'myclub-widget-plugin';
+
 import {
   IonItemSliding,
   IonRouterOutlet,
@@ -34,6 +35,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
 import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
 import { ActivatedRoute, Router } from "@angular/router";
+import { group } from "console";
 
 @Component({
   selector: "app-events",
@@ -77,32 +79,39 @@ export class EventsPage implements OnInit {
     this.subscription = this.eventList$.pipe(
       tap(async (events) => {
         const event = events[0];
-        // console.log('Events', events);
-        await Preferences.set({
-          key: 'widgetNextEventName',
-          value: event.name
-        });
-        await Preferences.set({
-          key: 'widgetNextEventDate',
-          value: event.date.toString()
-        });
-        console.log('Widget Next Event:', event.name, event.date.toString());
+        console.log('Widget Value for Key=NextEvent: ', event.name);
+        // MyClubAppWidget.echo({ value: event.name });
+
+        try {
+          await MyClubAppWidget.setItem({ key: 'nextEvent', value: event.name, group: 'group.app.myclub.default' }); 
+        } catch (error) { 
+          console.error('Widget Error setItem: ', error); 
+        }
+      
+        try {
+          await MyClubAppWidget.reloadAllTimelines();
+          await MyClubAppWidget.reloadTimelines({ ofKind: 'AppWidget' });
+
+        } catch (error) {
+          console.error('Widget Error reloadTimelines: ', error);
+        }
+
       })
     ).subscribe();
-  
+
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
 
     this.handleNavigationData();
-    }
-  
+  }
+
 
   ngOnDestroy() {
-    if (this.activatedRouteSub){
+    if (this.activatedRouteSub) {
       this.activatedRouteSub.unsubscribe();
     }
-    if (this.subscription){
+    if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
@@ -302,7 +311,7 @@ export class EventsPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
     );
     const newStartDate = event.date.toDate();
-    newStartDate.setHours(Number(event.timeFrom.substring(0,2)));
+    newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
     // console.log(newStartDate);
 
     // Get team threshold via training.teamId
@@ -310,10 +319,10 @@ export class EventsPage implements OnInit {
     const eventThreshold = event.club.eventThreshold || 0;
     console.log(eventThreshold);
     // Verpätete Abmeldung?
-    if ( ((newStartDate.getTime() - new Date().getTime()) < ( 1000 * 60 * 60 * eventThreshold)) && status == false && eventThreshold){
+    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * eventThreshold)) && status == false && eventThreshold) {
       console.log("too late");
-       await this.tooLateToggle();
-     
+      await this.tooLateToggle();
+
     } else {
       // OK
       await this.eventService.setClubEventAttendeeStatus(
@@ -338,7 +347,7 @@ export class EventsPage implements OnInit {
       `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
     );
     const newStartDate = event.date.toDate();
-    newStartDate.setHours(Number(event.timeFrom.substring(0,2)));
+    newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
     // console.log(newStartDate);
 
     // Get team threshold via training.teamId
@@ -347,10 +356,10 @@ export class EventsPage implements OnInit {
     console.log(eventThreshold);
 
     // Verpätete Abmeldung?
-    if ( ((newStartDate.getTime() - new Date().getTime()) < ( 1000 * 60 * 60 * eventThreshold)) && status == false && eventThreshold){
+    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * eventThreshold)) && status == false && eventThreshold) {
       console.log("too late");
-       await this.tooLateToggle();
-     
+      await this.tooLateToggle();
+
     } else {
       // OK
       await this.eventService.setClubEventAttendeeStatus(
@@ -427,15 +436,15 @@ export class EventsPage implements OnInit {
     toast.present();
   }
 
-  async tooLateToggle(){
+  async tooLateToggle() {
     const alert = await this.alertCtrl.create({
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
-      buttons: [ {
+      buttons: [{
         role: "",
         text: "OK",
-        handler: (data)=> {
-          console.log(data)  
+        handler: (data) => {
+          console.log(data)
         }
       }]
     })

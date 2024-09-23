@@ -69,11 +69,11 @@ export class NotificationPage implements OnInit {
       switchMap((user) => {
         return this.notificationService.getNotifications(user).pipe(
           map((notifications) => {
+            if (notifications == null || notifications.length === 0) {
+              PushNotifications.removeAllDeliveredNotifications();
+            }
             return notifications.sort((a, b) => a.date - b.date);
           }),
-          tap((notifications) => {
-            // console.log('Sorted Notifications', notifications);
-          })
         );
       })
     )
@@ -99,7 +99,12 @@ export class NotificationPage implements OnInit {
   toggle(notification) {
     this.notificationService.toggleNotification(notification);
 
-    this.subscriptionToggle = this.notifications$.subscribe((notifications) => {
+    this.subscriptionToggle = this.notifications$.pipe(take(1),tap(notifications=>{
+      if(notifications == null || notifications.length === 0){
+        PushNotifications.removeAllDeliveredNotifications();
+      }
+
+    })).subscribe((notifications) => {
       if (notifications.length === 0) {
         PushNotifications.removeAllDeliveredNotifications();
       }

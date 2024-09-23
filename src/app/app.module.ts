@@ -16,13 +16,7 @@ import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { provideFirebaseApp, getApp, initializeApp } from "@angular/fire/app";
 import { getFirestore, provideFirestore } from "@angular/fire/firestore";
 import { provideAuth, getAuth, initializeAuth } from "@angular/fire/auth";
-import {
-  setPersistence,
-  browserSessionPersistence,
-  inMemoryPersistence,
-  indexedDBLocalPersistence,
-  // indexedDBLocalPersistence
-} from "firebase/auth";
+import { indexedDBLocalPersistence } from "firebase/auth";
 import { provideStorage, getStorage } from "@angular/fire/storage";
 import { provideMessaging, getMessaging } from "@angular/fire/messaging";
 
@@ -55,7 +49,7 @@ import { ClubTeamListPage } from "./pages/club-team-list/club-team-list.page";
 import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.page";
 import { ClubRequestListPage } from "./pages/club-request-list/club-request-list.page";
 import { TeamCreatePage } from "./pages/team/team-create/team-create.page";
-import { of, switchMap, take } from "rxjs";
+import { take } from "rxjs";
 import { HelferPunkteClubPage } from "./pages/helfer/helfer-punkte-club/helfer-punkte-club.page";
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 import { GamePreviewPage } from "./pages/championship/game-preview/game-preview.page";

@@ -22,6 +22,7 @@ import { Team } from "src/app/models/team";
 import { Profile } from "src/app/models/user";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { Club } from "src/app/models/club";
 
 @Component({
   selector: "app-member",
@@ -32,16 +33,16 @@ export class MemberPage implements OnInit {
   @Input("data") userProfile: Profile;
   @Input("isRequest") isRequest: boolean;
   @Input("clubId") clubId: string;
+  @Input("teamId") teamId: string;
   userProfile$: Observable<Profile>;
   skeleton = new Array(12);
 
   teamAdminList$: Observable<Team[]>;
+  clubAdminList$: Observable<Club[]>;
 
   alertTeamSelection = [];
 
   alertButtonsApproveClub = [];
-
-  teamAdminListSubscription: Subscription;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -56,44 +57,28 @@ export class MemberPage implements OnInit {
   ngOnInit() {
     this.isRequest = this.navParams.get("isRequest");
     this.clubId = this.navParams.get("clubId");
+    this.teamId = this.navParams.get("teamId");
     this.userProfile = this.navParams.get("data");
     // this.userProfile$ = of(this.userProfile);
     this.userProfile$ = this.getUserProfile(this.userProfile.id);
 
     this.setupAlerts();
 
-
-    // CHANGE ThIS To CLUBadMIN AND / OR TEAM ADMIN LIST
-    // this.getTeamAndClubTeamsAsAdmin();
-    // Get Array of all Clubs, that user is Admin
-    /*this.fbService.getClubAdminList()
-    // Get all Teams of that club.
-    this.fbService.getClubTeamList(club.id)
-
-    // Get all Teams, that user is admin.
+    this.clubAdminList$ = this.fbService.getClubAdminList();
     this.teamAdminList$ = this.fbService.getTeamAdminList();
-    this.teamAdminList$.forEach((teamList) => {
-      for (const team of teamList) {
-        this.alertTeamSelection.push(
-          {
-            label: team.name,
-            type: 'checkbox',
-            value: team.id,
-            checked: false
-          }
-        )
-      }
-      return teamList;
-    });
-  */
   }
 
   ngOnDestroy() {
-    if (this.teamAdminListSubscription) {
-      this.teamAdminListSubscription.unsubscribe();
-    }
+
   }
 
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
+
+  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
+    return teamAdminList && teamAdminList.some(team => team.id === teamId);
+  }
   async copy(value) {
     await Clipboard.write({
       string: value

@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
-import { Preferences, GetResult } from "@capacitor/preferences";
 import {
   AlertController,
   IonItemSliding,

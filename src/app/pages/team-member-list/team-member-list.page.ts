@@ -453,6 +453,8 @@ export class TeamMemberListPage implements OnInit {
       showBackdrop: true,
       componentProps: {
         data: member,
+        teamId: this.team.id,
+        clubId: this.team.clubId,
       },
     });
     modal.present();

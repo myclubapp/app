@@ -1,6 +1,6 @@
 {
   "name": "myclub",
-  "version": "1.8.4",
+  "version": "1.8.6",
   "author": "liitu consulting gmbh",
   "homepage": "https://my-club.app/",
   "scripts": {
@@ -52,12 +52,10 @@
     "@capacitor/ios": "6.1.2",
     "@capacitor/keyboard": "6.0.2",
     "@capacitor/network": "6.0.2",
-    "@capacitor/preferences": "^6.0.2",
     "@capacitor/push-notifications": "6.0.2",
     "@capacitor/share": "6.0.2",
     "@capacitor/splash-screen": "6.0.2",
     "@capacitor/status-bar": "6.0.1",
-    "@capawesome/capacitor-badge": "^6.0.0",
     "@fortawesome/angular-fontawesome": "0.14.1",
     "@fortawesome/fontawesome-svg-core": "6.5.2",
     "@fortawesome/free-brands-svg-icons": "6.5.2",
@@ -74,6 +72,7 @@
     "husky-init": "^8.0.0",
     "lottie-web": "^5.12.2",
     "myclub-game-preview": "^0.0.8",
+    "myclub-widget-plugin": "^1.0.5",
     "ngx-lottie": "^11.0.1",
     "rxjs": "^7.4.0",
     "save-svg-as-png": "^1.4.17",

@@ -9,10 +9,6 @@
 	},
 	"android": {},
 	"plugins": {
-		"Badge": {
-			"persist": true,
-			"autoClear": false
-		},
 		"PushNotifications": {
 			"presentationOptions": [
 				"badge",
@@ -36,12 +32,11 @@
 		"HapticsPlugin",
 		"KeyboardPlugin",
 		"CAPNetworkPlugin",
-		"PreferencesPlugin",
 		"PushNotificationsPlugin",
 		"SharePlugin",
 		"SplashScreenPlugin",
 		"StatusBarPlugin",
-		"BadgePlugin",
+		"MyClubAppWidgetPlugin",
 		"CDVPlugin"
 	]
 }

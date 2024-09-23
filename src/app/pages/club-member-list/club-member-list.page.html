@@ -64,7 +64,15 @@
                 </ion-avatar>
                 <ion-label class="ion-text-wrap" (click)="openMember(member)">{{member.firstName}}
                   {{member.lastName}}</ion-label>
-                <ion-badge *ngFor="let role of member.roles" slot="end">{{role}}</ion-badge>
+                <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+                  <ion-label *ngIf="isClubAdmin(clubAdminList, club.id)">
+                    {{member.dateOfBirth?.toDate() | date:'dd.MM.YYYY '}}
+                  </ion-label>
+                </ng-container>
+
+                <ion-label *ngIf="member.roles.length > 0" slot="end">
+                  <ion-badge *ngFor="let role of member.roles">{{role}}</ion-badge>
+                </ion-label>
               </ion-item>
             </ion-item-sliding>
           </ng-container>
