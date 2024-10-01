@@ -60,6 +60,7 @@ export class HelferAddPage implements OnInit {
       clubId: "",
       clubName: "",
 
+
       schichten: <any>[],
 
       status: true,
@@ -108,6 +109,111 @@ export class HelferAddPage implements OnInit {
 
   async close() {
     return this.modalCtrl.dismiss(null, "close");
+  }
+
+  async deleteSchicht(schicht: Schicht) {
+    const alert = await this.alertController.create({
+      header: "Schicht löschen",
+      message: "Möchten Sie diese Schicht wirklich löschen?",
+      buttons: [
+        {
+          text: "Abbrechen",
+          role: "cancel",
+          handler: () => {
+            console.log("Löschen abgebrochen");
+          },
+        },
+        {
+          text: "Löschen",
+          handler: async () => {
+            console.log("Löschen bestätigt");
+            const index = this.event.schichten.findIndex((object) => {
+              return object.id === schicht.id;
+            });
+            if (index !== -1) {
+              this.event.schichten.splice(index, 1);
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+   
+  }
+
+  async copySchicht(schicht: Schicht) {
+    console.log(this.event.timeTo);
+    const alert = await this.alertController.create({
+      header: "Schicht erstellen",
+      subHeader: " ",
+      message: "Eine neue Helferschicht erstellen.",
+      inputs: [
+        {
+          id: "name",
+          name: "name",
+          value: schicht.name,
+          label: "Beschreibung",
+          placeholder: "Beschreibung",
+          type: "text",
+        },
+        {
+          id: "count",
+          name: "countNeeded",
+          value: schicht.countNeeded,
+          label: "Anzahl Helfer",
+          placeholder: "Anzahl Helfer",
+          type: "number",
+        },
+        {
+          id: "points",
+          name: "points",
+          value: schicht.points,
+          label: "Anzahl Helferpunkte",
+          placeholder: "Anzahl Helferpunkte",
+          type: "number",
+    
+        },
+        {
+          id: "timeFrom",
+          name: "timeFrom",
+          value: schicht.timeFrom,
+          label: "Zeit von",
+          placeholder: "Zeit von",
+          type: "time",
+
+        },
+        {
+          id: "timeTo",
+          name: "timeTo",
+          value: schicht.timeTo,
+          label: "Zeit bis",
+          placeholder: "Zeit bis",
+          type: "time",
+
+        },
+      ],
+      buttons: [
+        {
+          text: "Abbrechen",
+          handler: () => {
+            console.log("Abbrechen");
+          },
+        },
+        {
+          text: "Hinzufügen",
+          handler: (data) => {
+            console.log(data);
+            this.event.schichten.push({
+              id: this.event.schichten.length + 1,
+              ...data,
+              count: 0,
+            });
+          },
+        },
+      ],
+    });
+    alert.present();
   }
 
   async editSchicht(schicht: Schicht) {

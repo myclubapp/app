@@ -187,6 +187,25 @@ export class EventService {
     }) as Observable<any[]>;
   }
 
+  addNewHelferEventSchicht(clubId: string, eventId: string, schicht: any) {
+    console.log(clubId, eventId, schicht);  
+    return addDoc(
+      collection(this.firestore, `club/${clubId}/helferEvents/${eventId}/schichten`),
+      schicht
+    );
+  }
+
+  changeHelferEventSchicht(clubId, eventId, schichtId, schicht){
+    console.log(clubId, eventId,schichtId,  schicht);  
+    const helferEventSchichtRef = doc(this.firestore, `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}`);
+    return updateDoc(helferEventSchichtRef, schicht,{merge: true});
+  }
+
+  deleteHelferEventSchicht(clubId, eventId, schichtId){
+    return deleteDoc(doc(this.firestore, `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}`));
+  }
+
+
   getClubHelferEventSchichtAttendeesRef(
     clubId: string,
     eventId: string,

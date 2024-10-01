@@ -25,7 +25,7 @@ import {
   tap,
 } from "rxjs";
 import { Browser } from "@capacitor/browser";
-import { HelferEvent } from "src/app/models/event";
+import { HelferEvent, Schicht } from "src/app/models/event";
 import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 import { EventService } from "src/app/services/firebase/event.service";
@@ -489,6 +489,259 @@ export class HelferDetailPage implements OnInit {
     await toast.present();
   }
 
+  async editSchicht(schicht: Schicht) {
+    const alert = await this.alertCtrl.create({
+      header: "Schicht bearbeiten",
+      subHeader: " ",
+      message: "Eine Helferschicht bearbeiten.",
+      inputs: [
+        {
+          id: "name",
+          name: "name",
+          label: "Beschreibung",
+          placeholder: "Beschreibung",
+          type: "text",
+          value: schicht.name,
+        },
+        {
+          id: "count",
+          name: "countNeeded",
+          label: "Anzahl Helfer",
+          placeholder: "Anzahl Helfer",
+          type: "number",
+          value: schicht.countNeeded,
+        },
+        {
+          id: "points",
+          name: "points",
+          label: "Anzahl Helferpunkte",
+          placeholder: "1",
+          type: "number",
+          value: schicht.points,
+        },
+        {
+          id: "timeFrom",
+          name: "timeFrom",
+          label: "Zeit von",
+          placeholder: "Zeit von",
+          type: "time",
+          value: schicht.timeFrom,
+        },
+        {
+          id: "timeTo",
+          name: "timeTo",
+          label: "Zeit bis",
+          placeholder: "Zeit bis",
+          type: "time",
+          value: schicht.timeTo,
+        },
+      ],
+      buttons: [
+        {
+          text: "Abbrechen",
+          handler: () => {
+            console.log("Abbrechen");
+          },
+        },
+        {
+          text: "Speichern",
+          handler: async (data) => {
+            console.log(data);
+
+            await this.eventService.changeHelferEventSchicht(this.event.clubId, this.event.id, schicht.id, data);
+            await this.presentToast();
+            /*const index = this.event.schichten.findIndex((object) => {
+              return object.id === schicht.id;
+            });
+            if (index !== -1) {
+              this.event.schichten[index] = {
+                id: schicht.id,
+                ...data,
+                count: 0,
+              };
+            }*/
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  async deleteSchicht(schicht: Schicht) {
+    const alert = await this.alertCtrl.create({
+      header: "Schicht löschen",
+      message: "Möchten Sie diese Schicht wirklich löschen?",
+      buttons: [
+        {
+          text: "Abbrechen",
+          role: "cancel",
+          handler: () => {
+            console.log("Löschen abgebrochen");
+          },
+        },
+        {
+          text: "Löschen",
+          handler: async () => {
+            await this.eventService.deleteHelferEventSchicht(this.event.clubId, this.event.id, schicht.id);
+            await this.presentToast();
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+   
+  }
+
+  async copySchicht(schicht: Schicht) {
+    console.log(this.event.timeTo);
+    const alert = await this.alertCtrl.create({
+      header: "Schicht erstellen",
+      subHeader: " ",
+      message: "Eine neue Helferschicht erstellen.",
+      inputs: [
+        {
+          id: "name",
+          name: "name",
+          value: schicht.name,
+          label: "Beschreibung",
+          placeholder: "Beschreibung",
+          type: "text",
+        },
+        {
+          id: "count",
+          name: "countNeeded",
+          value: schicht.countNeeded,
+          label: "Anzahl Helfer",
+          placeholder: "Anzahl Helfer",
+          type: "number",
+        },
+        {
+          id: "points",
+          name: "points",
+          value: schicht.points,
+          label: "Anzahl Helferpunkte",
+          placeholder: "Anzahl Helferpunkte",
+          type: "number",
+    
+        },
+        {
+          id: "timeFrom",
+          name: "timeFrom",
+          value: schicht.timeFrom,
+          label: "Zeit von",
+          placeholder: "Zeit von",
+          type: "time",
+
+        },
+        {
+          id: "timeTo",
+          name: "timeTo",
+          value: schicht.timeTo,
+          label: "Zeit bis",
+          placeholder: "Zeit bis",
+          type: "time",
+
+        },
+      ],
+      buttons: [
+        {
+          text: "Abbrechen",
+          handler: () => {
+            console.log("Abbrechen");
+          },
+        },
+        {
+          text: "Hinzufügen",
+          handler: async (data) => {
+            console.log(data);
+            await this.eventService.addNewHelferEventSchicht(this.event.clubId, this.event.id, data);
+            await this.presentToast();
+            /*this.event.schichten.push({
+              id: this.event.schichten.length + 1,
+              ...data,
+              count: 0,
+            });*/
+          },
+        },
+      ],
+    });
+    alert.present();
+  }
+
+
+  async addSchicht() {
+    console.log(this.event.timeTo);
+    const alert = await this.alertCtrl.create({
+      header: "Schicht erstellen",
+      subHeader: " ",
+      message: "Eine neue Helferschicht erstellen.",
+      inputs: [
+        {
+          id: "name",
+          name: "name",
+          label: "Beschreibung",
+          placeholder: "Beschreibung",
+          type: "text",
+        },
+        {
+          id: "count",
+          name: "countNeeded",
+          label: "Anzahl Helfer",
+          placeholder: "Anzahl Helfer",
+          type: "number",
+        },
+        {
+          id: "points",
+          name: "points",
+          label: "Anzahl Helferpunkte",
+          placeholder: "Anzahl Helferpunkte",
+          type: "number",
+          value: "",
+        },
+        {
+          id: "timeFrom",
+          name: "timeFrom",
+          label: "Zeit von",
+          placeholder: "Zeit von",
+          type: "time",
+          value: this.event.timeFrom.slice(11, 16),
+        },
+        {
+          id: "timeTo",
+          name: "timeTo",
+          label: "Zeit bis",
+          placeholder: "Zeit bis",
+          type: "time",
+          value: this.event.timeTo.slice(11, 16),
+        },
+      ],
+      buttons: [
+        {
+          text: "Abbrechen",
+          handler: () => {
+            console.log("Abbrechen");
+          },
+        },
+        {
+          text: "Hinzufügen",
+          handler: async (data) => {
+            console.log(data);
+            await this.eventService.addNewHelferEventSchicht(this.event.clubId, this.event.id, data);
+            await this.presentToast();
+            /*this.event.schichten.push({
+              id: this.event.schichten.length + 1,
+              ...data,
+              count: 0,
+            });*/
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
   changeTimeFrom(ev) {
     console.log(ev.detail.value);
     if (this.event.timeFrom > this.event.timeTo) {
