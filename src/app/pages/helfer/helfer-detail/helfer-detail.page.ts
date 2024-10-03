@@ -210,6 +210,15 @@ export class HelferDetailPage implements OnInit {
     return this.eventService.getClubHelferEventSchichtenRef(clubId, eventId).pipe(
       switchMap((schichten) => {
         if (schichten.length === 0) return of([]); // No schichten found
+
+        // Sort the schichten by timeFrom ascending and then by name A-Z
+        const sortedSchichten = schichten.sort((a, b) => {
+          const timeComparison = a.timeFrom.localeCompare(b.timeFrom); // Ascending order by timeFrom
+          if (timeComparison !== 0) return timeComparison; // If timeFrom is different, use it
+          return a.name.localeCompare(b.name); // If timeFrom is the same, sort by name A-Z
+        });
+
+
         return this.fbService.getClubMemberRefs(clubId).pipe(
           switchMap(clubMembers => {
             const clubMemberProfiles$ = clubMembers.map(member =>
@@ -223,7 +232,7 @@ export class HelferDetailPage implements OnInit {
             );
             return forkJoin(clubMemberProfiles$).pipe(
               switchMap(clubMembersWithDetails => {
-                const schichtenWithAttendees$ = schichten.map(schicht =>
+                const schichtenWithAttendees$ = sortedSchichten.map(schicht =>
                   this.eventService.getClubHelferEventSchichtAttendeesRef(clubId, eventId, schicht.id).pipe(
                     map(attendees => {
                       const attendeeDetails = attendees.map(attendee => {
@@ -591,7 +600,7 @@ export class HelferDetailPage implements OnInit {
     });
 
     await alert.present();
-   
+
   }
 
   async copySchicht(schicht: Schicht) {
@@ -624,7 +633,7 @@ export class HelferDetailPage implements OnInit {
           label: "Anzahl Helferpunkte",
           placeholder: "Anzahl Helferpunkte",
           type: "number",
-    
+
         },
         {
           id: "timeFrom",

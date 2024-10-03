@@ -86,7 +86,7 @@ export class HelferPage implements OnInit {
     this.activatedRouteSub = this.activatedRoute.url.subscribe(data => {
       if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "helferEvent") {
         const pushData = this.router.getCurrentNavigation().extras.state;
-        console.log("PUSHDATA " + JSON.stringify(pushData));
+        // console.log("PUSHDATA " + JSON.stringify(pushData));
         let helferEvent: HelferEvent = {
           id: "",
           name: "",
@@ -471,8 +471,8 @@ export class HelferPage implements OnInit {
   }
 
   async openEventDetailModal(event: HelferEvent, isFuture: boolean) {
-    console.log("Open Modal");
-    console.log(JSON.stringify(event));
+    // console.log("Open Modal");
+    // console.log(JSON.stringify(event));
     const modal = await this.modalCtrl.create({
       component: HelferDetailPage,
       presentingElement: this.routerOutlet.nativeEl,

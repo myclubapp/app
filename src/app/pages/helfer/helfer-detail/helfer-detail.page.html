@@ -111,7 +111,7 @@
               </ng-container>
               <ion-label>
                 <h2>{{schicht.name}}</h2>
-                <h3>{{schicht.timeFrom}} {{schicht.timeTo}}</h3>
+                <h3>Zeit: {{schicht.timeFrom}} Uhr - {{schicht.timeTo}} Uhr</h3>
                 <h3>{{'common.helper_points'| translate}}: {{schicht.points}}</h3>
               </ion-label>
               <ion-badge>{{schicht.attendeeListTrue.length}} /
@@ -355,7 +355,7 @@
 
             <ion-label (click)="editSchicht(schicht)">
               <h3>{{schicht.name}}</h3>
-              <h2>{{schicht.timeFrom}} {{schicht.timeTo}}</h2>
+              <h2>{{schicht.timeFrom}} Uhr - {{schicht.timeTo}} Uhr</h2>
             </ion-label>
             <ion-badge slot="end">{{schicht.countNeeded}}</ion-badge>
           </ion-item>
