@@ -235,12 +235,12 @@
           <div *ngFor="let entry of teamRankings">
             <ion-accordion value="{{entry.teamId}}">
               <ion-item slot="header" color="light">
-                <ion-label class="ion-text-wrap">{{entry.details.title}}</ion-label>
+                <ion-label class="ion-text-wrap">{{entry.details?.title}}</ion-label>
               </ion-item>
               <div slot="content">
                 <ion-list>
                   <ion-list-header>
-                    <ion-label>{{entry.details.title}}</ion-label>
+                    <ion-label>{{entry?.details?.title}}</ion-label>
                   </ion-list-header>
                   <ion-item>
                     <ion-grid>

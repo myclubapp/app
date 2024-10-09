@@ -224,9 +224,9 @@ export class AppComponent implements OnInit {
 
   ngOnDestroy() {
     Network.removeAllListeners();
-    
+
     App.removeAllListeners();
-    
+
     if (this.clubListSub) {
       this.clubListSub.unsubscribe();
     }
@@ -244,15 +244,21 @@ export class AppComponent implements OnInit {
   }
 
   private registerBackButton() {
-    App.addListener('backButton', ({ canGoBack }) => {
-      console.log("backbutton", canGoBack);
-      // alert(canGoBack)
-      if (canGoBack) {
+    App.addListener('backButton', async ({ canGoBack }) => {
+      // console.log("backbutton", canGoBack);
+      // console.log(">", this.router.lastSuccessfulNavigation)
+      // console.log(">>", this.router.getCurrentNavigation())
+      // console.log(">>>", window.history.length);
+      const modal = await this.modalCtrl.getTop()
+      if (modal) {
+        modal.dismiss();
+        return;
+      } else if (canGoBack) {
         // Navigieren Sie zurück in der App-Historie
         window.history.back();
       } else {
         // Beenden Sie die App, wenn keine vorherige Seite vorhanden ist
-        // App.exitApp();
+        App.exitApp();
       }
     });
   }
