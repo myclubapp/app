@@ -39,15 +39,17 @@ import { Club } from "src/app/models/club";
   styleUrls: ["./championship.page.scss"],
 })
 export class ChampionshipPage implements OnInit {
-  @Input("team") team: Team;
-  @Input("isModal") isModal: boolean;
+  @Input("team")
+  team!: Team;
+  @Input("isModal")
+  isModal!: boolean;
   skeleton = new Array(12);
-  user$: Observable<User>;
-  user: User;
+  user$!: Observable<User>;
+  user!: User;
 
-  gameList$: Observable<Game[]>;
-  gameListPast$: Observable<Game[]>;
-  teamRankings$: Observable<any[]>;
+  gameList$!: Observable<Game[]>;
+  gameListPast$!: Observable<Game[]>;
+  teamRankings$!: Observable<any[]>;
 
   /*gameListBackup$: Observable<Game[]>;
   gameListPastBackup$: Observable<Game[]>;
@@ -60,10 +62,10 @@ export class ChampionshipPage implements OnInit {
 
   mode = "games";
 
-  teamList$: Observable<Team[]>;
+  teamList$!: Observable<Team[]>;
 
-  clubAdminList$: Observable<Club[]>;
-  teamAdminList$: Observable<Team[]>;
+  clubAdminList$!: Observable<Club[]>;
+  teamAdminList$!: Observable<Team[]>;
 
   /*filterList: any[] = [];
   filterValue: string = "";
@@ -116,7 +118,17 @@ export class ChampionshipPage implements OnInit {
       // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         if (this.team && this.team.id) {
-          teams.push({ id: this.team.id })
+          teams.push({
+            id: this.team.id,
+            clubId: "",
+            name: "",
+            logo: "",
+            website: "",
+            portrait: "",
+            liga: "",
+            type: "",
+            updated: Timestamp.now(),
+          })
         } else if (teams.length === 0) {
           return of([])
         };
@@ -166,7 +178,9 @@ export class ChampionshipPage implements OnInit {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => {
-        this.user = user;
+        if (user) {
+          this.user = user;
+        }
       }),
       switchMap((user) => {
         if (!user) return of([]);
@@ -174,7 +188,17 @@ export class ChampionshipPage implements OnInit {
       }),
       mergeMap((teams) => {
         if (this.team && this.team.id) {
-          teams.push({ id: this.team.id })
+          teams.push({
+            id: this.team.id,
+            clubId: "",
+            name: "",
+            logo: "",
+            website: "",
+            portrait: "",
+            liga: "",
+            type: "",
+            updated: Timestamp.now(),
+          })
         } else if (teams.length === 0) {
           return of([])
         };
@@ -236,7 +260,7 @@ export class ChampionshipPage implements OnInit {
           )
         ).pipe(
           map((teamsGames) => teamsGames.flat()), // Flatten to get all games across all teams
-          map((allGames) => allGames.sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())), // Sort games by date
+          map((allGames) => allGames.sort((a, b) => a.dateTime.toDate().getTime() - b.dateTime.toDate().getTime())), // Sort games by date
           catchError((err) => {
             console.error("Error in getTeamGamesUpcoming:", err);
             return of([]); // Return an empty array on error
@@ -260,7 +284,17 @@ export class ChampionshipPage implements OnInit {
       }),
       mergeMap((teams) => {
         if (this.team && this.team.id) {
-          teams.push({ id: this.team.id })
+          teams.push({
+            id: this.team.id,
+            clubId: "",
+            name: "",
+            logo: "",
+            website: "",
+            portrait: "",
+            liga: "",
+            type: "",
+            updated: Timestamp.now(),
+          })
         } else if (teams.length === 0) {
           return of([])
         };

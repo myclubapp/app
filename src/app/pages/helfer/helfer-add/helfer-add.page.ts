@@ -412,10 +412,9 @@ export class HelferAddPage implements OnInit {
     if (helferEvent) {
       console.log(helferEvent.id);
       return this.modalCtrl.dismiss({}, "confirm");
-    } else {
-
     }
 
+    return null;
   }
   async toastActionError(error) {
     const toast = await this.toastController.create({

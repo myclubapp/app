@@ -34,8 +34,8 @@ export class ClubListPage implements OnInit {
   ngOnInit() {
 
     this.clubList$ = this.fbService.getClubList();
-    if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === 'clubRequestAdmin') {
-      this.subscription = this.fbService.getClubRef(this.router.getCurrentNavigation().extras.state.clubId).pipe(
+    if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state["type"] === 'clubRequestAdmin') {
+      this.subscription = this.fbService.getClubRef(this.router.getCurrentNavigation().extras.state["clubId"]).pipe(
         take(1),
         tap(club => {
           this.openModal(club);

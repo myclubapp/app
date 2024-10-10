@@ -10,6 +10,12 @@
 
 #import <Foundation/Foundation.h>
 
+#if __has_feature(modules)
+@import GoogleMapsBase;
+#else
+#import <GoogleMapsBase/GoogleMapsBase.h>
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -58,12 +64,16 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Enables the map to render using Metal instead of OpenGL.
  *
- * The rendering might look very slightly different between renderers. The default is @c NO and
+ * The rendering might look very slightly different between renderers. The default is @c YES and
  * value must be updated before the services instance is initialized.
  *
  * This property must be set from the main thread.
  */
-+ (void)setMetalRendererEnabled:(BOOL)enabled;
++ (void)setMetalRendererEnabled:(BOOL)enabled
+    __GMS_AVAILABLE_BUT_DEPRECATED_MSG(
+        "Metal is now the default renderer if this API is not invoked. In the future, "
+        "Metal rendering will be the only available implementation and this API will be a no-op. "
+        "We encourage customers to remove calls to this method from their code.");
 
 /**
  * Enables reporting of abnormal SDK terminations such as the app crashes while the SDK is still
