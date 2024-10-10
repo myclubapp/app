@@ -53,8 +53,8 @@ export class TrainingService {
 
   async setCreateTraining(training: Training) {
     const user = this.authService.auth.currentUser;
-    console.log("training");
-    console.log(training);
+    // console.log("training");
+    // console.log(training);
     return addDoc(
       collection(this.firestore, `userProfile/${user.uid}/trainings`),
       training
@@ -72,7 +72,7 @@ export class TrainingService {
 
   /* TEAM TrainingS */
   getTeamTrainingsRefs(teamId: string): Observable<Training[]> {
-    // console.log(`Read Team Trainings List Ref ${teamId}`)
+    console.log(`Read Team Trainings List Ref ${teamId}`)
     const trainingsRefList = collection(
       this.firestore,
       `teams/${teamId}/trainings`
@@ -80,11 +80,11 @@ export class TrainingService {
     const q = query(
       trainingsRefList,
       where(
-        "date",
+        "date", // date = endDate
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600  * 1)) // 1 Hour after training ends
       )
-    ); // heute - 1 Woche
+    );
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       Training[]
     >;
@@ -100,12 +100,12 @@ export class TrainingService {
     const q = query(
       trainingsRefList,
       where(
-        "date",
+        "date", //  date = endDate of training
         "<",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now())) // sofort als "vergangen" anzeigen
       ),
-      limit(20)
-    ); // heute - 1 Woche
+      limit(20) 
+    ); 
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       Training[]
     >;
@@ -147,6 +147,19 @@ export class TrainingService {
     const statusRef = doc(
       this.firestore,
       `teams/${teamId}/trainings/${trainingId}/attendees/${user.uid}`
+    );
+    return await setDoc(statusRef, { status });
+  }
+
+  async setTeamTrainingAttendeeStatusAdmin(
+    status: boolean,
+    teamId: string,
+    trainingId: string,
+    memberId: string,
+  ) {
+    const statusRef = doc(
+      this.firestore,
+      `teams/${teamId}/trainings/${trainingId}/attendees/${memberId}`
     );
     return await setDoc(statusRef, { status });
   }

@@ -8,11 +8,14 @@ import {
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import {
+  BehaviorSubject,
   Observable,
   Subscription,
   catchError,
   combineLatest,
+  debounceTime,
   finalize,
+  first,
   forkJoin,
   lastValueFrom,
   map,
@@ -27,7 +30,9 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { MemberPage } from "../member/member.page";
 import { Profile } from "src/app/models/user";
-import { User } from "firebase/auth";
+import { Team } from "src/app/models/team";
+import { Club } from "src/app/models/club";
+
 @Component({
   selector: 'app-team-admin-list',
   templateUrl: './team-admin-list.page.html',
@@ -37,14 +42,16 @@ export class TeamAdminListPage implements OnInit {
   @Input("team") team: any;
   team$: Observable<any>;
 
-  user$: Observable<User>;
-  user: User;
-
   allowEdit: boolean = false;
 
   groupArray = [];
-  subscribeAdmin: Subscription;
 
+  teamAdminList$: Observable<Team[]>;
+  clubAdminList$: Observable<Club[]>;
+
+  teamAdmins$: Observable<any[]>; // Observable for the full list of members
+  filteredTeamAdmins$: Observable<any[]>; // Observable for filtered results
+  searchTerm = new BehaviorSubject<string>('');  // Initialized with an empty string
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -55,20 +62,26 @@ export class TeamAdminListPage implements OnInit {
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.team = this.navParams.get("team");
+    if (this.team.roles && this.team.roles.lenght > 0) {
 
-    this.team$ = of(this.team);
-    this.team$ = this.getTeam(this.team.id);
+    } else {
+      this.team.roles = [];
+    }
+
+    this.team$ = this.fbService.getTeamRef(this.team.id);
+
+    this.initializeTeamAdmins();
+
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    this.clubAdminList$ = this.fbService.getClubAdminList();
   }
 
   ngOnDestroy() {
 
-    if (this.subscribeAdmin) {
-      this.subscribeAdmin.unsubscribe();
-    }
   }
 
   edit() {
@@ -80,225 +93,303 @@ export class TeamAdminListPage implements OnInit {
     }
   }
 
-  getTeam(teamId: string) {
-    this.groupArray = [];
+  initializeTeamAdmins() {
+    this.groupArray = [];  // Initialize or clear the group array
 
-    const calculateAge = (dateOfBirth) => {
-      // console.log("DoB: " + JSON.stringify(dateOfBirth));
-      const birthday = new Date(dateOfBirth.seconds * 1000);
-      const ageDifMs = Date.now() - birthday.getTime();
-      const ageDate = new Date(ageDifMs); // miliseconds from epoch
-      return Math.abs(ageDate.getUTCFullYear() - 1970);
-    };
-
-    return this.authService.getUser$().pipe(
-      take(1),
-      tap((user) => {
-        this.user = user;
-        if (!user) throw new Error("User not found");
-      }),
-      switchMap(() => this.fbService.getTeamRef(teamId)),
-      switchMap((team) => {
-        if (!team) return of(null);
-        return combineLatest({
-          teamMembers: this.fbService.getTeamMemberRefs(teamId),
-          teamAdmins: this.fbService.getTeamAdminRefs(teamId),
-          //teamRequests: this.fbService.getTeamRequestRefs(teamId),
-        }).pipe(
-          switchMap(
-            ({
-              teamMembers,
-              teamAdmins,
-              // teamRequests
-            }) => {
-              const memberProfiles$ = teamMembers.map((member) =>
-                this.userProfileService.getUserProfileById(member.id).pipe(
-                  take(1),
-
-                  catchError(() =>
-                    of({ ...member, firstName: "Unknown", lastName: "Unknown" })
-                  )
-                )
-              );
-             const adminProfiles$ = teamAdmins.map((admin) =>
-              this.userProfileService.getUserProfileById(admin.id).pipe(
-                take(1),
-                catchError(() =>
-                  of({ ...admin, firstName: "Unknown", lastName: "Unknown" })
-                )
-              )
-            );
-            /*  const teamRequests$ = teamRequests.map((request) =>
-              this.userProfileService.getUserProfileById(request.id).pipe(
-                take(1),
-                catchError(() =>
-                  of({ ...request, firstName: "Unknown", lastName: "Unknown" })
-                )
-              )
-            );*/
-              return forkJoin({
-                teamMembers: forkJoin(memberProfiles$).pipe(startWith([])),
-                teamAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
-                // teamRequests: forkJoin(teamRequests$).pipe(startWith([])),
-              }).pipe(
-                map(
-                  ({
-                    teamMembers,
-                    teamAdmins,
-                    //  teamRequests
-                  }) => ({
-                    teamAdmins: teamAdmins
-                      .filter((member) => member !== undefined)
-                      .sort((a, b) => a.firstName.localeCompare(b.firstName))
-                      .map((profile) => {
-                        if (
-                          !this.groupArray.includes(profile.firstName.charAt(0))
-                        ) {
-                          this.groupArray.push(profile.firstName.charAt(0));
-                        }
-                        return {
-                          ...profile,
-                          groupBy: profile.firstName.charAt(0),
-                        };
-                      }), // Sort by firstName, // Filter out undefined
-                    teamMembers: teamMembers.filter((member) => member !== undefined), // Filter out undefined
-                    /*teamRequests: teamRequests.filter(
-                  (request) => request !== undefined
-                ), // Filter out undefined*/
-                  })
-                )
-              );
-            }
-          ),
-          map(
-            ({
-                teamMembers,
-                teamAdmins,
-              //  teamRequests
-            }) => {
-              /* const ages = teamMembers
-              .map((member) =>
-                member.hasOwnProperty("dateOfBirth")
-                  ? calculateAge(member.dateOfBirth)
-                  : 0
-              )
-              .filter((age) => age > 0); // Filter out invalid or 'Unknown' ages
-            // console.log(ages);
-
-            const averageAge =
-              ages.length > 0
-                ? ages.reduce((a, b) => a + b, 0) / ages.length
-                : 0; // Calculate average or set to 0 if no valid ages
-                */
-
+    this.teamAdmins$ = this.fbService.getTeamAdminRefs(this.team.id).pipe(
+      // tap(() => console.log("Fetching team admins")),
+      switchMap(members => {
+        if (members.length === 0) {
+          console.log("No team admins found.");
+          this.groupArray = [];
+          return of([]); // Emit an empty array to keep the observable alive
+        }
+        const profiles$ = members.map(member =>
+          this.userProfileService.getUserProfileById(member.id).pipe(
+            map(profile => ({
+              ...member, // Spread member to retain all original attributes
+              ...profile, // Spread profile to overwrite and add profile attributes
+              firstName: profile.firstName || "Unknown",
+              lastName: profile.lastName || "Unknown",
+              roles: member.roles || []
+            })),
+            catchError(() => of({
+              ...member,
+              firstName: "Unknown",
+              lastName: "Unknown",
+              roles: member.roles ||  [] // Ensure role or other attributes are included even in error
+            }))
+          )
+        );
+        return combineLatest(profiles$).pipe(
+          map(profiles => profiles
+            .filter(profile => profile !== undefined)
+            .sort((a, b) => a.firstName.localeCompare(b.firstName))
+            .map(profile => {
+              const groupByChar = profile.firstName.charAt(0).toUpperCase();
+              if (!this.groupArray.includes(groupByChar)) {
+                this.groupArray.push(groupByChar);
+              }
               return {
-                ...team,
-                // averageAge: averageAge.toFixed(1), // Keep two decimal places
-                  teamMembers,
-                  teamAdmins,
-                //  teamRequests,
+                ...profile,
+                groupBy: groupByChar,
               };
-            }
+            })
           )
         );
       }),
-      catchError((err) => {
-        this.toastActionError(err);
-        console.error("Error in getTeamWithMembersAndAdmins:", err);
-        return of(null);
+      catchError(err => {
+        console.error("Error fetching Team admins:", err);
+        return of([]); // Emit an empty array on error
+      }),
+    );
+
+    this.filteredTeamAdmins$ = combineLatest([this.teamAdmins$, this.searchTerm]).pipe(
+      debounceTime(300),
+      map(([admins, term]) => {
+        if (!term) return admins;
+
+        const filtered = admins.filter(admin =>
+          admin.firstName.toLowerCase().includes(term.toLowerCase()) ||
+          admin.lastName.toLowerCase().includes(term.toLowerCase()) ||
+          admin.roles.find(role=>role.toLowerCase().includes(term.toLowerCase()))
+        );
+        return filtered;
+      }),
+      map(filtered => {
+        // Update the groupArray
+        this.groupArray = [];
+        filtered.forEach(admin => {
+          const groupByChar = admin.firstName.charAt(0).toUpperCase();
+          if (!this.groupArray.includes(groupByChar)) {
+            this.groupArray.push(groupByChar);
+          }
+        });
+        return filtered;
+      }),
+      tap(filtered => console.log("Filtered admins:", filtered.length)),
+      catchError(err => {
+        console.error("Error filtering admins:", err);
+        return of([]);
       })
     );
   }
 
-  handleChange(event: any) {
-    console.log(event.detail.value);
-    if (event.detail.value) {
-      const sub = this.team$
-        .pipe(
-          take(1),
-          tap((team) => {
-            const searchResult = team.teamAdmins.filter(
-              (searchMember) =>
-                searchMember.firstName
-                  .toLowerCase()
-                  .includes(event.detail.value.toLowerCase()) ||
-                searchMember.lastName
-                  .toLowerCase()
-                  .includes(event.detail.value.toLowerCase())
-            );
-            console.log(searchResult);
-            this.groupArray = [];
-            for (const profile of searchResult) {
-              if (!this.groupArray.includes(profile.firstName.charAt(0))) {
-                this.groupArray.push(profile.firstName.charAt(0));
-              }
-            }
+  handleSearch(event: any) {
+    const searchTerm = event.detail.value || '';
+    console.log('Handling Search Event:', searchTerm);
+    this.searchTerm.next(searchTerm.trim()); // Trim and update the search term
+  }
 
-            this.team$ = of({
-              ...team,
-              teamMembers: searchResult,
-            });
-          })
+  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
+    return teamAdminList && teamAdminList.some(team => team.id === teamId);
+  }
+
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
+  async addAdministratorToTeam() {
+    if (!this.team || !this.team.clubId) {
+      console.error('No valid team or team reference found.');
+      return;
+    }
+  
+    try {
+      console.log('Fetching members for team ID:', this.team.id);
+      const members = await lastValueFrom(
+        this.fbService.getTeamMemberRefs(this.team.id).pipe(
+          first()  // Takes the first emitted value then completes
         )
-        .subscribe();
-    } else {
-      console.log("empty " + this.team.id);
-      this.team$ = this.getTeam(this.team.id);
+      );
+      console.log('Members fetched:', members.length);
+  
+      if (!members.length) {
+        console.log('No team members found.');
+        return;
+      }
+  
+      const profiles = await Promise.all(members.map(member =>
+        lastValueFrom(this.userProfileService.getUserProfileById(member.id).pipe(
+          first(),
+          //tap(profiles=>console.log(profiles)),
+          catchError(err => {
+            console.error(`Error fetching profile for ${member.id}:`, err);
+            return of({ ...member, firstName: 'Unknown', lastName: 'Unknown' });
+          })
+        ))
+      ));
+  
+      const filteredProfiles = profiles.filter(profile => profile !== undefined);
+      console.log(filteredProfiles)
+      const newTeamMembers = this.filterNewTeamMembers(filteredProfiles, await lastValueFrom(this.teamAdmins$.pipe(take(1))));
+      console.log(newTeamMembers)
+      const memberSelectOptions = this.prepareMemberSelectOptions(newTeamMembers);
+      console.log(memberSelectOptions)  
+      if (memberSelectOptions.length > 0) {
+        await this.showAddMemberAlert(memberSelectOptions);
+      } else {
+        console.log('No new members available to add.');
+      }
+    } catch (err) {
+      console.error('Error in addMemberToTeam:', err);
     }
   }
+  
+  filterNewTeamMembers(profiles, teamMembers) {
+    return profiles.filter(member =>
+      !teamMembers.some(teamMember => teamMember.id === member.id)
+    );
+  }
 
+  prepareMemberSelectOptions(filteredMembers) {
+    // Sort members alphabetically by firstName, then by lastName
+    const sortedMembers = filteredMembers.sort((a, b) => {
+      const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+      const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
 
-  async addAdministrator() {
-    let memberSelect = [];
+    // Map sorted members to checkbox options
+    return sortedMembers.map(member => ({
+      type: 'checkbox',
+      name: member.id,
+      label: `${member.firstName} ${member.lastName}`,
+      value: member.id,
+      checked: false,
+    }));
+  }
 
-    this.subscribeAdmin = this.team$
-      .pipe(
-        take(1),
-        tap((team) => {
-          console.log(team);
-          team.teamMembers.forEach((member) => {
-            if (!team.teamAdmins.find((element) => element.id === member.id)) {
-              memberSelect.push({
-                type: "checkbox",
-                name: member.id,
-                label: `${member.firstName} ${member.lastName}`,
-                value: member,
-                checked: false,
-              });
-            }
-          });
-        }),
-        finalize(async () => {
-          if (memberSelect.length > 0) {
-            const alert = await this.alertCtrl.create({
-              header: "Administrator hinzufügen",
-              inputs: memberSelect,
-              buttons: [
-                {
-                  text: "Abbrechen",
-                  handler: () => console.log("Cancel clicked"),
-                },
-                {
-                  text: "Hinzufügen",
-                  handler: (data) => console.log(data),
-                },
-              ],
+  async showAddMemberAlert(memberSelect) {
+    const alert = await this.alertCtrl.create({
+      header: await lastValueFrom(this.translate.get("common.addMember")),
+      inputs: memberSelect,
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: 'cancel',
+          handler: () => console.log('Cancel clicked'),
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.add")),
+          handler: (selectedMembers) => {
+            selectedMembers.forEach(memberId => {
+              console.log(memberId)
+              this.approveTeamAdminRequest(this.team.id, memberId);
             });
-            await alert.present();
-          } else {
-            alert("no members")
-          }
-        })
-      )
-      .subscribe();
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+/*
+  addAdministratorToTeam() {
+    if (!this.team || !this.team.id) {
+      console.error('No valid team or team reference found.');
+      return; // Exit if no valid team ID is found
+    }
+
+    // Combine the fetching of team members and current team admins
+    const fetchTeamAndAdmins$ = combineLatest([
+      this.fbService.getTeamMemberRefs(this.team.id),
+      this.teamAdmins$
+    ]).pipe(
+
+      switchMap(([members, teamAdmins]) => {
+        if (members.length === 0) {
+          console.log('No team members found.');
+          return of([]); // Return empty array if no members
+        }
+
+        const profiles$ = members.map(member =>
+          this.userProfileService.getUserProfileById(member.id).pipe(
+            catchError(() => of({ ...member, firstName: 'Unknown', lastName: 'Unknown' })) // Provide fallback data
+          )
+        );
+
+        return combineLatest(profiles$).pipe(
+   
+          map(profiles => profiles.filter(profile => profile !== undefined)),
+          map(profiles => this.filterNewAdmins(profiles, teamAdmins)),
+          map(filteredMembers => this.prepareMemberSelectOptions(filteredMembers))
+        );
+      }),
+      catchError(err => {
+        console.error('Error fetching team and team admins:', err);
+        return of([]); // Handle errors by returning an empty array
+      })
+    );
+
+    fetchTeamAndAdmins$.subscribe(async adminSelect => {
+      if (adminSelect.length > 0) {
+        await this.showAddAdminAlert(adminSelect); // Present the alert with admin selections
+      } else {
+        console.log('No new administrators available to add.');
+      }
+    });
+  }
+
+  filterNewAdmins(profiles, teamAdmins) {
+    return profiles.filter(member =>
+      !teamAdmins.some(admin => admin.id === member.id)
+    );
+  }
+  prepareMemberSelectOptions(filteredMembers) {
+    // Sort members alphabetically by firstName, then by lastName
+    const sortedMembers = filteredMembers.sort((a, b) => {
+      const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+      const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
+
+    // Map sorted members to checkbox options
+    return sortedMembers.map(member => ({
+      type: 'checkbox',
+      name: member.id,
+      label: `${member.firstName} ${member.lastName}`,
+      value: member.id,
+      checked: false,
+    }));
+  }
+  async showAddAdminAlert(adminSelect) {
+    const alert = await this.alertCtrl.create({
+      header: await lastValueFrom(this.translate.get("common.addAdministrator")),
+      inputs: adminSelect,
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: 'cancel',
+          handler: () => console.log('Cancel clicked'),
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.add")),
+          handler: (selectedAdmins) => {
+            selectedAdmins.forEach(adminId => {
+              this.approveTeamAdminRequest(this.team.id, adminId); // Adjusted to admin-specific approval
+            });
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }*/
+
+  async approveTeamAdminRequest(teamId, adminId) {
+    await this.fbService.addTeamAdmin(teamId, adminId).then(() => {
+      this.toastActionSaved();
+    })
+      .catch((err) => {
+        this.toastActionError(err);
+      });
   }
 
 
-  async deleteTeamAdmin( member){
+  async deleteTeamAdmin(member) {
     try {
       await this.fbService.deleteTeamAdmin(this.team.id, member.id);
       await this.toastActionSaved();
-    } catch(e){
+    } catch (e) {
       this.toastActionError(e);
     }
   }
@@ -326,7 +417,7 @@ export class TeamAdminListPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
@@ -337,7 +428,7 @@ export class TeamAdminListPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("team.action__canceled")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
     await toast.present();
@@ -346,8 +437,8 @@ export class TeamAdminListPage implements OnInit {
   async toastActionError(error) {
     const toast = await this.toastCtrl.create({
       message: error.message,
-      duration: 2000,
-      position: "bottom",
+      duration: 1500,
+      position: "top",
       color: "danger",
     });
 

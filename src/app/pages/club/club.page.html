@@ -9,7 +9,7 @@
           >{{"common.cancel" | translate}}</ion-button
         >
       </ion-buttons>-->
-      <ion-title>Club Details</ion-title>
+      <ion-title>{{"club.details" | translate}}</ion-title>
       <ion-buttons slot="primary">
         <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
       </ion-buttons>
@@ -19,7 +19,7 @@
   <ion-content [fullscreen]="true">
     <ion-header collapse="condense">
       <ion-toolbar>
-        <ion-title size="large">Club Details</ion-title>
+        <ion-title size="large">{{"club.details" | translate}}</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -30,7 +30,7 @@
         </ion-thumbnail>
         <ion-label>{{club.name}}</ion-label>
       </ion-item>
-      <ion-item>
+      <!--   <ion-item>
         <ion-label>type</ion-label>
         <ion-badge slot="end">{{club.type}}</ion-badge>
       </ion-item>
@@ -39,7 +39,7 @@
       </ion-item>
       <ion-item>
         <ion-label> {{club.wordpress}} </ion-label>
-      </ion-item>
+      </ion-item>-->
 
       <!--
   <ion-item>
@@ -50,46 +50,131 @@
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
-        <ion-label> {{ "common.Mitgliederverwaltung" | translate}} </ion-label>
+        <ion-label> {{ "common.manage_members" | translate}} </ion-label>
       </ion-list-header>
       <ion-item>
         <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
         <ion-label> {{"common.average__age" | translate}} </ion-label>
         <ion-note slot="end"> {{club.averageAge}}</ion-note>
       </ion-item>
+
+      <ion-item detail="true" (click)="openRequestList()" *ngIf="club['clubRequests'].length > 0">
+        <ion-icon name="alert-circle-outline" color="warning" slot="start"></ion-icon>
+        <ion-label> {{"common.requests" | translate}} </ion-label>
+        <ion-note slot="end">{{club['clubRequests'].length}}</ion-note>
+      </ion-item>
+
       <ion-item detail="true" (click)="openMemberList()">
         <ion-icon name="people-circle-outline" slot="start"></ion-icon>
-        <ion-label> Mitglieder </ion-label>
+        <ion-label> {{"common.members" | translate}} </ion-label>
         <ion-note slot="end">{{club['clubMembers'].length}}</ion-note>
       </ion-item>
 
       <ion-item detail="true" (click)="openAdminList()">
         <ion-icon name="shield-half-outline" slot="start"></ion-icon>
-        <ion-label> Administratoren </ion-label>
+        <ion-label> {{"common.admins" | translate}} </ion-label>
         <ion-note slot="end">{{club['clubAdmins'].length}}</ion-note>
       </ion-item>
 
       <ion-item detail="true" (click)="openTeamList()">
         <ion-icon name="people-outline" slot="start"></ion-icon>
-        <ion-label> Teams </ion-label>
-        <ion-note slot="end">5</ion-note>
+        <ion-label> {{"common.teams" | translate}} </ion-label>
+        <ion-note slot="end">{{club['clubTeams'].length}}</ion-note>
       </ion-item>
-      <ion-item detail="true" (click)="openHelferPunkte()">
-        <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
-        <ion-label> Helferpunkte </ion-label>
-      </ion-item>
+      <ng-container *ngIf="club.hasFeatureHelferEvent">
+        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+          <ion-item *ngIf="isClubAdmin(clubAdminList, this.club.id)" detail="true" (click)="openHelferPunkteClub()">
+            <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
+            <ion-label> Helferpunkte </ion-label>
+          </ion-item>
+        </ng-container>
+      </ng-container>
     </ion-list>
+
+    <ion-list [inset]="true">
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-item *ngIf="isClubAdmin(clubAdminList, this.club.id)" detail="true" (click)="openSubscription()">
+          <ion-icon name="card-outline" slot="start"></ion-icon>
+          <ion-label> {{"common.subscription" | translate}} </ion-label>
+          <ion-badge slot="end">{{club.subscriptionType}}</ion-badge>
+        </ion-item>
+      </ng-container>
+    </ion-list>
+
+
+
+    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+      <ng-container *ngIf="isClubAdmin(clubAdminList, club.id)">
+        <ion-list lines="full" [inset]="true">
+          <ion-list-header>
+            <ion-label> Grenzwerte für Abmeldungen </ion-label>
+          </ion-list-header>
+          <ion-item>
+            <ion-icon name="calendar-outline" slot="start"></ion-icon>
+            <ion-input labelPlacement="fixed" label="Veranstaltungen" type="number" [value]="club.eventThreshold"
+              (ionInput)="onInput($event, 'eventThreshold')"></ion-input>
+          </ion-item>
+
+          <ng-container *ngIf="club.hasFeatureHelferEvent">
+            <ion-item>
+              <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
+              <ion-input labelPlacement="fixed" label="Helferevents" type="number" [value]="club.helferThreshold"
+                (ionInput)="onInput($event, 'helferThreshold')"></ion-input>
+            </ion-item>
+          </ng-container>
+
+        </ion-list>
+        <ion-note color="medium" style="display:block"
+          class="ion-margin-horizontal ion-padding-horizontal ion-text-wrap">
+          Anzahl Stunden vor Beginn des Spiels, Trainings oder Veranstaltung</ion-note>
+      </ng-container>
+    </ng-container>
+
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
-        <ion-label> {{ "common.settings" | translate}} </ion-label>
+        <ion-label> {{ "common.details" | translate}} </ion-label>
       </ion-list-header>
-
       <ion-item>
-        <ion-icon name="hammer-outline" slot="start"></ion-icon>
-        <ion-label> API KEY </ion-label>
+        <ion-icon slot="start" name="mail-outline">
+        </ion-icon>
+        <ion-input (ionChange)="changeEmail($event)" labelPlacement="stacked" [label]='"profile.email" | translate' type="email"
+          attr.aria-label='{{"common.email" | translate}}' [value]="club.email">
+        </ion-input>
       </ion-item>
+      <ion-item *ngIf="club.wordpress">
+        <ion-icon name="logo-wordpress" slot="start"></ion-icon>
+        <ion-label class="ion-text-wrap"> {{club.wordpress}} </ion-label>
+        <ion-button (click)="openUrl(club.wordpress)" fill="clear">
+          <ion-icon slot="icon-only" name="open-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item>
+        <ion-icon name="heart-circle-outline" slot="start"></ion-icon>
+        <ion-label> {{club.type}} </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-icon name="time" slot="start" color="medium"></ion-icon>
+        <ion-note> {{club.updated | date:'dd.MM.YYYY HH:mm'}} Uhr</ion-note>
+      </ion-item>
+
+      <!--<ion-item >
+        <ion-icon name="key" slot="start"></ion-icon>
+        <ion-label> {{club.apiKey}} </ion-label>
+      </ion-item>-->
     </ion-list>
+    <!--
+  <ion-list lines="full" [inset]="true">
+    <ion-list-header>
+      <ion-label> {{ "common.settings" | translate}} </ion-label>
+    </ion-list-header>
+    
+    <ion-item>
+      <ion-icon name="hammer-outline" slot="start"></ion-icon>
+      <ion-label> API KEY </ion-label>
+    </ion-item>
+  </ion-list>
+-->
 
     <!--
   

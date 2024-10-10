@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { ModalController, NavParams } from "@ionic/angular";
+import { ModalController, NavParams, ToastController } from "@ionic/angular";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import {
@@ -39,6 +39,9 @@ export class TrainingCreatePage implements OnInit {
     private readonly modalCtrl: ModalController,
     private trainingService: TrainingService,
     private readonly authService: AuthService,
+
+    private readonly toastController: ToastController,
+
     private fbService: FirebaseService,
     public navParams: NavParams
   ) {
@@ -47,6 +50,7 @@ export class TrainingCreatePage implements OnInit {
       name: "",
       description: "",
 
+      location: "",
       streetAndNumber: "",
       postalCode: "",
       city: "",
@@ -85,11 +89,11 @@ export class TrainingCreatePage implements OnInit {
 
       this.training.timeFrom = new Date(
         new Date(this.trainingCopy.timeFrom).getTime() -
-          new Date(this.trainingCopy.timeFrom).getTimezoneOffset() * 60 * 1000
+        new Date(this.trainingCopy.timeFrom).getTimezoneOffset() * 60 * 1000
       ).toISOString();
       this.training.timeTo = new Date(
         new Date(this.trainingCopy.timeTo).getTime() -
-          new Date(this.trainingCopy.timeTo).getTimezoneOffset() * 60 * 1000
+        new Date(this.trainingCopy.timeTo).getTimezoneOffset() * 60 * 1000
       ).toISOString();
     }
 
@@ -100,7 +104,7 @@ export class TrainingCreatePage implements OnInit {
     });
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void { }
 
   changeTimeFrom(ev) {
     console.log(ev.detail.value);
@@ -164,7 +168,26 @@ export class TrainingCreatePage implements OnInit {
 
     delete this.training.attendees;
 
-    this.trainingService.setCreateTraining(this.training);
-    return this.modalCtrl.dismiss({}, "confirm");
+    const training = await this.trainingService.setCreateTraining(this.training).catch(e => {
+      console.log(e.message);
+      this.toastActionError(e);
+    })
+    if (training) {
+      console.log(training.id);
+      return this.modalCtrl.dismiss({}, "confirm");
+    }
+
+    return null;
   }
+  async toastActionError(error) {
+    const toast = await this.toastController.create({
+      message: error.message,
+      duration: 1500,
+      position: "top",
+      color: "danger",
+    });
+
+    await toast.present();
+  }
+
 }

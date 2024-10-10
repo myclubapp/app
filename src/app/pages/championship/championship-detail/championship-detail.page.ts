@@ -7,8 +7,10 @@ import {
   ViewChild,
 } from "@angular/core";
 import {
+  AlertController,
+  IonItemSliding,
   ModalController,
-  NavController,
+  // NavController,
   NavParams,
   ToastController,
 } from "@ionic/angular";
@@ -21,17 +23,19 @@ import {
   Position,
 } from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import { forkJoin, lastValueFrom, Observable, of } from "rxjs";
+import { combineLatest, forkJoin, lastValueFrom, Observable, of } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "@angular/fire/auth";
 import { catchError, map, switchMap, take, tap } from "rxjs/operators";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { environment } from "src/environments/environment";
-import { ActivatedRoute } from "@angular/router";
+// import { ActivatedRoute } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { LineupPage } from "../lineup/lineup.page";
 import { Profile } from "src/app/models/user";
 import { MemberPage } from "../../member/member.page";
+import { FirebaseService } from "src/app/services/firebase.service";
+import { Team } from "src/app/models/team";
 
 @Component({
   selector: "app-championship-detail",
@@ -50,55 +54,41 @@ export class ChampionshipDetailPage implements OnInit {
 
   mode = "yes";
 
-//   user$: Observable<User>;
+  //   user$: Observable<User>;
   user: User;
 
   coordinates: Position;
+  teamAdminList$: Observable<Team[]>;
 
   constructor(
     private readonly modalCtrl: ModalController,
     // private navController: NavController,
     private navParams: NavParams,
     private readonly userProfileService: UserProfileService,
-    // private readonly route: ActivatedRoute,
+    private readonly alertCtrl: AlertController,
     private readonly championshipService: ChampionshipService,
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
+    private readonly fbService: FirebaseService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService
   ) {
     //  this.setMap();
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
   }
 
   ngOnInit() {
     // console.log(this.navParams);
     this.game = this.navParams.get("data");
-
-    /*this.route.queryParams.subscribe((params) => {
-      console.log(params);
-      this.game = JSON.parse(params.data);
-      */
-    this.game$ = of(this.game);
-
     this.game$ = this.getGame(this.game.teamId, this.game.id);
-    this.game$.subscribe({
-      next: (data) => {
-        console.log("GAMES Data received");
-        this.game = {
-          ...this.game,
-          ...data,
-        };
-        this.cdr.detectChanges();
 
-        this.setMap();
-      },
-      error: (err) => console.error("GAMES Error in subscription:", err),
-      complete: () => console.log("GAMES Observable completed"),
-    });
-    // });
-
-    // let this.mapRef =  @ViewChild('map') abc;
   }
+
+  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
+    // console.log(teamAdminList, teamId)
+    return teamAdminList && teamAdminList.some(team => team.id === teamId);
+  }
+
   ionViewDidEnter() {
     if (!this.newMap) this.setMap();
   }
@@ -109,97 +99,221 @@ export class ChampionshipDetailPage implements OnInit {
     }
   }
   // ng
-
   getGame(teamId: string, gameId: string) {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => {
+        this.setMap();
         this.user = user;
-        if (!user) {
-          console.log("No user found");
-          throw new Error("User not found");
-        }
+        if (!user) throw new Error("User not found");
       }),
       switchMap(() => this.championshipService.getTeamGameRef(teamId, gameId)),
       switchMap((game) => {
         if (!game) return of(null);
-        return this.championshipService
-          .getTeamGameAttendeesRef(teamId, gameId)
-          .pipe(
-            switchMap((attendees) => {
-              if (attendees.length === 0) {
-                // If no attendees, return event data immediately
+
+        // Fetch team details
+        return this.fbService.getTeamRef(teamId).pipe(
+          switchMap(team => {
+            if (!team) return of(null);
+
+
+            // Fetch all team members first
+            return this.fbService.getTeamMemberRefs(teamId).pipe(
+              switchMap(teamMembers => {
+                const teamMemberProfiles$ = teamMembers.map(member =>
+                  this.userProfileService.getUserProfileById(member.id).pipe(
+                    take(1),
+                    map(profile => ({
+                      ...member, // Spread member to retain all original attributes
+                      ...profile, // Spread profile to overwrite and add profile attributes
+                      firstName: profile.firstName || "Unknown",
+                      lastName: profile.lastName || "Unknown",
+                      roles: member.roles || []
+                    })),
+                    catchError(err => {
+                      console.log(`Failed to fetch profile for team member ${member.id}:`, err);
+                      return of({ ...member, firstName: "Unknown", lastName: "Unknown", roles: member.roles || [], status: null });
+                    })
+                  )
+                );
+                // Fetch all attendees next
+                return forkJoin(teamMemberProfiles$).pipe(
+                  map(teamMembersWithDetails => teamMembersWithDetails.filter(member => member !== undefined)), // Filtering out undefined entries
+                  switchMap(teamMembersWithDetails => {
+                    return this.championshipService.getTeamGameAttendeesRef(teamId, gameId).pipe(
+                      map(attendees => {
+                        const attendeeDetails = attendees.map(attendee => {
+                          const detail = teamMembersWithDetails.find(member => member.id === attendee.id);
+                          return detail ? { ...detail, status: attendee.status } : null;
+                        }).filter(item => item !== null);
+
+                        const attendeeListTrue = attendeeDetails.filter(att => att.status === true)
+                          .sort((a, b) => a.firstName.localeCompare(b.firstName));
+                        const attendeeListFalse = attendeeDetails.filter(att => att.status === false)
+                          .sort((a, b) => a.firstName.localeCompare(b.firstName));
+                        const respondedIds = new Set(attendeeDetails.map(att => att.id));
+                        // Modify here to add 'status: null' for each unresponded member
+                        const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id))
+                          .map(member => ({ ...member, status: null })).sort((a, b) => a.firstName.localeCompare(b.firstName)); // Ensuring 'status: null' is explicitly set
+
+                        const userAttendee = attendeeDetails.find(att => att.id === this.user.uid);
+                        const status = userAttendee ? userAttendee.status : null;
+                        return {
+                          ...game,
+                          team, // Add team details here
+                          teamId: teamId,
+                          attendees: attendeeDetails,
+                          attendeeListTrue,
+                          attendeeListFalse,
+                          unrespondedMembers,
+                          status,
+                        };
+                      }),
+                      catchError(err => {
+                        console.error("Error fetching attendees:", err);
+                        return of({
+                          ...game,
+                          team, // Add team details here
+                          teamId: teamId,
+                          attendees: [],
+                          attendeeListTrue: [],
+                          attendeeListFalse: [],
+                          unrespondedMembers: teamMembersWithDetails.filter(member => member !== null)
+                            .map(member => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
+                          status: null
+                        });
+                      })
+                    );
+                  }),
+                );
+              }),
+              catchError(err => {
+                console.error("Error fetching team members:", err);
                 return of({
                   ...game,
+                  team, // Add team details here
+                  teamId: teamId,
                   attendees: [],
                   attendeeListTrue: [],
                   attendeeListFalse: [],
-                  status: null,
+                  unrespondedMembers: [],
+                  status: null
                 });
-              }
-              const attendeeProfiles$ = attendees.map((attendee) =>
-                this.userProfileService.getUserProfileById(attendee.id).pipe(
-                  take(1),
-                  map((profile) => ({ ...profile, ...attendee })), // Combine attendee object with profile
-                  catchError(() =>
-                    of({
-                      ...attendee,
-                      firstName: "Unknown",
-                      lastName: "Unknown",
-                    })
-                  )
-                )
-              );
-              return forkJoin(attendeeProfiles$).pipe(
-                map((attendeesWithDetails) => ({
-                  ...game,
-                  attendees: attendeesWithDetails,
-                  attendeeListTrue: attendeesWithDetails.filter(
-                    (e) => e.status == true
-                  ),
-                  attendeeListFalse: attendeesWithDetails.filter(
-                    (e) => e.status == false
-                  ),
-                  status: attendeesWithDetails.find(
-                    (att) => att.id == this.user.uid
-                  )?.status,
-                }))
-              );
-            }),
-            catchError(() =>
-              of({
-                ...game,
-                attendees: [],
-                status: null,
               })
-            )
-          );
+            );
+          })
+        );
       }),
-      catchError((err) => {
-        console.error("Error in getTrainingWithAttendees:", err);
+      catchError(err => {
+        console.error("Error in getGameWithAttendees:", err);
         return of(null);
       })
     );
   }
+  async toggleAll(status: boolean, game: Game) {
+    const alert = await this.alertCtrl.create({
+      message: "Sollen alle angemeldet werden?",
+      header: "Alle anmelden",
+      buttons: [
+        {
+          text: "Nein",
+          role: "cancel",
+          handler: () => {
 
-  async toggle(status: boolean, game: Game) {
+          }
+        },
+        {
+          role: "",
+          text: "OK",
+          handler: async () => {
+            for (let member of game['unrespondedMembers']) {
+              console.log(
+                `Set Status ${status} for user ${this.user.uid} and team ${this.game.teamId} and game ${game.id}`
+              );
+              await this.championshipService.setTeamGameAttendeeStatusAdmin(
+                status,
+                this.game.teamId,
+                game.id,
+                member.id,
+              ).catch(e => {
+                console.log(e.message);
+                this.toastActionError(e);
+              })
+            }
+            this.presentToast();
+          }
+        },
+
+      ]
+    })
+    alert.present();
+
+  }
+
+  async toggle(status: boolean, game: any) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${this.game.teamId} and game ${game.id}`
+      `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
     );
-    await this.championshipService.setTeamGameAttendeeStatus(
-      this.user.uid,
+    console.log(game)
+    const newStartDate = game.dateTime.toDate();
+    newStartDate.setHours(Number(game.time.substring(0, 2)));
+    console.log(newStartDate);
+
+    // Get team threshold via training.teamId
+    console.log("Grenzwert ")
+    const championshipTreshold = game.team.championshipThreshold || 0;
+    console.log(championshipTreshold);
+    // Verpätete Abmeldung?
+    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * championshipTreshold)) && status == false && championshipTreshold) {
+      console.log("too late");
+      await this.tooLateToggle();
+
+    } else {
+      // OK
+      await this.championshipService.setTeamGameAttendeeStatus(
+        status,
+        game.teamId,
+        game.id
+      );
+      this.presentToast();
+    }
+
+  }
+  async toggleItem(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    game: Game,
+    memberId: string,
+  ) {
+    slidingItem.closeOpened();
+
+    console.log(
+      `Set Status ${status} for user ${memberId} and team ${game.teamId} and game ${game.id}`
+    );
+    await this.championshipService.setTeamGameAttendeeStatusAdmin(
       status,
-      this.game.teamId,
-      game.id
+      game.teamId,
+      game.id,
+      memberId,
     );
     this.presentToast();
   }
 
+  async toastActionError(error) {
+    const toast = await this.toastController.create({
+      message: error.message,
+      duration: 1500,
+      position: "top",
+      color: "danger",
+    });
+
+    await toast.present();
+  }
   async presentToast() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       color: "primary",
-      duration: 2000,
+      duration: 1500,
       position: "top",
     });
     toast.present();
@@ -320,6 +434,20 @@ export class ChampionshipDetailPage implements OnInit {
     if (role === "confirm") {
     }
   }
+  async tooLateToggle() {
+    const alert = await this.alertCtrl.create({
+      header: "Abmelden nicht möglich",
+      message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
+      buttons: [{
+        role: "",
+        text: "OK",
+        handler: (data) => {
+          console.log(data)
+        }
+      }]
+    })
+    alert.present()
+  }
 
   openMaps(game: Game) {
     if (this.coordinates.coords.longitude && this.coordinates.coords.latitude) {
@@ -345,3 +473,4 @@ export class ChampionshipDetailPage implements OnInit {
     }
   }
 }
+

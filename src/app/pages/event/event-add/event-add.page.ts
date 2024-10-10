@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
-import { ModalController, NavParams } from "@ionic/angular";
+import { ModalController, NavParams, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
@@ -43,6 +43,7 @@ export class EventAddPage implements OnInit {
     private eventService: EventService,
     private cdr: ChangeDetectorRef,
     private fbService: FirebaseService,
+    private readonly toastController: ToastController,
     public navParams: NavParams,
     private translate: TranslateService
   ) {
@@ -67,12 +68,16 @@ export class EventAddPage implements OnInit {
       teamName: "",
       liga: "",*/
 
+      link_poll: "", 
+      link_web: "",
+
       clubId: "",
       clubName: "",
 
       status: true,
       attendees: [],
       countAttendees: 0,
+      countNeeded: 0,
     };
   }
 
@@ -95,7 +100,9 @@ export class EventAddPage implements OnInit {
   async close() {
     return this.modalCtrl.dismiss(null, "close");
   }
-
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
   async createEvent() {
     //Set Hours/Minutes of endDate to TimeFrom of training
     console.log(`Start Date before calculation: ${this.event.startDate}`);
@@ -138,10 +145,26 @@ export class EventAddPage implements OnInit {
 
     delete this.event.attendees;
 
-    this.eventService.setCreateClubEvent(this.event);
-    return this.modalCtrl.dismiss({}, "confirm");
+    const event = await this.eventService.setCreateClubEvent(this.event).catch(e => {
+      console.log(e.message);
+      this.toastActionError(e);
+    })
+    if (event) {
+      console.log(event.id);
+      return this.modalCtrl.dismiss({}, "confirm");
+    }
+    return null;
   }
+  async toastActionError(error) {
+    const toast = await this.toastController.create({
+      message: error.message,
+      duration: 1500,
+      position: "top",
+      color: "danger",
+    });
 
+    await toast.present();
+  }
   changeTimeFrom(ev) {
     console.log(ev.detail.value);
     if (this.event.timeFrom > this.event.timeTo) {

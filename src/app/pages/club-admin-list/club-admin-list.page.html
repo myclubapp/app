@@ -1,11 +1,13 @@
 <ng-container *ngIf="club$ | async as club">
   <ion-header [translucent]="true">
     <ion-toolbar>
-      <ion-buttons slot="secondary">
-        <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
-        <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.cancel" | translate}}</ion-button>
-      </ion-buttons>
-      <ion-title>Administratoren</ion-title>
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-buttons *ngIf="isClubAdmin(clubAdminList, this.club.id)" slot="secondary">
+          <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
+          <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
+        </ion-buttons>
+      </ng-container>
+      <ion-title>{{"common.admins" | translate}}</ion-title>
       <ion-buttons slot="primary">
         <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
       </ion-buttons>
@@ -15,57 +17,86 @@
   <ion-content [fullscreen]="true">
     <ion-header collapse="condense">
       <ion-toolbar>
-        <ion-title size="large">Administratoren</ion-title>
+        <ion-title size="large">{{"common.admins" | translate}}</ion-title>
       </ion-toolbar>
     </ion-header>
 
-    <ion-searchbar [debounce]="1000" (ionChange)="handleChange($event)" animated="true"
-      search-icon="search-circle"></ion-searchbar>
+    <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
+      placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
 
-    <ion-list [inset]="true">
-      <!-- <ion-list-header>
-        <ion-label> {{"common.members" | translate}} </ion-label>
-      </ion-list-header>-->
+    <ion-list [inset]="true" *ngIf="filteredClubAdmins$ | async as clubAdminList">
       <ion-item-group>
         <ng-container *ngFor="let groupBy of groupArray">
           <ion-item-divider color="light">
             <ion-label> {{groupBy}} </ion-label>
           </ion-item-divider>
+          <ng-container *ngFor="let member of clubAdminList">
 
-          <ng-container *ngFor="let member of club['clubAdmins']">
             <ion-item-sliding *ngIf="member.groupBy == groupBy">
-              <ion-item-options side="end">
-                <ion-item-option color="danger" (click)="deleteClubAdmin(member)">
-                  <ion-icon name="trash"></ion-icon>
-                </ion-item-option>
-              </ion-item-options>
-
               <ion-item detail="true">
                 <ion-icon *ngIf="allowEdit==true" slot="icon-only" color="danger" slot="start" name="trash"
                   (click)="deleteClubAdmin(member)"></ion-icon>
-
-
-
                 <ion-avatar slot="start">
-                  <img src="{{member?.profilePicture}}" />
+                  <img *ngIf="!member.profilePicture" alt="Silhouette of a person's head"
+                    src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+                  <img *ngIf="member.profilePicture" src="{{member?.profilePicture}}" />
                 </ion-avatar>
-                <ion-label class="ion-text-wrap" (click)="openMember(member)">{{member.firstName}}
-                  {{member.lastName}}</ion-label>
+                <ion-label class="ion-text-wrap" (click)="openMember(member)">
+                  {{member.firstName}} {{member.lastName}}
+                </ion-label>
               </ion-item>
             </ion-item-sliding>
           </ng-container>
         </ng-container>
       </ion-item-group>
     </ion-list>
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button (click)="addAdministrator()">
-        <ion-icon name="add-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
 
-
+    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+      <ion-fab *ngIf="isClubAdmin(clubAdminList, club.id)" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="addAdministratorToClub()">
+          <ion-icon name="add-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ng-container>
   </ion-content>
 </ng-container>
-<ng-template #noRequests>
-  <!-- You can put any placeholder or message here if needed when there are no requests -->
+
+<ng-template #loading>
+  <ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-title>{{"common.admins" | translate}}</ion-title>
+      <ion-buttons slot="primary">
+        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">{{"common.admins" | translate}}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
+      placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
+
+    <ion-list [inset]="true">
+      <ion-item-group>
+        <ng-container *ngFor="let groupBy of groupArray">
+          <ion-item-divider color="light">
+            <ion-label> {{groupBy}} </ion-label>
+          </ion-item-divider>
+        </ng-container>
+      </ion-item-group>
+    </ion-list>
+
+    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+      <ion-fab *ngIf="clubAdminList.length > 0" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="addAdministratorToClub()">
+          <ion-icon name="add-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ng-container>
+  </ion-content>
 </ng-template>

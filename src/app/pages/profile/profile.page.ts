@@ -3,6 +3,7 @@ import {
   OnInit,
   AfterViewInit,
   ChangeDetectorRef,
+  OnDestroy,
 } from "@angular/core";
 import {
   combineLatest,
@@ -47,14 +48,18 @@ import { TranslateService } from "@ngx-translate/core";
 import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
 import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
+import { Timestamp } from "firebase/firestore";
 
 @Component({
   selector: "app-profile",
   templateUrl: "./profile.page.html",
   styleUrls: ["./profile.page.scss"],
 })
-export class ProfilePage implements OnInit, AfterViewInit {
+export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   userProfile$: Observable<Profile>;
+  
+  profileSubscription: Subscription;
+
 
   teamList$: Observable<Team[]>;
   clubList$: Observable<Club[]>;
@@ -62,10 +67,17 @@ export class ProfilePage implements OnInit, AfterViewInit {
   user$: Observable<User>;
   user: User;
 
+  public alertButtonsEmail = [];
+  public alertInputsEmail = [];
+  public alertButtonsAddress = [];
+  public alertInputsAddress= [];
+
   private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
+  localDateString: string;
+
   constructor(
     // private readonly swPush: SwPush,
     private readonly authService: AuthService,
@@ -73,9 +85,9 @@ export class ProfilePage implements OnInit, AfterViewInit {
     private readonly profileService: UserProfileService,
     private readonly toastController: ToastController,
     private readonly loadingController: LoadingController,
-    private readonly alertController: AlertController,
     private readonly router: Router,
     private readonly menuCtrl: MenuController,
+    private readonly alertController: AlertController,
     private translate: TranslateService,
     private readonly modalCtrl: ModalController,
     private readonly routerOutlet: IonRouterOutlet,
@@ -84,27 +96,8 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
+    console.log("ngOnInit");
     this.userProfile$ = this.getUserProfile();
-
-    /*this.teamList$ = this.fbService.getTeamList();
-    this.teamList$.subscribe({
-      next: (data) => {
-        console.log("Team Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Team Error in subscription:", err),
-      complete: () => console.log("Team Observable completed"),
-    });
-
-    this.clubList$ = this.fbService.getClubList();
-    this.clubList$.subscribe({
-      next: (data) => {
-        console.log("Club Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Cluh Error in subscription:", err),
-      complete: () => console.log("Club Observable completed"),
-    });*/
 
     this.deviceId = await Device.getId();
     this.deviceInfo = await Device.getInfo();
@@ -112,10 +105,119 @@ export class ProfilePage implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // this.getClubList();
-    // this.getTeamList();
+    console.log("ngAfterViewInit called");
+
+    this.profileSubscription = this.userProfile$.subscribe(async profile => {
+      if (profile) {
+        this.setupAlerts(profile);
+      }
+    });
   }
-  ngOnDestroy() {}
+  setupAlerts(profile: Profile) {
+    this.alertInputsEmail = [
+      {
+        label: this.translate.instant("profile.change_email_old_label"),
+        placeholder: this.translate.instant("profile.change_email_old_label"),
+        name: "oldEmail",
+        type: "email",
+        value: profile.email
+      },
+      {
+        label: this.translate.instant("profile.change_email_new_label"),
+        placeholder: this.translate.instant("profile.change_email_new_label"),
+        name: "newEmail",
+        type: "email",
+      },
+    ];
+
+    this.alertButtonsEmail = [
+      {
+        text: this.translate.instant("common.cancel"),
+        role: "destructive",
+        handler: (data) => {
+          console.log(data);
+        },
+      },
+      {
+        text: this.translate.instant("common.save"),
+        handler: async (data) => {
+          console.log(data);
+          if (data.oldEmail !== data.newEmail && data.oldEmail.length > 0 && data.newEmail.length > 0) {
+            try {
+              const verifyEmail = await this.authService.verifyBeforeUpdateEmail(data.newEmail);
+              console.log(verifyEmail);
+              const updatedProfile = await this.profileChange(
+                { detail: { value: data.newEmail } },
+                "email"
+              );
+              await this.authService.logout();
+            } catch (e) {
+              if (e.code == "auth/operation-not-allowed") {
+                console.log(e.message);
+              } else if (e.code == "auth/requires-recent-login") {
+                alert("bitte ausloggen und nochmals probieren.");
+              } else {
+                console.log(JSON.stringify(e));
+              }
+            }
+          } else {
+            console.log("error");
+          }
+        },
+      },
+    ];
+
+    this.alertInputsAddress = [
+      {
+        label: this.translate.instant("profile.change_address_streetandnumber"),
+        placeholder: this.translate.instant("profile.change_address_streetandnumber"),
+        name: "streetAndNumber",
+        type: "text",
+        value: profile.streetAndNumber,
+      },
+      {
+        label: this.translate.instant("profile.change_address_postalcode"),
+        placeholder: this.translate.instant("profile.change_address_postalcode"),
+        name: "postalcode",
+        type: "number",
+        value: profile.postalcode,
+      },
+      {
+        label: this.translate.instant("profile.change_address_city"),
+        placeholder: this.translate.instant("profile.change_address_city"),
+        name: "city",
+        type: "text",
+        value: profile.city,
+      },
+    ];
+
+    this.alertButtonsAddress = [
+      {
+        text: this.translate.instant("common.cancel"),
+        role: "destructive",
+        handler: (data) => {
+          console.log(data);
+        },
+      },
+      {
+        text: this.translate.instant("common.save"),
+        role: "",
+        handler: async (data) => {
+          console.log(data);
+          await this.profileChange({ detail: { value: data.city } }, "city");
+          await this.profileChange({ detail: { value: data.postalcode } }, "postalcode");
+          await this.profileChange({ detail: { value: data.streetAndNumber } }, "streetAndNumber");
+        },
+      },
+    ];
+  }
+
+
+  ngOnDestroy() { 
+    if (this.profileSubscription){
+      this.profileSubscription.unsubscribe();
+    }
+  }
 
   getUserProfile(): Observable<any> {
     // Replace 'any' with the actual type of the user profile
@@ -125,7 +227,15 @@ export class ProfilePage implements OnInit, AfterViewInit {
           console.log("No user found");
           return of(null); // Return null or appropriate default value if user is not logged in
         }
-        return this.profileService.getUserProfile(user);
+        return this.profileService.getUserProfile(user).pipe(
+          tap((profile: Profile) => {
+            if (profile && profile.dateOfBirth) {
+              this.localDateString = this.convertToLocalDateString(profile.dateOfBirth.toDate());
+            } else {
+              this.localDateString = '1970-01-01T00:00:00.000Z'
+            }
+          })
+        );
       }),
       catchError((err) => {
         console.error("Error fetching user profile", err);
@@ -133,10 +243,22 @@ export class ProfilePage implements OnInit, AfterViewInit {
       })
     );
   }
+  convertToLocalDateString(date: Date): string {
+    const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+    return localDate.toISOString();
+  }
+  getClubRequestList() { }
+  getTeamRequestList() { }
+  getPushDeviceList() { }
 
-  getClubRequestList() {}
-  getTeamRequestList() {}
-  getPushDeviceList() {}
+  async onDateChange(event: CustomEvent) {
+
+    event.detail.value = Timestamp.fromDate(new Date(event.detail.value))
+
+    this.profileChange(event, "dateOfBirth");
+
+  }
+
 
   async takePicture() {
     const loading = await this.loadingController.create({
@@ -190,6 +312,14 @@ export class ProfilePage implements OnInit, AfterViewInit {
       ),
       buttons: [
         {
+          role: "destructive",
+          text: await lastValueFrom(this.translate.get("common.no")),
+          handler: () => {
+            console.log("nein");
+            this.presentCancelToast();
+          },
+        },
+        {
           text: await lastValueFrom(this.translate.get("common.yes")),
           handler: async () => {
             await this.authService.deleteProfile().catch((error) => {
@@ -199,9 +329,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
             await this.router.navigateByUrl("/logout");
           },
         },
-        {
-          text: await lastValueFrom(this.translate.get("common.no")),
-        },
+       
       ],
     });
     alert.present();
@@ -233,8 +361,20 @@ export class ProfilePage implements OnInit, AfterViewInit {
         this.translate.get("profile.request_success__deleted")
       ),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
+    });
+
+    await toast.present();
+  }
+  async presentCancelToast() {
+    const toast = await this.toastController.create({
+      message: await lastValueFrom(
+        this.translate.get("onboarding.warning__action_canceled")
+      ),
+      duration: 1500,
+      position: "top",
+      color: "danger",
     });
 
     await toast.present();
@@ -245,7 +385,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
         this.translate.get("profile.success__profile_pic_changed")
       ),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
@@ -386,7 +526,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
         this.translate.get("profile.success__profile_deleted")
       ),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
 
@@ -399,7 +539,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
         this.translate.get("profile.error__while_deleting_msg")
       ),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
 
@@ -410,7 +550,7 @@ export class ProfilePage implements OnInit, AfterViewInit {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
@@ -423,109 +563,10 @@ export class ProfilePage implements OnInit, AfterViewInit {
       event.detail.value,
       fieldname
     );
-  }
-
-  async changeEmail(oldEmail: string) {
-    const alert = await this.alertController.create({
-      message: "Change Email",
-      header: "Change Email Header",
-      inputs: [
-        {
-          label: "Old E-Mail",
-          name: "oldEmail",
-          type: "email",
-          value: oldEmail,
-        },
-        {
-          label: "New E-Mail",
-          name: "newEmail",
-          type: "email",
-        },
-      ],
-      buttons: [
-        {
-          text: "Save",
-          role: "",
-          handler: async (data) => {
-            console.log(data);
-            await this.authService.updateEmail(data.newEmail);
-            await this.profileChange(
-              { detail: { value: data.newEmail } },
-              "email"
-            );
-            alert.dismiss();
-          },
-        },
-        {
-          text: "Cancel",
-          handler: () => {
-            alert.dismiss();
-          },
-        },
-      ],
-    });
-    alert.present();
-    // alert.onDidDismiss
-  }
-
-  async changeAddress(profile: Profile) {
-    const alert = await this.alertController.create({
-      message: "Change Address",
-      header: "Change Address Header",
-      inputs: [
-        {
-          label: "Street and Number",
-          name: "streetAndNumber",
-          type: "text",
-          value: profile.streetAndNumber,
-        },
-        {
-          label: "Postalcode",
-          name: "postalcode",
-          type: "number",
-          value: profile.postalcode,
-        },
-        {
-          label: "City",
-          name: "city",
-          type: "text",
-          value: profile.city,
-        },
-      ],
-      buttons: [
-        {
-          text: "Save",
-          role: "",
-          handler: () => {
-            alert.dismiss();
-          },
-        },
-        {
-          text: "Cancel",
-          handler: () => {
-            alert.dismiss();
-          },
-        },
-      ],
-    });
-    alert.present();
-  }
-
-  /*
-  async languageChange(event) {
-    console.log(event.target.value);
-    if (event.target.value) {
-      if (event.target.value.length > 0) {
-        await this.profileService.changeLanguage(event.detail.value);
-      }
+    if (fieldname == 'language'){
+      // console.log(event.detail.value)
+      this.translate.use(event.detail.value);
     }
-  }
-
-  async setFavTeam(event) {
-    await this.profileService.changeFavTeam(event.detail.value);
-  }
-
-  async setFavClub(event) {
-    await this.profileService.changeFavClub(event.detail.value);
-  }*/
+  } 
+  
 }

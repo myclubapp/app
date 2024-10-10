@@ -10,7 +10,6 @@
 #endif
 #endif
 
-#import "SharePlugin.h"
 
 FOUNDATION_EXPORT double CapacitorShareVersionNumber;
 FOUNDATION_EXPORT const unsigned char CapacitorShareVersionString[];

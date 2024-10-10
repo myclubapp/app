@@ -10,7 +10,6 @@
 #endif
 #endif
 
-#import "CameraPlugin.h"
 
 FOUNDATION_EXPORT double CapacitorCameraVersionNumber;
 FOUNDATION_EXPORT const unsigned char CapacitorCameraVersionString[];

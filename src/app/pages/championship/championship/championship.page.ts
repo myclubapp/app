@@ -1,9 +1,8 @@
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
-import { Preferences, GetResult } from "@capacitor/preferences";
+import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
-  IonRouterOutlet,
+  // IonRouterOutlet,
   MenuController,
   ModalController,
   NavController,
@@ -31,6 +30,8 @@ import { NavigationExtras, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { ChampionshipDetailPage } from "../championship-detail/championship-detail.page";
 import { Team } from "src/app/models/team";
+import { GamePreviewPage } from "../game-preview/game-preview.page";
+import { Club } from "src/app/models/club";
 
 @Component({
   selector: "app-championship",
@@ -38,13 +39,17 @@ import { Team } from "src/app/models/team";
   styleUrls: ["./championship.page.scss"],
 })
 export class ChampionshipPage implements OnInit {
+  @Input("team")
+  team!: Team;
+  @Input("isModal")
+  isModal!: boolean;
   skeleton = new Array(12);
-  user$: Observable<User>;
-  user: User;
+  user$!: Observable<User>;
+  user!: User;
 
-  gameList$: Observable<Game[]>;
-  gameListPast$: Observable<Game[]>;
-  teamRankings$: Observable<any[]>;
+  gameList$!: Observable<Game[]>;
+  gameListPast$!: Observable<Game[]>;
+  teamRankings$!: Observable<any[]>;
 
   /*gameListBackup$: Observable<Game[]>;
   gameListPastBackup$: Observable<Game[]>;
@@ -57,7 +62,10 @@ export class ChampionshipPage implements OnInit {
 
   mode = "games";
 
-  teamList$: Observable<Team[]>;
+  teamList$!: Observable<Team[]>;
+
+  clubAdminList$!: Observable<Club[]>;
+  teamAdminList$!: Observable<Team[]>;
 
   /*filterList: any[] = [];
   filterValue: string = "";
@@ -65,7 +73,7 @@ export class ChampionshipPage implements OnInit {
 
   constructor(
     public toastController: ToastController,
-    private readonly routerOutlet: IonRouterOutlet,
+    // private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -80,76 +88,56 @@ export class ChampionshipPage implements OnInit {
   }
 
   ngOnInit() {
-    this.teamRankings$ = this.getTeamsWithRankingsForYear("2023");
+    this.teamRankings$ = this.getTeamsWithRankingsForYear("2024");
     this.gameList$ = this.getTeamGamesUpcoming();
     this.gameListPast$ = this.getTeamGamesPast();
 
-    /*this.teamRankingsBackup$ = this.getTeamsWithRankingsForYear("2023");
-    this.teamRankingsBackup$.subscribe({
-      next: () => {
-        console.log("RANKING Backup Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("RANKING Backup Error in subscription:", err),
-      complete: () => console.log("RANKING Backup Observable completed"),
-    });
-
-   
-    this.gameListBackup$ = this.getTeamGamesUpcoming();
-    this.gameListBackup$.subscribe({
-      next: (data) => {
-        console.log("GAMES Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("GAMES Error in subscription:", err),
-      complete: () => console.log("GAMES Observable completed"),
-    });*/
-
-    /*this.gameListPastBackup$ = this.getTeamGamesPast();
-    this.gameListPastBackup$.subscribe({
-      next: () => {
-        console.log("GAMES PAST Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("GAMES PAST Error in subscription:", err),
-      complete: () => console.log("GAMES PAST Observable completed"),
-    });*/
-
-    // Filter
-    /* this.teamList$ = this.fbService.getTeamList();
-    this.teamList$.subscribe({
-      next: (data) => {
-       // this.filterList = data;
-        console.log("Team Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Team Error in subscription:", err),
-      complete: () => console.log("Team Observable completed"),
-    });*/
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    this.clubAdminList$ = this.fbService.getClubAdminList();
   }
 
   ngOnDestroy(): void {
-    /* if (this.subscription) {
-        this.subscription.unsubscribe();
-    }
-    if (this.subscriptionPast) {
-      this.subscriptionPast.unsubscribe();
-    }*/
+
+  }
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
+  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
+    // console.log(teamAdminList, teamId)
+    return teamAdminList && teamAdminList.some(team => team.id === teamId);
   }
 
-  getTeamsWithRankingsForYear(year: string = "2023") {
+  getTeamsWithRankingsForYear(year: string) {
     return this.authService.getUser$().pipe(
       take(1),
-      tap((user) => console.log("User:", user)),
+      // tap((user) => console.log("User:", user)),
       switchMap((user) => {
         if (!user) return of([]); // If no user, return an empty array
         return this.fbService.getUserTeamRefs(user);
       }),
-      tap((teams) => console.log("Teams:", teams)),
+      // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
-        if (teams.length === 0) return of([]);
+        if (this.team && this.team.id) {
+          teams.push({
+            id: this.team.id,
+            clubId: "",
+            name: "",
+            logo: "",
+            website: "",
+            portrait: "",
+            liga: "",
+            type: "",
+            updated: Timestamp.now(),
+          })
+        } else if (teams.length === 0) {
+          return of([])
+        };
+        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+        // console.log("relevant teams : ", relevantTeams);
         return combineLatest(
-          teams.map((team) =>
+          relevantTeams.map((team) =>
+
+
             combineLatest({
               teamDetails: of(team),
               rankingsTable: this.championshipService.getTeamRankingTable(
@@ -161,6 +149,9 @@ export class ChampionshipPage implements OnInit {
                 year
               ),
             }).pipe(
+              tap(data=>{
+                console.log(data)
+              }),
               map(({ teamDetails, rankingsTable, rankingDetails }) => ({
                 ...teamDetails,
                 teamId: teamDetails.id,
@@ -169,14 +160,13 @@ export class ChampionshipPage implements OnInit {
                 }),
                 details: rankingDetails,
               })),
-              tap((result) =>
-                console.log("Team with rankings and details:", result)
-              )
-            )
+              // tap((result) => console.log("Team with rankings and details:", result))
+            ),
+       
           )
         );
       }),
-      tap((results) => console.log("Final results:", results)),
+      // tap((results) => console.log("Final results:", results)),
       catchError((err) => {
         console.error("Error in getTeamsWithRankingsForYear:", err);
         return of([]); // Return an empty array on error
@@ -188,78 +178,99 @@ export class ChampionshipPage implements OnInit {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => {
-        this.user = user;
+        if (user) {
+          this.user = user;
+        }
       }),
       switchMap((user) => {
         if (!user) return of([]);
         return this.fbService.getUserTeamRefs(user);
       }),
-      tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
-        if (teams.length === 0) return of([]);
+        if (this.team && this.team.id) {
+          teams.push({
+            id: this.team.id,
+            clubId: "",
+            name: "",
+            logo: "",
+            website: "",
+            portrait: "",
+            liga: "",
+            type: "",
+            updated: Timestamp.now(),
+          })
+        } else if (teams.length === 0) {
+          return of([])
+        };
+        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
         return combineLatest(
-          teams.map((team) =>
+          relevantTeams.map((team) =>
             this.championshipService.getTeamGamesRefs(team.id).pipe(
+              catchError((err) => {
+                console.error("Permission error in fetching getTeamGamesRefs:", team.id, err);
+                return of([]); // Return an empty array if permission error occurs
+              }),
               switchMap((teamGames) => {
                 if (teamGames.length === 0) return of([]);
                 return combineLatest(
                   teamGames.map((game) =>
-                    this.championshipService
-                      .getTeamGameAttendeesRef(team.id, game.id)
-                      .pipe(
-                        map((attendees) => {
-                          const userAttendee = attendees.find(
-                            (att) => att.id == this.user.uid
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null; // default to false if user is not found in attendees list
-                          return {
-                            ...game,
-                            attendees,
-                            status: status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true
-                            ).length,
-                            teamId: team.id,
-                          };
+                    combineLatest([
+                      this.championshipService.getTeamGameAttendeesRef(team.id, game.id).pipe(
+                        catchError((err) => {
+                          console.error("Permission error in fetching attendees:", err);
+                          return of([]); // Return an empty array if permission error occurs
                         }),
-                        catchError(() =>
-                          of({
-                            ...game,
-                            attendees: [],
-                            status: null,
-                            countAttendees: 0,
-                            teamId: team.id,
-                          })
-                        ) // If error, return game with empty attendees
-                      )
+                      ),
+                      this.fbService.getTeamRef(team.id).pipe(
+                        catchError((err) => {
+                          console.error("Permission error in fetching getTeamRef:", err);
+                          return of({}); // Return an empty array if permission error occurs
+                        }),
+                      ), // Fetching team details
+                    ]).pipe(
+                      map(([attendees, teamDetails]) => {
+                        const userAttendee = attendees.find((att) => att.id === this.user.uid);
+                        return {
+                          ...game,
+                          team: teamDetails,
+                          attendees,
+                          status: userAttendee ? userAttendee.status : null,
+                          countAttendees: attendees.filter((att) => att.status === true).length,
+                          teamId: team.id,
+                        };
+                      }),
+                      catchError(() => of({
+                        ...game,
+                        team: null,
+                        attendees: [],
+                        status: null,
+                        countAttendees: 0,
+                        teamId: team.id,
+                      }))
+                    )
                   )
                 );
               }),
               map((gamesWithAttendees) => gamesWithAttendees), // Flatten games array for each team
-              catchError(() => of([])) // If error in fetching games, return empty array
+              catchError((err) => {
+                console.error("Error fetching games for team:", err);
+                return of([]); // If error in fetching games, return empty array
+              })
             )
           )
         ).pipe(
           map((teamsGames) => teamsGames.flat()), // Flatten to get all games across all teams
-          map(
-            (allGames) =>
-              allGames.sort(
-                (a, b) =>
-                  Timestamp.fromMillis(a.dateTime).seconds -
-                  Timestamp.fromMillis(b.dateTime).seconds
-              ) // Sort games by date
-          )
+          map((allGames) => allGames.sort((a, b) => a.dateTime.toDate().getTime() - b.dateTime.toDate().getTime())), // Sort games by date
+          catchError((err) => {
+            console.error("Error in getTeamGamesUpcoming:", err);
+            return of([]); // Return an empty array on error
+          })
         );
-      }),
-      tap((results) => console.log("Final results with all games:", results)),
-      catchError((err) => {
-        console.error("Error in getTeamGamesUpcoming:", err);
-        return of([]); // Return an empty array on error
       })
     );
   }
+
+
 
   getTeamGamesPast() {
     return this.authService.getUser$().pipe(
@@ -271,69 +282,86 @@ export class ChampionshipPage implements OnInit {
         if (!user) return of([]);
         return this.fbService.getUserTeamRefs(user);
       }),
-      tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
-        if (teams.length === 0) return of([]);
+        if (this.team && this.team.id) {
+          teams.push({
+            id: this.team.id,
+            clubId: "",
+            name: "",
+            logo: "",
+            website: "",
+            portrait: "",
+            liga: "",
+            type: "",
+            updated: Timestamp.now(),
+          })
+        } else if (teams.length === 0) {
+          return of([])
+        };
+        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
         return combineLatest(
-          teams.map((team) =>
+          relevantTeams.map((team) =>
             this.championshipService.getTeamGamesPastRefs(team.id).pipe(
+              catchError((err) => {
+                console.error("Permission error in fetching getTeamGamesRefs:", team.id, err);
+                return of([]); // Return an empty array if permission error occurs
+              }),
               switchMap((teamGames) => {
                 if (teamGames.length === 0) return of([]);
                 return combineLatest(
                   teamGames.map((game) =>
-                    this.championshipService
-                      .getTeamGameAttendeesRef(team.id, game.id)
-                      .pipe(
-                        map((attendees) => {
-                          const userAttendee = attendees.find(
-                            (att) => att.id == this.user.uid
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null; // default to false if user is not found in attendees list
-                          return {
-                            ...game,
-                            attendees,
-                            status: status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true
-                            ).length,
-                            teamId: team.id,
-                          };
+                    combineLatest([
+                      this.championshipService.getTeamGameAttendeesRef(team.id, game.id).pipe(
+                        catchError((err) => {
+                          console.error("Permission error in fetching attendees:", err);
+                          return of([]); // Return an empty array if permission error occurs
                         }),
-                        catchError(() =>
-                          of({
-                            ...game,
-                            attendees: [],
-                            status: null,
-                            countAttendees: 0,
-                            teamId: team.id,
-                          })
-                        ) // If error, return game with empty attendees
-                      )
+                      ),
+                      this.fbService.getTeamRef(team.id).pipe(
+                        catchError((err) => {
+                          console.error("Permission error in fetching getTeamRef:", err);
+                          return of({}); // Return an empty array if permission error occurs
+                        }),
+                      ), // Fetching team details
+                    ]).pipe(
+                      map(([attendees, teamDetails]) => {
+                        const userAttendee = attendees.find((att) => att.id === this.user.uid);
+                        return {
+                          ...game,
+                          team: teamDetails,
+                          attendees,
+                          status: userAttendee ? userAttendee.status : null,
+                          countAttendees: attendees.filter((att) => att.status === true).length,
+                          teamId: team.id,
+                        };
+                      }),
+                      catchError(() => of({
+                        ...game,
+                        team: null,
+                        attendees: [],
+                        status: null,
+                        countAttendees: 0,
+                        teamId: team.id,
+                      }))
+                    )
                   )
                 );
               }),
               map((gamesWithAttendees) => gamesWithAttendees), // Flatten games array for each team
-              catchError(() => of([])) // If error in fetching games, return empty array
+              catchError((err) => {
+                console.error("Error fetching games for team:", err);
+                return of([]); // If error in fetching games, return empty array
+              })
             )
           )
         ).pipe(
           map((teamsGames) => teamsGames.flat()), // Flatten to get all games across all teams
-          map(
-            (allGames) =>
-              allGames.sort(
-                (b, a) =>
-                  Timestamp.fromMillis(a.dateTime).seconds -
-                  Timestamp.fromMillis(b.dateTime).seconds
-              ) // Sort games by date
-          )
+          map((allGames) => allGames.sort((b, a) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())), // Sort games by date
+          catchError((err) => {
+            console.error("Error in getTeamGamesUpcoming:", err);
+            return of([]); // Return an empty array on error
+          })
         );
-      }),
-      tap((results) => console.log("Final results with all games:", results)),
-      catchError((err) => {
-        console.error("Error in getTeamGamesUpcoming:", err);
-        return of([]); // Return an empty array on error
       })
     );
   }
@@ -355,7 +383,8 @@ export class ChampionshipPage implements OnInit {
 
     const modal = await this.modalCtrl.create({
       component: ChampionshipDetailPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement: await this.modalCtrl.getTop(),
+      // presentingElement: this.routerOutlet.nativeEl,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -372,44 +401,140 @@ export class ChampionshipPage implements OnInit {
   }
 
   // List item
-  async toggle(status: boolean, game: Game) {
+  async toggle(status: boolean, game: any) {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
     );
-    await this.championshipService.setTeamGameAttendeeStatus(
-      this.user.uid,
-      status,
-      game.teamId,
-      game.id
-    );
-    this.presentToast();
+    console.log(game)
+    const newStartDate = game.dateTime.toDate();
+    newStartDate.setHours(Number(game.time.substring(0, 2)));
+    console.log(newStartDate);
+
+    // Get team threshold via training.teamId
+    console.log("Grenzwert ")
+    const championshipTreshold = game.team.championshipThreshold || 0;
+    console.log(championshipTreshold);
+    // Verpätete Abmeldung?
+    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * championshipTreshold)) && status == false && championshipTreshold) {
+      console.log("too late");
+      await this.tooLateToggle();
+
+    } else {
+      // OK
+      await this.championshipService.setTeamGameAttendeeStatus(
+        status,
+        game.teamId,
+        game.id
+      );
+      this.presentToast();
+    }
+
   }
 
   //Sliding
-  async toggleItem(slidingItem: IonItemSliding, status: boolean, game: Game) {
+  async toggleItem(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    game: any
+  ) {
     slidingItem.closeOpened();
 
-    /*console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
-    );*/
-    await this.championshipService.setTeamGameAttendeeStatus(
-      this.user.uid,
-      status,
-      game.teamId,
-      game.id
+    console.log(
+      `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and training ${game.id}`
     );
-    this.presentToast();
+    console.log(game)
+    const newStartDate = game.dateTime.toDate();
+    newStartDate.setHours(Number(game.time.substring(0, 2)));
+    console.log(newStartDate);
+
+    // Get team threshold via training.teamId
+    console.log("Grenzwert ")
+    const championshipTreshold = game.team.championshipThreshold || 0;
+    console.log(championshipTreshold);
+    // Verpätete Abmeldung?
+    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * championshipTreshold)) && status == false && championshipTreshold) {
+      console.log("too late");
+      await this.tooLateToggle();
+
+    } else {
+      // OK
+      await this.championshipService.setTeamGameAttendeeStatus(
+        status,
+        game.teamId,
+        game.id
+      );
+      this.presentToast();
+    }
   }
+
+
+
   async presentToast() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.changes__saved")),
       color: "primary",
-      duration: 2000,
+      duration: 1500,
       position: "top",
     });
     toast.present();
   }
 
+  async shareSocialMedia(slidingItem: IonItemSliding, game) {
+    slidingItem.closeOpened();
+
+    const modal = await this.modalCtrl.create({
+      component: GamePreviewPage,
+      // presentingElement: this.routerOutlet.nativeEl,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: game,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+
+
+  }
+
+  async close() {
+
+    return await this.modalCtrl.dismiss(null, "close");
+  }
+
+
+
+  async deleteGame(slidingItem: IonItemSliding, game) {
+    slidingItem.closeOpened();
+    await this.championshipService.deleteTeamGame(game.teamId, game.id);
+    const toast = await this.toastController.create({
+      message: await lastValueFrom(this.translate.get("common.success__training_deleted")),
+      color: "danger",
+      duration: 1500,
+      position: "top",
+    });
+    toast.present();
+  }
+
+  async tooLateToggle() {
+    const alert = await this.alertCtrl.create({
+      header: "Abmelden nicht möglich",
+      message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
+      buttons: [{
+        role: "",
+        text: "OK",
+        handler: (data) => {
+          console.log(data)
+        }
+      }]
+    })
+    alert.present()
+  }
   /*  async openFilter(ev: Event) {
 
     const alertInputs = [];

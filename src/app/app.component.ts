@@ -1,13 +1,13 @@
-import { ChangeDetectorRef, Component, NgZone, OnInit } from "@angular/core";
+import { Component, NgZone, OnInit } from "@angular/core";
 import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
 import {
   AlertController,
   MenuController,
   ModalController,
-  Platform,
   ToastController,
-  IonRouterOutlet,
 } from "@ionic/angular";
+import { App } from '@capacitor/app';
+import { ConfirmResult, Dialog } from "@capacitor/dialog";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
@@ -20,15 +20,14 @@ import { Device, DeviceId, DeviceInfo, LanguageTag } from "@capacitor/device";
 import { Network, ConnectionStatus } from "@capacitor/network";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "./models/club";
-import { Team } from "./models/team";
+
 import {
   ActionPerformed,
   PushNotificationSchema,
   PushNotifications,
   Token,
 } from "@capacitor/push-notifications";
-import { ConfirmResult, Dialog } from "@capacitor/dialog";
-import { OnboardingPage } from "./pages/onboarding/onboarding.page";
+import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 
 @Component({
   selector: "app-root",
@@ -39,15 +38,11 @@ export class AppComponent implements OnInit {
   public email: string;
   public appVersion: string = packagejson.version;
 
-  private clubList$: Observable<Club[]>;
-  private teamList$: Observable<Team[]>;
-  private clubAdminList$: Observable<Club[]>;
-  private teamAdminList$: Observable<Team[]>;
+  clubList$: Observable<Club[]>;
+
 
   private clubListSub: Subscription;
-  private teamListSub: Subscription;
-  private clubAdminListSub: Subscription;
-  private teamAdminListSub: Subscription;
+
 
   user: User;
   deviceId: DeviceId;
@@ -70,79 +65,76 @@ export class AppComponent implements OnInit {
     private translate: TranslateService,
     public toastController: ToastController,
     private ngZone: NgZone,
-    private cdr: ChangeDetectorRef // private platform: Platform
+
   ) {
     this.initializeApp();
-    this.clubList$ = this.fbService.getClubList();
-
-    // https://fireship.io/lessons/sharing-data-between-angular-components-four-methods/
-
-    //Filter for Events, Helfer, News
-    /*this.clubListSub = this.clubList$.subscribe({
-      next: (data) => {
-        console.log("Club Data received ");
-        if (data.length > 0){
-          this.userHasClub = true;
-        }
-      },
-      error: (err) => console.error("Club Error in subscription:", err),
-      complete: () => console.log("Club Observable completed"),
-    });*/
-    /*
-    //Filter for Trainings
-    this.teamList$ = this.fbService.getTeamList();
-    this.teamListSub = this.teamList$.subscribe({
-      next: (data) => {
-        console.log("Team Data received");
-      },
-      error: (err) => console.error("Team Error in subscription:", err),
-      complete: () => console.log("Team Observable completed"),
-    });*/
-
-    //Create Events, Helfer, News
-    /*this.clubAdminList$ = this.fbService.getClubAdminList();
-    this.clubAdminListSub = this.clubAdminList$.subscribe({
-      next: () => {
-        console.log("Club Admin Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Club Admin Error in subscription:", err),
-      complete: () => console.log("Club Admin Observable completed"),
-    });
-    // Create Trainings
-    this.teamAdminList$ = this.fbService.getTeamAdminList();
-    this.teamAdminListSub = this.teamAdminList$.subscribe({
-      next: () => {
-        console.log("Team Admin Data received");
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error("Team Admin Error in subscription:", err),
-      complete: () => console.log("Team Admin Observable completed"),
-    });*/
 
     onAuthStateChanged(this.authService.auth, async (user) => {
       if (user) {
         // 0. LOGIN
         this.email = user.email;
         this.user = user;
-        this.setDefaultLanguage();
 
         if (!user.emailVerified) {
-          this.doOnboarding(user);
-        }
-        this.clubListSub = this.clubList$
-          .pipe(
-            take(1),
-            tap((data) => {
-              if (data.length == 0) {
-                console.log("NO! Club Data received ");
-                this.doOnboarding(user);
-              }
-            })
-          )
-          .subscribe();
+          const navOnboardingEmail = await this.router.navigateByUrl('/onboarding-email');
+          if (navOnboardingEmail) {
+            console.log('Navigation success to onboarding Email Page');
+          } else {
+            console.error('Navigation ERROR to onboarding Email Page');
+          }
+        } else {
+          console.log("E-Mail IS verified. Go ahead..")
+          console.log(user.email, user.displayName, user.emailVerified)
+          this.clubListSub = this.clubList$
+            .pipe(
+              take(1),
+              tap(async (clubList) => {
+                if (clubList.length == 0) {
+                  console.log("NO! Club Data received. > Call Club Onboarding");
+                  try {
+                    const navOnboardingClub = await this.router.navigateByUrl('/onboarding-club');
+                    if (navOnboardingClub) {
+                      console.log('Navigation success to onboarding Club Page');
+                    } else {
+                      console.error('Navigation ERROR to onboarding Club Page');
+                    }
+                  } catch (error) {
+                    console.error('Navigation Exception:', error);
+                    window.location.reload();
+                  }
+                } else {
+                  // CHECK SUBSCRIPTION FOR CLUB
+                  // console.log(clubList.find((club:any)=>club.subscriptionActive == false ))
 
-        // this.platform.ready().then(async () => {
+                  if (clubList.find((club: any) => club.subscriptionActive == false)) {
+                    console.log("NO SUBSCRIPTION FOUND")
+                    const modal = await this.modalCtrl.create({
+                      component: ClubSubscriptionPage,
+                      presentingElement: await this.modalCtrl.getTop(),
+                      canDismiss: true,
+                      showBackdrop: true,
+                      componentProps: {
+                        clubId: clubList.find((club: any) => club.subscriptionActive == false).id,
+                      },
+                    });
+                    modal.present();
+
+                    const { role } = await modal.onWillDismiss();
+                    console.log(role)
+                    if (role === "close" || role == "backdrop") {
+                      this.authService.logout();
+                    }
+                  } else {
+                    console.log("Club is active")
+                  }
+
+                }
+              })
+            )
+            .subscribe();
+        }
+        // }
+
 
         // SEt DEVICE INFOS
         this.deviceInfo = await Device.getInfo();
@@ -158,6 +150,12 @@ export class AppComponent implements OnInit {
         } else {
           // Register Web Push, if available
         }
+
+
+
+        // this.platform.ready().then(async () => {
+
+
         // })
         // READ USER LANGUAGE FROM DATABASE if AVAILABLE
 
@@ -170,10 +168,23 @@ export class AppComponent implements OnInit {
         console.log("User is signed out");
         this.menuCtrl.enable(false, "menu");
         this.email = "";
+        const navLogout = await this.router.navigateByUrl('/login');
+        if (navLogout) {
+          console.log('Navigation SUCCESS to Logout Page');
+        } else {
+          console.error('Navigation ERROR to Logout Page');
+        }
       }
     });
+
+
   }
   ngOnInit(): void {
+    App.removeAllListeners().then(() => {
+      this.registerBackButton();
+    });
+
+    this.clubList$ = this.fbService.getClubList();
     Network.addListener(
       "networkStatusChange",
       async (status: ConnectionStatus) => {
@@ -209,35 +220,17 @@ export class AppComponent implements OnInit {
       }
     );
 
-    // this.requestSubscription();
-    /*this.swPush.messages.subscribe((message) => {
-      console.log(message);
-
-      this.alertPushMessage(message);
-    });*/
   }
 
   ngOnDestroy() {
     Network.removeAllListeners();
 
+    App.removeAllListeners();
+
     if (this.clubListSub) {
       this.clubListSub.unsubscribe();
     }
-    if (this.teamListSub) {
-      this.teamListSub.unsubscribe();
-    }
-    if (this.clubAdminListSub) {
-      this.clubAdminListSub.unsubscribe();
-    }
-    if (this.teamAdminListSub) {
-      this.teamAdminListSub.unsubscribe();
-    }
 
-    //     this.pushNotificationClickSubscription.unsubscribe();
-    //    this.pushMessageSubscription.unsubscribe();
-    //    this.swPush.unsubscribe();
-    // this.userClubRefs.unsubscribe();
-    // this.userTeamRefs.unsubscribe();
   }
 
   initializeApp(): void {
@@ -250,12 +243,32 @@ export class AppComponent implements OnInit {
     });
   }
 
-  async doOnboarding(user) {
+  private registerBackButton() {
+    App.addListener('backButton', async ({ canGoBack }) => {
+      // console.log("backbutton", canGoBack);
+      // console.log(">", this.router.lastSuccessfulNavigation)
+      // console.log(">>", this.router.getCurrentNavigation())
+      // console.log(">>>", window.history.length);
+      const modal = await this.modalCtrl.getTop()
+      if (modal) {
+        modal.dismiss();
+        return;
+      } else if (canGoBack) {
+        // Navigieren Sie zurück in der App-Historie
+        window.history.back();
+      } else {
+        // Beenden Sie die App, wenn keine vorherige Seite vorhanden ist
+        App.exitApp();
+      }
+    });
+  }
+
+  /*async doOnboardingEmail(user) {
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: OnboardingPage,
       presentingElement: await this.modalCtrl.getTop(), //  this.routerOutlet.nativeEl,
-      canDismiss: true,
+      canDismiss: false,
       showBackdrop: true,
       componentProps: {
         data: user,
@@ -268,7 +281,7 @@ export class AppComponent implements OnInit {
     if (role === "close") {
       console.log(">>> close onboarding modal" + data);
     }
-  }
+  }*/
 
   setFallbackLanguage() {
     Device.getLanguageTag().then((result: LanguageTag) => {
@@ -278,11 +291,12 @@ export class AppComponent implements OnInit {
         result.value == "en" ||
         result.value == "it"
       ) {
-        console.log("Set Fallback Language to " + result.value);
-        this.translate.setDefaultLang(result.value);
+        console.log("Set Fallback Language to Device Language: " + result.value);
+        this.translate.use(result.value);
       } else {
-        console.log("Set Fallback Language to EN");
-        this.translate.setDefaultLang("en");
+        console.log("Set Fallback Language to DE");
+        this.translate.use("de");
+        // this.translate.resetLang("de");
       }
     });
   }
@@ -301,7 +315,8 @@ export class AppComponent implements OnInit {
         if (profile) {
           if (profile.language) {
             if (profile.language.length > 0) {
-              this.translate.setDefaultLang(profile.language);
+              console.log("set user langauge: " + profile.language);
+              this.translate.use(profile.language);
               return;
             }
           }
@@ -371,7 +386,7 @@ export class AppComponent implements OnInit {
     // await SplashScreen.hide();
     // Show the splash for two seconds and then automatically hide it:
     await SplashScreen.show({
-      showDuration: 2000,
+      showDuration: 1500,
       autoHide: true,
     });
   }
@@ -497,6 +512,12 @@ export class AppComponent implements OnInit {
     console.log("onDidDismiss resolved with role", role);
     */
   }
+  enableHelferEvents(clubList) {
+    return clubList && clubList.some(club => club.hasFeatureHelferEvent == true);
+  }
+  enableChampionship(clubList) {
+    return clubList && clubList.some(club => club.hasFeatureChampionship == true);
+  }
 
   async presentAlertUpdateVersion() {
     const alert = await this.alertController.create({
@@ -583,7 +604,7 @@ export class AppComponent implements OnInit {
       /*this.toastController.create({
         message: "Push erfolgreich registriert",
         color: "primary",
-        duration: 2000,
+        duration: 1500,
         position: "top",
       }).then(toast=>{
         toast.present();

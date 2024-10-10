@@ -18,6 +18,7 @@ export interface Profile {
   licenseNumber: string;
   settingsPush: boolean;
   settingsPushNews: boolean;
+  settingsPushNewsVerband: boolean;
   settingsPushTraining: boolean;
   settingsPushChampionship: boolean;
   settingsPushEvent: boolean;
@@ -27,6 +28,7 @@ export interface Profile {
   language: string;
   favTeam: string;
   favClub: string;
+  roles: [string];
 
   // Business Logic Fields
   isAdmin: boolean;

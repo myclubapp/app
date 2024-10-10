@@ -67,7 +67,7 @@
             <h2>{{event.name}}</h2>
             <h3>
               <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
-              {{event.date.toDate() | date:'dd.MM.YYYY '}} {{event.timeFrom |
+              {{event.date.toDate() | date:'dd.MM.YYYY'}} {{event.timeFrom |
               date:'HH:mm'}} Uhr - {{event.timeTo | date:'HH:mm'}} Uhr
             </h3>
             <h3>
@@ -75,9 +75,8 @@
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
           </ion-label>
-          <ion-note slot="end" (click)="openEventDetailModal(event, true)">
-            <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
-          </ion-note>
+          <ion-badge slot="end" (click)="openEventDetailModal(event, true)" color="primary">{{event.countAttendees}}</ion-badge>
+
         </ion-item>
 
         <ion-item-options side="start">
@@ -98,7 +97,7 @@
         </ion-item-options>
 
         <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-          <ion-item-options side="end" *ngIf="clubAdminList.length > 0">
+          <ion-item-options side="end" *ngIf="isClubAdmin(clubAdminList, event.clubId)">
             <ion-item-option
               color="primary"
               (click)="createHelferEvent(item, event)"
@@ -175,14 +174,13 @@
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
           </ion-label>
-          <ion-note slot="end" (click)="openEventDetailModal(event, false)">
-            <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
-          </ion-note>
+          <ion-badge slot="end" (click)="openEventDetailModal(event, false)" color="primary">{{event.countAttendees}}</ion-badge>
+
         </ion-item>
 
         <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
           
-          <ion-item-options side="end" *ngIf="clubAdminList.length > 0">
+          <ion-item-options side="end"  *ngIf="isClubAdmin(clubAdminList, event.clubId)">
 
             <ion-item-option
               color="primary"
@@ -214,7 +212,7 @@
 
   <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
     <ion-fab
-      *ngIf="clubAdminList.length > 0"
+    *ngIf="clubAdminList.length > 0"
       vertical="bottom"
       horizontal="end"
       slot="fixed"

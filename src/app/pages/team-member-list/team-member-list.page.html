@@ -1,19 +1,18 @@
-<ng-container *ngIf="team$ | async as team">
+<ng-container *ngIf="team$ | async as team; else loading">
   <ion-header [translucent]="true">
     <ion-toolbar>
-      <ion-buttons slot="secondary">
-        <ion-button *ngIf="!allowEdit" (click)="edit()"
-          >{{"common.edit" | translate}}</ion-button
-        >
-        <ion-button *ngIf="allowEdit" (click)="edit()"
-          >{{"common.cancel" | translate}}</ion-button
-        >
-      </ion-buttons>
-      <ion-title >Mitglieder</ion-title>
+      <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+          <ion-buttons slot="secondary"
+            *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)">
+            <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
+            <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
+          </ion-buttons>
+        </ng-container>
+      </ng-container>
+      <ion-title>{{"common.members" | translate}}</ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()"
-          >{{"common.close" | translate}}</ion-button
-        >
+        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -21,73 +20,123 @@
   <ion-content [fullscreen]="true">
     <ion-header collapse="condense">
       <ion-toolbar>
-        <ion-title size="large">Mitglieder</ion-title>
+        <ion-title size="large">{{"common.members" | translate}}</ion-title>
       </ion-toolbar>
     </ion-header>
 
-    <ion-searchbar
-      [debounce]="1000"
-      (ionChange)="handleChange($event)"
-      animated="true"
-      search-icon="search-circle"
-    ></ion-searchbar>
 
-    <ion-list [inset]="true">
-      <!-- <ion-list-header>
-        <ion-label> {{"common.members" | translate}} </ion-label>
-      </ion-list-header>-->
+    <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
+      [value]="searchTerm.value" placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
+
+    <div class="ion-padding">
+      <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+        <ion-button *ngIf="isTeamAdmin(teamAdminList, team.id)" shape="round" size="small" (click)="addRole()">
+          hinzufügen
+          <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+        </ion-button>
+      </ng-container>
+      <ion-button (click)="setFilter(role)" shape="round" size="small" *ngFor="let role of team['roles']">
+        {{role}}
+      </ion-button>
+    </div>
+
+    <ion-list [inset]="true" *ngIf="filteredTeamMembers$ | async as teamMemberList">
       <ion-item-group>
         <ng-container *ngFor="let groupBy of groupArray">
           <ion-item-divider color="light">
             <ion-label> {{groupBy}} </ion-label>
           </ion-item-divider>
 
-          <ng-container *ngFor="let member of team['teamMembers']">
-            <ion-item-sliding *ngIf="member.groupBy == groupBy">
-              <ion-item-options side="end">
-                <ion-item-option color="danger" (click)="deleteTeamMember(member)">
-                  <ion-icon name="trash"></ion-icon>
-                </ion-item-option>
-              </ion-item-options>
+          <ng-container *ngFor="let member of teamMemberList">
+
+            <ion-item-sliding #item *ngIf="member.groupBy == groupBy">
+
+              <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+                <ion-item-options *ngIf="isTeamAdmin(teamAdminList, team.id)" side="end">
+                  <ion-item-option color="primary" (click)="changeRoleOfMember(item, member)">
+                    <ion-icon slot="icon-only" name="pricetags-outline"></ion-icon>
+                  </ion-item-option>
+                </ion-item-options>
+              </ng-container>
 
               <ion-item detail="true">
-                <ion-icon
-                *ngIf="allowEdit==true"
-                slot="icon-only"
-                color="danger"
-                slot="start"
-                name="trash"
-                (click)="deleteTeamMember(member)"
-              ></ion-icon>
-
-
-
-                <ion-avatar slot="start">
-                  <img src="{{member?.profilePicture}}" />
+                <ion-icon *ngIf="allowEdit==true" slot="icon-only" color="danger" slot="start" name="trash"
+                  (click)="deleteTeamMember(member)"></ion-icon>
+                <ion-avatar slot="start" (click)="openMember(member)">
+                  <img *ngIf="!member.profilePicture" alt="Silhouette of a person's head"
+                    src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+                  <img *ngIf="member.profilePicture" src="{{member?.profilePicture}}" />
                 </ion-avatar>
-                <ion-label class="ion-text-wrap" (click)="openMember(member)"
-                  >{{member.firstName}} {{member.lastName}}</ion-label
-                >
+                <ion-label class="ion-text-wrap" (click)="openMember(member)">{{member.firstName}}
+                  {{member.lastName}}</ion-label>
+                <ion-badge *ngFor="let role of member.roles" slot="end">{{role}}</ion-badge>
               </ion-item>
             </ion-item-sliding>
           </ng-container>
         </ng-container>
       </ion-item-group>
     </ion-list>
-    <!--<ng-container *ngIf="teamAdminList$ | async as teamAdminList">-->
-      <ion-fab
-        
-        vertical="bottom"
-        horizontal="end"
-        slot="fixed"
-      >
-        <ion-fab-button (click)="addMember()">
-          <ion-icon name="add-outline"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
-    <!--</ng-container>-->
+
+
+    <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-fab *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
+          vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addMemberToTeam()">
+            <ion-icon name="add-outline"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+      </ng-container>
+    </ng-container>
   </ion-content>
 </ng-container>
-<ng-template #noRequests>
-  <!-- You can put any placeholder or message here if needed when there are no requests -->
+
+
+
+<ng-template #loading>
+  <ion-header [translucent]="true">
+    <ion-toolbar>
+
+      <ion-title>{{"common.members" | translate}}</ion-title>
+      <ion-buttons slot="primary">
+        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">{{"common.members" | translate}}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
+      placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
+
+    <ion-list [inset]="true">
+
+      <ion-item-group>
+        <ng-container *ngFor="let groupBy of groupArray">
+          <ion-item-divider color="light">
+            <ion-label> {{groupBy}} </ion-label>
+          </ion-item-divider>
+
+
+        </ng-container>
+      </ion-item-group>
+    </ion-list>
+    <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-fab *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
+          vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addMemberToTeam()">
+            <ion-icon name="add-outline"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+      </ng-container>
+    </ng-container>
+  </ion-content>
+
+
 </ng-template>

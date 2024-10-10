@@ -1,11 +1,13 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-menu-button *ngIf="!isModal"></ion-menu-button>
     </ion-buttons>
     <ion-title>{{"common.championship" | translate}}</ion-title>
-
-    <ion-buttons slot="end">
+    <ion-buttons *ngIf="isModal" slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+    <!--<ion-buttons slot="end">
       <ion-button id="championshipMoreButton">
         <ion-icon slot="icon-only" name="ellipsis-horizontal-outline"></ion-icon>
       </ion-button>
@@ -35,7 +37,7 @@
           </ion-content>
         </ng-template>
       </ion-popover>
-    </ion-buttons>
+    </ion-buttons>-->
   </ion-toolbar>
   <ion-toolbar>
     <ion-segment [(ngModel)]="mode">
@@ -45,9 +47,7 @@
       <ion-segment-button value="ranking">
         <ion-label>{{"championship.table" | translate}}</ion-label>
       </ion-segment-button>
-      <!-- <ion-segment-button value="stats">
-        <ion-label>Statistik</ion-label>
-      </ion-segment-button>-->
+
     </ion-segment>
   </ion-toolbar>
 </ion-header>
@@ -76,38 +76,19 @@
 
         <ion-item-sliding #item *ngFor="let game of gameList">
           <ion-item type="button" detail="true">
-            <ion-icon
-              *ngIf="game.status === null"
-              slot="icon-only"
-              color="warning"
-              slot="start"
-              name="help-circle"
-              (click)="toggle(true, game)"
-            ></ion-icon>
-            <ion-icon
-              *ngIf="game.status === false"
-              slot="icon-only"
-              color="danger"
-              slot="start"
-              name="close-circle"
-              (click)="toggle( true, game)"
-            ></ion-icon>
-            <ion-icon
-              *ngIf="game.status === true"
-              slot="icon-only"
-              color="success"
-              slot="start"
-              name="checkmark-circle"
-              (click)="toggle(false, game)"
-            ></ion-icon>
+            <ion-icon *ngIf="game.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
+              (click)="toggle(true, game)"></ion-icon>
+            <ion-icon *ngIf="game.status === false" slot="icon-only" color="danger" slot="start" name="close-circle"
+              (click)="toggle( true, game)"></ion-icon>
+            <ion-icon *ngIf="game.status === true" slot="icon-only" color="success" slot="start" name="checkmark-circle"
+              (click)="toggle(false, game)"></ion-icon>
             <ion-label (click)="openChampionshipDetailModal(game, true)">
-              <h2>{{game.teamHome}} vs.</h2>
-              <h2>{{game.teamAway}}</h2>
+              <h2>{{game.name}}</h2>
               <h3>
                 <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
                 {{game.date}} {{game.time}} Uhr
               </h3>
-              <h3>
+              <h3 *ngIf="game.location">
                 <ion-icon slot="icon-only" name="location-outline"></ion-icon>
                 {{game.location}} {{game.city}}
               </h3>
@@ -117,34 +98,43 @@
                 {{game.liga}} {{game.teamName}}
               </h3>
 
-              <h3 *ngIf="game.result">
+              <h3 *ngIf="game.result && game.result != '0:0(0:0)'">
                 <ion-icon slot="icon-only" name="podium-outline"></ion-icon>
                 {{game.result}}
               </h3>
+              <h3 *ngIf="game.gameStatus && game.gameStatus=='deleted'">
+                <ion-icon slot="icon-only" color="danger" name="close-circle-outline"></ion-icon>
+                Spiel gelöscht
+              </h3>
             </ion-label>
-            <ion-note
-              slot="end"
-              (click)="openChampionshipDetailModal(game, true)"
-            >
+            <ion-note slot="end" (click)="openChampionshipDetailModal(game, true)">
               <ion-badge color="primary">{{game.countAttendees}}</ion-badge>
             </ion-note>
           </ion-item>
 
           <ion-item-options side="start">
-            <ion-item-option
-              color="success"
-              *ngIf="game.status === false || game.status === null"
-              (click)="toggleItem(item, true, game)"
-            >
+            <ion-item-option color="success" *ngIf="game.status === false || game.status === null"
+              (click)="toggleItem(item, true, game)">
               <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
             </ion-item-option>
-            <ion-item-option
-              color="danger"
-              *ngIf="game.status === true || game.status === null"
-              (click)="toggleItem(item, false, game)"
-            >
+            <ion-item-option color="danger" *ngIf="game.status === true || game.status === null"
+              (click)="toggleItem(item, false, game)">
               <ion-icon slot="icon-only" name="close-circle"></ion-icon>
             </ion-item-option>
+          </ion-item-options>
+          <ion-item-options side="end">
+            <ion-item-option color="primary" (click)="shareSocialMedia(item, game)">
+              <ion-icon name="logo-instagram" slot="icon-only"></ion-icon>
+            </ion-item-option>
+
+
+            <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+              <ion-item-option *ngIf="isTeamAdmin(teamAdminList, game.teamId)" color="danger"
+                (click)="deleteGame(item, game)">
+                <ion-icon slot="icon-only" name="trash"></ion-icon>
+              </ion-item-option>
+            </ng-container>
+
           </ion-item-options>
 
           <!--<ion-item-options side="end" *ngIf="user && user.">
@@ -183,31 +173,13 @@
 
         <ion-item-sliding #item *ngFor="let game of gameListPast">
           <ion-item type="button" detail="true">
-            <ion-icon
-              *ngIf="game.status === null"
-              slot="icon-only"
-              color="warning"
-              slot="start"
-              name="help-circle"
-            ></ion-icon>
-            <ion-icon
-              *ngIf="game.status === false"
-              slot="icon-only"
-              color="danger"
-              slot="start"
-              name="close-circle"
-            ></ion-icon>
-            <ion-icon
-              *ngIf="game.status === true"
-              slot="icon-only"
-              color="success"
-              slot="start"
-              name="checkmark-circle"
-            ></ion-icon>
-            <ion-label
-              class="ion-text-wrap"
-              (click)="openChampionshipDetailModal(game, false)"
-            >
+            <ion-icon *ngIf="game.status === null" slot="icon-only" color="warning" slot="start"
+              name="help-circle"></ion-icon>
+            <ion-icon *ngIf="game.status === false" slot="icon-only" color="danger" slot="start"
+              name="close-circle"></ion-icon>
+            <ion-icon *ngIf="game.status === true" slot="icon-only" color="success" slot="start"
+              name="checkmark-circle"></ion-icon>
+            <ion-label class="ion-text-wrap" (click)="openChampionshipDetailModal(game, false)">
               <h2>{{game.teamHome}} vs.</h2>
               <h2>{{game.teamAway}}</h2>
               <h3>
@@ -227,10 +199,7 @@
                 {{game.result}}
               </h3>
             </ion-label>
-            <ion-note
-              slot="end"
-              (click)="openChampionshipDetailModal(game, false)"
-            >
+            <ion-note slot="end" (click)="openChampionshipDetailModal(game, false)">
               <ion-badge color="primary">{{game.countAttendees}}</ion-badge>
             </ion-note>
           </ion-item>
@@ -262,95 +231,56 @@
   <ng-container *ngIf="mode=='ranking'">
     <ng-container *ngIf="teamRankings$ | async as teamRankings">
       <ion-list [inset]="true">
-      <ion-accordion-group [multiple]="true" [value]="teamRankings[0].teamId">
-        <div *ngFor="let entry of teamRankings">
-          <ion-accordion value="{{entry.teamId}}">
-            <ion-item slot="header" color="light">
-              <ion-label class="ion-text-wrap"
-                >{{entry.details.title}}</ion-label>
-            </ion-item>
-            <div slot="content">
-              <ion-list>
-                <ion-list-header>
-                  <ion-label>{{entry.details.title}}</ion-label>
-                </ion-list-header>
-                <ion-item>
-                  <ion-grid>
-                    <ion-row>
-                      <ion-col size="1">#</ion-col>
-                      <ion-col size="5">{{"common.name" | translate}}</ion-col>
-                      <ion-col size="3">Sp/S/N</ion-col>
-                      <ion-col size="2">T</ion-col>
-                      <ion-col size="1">P</ion-col>
-                    </ion-row>
-                  </ion-grid>
-                </ion-item>
+        <ion-accordion-group [multiple]="true" [value]="teamRankings[0].teamId">
+          <div *ngFor="let entry of teamRankings">
+            <ion-accordion value="{{entry.teamId}}">
+              <ion-item slot="header" color="light">
+                <ion-label class="ion-text-wrap">{{entry.details?.title}}</ion-label>
+              </ion-item>
+              <div slot="content">
+                <ion-list>
+                  <ion-list-header>
+                    <ion-label>{{entry?.details?.title}}</ion-label>
+                  </ion-list-header>
+                  <ion-item>
+                    <ion-grid>
+                      <ion-row>
+                        <ion-col size="1">#</ion-col>
+                        <ion-col size="5">{{"common.name" | translate}}</ion-col>
+                        <ion-col size="3">Sp/S/N</ion-col>
+                        <ion-col size="2">T</ion-col>
+                        <ion-col size="1">P</ion-col>
+                      </ion-row>
+                    </ion-grid>
+                  </ion-item>
 
-                <ion-item class="myclubPadding" *ngFor="let ranking of entry.rankings">
-                  <ion-grid>
-                    <ion-row class="ion-align-items-center">
-                      <ion-col size="1">
-                        <ion-badge> {{ranking.ranking}} </ion-badge>
-                      </ion-col>
-                      <ion-col size="5">
-                        <ion-avatar>
-                          <img alt="{{ranking.name}}" src="{{ranking.image}}" />
-                        </ion-avatar>
-                        {{ranking.name}}
-                      </ion-col>
-                      <ion-col size="3">
-                        {{ranking.games}}/{{ranking.wins}}/{{ranking.loss}}
-                      </ion-col>
-                      <ion-col size="2"> {{ranking.goals}} </ion-col>
-                      <ion-col size="1"> {{ranking.points}} </ion-col>
-                    </ion-row>
-                  </ion-grid>
-                </ion-item>
-              </ion-list>
-            </div>
-          </ion-accordion>
-        </div>
-      </ion-accordion-group>
+                  <ion-item class="myclubPadding" *ngFor="let ranking of entry.rankings">
+                    <ion-grid>
+                      <ion-row class="ion-align-items-center">
+                        <ion-col size="1">
+                          <ion-badge> {{ranking.ranking}} </ion-badge>
+                        </ion-col>
+                        <ion-col size="5">
+                          <ion-avatar>
+                            <img alt="{{ranking.name}}" src="{{ranking.image}}" />
+                          </ion-avatar>
+                          {{ranking.name}}
+                        </ion-col>
+                        <ion-col size="3">
+                          {{ranking.games}}/{{ranking.wins}}/{{ranking.loss}}
+                        </ion-col>
+                        <ion-col size="2"> {{ranking.goals}} </ion-col>
+                        <ion-col size="1"> {{ranking.points}} </ion-col>
+                      </ion-row>
+                    </ion-grid>
+                  </ion-item>
+                </ion-list>
+              </div>
+            </ion-accordion>
+          </div>
+        </ion-accordion-group>
       </ion-list>
 
-      <!--<ion-list *ngFor="let entry of teamRankings" lines="full">
-        <ion-list-header>
-          <ion-label>{{entry.details.title}}</ion-label>
-        </ion-list-header>
-
-        <ion-item>
-          <ion-grid>
-            <ion-row>
-              <ion-col size="1">#</ion-col>
-              <ion-col size="5">{{"common.name" | translate}}</ion-col>
-              <ion-col size="3">Sp/S/N</ion-col>
-              <ion-col size="2">T</ion-col>
-              <ion-col size="1">P</ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-item>
-
-        <ion-item *ngFor="let ranking of entry.rankings">
-          <ion-grid>
-            <ion-row class="ion-align-items-center">
-              <ion-col size="1">
-                <ion-badge> {{ranking.ranking}} </ion-badge>
-              </ion-col>
-              <ion-col size="5">
-                <ion-avatar>
-                  <img alt="{{ranking.name}}" src="{{ranking.image}}" />
-                </ion-avatar>
-                {{ranking.name}}
-              </ion-col>
-              <ion-col size="3">
-                {{ranking.games}}/{{ranking.wins}}/{{ranking.loss}}
-              </ion-col>
-              <ion-col size="2"> {{ranking.goals}} </ion-col>
-              <ion-col size="1"> {{ranking.points}} </ion-col>
-            </ion-row>
-          </ion-grid>
-        </ion-item>
-      </ion-list>-->
     </ng-container>
     <div class="ion-padding">
       <ion-text>
@@ -370,50 +300,23 @@
     <ion-list *ngIf="loading">
       <ion-grid>
         <ion-row>
-          <ion-col
-            size-lg="4"
-            size-md="6"
-            size-sm="6"
-            size="12"
-            *ngFor="let item of skeleton"
-          >
+          <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
             <ion-card>
               <ion-card-header>
                 <ion-card-subtitle>
-                  <ion-skeleton-text
-                    animated
-                    style="width: 60%"
-                  ></ion-skeleton-text>
+                  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
                 </ion-card-subtitle>
                 <ion-card-title>
-                  <ion-skeleton-text
-                    animated
-                    style="width: 80%"
-                  ></ion-skeleton-text>
+                  <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
                 </ion-card-title>
               </ion-card-header>
 
               <ion-card-content>
-                <ion-skeleton-text
-                  animated
-                  style="width: 80%"
-                ></ion-skeleton-text>
-                <ion-skeleton-text
-                  animated
-                  style="width: 60%"
-                ></ion-skeleton-text>
-                <ion-skeleton-text
-                  animated
-                  style="width: 80%"
-                ></ion-skeleton-text>
-                <ion-skeleton-text
-                  animated
-                  style="width: 60%"
-                ></ion-skeleton-text>
-                <ion-skeleton-text
-                  animated
-                  style="width: 80%"
-                ></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
               </ion-card-content>
             </ion-card>
           </ion-col>

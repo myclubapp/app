@@ -31,6 +31,12 @@ export class EventService {
 
   /* CLUB EventS */
 
+  changeClubEvent(eventData, clubId, eventId){
+    const clubEventRef = doc(this.firestore, `club/${clubId}/events/${eventId}`);
+    return updateDoc(clubEventRef, eventData);
+  }
+
+
   getClubEventRef(clubId: string, eventId: string): Observable<Veranstaltung> {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const eventRef = doc(this.firestore, `club/${clubId}/events/${eventId}`);
@@ -44,9 +50,9 @@ export class EventService {
       where(
         "date",
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)) // 2h lang anzeigen lassen
       )
-    ); // heute - 1 Tag
+    ); // StartDatum der Veranstaltung - 12h
     return collectionData(q, {
       idField: "id",
     }) as unknown as Observable<Veranstaltung[]>;
@@ -58,10 +64,10 @@ export class EventService {
       where(
         "date",
         "<",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now())) // sofort als vergangen auflisten
       ),
       limit(20)
-    ); // heute - 1 Tag
+    ); // heute - 1 Tag = gestern
 
     return collectionData(q, {
       idField: "id",
@@ -92,8 +98,8 @@ export class EventService {
 
   async setCreateClubEvent(event: Veranstaltung) {
     const user = this.authService.auth.currentUser;
-    console.log("event");
-    console.log(event);
+    // console.log("event");
+    // console.log(event);
     return addDoc(
       collection(this.firestore, `userProfile/${user.uid}/clubEvents`),
       event
@@ -101,6 +107,11 @@ export class EventService {
   }
 
   /* HELFER EVENTS */
+
+  changeHelferEvent(eventData, clubId, eventId){
+    const helferEventRef = doc(this.firestore, `club/${clubId}/helferEvents/${eventId}`);
+    return updateDoc(helferEventRef, eventData);
+  }
   getClubHelferEventRef(
     clubId: string,
     eventId: string
@@ -121,11 +132,11 @@ export class EventService {
     const q = query(
       eventsRefList,
       where(
-        "date",
+        "date", // muss auf Event End Date umgestellt werden.
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)) // 2h lang noch anzeigen
       )
-    ); // heute - 1 Tag
+    ); // StartDatum der Veranstaltung - 12h
     return collectionData(q, {
       idField: "id",
     }) as unknown as Observable<HelferEvent[]>;
@@ -140,7 +151,7 @@ export class EventService {
       where(
         "date",
         "<",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 1))
+        Timestamp.fromDate(new Date(Date.now())) // sofort anzeigen
       ),
       limit(20)
     ); // heute - 1 Tag
@@ -176,22 +187,41 @@ export class EventService {
     }) as Observable<any[]>;
   }
 
+  addNewHelferEventSchicht(clubId: string, eventId: string, schicht: any) {
+    console.log(clubId, eventId, schicht);  
+    return addDoc(
+      collection(this.firestore, `club/${clubId}/helferEvents/${eventId}/schichten`),
+      schicht
+    );
+  }
+
+  changeHelferEventSchicht(clubId, eventId, schichtId, schicht){
+    console.log(clubId, eventId,schichtId,  schicht);  
+    const helferEventSchichtRef = doc(this.firestore, `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}`);
+    return updateDoc(helferEventSchichtRef, schicht,{merge: true});
+  }
+
+  deleteHelferEventSchicht(clubId, eventId, schichtId){
+    return deleteDoc(doc(this.firestore, `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}`));
+  }
+
+
   getClubHelferEventSchichtAttendeesRef(
     clubId: string,
     eventId: string,
     schichtId: string
   ): Observable<any[]> {
-    console.log(
+    /*console.log(
       "getClubHelferEventSchichtAttendeesRef",
       clubId,
       eventId,
       schichtId
-    );
+    );*/
     const schichtAttendeesListRef = collection(
       this.firestore,
       `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}/attendees`
     );
-    console.log(schichtAttendeesListRef.id, schichtAttendeesListRef.path);
+    // console.log(schichtAttendeesListRef.id, schichtAttendeesListRef.path);
     return collectionData(schichtAttendeesListRef, {
       idField: "id",
     }) as Observable<any[]>;
@@ -221,7 +251,8 @@ export class EventService {
     clubId: string,
     eventId: string,
     schichtId: string,
-    userId: string
+    userId: string,
+    points: number,
   ) {
     const user = this.authService.auth.currentUser;
     const userRef = doc(this.firestore, `userProfile/${user.uid}`);
@@ -231,7 +262,7 @@ export class EventService {
     );
     return setDoc(
       statusRef,
-      { confirmed: true, date: new Date(), confirmedBy: userRef },
+      { confirmed: true, date: new Date(), confirmedBy: userRef, points: points },
       { merge: true }
     );
   }
@@ -251,9 +282,9 @@ export class EventService {
 
   async setCreateHelferEvent(event: HelferEvent) {
     const user = this.authService.auth.currentUser;
-    console.log("Helferevent");
-    console.log(event);
-    const newHelferevent = await addDoc(
+    // console.log("Helferevent");
+    // console.log(event);
+    return addDoc(
       collection(this.firestore, `userProfile/${user.uid}/helferEvents`),
       event
     );

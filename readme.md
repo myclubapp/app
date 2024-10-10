@@ -22,8 +22,13 @@ use [conventionalcommits](https://www.conventionalcommits.org/en/)
 
 ## Prettier Setup
 
-`npm i husky-init`
-`npx husky-init; npm install --save-dev pretty-quick; npx husky set .husky/pre-commit "npx pretty-quick --staged";`
+use [how to guide](https://typicode.github.io/husky/get-started.html)
+Install husky & Prettier
+`npm install — save-dev husky prettier pretty-quick`
+`npx husky init`
+
+modify file: .husky/pre_commit and set pre-commit hook in husky
+`npx pretty-quick --staged`
 
 ## Create App Icon & Splash Screen
 
@@ -44,10 +49,10 @@ use [conventionalcommits](https://www.conventionalcommits.org/en/)
 
 ## Installed packages
 
-- Ionicframework (v 7)
-- Capacitor JS (v 4)
+- Ionicframework (v7)
+- Capacitor JS (v5)
 - Trapeze for native configuration
-- Angular v 15.2 & Angular PWA (`ng add @angular/pwa --project _project-name_`)
+- Angular v 17.2 & Angular PWA (`ng add @angular/pwa --project _project-name_`)
 - Angular Fire v 7.5 `ng add @angular/fire`
 - [Angular Localize](https://angular.io/guide/i18n-common-locale-id)
   -- de-CH German (Switzerland)
@@ -57,6 +62,7 @@ use [conventionalcommits](https://www.conventionalcommits.org/en/)
 - Tailwind CSS (`npm install -D tailwindcss@latest postcss autoprefixer`)
 - Fontawesome Icons
 - Ionicons v 5
+- Lottie Files
 
 # MY-CLUB-PREMIUM
 
@@ -134,3 +140,7 @@ then, have a look in the directory or copy icons to src/custom_themes/app-CUSTOM
 Also upload login.jpg to /bg and create favicon.
 
 https://favicon.io/favicon-converter/
+
+
+# Licenses used
+run: `license-report --only=prod --output=json`

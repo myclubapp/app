@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
-import { AlertController, ModalController, NavParams } from "@ionic/angular";
+import { AlertController, ModalController, NavParams, ToastController } from "@ionic/angular";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subscription, catchError, map } from "rxjs";
 import { Club } from "src/app/models/club";
 import { HelferEvent, Schicht } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
@@ -20,11 +20,13 @@ export class HelferAddPage implements OnInit {
   user: User;
 
   clubAdminList$: Observable<Club[]>;
-  subscriptionClubAdminList: Subscription;
 
   constructor(
     private readonly modalCtrl: ModalController,
     private eventService: EventService,
+
+    private readonly toastController: ToastController,
+
     private cdr: ChangeDetectorRef,
     private readonly authService: AuthService,
     private fbService: FirebaseService,
@@ -52,15 +54,19 @@ export class HelferAddPage implements OnInit {
       /*teamId: "",
       teamName: "",
       liga: "",*/
-
+      link_poll: "", 
+      link_web: "",
+      
       clubId: "",
       clubName: "",
+
 
       schichten: <any>[],
 
       status: true,
       attendees: [],
       countAttendees: 0,
+      countNeeded: 0,
     };
   }
 
@@ -68,38 +74,146 @@ export class HelferAddPage implements OnInit {
     this.eventCopy = this.navParams.get("data");
     if (this.eventCopy.id) {
       this.event = this.eventCopy;
-      console.log( this.event);
-      
+      console.log(this.event);
+
 
       // TODO READ SCHICHTEN, if available
 
     }
 
-    if (!this.event.schichten){
+    if (!this.event.schichten) {
       this.event.schichten = <any>[];
     }
 
-    this.clubAdminList$ = this.fbService.getClubAdminList();
-
-    this.subscriptionClubAdminList = this.clubAdminList$.subscribe({
-      next: (data) => {
-        console.log("Club Admin Data received");
-        this.event.clubId = data[0].id;
-        this.event.clubName = data[0].name;
-      },
-      error: (err) => console.error("Club Admin Error in subscription:", err),
-      complete: () => console.log("Club Admin Observable completed"),
-    });
+    this.clubAdminList$ = this.fbService.getClubAdminList().pipe(
+      map(data => {
+        if (data && data.length > 0) {
+          this.event.clubId = data[0].id;
+          this.event.clubName = data[0].name;
+          return data;
+        } else {
+          console.log("No club admins found.");
+          return [];
+        }
+      }),
+      catchError(err => {
+        console.error("Club Admin Error in data fetching:", err);
+        return []; // Return an empty array to handle the error gracefully
+      })
+    );
   }
 
   ngOnDestroy(): void {
-    if (this.subscriptionClubAdminList) {
-      this.subscriptionClubAdminList.unsubscribe();
-    }
+
   }
 
   async close() {
     return this.modalCtrl.dismiss(null, "close");
+  }
+
+  async deleteSchicht(schicht: Schicht) {
+    const alert = await this.alertController.create({
+      header: "Schicht löschen",
+      message: "Möchten Sie diese Schicht wirklich löschen?",
+      buttons: [
+        {
+          text: "Abbrechen",
+          role: "cancel",
+          handler: () => {
+            console.log("Löschen abgebrochen");
+          },
+        },
+        {
+          text: "Löschen",
+          handler: async () => {
+            console.log("Löschen bestätigt");
+            const index = this.event.schichten.findIndex((object) => {
+              return object.id === schicht.id;
+            });
+            if (index !== -1) {
+              this.event.schichten.splice(index, 1);
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+   
+  }
+
+  async copySchicht(schicht: Schicht) {
+    console.log(this.event.timeTo);
+    const alert = await this.alertController.create({
+      header: "Schicht erstellen",
+      subHeader: " ",
+      message: "Eine neue Helferschicht erstellen.",
+      inputs: [
+        {
+          id: "name",
+          name: "name",
+          value: schicht.name,
+          label: "Beschreibung",
+          placeholder: "Beschreibung",
+          type: "text",
+        },
+        {
+          id: "count",
+          name: "countNeeded",
+          value: schicht.countNeeded,
+          label: "Anzahl Helfer",
+          placeholder: "Anzahl Helfer",
+          type: "number",
+        },
+        {
+          id: "points",
+          name: "points",
+          value: schicht.points,
+          label: "Anzahl Helferpunkte",
+          placeholder: "Anzahl Helferpunkte",
+          type: "number",
+    
+        },
+        {
+          id: "timeFrom",
+          name: "timeFrom",
+          value: schicht.timeFrom,
+          label: "Zeit von",
+          placeholder: "Zeit von",
+          type: "time",
+
+        },
+        {
+          id: "timeTo",
+          name: "timeTo",
+          value: schicht.timeTo,
+          label: "Zeit bis",
+          placeholder: "Zeit bis",
+          type: "time",
+
+        },
+      ],
+      buttons: [
+        {
+          text: "Abbrechen",
+          handler: () => {
+            console.log("Abbrechen");
+          },
+        },
+        {
+          text: "Hinzufügen",
+          handler: (data) => {
+            console.log(data);
+            this.event.schichten.push({
+              id: this.event.schichten.length + 1,
+              ...data,
+              count: 0,
+            });
+          },
+        },
+      ],
+    });
+    alert.present();
   }
 
   async editSchicht(schicht: Schicht) {
@@ -291,10 +405,27 @@ export class HelferAddPage implements OnInit {
 
     delete this.event.attendees;
 
-    this.eventService.setCreateHelferEvent(this.event);
-    return this.modalCtrl.dismiss({}, "confirm");
-  }
+    const helferEvent = await this.eventService.setCreateHelferEvent(this.event).catch(e => {
+      console.log(e.message);
+      this.toastActionError(e);
+    })
+    if (helferEvent) {
+      console.log(helferEvent.id);
+      return this.modalCtrl.dismiss({}, "confirm");
+    }
 
+    return null;
+  }
+  async toastActionError(error) {
+    const toast = await this.toastController.create({
+      message: error.message,
+      duration: 1500,
+      position: "top",
+      color: "danger",
+    });
+
+    await toast.present();
+  }
   changeTimeFrom(ev) {
     console.log(ev.detail.value);
     if (this.event.timeFrom > this.event.timeTo) {

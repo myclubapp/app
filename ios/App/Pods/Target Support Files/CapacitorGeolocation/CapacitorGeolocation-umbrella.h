@@ -10,7 +10,6 @@
 #endif
 #endif
 
-#import "GeolocationPlugin.h"
 
 FOUNDATION_EXPORT double CapacitorGeolocationVersionNumber;
 FOUNDATION_EXPORT const unsigned char CapacitorGeolocationVersionString[];

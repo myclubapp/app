@@ -22,11 +22,11 @@ export class InfoPage implements OnInit {
   }
 
   async openTCSite() {
-    await Browser.open({ url: 'https://my-club.app/terms-and-conditions/' });
+    await Browser.open({ url: 'https://my-club.app/terms-and-conditions-de/' });
   };
 
   async openPPSite() {
-    await Browser.open({ url: 'https://my-club.app/privacy-policy/',  });
+    await Browser.open({ url: 'https://my-club.app/privacy-policy-de/',  });
   };
 
 }

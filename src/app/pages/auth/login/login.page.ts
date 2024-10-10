@@ -9,7 +9,7 @@ import {
   Validators,
   UntypedFormBuilder,
 } from "@angular/forms";
-import { AlertController, MenuController } from "@ionic/angular";
+import { AlertController, LoadingController, MenuController } from "@ionic/angular";
 import { AuthService } from "src/app/services/auth.service";
 import { TranslateService } from "@ngx-translate/core";
 import { lastValueFrom } from "rxjs";
@@ -25,6 +25,7 @@ export class LoginPage implements OnInit {
 
   constructor(
     private readonly alertCtrl: AlertController,
+    private readonly loadingCtrl: LoadingController,
     private readonly authService: AuthService,
     private readonly router: Router,
     private readonly formBuilder: UntypedFormBuilder,
@@ -47,16 +48,25 @@ export class LoginPage implements OnInit {
   }
 
   async submitCredentials(authForm: any) {
+    const loading = await this.loadingCtrl.create({
+      message: 'Login...',
+      duration: 0,
+      backdropDismiss: false,
+    });
+    loading.present();
     try {
       const userCredential: UserCredential = await this.authService.login(
         authForm.value.email,
         authForm.value.password
       );
-      this.router.navigateByUrl("/").catch((error) => {
+      loading.dismiss();
+      this.menuCtrl.enable(true, "menu");
+      this.router.navigateByUrl("/t").catch((error) => {
         console.error(error.message);
         this.router.navigateByUrl("");
       });
     } catch (err) {
+      loading.dismiss();
       let message =
         (await lastValueFrom(
           this.translate.get("common.general__error_occurred")
@@ -87,18 +97,22 @@ export class LoginPage implements OnInit {
         );
       } else if (err.code == "auth/invalid-login-credentials") {
         message = await lastValueFrom(
-          this.translate.get("login.error__invalid-login-credentials")
+          this.translate.get("login.error__invalid_login_credentials")
+        );
+      } else if (err.code == "auth/invalid-credential") {
+        message = await lastValueFrom(
+          this.translate.get("login.error__invalid_credentials")
         );
       } else {
         console.log("Error");
       }
 
       const alert = await this.alertCtrl.create({
-        header: await lastValueFrom(this.translate.get("login.mistake")),
+        header: await lastValueFrom(this.translate.get("login.error")),
         message: message,
         buttons: [
           {
-            text: await lastValueFrom(this.translate.get("ok")),
+            text: await lastValueFrom(this.translate.get("common.ok")),
             role: "cancel",
           },
         ],

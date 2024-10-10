@@ -1,0 +1,17 @@
+<ng-container *ngIf="game$ | async as game">
+  <ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-title>{{"common.details" | translate}}</ion-title>
+      <ion-buttons slot="primary">
+        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">{{"common.details" | translate}}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <game-preview club="{{game.clubRef.id}}" game="{{game.id}}"></game-preview>
+  </ion-content>  

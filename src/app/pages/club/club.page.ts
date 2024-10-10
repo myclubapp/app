@@ -5,6 +5,7 @@ import {
   NavParams,
   ToastController,
 } from "@ionic/angular";
+import { Browser } from "@capacitor/browser";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
@@ -32,7 +33,11 @@ import { ClubMemberListPage } from "../club-member-list/club-member-list.page";
 import { ClubAdminListPage } from "../club-admin-list/club-admin-list.page";
 import { TeamListPage } from "../team-list/team-list.page";
 import { ClubTeamListPage } from "../club-team-list/club-team-list.page";
-import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
+import { ClubRequestListPage } from "../club-request-list/club-request-list.page";
+import { Timestamp } from "firebase/firestore";
+import { HelferPunkteClubPage } from "../helfer/helfer-punkte-club/helfer-punkte-club.page";
+import { Club } from "src/app/models/club";
+import { ClubSubscriptionPage } from "../club-subscription/club-subscription.page";
 
 @Component({
   selector: "app-club",
@@ -43,12 +48,13 @@ export class ClubPage implements OnInit {
   @Input("data") club: any;
 
   club$: Observable<any>;
-  subscribeMember: Subscription;
 
   user$: Observable<User>;
   user: User;
 
-  alertTeamSelection = [];
+  clubAdminList$: Observable<Club[]>;
+
+  // alertTeamSelection = [];
 
   allowEdit: boolean = false;
 
@@ -62,19 +68,18 @@ export class ClubPage implements OnInit {
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.club = this.navParams.get("data");
 
-    this.club$ = of(this.club);
     this.club$ = this.getClub(this.club.id);
+
+    this.clubAdminList$ = this.fbService.getClubAdminList();
   }
 
   ngOnDestroy() {
-    if (this.subscribeMember) {
-      this.subscribeMember.unsubscribe();
-    }
+
   }
   edit() {
     if (this.allowEdit) {
@@ -84,6 +89,14 @@ export class ClubPage implements OnInit {
     }
   }
 
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+  }
+  async openUrl(url: string) {
+    Browser.open({
+      url: url
+    });
+  }
   getClub(clubId: string) {
     const calculateAge = (dateOfBirth) => {
       // console.log("DoB: " + JSON.stringify(dateOfBirth));
@@ -105,12 +118,15 @@ export class ClubPage implements OnInit {
         return combineLatest({
           clubMembers: this.fbService.getClubMemberRefs(clubId),
           clubAdmins: this.fbService.getClubAdminRefs(clubId),
-          // clubRequests: this.fbService.getClubRequestRefs(clubId),
+          clubRequests: this.fbService.getClubRequestRefs(clubId),
+          clubTeams: this.fbService.getClubTeamRefs(clubId),
         }).pipe(
-          switchMap(({ clubMembers,
-            clubAdmins, 
-            // clubRequests
-             }) => {
+          switchMap(({
+            clubMembers,
+            clubAdmins,
+            clubRequests,
+            clubTeams,
+          }) => {
             const memberProfiles$ = clubMembers.map((member) =>
               this.userProfileService.getUserProfileById(member.id).pipe(
                 take(1),
@@ -119,7 +135,7 @@ export class ClubPage implements OnInit {
                 )
               )
             );
-           const adminProfiles$ = clubAdmins.map((admin) =>
+            const adminProfiles$ = clubAdmins.map((admin) =>
               this.userProfileService.getUserProfileById(admin.id).pipe(
                 take(1),
                 catchError(() =>
@@ -127,38 +143,45 @@ export class ClubPage implements OnInit {
                 )
               )
             );
-            /*const clubRequests$ = clubRequests.map((request) =>
+            const clubRequests$ = clubRequests.map((request) =>
               this.userProfileService.getUserProfileById(request.id).pipe(
                 take(1),
                 catchError(() =>
                   of({ ...request, firstName: "Unknown", lastName: "Unknown" })
                 )
               )
-            );*/
+            );
+            // console.log(clubTeams)
+            
             return forkJoin({
               clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
               clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
-              // clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
+              clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
+              clubTeams: of(clubTeams) 
             }).pipe(
-              map(({ 
-                  clubMembers, 
-                  clubAdmins, 
-              //  clubRequests
-               }) => ({
+              map(({
+                clubMembers,
+                clubAdmins,
+                clubRequests,
+                clubTeams
+              }) => ({
                 clubMembers: clubMembers.filter(
                   (member) => member !== undefined
                 ), // Filter out undefined
                 clubAdmins: clubAdmins.filter((admin) => admin !== undefined), // Filter out undefined
-                /*clubRequests: clubRequests.filter(
+                clubRequests: clubRequests.filter(
                   (request) => request !== undefined
                 ), // Filter out undefined*/
+                clubTeams:clubTeams,
               }))
             );
           }),
-          map(({ clubMembers, 
-            clubAdmins, 
-          //  clubRequests
-           }) => {
+          map(({
+            clubMembers,
+            clubAdmins,
+            clubRequests,
+            clubTeams
+          }) => {
 
             const ages = clubMembers
               .map((member) =>
@@ -173,13 +196,15 @@ export class ClubPage implements OnInit {
               ages.length > 0
                 ? ages.reduce((a, b) => a + b, 0) / ages.length
                 : 0; // Calculate average or set to 0 if no valid ages
-
+            console.log(clubTeams)
             return {
               ...club,
+              clubTeams,
+              updated: Timestamp.fromMillis(club.updated.seconds * 1000).toDate().toISOString(),
               averageAge: averageAge.toFixed(1), // Keep two decimal places
               clubMembers,
               clubAdmins,
-            //  clubRequests,
+              clubRequests,
             };
           })
         );
@@ -190,6 +215,30 @@ export class ClubPage implements OnInit {
         return of(null);
       })
     );
+  }
+
+  onInput(ev, fieldname){
+    console.log(ev.detail.value);
+    this.fbService.setClubThreshold(this.club.id, fieldname, ev.detail.value)
+  }
+
+  async openRequestList() {
+    console.log("open Club Request List");
+    const modal = await this.modalCtrl.create({
+      component: ClubRequestListPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        club: this.club
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
   }
 
 
@@ -205,44 +254,23 @@ export class ClubPage implements OnInit {
       },
     });
     modal.present();
-  
+
     const { data, role } = await modal.onWillDismiss();
-  
+
     if (role === "confirm") {
     }
   }
 
 
-async openAdminList(){
-  console.log("open Club Admin");
-  const modal = await this.modalCtrl.create({
-    component: ClubAdminListPage,
-    presentingElement: await this.modalCtrl.getTop(),
-    canDismiss: true,
-    showBackdrop: true,
-    componentProps: {
-      club: this.club
-    },
-  });
-  modal.present();
-
-  const { data, role } = await modal.onWillDismiss();
-
-  if (role === "confirm") {
-  }
-}
-/*
-  async openRequestMember(member: Profile) {
-    console.log("open Request Member");
+  async openAdminList() {
+    console.log("open Club Admin");
     const modal = await this.modalCtrl.create({
-      component: MemberPage,
+      component: ClubAdminListPage,
       presentingElement: await this.modalCtrl.getTop(),
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        data: member,
-        isRequest: true,
-        clubId: this.club.id
+        club: this.club
       },
     });
     modal.present();
@@ -251,12 +279,33 @@ async openAdminList(){
 
     if (role === "confirm") {
     }
-  }*/
+  }
+  /*
+    async openRequestMember(member: Profile) {
+      console.log("open Request Member");
+      const modal = await this.modalCtrl.create({
+        component: MemberPage,
+        presentingElement: await this.modalCtrl.getTop(),
+        canDismiss: true,
+        showBackdrop: true,
+        componentProps: {
+          data: member,
+          isRequest: true,
+          clubId: this.club.id
+        },
+      });
+      modal.present();
+  
+      const { data, role } = await modal.onWillDismiss();
+  
+      if (role === "confirm") {
+      }
+    }*/
 
-  async openHelferPunkte(){
-    console.log("open HelferPunkte List");
+  async openSubscription() {
+    console.log("open openSubscription CLUB");
     const modal = await this.modalCtrl.create({
-      component: HelferPunktePage,
+      component: ClubSubscriptionPage,
       presentingElement: await this.modalCtrl.getTop(),
       canDismiss: true,
       showBackdrop: true,
@@ -269,12 +318,43 @@ async openAdminList(){
     const { data, role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
-    }  
+    }
 
   }
 
+  async openHelferPunkteClub() {
+    console.log("open HelferPunkte CLUB");
+    const modal = await this.modalCtrl.create({
+      component: HelferPunkteClubPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        clubId: this.club.id,
+      },
+    });
+    modal.present();
 
-  async openTeamList(){
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+
+  }
+  changeEmail(event){
+    console.log(event.detail.value)
+    //this.fbService.setClub
+  }
+
+ /* changeClubttribute(value: any, fieldname) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { [fieldname]: value });
+  }*/
+
+
+
+  async openTeamList() {
     console.log("open Team List");
     const modal = await this.modalCtrl.create({
       component: ClubTeamListPage,
@@ -290,110 +370,15 @@ async openAdminList(){
     const { data, role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
-    }  
-  }
-
-  /*async approveClubRequest(user) {
-    console.log(user);
-    const alert = await this.alertCtrl.create({
-      message: (
-        (await lastValueFrom(
-          this.translate.get("club.want_to_add__user__to_club_string")
-        )) ?? ""
-      ).replace("{userName}", `${user.firstName} ${user.lastName}`),
-      subHeader: "",
-      buttons: [
-        {
-          text: await lastValueFrom(this.translate.get("common.yes")),
-          role: "confirm",
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: "cancel",
-        },
-      ],
-      htmlAttributes: { "aria-label": "alert dialog" },
-    });
-    await alert.present();
-    const { role, data } = await alert.onDidDismiss();
-
-    if (role == "confirm") {
-      await this.fbService.approveUserClubRequest(user.clubId, user.id);
-      const toast = await this.toastCtrl.create({
-        message: await lastValueFrom(
-          this.translate.get("club.success__user_added")
-        ),
-        color: "primary",
-        duration: 1500,
-        position: "bottom",
-      });
-      await toast.present();
-
-      await this.assignTeamAlert(user);
-    } else {
-      await this.toastActionCanceled();
     }
   }
 
-  async assignTeamAlert(user) {
-    console.log(user);
-    const alert = await this.alertCtrl.create({
-      header: await lastValueFrom(this.translate.get("club.select__team")),
-      message: (
-        (await lastValueFrom(
-          this.translate.get("club.want_to_add__user__to_team_string")
-        )) ?? ""
-      ).replace("{userName}", `${user.firstName} ${user.lastName}`),
-      inputs: this.alertTeamSelection,
-      buttons: [
-        {
-          text: await lastValueFrom(this.translate.get("club.add")),
-          role: "confirm",
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: "cancel",
-        },
-      ],
-      htmlAttributes: { "aria-label": "alert dialog selcting teams" },
-    });
-    await alert.present();
-    const { role, data } = await alert.onDidDismiss();
-    console.log(data);
-
-    if (role == "confirm") {
-      for (const teamId of data.values) {
-        await this.fbService.approveUserTeamRequest(teamId, user.id);
-      }
-      const toast = await this.toastCtrl.create({
-        message: (
-          (await lastValueFrom(
-            this.translate.get("club.success__added_user_to_team_string")
-          )) ?? ""
-        )
-          .replace("{userName}", `${user.firstName} ${user.lastName}`)
-          .replace("length", `${data.values.length}`),
-        color: "primary",
-        duration: 1500,
-        position: "bottom",
-      });
-      await toast.present();
-    } else {
-      await this.toastActionCanceled();
-    }
-  }
-
-  async deleteClubRequest(user) {
-    console.log(user);
-    await this.fbService.deleteUserClubRequest(user.clubId, user.id);
-    await this.toastActionSaved();
-  }*/
 
   async toastActionSaved() {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
@@ -402,9 +387,9 @@ async openAdminList(){
 
   async toastActionCanceled() {
     const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("club.action__canceled")),
+      message: await lastValueFrom(this.translate.get("common.action__canceled")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
     await toast.present();
@@ -413,8 +398,8 @@ async openAdminList(){
   async toastActionError(error) {
     const toast = await this.toastCtrl.create({
       message: error.message,
-      duration: 2000,
-      position: "bottom",
+      duration: 1500,
+      position: "top",
       color: "danger",
     });
 

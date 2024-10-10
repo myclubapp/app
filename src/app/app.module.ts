@@ -1,4 +1,4 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA, APP_INITIALIZER, Injector } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy } from "@angular/router";
 
@@ -9,34 +9,23 @@ import { AppComponent } from "./app.component";
 import { AppRoutingModule } from "./app-routing.module";
 import { ServiceWorkerModule } from "@angular/service-worker";
 import { environment } from "../environments/environment";
-import { HttpClientModule, HttpClient } from "@angular/common/http";
-
-// import { GraphQLModule } from './graphql.module';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 import { provideFirebaseApp, getApp, initializeApp } from "@angular/fire/app";
-import {
-  getFirestore,
-  provideFirestore,
-} from "@angular/fire/firestore";
+import { getFirestore, provideFirestore } from "@angular/fire/firestore";
 import { provideAuth, getAuth, initializeAuth } from "@angular/fire/auth";
-import {
-  setPersistence,
-  browserSessionPersistence,
-  inMemoryPersistence,
-  indexedDBLocalPersistence,
-  // indexedDBLocalPersistence
-} from "firebase/auth";
+import { indexedDBLocalPersistence } from "firebase/auth";
 import { provideStorage, getStorage } from "@angular/fire/storage";
 import { provideMessaging, getMessaging } from "@angular/fire/messaging";
 
 // MODALs
-import { OnboardingPage } from "./pages/onboarding/onboarding.page";
+// import { OnboardingPage } from "./pages/onboarding/onboarding.page";
 import { NewsDetailPage } from "./pages/news/news-detail/news-detail.page";
 import { MemberPage } from "./pages/member/member.page";
 import { HelferPunktePage } from "./pages/helfer/helfer-punkte/helfer-punkte.page";
-import { ChampionshipDetailPage } from "./pages/championship/championship-detail/championship-detail.page";
+// import { ChampionshipDetailPage } from "./pages/championship/championship-detail/championship-detail.page";
 import { TrainingDetailPage } from "./pages/training/training-detail/training-detail.page";
 import { TrainingCreatePage } from "./pages/training/training-create/training-create.page";
 import { TrainingExercisesPage } from "./pages/training/training-exercises/training-exercises.page";
@@ -45,7 +34,10 @@ import { EventDetailPage } from "./pages/event/event-detail/event-detail.page";
 import { ClubPage } from "./pages/club/club.page";
 import { TeamPage } from "./pages/team/team-detail/team.page";
 import { Capacitor } from "@capacitor/core";
-import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
+import { TranslateModule, TranslateLoader, MissingTranslationHandler, MissingTranslationHandlerParams } from "@ngx-translate/core";
+import { TranslateService } from '@ngx-translate/core';
+import { LOCATION_INITIALIZED } from '@angular/common';
+
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 import { HelferDetailPage } from "./pages/helfer/helfer-detail/helfer-detail.page";
 import { HelferAddPage } from "./pages/helfer/helfer-add/helfer-add.page";
@@ -55,36 +47,72 @@ import { ClubAdminListPage } from "./pages/club-admin-list/club-admin-list.page"
 import { TeamAdminListPage } from "./pages/team-admin-list/team-admin-list.page";
 import { ClubTeamListPage } from "./pages/club-team-list/club-team-list.page";
 import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.page";
+import { ClubRequestListPage } from "./pages/club-request-list/club-request-list.page";
+import { TeamCreatePage } from "./pages/team/team-create/team-create.page";
+import { take } from "rxjs";
+import { HelferPunkteClubPage } from "./pages/helfer/helfer-punkte-club/helfer-punkte-club.page";
+import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
+import { GamePreviewPage } from "./pages/championship/game-preview/game-preview.page";
+import { NotificationPage } from "./pages/news/notification/notification.page";
+
+export function HttpLoaderFactory(httpClient: HttpClient) {
+  return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
+}
+export class TranslateHandler implements MissingTranslationHandler {
+  handle(params: MissingTranslationHandlerParams) {
+    /* some logic */
+  }
+}
+
+export function appInitializerFactory(translateService: TranslateService, injector: Injector): () => Promise<any> {
+  // tslint:disable-next-line:no-any
+  return () => new Promise<any>((resolve: any) => {
+    const locationInitialized = injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
+    locationInitialized.then(() => {
+      translateService.use("de")
+        // here u can change language loaded before reander enything
+        .pipe(take(1))
+        .subscribe(() => { },
+          err => console.error(err), () => resolve(null));
+    })
+
+  });
+}
 
 @NgModule({
   declarations: [
     AppComponent,
     NewsDetailPage,
+    NotificationPage,
     MemberPage,
-
     HelferPunktePage,
+    HelferPunkteClubPage,
     HelferDetailPage,
     HelferAddPage,
     // ChampionshipDetailPage,
     TrainingExercisesPage,
     TrainingDetailPage,
     TrainingCreatePage,
-    
+    GamePreviewPage,
     EventAddPage,
     EventDetailPage,
-
-    OnboardingPage,
+    // OnboardingPage,
     ClubPage,
     ClubMemberListPage,
     ClubAdminListPage,
     ClubTeamListPage,
-
+    ClubRequestListPage,
+    ClubSubscriptionPage,
     TeamPage,
     TeamMemberListPage,
     TeamAdminListPage,
-    TeamExercisesPage
+    TeamExercisesPage,
+    TeamCreatePage,
   ],
+  bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
+  
     BrowserModule,
     FontAwesomeModule,
     IonicModule.forRoot(),
@@ -96,17 +124,19 @@ import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.pa
       // or after 30 seconds (whichever comes first).
       registrationStrategy: "registerWhenStable:30000",
     }),
-    // GraphQLModule,
-    HttpClientModule,
     TranslateModule.forRoot({
-      // <--- add this
       loader: {
-        // <--- add this
-        provide: TranslateLoader, // <--- add this
-        useFactory: createTranslateLoader, // <--- add this
-        deps: [HttpClient], // <--- add this
-      }, // <--- add this
+        provide: TranslateLoader,
+        useFactory: (HttpLoaderFactory),
+        deps: [HttpClient]
+      },
+      isolate: false,
+      missingTranslationHandler: [{ provide: MissingTranslationHandler, useClass: TranslateHandler }]
     }),
+    
+    
+  ],
+  providers: [
     provideFirebaseApp(() => {
       const init = initializeApp(environment.firebase);
       return init;
@@ -120,7 +150,8 @@ import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.pa
         return initializeAuth(getApp(), {
           persistence: indexedDBLocalPersistence,
         });
-      } else {
+      }
+      else {
         return getAuth();
       }
       // const auth = getAuth();
@@ -129,12 +160,13 @@ import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.pa
     }),
     provideStorage(() => getStorage()),
     provideMessaging(() => getMessaging()),
-  ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
-  bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, {
+    provide: APP_INITIALIZER,
+    useFactory: appInitializerFactory,
+    deps: [TranslateService, Injector],
+    multi: true
+  }, provideHttpClient(withInterceptorsFromDi())]
 })
-export class AppModule {}
-export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, "./assets/lang/", ".json");
-}
+export class AppModule { }
+

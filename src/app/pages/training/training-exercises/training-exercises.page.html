@@ -1,9 +1,11 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="secondary">
-      <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
-      <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
-    </ion-buttons>
+    <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+      <ion-buttons *ngIf="isTeamAdmin(teamAdminList, training.teamId)" slot="secondary">
+        <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
+        <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
+      </ion-buttons>
+    </ng-container>
     <ion-title>Übungen</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
@@ -33,18 +35,24 @@
 
       <ion-reorder-group [disabled]="false" (ionItemReorder)="handleReorder($any($event), teamTrainingExerciseList)">
         <ion-item-sliding #item *ngFor="let exercise of teamTrainingExerciseList; trackBy: trackItems">
-          <ion-item type="button" detail="true">
-            <ion-icon *ngIf="allowEdit==true" slot="icon-only" color="danger" slot="start" name="remove-circle-outline"
-              (click)="removeExercise(exercise)"></ion-icon>
-            <ion-thumbnail slot="start">
-              <img alt="{{exercise.title}}" src="{{exercise.image}}" />
-            </ion-thumbnail>
-            <ion-label (click)="openExercise(exercise)">
-              <h2>{{exercise.title}}</h2>
-              <h3>{{exercise.description}}</h3>
-            </ion-label>
-            <ion-reorder *ngIf="allowEdit==true" slot="end"></ion-reorder>
-          </ion-item>
+          <ion-item-options *ngIf="allowEdit" side="start">
+            <ion-item-option  color="danger"
+            (click)="removeExercise(item, exercise)">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+        <ion-item type="button" detail="true">
+            
+          <ion-thumbnail slot="start">
+            <img alt="{{exercise.title}}" src="{{exercise.image}}" />
+          </ion-thumbnail>
+          <ion-label  class="ion-text-wrap" (click)="openExercise(exercise)">
+            <h2>{{exercise.title}}</h2>
+            <h3>{{exercise.category}}</h3>
+            <h3>{{exercise.description}}</h3>
+          </ion-label>
+          <ion-reorder *ngIf="allowEdit==true" slot="end"></ion-reorder>
+        </ion-item>
         </ion-item-sliding>
       </ion-reorder-group>
     </ion-list>

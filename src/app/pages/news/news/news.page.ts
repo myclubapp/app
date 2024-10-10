@@ -8,8 +8,15 @@ import {
   AnimationController,
   AlertController,
 } from "@ionic/angular";
+import { Router } from '@angular/router';
+// import { ActivatedRoute } from '@angular/router';
 import { News } from "src/app/models/news";
-
+import {
+  DomSanitizer,
+  SafeHtml,
+  SafeUrl,
+  SafeStyle
+} from '@angular/platform-browser';
 import { Share } from "@capacitor/share";
 import { Device } from "@capacitor/device";
 
@@ -26,35 +33,21 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { User, user } from "@angular/fire/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
-import { filter } from "rxjs/operators";
 import {
   Observable,
-  Subscription,
   catchError,
   combineLatest,
-  concat,
-  concatAll,
-  concatMap,
-  defaultIfEmpty,
-  finalize,
-  forkJoin,
-  from,
-  lastValueFrom,
   map,
-  merge,
-  mergeMap,
   of,
-  shareReplay,
   switchMap,
   take,
   tap,
-  timeout,
-  toArray,
 } from "rxjs";
 import { Club } from "src/app/models/club";
 import { Team } from "src/app/models/team";
 import { TranslateService } from "@ngx-translate/core";
-import { Router } from "@angular/router";
+import { NotificationPage } from "../notification/notification.page";
+import { NotificationService } from "src/app/services/firebase/notification.service";
 
 @Component({
   selector: "app-news",
@@ -72,21 +65,21 @@ export class NewsPage implements OnInit {
   shareSocialShareOptions: any;
   showSocialShare = false;
 
-  faTwitter: any = faTwitter; 
+  faTwitter: any = faTwitter;
   faFacebook: any = faFacebook;
   faWhatsapp: any = faWhatsapp;
   faLinkedin: any = faLinkedin;
   faEnvelope: any = faEnvelope;
   faCopy: any = faCopy;
 
-  private subscription: Subscription;
-  private subscriptionFilter: Subscription;
+  notifications$: Observable<any[]>;
 
-  newsList: News[] = [];
   newsList$: Observable<News[]>;
 
   constructor(
+    private readonly notificationService: NotificationService,
     private readonly newsService: NewsService,
+    // private readonly sanitization: DomSanitizer,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
     private readonly routerOutlet: IonRouterOutlet,
@@ -95,17 +88,18 @@ export class NewsPage implements OnInit {
     private readonly menuCtrl: MenuController,
     public animationCtrl: AnimationController,
     private translate: TranslateService,
+    // private route: ActivatedRoute,
     private router: Router
   ) {
     this.menuCtrl.enable(true, "menu");
-    if (this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "news") {
+    /* if (this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "news") {
       const pushData = this.router.getCurrentNavigation().extras.state;
       // It's a Push Message
       let news: News = {
         id: pushData.id,
         title: pushData.title,
         slug: pushData.slug,
-        image: pushData.iamge,
+        image: pushData.image,
         leadText: pushData.leadText,
         author: pushData.author,
         authorImage: pushData.authorImage,
@@ -114,7 +108,7 @@ export class NewsPage implements OnInit {
         text: pushData.text,
         url: pushData.url,
         filterable: pushData.filterable,
-        tags: pushData.tags
+        tags: pushData.tags || []
       };
       this.openModal(news);
     }
@@ -125,7 +119,7 @@ export class NewsPage implements OnInit {
         id: pushData.id,
         title: pushData.title,
         slug: pushData.slug,
-        image: pushData.iamge,
+        image: pushData.image,
         leadText: pushData.leadText,
         author: pushData.author,
         authorImage: pushData.authorImage,
@@ -134,164 +128,152 @@ export class NewsPage implements OnInit {
         text: pushData.text,
         url: pushData.url,
         filterable: pushData.filterable,
-        tags: pushData.tags
+        tags: pushData.tags || []
       };
-      this.openModal(news);
-    }
+      this.openModal(news); 
+    }*/
+
+
   }
 
   ngOnInit() {
-    const clubNewsList: News[] = [];
-    const teamNewsList: News[] = [];
-    const verbandNewsList: News[] = [];
+    this.newsList$ = this.getNews();
+    this.notifications$ = this.getNotifications();
 
-    clubNewsList.length = 0;
-    teamNewsList.length = 0;
-    verbandNewsList.length = 0;
+    /*this.route.snapshot.data['news'].subscribe((news) => {
+      console.log(news)
+    });*/
 
-    // Club observable
-    const clubNews$ = this.authService.getUser$().pipe(
-      take(1),
-      switchMap((user) => this.fbService.getUserClubRefs(user)),
-      concatMap((clubsArray) => from(clubsArray)),
-      tap((club) => console.log(club.id)),
-      concatMap((club) =>
-        this.newsService.getClubNewsRef(club.id).pipe(
-          take(1),
-          map((newsArray) =>
-            newsArray.map((newsItem) => ({
-              ...newsItem,
-              filterable: club.id,
-            }))
-          ),
-          catchError((error) => {
-            console.error("Error fetching club news:", error);
-            return of([]);
-          })
-        )
-      ),
-      tap((news) => news.forEach((n) => clubNewsList.push(n))),
-      finalize(() => console.log("Club news fetching completed"))
-    );
-
-    // Verband observable
-    const verbandNews$ = this.authService.getUser$().pipe(
-      take(1),
-      switchMap((user) => this.fbService.getUserClubRefs(user)),
-      concatMap((clubsArray) => from(clubsArray)),
-      switchMap((club) => this.fbService.getClubRef(club.id)),
-      tap((clubDetail) => console.log(clubDetail.type)),
-      concatMap((clubDetail) =>
-        this.newsService.getNewsRef(clubDetail.type).pipe(
-          take(1),
-          map((newsArray) =>
-            newsArray.map((newsItem) => ({
-              ...newsItem,
-              filterable: clubDetail.type,
-            }))
-          ),
-          catchError((error) => {
-            console.error("Error fetching verband news:", error);
-            return of([]);
-          })
-        )
-      ),
-      tap((news) => news.forEach((n) => verbandNewsList.push(n))),
-      finalize(() => console.log("Verband news fetching completed"))
-    );
-
-    // Team observable
-    const teamNews$ = this.authService.getUser$().pipe(
-      take(1),
-      switchMap((user) => this.fbService.getUserTeamRefs(user)),
-      concatMap((teamsArray) => from(teamsArray)),
-      tap((team) => console.log(team.id)),
-      concatMap((team) =>
-        this.newsService.getTeamNewsRef(team.id).pipe(
-          take(1),
-          map((newsArray) =>
-            newsArray.map((newsItem) => ({
-              ...newsItem,
-              filterable: team.id,
-            }))
-          ),
-          catchError((error) => {
-            console.error("Error fetching team news:", error);
-            return of([]);
-          })
-        )
-      ),
-      tap((news) => news.forEach((n) => teamNewsList.push(n))),
-      finalize(() => console.log("Team news fetching completed"))
-    );
-
-    // Use combineLatest to get results when both observables have emitted
-    this.subscriptionFilter = combineLatest([
-      clubNews$,
-      teamNews$,
-      verbandNews$,
-    ]).subscribe({
-      next: () => {
-        this.newsList = [
-          ...this.newsList,
-          ...clubNewsList,
-          ...teamNewsList,
-          ...verbandNewsList,
-        ].sort((a, b): any => {
-          // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
-          return new Date(a.date).getTime() < new Date(b.date).getTime();
-        });
-
-        this.newsList = this.newsList.filter(
-          (news, index, self) =>
-            index === self.findIndex((t) => t.id === news.id)
-        );
-
-        this.newsList$ = of(this.newsList);
-        console.log("Combined news list created");
-      },
-      error: (err) => console.error("Error in the observable chain:", err),
-    });
-  }
-
-  ngAfterViewInit(): void {}
-
-  ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
+    const navigation = this.router.getCurrentNavigation();
+    if (navigation) {
+      const state = navigation.extras.state;
+      if (state) {
+        console.log(state); // 'someValue'
+      } else {
+        console.log('No state provided');
+      }
     }
   }
+
+
+  ngOnDestroy(): void {
+
+  }
+
+  getNews() {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap(user => {
+        if (!user) throw new Error("User not found");
+        this.user = user;
+      }),
+      switchMap(user => this.fbService.getUserClubRefs(user)), // Get user's club references
+      switchMap(clubs => {
+        if (!clubs.length) {
+          console.log("No clubs associated with the user.");
+          /*this.router.navigateByUrl('/onboarding-club').then(navOnboardingClub=>{
+            if (navOnboardingClub) {
+              console.log('Navigation success to onboarding Club Page');
+            } else {
+              console.error('Navigation ERROR to onboarding Club Page');
+            }
+          })*/
+          return of([]);
+        }
+
+        // Fetch detailed information for each club
+        return combineLatest(
+          clubs.map(club => this.fbService.getClubRef(club.id).pipe(
+            switchMap(clubDetail => {
+              if (!clubDetail) {
+                console.log(`No details found for club ID: ${club.id}`);
+                return of({ clubNews: [], typeNews: [] });
+              }
+
+              const newsByClub$ = this.newsService.getClubNewsRef(club.id).pipe(
+                catchError(error => {
+                  console.error(`Error fetching news for club ID ${club.id}:`, error);
+                  return of([]);
+                })
+              );
+
+              const newsByType$ = this.newsService.getNewsRef(clubDetail.type).pipe(
+                catchError(error => {
+                  console.error(`Error fetching news for type ${clubDetail.type}:`, error);
+                  return of([]);
+                })
+              );
+
+              return combineLatest([newsByClub$, newsByType$]).pipe(
+                map(([clubNews, typeNews]) => ({ clubNews, typeNews }))
+              );
+            })
+          ))
+        );
+      }),
+      map(newsArrays => {
+        const allNews = [];
+
+        // Aggregate and flatten the news items
+        newsArrays.forEach(({ clubNews, typeNews }) => {
+          /*typeNews.map(news=>{
+            news.image = this.sanitization.bypassSecurityTrustResourceUrl(news.image);
+          })*/
+          allNews.push(...clubNews);
+          allNews.push(...typeNews);
+        });
+
+        // Remove duplicates and sort
+        return allNews
+          .filter((news, index, self) =>
+            index === self.findIndex((t) => t.id === news.id)
+          )
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      }),
+      catchError(error => {
+        console.error("Error fetching news:", error);
+        return of([]);
+      })
+    );
+  }
+  getNotifications(): Observable<any[]> {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        if (!user) throw new Error("User not found");
+      }),
+      switchMap((user) => {
+        return this.notificationService.getNotifications(user);
+      })
+    )
+  }
+  async openNotification() {
+    const modal = await this.modalCtrl.create({
+      component: NotificationPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+      },
+      //   enterAnimation,
+      //   leaveAnimation,
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+      console.log('Notification', data);
+      // console.log("TYPE:  " + data.type);
+      if (data.type === "news" || data.type === "clubNews") {
+        this.openModal(data);
+      } else {
+      }
+    }
+  }
+
+
   async openModal(news: News) {
-    // const presentingElement = await this.modalCtrl.getTop();
-
-    /*const enterAnimation = (baseEl: any) => {
-      const root = baseEl.shadowRoot;
-
-      const backdropAnimation = this.animationCtrl
-        .create()
-        .addElement(root.querySelector("ion-backdrop")!)
-        .fromTo("opacity", "0.01", "var(--backdrop-opacity)");
-
-      const wrapperAnimation = this.animationCtrl
-        .create()
-        .addElement(root.querySelector(".modal-wrapper")!)
-        .keyframes([
-          { offset: 0, opacity: "0", transform: "scale(0)" },
-          { offset: 1, opacity: "0.99", transform: "scale(1)" },
-        ]);
-
-      return this.animationCtrl
-        .create()
-        .addElement(baseEl)
-        .easing("ease-out")
-        .duration(150)
-        .addAnimation([backdropAnimation, wrapperAnimation]);
-    };
-
-    const leaveAnimation = (baseEl: any) => {
-      return enterAnimation(baseEl).direction("reverse");
-    };*/
-
     const modal = await this.modalCtrl.create({
       component: NewsDetailPage,
       presentingElement: this.routerOutlet.nativeEl,
@@ -311,264 +293,18 @@ export class NewsPage implements OnInit {
     }
   }
 
-  async openAddNews() {}
-
-  async openFilter(ev: Event) {
-    /*let filterList = [];
-
-    const clubs$ = this.authService.getUser$().pipe(
-      take(1),
-      switchMap(user => this.fbService.getUserClubRefs(user).pipe(take(1))),  
-      concatMap(clubArray => from(clubArray)),
-      tap((club:Club)=>console.log(club.id)),
-      concatMap(club => 
-        this.fbService.getClubRef(club.id).pipe(
-          take(1),
-          defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
-          map(result => [result]),
-          catchError(error => {
-            console.error('Error fetching ClubDetail:', error);
-            return of([]);
-          })
-        )
-      ),
-      tap(clubList => clubList.forEach(club => {
-        filterList.push({id: club.type, name: club.type}); // Verband Infos
-        return filterList.push(club);
-      })),
-      finalize(() => console.log("Get Club completed"))
-  );
-
-  const teams$ = this.authService.getUser$().pipe(
-    take(1),
-    switchMap(user => this.fbService.getUserTeamRefs(user).pipe(take(1))),
-    concatMap(teamsArray =>  from(teamsArray)),
-    tap((team:Team)=>console.log(team.id)),
-    concatMap(team => 
-      this.fbService.getTeamRef(team.id).pipe(
-        take(1),
-        defaultIfEmpty(null),  // gibt null zurück, wenn kein Wert von getClubRef gesendet wird
-        map(result => [result]),
-        catchError(error => {
-          console.error('Error fetching TeamDetail:', error);
-          return of([]);
-      })
-    )
-    ),
-    tap(teamList => teamList.forEach(team => filterList.push(team))),
-    finalize(() => console.log("Get Teams completed"))
-  );
-
-  this.subscription = forkJoin([teams$, clubs$]).subscribe({
-    next: async () => {
-      const alertInputs = [];
-      for (const item of filterList){
-        alertInputs.push({
-          label: item.name,
-          type: 'radio',
-          checked: item.id == this.filterValue,
-          value: item.id,
-        });
-      }
-    
-      this.alertCtrl.create({
-        header: await lastValueFrom(this.translate.get("news.filter__news")),
-        message: await lastValueFrom(this.translate.get("news.filter__by_club_team")),
-       // subHeader: 'Nach Verein oder Teams filtern.',
-        inputs: alertInputs,
-        buttons: [
-          { text:  await lastValueFrom(this.translate.get("ok")),
-            role: "confirm",
-            handler: (value)=>{
-              console.log(value)
-              this.filterValue = value;
-              this.newsList$ = of(this.newsList.filter((news: any) => news.filterable == value));
-            } 
-          },
-          { text:  await lastValueFrom(this.translate.get("cancel")),
-            role: "cancel",
-            handler: (value)=>{
-              console.log(value);
-              this.filterValue = "";
-              this.newsList$ = of(this.newsList);
-            } 
-          }
-        ],
-        htmlAttributes: { 'aria-label': 'alert dialog' },
-      }).then(alert => {
-        alert.present();
-      });
-    },
-    error: err => console.error('Error in the observable chain:', err)
-  });
-*/
-    /*
-  this.subscriptionFilter = forkJoin([teams$, clubs$]).pipe(
-    map(([teams, clubs]) => [...teams, ...clubs]),
-    map(filterList => {
-      filterList.sort((a, b) => a.name < b.name ? -1 : 1);
-      return filterList.filter((item, index, self) => 
-        index === self.findIndex(t => t.id === item.id)
-      );
-    }),
-    tap(filteredList => {
-      const alertInputs = [];
-      for (const item of filteredList){
-        alertInputs.push({
-          label: item.name,
-          type: 'radio',
-          value: item.id,
-        });
-      }
-    
-      this.alertCtrl.create({
-        message: 'News Filtern.',
-        inputs: alertInputs,
-        buttons: [
-          { text: "OK" },
-          { text: "abbrechen" }
-        ],
-        htmlAttributes: { 'aria-label': 'alert dialog' },
-      }).then(alert => {
-        alert.present();
-      });
-    })
-  ).subscribe({
-    error: err => console.error('Error in the observable chain:', err)
-  });
-*/
-    /*
-
-
-  // Use forkJoin to get results when both observables have completed
-  this.subscriptionFilter = combineLatest([teams$, clubs$]).subscribe({
-    next: () => {
-      console.log("ONLY 1 TIME")
-      
-      filterList = filterList.sort((a, b):any => {
-        return a.name < b.name;
-      });    
-      
-      filterList = filterList.filter((item, index, self) => 
-      index === self.findIndex((t) => (t.id === item.id))
-      );
-      console.log(filterList);
-
-      const alertInputs = [];
-      for (const item of filterList){
-        console.log(item)
-        alertInputs.push(
-          {
-            label: item.name,
-            type: 'radio',
-            value: item.id,
-          }
-        )
-      }
-  
-      this.alertCtrl.create({
-        message: 'News Filtern.',
-        inputs: alertInputs,
-        buttons: [
-          {
-            text: "OK"
-          },
-          {
-            text: "abbrechen"
-          }
-        ],
-        htmlAttributes: {
-          'aria-label': 'alert dialog',
-        },
-      }).then(alert=>{
-        alert.present();
-      });
-  
-      
-    },
-    error: err => console.error('Error in the observable chain:', err)
-  });
-*/
-    /*
-    // console.log(ev);
-    const filterList = [];
-
-    const clubs$ =  this.authService.getUser$().pipe(
-      switchMap(user => this.fbService.getUserClubRefs(user)),
-      concatMap(clubsArray => from(clubsArray)),
-      switchMap(club => this.fbService.getClubRef(club.id).pipe(take(1))),
-      tap(clubDetail=>{
-        filterList.push(clubDetail)
-      }),
-    finalize(() => console.log("Get clubs completed")));
-    const teams$ =  this.authService.getUser$().pipe(
-      switchMap(user => this.fbService.getUserTeamRefs(user)),
-      concatMap(teamArray => from(teamArray)),
-      concatMap(team => this.fbService.getTeamRef(team.id).pipe(take(1))),
-      tap(teamDetail=>{
-        filterList.push(teamDetail)
-      }),
-      finalize(() => console.log("Get clubs completed")));
-
-// Use combineLatest to get results when both observables have emitted
-this.subscriptionFilter = combineLatest([teams$, clubs$]).subscribe({
-  next: () => {
-    this.filterList = [...this.filterList, ...filterList].sort((a, b):any => {
-        // Assuming date is a string in 'YYYY-MM-DD' format or a similar directly comparable format.
-        return a.name < b.name;
-    });    
-    this.filterList = this.filterList.filter((item, index, self) => 
-    index === self.findIndex((t) => (t.id === item.id))
-);
-console.log(this.filterList)
-   
-    const alertInputs = [];
-    for (const item of this.filterList){
-      console.log(item)
-      alertInputs.push(
-        {
-          label: item.name,
-          type: 'radio',
-          value: item.id,
-        }
-      )
-    }
-
-    this.alertCtrl.create({
-      message: 'This is an alert with custom aria attributes.',
-      inputs: alertInputs,
-      buttons: [
-        {
-          text: "OK"
-        },
-        {
-          text: "abbrechen"
-        }
-      ],
-      htmlAttributes: {
-        'aria-label': 'alert dialog',
-      },
-    }).then(alert=>{
-      alert.present();
-    });
-
-    //alert.present();
-   
-  },
-  error: err => console.error('Error in the observable chain:', err)
-});
-*/
-  }
-
   async share(news: News) {
-    const device = await Device.getInfo();
-    if (device.platform === "web" && navigator && navigator.share) {
+    // const device = await Device.getInfo();
+    const { value } = await Share.canShare();
+
+    if (value) {
+      // if (device.platform === "web" && navigator && navigator.share) {
       const shareRet = await Share.share({
         title: news.title,
         text: news.leadText,
         url: news.url,
         dialogTitle: news.title,
-      }).catch((onrejected) => {});
+      }).catch((onrejected) => { });
     } else {
       await this.shareFallback(news);
     }

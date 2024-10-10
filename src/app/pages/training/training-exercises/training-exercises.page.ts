@@ -1,11 +1,13 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Browser } from "@capacitor/browser";
-import { ItemReorderEventDetail, ModalController, NavParams, ToastController } from "@ionic/angular";
+import { IonItemSliding, ItemReorderEventDetail, ModalController, NavParams, ToastController } from "@ionic/angular";
 import { Observable, filter, first, lastValueFrom, map, pipe, take } from "rxjs";
 import { Training } from "src/app/models/training";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { TeamExercisesPage } from "../../team/team-exercises/team-exercises.page";
 import { TranslateService } from "@ngx-translate/core";
+import { Team } from "src/app/models/team";
+import { FirebaseService } from "src/app/services/firebase.service";
 
 @Component({
   selector: "app-training-exercises",
@@ -25,14 +27,21 @@ export class TrainingExercisesPage implements OnInit {
 
   allowEdit: boolean = false;
 
+  teamAdminList$: Observable<Team[]>;
+
   constructor(
     public navParams: NavParams,
     private exerciseService: ExerciseService,
     private modalCtrl: ModalController,
+    private readonly fbService: FirebaseService,
     public toastCtrl: ToastController,
     private translate: TranslateService,
   ) {
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
 
+  }
+  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
+    return teamAdminList && teamAdminList.some(team => team.id === teamId);
   }
 
   ngOnInit() {
@@ -81,7 +90,8 @@ export class TrainingExercisesPage implements OnInit {
     }
   }
 
-  removeExercise(exercise){
+  removeExercise(slidingItem: IonItemSliding, exercise){
+    slidingItem.closeOpened();
     this.exerciseService.removeTeamTrainingExercise(this.training.teamId,this.training.id, exercise);
     this.toastActionCanceled();
   }
@@ -94,7 +104,7 @@ export class TrainingExercisesPage implements OnInit {
 
   openExercise(exercise) {
     Browser.open({
-      url: exercise.video
+      url: exercise.link
     })
   }
 
@@ -121,7 +131,7 @@ export class TrainingExercisesPage implements OnInit {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "success",
     });
 
@@ -130,9 +140,9 @@ export class TrainingExercisesPage implements OnInit {
 
   async toastActionCanceled() {
     const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("team.action__canceled")),
+      message: await lastValueFrom(this.translate.get("common.success__exercise_deleted")),
       duration: 1500,
-      position: "bottom",
+      position: "top",
       color: "danger",
     });
     await toast.present();
@@ -141,8 +151,8 @@ export class TrainingExercisesPage implements OnInit {
   async toastActionError(error) {
     const toast = await this.toastCtrl.create({
       message: error.message,
-      duration: 2000,
-      position: "bottom",
+      duration: 1500,
+      position: "top",
       color: "danger",
     });
 

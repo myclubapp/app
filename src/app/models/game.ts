@@ -6,8 +6,10 @@ export interface Game {
   date: string;
   time: string;
   dateTime: Timestamp;
+  
   location: string;
   city: string;
+  
   longitude: string;
   latitude: string;
   liga: string;
@@ -17,6 +19,7 @@ export interface Game {
 
   teamName: string;
   teamId: string;
+  clubId: string;
 
   teamHomeId: string;
   teamHome: string;
@@ -42,6 +45,8 @@ export interface Game {
   status: boolean;
   countAttendees: number;
   attendees: any;
+
+  gameStatus: any;
 }
 export interface SwissUnihockeyGame extends Game {}
 

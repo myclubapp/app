@@ -26,27 +26,31 @@
                   <ion-icon slot="start" name="barbell-outline"></ion-icon>
                   <ion-label>{{"common.training" | translate}}</ion-label>
                 </ion-item>
-                <ion-item routerDirection="root" [routerLink]="['/t/championship']" lines="none" detail="true"
-                  routerLinkActive="selected">
-                  <ion-icon slot="start" name="trophy-outline"></ion-icon>
-                  <ion-label>{{"common.championship" | translate}}</ion-label>
-                </ion-item>
+                <ng-container *ngIf="clubList$ | async as clubList">
+                  <ion-item *ngIf="enableChampionship(clubList)" routerDirection="root"
+                    [routerLink]="['/t/championship']" lines="none" detail="true" routerLinkActive="selected">
+                    <ion-icon slot="start" name="trophy-outline"></ion-icon>
+                    <ion-label>{{"common.championship" | translate}}</ion-label>
+                  </ion-item>
+                </ng-container>
                 <ion-item routerDirection="root" [routerLink]="['/t/events']" lines="none" detail="true"
                   routerLinkActive="selected">
                   <ion-icon slot="start" name="calendar-outline"></ion-icon>
                   <ion-label>{{"common.events" | translate}}</ion-label>
                 </ion-item>
-                <ion-item routerDirection="root" [routerLink]="['/t/helfer']" lines="none" detail="true"
-                  routerLinkActive="selected">
-                  <ion-icon slot="start" name="help-buoy-outline"></ion-icon>
-                  <ion-label>{{"common.helper" | translate}}</ion-label>
-                </ion-item>
-
+                <ng-container *ngIf="clubList$ | async as clubList">
+                  <ion-item *ngIf="enableHelferEvents(clubList)" routerDirection="root" [routerLink]="['/t/helfer']"
+                    lines="none" detail="true" routerLinkActive="selected">
+                    <ion-icon slot="start" name="help-buoy-outline"></ion-icon>
+                    <ion-label>{{"common.helper" | translate}}</ion-label>
+                  </ion-item>
+                </ng-container>
                 <ion-item routerDirection="root" [routerLink]="['/profile']" lines="none" detail="true"
                   routerLinkActive="selected">
                   <ion-icon slot="start" name="person-circle-outline"></ion-icon>
                   <ion-label>{{"common.profile" | translate}}</ion-label>
                 </ion-item>
+
                 <ion-item routerDirection="root" [routerLink]="['/info']" lines="none" detail="true"
                   routerLinkActive="selected">
                   <ion-icon slot="start" name="information-circle-outline"></ion-icon>

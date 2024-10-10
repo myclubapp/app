@@ -1,9 +1,21 @@
+import { Timestamp } from "firebase/firestore";
+
 export interface Club {
   id: string;
   name: string;
   logo: string;
   type: string;
   active: boolean;
+  wordpress: string;
+  website: string;
+  link_location: string;
+  address: string;
+  phone: string;
+  updated: Timestamp;
+  roles: [];
+  helferReportingDateFrom: string;
+  helferReportingDateTo: string;
+
 
 }
 export interface SwissUnihockeyClub extends Club {}

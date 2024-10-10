@@ -10,19 +10,30 @@
       <ion-label>{{"common.training"| translate}}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="championship">
-      <ion-icon name="trophy-outline"></ion-icon>
-      <ion-label>{{"common.championship"| translate}}</ion-label>
-    </ion-tab-button>
+    <ng-container *ngIf="clubList$ | async as clubList">
+      <ion-tab-button  *ngIf="enableChampionship(clubList)"  tab="championship">
+        <ion-icon name="trophy-outline"></ion-icon>
+        <ion-label>{{"common.championship"| translate}}</ion-label>
+      </ion-tab-button>
+    </ng-container>
+
     <ion-tab-button tab="events">
       <ion-icon name="calendar-outline"></ion-icon>
       <ion-label>{{"common.events" | translate}}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="helfer">
-      <ion-icon name="help-buoy-outline"></ion-icon>
-      <ion-label>{{"common.helper" | translate}}</ion-label>
-    </ion-tab-button>
+    <ng-container *ngIf="clubList$ | async as clubList">
+      <ion-tab-button *ngIf="enableHelferEvents(clubList)" tab="helfer">
+        <ion-icon name="help-buoy-outline"></ion-icon>
+        <ion-label>{{"common.helper" | translate}}</ion-label>
+      </ion-tab-button>
+    </ng-container>
 
+    <ng-container *ngIf="clubList$ | async as clubList">
+    <ion-tab-button *ngIf="!enableHelferEvents(clubList) || !enableChampionship(clubList)" tab="profile">
+      <ion-icon name="person-circle-outline"></ion-icon>
+      <ion-label>{{"common.profile" | translate}}</ion-label>
+    </ion-tab-button>
+  </ng-container>
   </ion-tab-bar>
 </ion-tabs>

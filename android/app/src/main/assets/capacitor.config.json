@@ -16,5 +16,8 @@
 				"alert"
 			]
 		}
+	},
+	"ios": {
+		"scheme": "App"
 	}
 }

@@ -6,8 +6,10 @@
         "register": "Anmelden",
         "error__no_acount_found": "Kein Account mit dieser E-Mail-Adresse gefunden",
         "error__invalid_username_password": "Die Kombination aus Benutzername und Passwort ist falsch.",
+        "error__invalid_login_credentials": "Die Kombination aus Benutzername und Passwort ist falsch.",
+        "error__invalid_credentials": "Die Kombination aus Benutzername und Passwort ist ungültig.",
         "error__network_connection": "Es gibt ein Problem mit der Netzwerkverbindung",
-        "mistake": "Fehler"
+        "error": "Fehler"
     },
     "logout": {
         "logout__success": "Logout war erfolgreich!",
@@ -25,7 +27,7 @@
         "to__register": "Registrieren",
         "account__created": "Account erstellt",
         "account__created_description": "Dein Account wurde erfolgreich erstellt. Bitte bestätige deine E-Mail Adresse.",
-        "email__already_in_use": "E-Mail already in use"
+        "email__already_in_use": "E-Mail wird bereits verwendet"
     },
     "championship": {
         "past__games": "Vergangene Spiele",
@@ -41,17 +43,26 @@
     },
     "championship-detail": {},
     "club": {
+        "details": "Club Details", 
+        "request_approve_header": "Club Anfrage",
+        "request_approve_subheader": "Mitglied dem Club hinzufügen?",
+        "request_add_user_to_club": "Möchtest du die Anfrage des Mitglieds annehmen und dem Club hinzufügen?",
         "want_to_add__user__to_club_string": "Möchtest du {userName} deinem Club hinzufügen?",
         "success__user_added": "user wurde erfolgreich dem Club hinzugefügt",
-        "select__team": "Team auswählen",
-        "want_to_add__user__to_team_string": "Möchtest du {userName} einem Team hinzufügen?",
+        "select_team_header": "Team auswählen",
+        "select_team_subheader": "Mitglied einem Team hinzufügen?",
+        "want_to_add__user__to_team_string": "Möchtest das Mitglieds einem Team hinzufügen? Wähle ein Team in der Liste aus.",
         "add": "hinzufügen",
         "success__added_user_to_team_string": "{userName} wurde erfolgreich {length} Team(s) hinzugefügt",
-        "action__canceled": "Action was canceled",
+
+        "action__request_deleted": "Anfrage wurde abgelehnt",
         "trainaing__presence": "Trainingspräsenz"
     },
     "club-list": {
         "my__clubs": "Meine Clubs"
+    },
+    "club-member-list": {
+        "delete_member__confirm": "Möchtest du das Mitglied wirklich aus dem Club entfernen?"
     },
     "event-add": {
         "new__event": "Neue Veranstaltung"
@@ -67,12 +78,15 @@
     },
     "helfer": {
         "upcomming__helper_event": "Kommende Helferevents",
-        "past__helper_events": "Vergangene Helferevents"
+        "past__helper_events": "Vergangene Helferevents",
+        "schichten": "Helferschichten"
     },
     "helfer-add": {
         "new__helper_event": "Neuer Helferevent"
     },
-    "helfer-detail": {},
+    "helfer-detail": {
+        "helfer_innen_for": "Helfer:innen für "
+    },
     "info": {
         "information": "Informationen",
         "terms__and_conditions": "Geschäftsbedingungen",
@@ -94,8 +108,10 @@
         "do_you_want_to_join__club": "Möchtest du dem Verein beitreten?",
         "success__request_sent": "Anfrage erfolgreich gesendet",
         "warning__action_canceled": "Aktion wurde abgebrochen",
-        "success__application_sent": "Antrag erfolgreich versendet",
-        "success__application_sent_desc": "Dein Antrag wurde erfolgreich an den Club gesendet. Sobald dein Antrag genehmigt wurde, informieren wir dich wieder."
+        "success__application_sent": "Anfrage erfolgreich gesendet",
+        "success__application_sent_desc": "Dein Antrag wurde erfolgreich an den Club gesendet. Sobald dein Antrag genehmigt wurde, informieren wir dich wieder per E-Mail.",
+        "success__activate_pplication_sent": "Aktivierungsantrag erfolgreich versendet",
+        "success__activate_application_sent_desc": "Dein Antrag wird von uns geprüft. Sobald dein Antrag genehmigt wurde, informieren wir dich wieder per E-Mail."
     },
     "onboarding-team": {
         "onboarding__team": "Onboarding-Team"
@@ -103,17 +119,38 @@
     "profile": {
         "email": "E-Mail",
         "generally": "Allgemein",
+        "birthdate": "Geburtsdatum",
+        "phonenumber": "Telefonnummer",
+        "address": "Adresse",
+        "contact__information": "Kontaktinformationen",
+        "license__number": "Lizenznummer",
+        "diverses": "Diverses",
+        "sport": "Sport",
+        "change_email_header": "E-Mail Adresse ändern",
+        "change_email_message": "Ändere hier deine Profil E-Mail Adresse.",
+        "change_email_old_label": "Aktuelle E-Mail Adresse",
+        "change_email_new_label": "Neue E-Mail Adresse",
+
+        "change_address_header": "Wohnadresse ändern",
+        "change_address_message": "Ändere hier deine Wohnadresse.",
+        "change_address_streetandnumber": "Strasse und Hausnummer",
+        "change_address_postalcode": "Postleitzahl",
+        "change_address_city": "Ortschaft",
+
         "open__club_inquiry": "Offene Club-Anfragen",
         "open__team_request": "Offene Team-Anfragens",
         "notifications": "Benachrichtigungen",
         "push__message": "Push-Nachrichten",
         "email__messages_report": "E-Mail-Nachrichten Reporting",
         "email__messages": "E-Mail-Nachrichten",
-        "push__notifications": "Push Notifications",
+        "push__notifications": "Push-Nachrichten",
         "push__notifications_devices": "Registrierte Push Geräte",
+        "push__message__activate": "Push-Nachrichten",
+        "push__message__deactivate": "Push-Nachrichten können jederzeit deaktiviert werden",
+
         "current__device": "aktuelles Gerät",
         "push__registeration": "Push Registrierung",
-        "delete__profile": "Danger Zone: Profil löschen",
+        "delete__profile": "Profil löschen",
         "profile_pic__uploaded": "Profilbild wird hochgeladen",
         "delete_profile__confirm": "Möchtest du das Profil wirklich löschen?",
         "request_success__deleted": "Anfrage erfolgreich gelöscht",
@@ -130,9 +167,17 @@
         "select__language":"Sprache auswählen"
     },
     "tabs": {},
-    "team": {},
+    "team": {
+        "delete": "Team löschen",
+        "delete_team__confirm": "Möchtest du das Team wirklich löschen?"
+    },
     "team-list": {
-        "my__teams": "Meine Teams"
+        "my__teams": "Meine Teams", 
+        "leave_team__confirm": "Möchtest du das Team wirklich verlassen?"
+
+    },
+    "team-member-list": {
+        "delete_member__confirm": "Möchtest du das Mitglied wirklich aus dem Team entfernen?"
     },
     "training-create": {
         "new__training": "Neues Training",
@@ -148,7 +193,6 @@
     },
     "traning-detail": {},
     "training": {
-        "upcomming__training_courses": "Kommende Schulungen",
         "upcomming__training": "Kommende Trainings",
         "no_training__found": "keine Trainings gefunden",
         "past__training": "Vergangene Trainings",
@@ -163,18 +207,54 @@
         "version": "Version"
     },
     "common": {
+        "all_read": "Alle gelesen",
+        "notifications": "Benachrichtigungen",
+        "notifications_open": "Ungelesene Benachrichtigungen",
+        "notifications_read": "Gelesene Benachrichtigungen",
+        "teams": "Teams",
+        "success__copy": "Wert erfolgreich kopiert",
+        "month": "Monat", 
+        "action__canceled": "Aktion wurde abgebrochen",
+        "year": "Jahr",
+        "paid":"bezahlt",
+        "created": "Gekauft am",
+        "current_period_end": "Läuft bis",
+        "current_period_start": "Beginnt ab",
+        "ended_at": "Beendet am",
+        "active": "aktiv",
+        "canceled": "beendet",
+        "subscription": "Abonnement",
+        "success__event_deleted": "Veranstaltung erfolgreich gelöscht",
+        "success__helfer_deleted": "Helferevent erfolgreich gelöscht",
+        "success__training_deleted": "Training erfolgreich gelöscht",
+        "success__exercise_deleted": "Übung erfolgreich entfernt",
+        "success__exercise_added": "Übung erfolgreich hinzugefügt",
+        "alle_anmelden": "alle anmelden",
+        "link__web": "Webseite / Weitere Informationen",
+        "link__poll": "Umfrage",
+        "link__placeholder": "https://",
+        "confirm": "bestätigen",
         "or": "Oder",
         "email__address": "E-Mail Adresse",
         "password": "Passwort",
         "general__error_occurred": "Es ist ein allgemeiner Fehler aufgetreten",
         "ok": "OK",
+        "save": "speichern",
+        "done": "fertig",
+        "cancel": "abbrechen",
+        "create": "erstellen",
         "forget__password": "Passwort vergessen?",
+        "email_sent": "E-Mail versendet",
+        "email_not_yet_verified": "E-Mail Adresse wurde noch nicht verifiziert",
+        "error": "Fehler",
         "error__invalid_form": "Formular ist noch fehlerhaft",
         "please__wait": "Bitte warten",
         "first__name": "Vorname",
         "last__name": "Nachname",
+        "settings": "Einstellungen",
         "mountain_background__alt": "Hintergrundbild Berge",
         "mistake": "Fehler",
+        "searchfield": "Suchen",
         "status": "Status",
         "participant": "Teilnehmer",
         "championship": "Meisterschaft",
@@ -185,18 +265,24 @@
         "my__status": "Mein Status",
         "present": "Anwesend",
         "absent": "Abwesend",
+        "noreply": "Keine Antwort",
         "close": "schliessen",
         "success__saved": "Änderungen erfolgreich gespeichert",
         "no_of__members": "Anzahl Mitglieder",
         "average__age": "Durchschnittsalter",
         "requests": "Anfragen",
+        "approve_request": "Anfrage annehmen",
+        "delete_request": "Anfrage ablehnen",
+        "manage_members": "Mitgliederverwaltung",
         "members": "Mitglieder",
+        "member": "Mitglied",
         "admins": "Administratoren",
-        "cancel": "abbrechen",
-        "create": "erstellen",
+        "addAdministrator": "Administrator hinzufügen",
+        "addMember": "Mitglied hinzufügen",
+        "add": "hinzufügen",
         "club": "Club",
         "description": "Beschreibung",
-        "location": "Location",
+        "location": "Name/Halle/Bezeichnung",
         "street__house_number": "Strasse & Hausnummer",
         "postal__code": "Postleitzahl",
         "locality": "Ortschaft",
@@ -205,9 +291,12 @@
         "start__date": "Startdatum",
         "end__date": "Enddatum",
         "no_event__found": "keine Veranstaltungen gefunden",
-        "delete": "Delete",
+        "delete": "Löschen",
         "helper": "Helferevents",
+        "helper_points": "Helferpunkte",
+        "my_helper_points": "Meine Helferpunkte",
         "news": "News",
+        "newsVerband": "News Verband",
         "yes": "Ja",
         "no": "Nein",
         "logout": "Logout",

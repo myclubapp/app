@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Helferpunkte</ion-title>
+    <ion-title>{{ "common.my_helper_points" | translate}}</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
     </ion-buttons>
@@ -15,14 +15,12 @@
 
     <ion-header collapse="condense">
       <ion-toolbar>
-        <ion-title size="large">Helferpunkte</ion-title>
+        <ion-title size="large">{{ "common.my_helper_points" | translate}}</ion-title>
       </ion-toolbar>
     </ion-header>
 
 
     <ion-list [inset]="true">
-
-
 
       <ion-item-group>
         <ng-container *ngFor="let groupBy of groupArray">
@@ -49,7 +47,7 @@
               </ion-label>
 
               <ion-note slot="end">
-                <ion-badge>{{helferPunkt.punkte}}</ion-badge>
+                <ion-badge>{{helferPunkt.points}}</ion-badge>
               </ion-note>
 
             </ion-item>

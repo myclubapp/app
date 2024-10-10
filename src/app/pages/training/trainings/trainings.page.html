@@ -1,10 +1,13 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      <ion-menu-button *ngIf="!isModal"></ion-menu-button>
     </ion-buttons>
     <ion-title> {{"common.training" | translate}}</ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons *ngIf="isModal" slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+    <!--<ion-buttons slot="end">
       <ion-button id="trainingMoreButton">
         <ion-icon slot="icon-only" name="ellipsis-horizontal-outline"></ion-icon>
       </ion-button>
@@ -50,7 +53,7 @@
           </ion-content>
         </ng-template>
       </ion-popover>
-    </ion-buttons>
+    </ion-buttons>-->
     <!--<ion-buttons slot="end">
       <ng-container *ngIf="teamList$ | async as teamList">
         <ng-container *ngIf="teamList.length > 0">
@@ -70,13 +73,15 @@
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">{{"common.training" | translate}}</ion-title>
+
     </ion-toolbar>
   </ion-header>
 
   <ng-container *ngIf="trainingList$ | async as trainingList; else loading">
     <ion-list *ngIf="trainingList.length > 0" lines="full">
       <ion-list-header>
-        <ion-label>{{"training.upcomming__training_courses" | translate}}</ion-label>
+        <ion-label>{{"training.upcomming__training" | translate}}</ion-label>
+        <ion-button (click)="toggleAll()" size="small" fill="clear"> {{"common.alle_anmelden" | translate}}</ion-button>
       </ion-list-header>
       <ion-item>
         <ion-label slot="start">
@@ -104,7 +109,7 @@
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="location-outline"></ion-icon>
-              {{training.streetAndNumber}} {{training.city}}
+              {{training.location}} {{training.streetAndNumber}} {{training.city}}
             </h3>
 
             <h3>
@@ -115,9 +120,8 @@
               <ion-badge color="light">{{training.exercises.length}} Übungen vorhanden</ion-badge>
             </h3>
           </ion-label>
-          <ion-note slot="end" (click)="openTrainingDetailModal(training,true)">
-            <ion-badge color="primary">{{training.countAttendees}}</ion-badge>
-          </ion-note>
+          <ion-badge slot="end" (click)="openTrainingDetailModal(training,true)" color="primary">{{training.countAttendees}}</ion-badge>
+
         </ion-item>
 
         <ion-item-options side="start">
@@ -131,20 +135,23 @@
           </ion-item-option>
         </ion-item-options>
 
-        <ion-item-options side="end">
-          <ion-item-option color="medium" (click)="copyTraining(item, training)">
-            <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
-          </ion-item-option>
-          <ion-item-option color="danger" (click)="deleteTraining(item, training)">
-            <ion-icon slot="icon-only" name="trash"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
+        <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+          <ion-item-options side="end" *ngIf="isTeamAdmin(teamAdminList, training.teamId)">
+            <ion-item-option color="medium" (click)="copyTraining(item, training)">
+              <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="deleteTraining(item, training)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ng-container>
       </ion-item-sliding>
     </ion-list>
 
     <ion-list class="ion-padding" *ngIf="trainingList.length==0">
       <ion-list-header>
         <ion-label>{{"training.upcomming__training" | translate}}</ion-label>
+       
       </ion-list-header>
       <ion-item>
         <ion-note> {{"training.no_training__found" | translate}} </ion-note>
@@ -177,7 +184,7 @@
             <h2>{{training.name}}</h2>
             <h3>
               <ion-icon slot="icon-only" name="location-outline"></ion-icon>
-              {{training.streetAndNumber}} {{training.city}}
+              {{training.location}} {{training.streetAndNumber}} {{training.city}}
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
@@ -190,9 +197,8 @@
               {{training.liga}} {{training.teamName}}
             </h3>
           </ion-label>
-          <ion-note slot="end" (click)="openTrainingDetailModal(training,false)">
-            <ion-badge color="primary">{{training.countAttendees}}</ion-badge>
-          </ion-note>
+          <ion-badge slot="end" (click)="openTrainingDetailModal(training,false)" color="primary">{{training.countAttendees}}</ion-badge>
+
         </ion-item>
 
         <ion-item-options side="end">
@@ -207,7 +213,9 @@
       <ion-list-header>
         <ion-label>{{"training.past__training" | translate}}</ion-label>
       </ion-list-header>
-      <ion-note> {{"training.no_training__found" | translate}} </ion-note>
+      <ion-item>
+        <ion-note> {{"training.no_training__found" | translate}} </ion-note>
+      </ion-item>
     </ion-list>
   </ng-container>
 

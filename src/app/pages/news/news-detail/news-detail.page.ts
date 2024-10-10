@@ -1,9 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, NavParams } from '@ionic/angular';
 import { News } from 'src/app/models/news';
-
 import { Share } from '@capacitor/share';
-import { Device } from '@capacitor/device';
 
 import {
   faTwitter,
@@ -12,6 +10,9 @@ import {
   faLinkedin,
 } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faCopy } from '@fortawesome/free-solid-svg-icons';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Observable, take, tap } from 'rxjs';
+import { NewsService } from 'src/app/services/firebase/news.service';
 
 @Component({
   selector: 'app-news-detail',
@@ -20,6 +21,9 @@ import { faEnvelope, faCopy } from '@fortawesome/free-solid-svg-icons';
 })
 export class NewsDetailPage implements OnInit {
   @Input('data') news: News;
+
+
+  news$: Observable<News>;
 
   // Social Share
   shareSocialShareOptions: any;
@@ -32,38 +36,69 @@ export class NewsDetailPage implements OnInit {
   faEnvelope: any = faEnvelope;
   faCopy: any = faCopy;
 
-  constructor (
+  constructor(
     private readonly modalCtrl: ModalController,
+    private readonly newsService: NewsService,
+    // private readonly sanitization: DomSanitizer,
     public navParams: NavParams
-  ) {}
+  ) { }
 
-  ngOnInit () {
-    this.news = this.navParams.get('data');
+  ngOnInit() {
+
+    this.news = this.navParams.get("data");
+    // console.log(this.news);
+    if (this.news && this.news.clubId){
+      this.news$ = this.getClubNewsDetail(this.news.clubId, this.news.id);
+    } else {
+      this.news$ = this.getNewsDetail(this.news.id);
+    }
   }
 
-  async close () {
+  ngOnDestroy() {
+ 
+  }
+
+  getNewsDetail(newsId: string): Observable<News> {
+    return this.newsService.getNewsDetail(newsId).pipe(
+      take(1),
+      tap((news) => {
+        // console.log('News', news);
+      })
+    );
+  }
+
+  getClubNewsDetail(clubId: string, newsId: string): Observable<News> {
+    return this.newsService.getClubNewsDetail(clubId, newsId).pipe(
+      take(1),
+      tap((news) => {
+        // console.log('News', news);
+      })
+    );
+  }
+  async close() {
     return await this.modalCtrl.dismiss(null, 'close');
   }
 
-  async confirm () { 
+  async confirm() {
     return await this.modalCtrl.dismiss(this.news, 'confirm');
   }
 
-  async share (news: News) {
-    const device = await Device.getInfo();
-    if (device.platform === 'web' && navigator && navigator.share) {
+  async share(news: News) {
+    // const device = await Device.getInfo();
+    const { value } = await Share.canShare();
+    if (value) {
       const shareRet = await Share.share({
         title: news.title,
         text: news.leadText,
         url: news.url,
         dialogTitle: news.title
-      }).catch((onrejected) => {})
+      }).catch((onrejected) => { })
     } else {
       await this.shareFallback(news);
     }
   }
 
-  async shareFallback (news: News) {
+  async shareFallback(news: News) {
     return await new Promise(async (resolve) => {
       // The configuration, set the share options
       this.shareSocialShareOptions = {

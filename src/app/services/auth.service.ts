@@ -19,6 +19,8 @@ import {
   UserCredential,
   deleteUser,
   User,
+  ActionCodeOperation,
+  applyActionCode,
 } from "@angular/fire/auth";
 import { Observable } from "rxjs";
 
@@ -58,7 +60,15 @@ export class AuthService {
   }
 
   async sendVerifyEmail() {
+    this.auth.currentUser.getIdToken(true);
+    console.log("resend verification for user " + this.auth.currentUser.email)
     return await sendEmailVerification(this.auth.currentUser);
+  }
+
+  async verifyBeforeUpdateEmail(email) {
+    this.auth.currentUser.getIdToken(true);
+    return await verifyBeforeUpdateEmail(this.auth.currentUser, email)
+    
   }
 
   async signup(
@@ -101,10 +111,16 @@ export class AuthService {
     return updateEmail(this.auth.currentUser, newEmail);
   }
 
-  async logout(): Promise<void> {
-    await signOut(this.auth);
+  async logout(): Promise<any> {
+    return signOut(this.auth);
+  
     // firebase.firestore().clearPersistence();
-    await this.router.navigateByUrl("/logout");
+    /*const navLogout = await this.router.navigateByUrl("/logout");
+    if (navLogout) {
+      console.log('Navigation success to Logout Page');
+    } else {
+      console.error('Navigation ERROR to Logout Page');
+    }*/
   }
 
   async deleteProfile() {

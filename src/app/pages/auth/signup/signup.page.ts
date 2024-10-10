@@ -96,14 +96,11 @@ export class SignupPage implements OnInit {
           console.log(signupUserResponse.operationType);
         }
 
-        /*await this.authService.logout();
-        await this.router.navigateByUrl("login");*/
-
         const alert = await this.alertCtrl.create({
           header: await lastValueFrom(
             this.translate.get("signup.account__created")
           ),
-          message: "signup.account__created_description",
+          message: await lastValueFrom(this.translate.get("signup.account__created_description")),
           buttons: [
             {
               text: await lastValueFrom(this.translate.get("common.ok")),
@@ -116,8 +113,10 @@ export class SignupPage implements OnInit {
         const { data, role } = await alert.onDidDismiss();
         if (role === "confirm") {
         }
-        this.authService.login(credentials.email, credentials.password);
-        // await this.router.navigateByUrl(""); // --> this should trigger appcomponent?
+        const usercredentials = await this.authService.login(credentials.email, credentials.password);
+        console.log("user signed up " + usercredentials.user.email);
+        await this.router.navigateByUrl("/"); // --> this should trigger appcomponent?
+
       } catch (err) {
         let message =
           (await lastValueFrom(
@@ -138,7 +137,7 @@ export class SignupPage implements OnInit {
         }
         await loading.dismiss();
         const alert = await this.alertCtrl.create({
-          header: await lastValueFrom(this.translate.get("common.mistake")),
+          header: await lastValueFrom(this.translate.get("common.error")),
           message: message,
           buttons: [
             {
@@ -156,7 +155,7 @@ export class SignupPage implements OnInit {
     const loading = await this.loadingCtrl.create({
       cssClass: "my-custom-class",
       message: await lastValueFrom(this.translate.get("please__wait"))+"...",
-      duration: 2000,
+      duration: 1500,
     });
     await loading.present();
 

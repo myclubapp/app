@@ -5,18 +5,18 @@ import {
   redirectUnauthorizedTo,
   emailVerified,
 } from "@angular/fire/auth-guard";
+import { map, pipe } from "rxjs";
 
-// https://github.com/angular/angularfire/blob/master/docs/auth/router-guards.md
-const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(["login"]);
-// const emailVerifiedToLogout = () => emailVerified(["logout"]);
-
+const redirectUnverifiedTo = (redirect: any[]) => pipe(emailVerified, map(emailVerified => emailVerified || redirect));
+const redirectUnauthorizedToLogin = () => redirectUnverifiedTo(['/onboarding-email']);
+const redirectToLogin = () => redirectUnauthorizedTo(["login"]);
 const routes: Routes = [
   {
     path: "",
     loadChildren: () =>
       import("./pages/tabs/tabs.module").then((m) => m.TabsPageModule),
     canActivate: [AuthGuard],
-    data: { authGuardPipe: redirectUnauthorizedToLogin },
+    data: { authGuardPipe: redirectToLogin },
   },
   {
     path: "login",
@@ -61,6 +61,8 @@ const routes: Routes = [
     path: "news",
     loadChildren: () =>
       import("./pages/news/news/news.module").then((m) => m.NewsPageModule),
+
+
   },
   {
     path: "reset-password",
@@ -95,19 +97,30 @@ const routes: Routes = [
         (m) => m.ChampionshipPageModule
       ),
   },
-  /*{
+  {
     path: "onboarding",
     loadChildren: () =>
-      import("./pages/onboarding/onboarding.module").then(
+      import("./pages/onboarding/onboarding/onboarding.module").then(
         (m) => m.OnboardingPageModule
       ),
-  },*/
+  },
+  {
+    path: 'onboarding-club',
+    loadChildren: () => import('./pages/onboarding/onboarding-club/onboarding-club.module').then( m => m.OnboardingClubPageModule),
+    
+  },
+  {
+    path: 'onboarding-email',
+    loadChildren: () => import('./pages/onboarding/onboarding-email/onboarding-email.module').then( m => m.OnboardingEmailPageModule),
+  
+  },
   {
     path: "onboarding-team",
     loadChildren: () =>
-      import("./pages/onboarding-team/onboarding-team.module").then(
+      import("./pages/onboarding/onboarding-team/onboarding-team.module").then(
         (m) => m.OnboardingTeamPageModule
       ),
+      
   },
   {
     path: "info",
@@ -136,7 +149,6 @@ const routes: Routes = [
         (m) => m.LineupPageModule
       ),
   },
-
   {
     path: "**",
     loadChildren: () =>

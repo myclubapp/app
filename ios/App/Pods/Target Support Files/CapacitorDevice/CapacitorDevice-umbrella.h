@@ -10,7 +10,6 @@
 #endif
 #endif
 
-#import "DevicePlugin.h"
 
 FOUNDATION_EXPORT double CapacitorDeviceVersionNumber;
 FOUNDATION_EXPORT const unsigned char CapacitorDeviceVersionString[];

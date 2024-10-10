@@ -10,7 +10,6 @@
 #endif
 #endif
 
-#import "SplashScreenPlugin.h"
 
 FOUNDATION_EXPORT double CapacitorSplashScreenVersionNumber;
 FOUNDATION_EXPORT const unsigned char CapacitorSplashScreenVersionString[];

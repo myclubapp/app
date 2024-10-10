@@ -30,16 +30,16 @@ export class ExerciseService {
 
     return collectionData(q, {
       idField: "id",
-    }) as unknown as Observable<any[]>;
+    }) as Observable<any[]>;
   }
 
 
   getTeamExerciseRefs(teamId: string): Observable<any[]> {
     const exercisesRefList = collection(this.firestore, `teams/${teamId}/exercises`);
-    
-    return collectionData(exercisesRefList , {
+
+    return collectionData(exercisesRefList, {
       idField: "id",
-    }) as unknown as Observable<any[]>;
+    }) as Observable<any[]>;
   }
   getTeamTrainingExerciseRefs(teamId: string, trainingId: string): Observable<any[]> {
     const exercisesRefList = collection(this.firestore, `teams/${teamId}/trainings/${trainingId}/exercises`);
@@ -52,10 +52,11 @@ export class ExerciseService {
     )
     return collectionData(q, {
       idField: "id",
-    }) as unknown as Observable<any[]>;
+    }) as Observable<any[]>;
   }
 
   addTeamTrainingExercise(teamId, trainingId, exercise) {
+    // console.log(teamId, trainingId, exercise.id)
     return setDoc(
       doc(this.firestore, `teams/${teamId}/trainings/${trainingId}/exercises/${exercise.id}`),
       exercise

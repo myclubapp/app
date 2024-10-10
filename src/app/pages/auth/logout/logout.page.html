@@ -1,4 +1,35 @@
 <ion-content>
+
+  <ion-grid class="ion-no-padding" style="height: 100vh;">
+    <ion-row style="height: 100%;">
+      <!-- Logout Message Column -->
+      <ion-col size-md="6" size-lg="5" style="display: flex; align-items: center; justify-content: center;">
+        <ion-card class="ion-no-margin" style="max-width: 500px; width: 100%;">
+          <ion-card-content>
+            <ion-img src="assets/logo_trans.png" alt="Logo" style="max-height: 100px; max-width: 100px;"></ion-img>
+            <ion-card-title>{{"logout.logout__success"|translate}}</ion-card-title>
+            <ion-text>
+
+              <p>
+                <ion-router-link routerLink="/login" class="ion-text-primary">
+                  {{"logout.back_to__login"|translate}}
+                </ion-router-link>
+              </p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <!-- Image Column -->
+      <ion-col size-md="6" size-lg="7" style="padding: 0;" class="ion-hide-md-down">
+        <ion-img src="assets/bg/mountain-3.jpg" alt="{{'backgroud_image__alt'|translate}}"
+          style="height: 100%; width: 100%; object-fit: cover;">
+        </ion-img>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+  <!--
   <div class="min-h-screen bg-white flex">
     <div
       class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24"
@@ -38,5 +69,5 @@
         [alt]='"backgroud_image__alt"|translate'
       />
     </div>
-  </div>
+  </div>-->
 </ion-content>
