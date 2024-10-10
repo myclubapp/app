@@ -228,6 +228,15 @@
               <ion-label> {{"common.news" | translate}} </ion-label>
             </ion-item>
 
+            <!-- TODO ADD CHECK FOR CLUB-->
+            <ion-item  disabled="{{!userProfile.settingsPush}}">
+              <ion-icon size="small" slot="start" name="newspaper"></ion-icon>
+              <ion-toggle labelPlacement="start" attr.aria-label='{{"common.newsVerband" | translate}}'
+                value="{{userProfile?.settingsPushNewsVerband}}" slot="end" [checked]="userProfile.settingsPushNewsVerband"
+                [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'NewsVerband')"></ion-toggle>
+              <ion-label> {{"common.newsVerband" | translate}} </ion-label>
+            </ion-item>
+
             <ion-item disabled="{{!userProfile.settingsPush}}">
               <ion-icon size="small" slot="start" name="barbell-outline"></ion-icon>
               <ion-toggle labelPlacement="start" attr.aria-label='{{"common.training" | translate}}'
@@ -244,6 +253,7 @@
                 (ionChange)="togglePushModule($event, 'Championship')"></ion-toggle>
               <ion-label> {{"common.championship" | translate}} </ion-label>
             </ion-item>
+
             <ion-item disabled="{{!userProfile.settingsPush}}">
               <ion-icon size="small" slot="start" name="calendar-outline"></ion-icon>
               <ion-toggle labelPlacement="start" attr.aria-label='{{"common.events" | translate}}'
@@ -251,6 +261,7 @@
                 [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'Event')"></ion-toggle>
               <ion-label> {{"common.events" | translate}} </ion-label>
             </ion-item>
+
             <ion-item disabled="{{!userProfile.settingsPush}}">
               <ion-icon size="small" slot="start" name="help-buoy-outline"></ion-icon>
               <ion-toggle labelPlacement="start" attr.aria-label='{{"common.helper" | translate}}'

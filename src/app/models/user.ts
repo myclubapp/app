@@ -18,6 +18,7 @@ export interface Profile {
   licenseNumber: string;
   settingsPush: boolean;
   settingsPushNews: boolean;
+  settingsPushNewsVerband: boolean;
   settingsPushTraining: boolean;
   settingsPushChampionship: boolean;
   settingsPushEvent: boolean;

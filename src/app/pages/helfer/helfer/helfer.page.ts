@@ -84,7 +84,7 @@ export class HelferPage implements OnInit {
 
   handleNavigationData() {
     this.activatedRouteSub = this.activatedRoute.url.subscribe(data => {
-      if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "helferEvent") {
+      if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state["type"] === "helferEvent") {
         const pushData = this.router.getCurrentNavigation().extras.state;
         // console.log("PUSHDATA " + JSON.stringify(pushData));
         let helferEvent: HelferEvent = {

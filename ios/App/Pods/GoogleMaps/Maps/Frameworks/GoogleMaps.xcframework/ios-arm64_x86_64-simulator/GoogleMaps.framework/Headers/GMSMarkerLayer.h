@@ -13,6 +13,7 @@
 
 #import "GMSOverlayLayer.h"
 
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -36,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /** Opacity, as per GMSMarker. */
 @property(atomic) float opacity;
+
 
 @end
 

@@ -35,7 +35,6 @@ import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
 import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
 import { ActivatedRoute, Router } from "@angular/router";
-import { group } from "console";
 
 @Component({
   selector: "app-events",
@@ -123,11 +122,11 @@ export class EventsPage implements OnInit {
   handleNavigationData() {
     this.activatedRouteSub = this.activatedRoute.url.subscribe(() => {
       const navigation = this.router.getCurrentNavigation();
-      if (navigation && navigation.extras.state && navigation.extras.state.type === 'clubEvent') {
+      if (navigation && navigation.extras.state && navigation.extras.state["type"] === 'clubEvent') {
         const pushData = navigation.extras.state;
         console.log('PUSHDATA', JSON.stringify(pushData));
         const clubEvent: Veranstaltung = {
-          id: pushData.id,
+          id: pushData["id"],
           name: '',
           description: '',
           location: '',
@@ -139,7 +138,7 @@ export class EventsPage implements OnInit {
           endDate: '',
           timeFrom: '',
           timeTo: '',
-          clubId: pushData.clubId,
+          clubId: pushData["clubId"],
           clubName: '',
           link_poll: '',
           link_web: '',

@@ -329,8 +329,9 @@ export class HelferDetailPage implements OnInit {
         const confirmText = await lastValueFrom(this.translate.get("common.confirm"));
 
         const alert = await this.alertCtrl.create({
-          header: "Helfereinsätze bestätigen",
-          message: "Bitte wählen Sie die Mitglieder aus:",
+          header: "Helferpunkte bestätigen",
+          subHeader: "Bitte erst nach dem Einsatz bestätigen!",
+          message: "Wähle die Mitglieder um die Helferpunkte zu bestätigen:",
           inputs: alertInputs,
           buttons: [
             {

@@ -149,11 +149,11 @@ export class TrainingsPage implements OnInit {
   }
   handleNavigationData() {
     this.activatedRouteSub = this.activatedRoute.url.subscribe(data => {
-      if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "training") {
+      if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state["type"] === "training") {
         const pushData = this.router.getCurrentNavigation().extras.state;
         console.log("PUSHDATA " + pushData);
         let training: Training = {
-          id: pushData.id,
+          id: pushData["id"],
           name: "",
           description: "",
           location: "",
@@ -167,7 +167,7 @@ export class TrainingsPage implements OnInit {
           endDate: "",
           repeatAmount: "",
           repeatFrequency: "",
-          teamId: pushData.teamId,
+          teamId: pushData["teamId"],
           teamName: "",
           liga: "",
           status: false,

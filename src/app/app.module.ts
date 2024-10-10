@@ -79,92 +79,94 @@ export function appInitializerFactory(translateService: TranslateService, inject
   });
 }
 
-@NgModule({ declarations: [
-        AppComponent,
-        NewsDetailPage,
-        NotificationPage,
-        MemberPage,
-        HelferPunktePage,
-        HelferPunkteClubPage,
-        HelferDetailPage,
-        HelferAddPage,
-        // ChampionshipDetailPage,
-        TrainingExercisesPage,
-        TrainingDetailPage,
-        TrainingCreatePage,
-        GamePreviewPage,
-        EventAddPage,
-        EventDetailPage,
-        // OnboardingPage,
-        ClubPage,
-        ClubMemberListPage,
-        ClubAdminListPage,
-        ClubTeamListPage,
-        ClubRequestListPage,
-        ClubSubscriptionPage,
-        TeamPage,
-        TeamMemberListPage,
-        TeamAdminListPage,
-        TeamExercisesPage,
-        TeamCreatePage,
-    ],
-    bootstrap: [AppComponent],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA], imports: [BrowserModule,
-        FontAwesomeModule,
-        IonicModule.forRoot(),
-        AppRoutingModule,
-        FormsModule,
-        ServiceWorkerModule.register("ngsw-worker.js", {
-            enabled: environment.production,
-            // Register the ServiceWorker as soon as the app is stable
-            // or after 30 seconds (whichever comes first).
-            registrationStrategy: "registerWhenStable:30000",
-        }),
-        TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: (HttpLoaderFactory),
-                deps: [HttpClient]
-            },
-            isolate: false,
-            missingTranslationHandler: [{ provide: MissingTranslationHandler, useClass: TranslateHandler }]
-        }),
-        /*TranslateModule.forRoot({
-          // <--- add this
-          loader: {
-            // <--- add this
-            provide: TranslateLoader, // <--- add this
-            useFactory: createTranslateLoader, // <--- add this
-            deps: [HttpClient], // <--- add this
-          }, // <--- add this
-        }),*/
-        provideFirebaseApp(() => {
-            const init = initializeApp(environment.firebase);
-            return init;
-        }),
-        provideFirestore(() => {
-            const firestore = getFirestore();
-            return firestore;
-        }),
-        provideAuth(() => {
-            if (Capacitor.isNativePlatform()) {
-                return initializeAuth(getApp(), {
-                    persistence: indexedDBLocalPersistence,
-                });
-            }
-            else {
-                return getAuth();
-            }
-            // const auth = getAuth();
-            // setPersistence(auth,browserSessionPersistence);
-            // return auth;
-        }),
-        provideStorage(() => getStorage()),
-        provideMessaging(() => getMessaging())], providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, {
-            provide: APP_INITIALIZER,
-            useFactory: appInitializerFactory,
-            deps: [TranslateService, Injector],
-            multi: true
-        }, provideHttpClient(withInterceptorsFromDi())] })
+@NgModule({
+  declarations: [
+    AppComponent,
+    NewsDetailPage,
+    NotificationPage,
+    MemberPage,
+    HelferPunktePage,
+    HelferPunkteClubPage,
+    HelferDetailPage,
+    HelferAddPage,
+    // ChampionshipDetailPage,
+    TrainingExercisesPage,
+    TrainingDetailPage,
+    TrainingCreatePage,
+    GamePreviewPage,
+    EventAddPage,
+    EventDetailPage,
+    // OnboardingPage,
+    ClubPage,
+    ClubMemberListPage,
+    ClubAdminListPage,
+    ClubTeamListPage,
+    ClubRequestListPage,
+    ClubSubscriptionPage,
+    TeamPage,
+    TeamMemberListPage,
+    TeamAdminListPage,
+    TeamExercisesPage,
+    TeamCreatePage,
+  ],
+  bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [
+  
+    BrowserModule,
+    FontAwesomeModule,
+    IonicModule.forRoot(),
+    AppRoutingModule,
+    FormsModule,
+    ServiceWorkerModule.register("ngsw-worker.js", {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: "registerWhenStable:30000",
+    }),
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (HttpLoaderFactory),
+        deps: [HttpClient]
+      },
+      isolate: false,
+      missingTranslationHandler: [{ provide: MissingTranslationHandler, useClass: TranslateHandler }]
+    }),
+    
+    
+  ],
+  providers: [
+    provideFirebaseApp(() => {
+      const init = initializeApp(environment.firebase);
+      return init;
+    }),
+    provideFirestore(() => {
+      const firestore = getFirestore();
+      return firestore;
+    }),
+    provideAuth(() => {
+      if (Capacitor.isNativePlatform()) {
+        return initializeAuth(getApp(), {
+          persistence: indexedDBLocalPersistence,
+        });
+      }
+      else {
+        return getAuth();
+      }
+      // const auth = getAuth();
+      // setPersistence(auth,browserSessionPersistence);
+      // return auth;
+    }),
+    provideStorage(() => getStorage()),
+    provideMessaging(() => getMessaging()),
+    
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, {
+    provide: APP_INITIALIZER,
+    useFactory: appInitializerFactory,
+    deps: [TranslateService, Injector],
+    multi: true
+  }, provideHttpClient(withInterceptorsFromDi())]
+})
 export class AppModule { }
 

@@ -10,12 +10,24 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "ES2022",
+    "target": "es2022",
     "module": "es2020",
-    "lib": ["es2018", "dom", "esnext.asynciterable"],
+    "lib": [
+      "es2019", 
+      "dom"
+    ],
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "types": ["node"],
+    "forceConsistentCasingInFileNames": true,
+    "strict": false, // Change this to TRUE if every file is rewritten..
+    "noImplicitOverride": true,
+    "noImplicitAny": false, // remove this in the future..
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

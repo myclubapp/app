@@ -175,10 +175,9 @@ export class TrainingCreatePage implements OnInit {
     if (training) {
       console.log(training.id);
       return this.modalCtrl.dismiss({}, "confirm");
-    } else {
-
     }
 
+    return null;
   }
   async toastActionError(error) {
     const toast = await this.toastController.create({
