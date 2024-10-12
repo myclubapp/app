@@ -187,6 +187,7 @@ export class ChampionshipPage implements OnInit {
         return this.fbService.getUserTeamRefs(user);
       }),
       mergeMap((teams) => {
+        // Add the specific team if it exists
         if (this.team && this.team.id) {
           teams.push({
             id: this.team.id,
@@ -198,11 +199,15 @@ export class ChampionshipPage implements OnInit {
             liga: "",
             type: "",
             updated: Timestamp.now(),
-          })
+          });
         } else if (teams.length === 0) {
-          return of([])
-        };
+          return of([]); // Return empty if there are no teams
+        }
+  
+        // Filter to get only the specific team if `this.team.id` is set
         const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+  
+        // Fetch games for all relevant teams
         return combineLatest(
           relevantTeams.map((team) =>
             this.championshipService.getTeamGamesRefs(team.id).pipe(
@@ -212,6 +217,7 @@ export class ChampionshipPage implements OnInit {
               }),
               switchMap((teamGames) => {
                 if (teamGames.length === 0) return of([]);
+  
                 return combineLatest(
                   teamGames.map((game) =>
                     combineLatest([
@@ -251,16 +257,21 @@ export class ChampionshipPage implements OnInit {
                   )
                 );
               }),
-              map((gamesWithAttendees) => gamesWithAttendees), // Flatten games array for each team
+              map((gamesWithAttendees) => gamesWithAttendees), // Combine games for each team
               catchError((err) => {
                 console.error("Error fetching games for team:", err);
-                return of([]); // If error in fetching games, return empty array
+                return of([]); // Return an empty array on error
               })
             )
           )
         ).pipe(
-          map((teamsGames) => teamsGames.flat()), // Flatten to get all games across all teams
-          map((allGames) => allGames.sort((a, b) => a.dateTime.toDate().getTime() - b.dateTime.toDate().getTime())), // Sort games by date
+          // Flatten all games across all teams into a single array
+          map((teamsGames) => teamsGames.flat()),
+          // tap((allGames) => console.log("All games:", allGames)),
+  
+          // Sort games globally by their `dateTime` in ascending order (upcoming games)
+          map((allGames) => allGames.sort((a, b) => a.dateTime.seconds - b.dateTime.seconds)),
+  
           catchError((err) => {
             console.error("Error in getTeamGamesUpcoming:", err);
             return of([]); // Return an empty array on error
@@ -283,6 +294,7 @@ export class ChampionshipPage implements OnInit {
         return this.fbService.getUserTeamRefs(user);
       }),
       mergeMap((teams) => {
+        // Add the current team (if any) to the list
         if (this.team && this.team.id) {
           teams.push({
             id: this.team.id,
@@ -294,11 +306,15 @@ export class ChampionshipPage implements OnInit {
             liga: "",
             type: "",
             updated: Timestamp.now(),
-          })
+          });
         } else if (teams.length === 0) {
-          return of([])
-        };
+          return of([]); // If no teams found, return an empty array
+        }
+  
+        // Filter to get only the specific team if `this.team.id` is set
         const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+  
+        // Fetch games for all relevant teams
         return combineLatest(
           relevantTeams.map((team) =>
             this.championshipService.getTeamGamesPastRefs(team.id).pipe(
@@ -320,7 +336,7 @@ export class ChampionshipPage implements OnInit {
                       this.fbService.getTeamRef(team.id).pipe(
                         catchError((err) => {
                           console.error("Permission error in fetching getTeamRef:", err);
-                          return of({}); // Return an empty array if permission error occurs
+                          return of({}); // Return an empty object if permission error occurs
                         }),
                       ), // Fetching team details
                     ]).pipe(
@@ -347,18 +363,22 @@ export class ChampionshipPage implements OnInit {
                   )
                 );
               }),
-              map((gamesWithAttendees) => gamesWithAttendees), // Flatten games array for each team
+              map((gamesWithAttendees) => gamesWithAttendees), // Combine games for a team
               catchError((err) => {
                 console.error("Error fetching games for team:", err);
-                return of([]); // If error in fetching games, return empty array
+                return of([]); // Return an empty array if error occurs
               })
             )
           )
         ).pipe(
-          map((teamsGames) => teamsGames.flat()), // Flatten to get all games across all teams
-          map((allGames) => allGames.sort((b, a) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())), // Sort games by date
+          // Flatten to get all games across all teams
+          map((teamsGames) => teamsGames.flat()),
+          // tap((allGames) => console.log("All games:", allGames)),
+          // Sort games globally by date (newest first)
+          map((allGames) => allGames.sort((a, b) => b.dateTime.seconds - a.dateTime.seconds)),
+  
           catchError((err) => {
-            console.error("Error in getTeamGamesUpcoming:", err);
+            console.error("Error in getTeamGamesPast:", err);
             return of([]); // Return an empty array on error
           })
         );
