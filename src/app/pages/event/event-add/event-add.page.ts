@@ -152,10 +152,8 @@ export class EventAddPage implements OnInit {
     if (event) {
       console.log(event.id);
       return this.modalCtrl.dismiss({}, "confirm");
-    } else {
-
     }
-   
+    return null;
   }
   async toastActionError(error) {
     const toast = await this.toastController.create({

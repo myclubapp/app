@@ -38,7 +38,6 @@ import { Timestamp } from "firebase/firestore";
 import { HelferPunkteClubPage } from "../helfer/helfer-punkte-club/helfer-punkte-club.page";
 import { Club } from "src/app/models/club";
 import { ClubSubscriptionPage } from "../club-subscription/club-subscription.page";
-import { fork } from "child_process";
 
 @Component({
   selector: "app-club",

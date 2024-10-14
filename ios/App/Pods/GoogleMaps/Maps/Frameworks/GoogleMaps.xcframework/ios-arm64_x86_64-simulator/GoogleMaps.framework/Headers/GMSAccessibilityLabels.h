@@ -11,6 +11,12 @@
 #import <Foundation/Foundation.h>
 
 /**
+ * A previous version of this API contained this misspelling, this preserves compatibility with old
+ * versions. Use kGMSAccessibilityOutOfQuota instead.
+ */
+#define kGMSAccessiblityOutOfQuota kGMSAccessibilityOutOfQuota;
+
+/**
  * Accessibility identifier for the compass button.
  *
  * @related GMSMapView
@@ -29,4 +35,4 @@ extern NSString *const kGMSAccessibilityMyLocation;
  *
  * @related GMSMapView
  */
-extern NSString *const kGMSAccessiblityOutOfQuota;
+extern NSString *const kGMSAccessibilityOutOfQuota;
