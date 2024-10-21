@@ -23,45 +23,123 @@
       <ion-item detail (click)="openUrl('https://my-club.app/pricing')">
 
         <ion-label class="ion-text-wrap">
-          Finde dein passendes Abonnement für deinen Verein {{club.name}}
+          Finde dein passendes Abonnement für deinen Verein {{club.name}}.
+          <ng-container *ngIf="clubMemberCount$ | async as clubMemberCount">
+            Aktuelle Anzahl Mitglieder: {{clubMemberCount}}
+          </ng-container>
         </ion-label>
+
       </ion-item>
       <ng-container *ngIf="products$ | async as productList">
         <ion-accordion-group *ngFor="let product of productList">
-          <ion-accordion [value]=product.id>
-            <ion-item slot="header" color="light">
-              <ion-label>{{product.name}}</ion-label>
-              <ion-icon *ngIf="product.stripe_metadata_subscription==club.subscriptionType" slot="start" color="success"
-                name="checkmark-circle-outline"></ion-icon>
 
-              <ion-icon *ngIf="product.stripe_metadata_subscription!==club.subscriptionType" slot="start"
-                color="primary" name="heart-outline"></ion-icon>
+          <ng-container *ngIf="clubMemberCount$ | async as clubMemberCount">
 
+            <ion-accordion
+              *ngIf="product['stripe_metadata_max_users'] && product['stripe_metadata_max_users'] < clubMemberCount"
+              [value]=product.id>
+              <ion-item slot="header" color="light">
+                <ion-label>{{product.name}}</ion-label>
+                <ion-icon *ngIf="product.stripe_metadata_subscription==club.subscriptionType" slot="start"
+                  color="success" name="checkmark-circle-outline"></ion-icon>
 
-
-            </ion-item>
-            <div class="ion-padding" slot="content">
-              <ion-note color="success" *ngIf="product.stripe_metadata_subscription==club.subscriptionType">Dieses Modul
-                wurde
-                bereits aktiviert.</ion-note>
+                <ion-icon *ngIf="product.stripe_metadata_subscription!==club.subscriptionType" slot="start"
+                  color="danger" name="close-circle-outline"></ion-icon>
 
 
-              <ng-container *ngIf="product.stripe_metadata_subscription!=club.subscriptionType">
-                <ion-label class="ion-text-wrap">{{product.description}}</ion-label>
-                <ion-list>
-                  <ion-item *ngFor="let price of product.prices" detail (click)="checkout(price, product)">
-                    <ion-label *ngIf="price.stripe_metadata_payment=='month'">Preis / {{"common.month" | translate}}
-                    </ion-label>
-                    <ion-label *ngIf="price.stripe_metadata_payment=='year'">Preis / {{"common.year" | translate}}
-                    </ion-label>
-                    <ion-badge slot="end">{{price.currency_upper}} {{price.unit_amount}} </ion-badge>
-                  </ion-item>
-                </ion-list>
-              </ng-container>
+
+              </ion-item>
+              <div class="ion-padding" slot="content">
+                <ion-note color="success" *ngIf="product.stripe_metadata_subscription==club.subscriptionType">Dieses
+                  Abonnement
+                  wurde
+                  bereits aktiviert. <br /><br /></ion-note>
+                <ng-container *ngIf="product.stripe_metadata_subscription==club.subscriptionType">
+
+                  <ion-label class="ion-text-wrap">{{product.description}}</ion-label>
+                  <ion-list>
+                    <ion-item *ngFor="let price of product.prices">
+                      <ion-label *ngIf="price.stripe_metadata_payment=='month'">Preis / {{"common.month" | translate}}
+                      </ion-label>
+                      <ion-label *ngIf="price.stripe_metadata_payment=='year'">Preis / {{"common.year" | translate}}
+                      </ion-label>
+                      <ion-badge slot="end">{{price.currency_upper}} {{price.unit_amount}} </ion-badge>
+                    </ion-item>
+                  </ion-list>
+                </ng-container>
 
 
-            </div>
-          </ion-accordion>
+
+                <ng-container *ngIf="product.stripe_metadata_subscription!=club.subscriptionType">
+                  <ion-note color="danger">Dieses Abonnement
+                    kann nicht gewählt werden. <br /><br /></ion-note>
+                  <ion-label class="ion-text-wrap">{{product.description}}</ion-label>
+                  <ion-list>
+                    <ion-item *ngFor="let price of product.prices">
+                      <ion-label *ngIf="price.stripe_metadata_payment=='month'">Preis / {{"common.month" | translate}}
+                      </ion-label>
+                      <ion-label *ngIf="price.stripe_metadata_payment=='year'">Preis / {{"common.year" | translate}}
+                      </ion-label>
+                      <ion-badge slot="end">{{price.currency_upper}} {{price.unit_amount}} </ion-badge>
+                    </ion-item>
+                  </ion-list>
+                </ng-container>
+
+
+              </div>
+            </ion-accordion>
+
+            <ion-accordion
+              *ngIf="product['stripe_metadata_max_users'] && product['stripe_metadata_max_users'] >= clubMemberCount"
+              [value]=product.id>
+              <ion-item slot="header" color="light">
+                <ion-label>{{product.name}}</ion-label>
+                <ion-icon *ngIf="product.stripe_metadata_subscription==club.subscriptionType" slot="start"
+                  color="success" name="checkmark-circle-outline"></ion-icon>
+
+                <ion-icon *ngIf="product.stripe_metadata_subscription!==club.subscriptionType" slot="start"
+                  color="primary" name="heart-outline"></ion-icon>
+
+
+
+              </ion-item>
+              <div class="ion-padding" slot="content">
+                <ion-note color="success" *ngIf="product.stripe_metadata_subscription==club.subscriptionType">Dieses
+                  Abonnement
+                  wurde
+                  bereits aktiviert. <br /><br /></ion-note>
+                  <ng-container *ngIf="product.stripe_metadata_subscription==club.subscriptionType">
+
+                    <ion-label class="ion-text-wrap">{{product.description}}</ion-label>
+                    <ion-list>
+                      <ion-item *ngFor="let price of product.prices">
+                        <ion-label *ngIf="price.stripe_metadata_payment=='month'">Preis / {{"common.month" | translate}}
+                        </ion-label>
+                        <ion-label *ngIf="price.stripe_metadata_payment=='year'">Preis / {{"common.year" | translate}}
+                        </ion-label>
+                        <ion-badge slot="end">{{price.currency_upper}} {{price.unit_amount}} </ion-badge>
+                      </ion-item>
+                    </ion-list>
+                  </ng-container>
+
+                <ng-container *ngIf="product.stripe_metadata_subscription!=club.subscriptionType">
+                  <ion-label class="ion-text-wrap">{{product.description}}</ion-label>
+                  <ion-list>
+                    <ion-item *ngFor="let price of product.prices" detail (click)="checkout(price, product)">
+                      <ion-label *ngIf="price.stripe_metadata_payment=='month'">Preis / {{"common.month" | translate}}
+                      </ion-label>
+                      <ion-label *ngIf="price.stripe_metadata_payment=='year'">Preis / {{"common.year" | translate}}
+                      </ion-label>
+                      <ion-badge slot="end">{{price.currency_upper}} {{price.unit_amount}} </ion-badge>
+                    </ion-item>
+                  </ion-list>
+                </ng-container>
+
+
+              </div>
+            </ion-accordion>
+
+          </ng-container>
         </ion-accordion-group>
       </ng-container>
 
@@ -219,7 +297,7 @@
 
 
 
-      <ng-container >
+      <ng-container>
         <ion-item *ngFor="let subscription of club['activeSubscriptions']" detail
           (click)="openUrl(subscription.invoices[0].invoice_pdf)">
           <ion-label>
