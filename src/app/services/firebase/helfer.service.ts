@@ -35,7 +35,7 @@ export class HelferService {
   constructor(
     private readonly firestore: Firestore = inject(Firestore),
     private readonly authService: AuthService
-  ) { 
+  ) {
 
   }
   /*getHelferPunkteList() {
@@ -57,6 +57,11 @@ export class HelferService {
     );
   }*/
 
+  deleteHelferPunkt(clubId: string, helferPunktId: string) {
+    const helferPunktRef = doc(this.firestore, `club/${clubId}/helferPunkte/${helferPunktId}`);
+    return deleteDoc(helferPunktRef); 
+  }
+
   getUserHelferPunkteRefs(userId: any, clubId: string): Observable<any[]> {
     // console.log(userId, clubId)
     const helferPunkteRefList = collection(
@@ -74,7 +79,7 @@ export class HelferService {
   }
 
 
-  getUserHelferPunkteRefsWithFilter(userId: any, clubId: string, dateFrom:Timestamp, dateTo: Timestamp): Observable<any[]> {
+  getUserHelferPunkteRefsWithFilter(userId: any, clubId: string, dateFrom: Timestamp, dateTo: Timestamp): Observable<any[]> {
     console.log(userId, clubId, dateFrom, dateTo)
     const helferPunkteRefList = collection(
       this.firestore,

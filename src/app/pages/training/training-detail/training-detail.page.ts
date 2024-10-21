@@ -305,7 +305,7 @@ export class TrainingDetailPage implements OnInit {
   async presentToast() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
-      color: "primary",
+      color: "success",
       duration: 1500,
       position: "top",
     });

@@ -3,6 +3,7 @@ import {
   AlertController,
   AlertInput,
   AlertOptions,
+  IonItemSliding,
   ModalController,
   NavParams,
   ToastController,
@@ -380,6 +381,22 @@ export class HelferDetailPage implements OnInit {
     });
   }
 
+  async toggleSchichtItem(
+    slidingItem: IonItemSliding,
+    status: boolean, event, schicht,
+    memberId: string,
+  ) {
+    slidingItem.closeOpened();
+
+    await this.eventService.setClubHelferEventSchichtAttendeeStatusAdmin(
+      status,
+      event.clubId,
+      event.id, schicht.id,
+      memberId,
+    );
+    this.presentToast();
+  }
+
   async toggleSchicht(status: boolean, event, schicht) {
     console.log(`Set Status ${status}`);
 
@@ -398,8 +415,13 @@ export class HelferDetailPage implements OnInit {
     console.log("Grenzwert ")
     const helferThreshold = event.club.helferThreshold || 0;
     console.log(helferThreshold);
-    // Verpätete Abmeldung?
-    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * helferThreshold)) && status == false && helferThreshold) {
+
+    if (schicht['attendeeListTrue'].length >= schicht.countNeeded && status == true) {
+      console.log("too many");
+      this.tooMany();
+
+    } else if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * helferThreshold)) && status == false && helferThreshold) {
+      // Verpätete Abmeldung?
       console.log("too late");
       await this.tooLateToggle();
 
@@ -448,8 +470,12 @@ export class HelferDetailPage implements OnInit {
     console.log("Grenzwert ")
     const helferThreshold = event.club.helferThreshold || 0;
     console.log(helferThreshold);
-    // Verpätete Abmeldung?
-    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * helferThreshold)) && status == false && helferThreshold) {
+
+    if (event.count >= event.countNeeded) {
+      console.log("too many");
+
+    } else if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * helferThreshold)) && status == false && helferThreshold) {
+      // Verpätete Abmeldung?
       console.log("too late");
       await this.tooLateToggle();
 
@@ -478,10 +504,26 @@ export class HelferDetailPage implements OnInit {
     })
     alert.present()
   }
+
+  async tooMany() {
+    const alert = await this.alertCtrl.create({
+      header: "Genügend Helfer",
+      message: "Die Schicht hat bereits genügend Helfer",
+      buttons: [{
+        role: "",
+        text: "OK",
+        handler: (data) => {
+          console.log(data)
+        }
+      }]
+    })
+    alert.present()
+  }
+
   async presentToast() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),
-      color: "primary",
+      color: "success",
       duration: 1500,
       position: "top",
     });

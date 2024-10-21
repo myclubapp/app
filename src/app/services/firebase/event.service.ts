@@ -247,6 +247,27 @@ export class EventService {
     );
   }
 
+  setClubHelferEventSchichtAttendeeStatusAdmin(
+    status: boolean,
+    clubId: string,
+    eventId: string,
+    schichtId: string,
+    memberId: string
+  ) {
+    // const user = this.authService.auth.currentUser;
+    const statusRef = doc(
+      this.firestore,
+      `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}/attendees/${memberId}`
+    );
+    return setDoc(
+      statusRef,
+      { status },
+      {
+        merge: true,
+      }
+    );
+  }
+
   setClubHelferEventSchichtAttendeeStatusConfirm(
     clubId: string,
     eventId: string,

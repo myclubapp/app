@@ -1,12 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IonItemSliding, ModalController, NavParams } from '@ionic/angular';
-import { BehaviorSubject, Observable, catchError, combineLatest, debounceTime, defaultIfEmpty, forkJoin, map, of, switchMap, tap } from 'rxjs';
+import { AlertController, IonItemSliding, ModalController, NavParams, ToastController } from '@ionic/angular';
+import { BehaviorSubject, Observable, catchError, combineLatest, debounceTime, defaultIfEmpty, forkJoin, lastValueFrom, map, of, switchMap, tap } from 'rxjs';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { HelferService } from 'src/app/services/firebase/helfer.service';
 import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
 import { HelferDetailPage } from '../helfer-detail/helfer-detail.page';
 import { Club } from 'src/app/models/club';
 import { Timestamp } from 'firebase/firestore';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-helfer-punkte-club',
@@ -31,9 +32,12 @@ export class HelferPunkteClubPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
+    private translate: TranslateService,
     public navParams: NavParams,
+    private readonly alertController: AlertController,
     private readonly helferService: HelferService,
     private readonly userProfileService: UserProfileService,
+    private readonly toastController: ToastController,
     private readonly fbService: FirebaseService,
   ) {
 
@@ -172,18 +176,51 @@ export class HelferPunkteClubPage implements OnInit {
     );
   }
 
-  changeHelferPunkt(slidingItem: IonItemSliding, member, helferPunkt) {
-    slidingItem.closeOpened();
+  async changeHelferPunkt(slidingItem: IonItemSliding, member, helferPunkt) {
+    await slidingItem.closeOpened();
 
+    // this.presentToast();
     console.log(member, helferPunkt)
   }
 
-  deleteHelferPunkt(slidingItem: IonItemSliding, member, helferPunkt) {
-    slidingItem.closeOpened();
-
-    console.log(member, helferPunkt)
+  async deleteHelferPunkt(slidingItem: IonItemSliding, member, helferPunkt) {
+    await slidingItem.closeOpened();
+  
+    const alert = await this.alertController.create({
+      header: 'Bestätigung',
+      message: 'Sind Sie sicher, dass Sie diesen HelferPunkt löschen möchten?',
+      buttons: [
+        {
+          text: 'Abbrechen',
+          role: 'cancel',
+          handler: () => {
+            console.log('Löschvorgang abgebrochen');
+          }
+        },
+        {
+          text: 'Löschen',
+          handler: async () => {
+            await this.helferService.deleteHelferPunkt(this.clubId, helferPunkt.id);
+            this.presentToast();
+            console.log(member, helferPunkt);
+          }
+        }
+      ]
+    });
+  
+    await alert.present();
   }
 
+
+  async presentToast() {
+    const toast = await this.toastController.create({
+      message: await lastValueFrom(this.translate.get("common.success__saved")),
+      color: "success",
+      duration: 1500,
+      position: "top",
+    });
+    toast.present();
+  }
   /*
     getClubMembersWithHelferPunkte(clubId: string) {
       return this.fbService.getClubRef(clubId).pipe(

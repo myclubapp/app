@@ -48,7 +48,8 @@
 
         <ion-modal [keepContentsMounted]="true">
           <ng-template>
-            <ion-datetime id="dateFrom" presentation="date"  [firstDayOfWeek]="1" [value]="club.helferReportingDateFrom" [min]="minDate" [max]="maxDate"
+            <ion-datetime id="dateFrom" presentation="date" [firstDayOfWeek]="1" [value]="club.helferReportingDateFrom"
+              [min]="minDate" [max]="maxDate"
               (ionChange)="changeDate($event, 'helferReportingDateFrom')"></ion-datetime>
           </ng-template>
         </ion-modal>
@@ -61,8 +62,8 @@
 
         <ion-modal [keepContentsMounted]="true">
           <ng-template>
-            <ion-datetime id="dateTo" presentation="date"  [firstDayOfWeek]="1" [value]="club.helferReportingDateTo" [min]="minDate" [max]="maxDate"
-              (ionChange)="changeDate($event, 'helferReportingDateTo')"></ion-datetime>
+            <ion-datetime id="dateTo" presentation="date" [firstDayOfWeek]="1" [value]="club.helferReportingDateTo"
+              [min]="minDate" [max]="maxDate" (ionChange)="changeDate($event, 'helferReportingDateTo')"></ion-datetime>
           </ng-template>
         </ion-modal>
       </ion-item>
@@ -105,12 +106,9 @@
                       <ion-item-option color="primary" (click)="changeHelferPunkt(item, memberPunkte ,helferPunkt)">
                         <ion-icon slot="icon-only" name="help-buoy-outline"></ion-icon>
                       </ion-item-option>
-  
-
                     </ion-item-options>
                     <ion-item-options *ngIf="isClubAdmin(clubAdminList, clubId)" side="end">
-              
-                      <ion-item-option color="danger" (click)="deleteHelferPunkt(item, memberPunkte ,helferPunkt)">
+                      <ion-item-option color="danger" (click)="deleteHelferPunkt(item, memberPunkte,helferPunkt)">
                         <ion-icon slot="icon-only" name="trash"></ion-icon>
                       </ion-item-option>
 
@@ -119,7 +117,9 @@
                   <ion-item detail="true" (click)="openHelferEvent(helferPunkt)">
                     <ion-label>
                       <h3>
-                        {{helferPunkt.name}} - {{helferPunkt.schichtName}}
+                        Datum: {{helferPunkt.date.toDate() | date:'dd.MM.YYYY '}}
+                        <br /> {{helferPunkt.name}}
+                        <br /> {{helferPunkt.schichtName}} von {{helferPunkt.schichtTimeFrom}} Uhr bis {{helferPunkt.schichtTimeTo}} Uhr
                       </h3>
                     </ion-label>
 
