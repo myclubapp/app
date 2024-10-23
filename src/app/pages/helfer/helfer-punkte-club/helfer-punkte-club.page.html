@@ -117,7 +117,7 @@
                   <ion-item detail="true" (click)="openHelferEvent(helferPunkt)">
                     <ion-label>
                       <h3>
-                        Datum: {{helferPunkt.date.toDate() | date:'dd.MM.YYYY '}}
+                        Datum: {{helferPunkt.eventDate.toDate() | date:'dd.MM.YYYY '}}
                         <br /> {{helferPunkt.name}}
                         <br /> {{helferPunkt.schichtName}} von {{helferPunkt.schichtTimeFrom}} Uhr bis {{helferPunkt.schichtTimeTo}} Uhr
                       </h3>

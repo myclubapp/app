@@ -179,6 +179,25 @@ export class HelferPunkteClubPage implements OnInit {
   async changeHelferPunkt(slidingItem: IonItemSliding, member, helferPunkt) {
     await slidingItem.closeOpened();
 
+    const alert = await this.alertController.create({
+      message: "asdasd",
+      header: "Helferpunkt ändern",
+      inputs: [{
+        id: "points",
+        value: helferPunkt.points
+      }],
+      buttons: [{
+        "id": "ok",
+        "text": "Speichern",
+        handler: (data) => {
+          console.log(data.points);
+        }
+      }]
+
+    });
+
+    await alert.present();
+
     // this.presentToast();
     console.log(member, helferPunkt)
   }
