@@ -31,6 +31,7 @@
             <ion-icon slot="start" name="add-circle-outline"></ion-icon>
           </ion-button>
         </ng-container>-->
+       
       <ion-button (click)="setFilter(role)" shape="round" size="small" *ngFor="let role of club['roles']">
         {{role}}
       </ion-button>
@@ -67,13 +68,67 @@
           </ng-template>
         </ion-modal>
       </ion-item>
+
+      <ion-item>
+        <ion-select  value="0" label="Min. Punkte"  aria-label="Min Punkte"  justify="space-between"   (ionChange)="onHelferPunkteMinChange($event)" placeholder="Min Punkte">
+          <ion-select-option value="0">0 Punkte</ion-select-option>
+          <ion-select-option value="1">1 Punkt</ion-select-option>
+          <ion-select-option value="2">2 Punkte</ion-select-option>
+          <ion-select-option value="3">3 Punkte</ion-select-option>
+          <ion-select-option value="4">4 Punkte</ion-select-option>
+          <ion-select-option value="5">5 Punkte</ion-select-option>
+          <ion-select-option value="6">6 Punkte</ion-select-option>
+          <ion-select-option value="7">7 Punkt</ion-select-option>
+          <ion-select-option value="8">8 Punkte</ion-select-option>
+          <ion-select-option value="9">9 Punkte</ion-select-option>
+          <ion-select-option value="10">10 Punkte</ion-select-option>
+          <ion-select-option value="99">10+ Punkte</ion-select-option>
+        </ion-select>
+
+      </ion-item>
+
+      <ion-item>
+        <ion-select value="99" label="Max. Punkte"  aria-label="Max Punkte"  justify="space-between"   (ionChange)="onHelferPunkteMaxChange($event)" placeholder="Max Punkte">
+          <ion-select-option value="0">0 Punkte</ion-select-option>
+          <ion-select-option value="1">1 Punkt</ion-select-option>
+          <ion-select-option value="2">2 Punkte</ion-select-option>
+          <ion-select-option value="3">3 Punkte</ion-select-option>
+          <ion-select-option value="4">4 Punkte</ion-select-option>
+          <ion-select-option value="5">5 Punkte</ion-select-option>
+          <ion-select-option value="6">6 Punkte</ion-select-option>
+          <ion-select-option value="7">7 Punkt</ion-select-option>
+          <ion-select-option value="8">8 Punkte</ion-select-option>
+          <ion-select-option value="9">9 Punkte</ion-select-option>
+          <ion-select-option value="10">10 Punkte</ion-select-option>
+          <ion-select-option value="99">10+ Punkte</ion-select-option>
+
+        </ion-select>
+
+      </ion-item>
+
+      <ion-item>
+        <ion-toggle justify="space-between"  (ionChange)="onHelferPunktePlanned($event)" [checked]="plannedToggle.value" [enableOnOffLabels]="true"  labelPlacement="start">Geplante Einsätze</ion-toggle><br /><br />
+      </ion-item>
+
+<!--      <ion-item>
+        <ion-range labelPlacement="start" label="Helferpunkte" 
+        [dualKnobs]="true" 
+        [value]="{ lower: 0, upper: 2 }"
+        [pin]="true" 
+        [pinFormatter]="pinFormatter"
+        [ticks]="true" [snaps]="true" [min]="0" [max]="10"
+        (ionChange)="onHelferPunkteChange($event)"
+        ></ion-range>
+
+        <br />
+      </ion-item>-->
     </ion-list>
 
 
     <ng-container *ngIf="filteredHelferPunkteList$ | async as helferPunkteList">
       <ion-list inset="true">
         <ion-list-header>
-          Mitglieder
+          Mitglieder ({{helferPunkteList.length}})
         </ion-list-header>
 
         <ion-item-group>
@@ -123,9 +178,22 @@
                       </h3>
                     </ion-label>
 
-                    <ion-badge color="medium" slot="end">{{helferPunkt.points}}</ion-badge>
+                    <ion-badge color="primary" slot="end">{{helferPunkt.points}}</ion-badge>
                   </ion-item>
                 </ion-item-sliding>
+
+                <ion-item *ngFor="let planned of memberPunkte.plannedHelfer">
+                  <ion-label>
+                    <h3>
+                      <ion-badge>geplant</ion-badge><br />
+                      Datum: {{planned.event.startDate | date:'dd.MM.YYYY '}}
+                      <br /> {{planned.event.name}}
+                      <br /> {{planned.schicht.name}} von {{planned.schicht.timeFrom}} Uhr bis {{planned.schicht.timeTo}} Uhr
+                    </h3>
+                  </ion-label>
+                  <ion-badge color="medium" slot="end">{{planned.schicht.points}}</ion-badge>
+                </ion-item>
+
               </ion-list>
 
             </ng-container>

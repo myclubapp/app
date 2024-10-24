@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AlertController, IonItemSliding, ModalController, NavParams, ToastController } from '@ionic/angular';
-import { BehaviorSubject, Observable, catchError, combineLatest, debounceTime, defaultIfEmpty, forkJoin, lastValueFrom, map, of, switchMap, tap } from 'rxjs';
+import { AlertController, IonItemSliding, ModalController, NavParams, RangeCustomEvent, ToastController, ToggleCustomEvent } from '@ionic/angular';
+import { BehaviorSubject, Observable, catchError, combineLatest, debounceTime, defaultIfEmpty, forkJoin, lastValueFrom, map, of, switchMap, take, tap } from 'rxjs';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { HelferService } from 'src/app/services/firebase/helfer.service';
 import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
@@ -8,6 +8,7 @@ import { HelferDetailPage } from '../helfer-detail/helfer-detail.page';
 import { Club } from 'src/app/models/club';
 import { Timestamp } from 'firebase/firestore';
 import { TranslateService } from '@ngx-translate/core';
+import { EventService } from 'src/app/services/firebase/event.service';
 
 @Component({
   selector: 'app-helfer-punkte-club',
@@ -25,7 +26,11 @@ export class HelferPunkteClubPage implements OnInit {
 
   groupArray = [];
 
+  plannedToggle = new BehaviorSubject<boolean>(false);  // Initialized with an empty string
+
   searchTerm = new BehaviorSubject<string>('');  // Initialized with an empty string
+
+  pointsRange = new BehaviorSubject<{ lower: number, upper: number }>({ lower: 0, upper: 10 }); // Default range
 
   minDate: string = "";
   maxDate: string = "";
@@ -36,6 +41,7 @@ export class HelferPunkteClubPage implements OnInit {
     public navParams: NavParams,
     private readonly alertController: AlertController,
     private readonly helferService: HelferService,
+    private readonly eventService: EventService,
     private readonly userProfileService: UserProfileService,
     private readonly toastController: ToastController,
     private readonly fbService: FirebaseService,
@@ -48,7 +54,7 @@ export class HelferPunkteClubPage implements OnInit {
     let dateFrom = new Date();
     dateFrom.setFullYear(new Date().getFullYear() - 2);
     this.minDate = dateFrom.toISOString();
-    
+
     let dateTo = new Date();
     dateTo.setFullYear(new Date().getFullYear() + 2);
     this.maxDate = dateTo.toISOString();
@@ -74,7 +80,7 @@ export class HelferPunkteClubPage implements OnInit {
 
   initializeClubMembersWithHelferPunkte(clubId) {
     this.groupArray = [];  // Initialize or clear the group array
-
+  
     this.helferPunkteList$ = this.fbService.getClubRef(clubId).pipe(
       tap(club => console.log("Fetched club:", club)),
       switchMap((club) => {
@@ -90,31 +96,80 @@ export class HelferPunkteClubPage implements OnInit {
               this.groupArray = [];
               return of([]);
             }
+  
             const memberDetailsWithHelferPunkte$ = members.map((member) =>
               this.userProfileService.getUserProfileById(member.id).pipe(
                 switchMap((profile) => {
                   if (!profile) {
                     return of({ profile: { ...member, firstName: "Unknown", lastName: "Unknown", roles: member.roles || [] }, helferPunkte: [], totalPoints: 0 });
                   }
-                  return this.helferService.getUserHelferPunkteRefsWithFilter(profile.id, clubId, Timestamp.fromDate(new Date(club.helferReportingDateFrom)), Timestamp.fromDate(new Date(club.helferReportingDateTo))).pipe(
+  
+                  // Fetch confirmed HelferPunkte (points)
+                  const confirmedHelferPunkte$ = this.helferService.getUserHelferPunkteRefsWithFilter(
+                    profile.id, clubId,
+                    Timestamp.fromDate(new Date(club.helferReportingDateFrom)),
+                    Timestamp.fromDate(new Date(club.helferReportingDateTo))
+                  ).pipe(
                     map((helferPunkte) => ({
-                      profile,
                       helferPunkte,
-                      totalPoints: helferPunkte.reduce((sum, item) => sum + Number(item.points), 0),
-                      groupBy: profile.firstName.charAt(0).toUpperCase(),
-                      roles: member.roles || []
+                      totalConfirmedPoints: helferPunkte.reduce((sum, item) => sum + Number(item.points), 0)
                     })),
-                    catchError((err) => {
-                      return of({ profile, helferPunkte: [], totalPoints: 0 });
-                    })
+                    catchError((err) => of({ helferPunkte: [], totalConfirmedPoints: 0 }))
+                  );
+  
+                  // Combine confirmed points and planned events, but fetch planned events only if the toggle is true
+                  return combineLatest([confirmedHelferPunkte$, this.plannedToggle]).pipe(
+                    switchMap(([confirmed, toggle]) => {
+                      if (!toggle) {
+                        // If toggle is false, just return confirmed points
+                        return of({
+                          profile,
+                          helferPunkte: confirmed.helferPunkte,
+                          plannedHelfer: [],  // No planned events fetched
+                          totalPoints: confirmed.totalConfirmedPoints,
+                          groupBy: profile.firstName.charAt(0).toUpperCase(),
+                          roles: member.roles || []
+                        });
+                      } else {
+                        // If toggle is true, fetch planned Helfereinsätze
+                        return this.getPlannedHelfer(profile.id, clubId, 
+                          Timestamp.fromDate(new Date(club.helferReportingDateFrom)),
+                          Timestamp.fromDate(new Date(club.helferReportingDateTo))
+                        ).pipe(
+                          map((plannedHelfer: any) => ({
+                            profile,
+                            helferPunkte: confirmed.helferPunkte,
+                            plannedHelfer,
+                            totalPoints: confirmed.totalConfirmedPoints + plannedHelfer.reduce((sum, item) => sum + Number(item.schicht.points), 0),
+                            groupBy: profile.firstName.charAt(0).toUpperCase(),
+                            roles: member.roles || []
+                          })),
+                          catchError((err) => of({
+                            profile,
+                            helferPunkte: confirmed.helferPunkte,
+                            plannedHelfer: [],
+                            totalPoints: confirmed.totalConfirmedPoints
+                          }))
+                        );
+                      }
+                    }),
+                    catchError((err) => of({
+                      profile,
+                      helferPunkte: [],
+                      plannedHelfer: [],
+                      totalPoints: 0
+                    }))
                   );
                 }),
                 catchError((err) => {
                   return of({
                     profile: {
                       ...member, firstName: "Unknown", lastName: "Unknown",
-                      roles: member.roles || [] // Ensure role or other attributes are included even in error
-                    }, helferPunkte: [], totalPoints: 0
+                      roles: member.roles || []  // Ensure role or other attributes are included even in error
+                    },
+                    helferPunkte: [],
+                    plannedHelfer: [],
+                    totalPoints: 0
                   });
                 })
               )
@@ -124,7 +179,6 @@ export class HelferPunkteClubPage implements OnInit {
           map(memberDetails => {
             // Integrate search filter here
             memberDetails.map(member => {
-              console.log(member)
               const groupByChar = member.profile.firstName.charAt(0).toUpperCase();
               if (!this.groupArray.includes(groupByChar)) {
                 this.groupArray.push(groupByChar);
@@ -143,19 +197,23 @@ export class HelferPunkteClubPage implements OnInit {
         return of([]);
       })
     );
-
-
-    this.filteredHelferPunkteList$ = combineLatest([this.helferPunkteList$, this.searchTerm]).pipe(
+  
+    this.filteredHelferPunkteList$ = combineLatest([this.helferPunkteList$, this.searchTerm, this.pointsRange]).pipe(
       debounceTime(300),
-      map(([members, term]) => {
-        if (!term) return members;
-
-        const filtered = members.filter(member =>
-          member.profile.firstName.toLowerCase().includes(term.toLowerCase()) ||
-          member.profile.lastName.toLowerCase().includes(term.toLowerCase()) ||
-          member.roles.find(role => role.toLowerCase().includes(term.toLowerCase()))
-        );
-        return filtered;
+      map(([members, term, range]) => {
+        // Filter based on search term and point range
+        return members.filter(member => {
+          const matchesSearch = term
+            ? member.profile.firstName.toLowerCase().includes(term.toLowerCase()) ||
+              member.profile.lastName.toLowerCase().includes(term.toLowerCase()) ||
+              member.roles.find(role => role.toLowerCase().includes(term.toLowerCase()))
+            : true;  // If no search term, match all
+  
+          const withinRange = member.totalPoints >= range.lower && member.totalPoints <= range.upper;
+  
+          // Return true if both conditions are met
+          return matchesSearch && withinRange;
+        });
       }),
       map(filtered => {
         // Update the groupArray
@@ -204,7 +262,7 @@ export class HelferPunkteClubPage implements OnInit {
 
   async deleteHelferPunkt(slidingItem: IonItemSliding, member, helferPunkt) {
     await slidingItem.closeOpened();
-  
+
     const alert = await this.alertController.create({
       header: 'Bestätigung',
       message: 'Sind Sie sicher, dass Sie diesen HelferPunkt löschen möchten?',
@@ -226,10 +284,81 @@ export class HelferPunkteClubPage implements OnInit {
         }
       ]
     });
-  
+
     await alert.present();
   }
 
+  getPlannedHelfer(memberId: string, clubId: string, dateFrom, dateTo): Observable<any[]> {
+    // Step 1: Fetch all Helfer events
+    return this.eventService.getClubHelferEventRefsByDate(clubId, dateFrom, dateTo).pipe(
+      switchMap(events => {
+        // Step 2: For each event, fetch the list of schichten (shifts)
+        const schichtenObservables = events.map(event =>
+          this.eventService.getClubHelferEventSchichtenRef(clubId, event.id).pipe(
+            // Step 3: For each schicht, fetch the attendees and filter based on the memberId and status
+            switchMap(schichten => {
+              const attendeesObservables = schichten.map(schicht =>
+                this.eventService.getClubHelferEventSchichtAttendeesRef(clubId, event.id, schicht.id).pipe(
+                  map(attendees => {
+                    // Step 4: Find the attendees with the specified memberId and status set to true
+                    const isConfirmed = attendees.some(attendee => attendee.id === memberId && attendee.status === true);
+                    return isConfirmed ? { event, schicht } : null;  // Return the event and schicht if confirmed
+                  }),
+                  catchError(err => {
+                    console.error("Error fetching schicht attendees:", err);
+                    return of(null);
+                  })
+                )
+              );
+              return combineLatest(attendeesObservables).pipe(
+                map(results => results.filter(result => result !== null)) // Filter out null values
+              );
+            })
+          )
+        );
+
+        return combineLatest(schichtenObservables).pipe(
+          map(results => results.flat()),  // Flatten the array of results
+          catchError(err => {
+            console.error("Error fetching schichten:", err);
+            return of([]);
+          })
+        );
+      }),
+      catchError(err => {
+        console.error("Error fetching events:", err);
+        return of([]);
+      })
+    );
+  }
+
+  /*onHelferPunkteChange(event: CustomEvent) {
+    const range = (event as RangeCustomEvent).detail.value as any;
+    console.log('Range slider value:', range);
+    this.pointsRange.next({ lower: range.lower, upper: range.upper });
+
+
+
+  pinFormatter(value: number) {
+    console.log(value);
+    return `${value} Punkte`;
+  }
+  }*/
+
+
+  onHelferPunkteMinChange(event: CustomEvent) {
+    this.pointsRange.next({ lower: event.detail.value, upper: this.pointsRange.value.upper });
+  }
+
+
+  onHelferPunkteMaxChange(event: CustomEvent) {
+    this.pointsRange.next({ lower: this.pointsRange.value.lower, upper: event.detail.value });
+  }
+
+  onHelferPunktePlanned(event: CustomEvent<ToggleCustomEvent>) {
+    // console.log(event)
+    this.plannedToggle.next( event.detail['checked'] );
+  }
 
   async presentToast() {
     const toast = await this.toastController.create({

@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 
-import { limit, Timestamp } from "firebase/firestore";
+import { limit, orderBy, Timestamp } from "firebase/firestore";
 import {
   Firestore,
   addDoc,
@@ -122,6 +122,24 @@ export class EventService {
       `club/${clubId}/helferEvents/${eventId}`
     );
     return docData(eventRef, { idField: "id" }) as Observable<HelferEvent>;
+  }
+
+  getClubHelferEventRefsByDate(clubId: string,  dateFrom: Timestamp, dateTo: Timestamp): Observable<HelferEvent[]> {
+    console.log(dateFrom);
+    console.log(dateTo);
+    const eventsRefList = collection(
+      this.firestore,
+      `club/${clubId}/helferEvents`
+    );
+    const q = query(
+      eventsRefList,
+      where("date", ">=", dateFrom),
+      where("date", "<=", dateTo),
+      orderBy("date", "desc")
+    ); // StartDatum der Veranstaltung - 12h
+    return collectionData(q, {
+      idField: "id",
+    }) as unknown as Observable<HelferEvent[]>;
   }
 
   getClubHelferEventRefs(clubId: string): Observable<HelferEvent[]> {
@@ -323,6 +341,9 @@ export class EventService {
     );
     return deleteDoc(eventRef);
   }
+
+  
+
 
   /* TEAM EventS */
   /*
