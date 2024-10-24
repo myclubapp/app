@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AlertController, IonItemSliding, ModalController, NavParams, RangeCustomEvent, ToastController, ToggleCustomEvent } from '@ionic/angular';
+import { AlertController, IonItemSliding, ModalController, NavParams, RangeCustomEvent, ToastController, ToggleChangeEventDetail, ToggleCustomEvent } from '@ionic/angular';
 import { BehaviorSubject, Observable, catchError, combineLatest, debounceTime, defaultIfEmpty, forkJoin, lastValueFrom, map, of, switchMap, take, tap } from 'rxjs';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { HelferService } from 'src/app/services/firebase/helfer.service';
@@ -355,7 +355,7 @@ export class HelferPunkteClubPage implements OnInit {
     this.pointsRange.next({ lower: this.pointsRange.value.lower, upper: event.detail.value });
   }
 
-  onHelferPunktePlanned(event: CustomEvent<ToggleCustomEvent>) {
+  onHelferPunktePlanned(event: CustomEvent<ToggleChangeEventDetail>) {
     // console.log(event)
     this.plannedToggle.next( event.detail['checked'] );
   }
