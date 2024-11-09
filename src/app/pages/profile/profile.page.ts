@@ -219,6 +219,20 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  async showPicture(imageUrl: string) {
+  const alert = await this.alertController.create({
+    header: await lastValueFrom(this.translate.get('profile.profile_picture')),
+    message: `<img src="${imageUrl}" alt="Profilbild" style="width: 100%; max-width: 300px; height: auto;">`,
+    buttons: [{
+      text: await lastValueFrom(this.translate.get('common.close')),
+      role: 'cancel'
+    }],
+    cssClass: 'profile-picture-alert'
+  });
+
+  await alert.present();
+}
+
   getUserProfile(): Observable<any> {
     // Replace 'any' with the actual type of the user profile
     return this.authService.getUser$().pipe(

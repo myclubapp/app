@@ -2,30 +2,17 @@ import { Injectable, inject } from '@angular/core';
 import { AuthService } from '../auth.service';
 import {
   Firestore,
-  addDoc,
   collection,
   collectionData,
   doc,
-  docData,
   deleteDoc,
-  updateDoc,
-  DocumentReference,
-  setDoc,
 } from "@angular/fire/firestore";
+import { Timestamp } from 'firebase/firestore';
 import {
   Observable,
-  Observer,
-  catchError,
-  combineLatest,
-  map,
-  mergeMap,
-  of,
-  switchMap,
-  take,
-  tap,
 } from "rxjs";
 import { User } from 'firebase/auth';
-import { orderBy, query, Timestamp, where } from 'firebase/firestore';
+import { orderBy, query, where } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -80,7 +67,7 @@ export class HelferService {
 
 
   getUserHelferPunkteRefsWithFilter(userId: any, clubId: string, dateFrom: Timestamp, dateTo: Timestamp): Observable<any[]> {
-    console.log(userId, clubId, dateFrom, dateTo)
+   //  console.log(userId, clubId, dateFrom, dateTo)
     const helferPunkteRefList = collection(
       this.firestore,
       `club/${clubId}/helferPunkte`

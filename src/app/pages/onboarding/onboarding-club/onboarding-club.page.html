@@ -51,6 +51,15 @@
                 <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
               </ion-item>
 
+              <ion-list-header *ngIf="clubListST.length > 0">
+                Turnverein
+              </ion-list-header>
+              <ion-item lines="full" *ngFor="let club of clubListST" (click)="joinClub(club)" button>
+                <ion-avatar slot="start">
+                  <img alt="{{club.name}}" src="{{club.logo}}" />
+                </ion-avatar>
+                <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
+              </ion-item>
 
             </ion-list>
 

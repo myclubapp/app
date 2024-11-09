@@ -196,7 +196,7 @@ export class ClubPage implements OnInit {
               ages.length > 0
                 ? ages.reduce((a, b) => a + b, 0) / ages.length
                 : 0; // Calculate average or set to 0 if no valid ages
-            console.log(clubTeams)
+            // console.log(clubTeams)
             return {
               ...club,
               clubTeams,

@@ -33,14 +33,14 @@
           *ngFor="let team of teamList$ | async"
         >
           <ion-card>
-            <img (click)="openModal(team)" src="{{team.logo}}" />
+            <img (click)="openModal(team)" src="{{team?.logo}}" />
             <ion-card-header (click)="openModal(team)">
-              <ion-card-title> {{team.name}} </ion-card-title>
-              <ion-card-subtitle> {{team.liga}} </ion-card-subtitle>
+              <ion-card-title> {{team?.name}} </ion-card-title>
+              <ion-card-subtitle> {{team?.liga}} </ion-card-subtitle>
             </ion-card-header>
 
             <ion-card-content (click)="openModal(team)">
-              <ion-badge> {{team.type}} </ion-badge>
+              <ion-badge> {{team?.type}} </ion-badge>
             </ion-card-content>
             <ion-button class="ion-margin" fill="outline" expand="block" color="warning"   *ngIf="allowEdit"  (click)="leaveTeam(team)" >
               <ion-icon slot="start" name="exit-outline"></ion-icon>

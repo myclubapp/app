@@ -1,3 +1,18 @@
 ion-avatar img {
   height: 36px;
 }
+
+.profile-picture-alert {
+  --max-width: 90%;
+  --width: 340px;
+  
+  .alert-message {
+    text-align: center;
+    padding: 10px;
+  }
+
+  img {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+}

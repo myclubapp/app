@@ -103,15 +103,15 @@ export class TrainingsPage implements OnInit {
     this.subscription = this.trainingList$.pipe(
       tap(async (trainings) => {
         const training = trainings[0];
-        console.log('Widget Value for Key=nextTraining: ', training.name);
+        console.log('Widget Value for Key=nextTraining: ', training?.name);
         // MyClubAppWidget.echo({ value: event.name });
 
         try {
-          await MyClubAppWidget.setItem({ key: 'nextTraining', value: training.name, group: 'group.app.myclub.default' }); 
-        } catch (error) { 
-          console.error('Widget Error setItem: ', error); 
+          await MyClubAppWidget.setItem({ key: 'nextTraining', value: training?.name, group: 'group.app.myclub.default' });
+        } catch (error) {
+          console.error('Widget Error setItem: ', error);
         }
-      
+
         try {
           await MyClubAppWidget.reloadAllTimelines();
           await MyClubAppWidget.reloadTimelines({ ofKind: 'AppWidget' });

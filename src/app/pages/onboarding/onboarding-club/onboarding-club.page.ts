@@ -19,6 +19,7 @@ export class OnboardingClubPage implements OnInit {
   clubListSV: Club[];
   clubListSU: Club[];
   clubListSH: Club[];
+  clubListST: Club[];
   clubListSub: Subscription;
   user: User;
   userProfile$: Observable<Profile>;
@@ -42,7 +43,8 @@ export class OnboardingClubPage implements OnInit {
     this.menuCtrl.enable(false, "menu");
     this.clubListSU = [];
     this.clubListSV = [];
-    this.clubListSH = [];
+    this.clubListSH = []; 
+    this.clubListST = [];
     this.subscription = this.authService.getUser$().pipe(
       take(1),
       tap(user => this.user = user),
@@ -277,11 +279,13 @@ export class OnboardingClubPage implements OnInit {
           this.clubListSU = data.filter((el) => el.type == "swissunihockey");
           this.clubListSV = data.filter((el) => el.type == "swissvolley");
           this.clubListSH = data.filter((el) => el.type == "swisshandball");
+          this.clubListST = data.filter((el) => el.type == "swissturnverband");
         });
     } else {
       this.clubListSU = [];
       this.clubListSV = [];
       this.clubListSH = [];
+      this.clubListST = [];
       // this.activeClubList = this.activeClubListBackup;
     }
   }

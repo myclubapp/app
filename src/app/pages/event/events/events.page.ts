@@ -78,11 +78,11 @@ export class EventsPage implements OnInit {
     this.subscription = this.eventList$.pipe(
       tap(async (events) => {
         const event = events[0];
-        console.log('Widget Value for Key=NextEvent: ', event.name);
+        console.log('Widget Value for Key=NextEvent: ', event?.name);
         // MyClubAppWidget.echo({ value: event.name });
 
         try {
-          await MyClubAppWidget.setItem({ key: 'nextEvent', value: event.name, group: 'group.app.myclub.default' }); 
+          await MyClubAppWidget.setItem({ key: 'nextEvent', value: event?.name, group: 'group.app.myclub.default' }); 
         } catch (error) { 
           console.error('Widget Error setItem: ', error); 
         }
