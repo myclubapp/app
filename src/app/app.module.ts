@@ -19,6 +19,7 @@ import { provideAuth, getAuth, initializeAuth } from "@angular/fire/auth";
 import { indexedDBLocalPersistence } from "firebase/auth";
 import { provideStorage, getStorage } from "@angular/fire/storage";
 import { provideMessaging, getMessaging } from "@angular/fire/messaging";
+import { getAnalytics, provideAnalytics } from "@angular/fire/analytics";
 
 // MODALs
 // import { OnboardingPage } from "./pages/onboarding/onboarding.page";
@@ -158,6 +159,7 @@ export function appInitializerFactory(translateService: TranslateService, inject
       // setPersistence(auth,browserSessionPersistence);
       // return auth;
     }),
+    provideAnalytics(() => getAnalytics()),
     provideStorage(() => getStorage()),
     provideMessaging(() => getMessaging()),
     

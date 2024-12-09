@@ -388,6 +388,7 @@ export class HelferPunkteClubPage implements OnInit {
   }
 
   /*onHelferPunkteChange(event: CustomEvent) {
+
     const range = (event as RangeCustomEvent).detail.value as any;
     console.log('Range slider value:', range);
     this.pointsRange.next({ lower: range.lower, upper: range.upper });
@@ -398,6 +399,7 @@ export class HelferPunkteClubPage implements OnInit {
     console.log(value);
     return `${value} Punkte`;
   }
+
   }*/
 
 
@@ -527,6 +529,7 @@ export class HelferPunkteClubPage implements OnInit {
   }
 
 
+  
   async close() {
     return await this.modalCtrl.dismiss(null, "close");
   }

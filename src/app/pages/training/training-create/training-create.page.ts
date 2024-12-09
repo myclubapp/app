@@ -138,12 +138,12 @@ export class TrainingCreatePage implements OnInit {
     console.log(`Start Date after calculation: ${this.training.startDate}`);
 
     console.log(`End Date before calculation: ${this.training.endDate}`);
-    const calcualtedEndDate = new Date(this.training.endDate);
-    calcualtedEndDate.setHours(new Date(this.training.timeFrom).getHours());
-    calcualtedEndDate.setMinutes(new Date(this.training.timeFrom).getMinutes());
-    calcualtedEndDate.setSeconds(0);
-    calcualtedEndDate.setMilliseconds(0);
-    this.training.endDate = calcualtedEndDate.toISOString();
+    const calculatedEndDate = new Date(this.training.endDate);
+    calculatedEndDate.setHours(new Date(this.training.timeFrom).getHours());
+    calculatedEndDate.setMinutes(new Date(this.training.timeFrom).getMinutes());
+    calculatedEndDate.setSeconds(0);
+    calculatedEndDate.setMilliseconds(0);
+    this.training.endDate = calculatedEndDate.toISOString();
     console.log(`End Date after calculation: ${this.training.endDate}`);
 
     const calculatedTimeFrom = new Date(this.training.timeFrom);

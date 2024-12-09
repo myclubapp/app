@@ -85,7 +85,11 @@
         "new__helper_event": "Neuer Helferevent"
     },
     "helfer-detail": {
-        "helfer_innen_for": "Helfer:innen für "
+        "helfer_innen_for": "Helfer:innen für ",
+        "add_members": "Mitglieder hinzufügen",
+        "add_members_title": "Mitglieder zur Schicht hinzufügen",
+        "add_members_message": "Wähle die Mitglieder aus, die du zur Schicht hinzufügen möchtest:",
+        "no_members_available": "Keine weiteren Mitglieder verfügbar"
     },
     "info": {
         "information": "Informationen",

@@ -91,6 +91,7 @@
             </ng-container>
           </ion-list-header>
           <ng-container *ngFor="let schicht of schichten">
+            <ion-item-sliding #item>
             <ion-item>
               <ng-container *ngIf="!schicht.confirmed && isFuture">
                 <ion-icon *ngIf="schicht.status === null" slot="icon-only" color="warning" slot="start"
@@ -117,7 +118,14 @@
               <ion-badge>{{schicht.attendeeListTrue.length}} /
                 {{schicht.countNeeded}}
               </ion-badge>
+              
             </ion-item>
+            <ion-item-options side="end" *ngIf="clubAdminList$ | async as clubAdminList">
+              <ion-item-option color="primary" (click)="addMembersToSchicht(item, schicht)">
+                <ion-icon slot="icon-only" name="person-add"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
             <ion-accordion-group expand="inset" *ngIf="schicht['attendeeListTrue'].length > 0">
               <ion-accordion value="yes">
                 <ion-item slot="header" color="light">
@@ -155,6 +163,7 @@
                         </ion-item-options>
                       </ng-container>
                     </ion-item-sliding>
+                
                   </ion-list>
 
                 </div>

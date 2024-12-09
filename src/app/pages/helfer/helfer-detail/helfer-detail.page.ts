@@ -794,6 +794,91 @@ export class HelferDetailPage implements OnInit {
 
     await alert.present();
   }
+
+  async addMembersToSchicht(slidingItem: IonItemSliding, schicht: any) {
+    slidingItem.closeOpened();
+    // Hole alle Clubmitglieder
+    const clubMembers = await firstValueFrom(
+      this.fbService.getClubMemberRefs(this.event.clubId).pipe(
+        switchMap(members => {
+          const memberProfiles$ = members.map(member =>
+            this.userProfileService.getUserProfileById(member.id).pipe(
+              take(1),
+              catchError(err => {
+                console.error(`Failed to fetch profile for member ${member.id}:`, err);
+                return of(null);
+              })
+            )
+          );
+          return forkJoin(memberProfiles$);
+        })
+      )
+    );
+  
+    // Filtere Mitglieder, die bereits in der Schicht sind
+    const existingMemberIds = schicht.attendeeListTrue.map(m => m.id);
+    const availableMembers = clubMembers
+      .filter(member => member && !existingMemberIds.includes(member.id))
+      .sort((a, b) => a.firstName.localeCompare(b.firstName));
+  
+    if (availableMembers.length === 0) {
+      const toast = await this.toastController.create({
+        message: await lastValueFrom(this.translate.get("helfer-detail.no_members_available")),
+        duration: 1500,
+        position: "top",
+        color: "warning"
+      });
+      toast.present();
+      return;
+    }
+  
+    // Erstelle Alert mit Checkboxen für verfügbare Mitglieder
+    const alert = await this.alertCtrl.create({
+      header: await lastValueFrom(this.translate.get("helfer-detail.add_members_title")),
+      message: await lastValueFrom(this.translate.get("helfer-detail.add_members_message")),
+      inputs: availableMembers.map(member => ({
+        type: 'checkbox',
+        label: `${member.firstName} ${member.lastName}`,
+        value: member.id,
+        checked: false
+      })),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: 'cancel'
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.confirm")),
+          handler: async (selectedMemberIds) => {
+            if (selectedMemberIds.length === 0) return;
+            
+            try {
+              // Füge ausgewählte Mitglieder zur Schicht hinzu
+              const promises = selectedMemberIds.map(memberId =>
+                this.eventService.setClubHelferEventSchichtAttendeeStatusAdmin(
+                  true,
+                  this.event.clubId,
+                  this.event.id,
+                  schicht.id,
+                  memberId
+                )
+              );
+              
+              await Promise.all(promises);
+              this.presentToast();
+            } catch (error) {
+              console.error('Error adding members to schicht:', error);
+              this.toastActionError(error);
+            }
+          }
+        }
+      ]
+    });
+  
+    await alert.present();
+  }
+
+
   changeTimeFrom(ev) {
     console.log(ev.detail.value);
     if (this.event.timeFrom > this.event.timeTo) {

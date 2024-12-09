@@ -3,6 +3,7 @@ import { MenuController } from "@ionic/angular";
 import { Observable } from "rxjs";
 import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
+import { getAnalytics, logEvent } from "firebase/analytics";
 
 @Component({
   selector: "app-tabs",
@@ -28,5 +29,10 @@ export class TabsPage implements OnInit {
   }
   enableChampionship(clubList){
     return clubList && clubList.some(club => club.hasFeatureChampionship == true);
+  }
+  onTabsWillChange(event){
+    console.log(event);
+    const analytics = getAnalytics();
+    logEvent(analytics, 'tabs_will_change' + event.tab);
   }
 }
