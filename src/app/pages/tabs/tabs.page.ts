@@ -33,6 +33,6 @@ export class TabsPage implements OnInit {
   onTabsWillChange(event){
     console.log(event);
     const analytics = getAnalytics();
-    logEvent(analytics, 'tabs_will_change' + event.tab);
+    logEvent(analytics, 'tabs_will_change_' + event.tab);
   }
 }

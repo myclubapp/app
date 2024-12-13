@@ -233,18 +233,26 @@ export class TrainingsPage implements OnInit {
                         return of({}); // Return an empty array if permission error occurs
                       }),
                     ),
+                    this.fbService.getTeamMemberRefs(team.id), // Neue Zeile: Team-Mitglieder abrufen
                   ]).pipe(
-                    map(([attendees, exercises, teamDetails]) => {
+                    map(([attendees, exercises, teamDetails, teamMembers]) => {
                       // console.log("TEAM DETAILS for " + team.id + ":", teamDetails);  // Detailed log
                       const userAttendee = attendees.find((att) => att.id == this.user.uid);
                       const status = userAttendee ? userAttendee.status : null;
+                      // Nur Teilnehmer zählen, die auch Teammitglieder sind und status == true haben
+                      const validAttendees = attendees.filter((att) =>
+                        att.status === true &&
+                        teamMembers.some(member => member.id === att.id)
+                      );
+
                       return {
                         ...training,
                         attendees,
                         exercises,
                         team: teamDetails || {}, // Use empty object as a fallback
                         status,
-                        countAttendees: attendees.filter((att) => att.status == true).length,
+                        countAttendees: validAttendees.length, // Aktualisierte Zählung
+                        // countAttendees: attendees.filter((att) => att.status == true).length,
                         teamId: team.id,
                       };
                     }),

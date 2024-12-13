@@ -126,8 +126,8 @@
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
           <ion-datetime presentation="time" id="timeFrom" (ionChange)="changeTimeFrom($event)"
-            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" value="{{training.timeFrom}}"
-            [(ngModel)]="training.timeFrom"></ion-datetime>
+            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" [value]="training.timeFrom">
+          </ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>

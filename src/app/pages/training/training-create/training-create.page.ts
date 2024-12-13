@@ -45,6 +45,18 @@ export class TrainingCreatePage implements OnInit {
     private fbService: FirebaseService,
     public navParams: NavParams
   ) {
+
+    const now = new Date();
+    const utcNow = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        now.getUTCHours(),
+        now.getUTCMinutes(),
+        0,
+        0
+    ));
+
     this.training = {
       id: "",
       name: "",
@@ -57,11 +69,10 @@ export class TrainingCreatePage implements OnInit {
 
       date: Timestamp.fromDate(new Date()),
 
-      timeFrom: new Date().toISOString(),
-      timeTo: new Date().toISOString(),
-
-      startDate: new Date().toISOString(),
-      endDate: new Date().toISOString(),
+      timeFrom: utcNow.toISOString(),
+      timeTo: utcNow.toISOString(),
+      startDate: utcNow.toISOString(),
+      endDate: utcNow.toISOString(),
 
       repeatFrequency: "W",
       repeatAmount: "1",
@@ -79,6 +90,7 @@ export class TrainingCreatePage implements OnInit {
 
   ngOnInit() {
     this.trainingCopy = this.navParams.get("data");
+    console.log(this.trainingCopy);
     if (this.trainingCopy.id) {
       this.training = this.trainingCopy;
 
@@ -107,14 +119,53 @@ export class TrainingCreatePage implements OnInit {
   ngOnDestroy(): void { }
 
   changeTimeFrom(ev) {
-    console.log(ev.detail.value);
-    if (this.training.timeFrom > this.training.timeTo) {
-      this.training.timeTo = this.training.timeFrom;
+    console.log("changeTimeFrom local time: " + ev.detail.value);
+    const newDate = new Date(ev.detail.value);
+
+    // Check if the hours match UTC time (meaning it's already converted)
+    const currentUTCDate = new Date(this.training.timeFrom);
+    if (newDate.getHours() === currentUTCDate.getUTCHours()) {
+        // Just use the new value directly as it's already in correct format
+        this.training.timeFrom = ev.detail.value;
+    } else {
+        // Need to convert local time to UTC
+        const timezoneOffset = newDate.getTimezoneOffset();
+        
+        this.training.timeFrom = new Date(Date.UTC(
+            newDate.getFullYear(),
+            newDate.getMonth(),
+            newDate.getDate(),
+            newDate.getHours(),
+            newDate.getMinutes() + timezoneOffset,
+            0,
+            0
+        )).toISOString();
     }
-  }
+
+    console.log("to UTC:", this.training.timeFrom);
+
+    if (this.training.timeFrom > this.training.timeTo) {
+        this.training.timeTo = this.training.timeFrom;
+    }
+}
+  // In your component:
+/*getLocalTimeFrom(): string {
+  if (!this.training.timeFrom) return '';
+  
+  // Convert UTC to local time for display
+  const date = new Date(this.training.timeFrom);
+  return new Date(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+      date.getUTCHours(),
+      date.getUTCMinutes()
+  ).toISOString();
+}*/
+
 
   changeStartDate(ev) {
-    console.log(ev.detail.value);
+    console.log("changeStartDate " + ev.detail.value);
     if (this.training.startDate > this.training.endDate) {
       this.training.endDate = this.training.startDate;
     }
@@ -125,27 +176,62 @@ export class TrainingCreatePage implements OnInit {
   }
 
   async createTraining() {
-    //Set Hours/Minutes of endDate to TimeFrom of training
-    console.log(`Start Date before calculation: ${this.training.startDate}`);
-    const calculatedStartDate = new Date(this.training.startDate);
-    calculatedStartDate.setHours(new Date(this.training.timeFrom).getHours());
-    calculatedStartDate.setMinutes(
-      new Date(this.training.timeFrom).getMinutes()
-    );
-    calculatedStartDate.setSeconds(0);
-    calculatedStartDate.setMilliseconds(0);
-    this.training.startDate = calculatedStartDate.toISOString();
-    console.log(`Start Date after calculation: ${this.training.startDate}`);
 
+    // Set Start Date with Time of TimeFrom
+    console.log(`Start Date before calculation: ${this.training.startDate}`);
+
+    // Helper function to ensure UTC date
+    const ensureUTC = (dateString: string): Date => {
+      if (dateString.endsWith('Z')) {
+        return new Date(dateString);
+      } else {
+        // For local time, create UTC date by adding 'Z'
+        return new Date(dateString + 'Z');
+      }
+    };
+
+    // Convert both dates to UTC
+    const startDate = ensureUTC(this.training.startDate);
+    const timeFrom = ensureUTC(this.training.timeFrom);
+
+    // Create new UTC date with combined date and time
+    const calculatedStartDate = new Date(Date.UTC(
+      startDate.getUTCFullYear(),
+      startDate.getUTCMonth(),
+      startDate.getUTCDate(),
+      timeFrom.getUTCHours(),
+      timeFrom.getUTCMinutes(),
+      0,
+      0
+    ));
+
+    // Store results in ISO format (which includes the 'Z' suffix)
+    /*this.training.startDate = calculatedStartDate.toISOString();
+    this.training.timeFrom = calculatedStartDate.toISOString();
+    
+    
+        const calculatedStartDate = new Date(this.training.startDate);
+        calculatedStartDate.setHours(new Date(this.training.timeFrom).getHours());
+        calculatedStartDate.setMinutes(new Date(this.training.timeFrom).getMinutes());
+        calculatedStartDate.setSeconds(0);
+        calculatedStartDate.setMilliseconds(0);
+        this.training.startDate = calculatedStartDate.toISOString();
+        this.training.timeFrom = calculatedStartDate.toISOString();
+        console.log(`Start Date after calculation: ${this.training.startDate}`);
+        */
+
+    // Set EndDate Date with Time of TimeTo
     console.log(`End Date before calculation: ${this.training.endDate}`);
     const calculatedEndDate = new Date(this.training.endDate);
-    calculatedEndDate.setHours(new Date(this.training.timeFrom).getHours());
-    calculatedEndDate.setMinutes(new Date(this.training.timeFrom).getMinutes());
+    calculatedEndDate.setHours(new Date(this.training.timeTo).getHours());
+    calculatedEndDate.setMinutes(new Date(this.training.timeTo).getMinutes());
     calculatedEndDate.setSeconds(0);
     calculatedEndDate.setMilliseconds(0);
     this.training.endDate = calculatedEndDate.toISOString();
+    this.training.timeTo = calculatedEndDate.toISOString();
     console.log(`End Date after calculation: ${this.training.endDate}`);
 
+    /*
     const calculatedTimeFrom = new Date(this.training.timeFrom);
     calculatedTimeFrom.setDate(new Date(this.training.startDate).getDate());
     calculatedTimeFrom.setMonth(new Date(this.training.startDate).getMonth());
@@ -165,6 +251,7 @@ export class TrainingCreatePage implements OnInit {
     calculatedTimeTo.setSeconds(0);
     calculatedTimeTo.setMilliseconds(0);
     this.training.timeTo = calculatedTimeTo.toISOString();
+    */
 
     delete this.training.attendees;
 
