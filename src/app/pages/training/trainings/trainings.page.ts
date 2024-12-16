@@ -270,7 +270,7 @@ export class TrainingsPage implements OnInit {
             });
           }),
           map((allTrainings) => 
-            allTrainings.sort((b, a) => 
+            allTrainings.sort((a, b) => 
               Timestamp.fromMillis(a.startDate).seconds - Timestamp.fromMillis(b.startDate).seconds
             )
           )

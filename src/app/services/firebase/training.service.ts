@@ -36,7 +36,7 @@ import { Training } from "src/app/models/training";
 import { User } from "firebase/auth";
 import { FirebaseService } from "../firebase.service";
 import { Team } from "src/app/models/team";
-import { deleteDoc } from "firebase/firestore";
+import { deleteDoc, orderBy } from "firebase/firestore";
 
 @Injectable({
   providedIn: "root",
@@ -84,6 +84,7 @@ export class TrainingService {
         ">=",
         Timestamp.fromDate(new Date(Date.now() - 1000 * 3600  * 1)) // 1 Hour after training ends
       )
+      ,orderBy("date", "asc"),
     );
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       Training[]
@@ -104,6 +105,7 @@ export class TrainingService {
         "<",
         Timestamp.fromDate(new Date(Date.now())) // sofort als "vergangen" anzeigen
       ),
+      orderBy("date", "desc"),
       limit(20) 
     ); 
     return collectionData(q, { idField: "id" }) as unknown as Observable<
