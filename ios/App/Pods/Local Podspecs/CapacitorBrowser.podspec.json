@@ -1,13 +1,13 @@
 {
   "name": "CapacitorBrowser",
-  "version": "6.0.2",
+  "version": "6.0.4",
   "summary": "The Browser API provides the ability to open an in-app browser and subscribe to browser events.",
   "license": "MIT",
   "homepage": "https://capacitorjs.com",
   "authors": "Ionic <hi@ionicframework.com>",
   "source": {
     "git": "https://github.com/ionic-team/capacitor-plugins.git",
-    "tag": "@capacitor/browser@6.0.2"
+    "tag": "@capacitor/browser@6.0.4"
   },
   "source_files": [
     "ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}",

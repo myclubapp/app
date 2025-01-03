@@ -96,6 +96,20 @@ export class EventService {
     return await setDoc(statusRef, { status });
   }
 
+  async setClubEventAttendeeStatusAdmin(
+    status: boolean,
+    clubId: string,
+    eventId: string,
+    memberId: string,
+  ) {
+    const statusRef = doc(
+      this.firestore,
+      `club/${clubId}/events/${eventId}/attendees/${memberId}`
+    );
+    return await setDoc(statusRef, { status });
+  }
+
+
   async setCreateClubEvent(event: Veranstaltung) {
     const user = this.authService.auth.currentUser;
     // console.log("event");

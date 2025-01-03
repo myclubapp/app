@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
-import { AlertController, ModalController, NavParams, ToastController } from "@ionic/angular";
+import { AlertController, IonItemSliding, ModalController, NavParams, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
@@ -217,6 +217,16 @@ export class EventDetailPage implements OnInit {
     });
   }
 
+  async toggleItem(item: IonItemSliding, status: boolean, event: any, memberId: string) {
+    await item.close();
+    await this.eventService.setClubEventAttendeeStatusAdmin(
+      status,
+      event.clubId,
+      event.id,
+      memberId
+    );
+    this.presentToast();
+  }
 
   async toggle(status: boolean, event: Veranstaltung | any) {
     console.log(
