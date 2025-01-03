@@ -26,14 +26,14 @@ export class NotificationService {
 
   getNotifications(user: User): Observable<any[]> {
     const notificationsRef = collection(this.firestore, `userProfile/${user.uid}/notification`);
-    const queryRef = query(notificationsRef, where("opened", "==", false)); 
+    const queryRef = query(notificationsRef, where("opened", "==", false), orderBy("date", "desc")); 
     
     return collectionData(queryRef, { idField: "id" }) as Observable<any[]>;
   }
 
   getReadNotifications(user: User): Observable<any[]> {
     const notificationsRef = collection(this.firestore, `userProfile/${user.uid}/notification`);
-    const queryRef = query(notificationsRef, where("opened", "==", true), limit(10)); 
+    const queryRef = query(notificationsRef, where("opened", "==", true), limit(10), orderBy("date", "desc")); 
 
     return collectionData(queryRef, { idField: "id" }) as Observable<any[]>;
   }
