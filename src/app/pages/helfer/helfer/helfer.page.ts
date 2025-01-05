@@ -195,7 +195,7 @@ export class HelferPage implements OnInit {
           map((clubsEvents) => clubsEvents.flat()), // Flatten to get all events across all clubs
           map((allEvents) =>
             allEvents.sort(
-              (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime() // Sort events by date
+              (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime() // Sort events by date
             )
           )
         );
@@ -267,13 +267,10 @@ export class HelferPage implements OnInit {
           )
         ).pipe(
           map((clubsevents) => clubsevents.flat()), // Flatten to get all events across all clubs
-          map(
-            (allevents) =>
-              allevents.sort(
-                (a, b) =>
-                  Timestamp.fromMillis(a.dateTime).seconds -
-                  Timestamp.fromMillis(b.dateTime).seconds
-              ) // Sort events by date
+          map((allEvents) =>
+            allEvents.sort((a, b) =>
+              Timestamp.fromMillis(a.date).seconds - Timestamp.fromMillis(b.date).seconds
+            ) // Sort events by date
           )
         );
       }),
@@ -295,68 +292,80 @@ export class HelferPage implements OnInit {
         if (!user) return of([]);
         return this.fbService.getUserClubRefs(user);
       }),
-      tap((clubs) => console.log("Teams:", clubs)),
+      // tap((clubs) => console.log("Teams:", clubs)),
       mergeMap((clubs) => {
         if (clubs.length === 0) return of([]);
         return combineLatest(
           clubs.map((club) =>
             this.eventService.getClubHelferEventPastRefs(club.id).pipe(
-              switchMap((clubevents) => {
-                if (clubevents.length === 0) return of([]);
+              switchMap((events) => {
+                if (events.length === 0) return of([]);
                 return combineLatest(
-                  clubevents.map((game) =>
-                    this.eventService
-                      .getClubHelferEventAttendeesRef(club.id, game.id)
-                      .pipe(
-                        map((attendees) => {
-                          const userAttendee = attendees.find(
-                            (att) => att.id == this.user.uid
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null; // default to false if user is not found in attendees list
-                          return {
-                            ...game,
-                            attendees,
-                            status: status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true
-                            ).length,
-                            clubId: club.id,
-                          };
-                        }),
-                        catchError(() =>
-                          of({
-                            ...game,
-                            attendees: [],
-                            status: null,
-                            countAttendees: 0,
-                            clubId: club.id,
-                          })
-                        ) // If error, return game with empty attendees
-                      )
+                  events.map((event) =>
+                    this.eventService.getClubHelferEventSchichtenRef(club.id, event.id).pipe(
+                      switchMap((schichten) => {
+                        if (schichten.length === 0) return of([]);
+                        return combineLatest(
+                          schichten.map((schicht) =>
+                            this.eventService.getClubHelferEventSchichtAttendeesRef(club.id, event.id, schicht.id).pipe(
+                              map((attendees) => {
+                                /*const attendeeDetails = attendees.map(attendee => {
+                                    return {
+                                        ...attendee,
+                                        status: attendee.status,
+                                        confirmed: attendee.confirmed
+                                    };
+                                });
+                                */
+                                return {
+                                  ...schicht,
+                                  // attendees: attendeeDetails,
+                                  countAttendees: attendees.filter((att) => att.status === true).length,
+                                  countNeeded: schicht.countNeeded,
+                                };
+                              }),
+                              catchError(() => of({
+                                ...schicht,
+                                // attendees: [],
+                                countAttendees: 0,
+                                countNeeded: schicht.neededAttendees
+                              }))
+                            )
+                          )
+                        );
+                      }),
+                      map((schichtenWithDetails) => ({
+                        ...event,
+                        schichten: schichtenWithDetails,
+                        countAttendees: schichtenWithDetails.reduce((acc, schicht) => acc + Number(schicht.countAttendees), 0),
+                        countNeeded: schichtenWithDetails.reduce((acc, schicht) => acc + Number(schicht.countNeeded), 0),
+                      })),
+                      catchError(() => of({
+                        ...event,
+                        schichten: [],
+                        countAttendees: 0,
+                        countNeeded: 0
+                      }))
+                    )
                   )
                 );
               }),
-              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each club
+              map((eventsWithSchichten) => eventsWithSchichten), // Flatten events array for each club
               catchError(() => of([])) // If error in fetching events, return empty array
             )
           )
         ).pipe(
-          map((clubsevents) => clubsevents.flat()), // Flatten to get all events across all clubs
-          map(
-            (allevents) =>
-              allevents.sort(
-                (a, b) =>
-                  Timestamp.fromMillis(a.dateTime).seconds -
-                  Timestamp.fromMillis(b.dateTime).seconds
-              ) // Sort events by date
+          map((clubsEvents) => clubsEvents.flat()), // Flatten to get all events across all clubs
+          map((allEvents) =>
+            allEvents.sort((a, b) =>
+              Timestamp.fromMillis(b.date).seconds - Timestamp.fromMillis(a.date).seconds
+            ) // Sort events by date
           )
         );
       }),
       // tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
-        console.error("Error in getTeameventsUpcoming:", err);
+        console.error("Error in getHelferEvent:", err);
         return of([]); // Return an empty array on error
       })
     );

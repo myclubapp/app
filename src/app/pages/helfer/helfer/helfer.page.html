@@ -82,7 +82,12 @@
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
           </ion-label>
-            <ion-badge *ngIf="event.schichten.length>0" slot="end" color="primary">{{event.countAttendees}} / {{event.countNeeded}}</ion-badge>
+          <ng-container *ngIf="event.schichten.length>0" >
+            <ion-badge *ngIf="event.countAttendees >= event.countNeeded" slot="end" color="primary">{{event.countAttendees}} / {{event.countNeeded}}</ion-badge>  
+            <ion-badge *ngIf="event.countAttendees < event.countNeeded && event.countAttendees !== 0" slot="end" color="warning">{{event.countAttendees}} / {{event.countNeeded}}</ion-badge>  
+            <ion-badge *ngIf="event.countAttendees < event.countNeeded && event.countAttendees === 0" slot="end" color="danger">{{event.countAttendees}} / {{event.countNeeded}}</ion-badge>  
+          </ng-container>
+          
         </ion-item>
 
         <!--<ion-item-options side="start">
@@ -185,7 +190,7 @@
             </h3>
           </ion-label>
           <ion-note slot="end">
-            <ion-badge color="primary">{{event.countAttendees}}</ion-badge>
+            <ion-badge color="primary">{{event.countAttendees}} / {{event.countNeeded}}</ion-badge>
           </ion-note>
         </ion-item>
         <ng-container *ngIf="clubAdminList$ | async as clubAdminList">

@@ -1,4 +1,4 @@
-<ng-container *ngIf="training$ | async as training">
+<ng-container *ngIf="training$ | async as training; else loading">
   <ion-header [translucent]="true">
     <ion-toolbar>
       <ion-title>{{"common.details" | translate}}</ion-title>
@@ -81,7 +81,7 @@
         {{"common.attendances__absences" | translate}}
       </ion-list-header>
       <ion-item class="myclubStatus">
-        <ng-container *ngIf="training.hasOwnProperty('status'); else loading">
+        <ng-container *ngIf="training.hasOwnProperty('status'); else loadingStatus">
           <ion-fab-button (click)="toggle(true, training)" size="small" color="warning" slot="start"
             *ngIf="training.status === null">
             <ion-icon name="help-circle"> </ion-icon>
@@ -222,7 +222,162 @@
   </ion-content>
 </ng-container>
 
-<ng-template #loading>
+<ng-template #loadingStatus>
   <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>
   <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+</ng-template>
+
+<!-- Training Details Skeleton -->
+<ng-template #loading>
+  <ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-title>
+        <ion-skeleton-text animated style="width: 100px"></ion-skeleton-text>
+      </ion-title>
+      <ion-buttons slot="primary">
+        <ion-skeleton-text animated style="width: 80px; height: 20px; margin: 0 10px;"></ion-skeleton-text>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">
+          <ion-skeleton-text animated style="width: 150px"></ion-skeleton-text>
+        </ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- Training Details List -->
+    <ion-list [inset]="true">
+      <!-- Training Name -->
+      <ion-item>
+        <ion-icon slot="start" name="home-outline"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+
+      <!-- Date and Time -->
+      <ion-item>
+        <ion-icon slot="start" name="calendar-outline"></ion-icon>
+        <ion-label>
+          <ion-skeleton-text animated style="width: 85%"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+
+      <!-- Location -->
+      <ion-item>
+        <ion-icon slot="start" name="location-outline"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+
+      <!-- Team/League -->
+      <ion-item>
+        <ion-icon slot="start" name="trophy-outline"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+
+      <!-- Description -->
+      <ion-item>
+        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <!-- Exercises Section -->
+    <ion-list [inset]="true" lines="none">
+      <ion-item>
+        <ion-label>
+          <ion-skeleton-text animated style="width: 100px"></ion-skeleton-text>
+        </ion-label>
+        <ion-skeleton-text slot="end" animated style="width: 40px; margin-right: 16px"></ion-skeleton-text>
+      </ion-item>
+    </ion-list>
+
+    <!-- Attendance Section -->
+    <ion-list [inset]="true" lines="none">
+      <ion-list-header>
+        <ion-skeleton-text animated style="width: 140px"></ion-skeleton-text>
+      </ion-list-header>
+      
+      <!-- My Status -->
+      <ion-item>
+        <ion-skeleton-text animated slot="start" style="width: 40px; height: 40px; border-radius: 50%">
+        </ion-skeleton-text>
+        <ion-label>
+          <ion-skeleton-text animated style="width: 100px"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+
+      <!-- No Reply Count with Action -->
+      <ion-item>
+        <ion-icon slot="start" name="help-circle"></ion-icon>
+        <ion-label>
+          <ion-skeleton-text animated style="width: 120px"></ion-skeleton-text>
+        </ion-label>
+        <ion-skeleton-text slot="end" animated style="width: 80px"></ion-skeleton-text>
+      </ion-item>
+    </ion-list>
+
+    <!-- Attendance Lists -->
+    <ion-list [inset]="true">
+      <ion-accordion-group [multiple]="true" [value]="['yes']">
+        <!-- Present -->
+        <ion-accordion value="yes">
+          <ion-item slot="header" color="light">
+            <ion-label>
+              <ion-skeleton-text animated style="width: 150px"></ion-skeleton-text>
+            </ion-label>
+          </ion-item>
+          <div slot="content">
+            <ion-list>
+              <!-- Present Members -->
+              <ion-item>
+                <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+                <ion-label>
+                  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                </ion-label>
+                <ion-skeleton-text slot="end" style="width: 60px; margin: 0 8px"></ion-skeleton-text>
+                <ion-skeleton-text slot="end" style="width: 60px"></ion-skeleton-text>
+              </ion-item>
+              <ion-item>
+                <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+                <ion-label>
+                  <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+                </ion-label>
+                <ion-skeleton-text slot="end" style="width: 60px"></ion-skeleton-text>
+              </ion-item>
+            </ion-list>
+          </div>
+        </ion-accordion>
+
+        <!-- Absent -->
+        <ion-accordion value="no">
+          <ion-item slot="header" color="light">
+            <ion-label>
+              <ion-skeleton-text animated style="width: 130px"></ion-skeleton-text>
+            </ion-label>
+          </ion-item>
+        </ion-accordion>
+
+        <!-- No Reply -->
+        <ion-accordion value="null">
+          <ion-item slot="header" color="light">
+            <ion-label>
+              <ion-skeleton-text animated style="width: 140px"></ion-skeleton-text>
+            </ion-label>
+          </ion-item>
+        </ion-accordion>
+      </ion-accordion-group>
+    </ion-list>
+  </ion-content>
 </ng-template>

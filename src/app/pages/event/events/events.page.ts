@@ -214,7 +214,7 @@ export class EventsPage implements OnInit {
           map((clubsEvents) => clubsEvents.flat()), // Flatten to get all events across all clubs
           map((allEvents) =>
             allEvents.sort((a, b) =>
-              Timestamp.fromMillis(a.dateTime).seconds - Timestamp.fromMillis(b.dateTime).seconds
+              Timestamp.fromMillis(a.date).seconds - Timestamp.fromMillis(b.date).seconds
             ) // Sort events by date
           )
         );
@@ -286,13 +286,15 @@ export class EventsPage implements OnInit {
           )
         ).pipe(
           map((teamsevents) => teamsevents.flat()), // Flatten to get all events across all teams
-          map(
-            (allevents) =>
-              allevents.sort(
-                (a, b) =>
-                  Timestamp.fromMillis(a.dateTime).seconds -
-                  Timestamp.fromMillis(b.dateTime).seconds
-              ) // Sort events by date
+          map((allEvents) =>
+            allEvents.sort((a, b) => {
+              // console.log(a);
+              return Timestamp.fromMillis(b.date).seconds - Timestamp.fromMillis(a.date).seconds;
+            }
+              
+              // a.startDate.getTime() - b.dateTime.getTime()
+              // 
+            ) // Sort events by date
           )
         );
       }),
