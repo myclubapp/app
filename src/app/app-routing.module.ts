@@ -16,7 +16,7 @@ const routes: Routes = [
     loadChildren: () =>
       import("./pages/tabs/tabs.module").then((m) => m.TabsPageModule),
     canActivate: [AuthGuard],
-    data: { authGuardPipe: redirectToLogin },
+    data: { authGuardPipe: redirectToLogin},
   },
   {
     path: "login",
@@ -61,6 +61,7 @@ const routes: Routes = [
     path: "news",
     loadChildren: () =>
       import("./pages/news/news/news.module").then((m) => m.NewsPageModule),
+     
 
 
   },
@@ -75,6 +76,7 @@ const routes: Routes = [
     path: "profile",
     loadChildren: () =>
       import("./pages/profile/profile.module").then((m) => m.ProfilePageModule),
+    
   },
   {
     path: "trainings",

@@ -55,6 +55,7 @@ import { HelferPunkteClubPage } from "./pages/helfer/helfer-punkte-club/helfer-p
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 import { GamePreviewPage } from "./pages/championship/game-preview/game-preview.page";
 import { NotificationPage } from "./pages/news/notification/notification.page";
+import { enterAnimation } from "./animations/nav-animation";
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
@@ -113,10 +114,11 @@ export function appInitializerFactory(translateService: TranslateService, inject
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
-  
     BrowserModule,
     FontAwesomeModule,
-    IonicModule.forRoot(),
+    IonicModule.forRoot({
+      navAnimation: enterAnimation,
+    }),
     AppRoutingModule,
     FormsModule,
     ServiceWorkerModule.register("ngsw-worker.js", {

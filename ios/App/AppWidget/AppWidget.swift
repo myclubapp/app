@@ -4,7 +4,6 @@
 //
 //  Created by Sandro Scalco on 30.08.2024.
 //
-
 import WidgetKit
 import SwiftUI
 
@@ -12,18 +11,17 @@ struct Provider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(date: Date(), nextTraining: "placeholder Training", nextEvent: "placeholder Event", nextHelfer: "placeholder Helfer", nextGame: "placeholder Game", configuration: ConfigurationAppIntent())
     }
-    // USED FOR PREVIEW "ADD WIDGET TO HOMESCREEN"
+
     func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> SimpleEntry {
-        SimpleEntry(date: Date(), nextTraining: "Heute Abend 20:00 Uhr", nextEvent: "GV im Gemeindehaus", nextHelfer: "Heimspiel Herren 1", nextGame: "Am Sonntag: UHC Heim vs. UHC Gast",  configuration: configuration)
+        SimpleEntry(date: Date(), nextTraining: "Heute Abend 20:00 Uhr", nextEvent: "GV im Gemeindehaus", nextHelfer: "Heimspiel Herren 1", nextGame: "Am Sonntag: UHC Heim vs. UHC Gast", configuration: configuration)
     }
     
     func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<SimpleEntry> {
         var entries: [SimpleEntry] = []
-
         let sharedDefaults = UserDefaults.init(suiteName: "group.app.myclub.default")
 
         var _nextEvent: String? = nil
-        if(sharedDefaults != nil &&  configuration.showEvent == true) {
+        if(sharedDefaults != nil && configuration.showEvent == true) {
             _nextEvent = sharedDefaults?.string(forKey: "nextEvent")
         }
         
@@ -42,16 +40,8 @@ struct Provider: AppIntentTimelineProvider {
             _nextGame = sharedDefaults?.string(forKey: "nextGame")
         }
 
-        let entry = SimpleEntry(date: Date(), nextTraining: _nextTraining ?? "", nextEvent: _nextEvent ?? "", nextHelfer: _nextHelfer ?? "", nextGame: _nextGame  ?? "", configuration: configuration)
+        let entry = SimpleEntry(date: Date(), nextTraining: _nextTraining ?? "", nextEvent: _nextEvent ?? "", nextHelfer: _nextHelfer ?? "", nextGame: _nextGame ?? "", configuration: configuration)
         entries.append(entry)
-
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        /*let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, text: nil, configuration: configuration)
-            entries.append(entry)
-        }*/
 
         return Timeline(entries: entries, policy: .atEnd)
     }
@@ -59,7 +49,6 @@ struct Provider: AppIntentTimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
     var date: Date
-    
     let nextTraining: String?
     let nextEvent: String?
     let nextHelfer: String?
@@ -67,68 +56,114 @@ struct SimpleEntry: TimelineEntry {
     let configuration: ConfigurationAppIntent
 }
 
-struct AppWidgetEntryView : View {
+
+struct AppWidgetEntryView: View {
     var entry: Provider.Entry
+    @Environment(\.widgetFamily) var family
     
     var body: some View {
-        VStack(alignment: .leading) {
-            if entry.configuration.showTraining == true && entry.nextTraining != nil {
-                HStack(spacing: 5) {
-                    Image(systemName: "figure.walk")
-                        .foregroundColor(.blue)
-                        .frame(width: 20) // Set a fixed width
-                    VStack(alignment: .leading) {
-                        Text("Training:")
-                            .font(.subheadline)
-                        Text(entry.nextTraining ?? "")
-                            .font(.caption)
-                    }
+        switch family {
+        case .systemSmall:
+            SmallWidgetView(entry: entry)
+        default:
+            SmallWidgetView(entry: entry) // Use same design for all sizes for now
+        }
+    }
+}
+
+struct SmallWidgetView: View {
+    let entry: SimpleEntry
+    
+    var body: some View {
+        GeometryReader { geometry in
+            let size = geometry.size.width / 2
+            
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    // Training Quadrant
+                    QuadrantView(
+                        color: .blue,
+                        number: "2",
+                        text: entry.nextTraining,
+                        icon: "figure.walk",
+                        isVisible: entry.configuration.showTraining && entry.nextTraining != "",
+                        size: size
+                    )
+                    
+                    // Event Quadrant
+                    QuadrantView(
+                        color: .green,
+                        number: "5",
+                        text: "",
+                        icon: "calendar",
+                        isVisible: entry.configuration.showEvent && entry.nextEvent != "",
+                        size: size
+                    )
+                }
+                
+                HStack(spacing: 0) {
+                    // Helfer Quadrant
+                    QuadrantView(
+                        color: .orange,
+                        number: "1",
+                        text: "",
+                        icon: "lifepreserver",
+                        isVisible: entry.configuration.showHelfer && entry.nextHelfer != "",
+                        size: size
+                    )
+                    
+                    // Game Quadrant
+                    QuadrantView(
+                        color: .purple,
+                        number: "3",
+                        text: "",
+                        icon: "trophy",
+                        isVisible: entry.configuration.showGame && entry.nextGame != "",
+                        size: size
+                    )
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .ignoresSafeArea()
+        .background(.clear)
+    }
+}
+
+struct QuadrantView: View {
+    let color: Color
+    let number: String?
+    let text: String?
+    let icon: String
+    let isVisible: Bool
+    let size: CGFloat
+    
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .fill(color)
+                .frame(width: size, height: size)
             
-            if entry.configuration.showEvent == true && entry.nextEvent != nil {
-                HStack(spacing: 5) {
-                    Image(systemName: "calendar")
-                        .foregroundColor(.green)
-                        .frame(width: 20) // Same fixed width
-                    VStack(alignment: .leading) {
-                        Text("Event:")
-                            .font(.subheadline)
-                        Text(entry.nextEvent ?? "")
-                            .font(.caption)
-                    }
+            if isVisible {
+                VStack(spacing: 6) {
+                    Text(number ?? "")
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundColor(.white)
+                    Text(text ?? "")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
+                    Image(systemName: icon)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
                 }
-            }
-            
-            if entry.configuration.showHelfer == true && entry.nextHelfer != nil {
-                HStack(spacing: 5) {
-                    Image(systemName: "lifepreserver")
-                        .foregroundColor(.orange)
-                        .frame(width: 20) // Same fixed width
-                    VStack(alignment: .leading) {
-                        Text("Helfereinsatz:")
-                            .font(.subheadline)
-                        Text(entry.nextHelfer ?? "")
-                            .font(.caption)
-                    }
-                }
-            }
-            
-            if entry.configuration.showGame == true && entry.nextGame != nil {
-                HStack(spacing: 5) {
-                    Image(systemName: "trophy")
-                        .foregroundColor(.purple)
-                        .frame(width: 20) // Same fixed width
-                    VStack(alignment: .leading) {
-                        Text("Spiel:")
-                            .font(.subheadline)
-                        Text(entry.nextGame ?? "")
-                            .font(.caption)
-                    }
-                }
+            } else {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.5))
             }
         }
-        .padding([.top, .bottom, .trailing]) // Remove padding on the left side
     }
 }
 
@@ -138,7 +173,7 @@ struct AppWidget: Widget {
     var body: some WidgetConfiguration {
         AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: Provider()) { entry in
             AppWidgetEntryView(entry: entry)
-                .containerBackground(.fill.tertiary, for: .widget)
+                .containerBackground(.ultraThinMaterial, for: .widget)
         }
     }
 }
@@ -160,5 +195,12 @@ extension ConfigurationAppIntent {
 #Preview(as: .systemSmall) {
     AppWidget()
 } timeline: {
-    SimpleEntry(date: .now, nextTraining: "a", nextEvent: "b", nextHelfer: "c", nextGame: "d", configuration: .smiley)
+    SimpleEntry(
+        date: .now,
+        nextTraining: "Heute Abend 20:00 Uhr Training",
+        nextEvent: "Vereinsversammlung im Gemeindehaus",
+        nextHelfer: "Heimspiel: Kasse & Bar",
+        nextGame: "UHC Warriors vs UHC Dragons",
+        configuration: .smiley
+    )
 }

@@ -1,5 +1,5 @@
-import { Component, OnInit } from "@angular/core";
-import { MenuController } from "@ionic/angular";
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { MenuController, IonTabs } from "@ionic/angular";
 import { Observable } from "rxjs";
 import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -11,7 +11,10 @@ import { getAnalytics, logEvent } from "firebase/analytics";
   styleUrls: ["./tabs.page.scss"],
 })
 export class TabsPage implements OnInit {
+  @ViewChild('tabs', { static: true }) tabs!: IonTabs;
   clubList$: Observable<Club[]>;
+  previousTab: string;
+
   constructor(public menuCtrl: MenuController,
     private readonly fbService: FirebaseService,
   ) {
@@ -19,19 +22,20 @@ export class TabsPage implements OnInit {
   }
 
   ngOnInit() {
-    this.clubList$  = this.fbService.getClubList();
-    
+    this.clubList$ = this.fbService.getClubList();
+
     this.menuCtrl.enable(true, "menu");
+
   }
 
-  enableHelferEvents(clubList){
+  enableHelferEvents(clubList) {
     return clubList && clubList.some(club => club.hasFeatureHelferEvent == true);
   }
-  enableChampionship(clubList){
+  enableChampionship(clubList) {
     return clubList && clubList.some(club => club.hasFeatureChampionship == true);
   }
-  onTabsWillChange(event){
-    console.log(event);
+  async onTabsWillChange(event) {
+    console.log("event", event);
     const analytics = getAnalytics();
     logEvent(analytics, 'tabs_will_change_' + event.tab);
   }
