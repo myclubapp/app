@@ -2,7 +2,7 @@ import { NgModule, CUSTOM_ELEMENTS_SCHEMA, APP_INITIALIZER, Injector } from "@an
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy } from "@angular/router";
 
-import { IonicModule, IonicRouteStrategy } from "@ionic/angular";
+import { IonicModule, IonicRouteStrategy, isPlatform } from "@ionic/angular";
 import { FormsModule } from "@angular/forms";
 
 import { AppComponent } from "./app.component";
@@ -55,7 +55,7 @@ import { HelferPunkteClubPage } from "./pages/helfer/helfer-punkte-club/helfer-p
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 import { GamePreviewPage } from "./pages/championship/game-preview/game-preview.page";
 import { NotificationPage } from "./pages/news/notification/notification.page";
-import { enterAnimation } from "./animations/nav-animation";
+import { enterAnimation, slideInAnimation } from "./animations/nav-animation";
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
@@ -80,6 +80,15 @@ export function appInitializerFactory(translateService: TranslateService, inject
 
   });
 }
+const getConfig = () => {
+  let config = { animated: true, navAnimation: slideInAnimation, };
+  if (isPlatform('iphone')) {
+   // config["backButtonText"] = 'Previous';
+  }
+  return config;
+};
+
+
 
 @NgModule({
   declarations: [
@@ -116,9 +125,7 @@ export function appInitializerFactory(translateService: TranslateService, inject
   imports: [
     BrowserModule,
     FontAwesomeModule,
-    IonicModule.forRoot({
-      navAnimation: enterAnimation,
-    }),
+    IonicModule.forRoot(getConfig()),
     AppRoutingModule,
     FormsModule,
     ServiceWorkerModule.register("ngsw-worker.js", {
@@ -136,8 +143,8 @@ export function appInitializerFactory(translateService: TranslateService, inject
       isolate: false,
       missingTranslationHandler: [{ provide: MissingTranslationHandler, useClass: TranslateHandler }]
     }),
-    
-    
+
+
   ],
   providers: [
     provideFirebaseApp(() => {
@@ -164,13 +171,14 @@ export function appInitializerFactory(translateService: TranslateService, inject
     provideAnalytics(() => getAnalytics()),
     provideStorage(() => getStorage()),
     provideMessaging(() => getMessaging()),
-    
+
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, {
-    provide: APP_INITIALIZER,
-    useFactory: appInitializerFactory,
-    deps: [TranslateService, Injector],
-    multi: true
-  }, provideHttpClient(withInterceptorsFromDi())]
+      provide: APP_INITIALIZER,
+      useFactory: appInitializerFactory,
+      deps: [TranslateService, Injector],
+      multi: true
+    }, provideHttpClient(withInterceptorsFromDi())]
 })
 export class AppModule { }
+
 

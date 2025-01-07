@@ -1,10 +1,22 @@
-import { Animation, AnimationController } from "@ionic/angular";
+import { Animation,createAnimation, AnimationController } from "@ionic/angular";
+
+export const slideInAnimation = (baseEl: HTMLElement) => {
+    const animation = createAnimation()
+        .addElement(baseEl)
+        .duration(300)
+        .easing('ease-in-out')
+        .fromTo('transform', 'translateX(100%)', 'translateX(0%)')
+        .fromTo('opacity', 0, 1);
+
+    return animation;
+};
+
 
 export const enterAnimation = (baseEL: HTMLElement, opts?: any): Animation => {
   const DURATION = 1000; // Sichtbarer durch längere Dauer
   const animationCtrl = new AnimationController();
 
-  console.log("Animation options:", opts);
+  console.log(">> Animation options:", opts);
 
   const enteringAnimation = animationCtrl.create()
     .addElement(opts.enteringEl)
