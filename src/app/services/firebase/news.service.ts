@@ -9,6 +9,7 @@ import {
   orderBy,
   docData,
   doc,
+  limit,
 } from "@angular/fire/firestore";
 import { Observable, Observer } from "rxjs";
 import { News } from "src/app/models/news";
@@ -18,6 +19,7 @@ import { News } from "src/app/models/news";
 })
 export class NewsService {
   twentyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 20);
+  fourtyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 40);
   sixtyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 60);
 
   constructor(private firestore: Firestore = inject(Firestore)) {}
@@ -47,7 +49,8 @@ export class NewsService {
       newssRefList,
       orderBy("date", "desc"),
       where("type", "==", type),
-      where("date", ">=", this.twentyDaysAgo.toISOString())
+      where("date", ">=", this.fourtyDaysAgo.toISOString()),
+      limit(20)
     ); // heute - 20 Tage
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       News[]
@@ -60,7 +63,8 @@ export class NewsService {
     const q = query(
       newssRefList,
       orderBy("date", "desc"),
-      where("date", ">=", this.sixtyDaysAgo.toISOString())
+      where("date", ">=", this.sixtyDaysAgo.toISOString()),
+      limit(20)
     ); // heute - 20 Tage
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       News[]
@@ -73,7 +77,8 @@ export class NewsService {
     const q = query(
       newssRefList,
       orderBy("date", "desc"),
-      where("date", ">=", this.twentyDaysAgo.toISOString())
+      where("date", ">=", this.twentyDaysAgo.toISOString()),
+      limit(20)
     ); // heute - 20 Tage
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       News[]
@@ -86,7 +91,8 @@ export class NewsService {
     const q = query(
       newssRefList,
       orderBy("date", "desc"),
-      where("date", ">=", this.twentyDaysAgo.toISOString())
+      where("date", ">=", this.twentyDaysAgo.toISOString()),
+      limit(20)
     ); // heute - 20 Tage
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       News[]
