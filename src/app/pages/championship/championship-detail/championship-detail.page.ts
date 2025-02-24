@@ -38,9 +38,10 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { Team } from "src/app/models/team";
 
 @Component({
-  selector: "app-championship-detail",
-  templateUrl: "./championship-detail.page.html",
-  styleUrls: ["./championship-detail.page.scss"],
+    selector: "app-championship-detail",
+    templateUrl: "./championship-detail.page.html",
+    styleUrls: ["./championship-detail.page.scss"],
+    standalone: false
 })
 export class ChampionshipDetailPage implements OnInit {
   @Input("data") game: Game;

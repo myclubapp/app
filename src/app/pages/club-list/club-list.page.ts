@@ -1,21 +1,20 @@
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { Club } from "src/app/models/club";
-import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { Observable, Subscription, catchError, combineLatest, concat, concatAll, concatMap, defaultIfEmpty, finalize, forkJoin, from, map, merge, mergeMap, of, shareReplay, switchMap, take, tap, timeout, toArray } from "rxjs";
+import { Observable, Subscription, take, tap } from "rxjs";
 import { User } from "@angular/fire/auth";
 import { ClubPage } from "../club/club.page";
 import {
   IonRouterOutlet,
   ModalController,
 } from "@ionic/angular";
-import { TranslateService } from "@ngx-translate/core";
 import { Router } from "@angular/router";
 
 @Component({
-  selector: "app-club-list",
-  templateUrl: "./club-list.page.html",
-  styleUrls: ["./club-list.page.scss"],
+    selector: "app-club-list",
+    templateUrl: "./club-list.page.html",
+    styleUrls: ["./club-list.page.scss"],
+    standalone: false
 })
 export class ClubListPage implements OnInit {
   subscription: Subscription;

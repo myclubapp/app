@@ -65,7 +65,8 @@
         "delete_member__confirm": "Möchtest du das Mitglied wirklich aus dem Club entfernen?"
     },
     "event-add": {
-        "new__event": "Neue Veranstaltung"
+        "new__event": "Neue Veranstaltung",
+        "is__closed__event": "Anmeldung nicht möglich"
     },
     "event-detail": {},
     "events": {

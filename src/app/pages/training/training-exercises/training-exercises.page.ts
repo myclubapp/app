@@ -10,9 +10,10 @@ import { Team } from "src/app/models/team";
 import { FirebaseService } from "src/app/services/firebase.service";
 
 @Component({
-  selector: "app-training-exercises",
-  templateUrl: "./training-exercises.page.html",
-  styleUrls: ["./training-exercises.page.scss"],
+    selector: "app-training-exercises",
+    templateUrl: "./training-exercises.page.html",
+    styleUrls: ["./training-exercises.page.scss"],
+    standalone: false
 })
 export class TrainingExercisesPage implements OnInit {
   @Input("training") training: Training;

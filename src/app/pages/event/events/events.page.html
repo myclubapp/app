@@ -39,30 +39,14 @@
 
       <ion-item-sliding #item *ngFor="let event of eventsList">
         <ion-item type="button" detail="true">
-          <ion-icon
-            *ngIf="event.status === null"
-            slot="icon-only"
-            color="warning"
-            slot="start"
-            name="help-circle"
-            (click)="toggle(true, event)"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="event.status === false"
-            slot="icon-only"
-            color="danger"
-            slot="start"
-            name="close-circle"
-            (click)="toggle( true, event)"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="event.status === true"
-            slot="icon-only"
-            color="success"
-            slot="start"
-            name="checkmark-circle"
-            (click)="toggle(false, event)"
-          ></ion-icon>
+          <ng-container *ngIf="!event.closedEvent">
+            <ion-icon *ngIf="event.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
+              (click)="toggle(true, event)"></ion-icon>
+            <ion-icon *ngIf="event.status === false" slot="icon-only" color="danger" slot="start" name="close-circle"
+              (click)="toggle( true, event)"></ion-icon>
+            <ion-icon *ngIf="event.status === true" slot="icon-only" color="success" slot="start"
+              name="checkmark-circle" (click)="toggle(false, event)"></ion-icon>
+          </ng-container>
           <ion-label (click)="openEventDetailModal(event, true)">
             <h2>{{event.name}}</h2>
             <h3>
@@ -75,33 +59,27 @@
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
           </ion-label>
-          <ion-badge slot="end" (click)="openEventDetailModal(event, true)" color="primary">{{event.countAttendees}}</ion-badge>
+          <ion-badge slot="end" *ngIf="!event.closedEvent" (click)="openEventDetailModal(event, true)"
+            color="primary">{{event.countAttendees}}</ion-badge>
 
         </ion-item>
+        <ng-container *ngIf="!event.closedEvent">
 
-        <ion-item-options side="start">
-          <ion-item-option
-            color="success"
-            *ngIf="event.status === false || event.status === null"
-            (click)="toggleItem(item, true, event)"
-          >
-            <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-          </ion-item-option>
-          <ion-item-option
-            color="danger"
-            *ngIf="event.status === true || event.status === null"
-            (click)="toggleItem(item, false, event)"
-          >
-            <ion-icon slot="icon-only" name="close-circle"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
+          <ion-item-options side="start">
+            <ion-item-option color="success" *ngIf="event.status === false || event.status === null"
+              (click)="toggleItem(item, true, event)">
+              <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger" *ngIf="event.status === true || event.status === null"
+              (click)="toggleItem(item, false, event)">
+              <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ng-container>
 
         <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
           <ion-item-options side="end" *ngIf="isClubAdmin(clubAdminList, event.clubId)">
-            <ion-item-option
-              color="primary"
-              (click)="createHelferEvent(item, event)"
-            >
+            <ion-item-option color="primary" (click)="createHelferEvent(item, event)">
               <ion-icon slot="icon-only" name="help-buoy-outline"></ion-icon>
             </ion-item-option>
 
@@ -141,27 +119,12 @@
       </ion-item>
       <ion-item-sliding #item *ngFor="let event of eventsListPast">
         <ion-item type="button" detail="true">
-          <ion-icon
-            *ngIf="event.status === null"
-            slot="icon-only"
-            color="warning"
-            slot="start"
-            name="help-circle"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="event.status === false"
-            slot="icon-only"
-            color="danger"
-            slot="start"
-            name="close-circle"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="event.status === true"
-            slot="icon-only"
-            color="success"
-            slot="start"
-            name="checkmark-circle"
-          ></ion-icon>
+          <ion-icon *ngIf="event.status === null" slot="icon-only" color="warning" slot="start"
+            name="help-circle"></ion-icon>
+          <ion-icon *ngIf="event.status === false" slot="icon-only" color="danger" slot="start"
+            name="close-circle"></ion-icon>
+          <ion-icon *ngIf="event.status === true" slot="icon-only" color="success" slot="start"
+            name="checkmark-circle"></ion-icon>
           <ion-label (click)="openEventDetailModal(event, false)">
             <h2>{{event.name}}</h2>
             <h3>
@@ -174,18 +137,16 @@
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
           </ion-label>
-          <ion-badge slot="end" (click)="openEventDetailModal(event, false)" color="primary">{{event.countAttendees}}</ion-badge>
+          <ion-badge slot="end" (click)="openEventDetailModal(event, false)"
+            color="primary">{{event.countAttendees}}</ion-badge>
 
         </ion-item>
 
         <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-          
-          <ion-item-options side="end"  *ngIf="isClubAdmin(clubAdminList, event.clubId)">
 
-            <ion-item-option
-              color="primary"
-              (click)="createHelferEvent(item, event)"
-            >
+          <ion-item-options side="end" *ngIf="isClubAdmin(clubAdminList, event.clubId)">
+
+            <ion-item-option color="primary" (click)="createHelferEvent(item, event)">
               <ion-icon slot="icon-only" name="help-buoy-outline"></ion-icon>
             </ion-item-option>
 
@@ -211,12 +172,7 @@
   </ng-container>
 
   <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-    <ion-fab
-    *ngIf="clubAdminList.length > 0"
-      vertical="bottom"
-      horizontal="end"
-      slot="fixed"
-    >
+    <ion-fab *ngIf="clubAdminList.length > 0" vertical="bottom" horizontal="end" slot="fixed">
       <ion-fab-button (click)="openEventCreateModal()">
         <ion-icon name="add-outline"></ion-icon>
       </ion-fab-button>
@@ -228,50 +184,23 @@
   <ion-list *ngIf="loading">
     <ion-grid>
       <ion-row>
-        <ion-col
-          size-lg="4"
-          size-md="6"
-          size-sm="6"
-          size="12"
-          *ngFor="let item of skeleton"
-        >
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
           <ion-card>
             <ion-card-header>
               <ion-card-subtitle>
-                <ion-skeleton-text
-                  animated
-                  style="width: 60%"
-                ></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
               </ion-card-subtitle>
               <ion-card-title>
-                <ion-skeleton-text
-                  animated
-                  style="width: 80%"
-                ></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
               </ion-card-title>
             </ion-card-header>
 
             <ion-card-content>
-              <ion-skeleton-text
-                animated
-                style="width: 80%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 60%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 80%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 60%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 80%"
-              ></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
             </ion-card-content>
           </ion-card>
         </ion-col>

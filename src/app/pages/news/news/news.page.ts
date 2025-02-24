@@ -50,9 +50,10 @@ import { NotificationPage } from "../notification/notification.page";
 import { NotificationService } from "src/app/services/firebase/notification.service";
 
 @Component({
-  selector: "app-news",
-  templateUrl: "./news.page.html",
-  styleUrls: ["./news.page.scss"],
+    selector: "app-news",
+    templateUrl: "./news.page.html",
+    styleUrls: ["./news.page.scss"],
+    standalone: false
 })
 export class NewsPage implements OnInit {
   skeleton = new Array(12);

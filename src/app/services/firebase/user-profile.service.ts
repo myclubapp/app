@@ -3,7 +3,6 @@ import { Injectable, inject } from "@angular/core";
 import { User } from "@angular/fire/auth";
 import {
   Firestore,
-  addDoc,
   collection,
   collectionData,
   doc,

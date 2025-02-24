@@ -1,11 +1,10 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { AlertController, IonItemSliding, ModalController, NavParams, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
   Observable,
   catchError,
-  combineLatest,
   forkJoin,
   lastValueFrom,
   map,
@@ -25,9 +24,10 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { Club } from "src/app/models/club";
 
 @Component({
-  selector: "app-event-detail",
-  templateUrl: "./event-detail.page.html",
-  styleUrls: ["./event-detail.page.scss"],
+    selector: "app-event-detail",
+    templateUrl: "./event-detail.page.html",
+    styleUrls: ["./event-detail.page.scss"],
+    standalone: false
 })
 export class EventDetailPage implements OnInit {
   @Input("data") event: Veranstaltung;
@@ -208,7 +208,11 @@ export class EventDetailPage implements OnInit {
   }
   async updateEvent(event, field) {
     console.log(field, event.detail)
-    this.eventHasChanged[field] = event.detail.value;
+    if (field === 'closedEvent') {
+      this.eventHasChanged[field] = event.detail.checked;
+    } else {
+      this.eventHasChanged[field] = event.detail.value;
+    }
   }
 
   async openUrl(url: string) {

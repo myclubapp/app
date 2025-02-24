@@ -23,9 +23,10 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { MemberPage } from "../../member/member.page";
 
 @Component({
-  selector: "app-lineup",
-  templateUrl: "./lineup.page.html",
-  styleUrls: ["./lineup.page.scss"],
+    selector: "app-lineup",
+    templateUrl: "./lineup.page.html",
+    styleUrls: ["./lineup.page.scss"],
+    standalone: false
 })
 export class LineupPage implements OnInit {
   @Input("data") game: Game;

@@ -191,11 +191,19 @@
             </ng-template>
           </ion-modal>
         </ion-item>
+
+        <ion-item>
+          <ion-label position="default">
+            {{"event-add.is__closed__event" | translate}}
+          </ion-label>
+          <ion-toggle slot="end" (ionChange)="updateEvent($event, 'closedEvent')" [checked]="event.closedEvent"></ion-toggle>
+        </ion-item>
+
       </ion-list>
     </ng-container>
 
 
-    <ion-list [inset]="true" lines="none" *ngIf="isFuture && !allowEdit">
+    <ion-list [inset]="true" lines="none" *ngIf="isFuture && !allowEdit && !event.closedEvent">
       <ion-list-header>
         {{"common.attendances__absences" | translate}}
       </ion-list-header>
@@ -221,7 +229,7 @@
       </ion-item>
     </ion-list>
 
-    <ion-list [inset]="true" *ngIf="!allowEdit">
+    <ion-list [inset]="true" *ngIf="!allowEdit && !event.closedEvent">
       <!-- Ersetze die bestehenden Accordion-Inhalte mit dieser Version -->
       <ion-accordion-group [multiple]="true" [value]="['yes']">
         <ion-accordion value="yes">
@@ -235,13 +243,16 @@
                   <ion-icon color="success" slot="start" name="checkmark-circle"></ion-icon>
                   <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
                 </ion-item>
-                <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                  <ion-item-options *ngIf="isClubAdmin(clubAdminList, event.clubId)" side="end">
-                    <ion-item-option color="danger" (click)="toggleItem(item, false, event, member.id)">
-                      <ion-icon slot="icon-only" name="close-circle"></ion-icon>
-                    </ion-item-option>
-                  </ion-item-options>
-                </ng-container>
+
+
+                  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+                    <ion-item-options *ngIf="isClubAdmin(clubAdminList, event.clubId)" side="end">
+                      <ion-item-option color="danger" (click)="toggleItem(item, false, event, member.id)">
+                        <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                      </ion-item-option>
+                    </ion-item-options>
+                  </ng-container>
+
               </ion-item-sliding>
             </ion-list>
           </div>
@@ -258,13 +269,15 @@
                   <ion-icon color="danger" slot="start" name="close-circle"></ion-icon>
                   <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
                 </ion-item>
-                <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                  <ion-item-options *ngIf="isClubAdmin(clubAdminList, event.clubId)" side="end">
-                    <ion-item-option color="success" (click)="toggleItem(item, true, event, member.id)">
-                      <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-                    </ion-item-option>
-                  </ion-item-options>
-                </ng-container>
+                
+                  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+                    <ion-item-options *ngIf="isClubAdmin(clubAdminList, event.clubId)" side="end">
+                      <ion-item-option color="success" (click)="toggleItem(item, true, event, member.id)">
+                        <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                      </ion-item-option>
+                    </ion-item-options>
+                  </ng-container>
+                
               </ion-item-sliding>
             </ion-list>
           </div>
@@ -281,16 +294,18 @@
                   <ion-icon color="warning" slot="start" name="help-circle"></ion-icon>
                   <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
                 </ion-item>
-                <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                  <ion-item-options *ngIf="isClubAdmin(clubAdminList, event.clubId)" side="end">
-                    <ion-item-option color="success" (click)="toggleItem(item, true, event, member.id)">
-                      <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-                    </ion-item-option>
-                    <ion-item-option color="danger" (click)="toggleItem(item, false, event, member.id)">
-                      <ion-icon slot="icon-only" name="close-circle"></ion-icon>
-                    </ion-item-option>
-                  </ion-item-options>
-                </ng-container>
+                
+                  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+                    <ion-item-options *ngIf="isClubAdmin(clubAdminList, event.clubId)" side="end">
+                      <ion-item-option color="success" (click)="toggleItem(item, true, event, member.id)">
+                        <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                      </ion-item-option>
+                      <ion-item-option color="danger" (click)="toggleItem(item, false, event, member.id)">
+                        <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                      </ion-item-option>
+                    </ion-item-options>
+                  </ng-container>
+
               </ion-item-sliding>
             </ion-list>
           </div>

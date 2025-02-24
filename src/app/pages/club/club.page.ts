@@ -40,9 +40,10 @@ import { Club } from "src/app/models/club";
 import { ClubSubscriptionPage } from "../club-subscription/club-subscription.page";
 
 @Component({
-  selector: "app-club",
-  templateUrl: "./club.page.html",
-  styleUrls: ["./club.page.scss"],
+    selector: "app-club",
+    templateUrl: "./club.page.html",
+    styleUrls: ["./club.page.scss"],
+    standalone: false
 })
 export class ClubPage implements OnInit {
   @Input("data") club: any;

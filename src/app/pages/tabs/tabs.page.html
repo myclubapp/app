@@ -11,7 +11,7 @@
     </ion-tab-button>
 
     <ng-container *ngIf="clubList$ | async as clubList">
-      <ion-tab-button  *ngIf="enableChampionship(clubList)"  tab="championship">
+      <ion-tab-button *ngIf="enableChampionship(clubList)"  tab="championship">
         <ion-icon name="trophy-outline"></ion-icon>
         <ion-label>{{"common.championship"| translate}}</ion-label>
       </ion-tab-button>

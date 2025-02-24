@@ -7,15 +7,12 @@ import {
   doc,
   docData,
   deleteDoc,
-  updateDoc,
-  DocumentReference,
   setDoc,
   Timestamp,
 } from "@angular/fire/firestore";
 
 import {
   Observable,
-  Observer,
   catchError,
   combineLatest,
   map,
@@ -27,16 +24,12 @@ import {
 } from "rxjs";
 import {
   Club,
-  SwissHandballClub,
-  SwissUnihockeyClub,
-  SwissVolleyClub,
-  SwissTurnverbandClub,
 } from "../models/club";
 import { Team } from "../models/team";
-import { User, UserProfile } from "@angular/fire/auth";
+import { User } from "@angular/fire/auth";
 
 import { AuthService } from "src/app/services/auth.service";
-import { DocumentData, query, where } from "@angular/fire/firestore";
+import { query, where } from "@angular/fire/firestore";
 import { Profile } from "../models/user";
 
 @Injectable({

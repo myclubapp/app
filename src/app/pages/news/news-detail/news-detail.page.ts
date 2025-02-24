@@ -15,9 +15,10 @@ import { Observable, take, tap } from 'rxjs';
 import { NewsService } from 'src/app/services/firebase/news.service';
 
 @Component({
-  selector: 'app-news-detail',
-  templateUrl: './news-detail.page.html',
-  styleUrls: ['./news-detail.page.scss'],
+    selector: 'app-news-detail',
+    templateUrl: './news-detail.page.html',
+    styleUrls: ['./news-detail.page.scss'],
+    standalone: false
 })
 export class NewsDetailPage implements OnInit {
   @Input('data') news: News;

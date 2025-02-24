@@ -9,9 +9,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { Club } from 'src/app/models/club';
 
 @Component({
-  selector: 'app-club-team-list',
-  templateUrl: './club-team-list.page.html',
-  styleUrls: ['./club-team-list.page.scss'],
+    selector: 'app-club-team-list',
+    templateUrl: './club-team-list.page.html',
+    styleUrls: ['./club-team-list.page.scss'],
+    standalone: false
 })
 export class ClubTeamListPage implements OnInit {
   @Input("clubId") clubId: any;

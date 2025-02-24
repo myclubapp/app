@@ -10,7 +10,7 @@ import {
   updateDoc,
   doc,
 } from "@angular/fire/firestore";
-import { Observable, Observer } from "rxjs";
+import { Observable } from "rxjs";
 import { AuthService } from "../auth.service";
 import { limit } from "firebase/firestore";
 

@@ -16,26 +16,12 @@ import {
 // import firebase from 'firebase/compat/app';
 import {
   Observable,
-  Observer,
   Subscription,
-  catchError,
-  concatMap,
-  defaultIfEmpty,
-  finalize,
-  forkJoin,
-  from,
-  map,
-  of,
-  switchMap,
-  take,
-  tap,
 } from "rxjs";
 
 import { AuthService } from "src/app/services/auth.service";
 import { Training } from "src/app/models/training";
-import { User } from "firebase/auth";
 import { FirebaseService } from "../firebase.service";
-import { Team } from "src/app/models/team";
 import { deleteDoc, orderBy } from "firebase/firestore";
 
 @Injectable({

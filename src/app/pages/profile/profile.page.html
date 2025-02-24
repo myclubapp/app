@@ -27,7 +27,7 @@
         <ion-label></ion-label>
         <!--<ion-button slot="end" (click)="showPicture(userProfile.profilePicture)">
           <ion-icon slot="icon-only" name="expand"></ion-icon>
-        </ion-button>-->  
+        </ion-button>-->
         <ion-button slot="end" (click)="takePicture()">
           <ion-icon slot="icon-only" name="camera"></ion-icon>
         </ion-button>
@@ -101,8 +101,7 @@
 
       <ion-item id="present-alert-email" detail="true">
         <ion-input labelPlacement="stacked" [label]='"profile.email" | translate' type="email"
-          attr.aria-label='{{"profile.email" | translate}}' readonly 
-          [value]="userProfile.email">
+          attr.aria-label='{{"profile.email" | translate}}' readonly [value]="userProfile.email">
         </ion-input>
       </ion-item>
 
@@ -121,7 +120,7 @@
       <ion-item id="present-alert-address" detail="true">
         <ion-input labelPlacement="stacked" [label]='"profile.address" | translate'
           attr.aria-label='{{"profile.address" | translate}}'
-          value="{{userProfile.streetAndNumber}}, {{userProfile.postalcode}} {{userProfile.city}}">
+          value="{{userProfile.streetAndNumber}} {{userProfile.postalcode}} {{userProfile.city}}">
         </ion-input>
       </ion-item>
       <ion-alert trigger="present-alert-address" [header]='"profile.change_address_header" | translate'
@@ -130,7 +129,7 @@
 
     </ion-list>
 
-    <ion-list lines="full" [inset]="true">
+    <!--<ion-list lines="full" [inset]="true">
       <ion-list-header>
         <ion-label> {{ "profile.sport" | translate}} </ion-label>
       </ion-list-header>
@@ -142,18 +141,26 @@
           value="{{userProfile.licenseNumber}}">
         </ion-input>
       </ion-item>
-    </ion-list>
+    </ion-list>-->
 
-    <ion-list lines="full" [inset]="true">
-      <ion-list-header>
-        <ion-label> {{ "profile.diverses" | translate}} </ion-label>
-      </ion-list-header>
 
-      <ion-item detail="true" (click)="openHelferPunkte()">
-        <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
-        <ion-label> {{ "common.helper_points" | translate}} </ion-label>
-      </ion-item>
-    </ion-list>
+    <ng-container *ngIf="clubList$ | async as clubList">
+      <ng-container *ngIf="enableHelferEvents(clubList)">
+        <ion-list lines="full" [inset]="true">
+          <ion-list-header>
+            <ion-label> {{ "profile.diverses" | translate}} </ion-label>
+          </ion-list-header>
+
+
+          <ion-item detail="true" (click)="openHelferPunkte()">
+            <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
+            <ion-label> {{ "common.helper_points" | translate}} </ion-label>
+          </ion-item>
+
+        </ion-list>
+
+      </ng-container>
+    </ng-container>
 
     <!--
     <ion-list *ngIf="clubRequestList.length > 0" lines="full" [inset]="true">
@@ -232,11 +239,12 @@
             </ion-item>
 
             <!-- TODO ADD CHECK FOR CLUB-->
-            <ion-item  disabled="{{!userProfile.settingsPush}}">
+            <ion-item disabled="{{!userProfile.settingsPush}}">
               <ion-icon size="small" slot="start" name="newspaper"></ion-icon>
               <ion-toggle labelPlacement="start" attr.aria-label='{{"common.newsVerband" | translate}}'
-                value="{{userProfile?.settingsPushNewsVerband}}" slot="end" [checked]="userProfile.settingsPushNewsVerband"
-                [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'NewsVerband')"></ion-toggle>
+                value="{{userProfile?.settingsPushNewsVerband}}" slot="end"
+                [checked]="userProfile.settingsPushNewsVerband" [enableOnOffLabels]="true"
+                (ionChange)="togglePushModule($event, 'NewsVerband')"></ion-toggle>
               <ion-label> {{"common.newsVerband" | translate}} </ion-label>
             </ion-item>
 
@@ -356,7 +364,7 @@
       </ion-button>
     </div>
   </ng-container>
- 
+
 
   <!-- 
   <ng-container *ngIf="clubList$ | async as clubList; else loadingClub">

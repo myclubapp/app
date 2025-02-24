@@ -31,9 +31,10 @@ import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
 
 @Component({
-  selector: "app-training-detail",
-  templateUrl: "./training-detail.page.html",
-  styleUrls: ["./training-detail.page.scss"],
+    selector: "app-training-detail",
+    templateUrl: "./training-detail.page.html",
+    styleUrls: ["./training-detail.page.scss"],
+    standalone: false
 })
 export class TrainingDetailPage implements OnInit {
   @Input("data") training: Training;

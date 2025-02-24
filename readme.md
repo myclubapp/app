@@ -1,146 +1,166 @@
+# myclub app | the next generation 🏆
+
 [![Build + Prerender + Deploy](https://github.com/myclubapp/app/actions/workflows/main.yml/badge.svg)](https://github.com/myclubapp/app/actions/workflows/main.yml)
 
-# myclub app | the next generation
+## 📱 Übersicht
 
-myclub App is the way for floorball, handball & volleyball clubs in switzerland to manage their club. Based on real data from swissunihockey, swiss volley and swiss handball association, we generate real value for the users, so they can focus an what matters most, their success!
+myclub App ist die moderne Lösung für Unihockey-, Handball-, Volleyball-, Basketball-, Sport- und Turnvereine in der Schweiz. Basierend auf Echtzeit-Daten von swissunihockey, swiss volley und dem swiss handball Verband sowie weiteren Verbändengenerieren wir echten Mehrwert für unsere Nutzer, damit sie sich auf das Wichtigste konzentrieren können - ihren Erfolg!
 
-## Principles
+### 🎯 Prinzipien
 
-myclub App's architecture follows these principles:
+- Mobile First
+- Web-fokussiert (PWA als primäre Plattform)
+- Native Apps für iOS und Android in zweiter Phase
 
-- mobile first
-- always bet on the web
-  the latest version of the app is always available as PWA. In a second stage we also support iOS and Android Apps.
+## 🚀 Installation & Setup
 
-## Backend Data
+### Voraussetzungen
 
-We use a GraphQL API for Sports Data. Check this [repository](https://github.com/myclubapp/backend).
+- Node.js (v20 oder höher)
+- npm
+- Ionic CLI
+- Angular CLI
 
-# Developers (You?)
+### Schnellstart
 
-use [conventionalcommits](https://www.conventionalcommits.org/en/)
+```bash
+# Repository klonen
+git clone https://github.com/myclubapp/app.git
+cd app
 
-## Prettier Setup
+# Abhängigkeiten installieren
+npm install
 
-use [how to guide](https://typicode.github.io/husky/get-started.html)
-Install husky & Prettier
-`npm install — save-dev husky prettier pretty-quick`
-`npx husky init`
+# Entwicklungsserver starten
+ionic serve
+```
 
-modify file: .husky/pre_commit and set pre-commit hook in husky
-`npx pretty-quick --staged`
+## 💻 Entwicklung
 
-## Create App Icon & Splash Screen
+### Tech Stack
 
-- Generate your app icon and splash screens using cordova-res --skip-config --copy
-- Icon generator for manifest [Link](https://manifest-gen.netlify.app/)
-- Favicon generator [Link](https://www.hoststar.ch/de/tools/favicon-generator)
-- Install Asset generator: `npm install --global pwa-asset-generator` and run commands:
-  Light Mode: `pwa-asset-generator ./resources/icon.png -i ./src/index.html -m ./src/manifest.webmanifest --splash-only --dark-mode -p 0% `
-- Dark Mode: `pwa-asset-generator ./resources/icon_dark.png -i ./src/index.html -m ./src/manifest.webmanifest --splash-only -p 0% `
-
-## Native
-
-- Run ionic capacitor add to add a native iOS or Android project using Capacitor
-
-## Web
-
-- Run ionic serve within the app dpy
-
-## Installed packages
-
-- Ionicframework (v7)
-- Capacitor JS (v5)
-- Trapeze for native configuration
-- Angular v 17.2 & Angular PWA (`ng add @angular/pwa --project _project-name_`)
-- Angular Fire v 7.5 `ng add @angular/fire`
-- [Angular Localize](https://angular.io/guide/i18n-common-locale-id)
-  -- de-CH German (Switzerland)
-  -- fr-CH French (Switzerland)
-  -- it-CH Italian (Switzerland)
-  -- en-US English
-- Tailwind CSS (`npm install -D tailwindcss@latest postcss autoprefixer`)
+- Ionic Framework (v8)
+- Capacitor JS (v7)
+- Angular v19.1 & Angular PWA
+- Firebase 11.3
+- RXJS 7.8.1
+- Typescipt 5.7.3
+- Tailwind CSS
 - Fontawesome Icons
-- Ionicons v 5
-- Lottie Files
+- Ionicons v5
 
-# MY-CLUB-PREMIUM
+### Backend
 
-Run my-club within your own domain and use your own design(css)
+Wir verwenden eine GraphQL API für Sportdaten. Weitere Details finden Sie in diesem [Repository](https://github.com/myclubapp/backend).
 
-## Website
+### Entwicklungs-Tools Setup
 
-- my-club [Link](https://my-club.web.app) [Link](https://my-club.app)
+#### Commit Konventionen
 
-## Custom Apps:
+Wir verwenden [conventionalcommits](https://www.conventionalcommits.org/en/) für unsere Commit-Nachrichten.
 
-- General [Link](https://my-swissvolley.web.app)
-- Unihockey [Link](https://unihockey.web.app)
+#### Prettier & Husky
 
-### Unihockey
+Folgen Sie der [Anleitung](https://typicode.github.io/husky/get-started.html) für die Installation:
 
-- Kadetten Unihockey Schaffhausen [Link](https://kadetten-unihockey.web.app)
-- UHC Winterthur United [Link](https://uhc-win-u.web.app)
-- STV Spreitenbach [Link](https://stv-spreitenbach.web.app)
+```bash
+# Installation
+npm install --save-dev husky prettier pretty-quick
+npx husky init
 
-### Volleyball
+# Pre-commit Hook in .husky/pre_commit konfigurieren
+npx pretty-quick --staged
+```
 
-- VBC Schaffhausen [Link](https://vbc-schaffhausen.web.app)
+#### Asset-Generierung
 
-### Associations
+```bash
+# App Icon & Splash Screen Generator Installation
+npm install --global pwa-asset-generator
 
-- swissunihockey [Link](https://my-swissunihockey.web.app) [Link](https://my-swiss-unihockey.web.app) [Link](https://my-suhv.web.app)
-- swissvolley [Link](https://my-swissvolley.web.app) [Link](https://my-volleyball.web.app)
-- swisshandball [Link](https://shv.web.app)
+# Light Mode Assets
+pwa-asset-generator ./resources/icon.png -i ./src/index.html -m ./src/manifest.webmanifest --splash-only --dark-mode -p 0%
 
-## General new custom app
+# Dark Mode Assets
+pwa-asset-generator ./resources/icon_dark.png -i ./src/index.html -m ./src/manifest.webmanifest --splash-only -p 0%
+```
 
-Go to CUSTOM_THEMES and copy default folder. Then create icons and the following files change:
+Zusätzliche Tools:
+- Icon Generator für Manifest: [Link](https://manifest-gen.netlify.app/)
+- Favicon Generator: [Link](https://www.hoststar.ch/de/tools/favicon-generator)
 
-- index.html
-- tailwind.config.js [This is still an issue]
-- webmanifest.manifest
+## 🌍 Internationalisierung
 
-adjust theme color, names and path accordingly app-FIREBASE_SITE_MYAP
+Unterstützte Sprachen:
+- 🇨🇭 Deutsch (Schweiz)
+- 🇨🇭 Französisch (Schweiz)
+- 🇨🇭 Italienisch (Schweiz)
+- 🇺🇸 Englisch
 
-### Add Default Sites
+## 🚀 Deployment
 
-firebase target:apply hosting app-unihockey unihockey
+### Web Deployment
 
-### Add Custom Sites
+Die App ist als PWA verfügbar unter:
+- [my-club.app](https://my-club.app)
+- [my-club.web.app](https://my-club.web.app)
 
-firebase target:apply hosting app-FIREBASE_SITE_MYAPP FIREBASE_SITE_MYAPP
+### Native Apps
 
-- go to firebase.json and copy hosting config.
-- go to angular.json and copy angular build config
-- create styles in custom theme
-- create manifest file etc.
-- create icons (See below)
-- add build scripts in package.json
-- add build steps in yaml
+Für iOS/Android Build:
+```bash
+ionic capacitor add ios
+ionic capacitor add android
+```
 
-### Remove
+## 💎 MY-CLUB-PREMIUM
 
-firebase target:remove hosting FIREBASE_SITE_MYAPP
+Premium-Version mit:
+- Eigene Domain
+- Individuelles Design
+- Massgeschneiderte Funktionen
 
-### Icon
+### Bestehende Premium Implementierungen
 
-Run commands to generate custom icons:
+#### 🏑 Unihockey
+- Kadetten Unihockey Schaffhausen ([kadetten-unihockey.web.app](https://kadetten-unihockey.web.app))
+- UHC Winterthur United ([uhc-win-u.web.app](https://uhc-win-u.web.app)) (White Label im Aufbau)
+- STV Spreitenbach ([stv-spreitenbach.web.app](https://stv-spreitenbach.web.app)) (White Label im Aufbau)
 
-pwa-asset-generator ./resources/app-CUSTOM_icon.png --splash-only --dark-mode -p 0%
-pwa-asset-generator ./resources/app-CUSTOM_icon.png --splash-only -p 0%
-pwa-asset-generator ./resources/app-CUSTOM_icon.png --icon-only --dark-mode -p 0%
-pwa-asset-generator ./resources/app-CUSTOM_icon.png --icon-only -p 0%
+#### 🏐 Volleyball
+- VBC Schaffhausen ([vbc-schaffhausen.web.app](https://vbc-schaffhausen.web.app)) (White Label im Aufbau)
 
-then, have a look in the directory or copy icons to src/custom_themes/app-CUSTOM/assets
+#### 🤾 Handball
+- Kadetten Handball Schaffhausen ([kadetten-handball.web.app](https://kadetten-handball.web.app)) (White Label im Aufbau)
 
-- /icons
-- /splash
+#### 🏋️ Turnverein
+- Keine Custom Implementierungen
 
-Also upload login.jpg to /bg and create favicon.
+#### 🏀 Basketball
+- Keine Custom Implementierungen
 
-https://favicon.io/favicon-converter/
+#### 🤝 Verbände
+- swissunihockey (White Label im Aufbau)
+- swissvolley (White Label im Aufbau)
+- swisshandball (White Label im Aufbau)
 
+### Weitere Custom Apps
+- Unihockey: [unihockey.web.app](https://unihockey.web.app)
 
-# Licenses used
-run: `license-report --only=prod --output=json`
+## 📚 Dokumentation
+
+Ausführliche Dokumentation finden Sie in unserem [Wiki](link-to-wiki).
+
+## 🤝 Beitragen
+
+1. Fork das Projekt
+2. Erstelle einen Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit deine Änderungen (`git commit -m 'feat: Add some AmazingFeature'`)
+4. Push zum Branch (`git push origin feature/AmazingFeature`)
+5. Öffne einen Pull Request
+
+Bitte beachte unsere [Contribution Guidelines](link-to-contributing) und [Code of Conduct](link-to-code-of-conduct).
+
+## 📄 Lizenz
+
+Dieses Projekt ist lizenziert unter [LICENSE NAME] - siehe die [LICENSE](link-to-license) Datei für Details.

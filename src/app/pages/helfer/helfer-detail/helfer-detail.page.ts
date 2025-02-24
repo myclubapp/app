@@ -1,8 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
-  AlertInput,
-  AlertOptions,
   IonItemSliding,
   ModalController,
   NavParams,
@@ -14,8 +12,6 @@ import {
   Observable,
   catchError,
   combineLatest,
-  defaultIfEmpty,
-  first,
   firstValueFrom,
   forkJoin,
   lastValueFrom,
@@ -36,9 +32,10 @@ import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
 
 @Component({
-  selector: "app-helfer-detail",
-  templateUrl: "./helfer-detail.page.html",
-  styleUrls: ["./helfer-detail.page.scss"],
+    selector: "app-helfer-detail",
+    templateUrl: "./helfer-detail.page.html",
+    styleUrls: ["./helfer-detail.page.scss"],
+    standalone: false
 })
 export class HelferDetailPage implements OnInit {
   @Input("data") event: HelferEvent;

@@ -32,6 +32,7 @@ export interface Veranstaltung {
   attendees: any;
   countNeeded: number;
   countAttendees: number;
+  closedEvent: boolean;
 }
 export interface HelferEvent extends Veranstaltung {
   schichten?: [Schicht];

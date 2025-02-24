@@ -15,7 +15,6 @@ import {
   Subscription,
   catchError,
   combineLatest,
-  first,
   lastValueFrom,
   map,
   mergeMap,
@@ -37,9 +36,10 @@ import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
 import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
-  selector: "app-events",
-  templateUrl: "./events.page.html",
-  styleUrls: ["./events.page.scss"],
+    selector: "app-events",
+    templateUrl: "./events.page.html",
+    styleUrls: ["./events.page.scss"],
+    standalone: false
 })
 export class EventsPage implements OnInit {
   skeleton = new Array(12);
@@ -146,6 +146,7 @@ export class EventsPage implements OnInit {
           attendees: undefined,
           countAttendees: 0,
           countNeeded: 0,
+          closedEvent: false,
         };
         this.openEventDetailModal(clubEvent, true);
       } else {

@@ -40,9 +40,10 @@ import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { Club } from "src/app/models/club";
 
 @Component({
-  selector: "app-trainings",
-  templateUrl: "./trainings.page.html",
-  styleUrls: ["./trainings.page.scss"],
+    selector: "app-trainings",
+    templateUrl: "./trainings.page.html",
+    styleUrls: ["./trainings.page.scss"],
+    standalone: false
 })
 export class TrainingsPage implements OnInit {
   @Input("team") team: Team;

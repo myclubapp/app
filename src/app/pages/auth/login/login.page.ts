@@ -14,9 +14,10 @@ import { AuthService } from "src/app/services/auth.service";
 import { TranslateService } from "@ngx-translate/core";
 import { lastValueFrom } from "rxjs";
 @Component({
-  selector: "app-login",
-  templateUrl: "./login.page.html",
-  styleUrls: ["./login.page.scss"],
+    selector: "app-login",
+    templateUrl: "./login.page.html",
+    styleUrls: ["./login.page.scss"],
+    standalone: false
 })
 export class LoginPage implements OnInit {
   public user: UserCredentialLogin;

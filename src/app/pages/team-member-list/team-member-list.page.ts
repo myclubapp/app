@@ -34,9 +34,10 @@ import { User } from "firebase/auth";
 import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
 @Component({
-  selector: 'app-team-member-list',
-  templateUrl: './team-member-list.page.html',
-  styleUrls: ['./team-member-list.page.scss'],
+    selector: 'app-team-member-list',
+    templateUrl: './team-member-list.page.html',
+    styleUrls: ['./team-member-list.page.scss'],
+    standalone: false
 })
 export class TeamMemberListPage implements OnInit {
   @Input("team") team: any;

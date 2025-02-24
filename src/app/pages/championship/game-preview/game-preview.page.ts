@@ -9,9 +9,10 @@ import * as svg from "save-svg-as-png";
 
 
 @Component({
-  selector: 'app-game-preview',
-  templateUrl: './game-preview.page.html',
-  styleUrls: ['./game-preview.page.scss'],
+    selector: 'app-game-preview',
+    templateUrl: './game-preview.page.html',
+    styleUrls: ['./game-preview.page.scss'],
+    standalone: false
 })
 export class GamePreviewPage implements OnInit {
   @Input("data") game: Game;

@@ -55,7 +55,6 @@ import { HelferPunkteClubPage } from "./pages/helfer/helfer-punkte-club/helfer-p
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 import { GamePreviewPage } from "./pages/championship/game-preview/game-preview.page";
 import { NotificationPage } from "./pages/news/notification/notification.page";
-import { enterAnimation, slideInAnimation } from "./animations/nav-animation";
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
@@ -80,15 +79,13 @@ export function appInitializerFactory(translateService: TranslateService, inject
 
   });
 }
-const getConfig = () => {
-  let config = { animated: true, navAnimation: slideInAnimation, };
+ const getConfig = () => {
+  let config = { };
   if (isPlatform('iphone')) {
    // config["backButtonText"] = 'Previous';
   }
   return config;
 };
-
-
 
 @NgModule({
   declarations: [

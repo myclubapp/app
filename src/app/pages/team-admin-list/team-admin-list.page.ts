@@ -34,9 +34,10 @@ import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
 
 @Component({
-  selector: 'app-team-admin-list',
-  templateUrl: './team-admin-list.page.html',
-  styleUrls: ['./team-admin-list.page.scss'],
+    selector: 'app-team-admin-list',
+    templateUrl: './team-admin-list.page.html',
+    styleUrls: ['./team-admin-list.page.scss'],
+    standalone: false
 })
 export class TeamAdminListPage implements OnInit {
   @Input("team") team: any;

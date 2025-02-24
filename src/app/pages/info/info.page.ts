@@ -4,13 +4,15 @@ import { Browser, OpenOptions​ } from '@capacitor/browser';
 import packagejson from "./../../../../package.json";
 
 @Component({
-  selector: 'app-info',
-  templateUrl: './info.page.html',
-  styleUrls: ['./info.page.scss'],
+    selector: 'app-info',
+    templateUrl: './info.page.html',
+    styleUrls: ['./info.page.scss'],
+    standalone: false
 })
 export class InfoPage implements OnInit {
 
   public appVersion: string = packagejson.version;
+  public buildNumber: string = packagejson.buildNumber;
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
 

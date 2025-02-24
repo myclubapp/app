@@ -54,7 +54,8 @@
         "my__clubs": "I miei club"
     },
     "event-add": {
-        "new__event": "Nuovo evento"
+        "new__event": "Nuovo evento",
+        "is__closed__event": "Evento chiuso"
     },
     "event-detail": {},
     "events": {

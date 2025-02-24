@@ -4,21 +4,17 @@ import {
   limit,
   Timestamp,
   Firestore,
-  addDoc,
   collection,
   collectionData,
   doc,
   docData,
   deleteDoc,
-  updateDoc,
-  DocumentReference,
   setDoc,
   query,
   where,
-  collectionSnapshots,
 } from "@angular/fire/firestore";
 import { orderBy } from "firebase/firestore";
-import { Observable, Observer } from "rxjs";
+import { Observable } from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "../auth.service";
 
@@ -70,7 +66,7 @@ export class ChampionshipService {
 
   // PAST 20 Entries
   getTeamGamesPastRefs(teamId: string): Observable<Game[]> {
-    // console.log(`Read Team Games List Ref ${teamId}`)
+    //console.log(`Read Team Games List Ref ${teamId}`)
     const gamesRefList = collection(this.firestore, `teams/${teamId}/games`);
     const q = query(
       gamesRefList,

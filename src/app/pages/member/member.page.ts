@@ -25,9 +25,10 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { Club } from "src/app/models/club";
 
 @Component({
-  selector: "app-member",
-  templateUrl: "./member.page.html",
-  styleUrls: ["./member.page.scss"],
+    selector: "app-member",
+    templateUrl: "./member.page.html",
+    styleUrls: ["./member.page.scss"],
+    standalone: false
 })
 export class MemberPage implements OnInit {
   @Input("data") userProfile: Profile;

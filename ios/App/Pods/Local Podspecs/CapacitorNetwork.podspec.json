@@ -1,20 +1,20 @@
 {
   "name": "CapacitorNetwork",
-  "version": "6.0.3",
+  "version": "7.0.0",
   "summary": "The Network API provides network and connectivity information.",
   "license": "MIT",
   "homepage": "https://capacitorjs.com",
   "authors": "Ionic <hi@ionicframework.com>",
   "source": {
     "git": "https://github.com/ionic-team/capacitor-plugins.git",
-    "tag": "@capacitor/network@6.0.3"
+    "tag": "@capacitor/network@7.0.0"
   },
   "source_files": [
     "ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}",
     "network/ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}"
   ],
   "platforms": {
-    "ios": "13.0"
+    "ios": "14.0"
   },
   "dependencies": {
     "Capacitor": [

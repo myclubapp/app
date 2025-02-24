@@ -51,9 +51,10 @@ import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
 import { Timestamp } from "firebase/firestore";
 
 @Component({
-  selector: "app-profile",
-  templateUrl: "./profile.page.html",
-  styleUrls: ["./profile.page.scss"],
+    selector: "app-profile",
+    templateUrl: "./profile.page.html",
+    styleUrls: ["./profile.page.scss"],
+    standalone: false
 })
 export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   userProfile$: Observable<Profile>;
@@ -102,6 +103,9 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     this.deviceId = await Device.getId();
     this.deviceInfo = await Device.getInfo();
     // console.log(this.deviceInfo);
+
+    this.clubList$ = this.fbService.getClubList();
+
   }
 
   ngAfterViewInit(): void {
@@ -112,6 +116,10 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         this.setupAlerts(profile);
       }
     });
+  }
+
+  enableHelferEvents(clubList) {
+    return clubList && clubList.some(club => club.hasFeatureHelferEvent == true);
   }
   setupAlerts(profile: Profile) {
     this.alertInputsEmail = [

@@ -6,9 +6,10 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { getAnalytics, logEvent } from "firebase/analytics";
 
 @Component({
-  selector: "app-tabs",
-  templateUrl: "./tabs.page.html",
-  styleUrls: ["./tabs.page.scss"],
+    selector: "app-tabs",
+    templateUrl: "./tabs.page.html",
+    styleUrls: ["./tabs.page.scss"],
+    standalone: false
 })
 export class TabsPage implements OnInit {
   @ViewChild('tabs', { static: true }) tabs!: IonTabs;

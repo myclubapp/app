@@ -9,9 +9,10 @@ import { AuthService } from 'src/app/services/auth.service';
 import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
 
 @Component({
-  selector: 'app-onboarding-email',
-  templateUrl: './onboarding-email.page.html',
-  styleUrls: ['./onboarding-email.page.scss'],
+    selector: 'app-onboarding-email',
+    templateUrl: './onboarding-email.page.html',
+    styleUrls: ['./onboarding-email.page.scss'],
+    standalone: false
 })
 export class OnboardingEmailPage implements OnInit {
   userProfile$: Observable<Profile>;

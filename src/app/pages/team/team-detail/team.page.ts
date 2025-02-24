@@ -49,9 +49,10 @@ import { ChampionshipPage } from "../../championship/championship/championship.p
 import { TrainingsPage } from "../../training/trainings/trainings.page";
 
 @Component({
-  selector: "app-team",
-  templateUrl: "./team.page.html",
-  styleUrls: ["./team.page.scss"],
+    selector: "app-team",
+    templateUrl: "./team.page.html",
+    styleUrls: ["./team.page.scss"],
+    standalone: false
 })
 export class TeamPage implements OnInit {
   @Input("data") team: Team;
@@ -145,7 +146,7 @@ export class TeamPage implements OnInit {
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        training: { teamId: this.team.id }
+        training: { teamId: this.team.id, clubId: this.team.clubId }
       },
     });
     modal.present();

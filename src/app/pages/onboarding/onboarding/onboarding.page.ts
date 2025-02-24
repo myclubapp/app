@@ -34,9 +34,10 @@ import { TranslateService } from "@ngx-translate/core";
 import { PushNotifications } from "@capacitor/push-notifications";
 
 @Component({
-  selector: "app-onboarding",
-  templateUrl: "./onboarding.page.html",
-  styleUrls: ["./onboarding.page.scss"],
+    selector: "app-onboarding",
+    templateUrl: "./onboarding.page.html",
+    styleUrls: ["./onboarding.page.scss"],
+    standalone: false
 })
 export class OnboardingPage implements OnInit {
   @Input("data") user: User;

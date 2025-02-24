@@ -7,9 +7,10 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 
 @Component({
-  selector: "app-helfer-punkte",
-  templateUrl: "./helfer-punkte.page.html",
-  styleUrls: ["./helfer-punkte.page.scss"],
+    selector: "app-helfer-punkte",
+    templateUrl: "./helfer-punkte.page.html",
+    styleUrls: ["./helfer-punkte.page.scss"],
+    standalone: false
 })
 export class HelferPunktePage implements OnInit {
   helferPunkteList$: Observable<any[]>;

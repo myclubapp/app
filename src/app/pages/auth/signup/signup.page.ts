@@ -17,9 +17,10 @@ import { UserCredentialLogin, Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 
 @Component({
-  selector: "app-signup",
-  templateUrl: "./signup.page.html",
-  styleUrls: ["./signup.page.scss"],
+    selector: "app-signup",
+    templateUrl: "./signup.page.html",
+    styleUrls: ["./signup.page.scss"],
+    standalone: false
 })
 export class SignupPage implements OnInit {
   // private userProfileRef: AngularFirestoreDocument < UserProfile > ;

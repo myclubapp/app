@@ -23,9 +23,10 @@ interface PlannedEventsData {
 }
 
 @Component({
-  selector: 'app-helfer-punkte-club',
-  templateUrl: './helfer-punkte-club.page.html',
-  styleUrls: ['./helfer-punkte-club.page.scss'],
+    selector: 'app-helfer-punkte-club',
+    templateUrl: './helfer-punkte-club.page.html',
+    styleUrls: ['./helfer-punkte-club.page.scss'],
+    standalone: false
 })
 export class HelferPunkteClubPage implements OnInit {
   @Input("clubId") clubId: any;

@@ -19,8 +19,6 @@ import {
   UserCredential,
   deleteUser,
   User,
-  ActionCodeOperation,
-  applyActionCode,
 } from "@angular/fire/auth";
 import { Observable } from "rxjs";
 

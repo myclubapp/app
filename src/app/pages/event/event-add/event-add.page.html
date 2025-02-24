@@ -137,6 +137,13 @@
         </ng-template>
       </ion-modal>
     </ion-item>
+
+    <ion-item>
+      <ion-label position="default">
+        {{"event-add.is__closed__event" | translate}}
+      </ion-label>
+      <ion-toggle slot="end" [checked]="event.closedEvent"></ion-toggle>
+    </ion-item>
   </ion-list>
 
 

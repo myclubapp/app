@@ -8,12 +8,13 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 
 @Component({
-  selector: "app-team-exercises",
-  templateUrl: "./team-exercises.page.html",
-  styleUrls: ["./team-exercises.page.scss"],
+    selector: "app-team-exercises",
+    templateUrl: "./team-exercises.page.html",
+    styleUrls: ["./team-exercises.page.scss"],
+    standalone: false
 })
 export class TeamExercisesPage implements OnInit {
-  @Input("training") training: Training;
+  @Input("training") training: any;
 
   exerciseList$: Observable<any[]>;
   filteredExerciseList$: Observable<any[]>;
@@ -36,7 +37,7 @@ export class TeamExercisesPage implements OnInit {
 
   ngOnInit() {
     this.training = this.navParams.get("training");
-    console.log(this.training)
+    console.log(">>>", this.training)
     
 
     this.exerciseList$ = this.fbService.getTeamRef(this.training.teamId).pipe(
@@ -44,9 +45,24 @@ export class TeamExercisesPage implements OnInit {
       switchMap(team => {
         if (!team || !team.type) {
           console.error('Team data is incomplete or missing.');
-          // return of([]);  // Return an empty observable array if no type is found
+          return of([]);  // Return an empty observable array if no type is found
         }
-        return this.exerciseService.getExerciseRefs(team.type);  // Fetch exercises based on the team type
+        if (team.type === 'Club') {
+          // Wenn Team-Typ 'Club' ist, hole den Typ vom Club
+          return this.fbService.getClubRef(this.training.clubId).pipe(
+            take(1),
+            switchMap(club => {
+              if (!club || !club.type) {
+                console.error('Club data is incomplete or missing.');
+                return of([]);
+              }
+              return this.exerciseService.getExerciseRefs(club.type);
+            })
+          );
+        }
+        
+        // Ansonsten verwende den Team-Typ
+        return this.exerciseService.getExerciseRefs(team.type);
       }),
       catchError(err => {
         console.error('Error fetching exercises:', err);

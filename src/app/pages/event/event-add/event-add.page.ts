@@ -5,30 +5,17 @@ import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import {
   Observable,
-  Subscription,
-  catchError,
-  concatMap,
-  defaultIfEmpty,
-  finalize,
-  forkJoin,
-  from,
-  map,
-  of,
-  switchMap,
-  take,
-  tap,
 } from "rxjs";
 import { Club } from "src/app/models/club";
 import { Veranstaltung } from "src/app/models/event";
-import { Team } from "src/app/models/team";
-import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
 
 @Component({
-  selector: "app-event-add",
-  templateUrl: "./event-add.page.html",
-  styleUrls: ["./event-add.page.scss"],
+    selector: "app-event-add",
+    templateUrl: "./event-add.page.html",
+    styleUrls: ["./event-add.page.scss"],
+    standalone: false
 })
 export class EventAddPage implements OnInit {
   @Input("data") eventCopy: Veranstaltung;
@@ -78,6 +65,7 @@ export class EventAddPage implements OnInit {
       attendees: [],
       countAttendees: 0,
       countNeeded: 0,
+      closedEvent: false
     };
   }
 

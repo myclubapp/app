@@ -34,9 +34,10 @@ import { User } from "firebase/auth";
 import { Club } from "src/app/models/club";
 
 @Component({
-  selector: 'app-club-admin-list',
-  templateUrl: './club-admin-list.page.html',
-  styleUrls: ['./club-admin-list.page.scss'],
+    selector: 'app-club-admin-list',
+    templateUrl: './club-admin-list.page.html',
+    styleUrls: ['./club-admin-list.page.scss'],
+    standalone: false
 })
 export class ClubAdminListPage implements OnInit {
   @Input("club") club: any;

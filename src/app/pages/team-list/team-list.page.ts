@@ -16,9 +16,10 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { TranslateService } from "@ngx-translate/core";
 
 @Component({
-  selector: "app-team-list",
-  templateUrl: "./team-list.page.html",
-  styleUrls: ["./team-list.page.scss"],
+    selector: "app-team-list",
+    templateUrl: "./team-list.page.html",
+    styleUrls: ["./team-list.page.scss"],
+    standalone: false
 })
 export class TeamListPage implements OnInit {
   teamList$: Observable<Team[]>;

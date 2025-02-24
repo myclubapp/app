@@ -34,9 +34,10 @@ import { GamePreviewPage } from "../game-preview/game-preview.page";
 import { Club } from "src/app/models/club";
 
 @Component({
-  selector: "app-championship",
-  templateUrl: "./championship.page.html",
-  styleUrls: ["./championship.page.scss"],
+    selector: "app-championship",
+    templateUrl: "./championship.page.html",
+    styleUrls: ["./championship.page.scss"],
+    standalone: false
 })
 export class ChampionshipPage implements OnInit {
   @Input("team")

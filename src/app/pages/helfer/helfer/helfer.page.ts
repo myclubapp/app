@@ -1,11 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import {
   IonItemSliding,
   IonRouterOutlet,
   ModalController,
   MenuController,
   ToastController,
-  AlertController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
 import {
@@ -21,7 +20,7 @@ import {
   take,
   tap,
 } from "rxjs";
-import { HelferEvent, Veranstaltung } from "src/app/models/event";
+import { HelferEvent } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
@@ -33,9 +32,10 @@ import { Club } from "src/app/models/club";
 import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
-  selector: "app-helfer",
-  templateUrl: "./helfer.page.html",
-  styleUrls: ["./helfer.page.scss"],
+    selector: "app-helfer",
+    templateUrl: "./helfer.page.html",
+    styleUrls: ["./helfer.page.scss"],
+    standalone: false
 })
 export class HelferPage implements OnInit {
   skeleton = new Array(12);
@@ -107,7 +107,8 @@ export class HelferPage implements OnInit {
           status: false,
           attendees: undefined,
           countAttendees: 0,
-          countNeeded: 0
+          countNeeded: 0,
+          closedEvent: false
         };
         this.openEventDetailModal(helferEvent, true);
       } else {

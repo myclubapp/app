@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AlertController, ModalController, NavParams, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { User } from 'firebase/auth';
-import { BehaviorSubject, Observable, catchError, combineLatest, debounceTime, forkJoin, lastValueFrom, map, of, startWith, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest, debounceTime, lastValueFrom, map, of, switchMap, tap } from 'rxjs';
 import { Profile } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
@@ -10,9 +9,10 @@ import { UserProfileService } from 'src/app/services/firebase/user-profile.servi
 import { MemberPage } from '../member/member.page';
 
 @Component({
-  selector: 'app-club-request-list',
-  templateUrl: './club-request-list.page.html',
-  styleUrls: ['./club-request-list.page.scss'],
+    selector: 'app-club-request-list',
+    templateUrl: './club-request-list.page.html',
+    styleUrls: ['./club-request-list.page.scss'],
+    standalone: false
 })
 export class ClubRequestListPage implements OnInit {
   @Input("club") club: any;

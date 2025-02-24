@@ -10,14 +10,12 @@ import {
   docData,
   deleteDoc,
   updateDoc,
-  DocumentReference,
   setDoc,
   query,
   where,
 } from "@angular/fire/firestore";
-import { Observable, Observer } from "rxjs";
+import { Observable } from "rxjs";
 import { HelferEvent, Veranstaltung } from "src/app/models/event";
-import { User } from "firebase/auth";
 import { AuthService } from "../auth.service";
 
 @Injectable({

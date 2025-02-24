@@ -60,7 +60,8 @@
         "my__clubs": "My clubs"
     },
     "event-add": {
-        "new__event": "New event"
+        "new__event": "New event",
+        "is__closed__event": "Event is closed"
     },
     "event-detail": {},
     "events": {

@@ -9,9 +9,10 @@ import { UserProfileService } from 'src/app/services/firebase/user-profile.servi
 import { Browser } from "@capacitor/browser";
 
 @Component({
-  selector: 'app-club-subscription',
-  templateUrl: './club-subscription.page.html',
-  styleUrls: ['./club-subscription.page.scss'],
+    selector: 'app-club-subscription',
+    templateUrl: './club-subscription.page.html',
+    styleUrls: ['./club-subscription.page.scss'],
+    standalone: false
 })
 export class ClubSubscriptionPage implements OnInit {
   @Input("clubId") clubId: any;

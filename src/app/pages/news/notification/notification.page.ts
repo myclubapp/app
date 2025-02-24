@@ -11,9 +11,10 @@ import { Timestamp } from 'firebase/firestore';
 
 
 @Component({
-  selector: 'app-notification',
-  templateUrl: './notification.page.html',
-  styleUrls: ['./notification.page.scss'],
+    selector: 'app-notification',
+    templateUrl: './notification.page.html',
+    styleUrls: ['./notification.page.scss'],
+    standalone: false
 })
 export class NotificationPage implements OnInit {
   notifications$: Observable<any[]>;
@@ -69,10 +70,11 @@ export class NotificationPage implements OnInit {
       switchMap((user) => {
         return this.notificationService.getNotifications(user).pipe(
           map((notifications) => {
+            console.log(notifications)
             if (notifications == null || notifications.length === 0) {
               PushNotifications.removeAllDeliveredNotifications();
             }
-            return notifications.sort((a, b) => a.date - b.date);
+            return notifications.sort((a, b) => Timestamp.fromMillis(b.date).toMillis() - Timestamp.fromMillis(a.date).toMillis());
           }),
         );
       })
@@ -87,7 +89,7 @@ export class NotificationPage implements OnInit {
       switchMap((user) => {
         return this.notificationService.getReadNotifications(user).pipe(
           map((notifications) => {
-            return notifications.sort((a, b) => b.date - a.date);
+            return notifications.sort((a, b) => Timestamp.fromMillis(b.date).toMillis() - Timestamp.fromMillis(a.date).toMillis());
           }),
           tap((notifications) => {
             // console.log('Sorted Notifications', notifications);

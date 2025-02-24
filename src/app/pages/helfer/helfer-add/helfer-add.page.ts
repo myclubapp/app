@@ -10,9 +10,10 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
 
 @Component({
-  selector: "app-helfer-add",
-  templateUrl: "./helfer-add.page.html",
-  styleUrls: ["./helfer-add.page.scss"],
+    selector: "app-helfer-add",
+    templateUrl: "./helfer-add.page.html",
+    styleUrls: ["./helfer-add.page.scss"],
+    standalone: false
 })
 export class HelferAddPage implements OnInit {
   @Input("data") eventCopy: HelferEvent;
@@ -67,6 +68,7 @@ export class HelferAddPage implements OnInit {
       attendees: [],
       countAttendees: 0,
       countNeeded: 0,
+      closedEvent: false
     };
   }
 

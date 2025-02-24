@@ -1,5 +1,5 @@
 import { Component, NgZone, OnInit } from "@angular/core";
-import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
+import { SwUpdate, VersionEvent } from "@angular/service-worker";
 import {
   AlertController,
   MenuController,
@@ -7,7 +7,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { App } from '@capacitor/app';
-import { ConfirmResult, Dialog } from "@capacitor/dialog";
+import { Dialog } from "@capacitor/dialog";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
@@ -30,13 +30,15 @@ import {
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 
 @Component({
-  selector: "app-root",
-  templateUrl: "app.component.html",
-  styleUrls: ["app.component.scss"],
+    selector: "app-root",
+    templateUrl: "app.component.html",
+    styleUrls: ["app.component.scss"],
+    standalone: false
 })
 export class AppComponent implements OnInit {
   public email: string;
   public appVersion: string = packagejson.version;
+  public buildNumber: string = packagejson.buildNumber;
 
   clubList$: Observable<Club[]>;
 

@@ -1,10 +1,9 @@
-import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   ModalController,
   NavParams,
   ToastController,
-  IonList,
   IonItemSliding,
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
@@ -14,12 +13,9 @@ import {
   catchError,
   combineLatest,
   debounceTime,
-  forkJoin,
   lastValueFrom,
   map,
   of,
-  shareReplay,
-  startWith,
   switchMap,
   take,
   tap,
@@ -29,13 +25,13 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { MemberPage } from "../member/member.page";
 import { Profile } from "src/app/models/user";
-import { User } from "firebase/auth";
 import { Club } from "src/app/models/club";
 
 @Component({
-  selector: "app-club-member-list",
-  templateUrl: "./club-member-list.page.html",
-  styleUrls: ["./club-member-list.page.scss"],
+    selector: "app-club-member-list",
+    templateUrl: "./club-member-list.page.html",
+    styleUrls: ["./club-member-list.page.scss"],
+    standalone: false
 })
 export class ClubMemberListPage implements OnInit {
   @Input("club") club: any;

@@ -24,9 +24,10 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
 
 @Component({
-  selector: "app-training-create",
-  templateUrl: "./training-create.page.html",
-  styleUrls: ["./training-create.page.scss"],
+    selector: "app-training-create",
+    templateUrl: "./training-create.page.html",
+    styleUrls: ["./training-create.page.scss"],
+    standalone: false
 })
 export class TrainingCreatePage implements OnInit {
   @Input("data") trainingCopy: Training;

@@ -11,9 +11,10 @@ import { FirebaseService } from 'src/app/services/firebase.service';
 import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
 
 @Component({
-  selector: 'app-onboarding-club',
-  templateUrl: './onboarding-club.page.html',
-  styleUrls: ['./onboarding-club.page.scss'],
+    selector: 'app-onboarding-club',
+    templateUrl: './onboarding-club.page.html',
+    styleUrls: ['./onboarding-club.page.scss'],
+    standalone: false
 })
 export class OnboardingClubPage implements OnInit {
   clubListSV: Club[];
