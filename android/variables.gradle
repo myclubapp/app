@@ -17,7 +17,7 @@ ext {
     googleMapsUtilsVersion='3.4.0'
     googleMapsKtxVersion="3.4.0"
     googleMapsUtilsKtxVersion="3.4.0"
-    kotlinxCoroutinesVersion="1.6.4"
+    kotlinxCoroutinesVersion="1.7.3"
     androidxCoreKTXVersion="1.10.0"
-    kotlin_version="1.8.20"
+    kotlin_version="1.9.20"
 }

@@ -14,9 +14,10 @@ PODS:
     - Capacitor
   - CapacitorDialog (7.0.0):
     - Capacitor
-  - CapacitorGeolocation (7.0.0):
+  - CapacitorGeolocation (7.1.1):
     - Capacitor
-  - CapacitorGoogleMaps (7.0.0):
+    - IONGeolocationLib (~> 1.0)
+  - CapacitorGoogleMaps (7.0.1):
     - Capacitor
     - Google-Maps-iOS-Utils (~> 5.0)
     - GoogleMaps (~> 8.4)
@@ -104,6 +105,7 @@ PODS:
   - GoogleUtilities/UserDefaults (7.13.3):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
+  - IONGeolocationLib (1.0.0)
   - MyclubWidgetPlugin (1.0.5):
     - Capacitor
   - nanopb (2.30908.0):
@@ -149,6 +151,7 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleMaps
     - GoogleUtilities
+    - IONGeolocationLib
     - nanopb
     - PromisesObjC
 
@@ -201,8 +204,8 @@ SPEC CHECKSUMS:
   CapacitorCordova: 63d476958d5022d76f197031e8b7ea3519988c64
   CapacitorDevice: 62066b65e148a133df7b8c5bf972ba835b329748
   CapacitorDialog: 0c8fcf2de9464df5f28c070c02d5aa0dfd80047a
-  CapacitorGeolocation: 0854ff17bcbf1c694aa36495e627c9c1bffa323b
-  CapacitorGoogleMaps: 59dc1e4d05ecc0b9bb0354d9cb663f14d58dda9d
+  CapacitorGeolocation: 8f8ac02ceaeb203a4762f8dc4ff5119e3f7fa50a
+  CapacitorGoogleMaps: b8730f29cfbe1ca0b8caa8ac2b2db230162e02b7
   CapacitorHaptics: 1fba3e460e7614349c6d5f868b1fccdc5c87b66d
   CapacitorKeyboard: 2c26c6fccde35023c579fc37d4cae6326d5e6343
   CapacitorNetwork: cd17b98182841055ff58629213242a1f22f4a76b
@@ -221,6 +224,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: cd9db2180fcecd8da1b561aea31e3e56cf834aa7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
+  IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
   MyclubWidgetPlugin: 8564007d0afd54bc914bfd8ef20da6954a2c961a
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
