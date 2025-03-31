@@ -37,6 +37,18 @@ export class UserProfileService {
     private readonly authService: AuthService
   ) {}
 
+  addKid(email: string) {
+   /* const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { kids: email });*/
+  }
+
+  removeKid(email: string) {
+    /* const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { kids: email });*/
+  }
+
   getUserProfile(user: User): Observable<Profile> {
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return docData(userProfileRef, { idField: "id" }) as Observable<Profile>;

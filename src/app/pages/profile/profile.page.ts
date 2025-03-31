@@ -79,6 +79,20 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   deviceInfo: DeviceInfo;
   localDateString: string;
 
+  kidAlertButtons = [
+    {
+      text: this.translate.instant('common.cancel'),
+      role: 'cancel',
+    },
+    {
+      text: this.translate.instant('common.add'),
+      role: 'confirm',
+      handler: (data) => {
+        this.addKid(data.email);
+      },
+    },
+  ];
+
   constructor(
     // private readonly swPush: SwPush,
     private readonly authService: AuthService,
@@ -591,4 +605,22 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     }
   } 
   
+  async addKid(email: string) {
+    try {
+      // Hier Logik zum Senden der Verifizierungs-E-Mail implementieren
+      await this.profileService.addKid(email);
+      await this.presentToast();
+    } catch (error) {
+      await this.presentToast();
+    }
+  }
+
+  async removeKid(email: string) {
+    try {
+      await this.profileService.removeKid(email);
+      await this.presentToast();
+    } catch (error) {
+      await this.presentToast();
+    }
+  }
 }

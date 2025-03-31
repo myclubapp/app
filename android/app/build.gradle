@@ -1,37 +1,47 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android' // Add this line
 
 android {
-
-    packagingOptions {
-        resources {
-            excludes += ['META-INF/NOTICE', 'META-INF/LICENSE', 'META-INF/NOTICE', 'META-INF/LICENSE', 'META-INF/NOTICE', 'META-INF/LICENSE']
-        }
-    }
     namespace "app.myclub.defaultapp"
     compileSdk rootProject.ext.compileSdkVersion
+
     defaultConfig {
         applicationId "app.myclub.defaultapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 122
-        versionName "1.8.19"
+        versionCode 128
+        versionName "1.8.20"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
-             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
-             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+
+    kotlinOptions {
+        jvmTarget = "21" // Set to a valid JVM target, e.g., "17" or "20"
+    }
+
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/NOTICE', 'META-INF/LICENSE']
+        }
+    }
 }
 
 repositories {
-    flatDir{
+    flatDir {
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
     }
 }

@@ -29,6 +29,7 @@ export interface Profile {
   favTeam: string;
   favClub: string;
   roles: [string];
+  kids: any[];
 
   // Business Logic Fields
   isAdmin: boolean;

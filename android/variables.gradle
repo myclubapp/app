@@ -14,10 +14,10 @@ ext {
     androidxEspressoCoreVersion = '3.6.1'
     cordovaAndroidVersion = '10.1.1'
     googleMapsPlayServicesVersion = '18.2.0'
-    googleMapsUtilsVersion='3.4.0'
-    googleMapsKtxVersion="3.4.0"
-    googleMapsUtilsKtxVersion="3.4.0"
+    googleMapsUtilsVersion='3.8.2'
+    googleMapsKtxVersion="5.0.0"
+    googleMapsUtilsKtxVersion="5.0.0"
     kotlinxCoroutinesVersion="1.7.3"
-    androidxCoreKTXVersion="1.10.0"
-    kotlin_version="1.9.20"
+    androidxCoreKTXVersion="1.12.0"
+    kotlin_version="1.9.10"
 }

@@ -363,6 +363,44 @@
         {{'profile.delete__profile' | translate}}
       </ion-button>
     </div>
+
+    <ion-list lines="full" [inset]="true">
+      <ion-list-header>
+        <ion-label> {{"profile.kids" | translate}} </ion-label>
+      </ion-list-header>
+
+      <ion-item *ngFor="let kid of userProfile.kids">
+        <ion-label>
+          <h2>{{kid.email}}</h2>
+          <p *ngIf="kid.verified" color="success">{{"profile.kids.verified" | translate}}</p>
+          <p *ngIf="!kid.verified" color="warning">{{"profile.kids.pending" | translate}}</p>
+        </ion-label>
+        <ion-button slot="end" color="danger" (click)="removeKid(kid.email)">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ion-item id="add-kid-alert" detail="true">
+        <ion-icon slot="start" name="person-add-outline"></ion-icon>
+        <ion-label>{{"profile.kids.add" | translate}}</ion-label>
+      </ion-item>
+
+      <ion-alert trigger="add-kid-alert"
+        [header]='"profile.kids.add_header" | translate'
+        [message]='"profile.kids.add_message" | translate'
+        [buttons]="kidAlertButtons"
+        [inputs]="[
+          {
+            name: 'email',
+            type: 'email',
+            placeholder: 'profile.kids.email_placeholder' | translate,
+            attributes: {
+              autocomplete: 'email'
+            }
+          }
+        ]">
+      </ion-alert>
+    </ion-list>
   </ng-container>
 
 
