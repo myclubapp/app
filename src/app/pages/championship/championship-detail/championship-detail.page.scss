@@ -12,9 +12,10 @@ capacitor-google-map {
 */ 
 
 capacitor-google-map {
-  display: inline-block;
-  min-width: 100%;
-  height: 300px;
+  display: block;
+  width: 100%;
+  height: 300px; // adjust as needed
+  z-index: 1;
 }
 
 ion-fab {

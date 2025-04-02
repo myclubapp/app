@@ -388,25 +388,26 @@ export class ChampionshipPage implements OnInit {
   }
 
   async openChampionshipDetailModal(game: Game, isFuture: boolean) {
-    /*let extras: NavigationExtras = {
+    let extras: NavigationExtras = {
       queryParams: {
         data: JSON.stringify(game),
         isFuture: isFuture,
       },
     };
     console.log(extras);
-    this.navCtrl
+    /*this.navCtrl
       .navigateForward(["championship-details"], extras)
       .catch((e) => {
         console.log(e);
-      });
-    */
+      });*/
+    
 
     const modal = await this.modalCtrl.create({
       component: ChampionshipDetailPage,
       presentingElement: await this.modalCtrl.getTop(),
       // presentingElement: this.routerOutlet.nativeEl,
       canDismiss: true,
+      cssClass: 'transparent-modal',
       showBackdrop: true,
       componentProps: {
         data: game,

@@ -13,6 +13,7 @@ import {
   // NavController,
   NavParams,
   ToastController,
+  Platform,
 } from "@ionic/angular";
 import { Game } from "src/app/models/game";
 import { GoogleMap } from "@capacitor/google-maps";
@@ -38,10 +39,10 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { Team } from "src/app/models/team";
 
 @Component({
-    selector: "app-championship-detail",
-    templateUrl: "./championship-detail.page.html",
-    styleUrls: ["./championship-detail.page.scss"],
-    standalone: false
+  selector: "app-championship-detail",
+  templateUrl: "./championship-detail.page.html",
+  styleUrls: ["./championship-detail.page.scss"],
+  standalone: false
 })
 export class ChampionshipDetailPage implements OnInit {
   @Input("data") game: Game;
@@ -63,7 +64,7 @@ export class ChampionshipDetailPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    // private navController: NavController,
+    public platform: Platform,
     private navParams: NavParams,
     private readonly userProfileService: UserProfileService,
     private readonly alertCtrl: AlertController,
@@ -78,11 +79,56 @@ export class ChampionshipDetailPage implements OnInit {
     this.teamAdminList$ = this.fbService.getTeamAdminList();
   }
 
+
   ngOnInit() {
-    // console.log(this.navParams);
     this.game = this.navParams.get("data");
     this.game$ = this.getGame(this.game.teamId, this.game.id);
 
+    this.geolocationPermission();
+
+  }
+
+  async geolocationPermission() {
+    console.log("Überprüfe Standort-Berechtigungen...");
+    try {
+      const permission: PermissionStatus = await Geolocation.checkPermissions();
+      console.log("Aktueller Berechtigungsstatus:", permission.location, permission.coarseLocation);
+
+      switch (permission.location) {
+        case 'granted':
+          console.log("Standort-Berechtigung bereits erteilt");
+          return true;
+
+        case 'prompt':
+        case 'prompt-with-rationale':
+          console.log("Frage Standort-Berechtigung an");
+          const newPermission = await Geolocation.requestPermissions();
+          return newPermission.location === 'granted';
+
+        case 'denied':
+          console.log("Standort-Berechtigung verweigert");
+          // Hier könnte man einen Alert anzeigen, der erklärt, warum die App
+          // Standort-Berechtigungen benötigt und wie man sie in den Einstellungen aktivieren kann
+          await this.showLocationPermissionAlert();
+          return false;
+
+        default:
+          console.log("Unbekannter Berechtigungsstatus");
+          return false;
+      }
+    } catch (e) {
+      console.error("Fehler bei der Berechtigungsabfrage:", e);
+      return false;
+    }
+  }
+
+  private async showLocationPermissionAlert() {
+    const alert = await this.alertCtrl.create({
+      header: 'Standort-Berechtigung benötigt',
+      message: 'Um die Karte und Navigationsfunktionen nutzen zu können, wird Zugriff auf Ihren Standort benötigt. Bitte aktivieren Sie die Standort-Berechtigung in den Einstellungen.',
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
@@ -91,8 +137,18 @@ export class ChampionshipDetailPage implements OnInit {
   }
 
   ionViewDidEnter() {
-    if (!this.newMap) this.setMap();
+    this.game$.pipe(take(1)).subscribe(game => {
+      console.log(">> game", game);
+      if (!this.newMap && game) {
+        console.log("setMap");
+
+        if (!this.newMap) this.setMap();
+      } else {
+        console.log("MAP ERROR?");
+      }
+    });
   }
+
 
   ngOnDestroy() {
     if (this.newMap) {
@@ -104,7 +160,7 @@ export class ChampionshipDetailPage implements OnInit {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => {
-        this.setMap();
+        // this.setMap();
         this.user = user;
         if (!user) throw new Error("User not found");
       }),
@@ -342,6 +398,7 @@ export class ChampionshipDetailPage implements OnInit {
     if (this.mapRef == undefined || this.mapRef == null) {
       return;
     }
+    console.log("setMap");
     this.newMap = await GoogleMap.create({
       id: "my-map-" + this.game.id, // Unique identifier for this map instance
       element: this.mapRef.nativeElement, // mapRef, // reference to the capacitor-google-map element
@@ -357,7 +414,7 @@ export class ChampionshipDetailPage implements OnInit {
     });
 
     // await this.newMap.enableCurrentLocation(true);
-
+    // console.log("add Marker");
     this.newMap.addMarker({
       title: `${this.game.location} in ${this.game.city}`,
       coordinate: {
@@ -366,24 +423,14 @@ export class ChampionshipDetailPage implements OnInit {
       },
       snippet: `${this.game.location} in ${this.game.city}`,
     });
-    const permission: PermissionStatus = await Geolocation.checkPermissions();
-    try {
-      if (
-        permission.location === "denied" ||
-        permission.coarseLocation === "denied"
-      ) {
-        console.log("no permission");
-        await Geolocation.requestPermissions();
-      }
-    } catch (e) {
-      console.log("No Permission Request possible");
-    }
+
     try {
       this.coordinates = await Geolocation.getCurrentPosition();
       if (
         this.coordinates.coords.latitude &&
         this.coordinates.coords.longitude
       ) {
+        // console.log("add Marker with current position");
         this.newMap.addMarker({
           title: "Meine Position",
           coordinate: {
@@ -450,8 +497,9 @@ export class ChampionshipDetailPage implements OnInit {
     alert.present()
   }
 
-  openMaps(game: Game) {
-    if (this.coordinates.coords.longitude && this.coordinates.coords.latitude) {
+  async openMaps(game: Game) {
+    const coordinates = await Geolocation.getCurrentPosition();
+    if (coordinates.coords.longitude && coordinates.coords.latitude) {
       Browser.open({
         url:
           "https://www.google.com/maps/dir/?api=1&destination=" +
@@ -459,9 +507,11 @@ export class ChampionshipDetailPage implements OnInit {
           "," +
           game.longitude +
           "&origin=" +
-          this.coordinates.coords.latitude +
+          coordinates.coords.latitude +
           "," +
-          this.coordinates.coords.longitude,
+          coordinates.coords.longitude,
+      }).catch(e => {
+        console.log(e);
       });
     } else {
       Browser.open({
@@ -470,6 +520,8 @@ export class ChampionshipDetailPage implements OnInit {
           game.latitude +
           "," +
           game.longitude,
+      }).catch(e => {
+        console.log(e);
       });
     }
   }

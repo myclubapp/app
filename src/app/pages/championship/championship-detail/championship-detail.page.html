@@ -16,7 +16,7 @@
         <ion-icon name="close" size="small"></ion-icon>
       </ion-fab-button>
     </ion-fab>
-    <capacitor-google-map #map *ngIf="game.latitude && game.longitude"></capacitor-google-map>
+    <capacitor-google-map #map *ngIf="game.latitude && game.longitude && !platform.is('android')"></capacitor-google-map>
     <ion-list [inset]="true">
 
       <ion-item>
