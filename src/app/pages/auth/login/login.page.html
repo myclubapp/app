@@ -15,7 +15,7 @@
               </p>
             </ion-text>
             <!-- Form Content Here -->
-            <form [formGroup]="authForm">
+            <form [formGroup]="authForm" (keyup.enter)="submitCredentials(authForm)">
               <ion-list [inset]="true">
 
                 <ion-item lines="full">
