@@ -1,18 +1,18 @@
 PODS:
   - Capacitor (7.2.0):
     - CapacitorCordova
-  - CapacitorApp (7.0.0):
+  - CapacitorApp (7.0.1):
     - Capacitor
-  - CapacitorBrowser (7.0.0):
+  - CapacitorBrowser (7.0.1):
     - Capacitor
-  - CapacitorCamera (7.0.0):
+  - CapacitorCamera (7.0.1):
     - Capacitor
-  - CapacitorClipboard (7.0.0):
+  - CapacitorClipboard (7.0.1):
     - Capacitor
   - CapacitorCordova (7.2.0)
-  - CapacitorDevice (7.0.0):
+  - CapacitorDevice (7.0.1):
     - Capacitor
-  - CapacitorDialog (7.0.0):
+  - CapacitorDialog (7.0.1):
     - Capacitor
   - CapacitorGeolocation (7.1.1):
     - Capacitor
@@ -21,19 +21,19 @@ PODS:
     - Capacitor
     - Google-Maps-iOS-Utils (~> 5.0)
     - GoogleMaps (~> 8.4)
-  - CapacitorHaptics (7.0.0):
+  - CapacitorHaptics (7.0.1):
     - Capacitor
-  - CapacitorKeyboard (7.0.0):
+  - CapacitorKeyboard (7.0.1):
     - Capacitor
-  - CapacitorNetwork (7.0.0):
+  - CapacitorNetwork (7.0.1):
     - Capacitor
-  - CapacitorPushNotifications (7.0.0):
+  - CapacitorPushNotifications (7.0.1):
     - Capacitor
-  - CapacitorShare (7.0.0):
+  - CapacitorShare (7.0.1):
     - Capacitor
-  - CapacitorSplashScreen (7.0.0):
+  - CapacitorSplashScreen (7.0.1):
     - Capacitor
-  - CapacitorStatusBar (7.0.0):
+  - CapacitorStatusBar (7.0.1):
     - Capacitor
   - CordovaPlugins (7.2.0):
     - CapacitorCordova
@@ -197,22 +197,22 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Capacitor: 106e7a4205f4618d582b886a975657c61179138d
-  CapacitorApp: 45cb7cbef4aa380b9236fd6980033eb5cde6fcd2
-  CapacitorBrowser: 352a66541b15ceadae1d703802b11979023705e3
-  CapacitorCamera: 777ddf61d727754fcda0b92303ae09ea3765d7b7
-  CapacitorClipboard: 2afc5e21902233d7990978c8f41f023ddcee3e3d
+  CapacitorApp: d63334c052278caf5d81585d80b21905c6f93f39
+  CapacitorBrowser: 081852cf532acf77b9d2953f3a88fe5b9711fb06
+  CapacitorCamera: eb8687d8687fed853598ec9460d94bcd5e16babe
+  CapacitorClipboard: b98aead5dc7ec595547fc2c5d75bacd2ae3338bc
   CapacitorCordova: 5967b9ba03915ef1d585469d6e31f31dc49be96f
-  CapacitorDevice: 62066b65e148a133df7b8c5bf972ba835b329748
-  CapacitorDialog: 0c8fcf2de9464df5f28c070c02d5aa0dfd80047a
+  CapacitorDevice: fe3f190e1d718f4607bdc6b73993433d1c84f409
+  CapacitorDialog: 9b934329026b2b0ffa56939bb06df3c67541a2ab
   CapacitorGeolocation: 8f8ac02ceaeb203a4762f8dc4ff5119e3f7fa50a
   CapacitorGoogleMaps: b8730f29cfbe1ca0b8caa8ac2b2db230162e02b7
-  CapacitorHaptics: 1fba3e460e7614349c6d5f868b1fccdc5c87b66d
-  CapacitorKeyboard: 2c26c6fccde35023c579fc37d4cae6326d5e6343
-  CapacitorNetwork: cd17b98182841055ff58629213242a1f22f4a76b
-  CapacitorPushNotifications: c4feed483e03825369c278f5bab75100fb3f94a0
-  CapacitorShare: 2fcf1758cd07e0558f6aed40d7437bf8a3a42297
-  CapacitorSplashScreen: f4e58cc02aafd91c7cbaf32a3d1b44d02a115125
-  CapacitorStatusBar: 438e90beeeefa8276b24e6c5991cb02dd13e51bf
+  CapacitorHaptics: 70e47470fa1a6bd6338cd102552e3846b7f9a1b3
+  CapacitorKeyboard: 969647d0ca2e5c737d7300088e2517aa832434e2
+  CapacitorNetwork: 07ec4c69c1bb696f41c23e00d31bda1bbb221bba
+  CapacitorPushNotifications: 0b653a3264d56daccf0e8769fff15d2f48306de6
+  CapacitorShare: 58d6c2da63b093e8693287b2d36db92435538435
+  CapacitorSplashScreen: 19cd3573e57507e02d6f34597a8c421e00931487
+  CapacitorStatusBar: 275cbf2f4dfc00388f519ef80c7ec22edda342c9
   CordovaPlugins: ed39794e01c8cf15e7871d8743b51d8e2f47c342
   Firebase: c121feb35e4126c0b355e3313fa9b487d47319fd
   FirebaseCore: 907447d8917a4d3eb0cce2829c5a0ad21d90b432

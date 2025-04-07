@@ -1,5 +1,8 @@
 import { Component, NgZone, OnInit } from "@angular/core";
 import { SwUpdate, VersionEvent } from "@angular/service-worker";
+import { StatusBar, Style } from '@capacitor/status-bar';
+import { Platform } from '@ionic/angular';
+
 import {
   AlertController,
   MenuController,
@@ -54,6 +57,8 @@ export class AppComponent implements OnInit {
   userHasClub: boolean = false;
 
   constructor(
+
+    private platform: Platform,
     private readonly swUpdate: SwUpdate,
     private readonly modalCtrl: ModalController,
     // private readonly routerOutlet: IonRouterOutlet,
@@ -70,6 +75,7 @@ export class AppComponent implements OnInit {
 
   ) {
     this.initializeApp();
+
 
     onAuthStateChanged(this.authService.auth, async (user) => {
       if (user) {
@@ -236,6 +242,7 @@ export class AppComponent implements OnInit {
   }
 
   initializeApp(): void {
+    this.setStatusBar();
     this.showSplashScreen();
     this.setDefaultLanguage();
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
@@ -243,6 +250,35 @@ export class AppComponent implements OnInit {
         this.presentAlertUpdateVersion();
       }
     });
+  } 
+
+  private setStatusBar() {
+ 
+    StatusBar.setOverlaysWebView({ 
+      overlay: false,
+    });
+
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (prefersDark) {
+      StatusBar.setStyle({ style: Style.Dark });
+      StatusBar.setBackgroundColor({ color: '#795deb' });
+    } else {
+      StatusBar.setStyle({ style: Style.Light });
+      StatusBar.setBackgroundColor({ color: '#339bde' });
+    }
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      const newColorScheme = e.matches ? 'dark' : 'light';
+      console.log('System theme changed to:', newColorScheme);
+      if (newColorScheme == 'dark') {
+        StatusBar.setStyle({ style: Style.Dark });
+        StatusBar.setBackgroundColor({ color: '#795deb' });
+      } else {
+        StatusBar.setStyle({ style: Style.Light });
+        StatusBar.setBackgroundColor({ color: '#339bde' });
+      }
+    });
+
   }
 
   private registerBackButton() {
