@@ -1,5 +1,6 @@
 import { Component, NgZone, OnInit } from "@angular/core";
 import { SwUpdate, VersionEvent } from "@angular/service-worker";
+import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { Platform } from '@ionic/angular';
 
@@ -33,10 +34,10 @@ import {
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 
 @Component({
-    selector: "app-root",
-    templateUrl: "app.component.html",
-    styleUrls: ["app.component.scss"],
-    standalone: false
+  selector: "app-root",
+  templateUrl: "app.component.html",
+  styleUrls: ["app.component.scss"],
+  standalone: false
 })
 export class AppComponent implements OnInit {
   public email: string;
@@ -250,34 +251,38 @@ export class AppComponent implements OnInit {
         this.presentAlertUpdateVersion();
       }
     });
-  } 
+  }
 
   private setStatusBar() {
- 
-    StatusBar.setOverlaysWebView({ 
-      overlay: false,
-    });
 
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (prefersDark) {
-      StatusBar.setStyle({ style: Style.Dark });
-      StatusBar.setBackgroundColor({ color: '#795deb' });
-    } else {
-      StatusBar.setStyle({ style: Style.Light });
-      StatusBar.setBackgroundColor({ color: '#339bde' });
-    }
+    if (Capacitor.isNativePlatform()) {
+      StatusBar.setOverlaysWebView({
+        overlay: false,
+      });
 
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-      const newColorScheme = e.matches ? 'dark' : 'light';
-      console.log('System theme changed to:', newColorScheme);
-      if (newColorScheme == 'dark') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) {
         StatusBar.setStyle({ style: Style.Dark });
         StatusBar.setBackgroundColor({ color: '#795deb' });
       } else {
         StatusBar.setStyle({ style: Style.Light });
         StatusBar.setBackgroundColor({ color: '#339bde' });
       }
-    });
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        const newColorScheme = e.matches ? 'dark' : 'light';
+        console.log('System theme changed to:', newColorScheme);
+        if (newColorScheme == 'dark') {
+          StatusBar.setStyle({ style: Style.Dark });
+          StatusBar.setBackgroundColor({ color: '#795deb' });
+        } else {
+          StatusBar.setStyle({ style: Style.Light });
+          StatusBar.setBackgroundColor({ color: '#339bde' });
+        }
+      });
+    } else {
+      console.log("Status Bar not supported");
+    }
 
   }
 

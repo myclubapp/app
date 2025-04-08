@@ -89,10 +89,11 @@ export class AuthService {
         lastName,
         email: newUserCredential.user.email,
       });
-      await updateProfile(this.auth.currentUser, {
+      // wird im backend gemacht
+      /*await updateProfile(this.auth.currentUser, {
         displayName: `${firstName} ${lastName}`,
         photoURL: "https://randomuser.me/api/portraits/lego/1.jpg",
-      });
+      });*/
 
       return newUserCredential;
     } catch (error) {
