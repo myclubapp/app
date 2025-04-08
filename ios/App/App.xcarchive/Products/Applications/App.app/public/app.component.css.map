@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/app.component.scss"],
+  "sourcesContent": ["ion-thumbnail {\n  img{\n    object-fit: contain;\n  }\n}\nion-menu ion-note {\n  margin-bottom: 30px;\n}\n\nion-menu ion-list-header,\nion-menu ion-note {\n  padding-left: 20px;\n}\n.ios{\n  .notch-padding{\n    padding-top: 40px !important;\n  }\n}"],
+  "mappings": ";AACE,cAAA;AACE,cAAA;;AAGJ,SAAA;AACE,iBAAA;;AAGF,SAAA;AAAA,SAAA;AAEE,gBAAA;;AAGA,CAAA,IAAA,CAAA;AACE,eAAA;;",
+  "names": []
+}

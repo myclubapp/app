@@ -1,0 +1,75 @@
+import {
+  hapticSelectionChanged,
+  hapticSelectionEnd,
+  hapticSelectionStart
+} from "./chunk-3XAIP4YB.js";
+import {
+  createGesture
+} from "./chunk-2HS7YJ5A.js";
+import {
+  writeTask
+} from "./chunk-T7BCX42A.js";
+
+// node_modules/@ionic/core/dist/esm/button-active-90f1dbc4.js
+var createButtonActiveGesture = (el, isButton) => {
+  let currentTouchedButton;
+  let initialTouchedButton;
+  const activateButtonAtPoint = (x, y, hapticFeedbackFn) => {
+    if (typeof document === "undefined") {
+      return;
+    }
+    const target = document.elementFromPoint(x, y);
+    if (!target || !isButton(target) || target.disabled) {
+      clearActiveButton();
+      return;
+    }
+    if (target !== currentTouchedButton) {
+      clearActiveButton();
+      setActiveButton(target, hapticFeedbackFn);
+    }
+  };
+  const setActiveButton = (button, hapticFeedbackFn) => {
+    currentTouchedButton = button;
+    if (!initialTouchedButton) {
+      initialTouchedButton = currentTouchedButton;
+    }
+    const buttonToModify = currentTouchedButton;
+    writeTask(() => buttonToModify.classList.add("ion-activated"));
+    hapticFeedbackFn();
+  };
+  const clearActiveButton = (dispatchClick = false) => {
+    if (!currentTouchedButton) {
+      return;
+    }
+    const buttonToModify = currentTouchedButton;
+    writeTask(() => buttonToModify.classList.remove("ion-activated"));
+    if (dispatchClick && initialTouchedButton !== currentTouchedButton) {
+      currentTouchedButton.click();
+    }
+    currentTouchedButton = void 0;
+  };
+  return createGesture({
+    el,
+    gestureName: "buttonActiveDrag",
+    threshold: 0,
+    onStart: (ev) => activateButtonAtPoint(ev.currentX, ev.currentY, hapticSelectionStart),
+    onMove: (ev) => activateButtonAtPoint(ev.currentX, ev.currentY, hapticSelectionChanged),
+    onEnd: () => {
+      clearActiveButton(true);
+      hapticSelectionEnd();
+      initialTouchedButton = void 0;
+    }
+  });
+};
+
+export {
+  createButtonActiveGesture
+};
+/*! Bundled license information:
+
+@ionic/core/dist/esm/button-active-90f1dbc4.js:
+  (*!
+   * (C) Ionic http://ionicframework.com - MIT License
+   *)
+*/
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy9AaW9uaWMvY29yZS9kaXN0L2VzbS9idXR0b24tYWN0aXZlLTkwZjFkYmM0LmpzIl0sInNvdXJjZXNDb250ZW50IjpbIi8qIVxuICogKEMpIElvbmljIGh0dHA6Ly9pb25pY2ZyYW1ld29yay5jb20gLSBNSVQgTGljZW5zZVxuICovXG5pbXBvcnQgeyB3IGFzIHdyaXRlVGFzayB9IGZyb20gJy4vaW5kZXgtNTI3YjllMzQuanMnO1xuaW1wb3J0IHsgaCBhcyBoYXB0aWNTZWxlY3Rpb25FbmQsIGEgYXMgaGFwdGljU2VsZWN0aW9uU3RhcnQsIGIgYXMgaGFwdGljU2VsZWN0aW9uQ2hhbmdlZCB9IGZyb20gJy4vaGFwdGljLWFjMTY0ZTRjLmpzJztcbmltcG9ydCB7IGNyZWF0ZUdlc3R1cmUgfSBmcm9tICcuL2luZGV4LTM5NzgyNjQyLmpzJztcbmNvbnN0IGNyZWF0ZUJ1dHRvbkFjdGl2ZUdlc3R1cmUgPSAoZWwsIGlzQnV0dG9uKSA9PiB7XG4gIGxldCBjdXJyZW50VG91Y2hlZEJ1dHRvbjtcbiAgbGV0IGluaXRpYWxUb3VjaGVkQnV0dG9uO1xuICBjb25zdCBhY3RpdmF0ZUJ1dHRvbkF0UG9pbnQgPSAoeCwgeSwgaGFwdGljRmVlZGJhY2tGbikgPT4ge1xuICAgIGlmICh0eXBlb2YgZG9jdW1lbnQgPT09ICd1bmRlZmluZWQnKSB7XG4gICAgICByZXR1cm47XG4gICAgfVxuICAgIGNvbnN0IHRhcmdldCA9IGRvY3VtZW50LmVsZW1lbnRGcm9tUG9pbnQoeCwgeSk7XG4gICAgaWYgKCF0YXJnZXQgfHwgIWlzQnV0dG9uKHRhcmdldCkgfHwgdGFyZ2V0LmRpc2FibGVkKSB7XG4gICAgICBjbGVhckFjdGl2ZUJ1dHRvbigpO1xuICAgICAgcmV0dXJuO1xuICAgIH1cbiAgICBpZiAodGFyZ2V0ICE9PSBjdXJyZW50VG91Y2hlZEJ1dHRvbikge1xuICAgICAgY2xlYXJBY3RpdmVCdXR0b24oKTtcbiAgICAgIHNldEFjdGl2ZUJ1dHRvbih0YXJnZXQsIGhhcHRpY0ZlZWRiYWNrRm4pO1xuICAgIH1cbiAgfTtcbiAgY29uc3Qgc2V0QWN0aXZlQnV0dG9uID0gKGJ1dHRvbiwgaGFwdGljRmVlZGJhY2tGbikgPT4ge1xuICAgIGN1cnJlbnRUb3VjaGVkQnV0dG9uID0gYnV0dG9uO1xuICAgIGlmICghaW5pdGlhbFRvdWNoZWRCdXR0b24pIHtcbiAgICAgIGluaXRpYWxUb3VjaGVkQnV0dG9uID0gY3VycmVudFRvdWNoZWRCdXR0b247XG4gICAgfVxuICAgIGNvbnN0IGJ1dHRvblRvTW9kaWZ5ID0gY3VycmVudFRvdWNoZWRCdXR0b247XG4gICAgd3JpdGVUYXNrKCgpID0+IGJ1dHRvblRvTW9kaWZ5LmNsYXNzTGlzdC5hZGQoJ2lvbi1hY3RpdmF0ZWQnKSk7XG4gICAgaGFwdGljRmVlZGJhY2tGbigpO1xuICB9O1xuICBjb25zdCBjbGVhckFjdGl2ZUJ1dHRvbiA9IChkaXNwYXRjaENsaWNrID0gZmFsc2UpID0+IHtcbiAgICBpZiAoIWN1cnJlbnRUb3VjaGVkQnV0dG9uKSB7XG4gICAgICByZXR1cm47XG4gICAgfVxuICAgIGNvbnN0IGJ1dHRvblRvTW9kaWZ5ID0gY3VycmVudFRvdWNoZWRCdXR0b247XG4gICAgd3JpdGVUYXNrKCgpID0+IGJ1dHRvblRvTW9kaWZ5LmNsYXNzTGlzdC5yZW1vdmUoJ2lvbi1hY3RpdmF0ZWQnKSk7XG4gICAgLyoqXG4gICAgICogQ2xpY2tpbmcgb24gb25lIGJ1dHRvbiwgYnV0IHJlbGVhc2luZyBvbiBhbm90aGVyIGJ1dHRvblxuICAgICAqIGRvZXMgbm90IGRpc3BhdGNoIGEgY2xpY2sgZXZlbnQgaW4gYnJvd3NlcnMsIHNvIHdlXG4gICAgICogbmVlZCB0byBkbyBpdCBtYW51YWxseSBoZXJlLiBTb21lIGJyb3dzZXJzIHdpbGxcbiAgICAgKiBkaXNwYXRjaCBhIGNsaWNrIGlmIGNsaWNraW5nIG9uIG9uZSBidXR0b24sIGRyYWdnaW5nIG92ZXJcbiAgICAgKiBhbm90aGVyIGJ1dHRvbiwgYW5kIHJlbGVhc2luZyBvbiB0aGUgb3JpZ2luYWwgYnV0dG9uLiBJbiB0aGF0XG4gICAgICogY2FzZSwgd2UgbmVlZCB0byBtYWtlIHN1cmUgd2UgZG8gbm90IGNhdXNlIGEgZG91YmxlIGNsaWNrIHRoZXJlLlxuICAgICAqL1xuICAgIGlmIChkaXNwYXRjaENsaWNrICYmIGluaXRpYWxUb3VjaGVkQnV0dG9uICE9PSBjdXJyZW50VG91Y2hlZEJ1dHRvbikge1xuICAgICAgY3VycmVudFRvdWNoZWRCdXR0b24uY2xpY2soKTtcbiAgICB9XG4gICAgY3VycmVudFRvdWNoZWRCdXR0b24gPSB1bmRlZmluZWQ7XG4gIH07XG4gIHJldHVybiBjcmVhdGVHZXN0dXJlKHtcbiAgICBlbCxcbiAgICBnZXN0dXJlTmFtZTogJ2J1dHRvbkFjdGl2ZURyYWcnLFxuICAgIHRocmVzaG9sZDogMCxcbiAgICBvblN0YXJ0OiBldiA9PiBhY3RpdmF0ZUJ1dHRvbkF0UG9pbnQoZXYuY3VycmVudFgsIGV2LmN1cnJlbnRZLCBoYXB0aWNTZWxlY3Rpb25TdGFydCksXG4gICAgb25Nb3ZlOiBldiA9PiBhY3RpdmF0ZUJ1dHRvbkF0UG9pbnQoZXYuY3VycmVudFgsIGV2LmN1cnJlbnRZLCBoYXB0aWNTZWxlY3Rpb25DaGFuZ2VkKSxcbiAgICBvbkVuZDogKCkgPT4ge1xuICAgICAgY2xlYXJBY3RpdmVCdXR0b24odHJ1ZSk7XG4gICAgICBoYXB0aWNTZWxlY3Rpb25FbmQoKTtcbiAgICAgIGluaXRpYWxUb3VjaGVkQnV0dG9uID0gdW5kZWZpbmVkO1xuICAgIH1cbiAgfSk7XG59O1xuZXhwb3J0IHsgY3JlYXRlQnV0dG9uQWN0aXZlR2VzdHVyZSBhcyBjIH07Il0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7O0FBTUEsSUFBTSw0QkFBNEIsQ0FBQyxJQUFJLGFBQWE7QUFDbEQsTUFBSTtBQUNKLE1BQUk7QUFDSixRQUFNLHdCQUF3QixDQUFDLEdBQUcsR0FBRyxxQkFBcUI7QUFDeEQsUUFBSSxPQUFPLGFBQWEsYUFBYTtBQUNuQztBQUFBLElBQ0Y7QUFDQSxVQUFNLFNBQVMsU0FBUyxpQkFBaUIsR0FBRyxDQUFDO0FBQzdDLFFBQUksQ0FBQyxVQUFVLENBQUMsU0FBUyxNQUFNLEtBQUssT0FBTyxVQUFVO0FBQ25ELHdCQUFrQjtBQUNsQjtBQUFBLElBQ0Y7QUFDQSxRQUFJLFdBQVcsc0JBQXNCO0FBQ25DLHdCQUFrQjtBQUNsQixzQkFBZ0IsUUFBUSxnQkFBZ0I7QUFBQSxJQUMxQztBQUFBLEVBQ0Y7QUFDQSxRQUFNLGtCQUFrQixDQUFDLFFBQVEscUJBQXFCO0FBQ3BELDJCQUF1QjtBQUN2QixRQUFJLENBQUMsc0JBQXNCO0FBQ3pCLDZCQUF1QjtBQUFBLElBQ3pCO0FBQ0EsVUFBTSxpQkFBaUI7QUFDdkIsY0FBVSxNQUFNLGVBQWUsVUFBVSxJQUFJLGVBQWUsQ0FBQztBQUM3RCxxQkFBaUI7QUFBQSxFQUNuQjtBQUNBLFFBQU0sb0JBQW9CLENBQUMsZ0JBQWdCLFVBQVU7QUFDbkQsUUFBSSxDQUFDLHNCQUFzQjtBQUN6QjtBQUFBLElBQ0Y7QUFDQSxVQUFNLGlCQUFpQjtBQUN2QixjQUFVLE1BQU0sZUFBZSxVQUFVLE9BQU8sZUFBZSxDQUFDO0FBU2hFLFFBQUksaUJBQWlCLHlCQUF5QixzQkFBc0I7QUFDbEUsMkJBQXFCLE1BQU07QUFBQSxJQUM3QjtBQUNBLDJCQUF1QjtBQUFBLEVBQ3pCO0FBQ0EsU0FBTyxjQUFjO0FBQUEsSUFDbkI7QUFBQSxJQUNBLGFBQWE7QUFBQSxJQUNiLFdBQVc7QUFBQSxJQUNYLFNBQVMsUUFBTSxzQkFBc0IsR0FBRyxVQUFVLEdBQUcsVUFBVSxvQkFBb0I7QUFBQSxJQUNuRixRQUFRLFFBQU0sc0JBQXNCLEdBQUcsVUFBVSxHQUFHLFVBQVUsc0JBQXNCO0FBQUEsSUFDcEYsT0FBTyxNQUFNO0FBQ1gsd0JBQWtCLElBQUk7QUFDdEIseUJBQW1CO0FBQ25CLDZCQUF1QjtBQUFBLElBQ3pCO0FBQUEsRUFDRixDQUFDO0FBQ0g7IiwibmFtZXMiOltdLCJ4X2dvb2dsZV9pZ25vcmVMaXN0IjpbMF19

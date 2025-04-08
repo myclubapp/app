@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/pages/club-admin-list/club-admin-list.page.scss"],
+  "sourcesContent": ["ion-avatar img {\n    height: 36px;\n  }\n  "],
+  "mappings": ";AAAA,WAAA;AACI,UAAA;;",
+  "names": []
+}

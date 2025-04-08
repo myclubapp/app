@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/pages/auth/logout/logout.page.scss"],
+  "sourcesContent": ["ion-list{\n    margin-left: 0px !important;\n    margin-right: 0px !important;\n}\nion-card-title{\n    margin-top: 16px  !important;\n    margin-bottom: 16px  !important;\n}\n"],
+  "mappings": ";AAAA;AACI,eAAA;AACA,gBAAA;;AAEJ;AACI,cAAA;AACA,iBAAA;;",
+  "names": []
+}

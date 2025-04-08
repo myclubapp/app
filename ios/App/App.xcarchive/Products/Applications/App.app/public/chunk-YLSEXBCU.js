@@ -1,0 +1,13 @@
+import {
+  registerPlugin
+} from "./chunk-YB7CDXXA.js";
+
+// node_modules/myclub-widget-plugin/dist/esm/index.js
+var MyClubAppWidget = registerPlugin("MyClubAppWidget", {
+  web: () => import("./web-EZNPYY4H.js").then((m) => new m.MyClubAppWidgetWeb())
+});
+
+export {
+  MyClubAppWidget
+};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy9teWNsdWItd2lkZ2V0LXBsdWdpbi9kaXN0L2VzbS9pbmRleC5qcyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyByZWdpc3RlclBsdWdpbiB9IGZyb20gJ0BjYXBhY2l0b3IvY29yZSc7XG5jb25zdCBNeUNsdWJBcHBXaWRnZXQgPSByZWdpc3RlclBsdWdpbignTXlDbHViQXBwV2lkZ2V0Jywge1xuICB3ZWI6ICgpID0+IGltcG9ydCgnLi93ZWInKS50aGVuKG0gPT4gbmV3IG0uTXlDbHViQXBwV2lkZ2V0V2ViKCkpXG59KTtcbmV4cG9ydCAqIGZyb20gJy4vZGVmaW5pdGlvbnMnO1xuZXhwb3J0IHsgTXlDbHViQXBwV2lkZ2V0IH07XG4iXSwibWFwcGluZ3MiOiI7Ozs7O0FBQ0EsSUFBTSxrQkFBa0IsZUFBZSxtQkFBbUI7QUFBQSxFQUN4RCxLQUFLLE1BQU0sT0FBTyxtQkFBTyxFQUFFLEtBQUssT0FBSyxJQUFJLEVBQUUsbUJBQW1CLENBQUM7QUFDakUsQ0FBQzsiLCJuYW1lcyI6W10sInhfZ29vZ2xlX2lnbm9yZUxpc3QiOlswXX0=

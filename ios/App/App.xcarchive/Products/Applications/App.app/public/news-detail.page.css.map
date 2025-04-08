@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/pages/news/news-detail/news-detail.page.scss"],
+  "sourcesContent": ["ion-card {\n  margin-top: 0px;\n  margin-inline: 0px;\n}\n\nimg {\n  min-width: 100%;\n}"],
+  "mappings": ";AAAA;AACE,cAAA;AACA,iBAAA;;AAGF;AACE,aAAA;;",
+  "names": []
+}

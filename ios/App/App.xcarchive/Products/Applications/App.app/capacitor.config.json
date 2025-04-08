@@ -1,0 +1,48 @@
+{
+	"appId": "app.myclub.defaultapp",
+	"appName": "myclub",
+	"webDir": "www/browser",
+	"server": {
+		"allowNavigation": [
+			"http://developers.google.com/*"
+		]
+	},
+	"android": {},
+	"plugins": {
+		"PushNotifications": {
+			"presentationOptions": [
+				"badge",
+				"sound",
+				"alert"
+			]
+		},
+		"GoogleMaps": {
+			"androidKey": "AIzaSyAM5x9P0syj9qtxUmFs98nW0B967xo52Fw"
+		},
+		"Geolocation": {
+			"enableHighAccuracy": true
+		}
+	},
+	"ios": {
+		"scheme": "App"
+	},
+	"packageClassList": [
+		"AppPlugin",
+		"CAPBrowserPlugin",
+		"CAPCameraPlugin",
+		"ClipboardPlugin",
+		"DevicePlugin",
+		"DialogPlugin",
+		"GeolocationPlugin",
+		"CapacitorGoogleMapsPlugin",
+		"HapticsPlugin",
+		"KeyboardPlugin",
+		"CAPNetworkPlugin",
+		"PushNotificationsPlugin",
+		"SharePlugin",
+		"SplashScreenPlugin",
+		"StatusBarPlugin",
+		"MyClubAppWidgetPlugin",
+		"CDVPlugin"
+	]
+}

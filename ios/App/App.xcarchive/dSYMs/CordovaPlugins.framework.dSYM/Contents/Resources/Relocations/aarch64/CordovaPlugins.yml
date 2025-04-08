@@ -1,0 +1,26 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/sandro/Library/Developer/Xcode/DerivedData/App-gaoiciiwgmhemohfwvymkcufgjut/Build/Intermediates.noindex/ArchiveIntermediates/App/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/CordovaPlugins.framework/CordovaPlugins'
+relocations:
+  - { offset: 0x4C49, size: 0x8, addend: 0x0, symName: _CordovaPluginsVersionString, symObjAddr: 0x0, symBinAddr: 0x63C0, symSize: 0x0 }
+  - { offset: 0x4C7D, size: 0x8, addend: 0x0, symName: _CordovaPluginsVersionNumber, symObjAddr: 0x30, symBinAddr: 0x63F0, symSize: 0x0 }
+  - { offset: 0x4CB9, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon pluginInitialize]', symObjAddr: 0x0, symBinAddr: 0x4000, symSize: 0x114 }
+  - { offset: 0x4DAD, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon pluginInitialize]', symObjAddr: 0x0, symBinAddr: 0x4000, symSize: 0x114 }
+  - { offset: 0x4DEC, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon remove:]', symObjAddr: 0x114, symBinAddr: 0x4114, symSize: 0x1DC }
+  - { offset: 0x4E74, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon copyTo:]', symObjAddr: 0x2F0, symBinAddr: 0x42F0, symSize: 0x4A4 }
+  - { offset: 0x4F36, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon downloadFile:]', symObjAddr: 0x794, symBinAddr: 0x4794, symSize: 0x1CC }
+  - { offset: 0x4FBE, size: 0x8, addend: 0x0, symName: '___35-[IonicCordovaCommon downloadFile:]_block_invoke', symObjAddr: 0x960, symBinAddr: 0x4960, symSize: 0x2FC }
+  - { offset: 0x50A2, size: 0x8, addend: 0x0, symName: ___copy_helper_block_e8_32s40s48s, symObjAddr: 0xC5C, symBinAddr: 0x4C5C, symSize: 0x30 }
+  - { offset: 0x50C8, size: 0x8, addend: 0x0, symName: ___destroy_helper_block_e8_32s40s48s, symObjAddr: 0xC8C, symBinAddr: 0x4C8C, symSize: 0x30 }
+  - { offset: 0x50E5, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon getAppInfo:]', symObjAddr: 0xCBC, symBinAddr: 0x4CBC, symSize: 0x434 }
+  - { offset: 0x5213, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon getPreferences:]', symObjAddr: 0x10F0, symBinAddr: 0x50F0, symSize: 0x1FC }
+  - { offset: 0x52D1, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon setPreferences:]', symObjAddr: 0x12EC, symBinAddr: 0x52EC, symSize: 0xE4 }
+  - { offset: 0x532C, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon getNativeConfig]', symObjAddr: 0x13D0, symBinAddr: 0x53D0, symSize: 0x4E4 }
+  - { offset: 0x5403, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon getCustomConfig]', symObjAddr: 0x18B4, symBinAddr: 0x58B4, symSize: 0xB8 }
+  - { offset: 0x5489, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon configure:]', symObjAddr: 0x196C, symBinAddr: 0x596C, symSize: 0x16C }
+  - { offset: 0x54F3, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon revertToBase]', symObjAddr: 0x1AD8, symBinAddr: 0x5AD8, symSize: 0x10 }
+  - { offset: 0x5527, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon setRevertToBase:]', symObjAddr: 0x1AE8, symBinAddr: 0x5AE8, symSize: 0x10 }
+  - { offset: 0x5560, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon baseIndexPath]', symObjAddr: 0x1AF8, symBinAddr: 0x5AF8, symSize: 0x10 }
+  - { offset: 0x5594, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon setBaseIndexPath:]', symObjAddr: 0x1B08, symBinAddr: 0x5B08, symSize: 0xC }
+  - { offset: 0x55CF, size: 0x8, addend: 0x0, symName: '-[IonicCordovaCommon .cxx_destruct]', symObjAddr: 0x1B14, symBinAddr: 0x5B14, symSize: 0x14 }
+...

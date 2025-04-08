@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/pages/info/info.page.scss"],
+  "sourcesContent": ["ion-img {\n  display: block;\n  margin-left: auto;\n  margin-right: auto;\n  width: 200px;\n}\n"],
+  "mappings": ";AAAA;AACE,WAAA;AACA,eAAA;AACA,gBAAA;AACA,SAAA;;",
+  "names": []
+}

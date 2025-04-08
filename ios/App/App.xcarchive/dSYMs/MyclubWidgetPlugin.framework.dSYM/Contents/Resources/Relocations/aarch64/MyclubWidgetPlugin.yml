@@ -1,0 +1,57 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/sandro/Library/Developer/Xcode/DerivedData/App-gaoiciiwgmhemohfwvymkcufgjut/Build/Intermediates.noindex/ArchiveIntermediates/App/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/MyclubWidgetPlugin.framework/MyclubWidgetPlugin'
+relocations:
+  - { offset: 0x5FE35, size: 0x8, addend: 0x0, symName: _MyclubWidgetPluginVersionString, symObjAddr: 0x0, symBinAddr: 0x7870, symSize: 0x0 }
+  - { offset: 0x5FE6A, size: 0x8, addend: 0x0, symName: _MyclubWidgetPluginVersionNumber, symObjAddr: 0x30, symBinAddr: 0x78A0, symSize: 0x0 }
+  - { offset: 0x5FEA7, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0C4echoyS2SF', symObjAddr: 0x0, symBinAddr: 0x4000, symSize: 0x34 }
+  - { offset: 0x60063, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C10identifierSSvpfi', symObjAddr: 0x408, symBinAddr: 0x4408, symSize: 0x1C }
+  - { offset: 0x6007F, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C10identifierSSvpfi', symObjAddr: 0x408, symBinAddr: 0x4408, symSize: 0x1C }
+  - { offset: 0x60091, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C6jsNameSSvpfi', symObjAddr: 0x424, symBinAddr: 0x4424, symSize: 0x24 }
+  - { offset: 0x600CA, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C13pluginMethodsSaySo15CAPPluginMethodCGvpfi', symObjAddr: 0x448, symBinAddr: 0x4448, symSize: 0x234 }
+  - { offset: 0x601F4, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C14implementation33_79ACFF306562F62B65DAE95F540CCA70LLAA0defB0Cvpfi', symObjAddr: 0x67C, symBinAddr: 0x467C, symSize: 0x20 }
+  - { offset: 0x6022D, size: 0x8, addend: 0x0, symName: '_$ss29getContiguousArrayStorageType3fors01_bcD0CyxGmxm_tlFSo15CAPPluginMethodC_Ttg5', symObjAddr: 0x69C, symBinAddr: 0x469C, symSize: 0x54 }
+  - { offset: 0x60286, size: 0x8, addend: 0x0, symName: ___swift_instantiateConcreteTypeFromMangledName, symObjAddr: 0xA84, symBinAddr: 0x4A84, symSize: 0x44 }
+  - { offset: 0x6029A, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0CMa', symObjAddr: 0xBC8, symBinAddr: 0x4BC8, symSize: 0x20 }
+  - { offset: 0x602AE, size: 0x8, addend: 0x0, symName: '_$sSo15CAPPluginMethodCMa', symObjAddr: 0xBE8, symBinAddr: 0x4BE8, symSize: 0x44 }
+  - { offset: 0x60392, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0C4echoyS2SF', symObjAddr: 0x0, symBinAddr: 0x4000, symSize: 0x34 }
+  - { offset: 0x60416, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0C4echoyS2SFTo', symObjAddr: 0x34, symBinAddr: 0x4034, symSize: 0x88 }
+  - { offset: 0x60440, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0C7setItem3key5value5groupSbSS_S2StF', symObjAddr: 0xBC, symBinAddr: 0x40BC, symSize: 0x4 }
+  - { offset: 0x6046F, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0C7setItem3key5value5groupSbSS_S2StFTo', symObjAddr: 0xC0, symBinAddr: 0x40C0, symSize: 0xBC }
+  - { offset: 0x604AB, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0C18reloadAllTimelinesSbyF', symObjAddr: 0x17C, symBinAddr: 0x417C, symSize: 0xA8 }
+  - { offset: 0x60548, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0C18reloadAllTimelinesSbyFTo', symObjAddr: 0x224, symBinAddr: 0x4224, symSize: 0xC0 }
+  - { offset: 0x605DE, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0C15reloadTimelines6ofKindSbSS_tF', symObjAddr: 0x2E4, symBinAddr: 0x42E4, symSize: 0x4 }
+  - { offset: 0x605F9, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0C15reloadTimelines6ofKindSbSS_tFTo', symObjAddr: 0x2E8, symBinAddr: 0x42E8, symSize: 0x64 }
+  - { offset: 0x60629, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0CACycfC', symObjAddr: 0x34C, symBinAddr: 0x434C, symSize: 0x20 }
+  - { offset: 0x6063D, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0CACycfc', symObjAddr: 0x36C, symBinAddr: 0x436C, symSize: 0x30 }
+  - { offset: 0x60670, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0CACycfcTo', symObjAddr: 0x39C, symBinAddr: 0x439C, symSize: 0x3C }
+  - { offset: 0x606A5, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0CfD', symObjAddr: 0x3D8, symBinAddr: 0x43D8, symSize: 0x30 }
+  - { offset: 0x60778, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0C4echoyS2SFTf4nd_g', symObjAddr: 0x6F0, symBinAddr: 0x46F0, symSize: 0xE4 }
+  - { offset: 0x6088A, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0C7setItem3key5value5groupSbSS_S2StFTf4nnnd_n', symObjAddr: 0x7D4, symBinAddr: 0x47D4, symSize: 0x2B0 }
+  - { offset: 0x60B8C, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppB0C15reloadTimelines6ofKindSbSS_tFTf4nd_n', symObjAddr: 0xAC8, symBinAddr: 0x4AC8, symSize: 0x100 }
+  - { offset: 0x6102E, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0CfETo', symObjAddr: 0xB48, symBinAddr: 0x5754, symSize: 0x60 }
+  - { offset: 0x6105D, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0CMa', symObjAddr: 0xBA8, symBinAddr: 0x57B4, symSize: 0x20 }
+  - { offset: 0x6107C, size: 0x8, addend: 0x0, symName: '_$ss22__RawDictionaryStorageC4findys10_HashTableV6BucketV6bucket_Sb5foundtxSHRzlFSS_Tg5', symObjAddr: 0xBC8, symBinAddr: 0x57D4, symSize: 0x64 }
+  - { offset: 0x610CA, size: 0x8, addend: 0x0, symName: '_$ss22__RawDictionaryStorageC4find_9hashValues10_HashTableV6BucketV6bucket_Sb5foundtx_SitSHRzlFSS_Tg5', symObjAddr: 0xC2C, symBinAddr: 0x5838, symSize: 0xE0 }
+  - { offset: 0x611BB, size: 0x8, addend: 0x0, symName: '_$sSS_yptWOh', symObjAddr: 0x1450, symBinAddr: 0x6018, symSize: 0x40 }
+  - { offset: 0x611CF, size: 0x8, addend: 0x0, symName: '_$sSS_yptWOc', symObjAddr: 0x1490, symBinAddr: 0x6058, symSize: 0x48 }
+  - { offset: 0x611E3, size: 0x8, addend: 0x0, symName: '_$sypWOb', symObjAddr: 0x14D8, symBinAddr: 0x60A0, symSize: 0x10 }
+  - { offset: 0x6127D, size: 0x8, addend: 0x0, symName: '_$sSD17dictionaryLiteralSDyxq_Gx_q_td_tcfCSS_ypTt0g5Tf4g_n', symObjAddr: 0xD0C, symBinAddr: 0x5918, symSize: 0xF8 }
+  - { offset: 0x6139B, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C10identifierSSvg', symObjAddr: 0xC, symBinAddr: 0x4C38, symSize: 0x38 }
+  - { offset: 0x613C0, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C6jsNameSSvg', symObjAddr: 0x98, symBinAddr: 0x4CC4, symSize: 0x38 }
+  - { offset: 0x6142C, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C13pluginMethodsSaySo15CAPPluginMethodCGvgTo', symObjAddr: 0xD0, symBinAddr: 0x4CFC, symSize: 0x60 }
+  - { offset: 0x6145F, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C13pluginMethodsSaySo15CAPPluginMethodCGvg', symObjAddr: 0x130, symBinAddr: 0x4D5C, symSize: 0x10 }
+  - { offset: 0x614AD, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C4echoyySo13CAPPluginCallCFTo', symObjAddr: 0x140, symBinAddr: 0x4D6C, symSize: 0x48 }
+  - { offset: 0x614DE, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C7setItemyySo13CAPPluginCallCFTo', symObjAddr: 0x188, symBinAddr: 0x4DB4, symSize: 0x48 }
+  - { offset: 0x61549, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C18reloadAllTimelinesyySo13CAPPluginCallCFTo', symObjAddr: 0x1D0, symBinAddr: 0x4DFC, symSize: 0x140 }
+  - { offset: 0x6162F, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C15reloadTimelinesyySo13CAPPluginCallCFTo', symObjAddr: 0x310, symBinAddr: 0x4F3C, symSize: 0x48 }
+  - { offset: 0x61679, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C6bridge8pluginId0H4NameAC9Capacitor17CAPBridgeProtocol_p_S2StcfC', symObjAddr: 0x358, symBinAddr: 0x4F84, symSize: 0xB4 }
+  - { offset: 0x616B5, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C6bridge8pluginId0H4NameAC9Capacitor17CAPBridgeProtocol_p_S2Stcfc', symObjAddr: 0x40C, symBinAddr: 0x5038, symSize: 0x368 }
+  - { offset: 0x61838, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C6bridge8pluginId0H4NameAC9Capacitor17CAPBridgeProtocol_p_S2StcfcTo', symObjAddr: 0x774, symBinAddr: 0x53A0, symSize: 0x74 }
+  - { offset: 0x6184C, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0CACycfc', symObjAddr: 0x808, symBinAddr: 0x5414, symSize: 0x2F0 }
+  - { offset: 0x619A5, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0CACycfcTo', symObjAddr: 0xAF8, symBinAddr: 0x5704, symSize: 0x20 }
+  - { offset: 0x619B9, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0CfD', symObjAddr: 0xB18, symBinAddr: 0x5724, symSize: 0x30 }
+  - { offset: 0x619F7, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C4echoyySo13CAPPluginCallCFTf4nd_n', symObjAddr: 0xE04, symBinAddr: 0x5A10, symSize: 0x15C }
+  - { offset: 0x61AFE, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C7setItemyySo13CAPPluginCallCFTf4nd_n', symObjAddr: 0xF60, symBinAddr: 0x5B6C, symSize: 0x304 }
+  - { offset: 0x61C9D, size: 0x8, addend: 0x0, symName: '_$s18MyclubWidgetPlugin09MyClubAppbC0C15reloadTimelinesyySo13CAPPluginCallCFTf4nd_n', symObjAddr: 0x1264, symBinAddr: 0x5E70, symSize: 0x1A8 }
+...

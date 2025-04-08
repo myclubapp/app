@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/pages/profile/profile.page.scss"],
+  "sourcesContent": ["ion-avatar img {\n  height: 36px;\n}\n\n.profile-picture-alert {\n  --max-width: 90%;\n  --width: 340px;\n  \n  .alert-message {\n    text-align: center;\n    padding: 10px;\n  }\n\n  img {\n    border-radius: 8px;\n    box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n  }\n}"],
+  "mappings": ";AAAA,WAAA;AACE,UAAA;;AAGF,CAAA;AACE,eAAA;AACA,WAAA;;AAEA,CAJF,sBAIE,CAAA;AACE,cAAA;AACA,WAAA;;AAGF,CATF,sBASE;AACE,iBAAA;AACA,cAAA,EAAA,IAAA,IAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;;",
+  "names": []
+}
