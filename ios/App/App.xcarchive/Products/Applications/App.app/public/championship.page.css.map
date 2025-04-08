@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/pages/championship/championship/championship.page.scss"],
-  "sourcesContent": [".myclubPadding {\n    --padding-start: 0;\n    --inner-padding-end: p;\n}"],
-  "mappings": ";AAAA,CAAA;AACI,mBAAA;AACA,uBAAA;;",
-  "names": []
-}

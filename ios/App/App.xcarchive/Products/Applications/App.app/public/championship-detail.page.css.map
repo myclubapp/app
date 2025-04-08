@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/pages/championship/championship-detail/championship-detail.page.scss"],
-  "sourcesContent": ["/* The Google Map element itself comes unstyled, \nso you should style it to fit within the layout of your page structure. \nBecause we're rendering a view into this slot, \nby itself the element has no width or height, \nso be sure to set those explicitly.\n\ncapacitor-google-map {\n  display: inline-block;\n  width: 275px;\n  height: 400px;\n}\n*/ \n\ncapacitor-google-map {\n  display: block;\n  width: 100%;\n  height: 300px; // adjust as needed\n  z-index: 1;\n}\n\nion-fab {\n  position: absolute;\n  top: 32px;\n  right: 16px;\n}\n\n"],
-  "mappings": ";AAaA;AACE,WAAA;AACA,SAAA;AACA,UAAA;AACA,WAAA;;AAGF;AACE,YAAA;AACA,OAAA;AACA,SAAA;;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/pages/onboarding/onboarding/onboarding.page.scss"],
-  "sourcesContent": ["ion-card svg {\n  max-width: 100% !important;\n  max-height: 50% !important;\n}\n\nion-card {\n  margin-top: 0px;\n  margin-inline: 0px;\n}\n\nion-searchbar {\n  padding: 0px;\n}\n\nion-list {\n  margin: 0px !important;\n}\n"],
-  "mappings": ";AAAA,SAAA;AACE,aAAA;AACA,cAAA;;AAGF;AACE,cAAA;AACA,iBAAA;;AAGF;AACE,WAAA;;AAGF;AACE,UAAA;;",
-  "names": []
-}

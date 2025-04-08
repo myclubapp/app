@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/pages/onboarding/onboarding-club/onboarding-club.page.scss"],
-  "sourcesContent": ["ion-list {\n    margin: 0px !important;\n}\nion-card-title{\n    margin-top: 16px  !important;\n    margin-bottom: 16px  !important;\n}\n"],
-  "mappings": ";AAAA;AACI,UAAA;;AAEJ;AACI,cAAA;AACA,iBAAA;;",
-  "names": []
-}

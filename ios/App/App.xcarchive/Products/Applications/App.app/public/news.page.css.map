@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/pages/news/news/news.page.scss"],
-  "sourcesContent": ["div.web-social-share p {\n  color: black !important;\n\n  @media (prefers-color-scheme: dark) {\n    color: #000 !important;\n  }\n}\n\n// Funktioniert nicht..\ndiv.web-social-share-action-sheet-group {\n  // div.web-social-share.web-social-share-open div.web-social-share-action-sheet div.web-social-share-action-sheet-container\n  margin-bottom: 60px !important;\n}\n\n\nimg {\n  min-width: 100%;\n}"],
-  "mappings": ";AAAA,GAAA,CAAA,iBAAA;AACE,SAAA;;AAEA,OAAA,CAAA,oBAAA,EAAA;AAHF,KAAA,CAAA,iBAAA;AAII,WAAA;;;AAKJ,GAAA,CAAA;AAEE,iBAAA;;AAIF;AACE,aAAA;;",
-  "names": []
-}
