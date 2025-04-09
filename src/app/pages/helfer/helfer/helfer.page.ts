@@ -83,12 +83,14 @@ export class HelferPage implements OnInit {
   }
 
   handleNavigationData() {
-    this.activatedRouteSub = this.activatedRoute.url.subscribe(data => {
-      if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state["type"] === "helferEvent") {
+    this.activatedRouteSub = this.activatedRoute.url.subscribe(() => {
+      const navigation = this.router.getCurrentNavigation();
+      if (navigation && navigation.extras.state && navigation.extras.state["type"] === 'helferEvent') {
         const pushData = this.router.getCurrentNavigation().extras.state;
         // console.log("PUSHDATA " + JSON.stringify(pushData));
+        // console.log("PUSHDATA " + JSON.stringify(pushData));
         let helferEvent: HelferEvent = {
-          id: "",
+          id: pushData["id"],
           name: "",
           description: "",
           location: "",
@@ -100,7 +102,7 @@ export class HelferPage implements OnInit {
           endDate: "",
           timeFrom: "",
           timeTo: "",
-          clubId: "",
+          clubId: pushData["clubId"],
           clubName: "",
           link_poll: "",
           link_web: "",
