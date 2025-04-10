@@ -28,23 +28,18 @@
 ion-content {
     --background: transparent;
 }
-ion-content {
-    --ion-background-color: transparent;
-}
 
 body {
     background: transparent;
 }
-html, body {
-    background-color: transparent !important;
-  }
 
-/*.transparent-modal .md{
-    --background: transparent !important;
-    background: transparent !important;
-  }
-*/
- 
+ion-content {
+    --ion-background-color: transparent;
+}
+
+html {
+    background-color: transparent;
+}
 
 // ion-header {
 //     --background: transparent;
