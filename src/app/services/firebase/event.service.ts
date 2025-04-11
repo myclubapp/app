@@ -137,8 +137,8 @@ export class EventService {
   }
 
   getClubHelferEventRefsByDate(clubId: string,  dateFrom: Timestamp, dateTo: Timestamp): Observable<HelferEvent[]> {
-    console.log(dateFrom);
-    console.log(dateTo);
+    console.log(">>>>dateFrom", dateFrom);
+    console.log(">>>>dateTo", dateTo);
     const eventsRefList = collection(
       this.firestore,
       `club/${clubId}/helferEvents`

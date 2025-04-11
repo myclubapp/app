@@ -7,7 +7,7 @@
           <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
         </ion-buttons>
       </ng-container>
-      <ion-title>{{ "common.helper_points" | translate}}</ion-title>
+      <ion-title>{{ club.name }}</ion-title>
       <ion-buttons slot="primary">
         <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
       </ion-buttons>
@@ -17,7 +17,7 @@
   <ion-content [fullscreen]="true">
     <ion-header collapse="condense">
       <ion-toolbar>
-        <ion-title size="large">{{ "common.helper_points" | translate}}</ion-title>
+        <ion-title size="large">{{ club.name }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -125,85 +125,45 @@
     </ion-list>
 
 
-    <ng-container *ngIf="filteredHelferPunkteList$ | async as helferPunkteList">
+    <ng-container *ngIf="filteredClubMembers$ | async as members">
       <ion-list inset="true">
         <ion-list-header>
-          Mitglieder ({{helferPunkteList.length}})
+          Mitglieder ({{members?.length}})
         </ion-list-header>
 
         <ion-item-group>
           <ng-container *ngFor="let groupBy of groupArray">
             <ion-item-divider color="light">
-              <ion-label> {{groupBy}} </ion-label>
+              <ion-label>{{groupBy}}</ion-label>
             </ion-item-divider>
 
-            <ng-container *ngFor="let memberPunkte of helferPunkteList">
-
-              <ion-item *ngIf="memberPunkte.groupBy == groupBy">
-                <ion-label>{{memberPunkte.profile.firstName}} {{memberPunkte.profile.lastName}} <ion-badge
-                    color="primary" *ngFor="let role of memberPunkte.roles">{{role}}</ion-badge></ion-label>
-
-                <ion-badge *ngIf="memberPunkte.totalPoints >= 3" color="success"
-                  slot="end">{{memberPunkte.totalPoints}}</ion-badge>
-                <ion-badge *ngIf="memberPunkte.totalPoints == 2" color="warning"
-                  slot="end">{{memberPunkte.totalPoints}}</ion-badge>
-                <ion-badge *ngIf="memberPunkte.totalPoints == 1" color="warning"
-                  slot="end">{{memberPunkte.totalPoints}}</ion-badge>
-                <ion-badge *ngIf="memberPunkte.totalPoints == 0" color="danger"
-                  slot="end">{{memberPunkte.totalPoints}}</ion-badge>
+            <ng-container *ngFor="let member of members">
+              <ion-item *ngIf="member.groupBy == groupBy" detail="true" button="true" (click)="openHelferPunktDetailModal(member)">
+                <ion-label>
+                  {{member.profile.firstName}} {{member.profile.lastName}}
+                  <ion-badge color="primary" *ngFor="let role of member.roles">
+                    {{role}}
+                  </ion-badge>
+                </ion-label>
+                <ion-note slot="end">
+                  <ion-badge [color]="member.totalPoints >= 4 ? 'success' : (member.totalPoints <= 1 ? 'danger' : 'warning')">
+                    {{member.totalPoints || 0}} Punkte
+                  </ion-badge>
+                </ion-note>
               </ion-item>
-
-              <ion-list *ngIf="memberPunkte.groupBy == groupBy">
-
-                <ion-item-sliding #item *ngFor="let helferPunkt of memberPunkte.helferPunkte">
-                  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                    <ion-item-options *ngIf="isClubAdmin(clubAdminList, clubId)" side="start">
-                      <ion-item-option color="primary" (click)="changeHelferPunkt(item, memberPunkte ,helferPunkt)">
-                        <ion-icon slot="icon-only" name="help-buoy-outline"></ion-icon>
-                      </ion-item-option>
-                    </ion-item-options>
-                    <ion-item-options *ngIf="isClubAdmin(clubAdminList, clubId)" side="end">
-                      <ion-item-option color="danger" (click)="deleteHelferPunkt(item, memberPunkte,helferPunkt)">
-                        <ion-icon slot="icon-only" name="trash"></ion-icon>
-                      </ion-item-option>
-
-                    </ion-item-options>
-                  </ng-container>
-                  <ion-item detail="true" (click)="openHelferEvent(helferPunkt)">
-                    <ion-label>
-                      <h3>
-                        Datum: {{helferPunkt.eventDate.toDate() | date:'dd.MM.YYYY '}}
-                        <br /> {{helferPunkt.name}}
-                        <br /> {{helferPunkt.schichtName}} von {{helferPunkt.schichtTimeFrom}} Uhr bis {{helferPunkt.schichtTimeTo}} Uhr
-                      </h3>
-                    </ion-label>
-
-                    <ion-badge color="primary" slot="end">{{helferPunkt.points}}</ion-badge>
-                  </ion-item>
-                </ion-item-sliding>
-
-                <ion-item *ngFor="let planned of memberPunkte.plannedHelfer">
-                  <ion-label>
-                    <h3>
-                      <ion-badge>geplant</ion-badge><br />
-                      Datum: {{planned.event.startDate | date:'dd.MM.YYYY '}}
-                      <br /> {{planned.event.name}}
-                      <br /> {{planned.schicht.name}} von {{planned.schicht.timeFrom}} Uhr bis {{planned.schicht.timeTo}} Uhr
-                    </h3>
-                  </ion-label>
-                  <ion-badge color="medium" slot="end">{{planned.schicht.points}}</ion-badge>
-                </ion-item>
-
-              </ion-list>
-
             </ng-container>
           </ng-container>
         </ion-item-group>
-
       </ion-list>
-
     </ng-container>
 
+    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+      <ion-fab *ngIf="isClubAdmin(clubAdminList, clubId)" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="openHelferPunktCreateModal()">
+          <ion-icon name="add-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ng-container>
   </ion-content>
 
 </ng-container>

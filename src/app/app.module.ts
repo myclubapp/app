@@ -4,6 +4,7 @@ import { RouteReuseStrategy } from "@angular/router";
 
 import { IonicModule, IonicRouteStrategy, isPlatform } from "@ionic/angular";
 import { FormsModule } from "@angular/forms";
+import { take } from "rxjs";
 
 import { AppComponent } from "./app.component";
 import { AppRoutingModule } from "./app-routing.module";
@@ -50,8 +51,8 @@ import { ClubTeamListPage } from "./pages/club-team-list/club-team-list.page";
 import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.page";
 import { ClubRequestListPage } from "./pages/club-request-list/club-request-list.page";
 import { TeamCreatePage } from "./pages/team/team-create/team-create.page";
-import { take } from "rxjs";
 import { HelferPunkteClubPage } from "./pages/helfer/helfer-punkte-club/helfer-punkte-club.page";
+import { HelferPunkteDetailPage } from "./pages/helfer/helfer-punkte-detail/helfer-punkte-detail.page";
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 import { GamePreviewPage } from "./pages/championship/game-preview/game-preview.page";
 import { NotificationPage } from "./pages/news/notification/notification.page";
@@ -96,6 +97,7 @@ export function appInitializerFactory(translateService: TranslateService, inject
     HelferPunktePage,
     HelferPunkteClubPage,
     HelferDetailPage,
+    HelferPunkteDetailPage,
     HelferAddPage,
     // ChampionshipDetailPage,
     TrainingExercisesPage,
@@ -140,8 +142,6 @@ export function appInitializerFactory(translateService: TranslateService, inject
       isolate: false,
       missingTranslationHandler: [{ provide: MissingTranslationHandler, useClass: TranslateHandler }]
     }),
-
-
   ],
   providers: [
     provideFirebaseApp(() => {

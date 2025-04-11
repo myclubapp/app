@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+      <ion-buttons *ngIf="isClubAdmin(clubAdminList, clubId)" slot="secondary">
+        <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
+        <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
+      </ion-buttons>
+    </ng-container>
+    <ion-title>{{ member.profile.firstName }} {{ member.profile.lastName }}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Bestätigte Helfereinsätze</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let event of member.helferevents" detail="true" button="true" (click)="openHelferEvent(event)">
+      <ion-label>
+        <h2>{{event?.date?.toDate() | date:'dd.MM.yyyy'}} {{event?.name}} </h2> 
+        <h3>{{event?.description}}</h3>
+        <h3>{{event?.schichtName}}</h3>
+        <h3>{{event?.schichtTimeFrom}} - {{event?.schichtTimeTo}}</h3>
+      </ion-label>
+      <ion-badge color="primary" slot="end">{{event?.points}}</ion-badge>
+    </ion-item>
+  </ion-list>
+</ion-content>

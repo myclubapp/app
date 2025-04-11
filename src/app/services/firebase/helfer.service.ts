@@ -48,6 +48,22 @@ export class HelferService {
     const helferPunktRef = doc(this.firestore, `club/${clubId}/helferPunkte/${helferPunktId}`);
     return deleteDoc(helferPunktRef); 
   }
+  getHelferPunkteRefs(clubId: string): Observable<any[]> {
+    // console.log(userId, clubId)
+    const helferPunkteRefList = collection(
+      this.firestore,
+      `club/${clubId}/helferPunkte`
+    );
+    const q = query(
+      helferPunkteRefList,
+      
+      orderBy("eventDate", "desc")
+    )
+    return collectionData(q, {
+      idField: "id",
+    }) as Observable<any[]>;
+  }
+
 
   getUserHelferPunkteRefs(userId: any, clubId: string): Observable<any[]> {
     // console.log(userId, clubId)
