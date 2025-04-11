@@ -86,9 +86,18 @@ export class ChampionshipService {
   /* CLUB GAMES */
   getClubGamesRef(clubId: string): Observable<Game[]> {
     const gamesRefList = collection(this.firestore, `club/${clubId}/games`);
-    return collectionData(gamesRefList, {
-      idField: "id",
-    }) as Observable<Game[]>;
+    const q = query(
+      gamesRefList,
+      where(
+        "dateTime",
+        ">=",
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)) // 2h lang das "alte Spiel" anzeigen
+      ),
+      orderBy('dateTime', 'asc')
+    ); // heute - 1 Tag
+    return collectionData(q, { idField: "id" }) as Observable<
+      Game[]
+    >;
   }
 
   /* TEAM GAMES ATTENDEES */
