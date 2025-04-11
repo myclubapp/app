@@ -380,16 +380,17 @@
         </ion-button>
       </ion-item>
 
-      <ion-item id="add-kid-alert" detail="true">
-        <ion-icon slot="start" name="person-add-outline"></ion-icon>
-        <ion-label>{{"profile.kids.add" | translate}}</ion-label>
-      </ion-item>
-
-      <ion-alert trigger="add-kid-alert"
-        [header]='"profile.kids.add_header" | translate'
-        [message]='"profile.kids.add_message" | translate'
-        [buttons]="kidAlertButtons"
-        [inputs]="[
+        <!--
+          <ion-item id="add-kid-alert" detail="true">
+            <ion-icon slot="start" name="person-add-outline"></ion-icon>
+            <ion-label>{{"profile.kids.add" | translate}}</ion-label>
+          </ion-item>
+          
+          <ion-alert trigger="add-kid-alert"
+          [header]='"profile.kids.add_header" | translate'
+          [message]='"profile.kids.add_message" | translate'
+          [buttons]="kidAlertButtons"
+          [inputs]="[
           {
             name: 'email',
             type: 'email',
@@ -398,8 +399,9 @@
               autocomplete: 'email'
             }
           }
-        ]">
-      </ion-alert>
+          ]">
+        </ion-alert>
+        -->
     </ion-list>
   </ng-container>
 
