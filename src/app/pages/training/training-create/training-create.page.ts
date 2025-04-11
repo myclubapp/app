@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { ModalController, NavParams, ToastController } from "@ionic/angular";
+import { AlertController, ModalController, NavParams, ToastController } from "@ionic/angular";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import {
@@ -39,6 +39,7 @@ export class TrainingCreatePage implements OnInit {
   constructor(
     private readonly modalCtrl: ModalController,
     private trainingService: TrainingService,
+    private readonly alertController: AlertController,
     private readonly authService: AuthService,
 
     private readonly toastController: ToastController,
@@ -176,15 +177,15 @@ export class TrainingCreatePage implements OnInit {
     if (!(dateValue instanceof Date)) {
       dateObj = new Date(dateValue);
     }
-    
+
     // Get the date portion (year, month, day)
     const year = dateObj.getFullYear();
     const month = dateObj.getMonth();
     const day = dateObj.getDate();
-    
+
     // Parse the time string (handling ISO format like "2025-03-03T21:00:00")
     let hours = 0, minutes = 0, seconds = 0;
-    
+
     if (typeof timeValue === 'string') {
       // Check if it's ISO format with "T" separator
       if (timeValue.includes('T')) {
@@ -205,12 +206,12 @@ export class TrainingCreatePage implements OnInit {
       minutes = timeValue.getMinutes();
       seconds = timeValue.getSeconds();
     }
-    
+
     // Create a new date with combined date and time
     const combinedDateTime = new Date(year, month, day, hours, minutes, seconds);
     return combinedDateTime;
   }
-  
+
 
   async createTraining() {
     console.log(`Start Date before calculation: ${this.training.startDate}`);
@@ -219,45 +220,81 @@ export class TrainingCreatePage implements OnInit {
     console.log(`End Date before calculation: ${this.training.endDate}`);
     console.log(`End Time before calculation: ${this.training.timeTo}`);
 
-  // Combine start date with time from
-  const combinedStartDateTime = this.combineDateAndTime(
-    this.training.startDate,
-    this.training.timeFrom  // ISO format: "2025-03-03T21:00:00"
-  );
-  
-  // Combine end date with time to
-  const combinedEndDateTime = this.combineDateAndTime(
-    this.training.endDate,
-    this.training.timeTo    // ISO format: "2025-03-03T21:00:00"
-  );
-
-    // Or if you want to update the original fields:
-    this.training.startDate = combinedStartDateTime.toISOString();
-    this.training.timeFrom = combinedStartDateTime.toISOString();
-    
-    this.training.endDate = combinedEndDateTime.toISOString();
-    this.training.timeTo = combinedEndDateTime.toISOString();
-
-
-    console.log(`Start Date after calculation: ${this.training.startDate}`);
-    console.log(`Start Time after calculation: ${this.training.timeFrom}`);
-
-    console.log(`End Date after calculation: ${this.training.endDate}`);
-    console.log(`End Time after calculation: ${this.training.timeTo}`);
-
-    delete this.training.attendees;
-
-    const training = await this.trainingService.setCreateTraining(this.training).catch(e => {
-      console.log(e.message);
-      this.toastActionError(e);
-    });
-
-    if (training) {
-      console.log(training.id);
-      return this.modalCtrl.dismiss({}, "confirm");
+    // Überprüfe grundlegende Felder
+    if (!this.training.name  || !this.training.location 
+      || !this.training.streetAndNumber|| !this.training.postalCode 
+      || !this.training.city || !this.training.teamId || 
+      !this.training.timeFrom || !this.training.timeTo) {
+      this.toastActionError({ message: "Bitte füllen Sie alle Felder aus." });
+      return null;
     }
 
+
+    // Bestätigungsdialog anzeigen
+    const alert = await this.alertController.create({
+      header: 'Bestätigung',
+      message: 'Soll der Training erstellt werden?',
+      buttons: [
+        {
+          text: 'Abbrechen', role: 'cancel',
+          handler: () => {
+            console.log('Training-Erstellung abgebrochen');
+          }
+        },
+        {
+          text: 'Erstellen', role: 'confirm',
+          handler: async () => {
+
+            // Combine start date with time from
+            const combinedStartDateTime = this.combineDateAndTime(
+              this.training.startDate,
+              this.training.timeFrom  // ISO format: "2025-03-03T21:00:00"
+            );
+
+            // Combine end date with time to
+            const combinedEndDateTime = this.combineDateAndTime(
+              this.training.endDate,
+              this.training.timeTo    // ISO format: "2025-03-03T21:00:00"
+            );
+
+            // Or if you want to update the original fields:
+            this.training.startDate = combinedStartDateTime.toISOString();
+            this.training.timeFrom = combinedStartDateTime.toISOString();
+
+            this.training.endDate = combinedEndDateTime.toISOString();
+            this.training.timeTo = combinedEndDateTime.toISOString();
+
+
+            console.log(`Start Date after calculation: ${this.training.startDate}`);
+            console.log(`Start Time after calculation: ${this.training.timeFrom}`);
+
+            console.log(`End Date after calculation: ${this.training.endDate}`);
+            console.log(`End Time after calculation: ${this.training.timeTo}`);
+
+            delete this.training.attendees;
+
+            const training = await this.trainingService.setCreateTraining(this.training).catch(e => {
+              console.log(e.message);
+              this.toastActionError(e);
+            });
+
+            if (training) {
+              console.log(training.id);
+              return this.modalCtrl.dismiss({}, "confirm");
+            }
+
+            return null;
+          }
+        }
+      ]
+    });
+
+    await alert.present();
     return null;
+
+    // Überprüfe, ob die Start- und Endzeiten korrekt sind
+
+
   }
 
   async toastActionError(error) {

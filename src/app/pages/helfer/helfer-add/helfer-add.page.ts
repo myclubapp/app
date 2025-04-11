@@ -469,6 +469,7 @@ export class HelferAddPage implements OnInit {
         },
         {
           text: 'Erstellen',
+          role: 'confirm',
           handler: async () => {
             //Set Hours/Minutes of endDate to TimeFrom of training
             console.log(`Start Date before calculation: ${this.event.startDate}`);
