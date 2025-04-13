@@ -257,15 +257,15 @@ export class HelferPunkteClubPage implements OnInit {
   }
 
 
-  async openHelferPunktDetailModal(member) {
-    console.log('openHelferPunktDetailModal', member);
+  async openHelferPunktDetailModal(helferData: any) {
+    console.log('openHelferPunktDetailModal', helferData);
     const modal = await this.modalCtrl.create({
       component: HelferPunkteDetailPage,
       presentingElement: await this.modalCtrl.getTop(),
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        member: member,
+        data: helferData,
         clubId: this.clubId
       }
     });

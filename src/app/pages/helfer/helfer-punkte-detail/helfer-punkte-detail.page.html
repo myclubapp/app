@@ -1,49 +1,78 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+    <!--   <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
       <ion-buttons *ngIf="isClubAdmin(clubAdminList, clubId)" slot="secondary">
         <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
         <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
       </ion-buttons>
-    </ng-container>
-    <ion-title>{{ member.profile.firstName }} {{ member.profile.lastName }}</ion-title>
+    </ng-container>-->
+    <ion-title>{{helferData.profile.firstName}} {{helferData.profile.lastName}}</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-list>
-    <ion-list-header>
-      <ion-label>Bestätigte Helfereinsätze</ion-label>
-    </ion-list-header>
+<ion-content>
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{helferData.profile.firstName}} {{helferData.profile.lastName}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-    <ion-item-group>
-      <ion-item-sliding #item *ngFor="let event of member.helferevents">
-        <ion-item detail="true" button="true" (click)="openHelferEvent(event)">
-          <ion-label>
-            <h2>{{event?.date?.toDate() | date:'dd.MM.yyyy'}} {{event?.name}} </h2>
-            <h3>{{event?.description}}</h3>
-            <h3>{{event?.schichtName}}</h3>
-            <h3>{{event?.schichtTimeFrom}} - {{event?.schichtTimeTo}}</h3>
-          </ion-label>
-          <ion-badge color="primary" slot="end">{{event?.points}}</ion-badge>
-        </ion-item>
 
-        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-          <ion-item-options *ngIf="isClubAdmin(clubAdminList, clubId)" side="end">
-            <ion-item-option color="warning" (click)="changeHelferPunkt(item, event)">
-              <ion-icon name="create-outline"></ion-icon>
-              Ändern
-            </ion-item-option>
-            <ion-item-option color="danger" (click)="deleteHelferPunkt(item, event)">
-              <ion-icon name="trash-outline"></ion-icon>
-              Löschen
-            </ion-item-option>
-          </ion-item-options>
+  <ng-container *ngIf="helferPunkteList$ | async as helferPunkteList">
+    <ion-list [inset]="true">
+      <ion-item-group>
+        <ng-container *ngFor="let groupBy of groupArray">
+          <ion-item-divider color="light">
+            <ion-label> {{groupBy}} </ion-label>
+          </ion-item-divider>
+          <ng-container *ngFor="let helferPunkt of helferPunkteList">
+            <ion-item-sliding #item *ngIf="helferPunkt.eventDate.toDate().getFullYear()==groupBy">
+              <ion-item type="button" detail="true" (click)="openHelferEinsatz(helferPunkt)">
+                <ion-label>
+                  <h2>{{helferPunkt.eventName}} - {{helferPunkt.schichtName}}</h2>
+                  <h3>
+                    <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+                    {{helferPunkt.eventDate.toDate() | date:'dd.MM.YYYY '}}
+                  </h3>
+                  <h3 *ngIf="helferPunkt.schichtTimeFrom && helferPunkt.schichtTimeTo">
+                    <ion-icon slot="icon-only" name="time-outline"></ion-icon>
+                    {{helferPunkt.schichtTimeFrom}} Uhr - {{helferPunkt.schichtTimeTo}} Uhr
+                  </h3>
+                  <h3>
+                    Bestätigt von:
+                    {{helferPunkt.confirmedByFirstName}} {{helferPunkt.confirmedByLastName}} am
+                    {{helferPunkt.date.toDate() | date:'dd.MM.YYYY '}}
+                  </h3>
+                </ion-label>
+
+                <ion-note slot="end">
+                  <ion-badge>{{helferPunkt.points}}</ion-badge>
+                </ion-note>
+              </ion-item>
+
+              <ion-item-options side="end">
+                <ion-item-option color="primary" (click)="editHelferPunkt(item, helferPunkt)">
+                  <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                </ion-item-option>
+                <ion-item-option color="danger" (click)="deleteHelferPunkt(item, helferPunkt)">
+                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+          </ng-container>
         </ng-container>
-      </ion-item-sliding>
-    </ion-item-group>
-  </ion-list>
+      </ion-item-group>
+    </ion-list>
+  </ng-container>
+
+  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+    <ion-fab *ngIf="isClubAdmin(clubAdminList, clubId)" vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="openHelferPunktCreateModal()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ng-container>
 </ion-content>

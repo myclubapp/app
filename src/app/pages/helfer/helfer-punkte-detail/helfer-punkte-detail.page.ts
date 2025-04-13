@@ -1,12 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AlertController, IonItemSliding, ModalController, ToastController } from '@ionic/angular';
-import { catchError, lastValueFrom, Observable, of, tap } from 'rxjs';
+import { AlertController, IonItemSliding, ModalController, NavParams, ToastController } from '@ionic/angular';
+import { catchError, lastValueFrom, Observable, of, tap, from, combineLatest, map, switchMap, take } from 'rxjs';
 import { Club } from 'src/app/models/club';
 import { HelferDetailPage } from '../helfer-detail/helfer-detail.page';
 import { HelferService } from 'src/app/services/firebase/helfer.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Timestamp } from 'firebase/firestore';
 import { FirebaseService } from 'src/app/services/firebase.service';
+import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
 
 @Component({
   standalone: false,
@@ -15,29 +16,99 @@ import { FirebaseService } from 'src/app/services/firebase.service';
   styleUrls: ['./helfer-punkte-detail.page.scss'],
 })
 export class HelferPunkteDetailPage implements OnInit {
-  @Input("member") member: any;
+  @Input("data") helferData: any;
   @Input("clubId") clubId: string;
   clubAdminList$: Observable<Club[]>;
+  helferPunkteList$: Observable<any[]>;
+  groupArray: number[] = [];
   allowEdit: boolean = false;
+
   constructor(
     private readonly helferService: HelferService,
     private readonly alertController: AlertController,
     private readonly toastController: ToastController,
     private readonly translate: TranslateService,
     private modalCtrl: ModalController,
-    private readonly fbService: FirebaseService
-  ) { }
+    private readonly fbService: FirebaseService,
+    private readonly userProfileService: UserProfileService,
+    private readonly navParams: NavParams
+  ) {
+
+  }
 
   ngOnInit() {
-        // Load admin list
-        this.clubAdminList$ = this.fbService.getClubAdminList().pipe(
-          tap(admins => console.log('Club admin list loaded:', admins)),
-          catchError(err => {
-            console.error('Error loading admin list:', err);
-            return of([]);
-          })
-        );
+    this.helferData = this.navParams.get("data");
+    this.clubId = this.navParams.get("clubId");
+    console.log('helferData', this.helferData);
+    console.log('clubId', this.clubId);
+    this.helferPunkteList$ = this.getHeferEinsatz(this.helferData.profile.id, this.clubId);
+
+    // Load admin list
+    this.clubAdminList$ = this.fbService.getClubAdminList().pipe(
+      tap(admins => console.log('Club admin list loaded:', admins)),
+      catchError(err => {
+        console.error('Error loading admin list:', err);
+        return of([]);
+      })
+    );
+
+    this.helferPunkteList$.subscribe(helferPunkte => {
+      // Extrahiere alle Jahre aus den eventDates
+      const years = helferPunkte
+        .map(punkt => new Date(punkt.eventDate.toDate()).getFullYear())
+        .filter((year, index, self) => self.indexOf(year) === index) // Entferne Duplikate
+        .sort((a, b) => b - a); // Sortiere absteigend
+
+      this.groupArray = years;
+    });
+
+
   }
+
+  getHeferEinsatz(profileId: string, clubId: string) {
+    // Load helfer punkte for specific user and club
+    return this.helferService.getUserHelferPunkteRefs(profileId, clubId).pipe(
+      take(1),
+      switchMap(helferPunkte => {
+        // Für jeden HelferPunkt die Benutzerinformationen des bestätigenden Benutzers abrufen
+        const helferPunkteWithUser$ = helferPunkte.map(punkt => {
+          // Prüfe ob confirmedBy existiert und die richtige Struktur hat
+          if (!punkt.confirmedBy || !punkt.confirmedBy.id) {
+            return of({
+              ...punkt,
+              confirmedByFirstName: 'Unbekannt',
+              confirmedByLastName: ''
+            });
+          }
+
+          return this.userProfileService.getUserProfileById(punkt.confirmedBy.id).pipe(
+            map((user: any) => ({
+              ...punkt,
+              confirmedByFirstName: user?.firstName || 'Unbekannt',
+              confirmedByLastName: user?.lastName || ''
+            })),
+            catchError(() => of({
+              ...punkt,
+              confirmedByFirstName: 'Unbekannt',
+              confirmedByLastName: ''
+            }))
+          );
+        });
+        return combineLatest(helferPunkteWithUser$);
+      }),
+      tap(helferPunkte => {
+        // Gruppiere die Helferpunkte nach Jahren
+        const years = new Set(helferPunkte.map(punkt => punkt.eventDate.toDate().getFullYear()));
+        this.groupArray = Array.from(years).sort((a, b) => b - a);
+        console.log('Helferpunkte geladen:', helferPunkte);
+      }),
+      catchError(err => {
+        console.error('Fehler beim Laden der Helferpunkte:', err);
+        return of([]);
+      })
+    );
+  }
+
 
   async close() {
     return await this.modalCtrl.dismiss(null, "close");
@@ -53,7 +124,18 @@ export class HelferPunkteDetailPage implements OnInit {
     return clubAdminList.some(admin => admin.id === clubId);
   }
 
-  async openHelferEvent(event: any) {
+  async openHelferEinsatz(event: any) {
+
+    if (!event.eventRef) {
+      const toast = await this.toastController.create({
+        message: 'Diese Funktion ist leider nicht verfügbar',
+        duration: 2000,
+        position: 'top',
+        color: 'primary'
+      });
+      await toast.present();
+      return;
+    }
     console.log(event.eventRef.id);
     const modal = await this.modalCtrl.create({
       component: HelferDetailPage,
@@ -61,8 +143,8 @@ export class HelferPunkteDetailPage implements OnInit {
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        data: {id: event.eventRef.id, clubId: this.clubId},
-        isFuture: false  
+        data: { id: event.eventRef.id, clubId: this.clubId },
+        isFuture: false
       }
     });
     modal.present();
@@ -83,7 +165,7 @@ export class HelferPunkteDetailPage implements OnInit {
     toast.present();
   }
 
-  async changeHelferPunkt(slidingItem: IonItemSliding, helferPunktEvent: any) {
+  async editHelferPunkt(slidingItem: IonItemSliding, helferPunktEvent: any) {
     await slidingItem.closeOpened();
     const alert = await this.alertController.create({
       header: 'Helferpunkt ändern',
@@ -96,7 +178,7 @@ export class HelferPunkteDetailPage implements OnInit {
           value: helferPunktEvent.name
         },
         {
-          name: 'date',
+          name: 'eventDate',
           type: 'date' as const,
           label: 'Datum',
           value: helferPunktEvent.date?.toDate().toISOString().split('T')[0]
@@ -119,7 +201,7 @@ export class HelferPunkteDetailPage implements OnInit {
         {
           text: 'Speichern',
           handler: async (data) => {
-            if (!data.description || !data.date || !data.points) {
+            if (!data.name || !data.eventDate || !data.points) {
               const toast = await this.toastController.create({
                 message: 'Bitte füllen Sie alle Felder aus',
                 duration: 2000,
@@ -131,8 +213,9 @@ export class HelferPunkteDetailPage implements OnInit {
 
             try {
               await this.helferService.updateHelferPunkt(this.clubId, helferPunktEvent.id, {
-                description: data.description,
-                date: Timestamp.fromDate(new Date(data.date)),
+                name: data.name,
+                eventName: data.name,
+                eventDate: Timestamp.fromDate(new Date(data.eventDate)),
                 points: Number(data.points)
               });
 
@@ -142,8 +225,8 @@ export class HelferPunkteDetailPage implements OnInit {
                 color: 'success'
               });
               await toast.present();
-              
-              this.initializeData();
+
+              this.ngOnInit();
               return true;
             } catch (error) {
               console.error('Error updating helferpunkt:', error);
@@ -183,7 +266,7 @@ export class HelferPunkteDetailPage implements OnInit {
                 duration: 2000,
                 color: 'success'
               }).then(toast => toast.present());
-              this.initializeData();
+              this.ngOnInit();
             } catch (error) {
               this.toastController.create({
                 message: 'Fehler beim Löschen des Helferpunkts',
@@ -197,14 +280,83 @@ export class HelferPunkteDetailPage implements OnInit {
     });
     await alert.present();
   }
+  async openHelferPunktCreateModal() {
 
-  private async initializeData() {
-    try {
-      const helferPunkte = await this.helferService.getHelferPunkte(this.clubId);
-      this.member.helferevents = helferPunkte.filter((event: any) => event.userId === this.member.id);
-    } catch (error) {
-      console.error('Fehler beim Laden der Helferpunkte:', error);
-    }
+    // Zweiter Alert für Details
+    const detailsAlert = await this.alertController.create({
+      header: 'Helferpunkt Details',
+      inputs: [
+        {
+          name: 'name',
+          type: 'text' as const,
+          placeholder: 'Beschreibung',
+          label: 'Beschreibung'
+        },
+        {
+          name: 'date',
+          type: 'date' as const,
+          label: 'Datum'
+        },
+        {
+          name: 'points',
+          type: 'number' as const,
+          placeholder: 'Punkte',
+          label: 'Punkte',
+          value: '1',
+          min: '1',
+          max: '10'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Zurück',
+          role: 'cancel',
+          handler: () => {
+          
+            return false;
+          }
+        },
+        {
+          text: 'Speichern',
+          role: 'confirm',
+          handler: async (details) => {
+            if (!details.name || !details.date || !details.points) {
+              const toast = await this.toastController.create({
+                message: 'Bitte füllen Sie alle Felder aus',
+                duration: 2000,
+                position: 'top',
+                color: 'warning'
+              });
+              await toast.present();
+              return false;
+            }
+
+            try {
+              const helferPunkt = await this.helferService.createHelferPunkt(this.clubId, this.helferData.profile.id, details.name, details.date, Number(details.points));
+              console.log('helferPunkt id', helferPunkt.id);
+
+              const toast = await this.toastController.create({
+                message: 'Helferpunkt erfolgreich erstellt',
+                duration: 2000,
+                position: 'top',
+                color: 'success'
+              });
+              await toast.present();
+              return true;
+            } catch (error) {
+              console.error('Error creating Helferpunkt:', error);
+              const toast = await this.toastController.create({
+                message: 'Fehler beim Erstellen des Helferpunkts',
+                duration: 2000,
+                color: 'danger'
+              });
+              await toast.present();
+              return false;
+            }
+          }
+        }
+      ]
+    });
+    detailsAlert.present();
   }
-
 }

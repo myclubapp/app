@@ -27,6 +27,8 @@
           <ion-item-divider color="light">
             <ion-label> {{groupBy}} </ion-label>
           </ion-item-divider>
+
+          
           <ng-container *ngFor="let helferPunkt of helferPunkteList">
 
             <ion-item  
@@ -40,10 +42,15 @@
                   <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
                   {{helferPunkt.eventDate.toDate() | date:'dd.MM.YYYY '}}
                 </h3>
-                <h3>
+                <h3 *ngIf="helferPunkt.schichtTimeFrom && helferPunkt.schichtTimeTo">
                   <ion-icon slot="icon-only" name="time-outline"></ion-icon>
                   {{helferPunkt.schichtTimeFrom}} Uhr - {{helferPunkt.schichtTimeTo}} Uhr
                 </h3>
+                <h3>
+                  <ion-icon slot="icon-only" name="person-outline"></ion-icon>
+                  {{helferPunkt.confirmedByFirstName}} {{helferPunkt.confirmedByLastName}} {{helferPunkt.date.toDate() | date:'dd.MM.YYYY '}}
+                </h3>
+      
               </ion-label>
 
               <ion-note slot="end">

@@ -74,7 +74,7 @@ export class HelferService {
 
 
   getUserHelferPunkteRefs(userId: any, clubId: string): Observable<any[]> {
-    // console.log(userId, clubId)
+    console.log(userId, clubId)
     const helferPunkteRefList = collection(
       this.firestore,
       `club/${clubId}/helferPunkte`
@@ -113,7 +113,7 @@ export class HelferService {
     const helferPunktRef = collection(this.firestore, `club/${clubId}/helferPunkte`);
     return addDoc(helferPunktRef, {
       userId: userId,
-      // userRef: doc(this.firestore, `userProfile/${userId}`),
+      userRef: doc(this.firestore, `userProfile/${userId}`),
       name: name,
       eventName: name,
       date: new Date(eventDate),
@@ -121,7 +121,7 @@ export class HelferService {
       points: points,
       status: true,
       confirmed: true,
-      confirmedBy: this.authService.auth.currentUser?.uid
+      confirmedBy: doc(this.firestore, `userProfile/${this.authService.auth.currentUser?.uid}`)
     });
   }
 
