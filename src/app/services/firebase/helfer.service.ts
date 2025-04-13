@@ -53,7 +53,7 @@ export class HelferService {
 
   updateHelferPunkt(clubId: string, helferPunktId: string, data: any) {
     const helferPunktRef = doc(this.firestore, `club/${clubId}/helferPunkte/${helferPunktId}`);
-    return updateDoc(helferPunktRef, data);
+    return updateDoc(helferPunktRef, data, {merge: true});
   }
 
   getHelferPunkteRefs(clubId: string): Observable<any[]> {
@@ -116,7 +116,7 @@ export class HelferService {
       userRef: doc(this.firestore, `userProfile/${userId}`),
       name: name,
       eventName: name,
-      date: new Date(eventDate),
+      date: new Date(),
       eventDate: new Date(eventDate),
       points: points,
       status: true,

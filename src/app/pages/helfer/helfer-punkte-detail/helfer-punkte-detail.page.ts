@@ -68,8 +68,12 @@ export class HelferPunkteDetailPage implements OnInit {
   getHeferEinsatz(profileId: string, clubId: string) {
     // Load helfer punkte for specific user and club
     return this.helferService.getUserHelferPunkteRefs(profileId, clubId).pipe(
-      take(1),
+      
       switchMap(helferPunkte => {
+        if (!helferPunkte || helferPunkte.length === 0) {
+          return of([]);
+        }
+
         // Für jeden HelferPunkt die Benutzerinformationen des bestätigenden Benutzers abrufen
         const helferPunkteWithUser$ = helferPunkte.map(punkt => {
           // Prüfe ob confirmedBy existiert und die richtige Struktur hat
@@ -87,14 +91,27 @@ export class HelferPunkteDetailPage implements OnInit {
               confirmedByFirstName: user?.firstName || 'Unbekannt',
               confirmedByLastName: user?.lastName || ''
             })),
-            catchError(() => of({
+            catchError((error) => {
+              console.warn(`Fehler beim Laden des Benutzerprofils für Helferpunkt ${punkt.id}:`, error);
+              return of({
+                ...punkt,
+                confirmedByFirstName: 'Unbekannt',
+                confirmedByLastName: ''
+              });
+            })
+          );
+        });
+
+        return combineLatest(helferPunkteWithUser$).pipe(
+          catchError((error) => {
+            console.error('Fehler beim Kombinieren der Helferpunkte:', error);
+            return of(helferPunkte.map(punkt => ({
               ...punkt,
               confirmedByFirstName: 'Unbekannt',
               confirmedByLastName: ''
-            }))
-          );
-        });
-        return combineLatest(helferPunkteWithUser$);
+            })));
+          })
+        );
       }),
       tap(helferPunkte => {
         // Gruppiere die Helferpunkte nach Jahren
@@ -181,7 +198,7 @@ export class HelferPunkteDetailPage implements OnInit {
           name: 'eventDate',
           type: 'date' as const,
           label: 'Datum',
-          value: helferPunktEvent.date?.toDate().toISOString().split('T')[0]
+          value: helferPunktEvent.eventDate?.toDate().toISOString().split('T')[0]
         },
         {
           name: 'points',

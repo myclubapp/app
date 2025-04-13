@@ -28,7 +28,7 @@
             <ion-label> {{groupBy}} </ion-label>
           </ion-item-divider>
 
-          
+
           <ng-container *ngFor="let helferPunkt of helferPunkteList">
 
             <ion-item  
@@ -36,25 +36,29 @@
             detail="true"
             (click)="openHelferEinsatz(helferPunkt)"
             *ngIf="helferPunkt.eventDate.toDate().getFullYear()==groupBy">
-              <ion-label>
-                <h2>{{helferPunkt.eventName}} - {{helferPunkt.schichtName}}</h2>
-                <h3>
-                  <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
-                  {{helferPunkt.eventDate.toDate() | date:'dd.MM.YYYY '}}
-                </h3>
-                <h3 *ngIf="helferPunkt.schichtTimeFrom && helferPunkt.schichtTimeTo">
-                  <ion-icon slot="icon-only" name="time-outline"></ion-icon>
-                  {{helferPunkt.schichtTimeFrom}} Uhr - {{helferPunkt.schichtTimeTo}} Uhr
-                </h3>
-                <h3>
-                  <ion-icon slot="icon-only" name="person-outline"></ion-icon>
-                  {{helferPunkt.confirmedByFirstName}} {{helferPunkt.confirmedByLastName}} {{helferPunkt.date.toDate() | date:'dd.MM.YYYY '}}
-                </h3>
-      
-              </ion-label>
+                <ion-label>
+                  <h2>{{helferPunkt.eventName}}</h2>
+                  <h3 *ngIf="helferPunkt?.schichtName">
+                    {{helferPunkt?.schichtName}}
+                  </h3>
+                  <h3>
+                    <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+                    {{helferPunkt.eventDate.toDate() | date:'dd.MM.YYYY '}}
+                  </h3>
+
+                  <h3 *ngIf="helferPunkt?.schichtTimeFrom && helferPunkt?.schichtTimeTo">
+                    <ion-icon slot="icon-only" name="time-outline"></ion-icon>
+                    {{helferPunkt?.schichtTimeFrom}} Uhr - {{helferPunkt?.schichtTimeTo}} Uhr
+                  </h3>
+                  <h3 *ngIf="helferPunkt?.confirmedByFirstName && helferPunkt?.confirmedByLastName">
+                    Bestätigt von:
+                    {{helferPunkt?.confirmedByFirstName}} {{helferPunkt?.confirmedByLastName}} am
+                    {{helferPunkt?.date.toDate() | date:'dd.MM.YYYY '}}
+                  </h3>
+                </ion-label>
 
               <ion-note slot="end">
-                <ion-badge>{{helferPunkt.points}}</ion-badge>
+                <ion-badge>{{helferPunkt?.points}}</ion-badge>
               </ion-note>
 
             </ion-item>
