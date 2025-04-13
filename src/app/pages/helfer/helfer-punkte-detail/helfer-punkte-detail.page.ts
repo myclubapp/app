@@ -89,11 +89,11 @@ export class HelferPunkteDetailPage implements OnInit {
       header: 'Helferpunkt ändern',
       inputs: [
         {
-          name: 'description',
+          name: 'name',
           type: 'text' as const,
           placeholder: 'Beschreibung',
           label: 'Beschreibung',
-          value: helferPunktEvent.description
+          value: helferPunktEvent.name
         },
         {
           name: 'date',
