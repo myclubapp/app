@@ -6,8 +6,10 @@ import {
   collectionData,
   doc,
   deleteDoc,
+  updateDoc,
+  getDocs,
 } from "@angular/fire/firestore";
-import { Timestamp } from 'firebase/firestore';
+import { addDoc, Timestamp } from 'firebase/firestore';
 import {
   Observable,
 } from "rxjs";
@@ -44,10 +46,16 @@ export class HelferService {
     );
   }*/
 
-  deleteHelferPunkt(clubId: string, helferPunktId: string) {
-    const helferPunktRef = doc(this.firestore, `club/${clubId}/helferPunkte/${helferPunktId}`);
-    return deleteDoc(helferPunktRef); 
+  async deleteHelferPunkt(clubId: string, helferPunktId: string): Promise<void> {
+    const docRef = doc(this.firestore, `club/${clubId}/helferPunkte/${helferPunktId}`);
+    await deleteDoc(docRef);
   }
+
+  updateHelferPunkt(clubId: string, helferPunktId: string, data: any) {
+    const helferPunktRef = doc(this.firestore, `club/${clubId}/helferPunkte/${helferPunktId}`);
+    return updateDoc(helferPunktRef, data);
+  }
+
   getHelferPunkteRefs(clubId: string): Observable<any[]> {
     // console.log(userId, clubId)
     const helferPunkteRefList = collection(
@@ -98,5 +106,31 @@ export class HelferService {
     return collectionData(q, {
       idField: "id",
     }) as Observable<any[]>;
+  }
+
+  createHelferPunkt(clubId: string, userId: string, name: string, eventDate: string, points: number) {
+    console.log(clubId, userId, name, eventDate, points)
+    const helferPunktRef = collection(this.firestore, `club/${clubId}/helferPunkte`);
+    return addDoc(helferPunktRef, {
+      userId: userId,
+      // userRef: doc(this.firestore, `userProfile/${userId}`),
+      name: name,
+      eventName: name,
+      date: new Date(eventDate),
+      eventDate: new Date(eventDate),
+      points: points,
+      status: true,
+      confirmed: true,
+      confirmedBy: this.authService.auth.currentUser?.uid
+    });
+  }
+
+  async getHelferPunkte(clubId: string): Promise<any[]> {
+    const helferPunkteRef = collection(this.firestore, `clubs/${clubId}/helferPunkte`);
+    const snapshot = await getDocs(helferPunkteRef);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
   }
 }

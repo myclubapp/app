@@ -305,36 +305,7 @@ export class HelferPunkteClubPage implements OnInit {
     console.log(member, helferPunkt)
   }
 
-  async deleteHelferPunkt(slidingItem: IonItemSliding, member, helferPunkt) {
-    await slidingItem.closeOpened();
 
-    const alert = await this.alertController.create({
-      header: 'Bestätigung',
-      message: 'Sind Sie sicher, dass Sie diesen HelferPunkt löschen möchten?',
-      buttons: [
-        {
-          text: 'Abbrechen',
-          role: 'cancel',
-          handler: () => {
-            console.log('Löschvorgang abgebrochen');
-          }
-        },
-        {
-          text: 'Löschen',
-          handler: async () => {
-            try {
-              await this.helferService.deleteHelferPunkt(this.clubId, helferPunkt.id);
-              this.presentToast();
-            } catch (error) {
-              console.error('Error deleting helferPunkt:', error);
-            }
-          }
-        }
-      ]
-    });
-
-    await alert.present();
-  }
 
   onHelferPunkteMinChange(event: CustomEvent) {
     const value = Number(event.detail.value);
@@ -435,7 +406,8 @@ export class HelferPunkteClubPage implements OnInit {
             if (!memberId) {
               const toast = await this.toastController.create({
                 message: 'Bitte wählen Sie ein Mitglied aus',
-                duration: 2000,
+                duration: 2000, 
+                position: 'top',
                 color: 'warning'
               });
               await toast.present();
@@ -447,7 +419,7 @@ export class HelferPunkteClubPage implements OnInit {
               header: 'Helferpunkt Details',
               inputs: [
                 {
-                  name: 'description',
+                  name: 'name',
                   type: 'text' as const,
                   placeholder: 'Beschreibung',
                   label: 'Beschreibung'
@@ -470,6 +442,7 @@ export class HelferPunkteClubPage implements OnInit {
               buttons: [
                 {
                   text: 'Zurück',
+                  role: 'cancel',
                   handler: () => {
                     this.openHelferPunktCreateModal();
                     return false;
@@ -477,11 +450,13 @@ export class HelferPunkteClubPage implements OnInit {
                 },
                 {
                   text: 'Speichern',
+                  role: 'confirm',
                   handler: async (details) => {
-                    if (!details.description || !details.date || !details.points) {
+                    if (!details.name || !details.date || !details.points) {
                       const toast = await this.toastController.create({
                         message: 'Bitte füllen Sie alle Felder aus',
                         duration: 2000,
+                        position: 'top',
                         color: 'warning'
                       });
                       await toast.present();
@@ -489,18 +464,13 @@ export class HelferPunkteClubPage implements OnInit {
                     }
 
                     try {
-                      const helferPunktRef = collection(this.firestore, `club/${this.clubId}/helferPunkte`);
-                      await addDoc(helferPunktRef, {
-                        userId: memberId,
-                        description: details.description,
-                        eventDate: Timestamp.fromDate(new Date(details.date)),
-                        points: Number(details.points),
-                        status: true
-                      });
+                      const helferPunkt = await this.helferService.createHelferPunkt(this.clubId, memberId, details.name, details.date, Number(details.points));
+                      console.log('helferPunkt id', helferPunkt.id);
 
                       const toast = await this.toastController.create({
                         message: 'Helferpunkt erfolgreich erstellt',
                         duration: 2000,
+                        position: 'top',
                         color: 'success'
                       });
                       await toast.present();
@@ -508,7 +478,7 @@ export class HelferPunkteClubPage implements OnInit {
                       this.initializeClubMembers(this.clubId);
                       return true;
                     } catch (error) {
-                      console.error('Error creating helferpunkt:', error);
+                      console.error('Error creating Helferpunkt:', error);
                       const toast = await this.toastController.create({
                         message: 'Fehler beim Erstellen des Helferpunkts',
                         duration: 2000,
