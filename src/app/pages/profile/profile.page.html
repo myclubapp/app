@@ -16,22 +16,20 @@
 
   <ng-container *ngIf="userProfile$ | async as userProfile">
     <ion-list lines="full" [inset]="true">
+
+      <ion-item lines="none" class="ion-text-center profile-item">
+        <div class="profile-image-container">
+          <ion-avatar class="profile-avatar">
+            <img alt="{{userProfile.firstName}}" src="{{userProfile.profilePicture}}" />
+          </ion-avatar>
+          <ion-button class="camera-button" (click)="takePicture()">
+            <ion-icon slot="icon-only" name="camera"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
       <ion-list-header>
         <ion-label> {{"profile.generally" | translate}} </ion-label>
       </ion-list-header>
-
-      <ion-item>
-        <ion-avatar slot="start">
-          <img alt="{{userProfile.firstName}}" src="{{userProfile.profilePicture}}" />
-        </ion-avatar>
-        <ion-label></ion-label>
-        <!--<ion-button slot="end" (click)="showPicture(userProfile.profilePicture)">
-          <ion-icon slot="icon-only" name="expand"></ion-icon>
-        </ion-button>-->
-        <ion-button slot="end" (click)="takePicture()">
-          <ion-icon slot="icon-only" name="camera"></ion-icon>
-        </ion-button>
-      </ion-item>
 
       <ion-item>
         <ion-input labelPlacement="stacked" [label]='"common.first__name" | translate'

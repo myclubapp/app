@@ -32,6 +32,7 @@ import {
   Token,
 } from "@capacitor/push-notifications";
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
+import { lastValueFrom } from "rxjs";
 
 @Component({
   selector: "app-root",
@@ -630,209 +631,198 @@ export class AppComponent implements OnInit {
     });
   }*/
   async registerNotifications() {
-    // Request permission to use push notifications
-    // iOS will prompt user and return if they granted permission or not
-    // Android will just grant without prompting
-    PushNotifications.requestPermissions().then((result) => {
+    try {
+      // Request permission to use push notifications
+      // iOS will prompt user and return if they granted permission or not
+      // Android will just grant without prompting
+      const result = await PushNotifications.requestPermissions();
       if (result.receive === "granted") {
-        // Register with Apple / Google to receive push via APNS/FCM
-        PushNotifications.register();
-      } else {
-        // Show some error
-      }
-    });
-
-    PushNotifications.addListener("registration", (token: Token) => {
-      // alert('Push registration success, token: ' + token.value);
-      /*this.toastController.create({
-        message: "Push erfolgreich registriert",
-        color: "primary",
-        duration: 1500,
-        position: "top",
-      }).then(toast=>{
-        toast.present();
-      });*/
-
-      this.profileService
-        .addPushSubscriber(null, this.deviceId, this.deviceInfo, token.value)
-        .catch((err) => {
-          console.error("Could not subscribe to notifications", err);
-          // this.errorPushMessageEnable("Could not subscribe to notifications");
-        })
-        .then((ok) => {
-          console.log(ok);
-        });
-    });
-
-    PushNotifications.addListener("registrationError", (error: any) => {
-      // alert('Error on registration: ' + JSON.stringify(error));
-    });
-
-    PushNotifications.addListener(
-      "pushNotificationReceived",
-      async (notification: PushNotificationSchema) => {
-        // alert('Push received: ' + JSON.stringify(notification));
-
-        console.log("PUSH MESSAGE RECEIVED");
-        console.log("TYPE:  " + notification.data.type);
-
-        if (
-          notification.data.type &&
-          notification.data.type === "helferEvent"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
-          })
-
-          if (value) {
-            this.ngZone.run(() => {
-              this.router.navigateByUrl("/t/helfer", {
-                state: notification.data,
-              }).catch(e => {
-                console.log(e);
-              });
-            });
-          }
-
-        } else if (
-          notification.data.type &&
-          notification.data.type === "clubEvent"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
-          })
-          if (value) {
-            this.ngZone.run(() => {
-              this.router.navigateByUrl("/t/events", {
-                state: notification.data,
-              }).catch(e => {
-                console.log(e);
-              });
-            });
-          }
-
-        } else if (
-          notification.data.type &&
-          notification.data.type === "clubRequest"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
-          })
-          if (value) {
-          }
-
-        } else if (
-          notification.data.type &&
-          notification.data.type === "clubRequestAdmin"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
-          })
-          if (value) {
-          }
-
-        } else if (
-          notification.data.type &&
-          notification.data.type === "news"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
-          })
-          if (value) {
-            this.ngZone.run(() => {
-              this.router.navigateByUrl("/t/news", {
-                state: notification.data,
-              }).catch(e => {
-                console.log(e);
-              });
-            });
-          }
-        } else if (
-          notification.data.type &&
-          notification.data.type === "clubNews"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
-          })
-          if (value) {
-            this.ngZone.run(() => {
-              this.router.navigateByUrl("/t/news", {
-                state: notification.data,
-              }).catch(e => {
-                console.log(e);
-              });
-            });
-          }
-        } else if (
-          notification.data.type &&
-          notification.data.type === "training"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
-          })
-          if (value) {
-            this.ngZone.run(() => {
-              this.router.navigateByUrl("/t/training", {
-                state: notification.data,
-              }).catch(e => {
-                console.log(e);
-              });
-            });
-          }
-        } else {
-          Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "OK",
+        try {
+          // Register with Apple / Google to receive push via APNS/FCM
+          await PushNotifications.register();
+        } catch (error) {
+          console.error('Fehler bei der Push-Registrierung:', error);
+          const toast = await this.toastController.create({
+            message: await lastValueFrom(this.translate.get("error__push_notification_not_available")),
+            duration: 3000,
+            color: 'danger'
           });
+          await toast.present();
         }
+      } else {
+        console.warn('Push-Benachrichtigungen wurden nicht erlaubt');
       }
-    );
+    } catch (error) {
+      console.error('Fehler beim Anfordern der Push-Berechtigungen:', error);
+      const toast = await this.toastController.create({
+        message: await lastValueFrom(this.translate.get("error_device_not_support_push_notifications")),
+        duration: 3000,
+        color: 'danger'
+      });
+      await toast.present();
+    }
 
-    PushNotifications.addListener(
-      "pushNotificationActionPerformed",
-      (notification: ActionPerformed) => {
-        console.log(notification);
-        // alert('Push action performed: ' + JSON.stringify(notification));
-      }
-    );
+    try {
+      PushNotifications.addListener("registration", (token: Token) => {
+        this.profileService
+          .addPushSubscriber(null, this.deviceId, this.deviceInfo, token.value)
+          .catch((err) => {
+            console.error("Could not subscribe to notifications", err);
+          })
+          .then((ok) => {
+            console.log(ok);
+          });
+      });
 
-    // OLD CODE
-    /*
-        let permStatus = await PushNotifications.checkPermissions();
-        if (permStatus.receive === 'prompt') {
-          permStatus = await PushNotifications.requestPermissions();
+      PushNotifications.addListener("registrationError", (error: any) => {
+        console.error('Registration error:', error);
+      });
+
+      PushNotifications.addListener(
+        "pushNotificationReceived",
+        async (notification: PushNotificationSchema) => {
+          try {
+            console.log("PUSH MESSAGE RECEIVED");
+            console.log("TYPE:  " + notification.data.type);
+
+            if (notification.data.type && notification.data.type === "helferEvent") {
+              const { value } = await Dialog.confirm({
+                title: notification.title,
+                message: notification.body,
+                okButtonTitle: "Öffnen",
+                cancelButtonTitle: "Abbrechen",
+              });
+
+              if (value) {
+                this.ngZone.run(() => {
+                  this.router.navigateByUrl("/t/helfer", {
+                    state: notification.data,
+                  }).catch(e => {
+                    console.error('Navigation error:', e);
+                  });
+                });
+              }
+            } else if (
+              notification.data.type &&
+              notification.data.type === "clubEvent"
+            ) {
+              const { value } = await Dialog.confirm({
+                title: notification.title,
+                message: notification.body,
+                okButtonTitle: "Öffnen",
+                cancelButtonTitle: "Abbrechen",
+              })
+              if (value) {
+                this.ngZone.run(() => {
+                  this.router.navigateByUrl("/t/events", {
+                    state: notification.data,
+                  }).catch(e => {
+                    console.error('Navigation error:', e);
+                  });
+                });
+              }
+            } else if (
+              notification.data.type &&
+              notification.data.type === "clubRequest"
+            ) {
+              const { value } = await Dialog.confirm({
+                title: notification.title,
+                message: notification.body,
+                okButtonTitle: "Öffnen",
+                cancelButtonTitle: "Abbrechen",
+              })
+              if (value) {
+              }
+            } else if (
+              notification.data.type &&
+              notification.data.type === "clubRequestAdmin"
+            ) {
+              const { value } = await Dialog.confirm({
+                title: notification.title,
+                message: notification.body,
+                okButtonTitle: "Öffnen",
+                cancelButtonTitle: "Abbrechen",
+              })
+              if (value) {
+              }
+            } else if (
+              notification.data.type &&
+              notification.data.type === "news"
+            ) {
+              const { value } = await Dialog.confirm({
+                title: notification.title,
+                message: notification.body,
+                okButtonTitle: "Öffnen",
+                cancelButtonTitle: "Abbrechen",
+              })
+              if (value) {
+                this.ngZone.run(() => {
+                  this.router.navigateByUrl("/t/news", {
+                    state: notification.data,
+                  }).catch(e => {
+                    console.error('Navigation error:', e);
+                  });
+                });
+              }
+            } else if (
+              notification.data.type &&
+              notification.data.type === "clubNews"
+            ) {
+              const { value } = await Dialog.confirm({
+                title: notification.title,
+                message: notification.body,
+                okButtonTitle: "Öffnen",
+                cancelButtonTitle: "Abbrechen",
+              })
+              if (value) {
+                this.ngZone.run(() => {
+                  this.router.navigateByUrl("/t/news", {
+                    state: notification.data,
+                  }).catch(e => {
+                    console.error('Navigation error:', e);
+                  });
+                });
+              }
+            } else if (
+              notification.data.type &&
+              notification.data.type === "training"
+            ) {
+              const { value } = await Dialog.confirm({
+                title: notification.title,
+                message: notification.body,
+                okButtonTitle: "Öffnen",
+                cancelButtonTitle: "Abbrechen",
+              })
+              if (value) {
+                this.ngZone.run(() => {
+                  this.router.navigateByUrl("/t/training", {
+                    state: notification.data,
+                  }).catch(e => {
+                    console.error('Navigation error:', e);
+                  });
+                });
+              }
+            } else {
+              Dialog.confirm({
+                title: notification.title,
+                message: notification.body,
+                okButtonTitle: "OK",
+              });
+            }
+          } catch (error) {
+            console.error('Error processing push notification:', error);
+          }
         }
-        if (permStatus.receive !== 'granted') {
-          throw new Error('User denied permissions!');
+      );
+
+      PushNotifications.addListener(
+        "pushNotificationActionPerformed",
+        (notification: ActionPerformed) => {
+          console.log(notification);
         }
-        PushNotifications.removeAllListeners();
-        await this.addListeners();
-        await PushNotifications.register();
-      }
-    
-      subscribeMobileNotifications() {
-       */
+      );
+    } catch (error) {
+      console.error('Error setting up push notification listeners:', error);
+    }
   }
 }

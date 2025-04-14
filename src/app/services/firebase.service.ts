@@ -245,13 +245,13 @@ export class FirebaseService {
     );
   }
 
-  getClubTeamList(clubId) {
+  getClubTeamList(clubId: string): Observable<Team[]> {
     return this.getClubTeamsRef(clubId).pipe(
       tap((teams) => {
         if (teams.length === 0) {
-          console.log("No teams found for club");
+          console.log("Keine Teams für diesen Club gefunden");
         } else {
-          console.log("Fetching details for teams in club:", teams.map(team => team.id));
+          console.log("Lade Details für Teams im Club:", teams.map(team => team.id));
         }
       }),
       mergeMap((teams) => {
@@ -262,23 +262,26 @@ export class FirebaseService {
           teams.map((team) =>
             this.getTeamRef(team.id).pipe(
               catchError((error) => {
-                console.error(`Error fetching details for team ${team.id}:`, error.message);
-                return of(null); // Return null for this team in case of an error
+                console.error(`Fehler beim Laden der Team-Details für Team ${team.id}:`, error.message);
+                return of(null);
               })
             )
           )
         );
       }),
       map((teamsWithDetails) => {
-        const filteredTeams = teamsWithDetails.filter((team) => team !== null); // Filter out null (error cases)
+        const filteredTeams = teamsWithDetails.filter((team): team is Team => team !== null);
+        if (filteredTeams.length !== teamsWithDetails.length) {
+          console.warn(`Einige Teams konnten nicht geladen werden. ${filteredTeams.length} von ${teamsWithDetails.length} Teams erfolgreich geladen.`);
+        }
         return filteredTeams;
       }),
       catchError((err) => {
-        console.error("Error in getClubTeamsWithDetails:", err);
-        return of([]); // Return an empty array on error
+        console.error("Fehler beim Laden der Club-Teams:", err);
+        return of([]);
       })
     );
-}
+  }
 
   addClubTeam(team, clubId){
     return addDoc(

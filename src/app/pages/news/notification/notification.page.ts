@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { user } from '@angular/fire/auth';
 import { PushNotifications } from '@capacitor/push-notifications';
-import { ModalController } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 import { Router } from "@angular/router";
 // import { Badge } from '@capawesome/capacitor-badge';
 import { map, Observable, Subscription, switchMap, take, tap } from 'rxjs';
@@ -27,7 +27,8 @@ export class NotificationPage implements OnInit {
     private readonly authService: AuthService,
     private readonly modalCtrl: ModalController,
     private readonly router: Router,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private readonly platform: Platform
   ) { }
 
   ngOnInit() {
@@ -51,14 +52,20 @@ export class NotificationPage implements OnInit {
   }
 
   async markALlAsRead() {
-    this.subscription = this.notifications$.subscribe((notifications) => {
-      notifications.forEach((notification) => {
-        if (!notification.opened) {
-          this.toggle(notification);
-        }
+    try {
+      this.subscription = this.notifications$.subscribe((notifications) => {
+        notifications.forEach((notification) => {
+          if (!notification.opened) {
+            this.toggle(notification);
+          }
+        });
       });
-    });
-    await PushNotifications.removeAllDeliveredNotifications();
+      if (this.platform.is('capacitor')) {
+        await PushNotifications.removeAllDeliveredNotifications();
+      }
+    } catch (error) {
+      console.error('Fehler beim Markieren aller Benachrichtigungen als gelesen:', error);
+    }
   }
 
   getNotifications(): Observable<any[]> {
@@ -70,15 +77,21 @@ export class NotificationPage implements OnInit {
       switchMap((user) => {
         return this.notificationService.getNotifications(user).pipe(
           map((notifications) => {
-            console.log(notifications)
-            if (notifications == null || notifications.length === 0) {
-              PushNotifications.removeAllDeliveredNotifications();
+            try {
+              if (notifications == null || notifications.length === 0) {
+                if (this.platform.is('capacitor')) {
+                  PushNotifications.removeAllDeliveredNotifications();
+                }
+              }
+              return notifications.sort((a, b) => Timestamp.fromMillis(b.date).toMillis() - Timestamp.fromMillis(a.date).toMillis());
+            } catch (error) {
+              console.error('Fehler beim Verarbeiten der Benachrichtigungen:', error);
+              return [];
             }
-            return notifications.sort((a, b) => Timestamp.fromMillis(b.date).toMillis() - Timestamp.fromMillis(a.date).toMillis());
           }),
         );
       })
-    )
+    );
   }
   getReadNotifications(): Observable<any[]> {
     return this.authService.getUser$().pipe(
@@ -99,18 +112,33 @@ export class NotificationPage implements OnInit {
     )
   }
   toggle(notification) {
-    this.notificationService.toggleNotification(notification);
+    try {
+      this.notificationService.toggleNotification(notification);
 
-    this.subscriptionToggle = this.notifications$.pipe(take(1),tap(notifications=>{
-      if(notifications == null || notifications.length === 0){
-        PushNotifications.removeAllDeliveredNotifications();
-      }
-
-    })).subscribe((notifications) => {
-      if (notifications.length === 0) {
-        PushNotifications.removeAllDeliveredNotifications();
-      }
-    });
+      this.subscriptionToggle = this.notifications$.pipe(take(1), tap(notifications => {
+        try {
+          if (notifications == null || notifications.length === 0) {
+            if (this.platform.is('capacitor')) {
+              PushNotifications.removeAllDeliveredNotifications();
+            }
+          }
+        } catch (error) {
+          console.error('Fehler beim Entfernen der Benachrichtigungen:', error);
+        }
+      })).subscribe((notifications) => {
+        try {
+          if (notifications.length === 0) {
+            if (this.platform.is('capacitor')) {
+              PushNotifications.removeAllDeliveredNotifications();
+            }
+          }
+        } catch (error) {
+          console.error('Fehler beim Entfernen der Benachrichtigungen:', error);
+        }
+      });
+    } catch (error) {
+      console.error('Fehler beim Umschalten der Benachrichtigung:', error);
+    }
   }
 
   async openNotification(notification) {

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AlertController, IonItemSliding, ModalController, NavParams, ToastController } from '@ionic/angular';
-import { catchError, lastValueFrom, Observable, of, tap, from, combineLatest, map, switchMap, take } from 'rxjs';
+import { catchError, lastValueFrom, Observable, of, tap, from, combineLatest, map, switchMap, take, Subscription } from 'rxjs';
 import { Club } from 'src/app/models/club';
 import { HelferDetailPage } from '../helfer-detail/helfer-detail.page';
 import { HelferService } from 'src/app/services/firebase/helfer.service';
@@ -22,7 +22,7 @@ export class HelferPunkteDetailPage implements OnInit {
   helferPunkteList$: Observable<any[]>;
   groupArray: number[] = [];
   allowEdit: boolean = false;
-
+  private subscription: Subscription;
   constructor(
     private readonly helferService: HelferService,
     private readonly alertController: AlertController,
@@ -52,7 +52,7 @@ export class HelferPunkteDetailPage implements OnInit {
       })
     );
 
-    this.helferPunkteList$.subscribe(helferPunkte => {
+    this.subscription = this.helferPunkteList$.subscribe(helferPunkte => {
       // Extrahiere alle Jahre aus den eventDates
       const years = helferPunkte
         .map(punkt => new Date(punkt.eventDate.toDate()).getFullYear())
@@ -63,6 +63,12 @@ export class HelferPunkteDetailPage implements OnInit {
     });
 
 
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   getHeferEinsatz(profileId: string, clubId: string) {

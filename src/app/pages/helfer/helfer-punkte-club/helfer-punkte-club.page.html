@@ -24,20 +24,18 @@
     <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
       [value]="searchTerm.value" placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
 
-    <div class="ion-padding">
-      <!--<ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+    <!-- <div class="ion-padding">
+     <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
           <ion-button *ngIf="isClubAdmin(clubAdminList, club.id)" shape="round" size="small" (click)="addRole()">
             {{"common.add" | translate}}
             <ion-icon slot="start" name="add-circle-outline"></ion-icon>
           </ion-button>
-        </ng-container>-->
-       
+        </ng-container>
       <ion-button (click)="setFilter(role)" shape="round" size="small" *ngFor="let role of club['roles']">
         {{role}}
       </ion-button>
-    </div>
-
-
+    </div>-->
+       
     <ion-list inset="true">
       <ion-list-header>
         Auswertung
@@ -69,7 +67,7 @@
         </ion-modal>
       </ion-item>
 
-      <ion-item>
+   <!--   <ion-item>
         <ion-select  value="0" label="Min. Punkte"  aria-label="Min Punkte"  justify="space-between"   (ionChange)="onHelferPunkteMinChange($event)" placeholder="Min Punkte">
           <ion-select-option value="0">0 Punkte</ion-select-option>
           <ion-select-option value="1">1 Punkt</ion-select-option>
@@ -108,7 +106,7 @@
 
       <ion-item>
         <ion-toggle justify="space-between"  (ionChange)="onHelferPunktePlanned($event)" [checked]="plannedToggle.value" [enableOnOffLabels]="true"  labelPlacement="start">Geplante Einsätze</ion-toggle><br /><br />
-      </ion-item>
+      </ion-item>-->
 
 <!--      <ion-item>
         <ion-range labelPlacement="start" label="Helferpunkte" 
