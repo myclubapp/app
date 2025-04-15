@@ -11,6 +11,7 @@
       <ion-buttons slot="primary">
         <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
       </ion-buttons>
+
     </ion-toolbar>
   </ion-header>
 
@@ -38,7 +39,8 @@
        
     <ion-list inset="true">
       <ion-list-header>
-        Auswertung
+        <ion-label>Auswertung</ion-label>
+       
       </ion-list-header>
       <ion-item>
         <ion-icon name="calendar" slot="start"></ion-icon>
@@ -126,7 +128,12 @@
     <ng-container *ngIf="filteredClubMembers$ | async as members">
       <ion-list inset="true">
         <ion-list-header>
-          Mitglieder ({{members?.length}})
+          <ion-label>Mitglieder ({{members?.length}})</ion-label>
+          <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+            <ion-button *ngIf="isClubAdmin(clubAdminList, clubId)" shape="round" size="small" (click)="downloadClubPoints()">
+              <ion-label>Download</ion-label>
+            </ion-button>
+          </ng-container>
         </ion-list-header>
 
         <ion-item-group>

@@ -98,6 +98,53 @@ export class HelferPunkteClubPage implements OnInit {
   //   this.plannedToggle.next(event.detail['checked']);
   }
 
+  downloadClubPoints() {
+    console.log('downloadClubPoints');
+    
+    this.clubMembers$.pipe(take(1)).subscribe(async (members) => {
+      if (!members || members.length === 0) {
+        const toast = await this.toastController.create({
+          message: 'Keine Mitglieder gefunden',
+          duration: 2000,
+          color: 'warning'
+        });
+        await toast.present();
+        return;
+      }
+
+      // CSV Header
+      let csvContent = 'Vorname,Nachname,Rollen,Gesamtpunkte,Helferpunkte Details\n';
+
+      // CSV Daten
+      members.forEach(member => {
+        const firstName = member.profile.firstName || '';
+        const lastName = member.profile.lastName || '';
+        const roles = member.roles?.join('; ') || '';
+        const totalPoints = member.totalPoints || 0;
+        
+        // Helferpunkte Details
+        const helferDetails = member.helferevents
+          ?.filter(event => event.status)
+          ?.map(event => `${event.name} (${event.points} Punkte am ${event.eventDate?.toDate().toLocaleDateString()})`)
+          ?.join('; ') || '';
+
+        csvContent += `"${firstName}","${lastName}","${roles}",${totalPoints},"${helferDetails}"\n`;
+      });
+
+      // Erstelle Blob und Download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `helferpunkte_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  }
   async changeDate(event, fieldname) {
     await this.fbService.setClubHelferReportingDate(this.clubId, fieldname, event.detail.value)
   }
