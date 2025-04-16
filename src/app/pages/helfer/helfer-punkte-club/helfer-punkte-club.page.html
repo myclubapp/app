@@ -68,6 +68,11 @@
           </ng-template>
         </ion-modal>
       </ion-item>
+      <!--
+        <ion-item>
+          <ion-toggle justify="space-between"  (ionChange)="onHelferPunktePlanned($event)" [checked]="plannedToggle.value" [enableOnOffLabels]="true"  labelPlacement="start">Geplante Einsätze</ion-toggle><br /><br />
+        </ion-item>
+        -->
 
    <!--   <ion-item>
         <ion-select  value="0" label="Min. Punkte"  aria-label="Min Punkte"  justify="space-between"   (ionChange)="onHelferPunkteMinChange($event)" placeholder="Min Punkte">
@@ -145,14 +150,14 @@
             <ng-container *ngFor="let member of members">
               <ion-item *ngIf="member.groupBy == groupBy" detail="true" button="true" (click)="openHelferPunktDetailModal(member)">
                 <ion-label>
-                  {{member.profile.firstName}} {{member.profile.lastName}}
+                  {{member.profile.firstName}} {{member.profile.lastName}} 
                   <ion-badge color="primary" *ngFor="let role of member.roles">
                     {{role}}
                   </ion-badge>
                 </ion-label>
                 <ion-note slot="end">
                   <ion-badge [color]="member.totalPoints >= 4 ? 'success' : (member.totalPoints <= 1 ? 'danger' : 'warning')">
-                    {{member.totalPoints || 0}} Punkte
+                    {{member.totalPoints || 0}} / {{member.totalPointsPlanned}} Punkte
                   </ion-badge>
                 </ion-note>
               </ion-item>

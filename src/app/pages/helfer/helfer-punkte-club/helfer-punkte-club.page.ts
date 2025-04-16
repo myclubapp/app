@@ -95,7 +95,7 @@ export class HelferPunkteClubPage implements OnInit {
 
   }
   onHelferPunktePlanned(event: CustomEvent<ToggleChangeEventDetail>) {
-  //   this.plannedToggle.next(event.detail['checked']);
+    this.plannedToggle.next(event.detail.checked);
   }
 
   downloadClubPoints() {
@@ -152,12 +152,47 @@ export class HelferPunkteClubPage implements OnInit {
     console.log('initializeClubMembers called with clubId:', clubId);
 
     this.clubMembers$ = this.fbService.getClubRef(clubId).pipe(
-  
       switchMap((club) => {
         if (!club) {
           console.error('No club found for members processing');
           return of([]);
         }
+
+        // Lade alle Events mit Schichten einmal
+        const eventsWithSchichten$ = this.eventService.getClubHelferEventRefsByDate(
+          this.clubId,
+          Timestamp.fromDate(new Date(club['helferReportingDateFrom'])), 
+          Timestamp.fromDate(new Date(club['helferReportingDateTo']))
+        ).pipe(
+          switchMap(events => {
+            if (events.length === 0) return of([]);
+            return combineLatest(
+              events.map(event => 
+                this.eventService.getClubHelferEventSchichtenRef(this.clubId, event.id).pipe(
+                  switchMap(schichten => {
+                    if (schichten.length === 0) return of({...event, schichten: []});
+                    return combineLatest(
+                      schichten.map(schicht =>
+                        this.eventService.getClubHelferEventSchichtAttendeesRef(this.clubId, event.id, schicht.id).pipe(
+                          map(attendees => ({
+                            ...schicht,
+                            attendees: attendees,
+                            countAttendees: attendees.filter(att => att.status === true).length
+                          }))
+                        )
+                      )
+                    ).pipe(
+                      map(schichtenWithAttendees => ({
+                        ...event,
+                        schichten: schichtenWithAttendees
+                      }))
+                    );
+                  })
+                )
+              )
+            );
+          })
+        );
 
         return this.fbService.getClubMemberRefs(clubId).pipe(
           tap(members => console.log('Club members loaded:', members.length)),
@@ -167,23 +202,46 @@ export class HelferPunkteClubPage implements OnInit {
               return of([]);
             }
             console.log('Members found in club:', members.length);
-            const memberDetails$ = members.map(member =>
-              // add helferpunkte to the member
-              combineLatest([
-                this.userProfileService.getUserProfileById(member.id),
-                this.helferService.getUserHelferPunkteRefsWithFilter(
-                  member.id, 
-                  this.clubId, 
-                  Timestamp.fromDate(new Date(club['helferReportingDateFrom'])), 
-                  Timestamp.fromDate(new Date(club['helferReportingDateTo']))
+            
+            // Kombiniere die Events mit den Member-Details
+            return combineLatest([
+              eventsWithSchichten$,
+              ...members.map(member =>
+                combineLatest([
+                  this.userProfileService.getUserProfileById(member.id),
+                  this.helferService.getUserHelferPunkteRefsWithFilter(
+                    member.id, 
+                    this.clubId, 
+                    Timestamp.fromDate(new Date(club['helferReportingDateFrom'])), 
+                    Timestamp.fromDate(new Date(club['helferReportingDateTo']))
+                  )
+                ]).pipe(
+                  map(([profile, helferevents]) => ({
+                    member,
+                    profile,
+                    helferevents
+                  }))
                 )
-              ]).pipe(
-                tap(([profile, helferevents]) => {
-                  if (!profile) {
-                    console.warn(`No profile found for member ${member.id}`);
-                  }
-                }),
-                map(([profile, helferevents]) => {
+              )
+            ]).pipe(
+              map(([eventsWithSchichten, ...memberDetails]) => {
+                return memberDetails.map(({member, profile, helferevents}) => {
+                  // Filtere die Events für den aktuellen Member
+                  const memberEventsWithSchichten = eventsWithSchichten
+                    .map(event => {
+                      const memberSchichten = event.schichten.filter(schicht => {
+                        const memberAttendee = schicht.attendees.find(att => att.id === member.id);
+                        return memberAttendee && 
+                               memberAttendee.status === true && 
+                               (!memberAttendee.confirmed || memberAttendee.confirmed === false || !memberAttendee.confirmed === true);
+                      });
+                      return {
+                        ...event,
+                        schichten: memberSchichten
+                      };
+                    })
+                    .filter(event => event.schichten.length > 0);
+
                   if (!profile) {
                     return {
                       profile: { 
@@ -194,42 +252,25 @@ export class HelferPunkteClubPage implements OnInit {
                       },
                       groupBy: 'U',
                       roles: member.roles || [],
-                      helferevents: helferevents || []
+                      helferevents: helferevents || [],
+                      helfereventsPlanned: memberEventsWithSchichten || [],
+                      totalPointsPlanned: memberEventsWithSchichten.length
                     };
                   }
-                  console.log('helferevents', helferevents);
+
                   const filteredHelferPunkte = helferevents?.filter(punkt => punkt.status === true) || [];
                   const totalPoints = filteredHelferPunkte.reduce((sum, punkt) => Number(sum) + Number(punkt.points || 0), 0);
+
                   return {
                     profile,
                     groupBy: profile.firstName ? profile.firstName.charAt(0).toUpperCase() : 'Z',
                     roles: member.roles || [],
                     totalPoints: totalPoints,
-                    helferevents: helferevents
+                    helferevents: helferevents,
+                    helfereventsPlanned: memberEventsWithSchichten,
+                    totalPointsPlanned: memberEventsWithSchichten.length
                   };
-                }),
-                catchError(err => {
-                  console.error(`Error loading profile for member ${member.id}:`, err);
-                  return of({
-                    profile: { 
-                      ...member, 
-                      firstName: "Unknown", 
-                      lastName: "Unknown", 
-                      roles: member.roles || [] 
-                    },
-                    groupBy: 'U',
-                    roles: member.roles || [],
-                    totalPoints: 0,
-                    helferevents: []
-                  });
-                })
-              )
-            );
-
-            return combineLatest(memberDetails$).pipe(
-              catchError(err => {
-                console.error('Error combining member details:', err);
-                return of([]);
+                });
               })
             );
           }),
@@ -306,6 +347,7 @@ export class HelferPunkteClubPage implements OnInit {
 
   async openHelferPunktDetailModal(helferData: any) {
     console.log('openHelferPunktDetailModal', helferData);
+    console.log('eventsWithSchichten', helferData.eventsWithSchichten);
     const modal = await this.modalCtrl.create({
       component: HelferPunkteDetailPage,
       presentingElement: await this.modalCtrl.getTop(),

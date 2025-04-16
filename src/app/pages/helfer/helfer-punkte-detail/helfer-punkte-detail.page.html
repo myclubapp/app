@@ -20,9 +20,33 @@
     </ion-toolbar>
   </ion-header>
 
+  <ion-list *ngIf="helferData.helfereventsPlanned.length > 0">
+    <ion-list-header>
+      <ion-label>
+        Geplante Einsätze
+      </ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let helferPunkt of helferData.helfereventsPlanned">
+      <ion-label>
+        <h2>{{helferPunkt?.name}}</h2>
+        <h3>{{helferPunkt?.date.toDate() | date:'dd.MM.YYYY '}}</h3>
+
+        <h3 *ngFor="let schicht of helferPunkt?.schichten">
+          {{schicht?.name}} {{schicht?.timeFrom}} - {{schicht?.timeTo}} / mögliche Punkte: {{schicht?.points}}
+        </h3>
+       
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
 
   <ng-container *ngIf="helferPunkteList$ | async as helferPunkteList">
     <ion-list [inset]="true">
+      <ion-list-header>
+        <ion-label>
+          Bestätigte Einsätze
+        </ion-label>
+      </ion-list-header>
       <ion-item-group>
         <ng-container *ngFor="let groupBy of groupArray">
           <ion-item-divider color="light">
@@ -71,6 +95,8 @@
       </ion-item-group>
     </ion-list>
   </ng-container>
+
+
 
   <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
     <ion-fab *ngIf="isClubAdmin(clubAdminList, clubId)" vertical="bottom" horizontal="end" slot="fixed">
