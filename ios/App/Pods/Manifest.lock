@@ -27,6 +27,8 @@ PODS:
     - Capacitor
   - CapacitorNetwork (7.0.1):
     - Capacitor
+  - CapacitorPluginSafeArea (4.0.0):
+    - Capacitor
   - CapacitorPushNotifications (7.0.1):
     - Capacitor
   - CapacitorShare (7.0.1):
@@ -129,6 +131,7 @@ DEPENDENCIES:
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorNetwork (from `../../node_modules/@capacitor/network`)"
+  - CapacitorPluginSafeArea (from `../../node_modules/capacitor-plugin-safe-area`)
   - "CapacitorPushNotifications (from `../../node_modules/@capacitor/push-notifications`)"
   - "CapacitorShare (from `../../node_modules/@capacitor/share`)"
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
@@ -182,6 +185,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorNetwork:
     :path: "../../node_modules/@capacitor/network"
+  CapacitorPluginSafeArea:
+    :path: "../../node_modules/capacitor-plugin-safe-area"
   CapacitorPushNotifications:
     :path: "../../node_modules/@capacitor/push-notifications"
   CapacitorShare:
@@ -209,6 +214,7 @@ SPEC CHECKSUMS:
   CapacitorHaptics: 70e47470fa1a6bd6338cd102552e3846b7f9a1b3
   CapacitorKeyboard: 969647d0ca2e5c737d7300088e2517aa832434e2
   CapacitorNetwork: 07ec4c69c1bb696f41c23e00d31bda1bbb221bba
+  CapacitorPluginSafeArea: af80830df43015a915e504a56318a3027d3fc806
   CapacitorPushNotifications: 0b653a3264d56daccf0e8769fff15d2f48306de6
   CapacitorShare: 58d6c2da63b093e8693287b2d36db92435538435
   CapacitorSplashScreen: 19cd3573e57507e02d6f34597a8c421e00931487
@@ -229,6 +235,6 @@ SPEC CHECKSUMS:
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
 
-PODFILE CHECKSUM: 3a1c6c310c92000ba233a06d140d4d3cc00921ce
+PODFILE CHECKSUM: a9084d06c1039f57374ac151e37ed2d56c4c5681
 
 COCOAPODS: 1.15.2

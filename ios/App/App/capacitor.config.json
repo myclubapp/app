@@ -42,6 +42,7 @@
 		"SharePlugin",
 		"SplashScreenPlugin",
 		"StatusBarPlugin",
+		"SafeAreaPlugin",
 		"MyClubAppWidgetPlugin",
 		"CDVPlugin"
 	]

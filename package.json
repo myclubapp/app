@@ -66,6 +66,7 @@
     "@ionic/pwa-elements": "3.3.0",
     "@ngx-translate/core": "^16.0.4",
     "@ngx-translate/http-loader": "^16.0.1",
+    "capacitor-plugin-safe-area": "^4.0.0",
     "cordova-plugin-ionic": "5.5.3",
     "firebase": "11.6.0",
     "graphql": "^16.8.1",

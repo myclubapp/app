@@ -1,8 +1,9 @@
-import { Component, NgZone, OnInit } from "@angular/core";
+import { AfterViewInit, Component, NgZone, OnInit } from "@angular/core";
 import { SwUpdate, VersionEvent } from "@angular/service-worker";
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { Platform } from '@ionic/angular';
+import { SafeArea } from 'capacitor-plugin-safe-area';
 
 import {
   AlertController,
@@ -40,7 +41,7 @@ import { lastValueFrom } from "rxjs";
   styleUrls: ["app.component.scss"],
   standalone: false
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   public email: string;
   public appVersion: string = packagejson.version;
   public buildNumber: string = packagejson.buildNumber;
@@ -189,6 +190,21 @@ export class AppComponent implements OnInit {
 
 
   }
+
+
+  ngAfterViewInit() {
+    console.log('CSS DEBUG: AppComponent View initialized');
+    this.setStatusBarAndSafeArea();
+
+    // iOS only
+    window.addEventListener('statusTap', () => {
+      const content = document.querySelector('ion-content');
+      if (content) {
+        content.scrollToTop(500);
+      }
+    });
+  }
+
   ngOnInit(): void {
     App.removeAllListeners().then(() => {
       this.registerBackButton();
@@ -244,7 +260,7 @@ export class AppComponent implements OnInit {
   }
 
   initializeApp(): void {
-    this.setStatusBar();
+    // this.setStatusBarAndSafeArea();
     this.showSplashScreen();
     this.setDefaultLanguage();
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
@@ -254,36 +270,84 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private setStatusBar() {
+  private async setStatusBarAndSafeArea() {
 
-    if (Capacitor.isNativePlatform()) {
-      StatusBar.setOverlaysWebView({
-        overlay: false,
-      });
+    setTimeout(async () => {
+      const { statusBarHeight } = await SafeArea.getStatusBarHeight();
+      console.log("DEBUG CSS:  statusbarHeight", statusBarHeight);
 
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (prefersDark) {
-        StatusBar.setStyle({ style: Style.Dark });
-        StatusBar.setBackgroundColor({ color: '#795deb' });
-      } else {
-        StatusBar.setStyle({ style: Style.Light });
-        StatusBar.setBackgroundColor({ color: '#339bde' });
+      try {
+        const marginTop = getComputedStyle(document.querySelector('.android ion-app')).getPropertyValue('margin-top');
+        const numericValue = parseInt(marginTop.replace('px', ''));
+        console.log("DEBUG CSS:  marginTop", numericValue);
+      } catch (error) {
+        console.log("DEBUG CSS:  marginTop from app.component.scss", error);
       }
 
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-        const newColorScheme = e.matches ? 'dark' : 'light';
-        console.log('System theme changed to:', newColorScheme);
-        if (newColorScheme == 'dark') {
-          StatusBar.setStyle({ style: Style.Dark });
-          StatusBar.setBackgroundColor({ color: '#795deb' });
+      const safeAreaTop = Number(getComputedStyle(document.documentElement).getPropertyValue('--ion-safe-area-top').replace('px', ''));
+      const safeAreaBottom = Number(getComputedStyle(document.documentElement).getPropertyValue('--ion-safe-area-bottom').replace('px', ''));
+      console.log("DEBUG CSS:  safeAreaTop --ion-safe-area-top / bottom Value: ", safeAreaTop, safeAreaBottom);
+
+      const { insets } = await SafeArea.getSafeAreaInsets();
+      console.log("DEBUG CSS: insets via SafeArea Plugin: ", JSON.stringify(insets));
+
+      //Top
+      if (Capacitor.isNativePlatform() && Capacitor.getPlatform() == 'android') {
+        if (safeAreaTop != insets.top || insets.top > 0) {
+          document.documentElement.style.setProperty('--ion-safe-area-top', `${insets.top}px`);
+          console.log("DEBUG CSS: Update --ion-safe-area-top Value: ", insets.top);
         } else {
-          StatusBar.setStyle({ style: Style.Light });
-          StatusBar.setBackgroundColor({ color: '#339bde' });
+          console.log("DEBUG CSS: No Update --ion-safe-area-top Value: ", insets.top);
         }
-      });
-    } else {
-      console.log("Status Bar not supported");
-    }
+
+        //Bottom
+        if (safeAreaBottom != insets.bottom || insets.bottom > 0) {
+          document.documentElement.style.setProperty('--ion-safe-area-bottom', `${insets.bottom}px`);
+          console.log("DEBUG CSS: Update --ion-safe-area-bottom Value: ", insets.bottom);
+        } else {
+          console.log("DEBUG CSS: No Update --ion-safe-area-bottom Value: ", insets.bottom);
+        }
+      }
+
+      const safeAreaTopAfter = getComputedStyle(document.documentElement).getPropertyValue('--ion-safe-area-top');
+      console.log("DEBUG CSS: safeAreaTopAfter --ion-safe-area-top Value: ", safeAreaTopAfter);
+      const safeAreaBottomAfter = getComputedStyle(document.documentElement).getPropertyValue('--ion-safe-area-bottom');
+      console.log("DEBUG CSS: safeAreaBottomAfter --ion-safe-area-bottom Value: ", safeAreaBottomAfter);
+
+      if (Capacitor.isPluginAvailable("StatusBar")) {
+        console.log("StatusBar is available");
+
+        console.log("StatusBar set overlay to false");
+        await StatusBar.setOverlaysWebView({
+          overlay: false,
+        });
+
+        // Set initial theme
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDark) { // Dark Mode
+          await StatusBar.setStyle({ style: Style.Dark });
+          await StatusBar.setBackgroundColor({ color: '#795deb' });
+        } else { // Light Mode  
+          await StatusBar.setStyle({ style: Style.Light });
+          await StatusBar.setBackgroundColor({ color: '#339bde' });
+        }
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', async (e) => {
+          const newColorScheme = e.matches ? 'dark' : 'light';
+          console.log('System theme changed to:', newColorScheme);
+          if (newColorScheme == 'dark') {
+            await StatusBar.setStyle({ style: Style.Dark });
+            await StatusBar.setBackgroundColor({ color: '#795deb' });
+          } else {
+            await StatusBar.setStyle({ style: Style.Light });
+            await StatusBar.setBackgroundColor({ color: '#339bde' });
+          }
+        });
+      } else {
+        console.log("Status Bar not supported");
+      }
+    }, 100);
 
   }
 

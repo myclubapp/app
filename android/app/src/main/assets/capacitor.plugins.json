@@ -60,6 +60,10 @@
 		"classpath": "com.capacitorjs.plugins.statusbar.StatusBarPlugin"
 	},
 	{
+		"pkg": "capacitor-plugin-safe-area",
+		"classpath": "com.capacitor.safearea.SafeAreaPlugin"
+	},
+	{
 		"pkg": "myclub-widget-plugin",
 		"classpath": "app.myclub.widget.MyClubAppWidgetPlugin"
 	}

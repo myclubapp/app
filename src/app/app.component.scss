@@ -11,8 +11,7 @@ ion-menu ion-list-header,
 ion-menu ion-note {
   padding-left: 20px;
 }
-.ios{
-  .notch-padding{
-    padding-top: 40px !important;
-  }
+
+.android ion-app {
+  margin-top: 24px;
 }

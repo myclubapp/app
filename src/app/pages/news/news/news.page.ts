@@ -93,6 +93,7 @@ export class NewsPage implements OnInit {
     private router: Router
   ) {
     this.menuCtrl.enable(true, "menu");
+
     /* if (this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state.type === "news") {
       const pushData = this.router.getCurrentNavigation().extras.state;
       // It's a Push Message
