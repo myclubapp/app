@@ -23,6 +23,7 @@ export class HelferPunkteDetailPage implements OnInit {
   groupArray: number[] = [];
   allowEdit: boolean = false;
   private subscription: Subscription;
+  clubMember$: Observable<any>;
   constructor(
     private readonly helferService: HelferService,
     private readonly alertController: AlertController,
@@ -42,7 +43,8 @@ export class HelferPunkteDetailPage implements OnInit {
     console.log('helferData', this.helferData);
     console.log('clubId', this.clubId);
     this.helferPunkteList$ = this.getHeferEinsatz(this.helferData.profile.id, this.clubId);
-
+    this.clubMember$ = this.fbService.getClubMemberRef(this.clubId, this.helferData.profile.id);
+    
     // Load admin list
     this.clubAdminList$ = this.fbService.getClubAdminList().pipe(
       tap(admins => console.log('Club admin list loaded:', admins)),
@@ -69,6 +71,12 @@ export class HelferPunkteDetailPage implements OnInit {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+  updateHelferPunkte(helferPunkte: any) {
+    // console.log('helferPunkte', helferPunkte);
+    this.fbService.setHelferPunkte(this.clubId, this.helferData.profile.id, Number(helferPunkte));
+    this.presentToast();
   }
 
   getHeferEinsatz(profileId: string, clubId: string) {

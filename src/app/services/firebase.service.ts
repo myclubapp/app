@@ -9,6 +9,7 @@ import {
   deleteDoc,
   setDoc,
   Timestamp,
+  updateDoc,
 } from "@angular/fire/firestore";
 
 import {
@@ -493,6 +494,20 @@ export class FirebaseService {
       idField: "id",
     }) as Observable<Profile[]>;
   }
+
+
+  getClubMemberRef(clubId: string, userId: string): Observable<Profile> {
+    const clubMemberRef = doc(this.firestore, `club/${clubId}/members/${userId}`);
+    return docData(clubMemberRef, { idField: "id" }) as unknown as Observable<Profile>;
+  }
+
+  setHelferPunkte(clubId: string, userId: string, helferPunkte: number) {
+    const clubMemberRef = doc(this.firestore, `club/${clubId}/members/${userId}`);
+    console.log('helferPunkte', clubId, userId, helferPunkte);
+    return updateDoc(clubMemberRef, { helferPunkte: helferPunkte});
+  }
+
+
 
   getClubAdminRefs(clubId: string): Observable<Profile[]> {
     const clubMemberRefList = collection(

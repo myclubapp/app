@@ -20,6 +20,21 @@
     </ion-toolbar>
   </ion-header>
 
+  <ion-list *ngIf="clubMember$ | async as clubMember">
+    <ion-list-header>
+      <ion-label>
+        Einstellungen
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-input label="Helferpunkte" labelPlacement="floating" type="number" 
+      value="{{clubMember.helferPunkte}}"
+      [(ngModel)]="clubMember.helferPunkte" (ionChange)="updateHelferPunkte($event.target.value)"></ion-input>
+    </ion-item>
+  </ion-list>
+
+
+
   <ion-list *ngIf="helferData.helfereventsPlanned.length > 0">
     <ion-list-header>
       <ion-label>

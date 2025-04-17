@@ -10,7 +10,6 @@ import { Club } from 'src/app/models/club';
 import { Timestamp } from 'firebase/firestore';
 import { TranslateService } from '@ngx-translate/core';
 import { EventService } from 'src/app/services/firebase/event.service';
-import { collection, addDoc } from 'firebase/firestore';
 import { Firestore } from '@angular/fire/firestore';
 
 @Component({
@@ -121,14 +120,14 @@ export class HelferPunkteClubPage implements OnInit {
         const lastName = member.profile.lastName || '';
         const roles = member.roles?.join('; ') || '';
         const totalPoints = member.totalPoints || 0;
-        
+        const helferPunkte = member.helferPunkte || 0;
         // Helferpunkte Details
         const helferDetails = member.helferevents
           ?.filter(event => event.status)
           ?.map(event => `${event.name} (${event.points} Punkte am ${event.eventDate?.toDate().toLocaleDateString()})`)
           ?.join('; ') || '';
 
-        csvContent += `"${firstName}","${lastName}","${roles}",${totalPoints},"${helferDetails}"\n`;
+        csvContent += `"${firstName}","${lastName}","${roles}",${helferPunkte},${totalPoints},"${helferDetails}"\n`;
       });
 
       // Erstelle Blob und Download
@@ -252,6 +251,7 @@ export class HelferPunkteClubPage implements OnInit {
                       },
                       groupBy: 'U',
                       roles: member.roles || [],
+                      helferPunkte: member?.helferPunkte ?? club?.helferPunkte,
                       helferevents: helferevents || [],
                       helfereventsPlanned: memberEventsWithSchichten || [],
                       totalPointsPlanned: memberEventsWithSchichten.length
@@ -266,6 +266,7 @@ export class HelferPunkteClubPage implements OnInit {
                     groupBy: profile.firstName ? profile.firstName.charAt(0).toUpperCase() : 'Z',
                     roles: member.roles || [],
                     totalPoints: totalPoints,
+                    helferPunkte: member.helferPunkte ?? club.helferPunkte,
                     helferevents: helferevents,
                     helfereventsPlanned: memberEventsWithSchichten,
                     totalPointsPlanned: memberEventsWithSchichten.length

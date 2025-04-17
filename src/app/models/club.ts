@@ -15,7 +15,7 @@ export interface Club {
   roles: [];
   helferReportingDateFrom: string;
   helferReportingDateTo: string;
-
+  helferPunkte: number;
 
 }
 export interface SwissUnihockeyClub extends Club {}

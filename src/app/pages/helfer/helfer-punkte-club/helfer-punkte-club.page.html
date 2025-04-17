@@ -145,6 +145,7 @@
           <ng-container *ngFor="let groupBy of groupArray">
             <ion-item-divider color="light">
               <ion-label>{{groupBy}}</ion-label>
+              <ion-label slot="end">min./bestätigt/offen</ion-label>
             </ion-item-divider>
 
             <ng-container *ngFor="let member of members">
@@ -156,8 +157,9 @@
                   </ion-badge>
                 </ion-label>
                 <ion-note slot="end">
-                  <ion-badge [color]="member.totalPoints >= 4 ? 'success' : (member.totalPoints <= 1 ? 'danger' : 'warning')">
-                    {{member.totalPoints || 0}} / {{member.totalPointsPlanned}} Punkte
+                  
+                  <ion-badge [color]="member.totalPoints >= member.helferPunkte ? 'success' : (member.totalPoints >= 0.5 * member.helferPunkte ? 'warning' : 'danger')">
+                    {{member.helferPunkte || 0}} / {{member.totalPoints || 0}} / {{member.totalPointsPlanned}} Punkte
                   </ion-badge>
                 </ion-note>
               </ion-item>
