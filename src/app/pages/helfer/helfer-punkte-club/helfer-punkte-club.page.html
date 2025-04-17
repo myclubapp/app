@@ -1,7 +1,7 @@
 <ng-container *ngIf="club$ | async as club">
   <ion-header [translucent]="true">
     <ion-toolbar>
-     <!-- <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+      <!-- <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
         <ion-buttons *ngIf="isClubAdmin(clubAdminList, clubId)" slot="secondary">
           <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
           <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
@@ -25,22 +25,17 @@
     <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
       [value]="searchTerm.value" placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
 
-    <!-- <div class="ion-padding">
-     <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-          <ion-button *ngIf="isClubAdmin(clubAdminList, club.id)" shape="round" size="small" (click)="addRole()">
-            {{"common.add" | translate}}
-            <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-          </ion-button>
-        </ng-container>
+    <div class="ion-padding">
+     
       <ion-button (click)="setFilter(role)" shape="round" size="small" *ngFor="let role of club['roles']">
         {{role}}
       </ion-button>
-    </div>-->
-       
+    </div>
+
     <ion-list inset="true">
       <ion-list-header>
         <ion-label>Auswertung</ion-label>
-       
+
       </ion-list-header>
       <ion-item>
         <ion-icon name="calendar" slot="start"></ion-icon>
@@ -74,7 +69,7 @@
         </ion-item>
         -->
 
-   <!--   <ion-item>
+      <!--   <ion-item>
         <ion-select  value="0" label="Min. Punkte"  aria-label="Min Punkte"  justify="space-between"   (ionChange)="onHelferPunkteMinChange($event)" placeholder="Min Punkte">
           <ion-select-option value="0">0 Punkte</ion-select-option>
           <ion-select-option value="1">1 Punkt</ion-select-option>
@@ -115,7 +110,7 @@
         <ion-toggle justify="space-between"  (ionChange)="onHelferPunktePlanned($event)" [checked]="plannedToggle.value" [enableOnOffLabels]="true"  labelPlacement="start">Geplante Einsätze</ion-toggle><br /><br />
       </ion-item>-->
 
-<!--      <ion-item>
+      <!--      <ion-item>
         <ion-range labelPlacement="start" label="Helferpunkte" 
         [dualKnobs]="true" 
         [value]="{ lower: 0, upper: 2 }"
@@ -135,7 +130,8 @@
         <ion-list-header>
           <ion-label>Mitglieder ({{members?.length}})</ion-label>
           <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-            <ion-button *ngIf="isClubAdmin(clubAdminList, clubId)" shape="round" size="small" (click)="downloadClubPoints()">
+            <ion-button *ngIf="isClubAdmin(clubAdminList, clubId)" shape="round" size="small"
+              (click)="downloadClubPoints()">
               <ion-label>Download</ion-label>
             </ion-button>
           </ng-container>
@@ -149,16 +145,23 @@
             </ion-item-divider>
 
             <ng-container *ngFor="let member of members">
-              <ion-item *ngIf="member.groupBy == groupBy" detail="true" button="true" (click)="openHelferPunktDetailModal(member)">
+              <ion-item *ngIf="member.groupBy == groupBy" detail="true" button="true"
+                (click)="openHelferPunktDetailModal(member)">
+                <ion-avatar slot="start">
+                  <img *ngIf="!member.profile.profilePicture" alt="Silhouette of a person's head"
+                    src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+                  <img *ngIf="member.profile.profilePicture" src="{{member?.profile.profilePicture}}" />
+                </ion-avatar>
                 <ion-label>
-                  {{member.profile.firstName}} {{member.profile.lastName}} 
+                  {{member.profile.firstName}} {{member.profile.lastName}}
                   <ion-badge color="primary" *ngFor="let role of member.roles">
                     {{role}}
                   </ion-badge>
                 </ion-label>
                 <ion-note slot="end">
-                  
-                  <ion-badge [color]="member.totalPoints >= member.helferPunkte ? 'success' : (member.totalPoints >= 0.5 * member.helferPunkte ? 'warning' : 'danger')">
+
+                  <ion-badge
+                    [color]="member.totalPoints >= member.helferPunkte ? 'success' : (member.totalPoints >= 0.5 * member.helferPunkte ? 'warning' : 'danger')">
                     {{member.helferPunkte || 0}} / {{member.totalPoints || 0}} / {{member.totalPointsPlanned}} Punkte
                   </ion-badge>
                 </ion-note>

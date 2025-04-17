@@ -16,7 +16,7 @@ import { Firestore } from '@angular/fire/firestore';
   selector: 'app-helfer-punkte-club',
   templateUrl: './helfer-punkte-club.page.html',
   styleUrls: ['./helfer-punkte-club.page.scss'],
-    standalone: false
+  standalone: false
 })
 export class HelferPunkteClubPage implements OnInit {
   @Input("clubId") clubId: string;
@@ -49,7 +49,7 @@ export class HelferPunkteClubPage implements OnInit {
     private readonly toastController: ToastController,
     private readonly fbService: FirebaseService,
     private readonly firestore: Firestore,
-  ) {}
+  ) { }
 
   ngOnInit() {
     console.log('ngOnInit called with clubId:', this.clubId);
@@ -99,7 +99,7 @@ export class HelferPunkteClubPage implements OnInit {
 
   downloadClubPoints() {
     console.log('downloadClubPoints');
-    
+
     this.clubMembers$.pipe(take(1)).subscribe(async (members) => {
       if (!members || members.length === 0) {
         const toast = await this.toastController.create({
@@ -134,11 +134,11 @@ export class HelferPunkteClubPage implements OnInit {
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
-      
+
       link.setAttribute('href', url);
       link.setAttribute('download', `helferpunkte_${new Date().toISOString().split('T')[0]}.csv`);
       link.style.visibility = 'hidden';
-      
+
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -160,16 +160,16 @@ export class HelferPunkteClubPage implements OnInit {
         // Lade alle Events mit Schichten einmal
         const eventsWithSchichten$ = this.eventService.getClubHelferEventRefsByDate(
           this.clubId,
-          Timestamp.fromDate(new Date(club['helferReportingDateFrom'])), 
+          Timestamp.fromDate(new Date(club['helferReportingDateFrom'])),
           Timestamp.fromDate(new Date(club['helferReportingDateTo']))
         ).pipe(
           switchMap(events => {
             if (events.length === 0) return of([]);
             return combineLatest(
-              events.map(event => 
+              events.map(event =>
                 this.eventService.getClubHelferEventSchichtenRef(this.clubId, event.id).pipe(
                   switchMap(schichten => {
-                    if (schichten.length === 0) return of({...event, schichten: []});
+                    if (schichten.length === 0) return of({ ...event, schichten: [] });
                     return combineLatest(
                       schichten.map(schicht =>
                         this.eventService.getClubHelferEventSchichtAttendeesRef(this.clubId, event.id, schicht.id).pipe(
@@ -201,7 +201,7 @@ export class HelferPunkteClubPage implements OnInit {
               return of([]);
             }
             console.log('Members found in club:', members.length);
-            
+
             // Kombiniere die Events mit den Member-Details
             return combineLatest([
               eventsWithSchichten$,
@@ -209,9 +209,9 @@ export class HelferPunkteClubPage implements OnInit {
                 combineLatest([
                   this.userProfileService.getUserProfileById(member.id),
                   this.helferService.getUserHelferPunkteRefsWithFilter(
-                    member.id, 
-                    this.clubId, 
-                    Timestamp.fromDate(new Date(club['helferReportingDateFrom'])), 
+                    member.id,
+                    this.clubId,
+                    Timestamp.fromDate(new Date(club['helferReportingDateFrom'])),
                     Timestamp.fromDate(new Date(club['helferReportingDateTo']))
                   )
                 ]).pipe(
@@ -224,15 +224,15 @@ export class HelferPunkteClubPage implements OnInit {
               )
             ]).pipe(
               map(([eventsWithSchichten, ...memberDetails]) => {
-                return memberDetails.map(({member, profile, helferevents}) => {
+                return memberDetails.map(({ member, profile, helferevents }) => {
                   // Filtere die Events für den aktuellen Member
                   const memberEventsWithSchichten = eventsWithSchichten
                     .map(event => {
                       const memberSchichten = event.schichten.filter(schicht => {
                         const memberAttendee = schicht.attendees.find(att => att.id === member.id);
-                        return memberAttendee && 
-                               memberAttendee.status === true && 
-                               (!memberAttendee.confirmed || memberAttendee.confirmed === false || !memberAttendee.confirmed === true);
+                        return memberAttendee &&
+                          memberAttendee.status === true &&
+                          (!memberAttendee.confirmed || memberAttendee.confirmed === false || !memberAttendee.confirmed === true);
                       });
                       return {
                         ...event,
@@ -243,11 +243,11 @@ export class HelferPunkteClubPage implements OnInit {
 
                   if (!profile) {
                     return {
-                      profile: { 
-                        ...member, 
-                        firstName: "Unknown", 
-                        lastName: "Unknown", 
-                        roles: member.roles || [] 
+                      profile: {
+                        ...member,
+                        firstName: "Unknown",
+                        lastName: "Unknown",
+                        roles: member.roles || []
                       },
                       groupBy: 'U',
                       roles: member.roles || [],
@@ -280,16 +280,16 @@ export class HelferPunkteClubPage implements OnInit {
             const groups = [...new Set(memberDetails.map(
               member => member.groupBy
             ))].sort();
-            
+
             // Only update if we have results, otherwise keep existing groups
             if (groups.length > 0) {
               this.groupArray = groups;
             }
-            
+
             console.log('Final member details count:', memberDetails.length);
             console.log('Group array:', this.groupArray);
-            
-            return memberDetails.sort((a, b) => 
+
+            return memberDetails.sort((a, b) =>
               a.profile.firstName.localeCompare(b.profile.firstName)
             );
           })
@@ -308,30 +308,27 @@ export class HelferPunkteClubPage implements OnInit {
     ]).pipe(
       debounceTime(300),
       map(([members, term]) => {
-        console.log(`Filtering ${members.length} members with term "${term}"`);
-        
-        return members.filter(member => {
-          if (!term) return true;
-          
-          return (
-            member.profile.firstName?.toLowerCase().includes(term.toLowerCase()) ||
-            member.profile.lastName?.toLowerCase().includes(term.toLowerCase())
-          );
+        if (!term) return members;
+
+        const filtered = members.filter(member =>
+          member.profile.firstName.toLowerCase().includes(term.toLowerCase()) ||
+          member.profile.lastName.toLowerCase().includes(term.toLowerCase()) ||
+          member.roles.find(role => role.toLowerCase().includes(term.toLowerCase()))
+        );
+        return filtered;
+      }),
+      map(filtered => {
+        // Update the groupArray
+        this.groupArray = [];
+        filtered.forEach(member => {
+          const groupByChar = member.profile.firstName.charAt(0).toUpperCase();
+          if (!this.groupArray.includes(groupByChar)) {
+            this.groupArray.push(groupByChar);
+          }
         });
+        return filtered;
       }),
-      tap(filtered => {
-        console.log(`Filtered to ${filtered.length} members`);
-        
-        const filteredGroups = [...new Set(filtered.map(
-          member => member.profile.firstName?.charAt(0).toUpperCase() || 'Z'
-        ))].sort();
-        
-        if (filteredGroups.length > 0) {
-          this.groupArray = filteredGroups;
-        }
-        
-        console.log('Updated group array after filtering:', this.groupArray);
-      }),
+      tap(filtered => console.log("Filtered members:", filtered.length)),
       catchError(err => {
         console.error("Error filtering members:", err);
         return of([]);
@@ -422,11 +419,11 @@ export class HelferPunkteClubPage implements OnInit {
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
     return clubAdminList && clubAdminList.some(club => club.id === clubId);
   }
-  
+
   setFilter(role) {
     this.handleSearch({ detail: { value: role } });
   }
-  
+
   edit() {
     this.allowEdit = !this.allowEdit;
   }
@@ -454,7 +451,7 @@ export class HelferPunkteClubPage implements OnInit {
       // Refresh the list if confirmed
     }
   }
-  
+
   async close() {
     return await this.modalCtrl.dismiss(null, "close");
   }
@@ -496,7 +493,7 @@ export class HelferPunkteClubPage implements OnInit {
             if (!memberId) {
               const toast = await this.toastController.create({
                 message: 'Bitte wählen Sie ein Mitglied aus',
-                duration: 2000, 
+                duration: 2000,
                 position: 'top',
                 color: 'warning'
               });
@@ -564,7 +561,7 @@ export class HelferPunkteClubPage implements OnInit {
                         color: 'success'
                       });
                       await toast.present();
-                      
+
                       this.initializeClubMembers(this.clubId);
                       return true;
                     } catch (error) {
