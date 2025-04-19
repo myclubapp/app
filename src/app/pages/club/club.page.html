@@ -89,6 +89,16 @@
           </ion-item>
         </ng-container>
       </ng-container>
+
+      <ng-container *ngIf="club.hasFeatureInvoice">
+        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+          <ion-item *ngIf="isClubAdmin(clubAdminList, this.club.id)" detail="true" (click)="openInvoiceClub()">
+            <ion-icon name="document-text-outline" slot="start"></ion-icon>
+            <ion-label> Rechnungen </ion-label>
+          </ion-item>
+        </ng-container>
+      </ng-container>
+
     </ion-list>
 
     <ion-list [inset]="true">

@@ -38,6 +38,7 @@ import { Timestamp } from "firebase/firestore";
 import { HelferPunkteClubPage } from "../helfer/helfer-punkte-club/helfer-punkte-club.page";
 import { Club } from "src/app/models/club";
 import { ClubSubscriptionPage } from "../club-subscription/club-subscription.page";
+import { ClubInvoicePage } from "../club-invoice/club-invoice.page";
 
 @Component({
     selector: "app-club",
@@ -342,6 +343,29 @@ export class ClubPage implements OnInit {
     }
 
   }
+
+
+
+
+  async openInvoiceClub() {
+    console.log("open Invoice CLUB");
+    const modal = await this.modalCtrl.create({
+      component: ClubInvoicePage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        club: this.club,
+      },
+    });
+    modal.present();  
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+  
+
   changeEmail(event){
     console.log(event.detail.value)
     //this.fbService.setClub
