@@ -34,7 +34,7 @@ import {
   Photo,
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { catchError, switchMap, take, tap } from "rxjs/operators";
+import { catchError, first, switchMap, take, tap } from "rxjs/operators";
 import {
   AlertController,
   IonRouterOutlet,
@@ -68,6 +68,9 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   user$: Observable<User>;
   user: User;
 
+  kidsRequests$: Observable<any[]>;
+  children$: Observable<any[]>;
+
   public alertButtonsEmail = [];
   public alertInputsEmail = [];
   public alertButtonsAddress = [];
@@ -88,7 +91,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
       text: this.translate.instant('common.add'),
       role: 'confirm',
       handler: (data) => {
-        this.addKid(data.email);
+        this.addKidRequest(data.email);
       },
     },
   ];
@@ -119,6 +122,22 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     // console.log(this.deviceInfo);
 
     this.clubList$ = this.fbService.getClubList();
+
+    this.userProfile$.pipe(take(1)).subscribe((userProfile) => {
+      this.kidsRequests$ = this.profileService.getKidsRequests(userProfile.id).pipe(
+        first(),
+        tap((kidsRequests) => {
+          console.log(kidsRequests);
+        })
+      );
+  
+      this.children$ = this.profileService.getChildren(userProfile.id).pipe(
+        first(),
+        tap((children) => {
+          console.log(children);
+        })
+      );
+    });
 
   }
 
@@ -605,22 +624,22 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     }
   } 
   
-  async addKid(email: string) {
+  async addKidRequest(email: string) {
     try {
       // Hier Logik zum Senden der Verifizierungs-E-Mail implementieren
-      await this.profileService.addKid(email);
-      await this.presentToast();
+      await this.profileService.addKidRequest(email);
+
     } catch (error) {
-      await this.presentToast();
+      
     }
   }
 
-  async removeKid(email: string) {
+  async deleteKidRequest(userId: string, requestId: string) {
     try {
-      await this.profileService.removeKid(email);
-      await this.presentToast();
+      await this.profileService.deleteKidRequest(userId, requestId);
+
     } catch (error) {
-      await this.presentToast();
+
     }
   }
 }

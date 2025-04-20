@@ -12,6 +12,7 @@ import {
   DocumentReference,
   setDoc,
   DocumentData,
+  addDoc,
 } from "@angular/fire/firestore";
 import {
   Storage,
@@ -37,16 +38,26 @@ export class UserProfileService {
     private readonly authService: AuthService
   ) {}
 
-  addKid(email: string) {
-   /* const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { kids: email });*/
+  addKidRequest(email: string) {
+    const user = this.authService.auth.currentUser;
+    const userKidsRef = collection(this.firestore, `userProfile/${user.uid}/kidsRequests`);
+    return addDoc(userKidsRef, { email: email, createdAt: new Date(), verified: false });
   }
 
-  removeKid(email: string) {
-    /* const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { kids: email });*/
+  getKidsRequests(userId: string) {
+    const userKidsRef = collection(this.firestore, `userProfile/${userId}/kidsRequests`);
+    return collectionData(userKidsRef, { idField: "id" }) as Observable<any[]>;
+  }
+  
+  getChildren(userId: string) {
+    const childrenRef = collection(this.firestore, `userProfile/${userId}/children`);
+    return collectionData(childrenRef, { idField: "id" }) as Observable<any[]>;
+  }
+
+  deleteKidRequest(userId: string, requestId: string) {
+    const userKidsRef = collection(this.firestore, `userProfile/${userId}/kidsRequests`);
+    return deleteDoc(doc(userKidsRef, requestId));
+  
   }
 
   getUserProfile(user: User): Observable<Profile> {
