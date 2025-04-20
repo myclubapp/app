@@ -62,6 +62,13 @@
         </ng-container>
       </ion-item-group>
     </ion-list>
+    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+      <ion-fab *ngIf="isClubAdmin(clubAdminList, club.id)" vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="createBillingRun()">
+          <ion-icon name="add-outline"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+    </ng-container>
   </ion-content>
 </ng-container>
 

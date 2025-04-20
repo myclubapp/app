@@ -41,10 +41,10 @@ import { ClubSubscriptionPage } from "../club-subscription/club-subscription.pag
 import { ClubInvoicePage } from "../club-invoice/club-invoice.page";
 
 @Component({
-    selector: "app-club",
-    templateUrl: "./club.page.html",
-    styleUrls: ["./club.page.scss"],
-    standalone: false
+  selector: "app-club",
+  templateUrl: "./club.page.html",
+  styleUrls: ["./club.page.scss"],
+  standalone: false
 })
 export class ClubPage implements OnInit {
   @Input("data") club: any;
@@ -154,12 +154,12 @@ export class ClubPage implements OnInit {
               )
             );
             // console.log(clubTeams)
-            
+
             return forkJoin({
               clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
               clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
               clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
-              clubTeams: of(clubTeams) 
+              clubTeams: of(clubTeams)
             }).pipe(
               map(({
                 clubMembers,
@@ -174,7 +174,7 @@ export class ClubPage implements OnInit {
                 clubRequests: clubRequests.filter(
                   (request) => request !== undefined
                 ), // Filter out undefined*/
-                clubTeams:clubTeams,
+                clubTeams: clubTeams,
               }))
             );
           }),
@@ -219,7 +219,7 @@ export class ClubPage implements OnInit {
     );
   }
 
-  onInput(ev, fieldname){
+  onInput(ev, fieldname) {
     console.log(ev.detail.value);
     this.fbService.setClubThreshold(this.club.id, fieldname, ev.detail.value)
   }
@@ -344,9 +344,6 @@ export class ClubPage implements OnInit {
 
   }
 
-
-
-
   async openInvoiceClub() {
     console.log("open Invoice CLUB");
     const modal = await this.modalCtrl.create({
@@ -358,24 +355,24 @@ export class ClubPage implements OnInit {
         club: this.club,
       },
     });
-    modal.present();  
+    modal.present();
     const { data, role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
     }
   }
-  
 
-  changeEmail(event){
+
+  changeEmail(event) {
     console.log(event.detail.value)
     //this.fbService.setClub
   }
 
- /* changeClubttribute(value: any, fieldname) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { [fieldname]: value });
-  }*/
+  /* changeClubttribute(value: any, fieldname) {
+     const user = this.authService.auth.currentUser;
+     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+     return updateDoc(userProfileRef, { [fieldname]: value });
+   }*/
 
 
 

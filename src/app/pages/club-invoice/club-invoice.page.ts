@@ -6,11 +6,13 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { TranslateService } from '@ngx-translate/core';
+import { MemberPage } from '../member/member.page';
+import { Profile } from 'src/app/models/user';
 
 @Component({
   selector: 'app-club-invoice',
   templateUrl: './club-invoice.page.html',
-  styleUrls: ['./club-invoice.page.scss'], 
+  styleUrls: ['./club-invoice.page.scss'],
   standalone: false
 
 })
@@ -29,7 +31,7 @@ export class ClubInvoicePage implements OnInit {
   searchTerm = new BehaviorSubject<string>('');  // Initialized with an empty string
 
   constructor(
-     private readonly modalCtrl: ModalController,
+    private readonly modalCtrl: ModalController,
     public navParams: NavParams,
     private readonly alertCtrl: AlertController,
     private readonly toastCtrl: ToastController,
@@ -58,6 +60,35 @@ export class ClubInvoicePage implements OnInit {
   ngOnDestroy() {
 
   }
+
+
+  async createBillingRun() {
+    console.log("createBillingRun");
+    const alert = await this.alertCtrl.create({
+      header: "Rechnungslauf erstellen",
+      message: "Zum erstlelen eines neuen Rechnungslaufs, bitte folgende Informationen eingeben.",
+      inputs: [
+        { name: "invoiceNumber", type: "text", placeholder: "Rechnungsnummer" },
+        { name: "invoiceDate", type: "date", placeholder: "Rechnungsdatum", value: new Date() },
+        { name: "invoiceAmount", type: "number", placeholder: "Rechnungsbetrag" },
+        { name: "invoiceDescription", type: "text", placeholder: "Rechnungsbeschreibung" },
+        { name: "invoiceType", type: "text", placeholder: "Rechnungstyp: Mitgliederbeitrag, Busse, Sonstiges"},
+        { name: "invoiceCurrency", type: "text", placeholder: "Währung", value: "CHF" },
+        
+        { name: "invoicePaymentTerms", type: "text", placeholder: "Zahlungsbedingungen", value: "30 Tage" },
+      ],
+      buttons: [
+        { text: "Abbrechen", role: "cancel", handler: () => { } },
+        { text: "Erstellen", role: "confirm", handler: (data) => {
+          console.log(data);
+        } }
+      ]
+    });
+    await alert.present();
+    
+  }
+
+
 
   initializeClubMembers() {
     this.groupArray = [];  // Initialize or clear the group array
@@ -159,7 +190,7 @@ export class ClubInvoicePage implements OnInit {
     this.handleSearch({ detail: { value: role } })
   }
 
-    handleSearch(event: any) {
+  handleSearch(event: any) {
     const searchTerm = event.detail.value || '';
     console.log('Handling Search Event:', searchTerm);
     this.searchTerm.next(searchTerm.trim()); // Trim and update the search term
@@ -169,9 +200,23 @@ export class ClubInvoicePage implements OnInit {
     return clubAdminList && clubAdminList.some(club => club.id === clubId);
   }
 
-  openMember(member: any) {
+  async openMember(member: Profile) {
     console.log("openMember");
- 
+    const modal = await this.modalCtrl.create({
+      component: MemberPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: member,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
   }
 
   async toastActionSaved() {
