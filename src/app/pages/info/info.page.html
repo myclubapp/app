@@ -51,7 +51,16 @@
         {{"info.app__version" | translate}} {{appVersion}}({{buildNumber}})
       </ion-label>
     </ion-item>
+
   </ion-list>
+
+  <div class="ion-padding">
+    <ion-button fill="outline" expand="block" color="warning" (click)="checkForUpdates()">
+      <ion-icon slot="start" name="refresh-outline"></ion-icon>
+      Prüfe auf Updates
+    </ion-button>
+  </div>
+
 
 
 </ion-content>
