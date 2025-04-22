@@ -34,19 +34,26 @@ export class InfoPage implements OnInit {
   };
 
   async checkForUpdates() {
+
+
+
+
     try {
-      const update = await this.swUpdate.checkForUpdate();
-      if (update) {
-        console.log(">>> update", update);
-        const resolver = await this.swUpdate.activateUpdate();
-        if (resolver) {
-          window.location.reload();
+      if (this.swUpdate.isEnabled) {
+        const update = await this.swUpdate.checkForUpdate();
+        if (update) {
+          console.log(">>> update", update);
+          const resolver = await this.swUpdate.activateUpdate();
+          if (resolver) {
+            window.location.reload();
+          } else {
+            console.log("Already on latest version");
+          }
+
         } else {
-          console.log("Already on latest version");
+          console.log("No update available");
         }
-      } else {
-        console.log("No update available");
-      } 
+      }
     } catch (error) {
       console.error("Error checking for updates", error);
     }
