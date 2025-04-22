@@ -38,6 +38,8 @@ import { Team } from "src/app/models/team";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { Club } from "src/app/models/club";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { Profile } from "src/app/models/user";
 
 @Component({
     selector: "app-trainings",
@@ -85,7 +87,8 @@ export class TrainingsPage implements OnInit {
     // private filterService: FilterService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private exerciseService: ExerciseService
+    private exerciseService: ExerciseService,
+    private userProfileService: UserProfileService
   ) {
     this.menuCtrl.enable(true, "menu");
 
@@ -102,7 +105,7 @@ export class TrainingsPage implements OnInit {
     this.handleNavigationData();
 
 
-    this.subscription = this.trainingList$.pipe(
+    /*this.subscription = this.trainingList$.pipe(
       tap(async (trainings) => {
         const training = trainings[0];
         console.log('Widget Value for Key=nextTraining: ', training?.name);
@@ -123,7 +126,7 @@ export class TrainingsPage implements OnInit {
         }
 
       })
-    ).subscribe();
+    ).subscribe();*/
 
 
   }
@@ -192,10 +195,36 @@ export class TrainingsPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.fbService.getUserTeamRefs(user);
+        // Get user's teams and children's teams
+        return combineLatest([
+          this.fbService.getUserTeamRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            switchMap((children: Profile[]) => 
+              children.length > 0 
+                ? combineLatest(
+                    children.map(child => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.fbService.getUserTeamRefs(childUser);
+                    })
+                  )
+                : of([])
+            ),
+            map(childrenTeams => childrenTeams.flat()),
+            tap((teams) => console.log("Children Teams:", teams)),
+            catchError((error) => {
+              console.error("Error fetching children teams:", error);
+              return of([]);
+            })
+          )
+        ]).pipe(
+          map(([userTeams, childrenTeams]) => [...userTeams, ...childrenTeams])
+        );
       }),
       // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
+        console.log("Teams:", teams);
         if (this.team && this.team.id) {
           teams.push({ id: this.team.id })
         } else if (teams.length === 0) {
@@ -292,7 +321,32 @@ export class TrainingsPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.fbService.getUserTeamRefs(user);
+        // Get user's teams and children's teams
+        return combineLatest([
+          this.fbService.getUserTeamRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            switchMap((children: Profile[]) => 
+              children.length > 0 
+                ? combineLatest(
+                    children.map(child => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.fbService.getUserTeamRefs(childUser);
+                    })
+                  )
+                : of([])
+            ),
+            map(childrenTeams => childrenTeams.flat()),
+            tap((teams) => console.log("Children Teams:", teams)),
+            catchError((error) => {
+              console.error("Error fetching children teams:", error);
+              return of([]);
+            })
+          )
+        ]).pipe(
+          map(([userTeams, childrenTeams]) => [...userTeams, ...childrenTeams])
+        );
       }),
       mergeMap((teams) => {
         if (this.team && this.team.id) {
@@ -495,64 +549,97 @@ export class TrainingsPage implements OnInit {
     }
   }
 
-  async toggle(status: boolean, training: any) {
-    console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
-    );
-    const newStartDate = training.date.toDate();
-    newStartDate.setHours(Number(training.timeFrom.substring(0, 2)));
-    // console.log(newStartDate);
 
-    // Get team threshold via training.teamId
-    console.log("Grenzwert ")
-    const trainingThreshold = training.team.trainingThreshold || 0;
-    console.log(trainingThreshold);
-    // Verpätete Abmeldung?
-    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * trainingThreshold)) && status == false && trainingThreshold) {
-      console.log("too late");
-      await this.tooLateToggle();
-
-    } else {
-      // OK
-      await this.trainingService.setTeamTrainingAttendeeStatus(
-        status,
-        training.teamId,
-        training.id
-      );
-      this.presentToast();
-    }
-
+  toggleItem(slidingItem: IonItemSliding, status: boolean, training: any) {
+    console.log("toggleItem", training);
+    slidingItem.closeOpened();
   }
 
-  async toggleItem(
-    slidingItem: IonItemSliding,
-    status: boolean,
-    training: any
-  ) {
-    slidingItem.closeOpened();
+  async toggle(status: boolean, training: any) {
+    // console.log("toggle", training, status);
+    // Hole die Team-Mitglieder
+    const teamMembers = await lastValueFrom(this.fbService.getTeamMemberRefs(training.teamId).pipe(take(1)));
+    // console.log("teamMembers", teamMembers);
+    // Hole die Kinder des aktuellen Benutzers
+    const children = await lastValueFrom(this.userProfileService.getChildren(this.user.uid).pipe(take(1)));
+    // console.log("children", children);
+    // Sammle alle möglichen Team-Mitglieder (aktueller Benutzer + Kinder)
+    const possibleMembers = [this.user, ...children.map(child => ({ uid: child.id }))];
+    
+    // Filtere die tatsächlichen Team-Mitglieder
+    const teamMemberIds = teamMembers.map(member => member.id);
+    const validMembers = possibleMembers.filter(member => teamMemberIds.includes(member.uid));
 
+    if (validMembers.length === 0) {
+      const toast = await this.toastController.create({
+        message: await lastValueFrom(this.translate.get("common.error__no_team_member")),
+        color: "danger",
+        duration: 1500,
+        position: "top",
+      });
+      toast.present();
+      return;
+    }
+    // console.log("validMembers", validMembers);
+
+    let selectedUserId: string;
+
+    if (validMembers.length === 1) {
+      // Wenn nur ein Mitglied gefunden wurde, verwende dieses
+      selectedUserId = validMembers[0].uid;
+      await this.processToggle(selectedUserId, status, training);
+    } else {
+      // Wenn mehrere Mitglieder gefunden wurden, zeige einen Auswahlalert
+      const alert = await this.alertCtrl.create({
+        header: await lastValueFrom(this.translate.get("common.select_member")),
+        inputs: await Promise.all(validMembers.map(async member => {
+          const profile = member.uid === this.user.uid 
+            ? { firstName: "Ich", lastName: "" }  // Für den aktuellen Benutzer
+            : await lastValueFrom(this.userProfileService.getUserProfileById(member.uid));
+          
+          return {
+            type: 'radio',
+            label: `${profile.firstName} ${profile.lastName}`,
+            value: member.uid
+          };
+        })),
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("common.cancel")),
+            role: 'cancel'
+          },
+          {
+            text: await lastValueFrom(this.translate.get("common.ok")),
+            handler: (selectedId) => {
+              if (selectedId) {
+                this.processToggle(selectedId, status, training);
+              }
+            }
+          }
+        ]
+      });
+      await alert.present();
+    }
+  }
+
+  private async processToggle(userId: string, status: boolean, training: any) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`
+      `Set Status ${status} for user ${userId} and team ${training.teamId} and training ${training.id}`
     );
     const newStartDate = training.date.toDate();
     newStartDate.setHours(Number(training.timeFrom.substring(0, 2)));
-    // console.log(newStartDate);
 
-    // Get team threshold via training.teamId
-    console.log("Grenzwert ")
     const trainingThreshold = training.team.trainingThreshold || 0;
-    console.log(trainingThreshold);
-    // Verpätete Abmeldung?
+    
     if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * trainingThreshold)) && status == false && trainingThreshold) {
       console.log("too late");
       await this.tooLateToggle();
-
     } else {
-      // OK
-      await this.trainingService.setTeamTrainingAttendeeStatus(
+      await this.trainingService.setTeamTrainingAttendeeStatusAdmin(
         status,
         training.teamId,
-        training.id
+        training.id,
+        userId
       );
       this.presentToast();
     }

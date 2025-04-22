@@ -38,9 +38,8 @@ export class UserProfileService {
     private readonly authService: AuthService
   ) {}
 
-  addKidRequest(email: string) {
-    const user = this.authService.auth.currentUser;
-    const userKidsRef = collection(this.firestore, `userProfile/${user.uid}/kidsRequests`);
+  addKidRequest(userId: string, email: string) {
+    const userKidsRef = collection(this.firestore, `userProfile/${userId}/kidsRequests`);
     return addDoc(userKidsRef, { email: email, createdAt: new Date(), verified: false });
   }
 
@@ -57,7 +56,6 @@ export class UserProfileService {
   deleteKidRequest(userId: string, requestId: string) {
     const userKidsRef = collection(this.firestore, `userProfile/${userId}/kidsRequests`);
     return deleteDoc(doc(userKidsRef, requestId));
-  
   }
 
   getUserProfile(user: User): Observable<Profile> {

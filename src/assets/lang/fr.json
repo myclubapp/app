@@ -73,7 +73,13 @@
     "helfer-add": {
         "new__helper_event": "Nouvel événement de bénévole"
     },
-    "helfer-detail": {},
+    "helfer-detail": {
+        "helfer_innen_for": "Bénévoles pour",
+        "add_members": "Ajouter des membres",
+        "add_members_title": "Ajouter des membres au créneau",
+        "add_members_message": "Sélectionnez les membres que vous souhaitez ajouter au créneau :",
+        "no_members_available": "Aucun autre membre disponible"
+    },
     "info": {
         "information": "Information",
         "terms__and_conditions": "Termes et conditions",
@@ -128,7 +134,17 @@
         "success__profile_deleted": "Profil supprimé avec succès",
         "error__while_deleting_msg": "Erreur lors de la suppression du profil",
         "language": "Langue",
-        "select__language": "Choisir la langue"
+        "select__language": "Choisir la langue",
+        "kidsRequests": "Demandes d'enfants",
+        "kids.verified": "Vérifié",
+        "kids.pending": "En attente",
+        "kidsrequestadd": "Ajouter",
+        "kids.add_header": "Ajouter un enfant",
+        "kids.add_message": "Veuillez saisir l'adresse e-mail de l'enfant que vous souhaitez ajouter.",
+        "kids.email_placeholder": "Adresse e-mail de l'enfant",
+        "children": "Enfants",
+        "confirm_delete_request": "Voulez-vous vraiment supprimer cette demande ?",
+        "no_children": "Aucun enfant disponible"
     },
     "tabs": {},
     "team": {},
@@ -222,6 +238,7 @@
         "language__german": "Deutsch",
         "language__french": "Französisch",
         "language__italian": "Italienisch",
-        "language__english": "Englisch"
+        "language__english": "Englisch",
+        "confirmation": "Confirmation"
     }
 }

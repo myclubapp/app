@@ -75,7 +75,7 @@ export class EventsPage implements OnInit {
     this.eventList$ = this.getClubEvent();
     this.eventListPast$ = this.getClubEventPast();
 
-    this.subscription = this.eventList$.pipe(
+    /*this.subscription = this.eventList$.pipe(
       tap(async (events) => {
         const event = events[0];
         console.log('Widget Value for Key=NextEvent: ', event?.name);
@@ -96,7 +96,7 @@ export class EventsPage implements OnInit {
         }
 
       })
-    ).subscribe();
+    ).subscribe();*/
 
 
     //Create Events, Helfer, News

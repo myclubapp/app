@@ -355,20 +355,38 @@
       </ion-item>
 
     </ion-list>-->
-    <div class="ion-padding">
-      <ion-button fill="outline" expand="block" color="danger" (click)="deleteProfile()">
-        <ion-icon slot="start" name="trash"></ion-icon>
-        {{'profile.delete__profile' | translate}}
-      </ion-button>
-    </div>
 
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
-        <ion-label> {{"profile.kids" | translate}} Anfragen</ion-label>
+        <ion-label> {{"profile.children" | translate}}</ion-label>
+        <ion-button  (click)="addKidRequest()">{{"profile.kidsrequestadd" | translate}}</ion-button>
+      </ion-list-header>
+      <ng-container *ngIf="children$ | async as children">
+      
+        <ion-item *ngFor="let child of children" detail="true" (click)="openMember(child)">
+          <ion-avatar  slot="start">
+            <img *ngIf="!child.profilePicture" alt="Silhouette of a person's head"
+              src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+            <img *ngIf="child.profilePicture" src="{{child?.profilePicture}}" />
+          </ion-avatar>
+          <ion-label>
+            <h2>{{child.firstName}} {{child.lastName}}</h2>
+            <p>{{child.email}}</p>
+          </ion-label>
+        </ion-item>
+        <ion-item *ngIf="children.length === 0">
+          <ion-label> {{"profile.no_children" | translate}}</ion-label>
+        </ion-item>
+      </ng-container>
+    </ion-list>
+
+    <ng-container *ngIf="kidsRequests$ | async as kidsRequests">
+    <ion-list *ngIf="kidsRequests.length > 0" lines="full" [inset]="true">
+      <ion-list-header>
+        <ion-label> {{"profile.kidsRequests" | translate}}</ion-label>
       </ion-list-header>
 
-      <ng-container *ngIf="kidsRequests$ | async as kidsRequests">
 
         <ion-item *ngFor="let kidRequest of kidsRequests">
           <ion-label>
@@ -380,43 +398,19 @@
             <ion-icon slot="icon-only" name="trash"></ion-icon>
           </ion-button>
         </ion-item>
+      </ion-list>
+    </ng-container>
 
 
-      </ng-container>
-      <ion-item id="add-kid-alert" detail="true">
-        <ion-icon slot="start" name="person-add-outline"></ion-icon>
-        <ion-label>{{"profile.kids.add" | translate}}</ion-label>
-      </ion-item>
-
-      <ion-alert trigger="add-kid-alert" [header]='"profile.kids.add_header" | translate'
-        [message]='"profile.kids.add_message" | translate' [buttons]="kidAlertButtons" [inputs]="[
-        {
-          name: 'email',
-          type: 'email',
-          placeholder: 'profile.kids.email_placeholder' | translate,
-          attributes: {
-            autocomplete: 'email'
-          }
-        }
-        ]">
-      </ion-alert>
-    </ion-list>
+    <div class="ion-padding">
+      <ion-button fill="outline" expand="block" color="danger" (click)="deleteProfile()">
+        <ion-icon slot="start" name="trash"></ion-icon>
+        {{'profile.delete__profile' | translate}}
+      </ion-button>
+    </div>
 
 
 
-    <ion-list lines="full" [inset]="true">
-      <ion-list-header>
-        <ion-label> {{"profile.children" | translate}} Meine Kinder</ion-label>
-      </ion-list-header>
-
-      <ng-container *ngIf="children$ | async as children">
-        <ion-item *ngFor="let child of children">
-          <ion-label>
-            <h2>{{child.firstName}} {{child.lastName}}</h2>
-          </ion-label>
-        </ion-item>
-      </ng-container>
-    </ion-list>
   </ng-container>
 
 

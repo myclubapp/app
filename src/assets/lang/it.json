@@ -73,7 +73,13 @@
     "helfer-add": {
         "new__helper_event": "Nuovo evento di volontariato"
     },
-    "helfer-detail": {},
+    "helfer-detail": {
+        "helfer_innen_for": "Volontari per",
+        "add_members": "Aggiungi membri",
+        "add_members_title": "Aggiungi membri al turno",
+        "add_members_message": "Seleziona i membri che desideri aggiungere al turno:",
+        "no_members_available": "Nessun altro membro disponibile"
+    },
     "info": {
         "information": "Informazioni",
         "terms__and_conditions": "Termini e condizioni",
@@ -128,7 +134,17 @@
         "success__profile_deleted": "Profilo eliminato con successo",
         "error__while_deleting_msg": "Errore durante l'eliminazione del profilo",
         "language": "Lingua",
-        "select__language": "seleziona la lingua"
+        "select__language": "seleziona la lingua",
+        "kidsRequests": "Richieste di bambini",
+        "kids.verified": "Verificato",
+        "kids.pending": "In attesa",
+        "kidsrequestadd": "Aggiungi",
+        "kids.add_header": "Aggiungi bambino",
+        "kids.add_message": "Inserisci l'indirizzo email del bambino che desideri aggiungere.",
+        "kids.email_placeholder": "Indirizzo email del bambino",
+        "children": "Bambini",
+        "confirm_delete_request": "Vuoi davvero eliminare questa richiesta?",
+        "no_children": "Nessun bambino disponibile"
     },
     "tabs": {},
     "team": {},

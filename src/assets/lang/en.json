@@ -81,7 +81,11 @@
         "new__helper_event": "New helper event"
     },
     "helfer-detail": {
-        "helfer_innen_for": "Helpers for "
+        "helfer_innen_for": "Helpers for",
+        "add_members": "Add members",
+        "add_members_title": "Add members to shift",
+        "add_members_message": "Select the members you want to add to the shift:",
+        "no_members_available": "No more members available"
     },
     "info": {
         "information": "Information",
@@ -157,7 +161,17 @@
         "success__profile_deleted": "Profile successfully deleted",
         "error__while_deleting_msg": "Error while deleting the profile",
         "language": "Language",
-        "select__language": "Select language"
+        "select__language": "Select language",
+        "kidsRequests": "Children requests",
+        "kids.verified": "Verified",
+        "kids.pending": "Pending",
+        "kidsrequestadd": "Add",
+        "kids.add_header": "Add child",
+        "kids.add_message": "Please enter the email address of the child you want to add.",
+        "kids.email_placeholder": "Child's email address",
+        "children": "Children",
+        "confirm_delete_request": "Do you really want to delete this request?",
+        "no_children": "No children available"
     },
     "tabs": {},
     "team": {},
@@ -286,6 +300,7 @@
         "language__german": "German",
         "language__french": "French",
         "language__italian": "Italian",
-        "language__english": "English"
+        "language__english": "English",
+        "confirmation": "Confirmation"
     }
 }

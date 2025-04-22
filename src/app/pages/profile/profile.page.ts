@@ -49,6 +49,7 @@ import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
 import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
 import { Timestamp } from "firebase/firestore";
+import { MemberPage } from "../member/member.page";
 
 @Component({
     selector: "app-profile",
@@ -58,15 +59,15 @@ import { Timestamp } from "firebase/firestore";
 })
 export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   userProfile$: Observable<Profile>;
-  
+  user$: Observable<User>;
+  user: User;
+  userSubscription: Subscription;
   profileSubscription: Subscription;
 
 
   teamList$: Observable<Team[]>;
   clubList$: Observable<Club[]>;
 
-  user$: Observable<User>;
-  user: User;
 
   kidsRequests$: Observable<any[]>;
   children$: Observable<any[]>;
@@ -82,19 +83,6 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   deviceInfo: DeviceInfo;
   localDateString: string;
 
-  kidAlertButtons = [
-    {
-      text: this.translate.instant('common.cancel'),
-      role: 'cancel',
-    },
-    {
-      text: this.translate.instant('common.add'),
-      role: 'confirm',
-      handler: (data) => {
-        this.addKidRequest(data.email);
-      },
-    },
-  ];
 
   constructor(
     // private readonly swPush: SwPush,
@@ -124,26 +112,30 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     this.clubList$ = this.fbService.getClubList();
 
     this.userProfile$.pipe(take(1)).subscribe((userProfile) => {
+      
       this.kidsRequests$ = this.profileService.getKidsRequests(userProfile.id).pipe(
-        first(),
         tap((kidsRequests) => {
           console.log(kidsRequests);
         })
       );
   
       this.children$ = this.profileService.getChildren(userProfile.id).pipe(
-        first(),
+      
         tap((children) => {
           console.log(children);
         })
       );
     });
 
+    this.user$ = this.authService.getUser$();
+    this.userSubscription = this.user$.pipe(take(1)).subscribe((user) => {
+      this.user = user;
+    });
+
   }
 
   ngAfterViewInit(): void {
     console.log("ngAfterViewInit called");
-
     this.profileSubscription = this.userProfile$.subscribe(async profile => {
       if (profile) {
         this.setupAlerts(profile);
@@ -258,6 +250,9 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     if (this.profileSubscription){
       this.profileSubscription.unsubscribe();
     }
+    if (this.userSubscription){
+      this.userSubscription.unsubscribe();
+    }
   }
 
   async showPicture(imageUrl: string) {
@@ -272,6 +267,24 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   });
 
   await alert.present();
+}
+async openMember(member: Profile) {
+  
+  const modal = await this.modalCtrl.create({
+    component: MemberPage,
+    presentingElement: this.routerOutlet.nativeEl,
+    canDismiss: true,
+    showBackdrop: true,
+    componentProps: {
+      data: member,
+    },
+  });
+  modal.present();
+
+  const { data, role } = await modal.onWillDismiss();
+
+  if (role === "confirm") {
+  }
 }
 
   getUserProfile(): Observable<any> {
@@ -624,22 +637,64 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     }
   } 
   
-  async addKidRequest(email: string) {
-    try {
-      // Hier Logik zum Senden der Verifizierungs-E-Mail implementieren
-      await this.profileService.addKidRequest(email);
-
-    } catch (error) {
-      
-    }
+  async addKidRequest() {
+    const alert = await this.alertController.create({
+      header: await lastValueFrom(this.translate.get('profile.kids.add_header')),
+      message: await lastValueFrom(this.translate.get('profile.kids.add_message')),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get('common.cancel')),
+          role: 'cancel',
+        },
+        {
+          text: await lastValueFrom(this.translate.get('common.add')),
+          role: 'confirm',
+          handler: (data:any) => {
+            this.profileService.addKidRequest(this.user.uid, data.email);
+          }
+        }
+      ],
+      inputs: [
+        {
+          name: 'email',
+          type: 'email',
+          placeholder: await lastValueFrom(this.translate.get('profile.kids.email_placeholder')),
+          attributes: {
+            autocomplete: 'email'
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   async deleteKidRequest(userId: string, requestId: string) {
-    try {
-      await this.profileService.deleteKidRequest(userId, requestId);
+    const alert = await this.alertController.create({
+      header: await lastValueFrom(this.translate.get('common.confirmation')),
+      message: await lastValueFrom(this.translate.get('profile.confirm_delete_request')),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get('common.no')),
+          role: 'cancel',
+          handler: () => {
+            console.log('Löschen abgebrochen');
+          }
+        },
+        {
+          text: await lastValueFrom(this.translate.get('common.yes')),
+          role: 'confirm',
+          handler: async () => {
+            try {
+              await this.profileService.deleteKidRequest(userId, requestId);
+              await this.presentToast();
+            } catch (error) {
+              console.error('Fehler beim Löschen des Requests', error);
+            }
+          }
+        }
+      ]
+    });
 
-    } catch (error) {
-
-    }
+    await alert.present();
   }
 }
