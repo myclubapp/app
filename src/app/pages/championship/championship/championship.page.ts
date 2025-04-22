@@ -117,8 +117,38 @@ export class ChampionshipPage implements OnInit {
       take(1),
       // tap((user) => console.log("User:", user)),
       switchMap((user) => {
-        if (!user) return of([]); // If no user, return an empty array
-        return this.fbService.getUserTeamRefs(user);
+        if (!user) return of([]);
+        // Get user's teams and children's teams
+        return combineLatest([
+          this.fbService.getUserTeamRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            switchMap((children: Profile[]) => 
+              children.length > 0 
+                ? combineLatest(
+                    children.map(child => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.fbService.getUserTeamRefs(childUser);
+                    })
+                  )
+                : of([])
+            ),
+            map(childrenTeams => childrenTeams.flat()),
+            tap((teams) => console.log("Children Teams:", teams)),
+            catchError((error) => {
+              console.error("Error fetching children teams:", error);
+              return of([]);
+            })
+          )
+        ]).pipe(
+          map(([userTeams, childrenTeams]) => {
+            const allTeams = [...userTeams, ...childrenTeams];
+            return allTeams.filter((team, index, self) =>
+              index === self.findIndex((t) => t.id === team.id)
+            );
+          })
+        );
       }),
       // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
@@ -213,7 +243,12 @@ export class ChampionshipPage implements OnInit {
             })
           )
         ]).pipe(
-          map(([userTeams, childrenTeams]) => [...userTeams, ...childrenTeams])
+          map(([userTeams, childrenTeams]) => {
+            const allTeams = [...userTeams, ...childrenTeams];
+            return allTeams.filter((team, index, self) =>
+              index === self.findIndex((t) => t.id === team.id)
+            );
+          })
         );
       }),
       // tap((teams) => console.log("Teams:", teams)),
@@ -266,6 +301,7 @@ export class ChampionshipPage implements OnInit {
                       ), // Fetching team details
                     ]).pipe(
                       map(([attendees, teamDetails]) => {
+                        // status: item.attendees.find((att) => [this.user.uid, ...children.map(child => child.id)].includes(att.id))?.status ?? null,
                         const userAttendee = attendees.find((att) => att.id === this.user.uid);
                         return {
                           ...game,
@@ -346,7 +382,12 @@ export class ChampionshipPage implements OnInit {
             })
           )
         ]).pipe(
-          map(([userTeams, childrenTeams]) => [...userTeams, ...childrenTeams])
+          map(([userTeams, childrenTeams]) => {
+            const allTeams = [...userTeams, ...childrenTeams];
+            return allTeams.filter((team, index, self) =>
+              index === self.findIndex((t) => t.id === team.id)
+            );
+          })
         );
       }),
       mergeMap((teams) => {
@@ -398,6 +439,7 @@ export class ChampionshipPage implements OnInit {
                     ]).pipe(
                       map(([attendees, teamDetails]) => {
                         const userAttendee = attendees.find((att) => att.id === this.user.uid);
+                        // status: item.attendees.find((att) => [this.user.uid, ...children.map(child => child.id)].includes(att.id))?.status ?? null,
                         return {
                           ...game,
                           team: teamDetails,

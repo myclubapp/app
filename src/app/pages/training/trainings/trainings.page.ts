@@ -219,7 +219,12 @@ export class TrainingsPage implements OnInit {
             })
           )
         ]).pipe(
-          map(([userTeams, childrenTeams]) => [...userTeams, ...childrenTeams])
+          map(([userTeams, childrenTeams]) => {
+            const allTeams = [...userTeams, ...childrenTeams];
+            return allTeams.filter((team, index, self) =>
+              index === self.findIndex((t) => t.id === team.id)
+            );
+          })
         );
       }),
       // tap((teams) => console.log("Teams:", teams)),
@@ -293,6 +298,7 @@ export class TrainingsPage implements OnInit {
                 attendees: item.attendees,
                 exercises: item.exercises,
                 team: item.teamDetails || {},
+                // status: item.attendees.find((att) => [this.user.uid, ...children.map(child => child.id)].includes(att.id))?.status ?? null,
                 status: item.attendees.find((att) => att.id == this.user.uid)?.status ?? null,
                 countAttendees: validAttendees.length,
                 teamId: item.teamId,
@@ -345,7 +351,12 @@ export class TrainingsPage implements OnInit {
             })
           )
         ]).pipe(
-          map(([userTeams, childrenTeams]) => [...userTeams, ...childrenTeams])
+          map(([userTeams, childrenTeams]) => {
+            const allTeams = [...userTeams, ...childrenTeams];
+            return allTeams.filter((team, index, self) =>
+              index === self.findIndex((t) => t.id === team.id)
+            );
+          })
         );
       }),
       mergeMap((teams) => {
@@ -435,6 +446,7 @@ export class TrainingsPage implements OnInit {
                 attendees: item.attendees,
                 exercises: item.exercises,
                 team: item.teamDetails || {},
+                // status: item.attendees.find((att) => [this.user.uid, ...children.map(child => child.id)].includes(att.id))?.status ?? null,
                 status: item.attendees.find((att) => att.id == this.user.uid)?.status ?? null,
                 countAttendees: validAttendees.length,
                 teamId: item.teamId,

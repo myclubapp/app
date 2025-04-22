@@ -638,6 +638,17 @@ async openMember(member: Profile) {
   } 
   
   async addKidRequest() {
+    const children = await lastValueFrom(this.children$.pipe(take(1)));
+    if (children.length >= 3) {
+      const alert = await this.alertController.create({
+        header: await lastValueFrom(this.translate.get('profile.kids.max_reached_header')),
+        message: await lastValueFrom(this.translate.get('profile.kids.max_reached_message')),
+        buttons: [await lastValueFrom(this.translate.get('common.ok'))]
+      });
+      await alert.present();
+      return;
+    }
+
     const alert = await this.alertController.create({
       header: await lastValueFrom(this.translate.get('profile.kids.add_header')),
       message: await lastValueFrom(this.translate.get('profile.kids.add_message')),

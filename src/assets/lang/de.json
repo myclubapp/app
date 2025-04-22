@@ -177,6 +177,8 @@
         "kids.add_header": "Kind hinzufügen",
         "kids.add_message": "Bitte gib die E-Mail-Adresse des Kindes ein, das du hinzufügen möchtest.",
         "kids.email_placeholder": "E-Mail-Adresse des Kindes",
+        "kids.max_reached_header": "Maximale Anzahl an Kindern erreicht",
+        "kids.max_reached_message": "Du kannst maximal 3 Kinder hinzufügen.",
         "children": "Kinder",
         "confirm_delete_request": "Möchtest du diese Anfrage wirklich löschen?",
         "no_children": "Keine Kinder vorhanden"

@@ -169,6 +169,8 @@
         "kids.add_header": "Add child",
         "kids.add_message": "Please enter the email address of the child you want to add.",
         "kids.email_placeholder": "Child's email address",
+        "kids.max_reached_header": "Maximum children reached",
+        "kids.max_reached_message": "You can add up to 3 children.",
         "children": "Children",
         "confirm_delete_request": "Do you really want to delete this request?",
         "no_children": "No children available"

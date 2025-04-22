@@ -360,7 +360,7 @@
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
         <ion-label> {{"profile.children" | translate}}</ion-label>
-        <ion-button  (click)="addKidRequest()">{{"profile.kidsrequestadd" | translate}}</ion-button>
+        <ion-button *ngIf="(children$ | async)?.length < 3" (click)="addKidRequest()">{{"profile.kidsrequestadd" | translate}}</ion-button>
       </ion-list-header>
       <ng-container *ngIf="children$ | async as children">
       

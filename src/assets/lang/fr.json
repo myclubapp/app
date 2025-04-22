@@ -142,6 +142,8 @@
         "kids.add_header": "Ajouter un enfant",
         "kids.add_message": "Veuillez saisir l'adresse e-mail de l'enfant que vous souhaitez ajouter.",
         "kids.email_placeholder": "Adresse e-mail de l'enfant",
+        "kids.max_reached_header": "Nombre maximal d'enfants atteint",
+        "kids.max_reached_message": "Vous pouvez ajouter jusqu'à 3 enfants",
         "children": "Enfants",
         "confirm_delete_request": "Voulez-vous vraiment supprimer cette demande ?",
         "no_children": "Aucun enfant disponible"
