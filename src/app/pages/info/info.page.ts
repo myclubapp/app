@@ -17,7 +17,7 @@ export class InfoPage implements OnInit {
   deviceInfo: DeviceInfo;
 
   constructor(
-    private swUpdate: SwUpdate
+    public swUpdate: SwUpdate
   ) { }
 
   async ngOnInit() {
@@ -35,29 +35,23 @@ export class InfoPage implements OnInit {
 
   async checkForUpdates() {
 
-
-
-
     try {
-      if (this.swUpdate.isEnabled) {
-        const update = await this.swUpdate.checkForUpdate();
-        if (update) {
-          console.log(">>> update", update);
-          const resolver = await this.swUpdate.activateUpdate();
-          if (resolver) {
-            window.location.reload();
-          } else {
-            console.log("Already on latest version");
-          }
-
+      const update = await this.swUpdate.checkForUpdate();
+      if (update) {
+        console.log(">>> update", update);
+        const resolver = await this.swUpdate.activateUpdate();
+        if (resolver) {
+          window.location.reload();
         } else {
-          console.log("No update available");
+          console.log("Already on latest version");
         }
+
+      } else {
+        console.log("No update available");
       }
     } catch (error) {
       console.error("Error checking for updates", error);
     }
   }
-
 
 }

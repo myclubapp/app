@@ -54,7 +54,7 @@
 
   </ion-list>
 
-  <div class="ion-padding">
+  <div class="ion-padding" *ngIf="swUpdate.isEnabled">
     <ion-button fill="outline" expand="block" color="warning" (click)="checkForUpdates()">
       <ion-icon slot="start" name="refresh-outline"></ion-icon>
       Prüfe auf Updates
