@@ -206,8 +206,8 @@ export class ChampionshipPage implements OnInit {
         }
   
         // Filter to get only the specific team if `this.team.id` is set
-        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
-  
+        let relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+        relevantTeams = [...new Set(relevantTeams.map(team => team.id))].map(id => relevantTeams.find(team => team.id === id));
         // Fetch games for all relevant teams
         return combineLatest(
           relevantTeams.map((team) =>
@@ -313,8 +313,8 @@ export class ChampionshipPage implements OnInit {
         }
   
         // Filter to get only the specific team if `this.team.id` is set
-        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
-  
+        let relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+        relevantTeams = [...new Set(relevantTeams.map(team => team.id))].map(id => relevantTeams.find(team => team.id === id));
         // Fetch games for all relevant teams
         return combineLatest(
           relevantTeams.map((team) =>

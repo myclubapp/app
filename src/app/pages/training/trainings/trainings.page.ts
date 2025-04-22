@@ -1,9 +1,8 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
-import { MyClubAppWidget } from 'myclub-widget-plugin';
+// import { MyClubAppWidget } from 'myclub-widget-plugin';
 import {
   AlertController,
   IonItemSliding,
-  IonRouterOutlet,
   // IonRouterOutlet,
   MenuController,
   ModalController,
@@ -15,7 +14,6 @@ import {
   Subscription,
   catchError,
   combineLatest,
-  first,
   lastValueFrom,
   map,
   mergeMap,
@@ -37,7 +35,6 @@ import { Team } from "src/app/models/team";
 // import { FilterService } from "src/app/services/filter.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
-import { Club } from "src/app/models/club";
 
 @Component({
     selector: "app-trainings",
@@ -102,7 +99,7 @@ export class TrainingsPage implements OnInit {
     this.handleNavigationData();
 
 
-    this.subscription = this.trainingList$.pipe(
+    /*this.subscription = this.trainingList$.pipe(
       tap(async (trainings) => {
         const training = trainings[0];
         console.log('Widget Value for Key=nextTraining: ', training?.name);
@@ -123,7 +120,7 @@ export class TrainingsPage implements OnInit {
         }
 
       })
-    ).subscribe();
+    ).subscribe();*/
 
 
   }
@@ -201,9 +198,9 @@ export class TrainingsPage implements OnInit {
         } else if (teams.length === 0) {
           return of([])
         };
-      
-        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
-        
+        let relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+        // Filter for duplicate teams
+        relevantTeams = [...new Set(relevantTeams.map(team => team.id))].map(id => relevantTeams.find(team => team.id === id));
         // Hole Team-Mitglieder einmalig pro Team
         const teamMembersMap$ = combineLatest(
           relevantTeams.map(team => 
@@ -301,8 +298,8 @@ export class TrainingsPage implements OnInit {
           return of([])
         };
   
-        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
-        
+        let relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+        relevantTeams = [...new Set(relevantTeams.map(team => team.id))].map(id => relevantTeams.find(team => team.id === id));
         // Hole Team-Mitglieder einmalig pro Team
         const teamMembersMap$ = combineLatest(
           relevantTeams.map(team => 
