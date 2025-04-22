@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Device, DeviceId, DeviceInfo } from '@capacitor/device';
-import { Browser, OpenOptions​ } from '@capacitor/browser';
+import { Browser, OpenOptions } from '@capacitor/browser';
 import packagejson from "./../../../../package.json";
 import { SwUpdate } from '@angular/service-worker';
 @Component({
-    selector: 'app-info',
-    templateUrl: './info.page.html',
-    styleUrls: ['./info.page.scss'],
-    standalone: false
+  selector: 'app-info',
+  templateUrl: './info.page.html',
+  styleUrls: ['./info.page.scss'],
+  standalone: false
 })
 export class InfoPage implements OnInit {
 
@@ -30,19 +30,25 @@ export class InfoPage implements OnInit {
   };
 
   async openPPSite() {
-    await Browser.open({ url: 'https://my-club.app/privacy-policy-de/',  });
+    await Browser.open({ url: 'https://my-club.app/privacy-policy-de/', });
   };
 
   async checkForUpdates() {
-    const update = await this.swUpdate.checkForUpdate();
-    console.log(">>> update", update);
-    if (update) {
-      const resolver = await this.swUpdate.activateUpdate();
-      if (resolver) {
-        window.location.reload();
+    try {
+      const update = await this.swUpdate.checkForUpdate();
+      if (update) {
+        console.log(">>> update", update);
+        const resolver = await this.swUpdate.activateUpdate();
+        if (resolver) {
+          window.location.reload();
+        } else {
+          console.log("Already on latest version");
+        }
       } else {
-        console.log("Already on latest version");
-      }
+        console.log("No update available");
+      } 
+    } catch (error) {
+      console.error("Error checking for updates", error);
     }
   }
 
