@@ -85,6 +85,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         // 0. LOGIN
         this.email = user.email;
         this.user = user;
+        console.log(">>> user.metadata", user.metadata);
+        console.log(">>> lastSignInTime", user.metadata?.lastSignInTime);
+        await this.user.getIdToken();
+        // console.log(">>> token", token);
 
         if (!user.emailVerified) {
           const navOnboardingEmail = await this.router.navigateByUrl('/onboarding-email');
