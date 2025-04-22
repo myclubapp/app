@@ -32,6 +32,8 @@ import { ChampionshipDetailPage } from "../championship-detail/championship-deta
 import { Team } from "src/app/models/team";
 import { GamePreviewPage } from "../game-preview/game-preview.page";
 import { Club } from "src/app/models/club";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { Profile } from "src/app/models/user";
 
 @Component({
     selector: "app-championship",
@@ -83,7 +85,9 @@ export class ChampionshipPage implements OnInit {
     private readonly menuCtrl: MenuController,
     private cdr: ChangeDetectorRef,
     private navCtrl: NavController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private userProfileService: UserProfileService,
+    
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -185,8 +189,34 @@ export class ChampionshipPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.fbService.getUserTeamRefs(user);
+        // Get user's teams and children's teams
+        return combineLatest([
+          this.fbService.getUserTeamRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            switchMap((children: Profile[]) => 
+              children.length > 0 
+                ? combineLatest(
+                    children.map(child => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.fbService.getUserTeamRefs(childUser);
+                    })
+                  )
+                : of([])
+            ),
+            map(childrenTeams => childrenTeams.flat()),
+            tap((teams) => console.log("Children Teams:", teams)),
+            catchError((error) => {
+              console.error("Error fetching children teams:", error);
+              return of([]);
+            })
+          )
+        ]).pipe(
+          map(([userTeams, childrenTeams]) => [...userTeams, ...childrenTeams])
+        );
       }),
+      // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         // Add the specific team if it exists
         if (this.team && this.team.id) {
@@ -292,7 +322,32 @@ export class ChampionshipPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.fbService.getUserTeamRefs(user);
+        // Get user's teams and children's teams
+        return combineLatest([
+          this.fbService.getUserTeamRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            switchMap((children: Profile[]) => 
+              children.length > 0 
+                ? combineLatest(
+                    children.map(child => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.fbService.getUserTeamRefs(childUser);
+                    })
+                  )
+                : of([])
+            ),
+            map(childrenTeams => childrenTeams.flat()),
+            tap((teams) => console.log("Children Teams:", teams)),
+            catchError((error) => {
+              console.error("Error fetching children teams:", error);
+              return of([]);
+            })
+          )
+        ]).pipe(
+          map(([userTeams, childrenTeams]) => [...userTeams, ...childrenTeams])
+        );
       }),
       mergeMap((teams) => {
         // Add the current team (if any) to the list
