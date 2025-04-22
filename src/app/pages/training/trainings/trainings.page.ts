@@ -154,7 +154,7 @@ export class TrainingsPage implements OnInit {
   }
   handleNavigationData() {
     this.activatedRouteSub = this.activatedRoute.url.subscribe(data => {
-      if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state["type"] === "training") {
+      if (this.router && this.router.getCurrentNavigation() && this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state["type"] === "training") {
         const pushData = this.router.getCurrentNavigation().extras.state;
         console.log("PUSHDATA " + pushData);
         let training: Training = {
