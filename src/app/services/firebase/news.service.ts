@@ -22,7 +22,7 @@ export class NewsService {
   fourtyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 40);
   sixtyDaysAgo = new Date(Date.now() - 1000 * 3600 * 24 * 60);
 
-  constructor(private firestore: Firestore = inject(Firestore)) {}
+  constructor(private firestore: Firestore) {}
 
   getNewsDetail(newsId: string): Observable<News> {
     const newsRef = doc(

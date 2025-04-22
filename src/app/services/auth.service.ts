@@ -36,7 +36,7 @@ export class AuthService {
   user$: Observable<User | null>;
   constructor(
     // private readonly firestore: Firestore,
-    private readonly firestore: Firestore = inject(Firestore),
+    private readonly firestore: Firestore,
     // public auth: Auth,
     public auth: Auth = inject(Auth),
 

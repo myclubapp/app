@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
+  IonRouterOutlet,
   // IonRouterOutlet,
   MenuController,
   ModalController,
@@ -36,10 +37,10 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { Profile } from "src/app/models/user";
 
 @Component({
-    selector: "app-championship",
-    templateUrl: "./championship.page.html",
-    styleUrls: ["./championship.page.scss"],
-    standalone: false
+  selector: "app-championship",
+  templateUrl: "./championship.page.html",
+  styleUrls: ["./championship.page.scss"],
+  standalone: false
 })
 export class ChampionshipPage implements OnInit {
   @Input("team")
@@ -78,7 +79,7 @@ export class ChampionshipPage implements OnInit {
 
   constructor(
     public toastController: ToastController,
-    // private readonly routerOutlet: IonRouterOutlet,
+    private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -89,15 +90,15 @@ export class ChampionshipPage implements OnInit {
     private navCtrl: NavController,
     private translate: TranslateService,
     private userProfileService: UserProfileService,
-    
+
   ) {
     this.menuCtrl.enable(true, "menu");
   }
 
   ngOnInit() {
-    this.teamRankings$ = this.getTeamsWithRankingsForYear("2024");
     this.gameList$ = this.getTeamGamesUpcoming();
     this.gameListPast$ = this.getTeamGamesPast();
+    this.teamRankings$ = this.getTeamsWithRankingsForYear("2024");
 
     this.teamAdminList$ = this.fbService.getTeamAdminList();
     this.clubAdminList$ = this.fbService.getClubAdminList();
@@ -124,16 +125,16 @@ export class ChampionshipPage implements OnInit {
         return combineLatest([
           this.fbService.getUserTeamRefs(user),
           this.userProfileService.getChildren(user.uid).pipe(
-            switchMap((children: Profile[]) => 
-              children.length > 0 
+            switchMap((children: Profile[]) =>
+              children.length > 0
                 ? combineLatest(
-                    children.map(child => {
-                      // Create a User-like object with uid from child.id
-                      const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
-                      return this.fbService.getUserTeamRefs(childUser);
-                    })
-                  )
+                  children.map(child => {
+                    // Create a User-like object with uid from child.id
+                    const childUser = { uid: child.id } as User;
+                    console.log("Child User:", childUser);
+                    return this.fbService.getUserTeamRefs(childUser);
+                  })
+                )
                 : of([])
             ),
             map(childrenTeams => childrenTeams.flat()),
@@ -186,7 +187,7 @@ export class ChampionshipPage implements OnInit {
                 year
               ),
             }).pipe(
-              tap(data=>{
+              tap(data => {
                 console.log(data)
               }),
               map(({ teamDetails, rankingsTable, rankingDetails }) => ({
@@ -199,7 +200,7 @@ export class ChampionshipPage implements OnInit {
               })),
               // tap((result) => console.log("Team with rankings and details:", result))
             ),
-       
+
           )
         );
       }),
@@ -228,16 +229,16 @@ export class ChampionshipPage implements OnInit {
             tap((children) => {
               this.children = children;
             }),
-            switchMap((children: Profile[]) => 
-              children.length > 0 
+            switchMap((children: Profile[]) =>
+              children.length > 0
                 ? combineLatest(
-                    children.map(child => {
-                      // Create a User-like object with uid from child.id
-                      const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
-                      return this.fbService.getUserTeamRefs(childUser);
-                    })
-                  )
+                  children.map(child => {
+                    // Create a User-like object with uid from child.id
+                    const childUser = { uid: child.id } as User;
+                    console.log("Child User:", childUser);
+                    return this.fbService.getUserTeamRefs(childUser);
+                  })
+                )
                 : of([])
             ),
             map(childrenTeams => childrenTeams.flat()),
@@ -274,10 +275,10 @@ export class ChampionshipPage implements OnInit {
         } else if (teams.length === 0) {
           return of([]); // Return empty if there are no teams
         }
-  
+
         // Filter to get only the specific team if `this.team.id` is set
         const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
-  
+
         // Fetch games for all relevant teams
         return combineLatest(
           relevantTeams.map((team) =>
@@ -288,7 +289,7 @@ export class ChampionshipPage implements OnInit {
               }),
               switchMap((teamGames) => {
                 if (teamGames.length === 0) return of([]);
-  
+
                 return combineLatest(
                   teamGames.map((game) =>
                     combineLatest([
@@ -340,10 +341,10 @@ export class ChampionshipPage implements OnInit {
           // Flatten all games across all teams into a single array
           map((teamsGames) => teamsGames.flat()),
           // tap((allGames) => console.log("All games:", allGames)),
-  
+
           // Sort games globally by their `dateTime` in ascending order (upcoming games)
           map((allGames) => allGames.sort((a, b) => a.dateTime.seconds - b.dateTime.seconds)),
-  
+
           catchError((err) => {
             console.error("Error in getTeamGamesUpcoming:", err);
             return of([]); // Return an empty array on error
@@ -367,16 +368,16 @@ export class ChampionshipPage implements OnInit {
         return combineLatest([
           this.fbService.getUserTeamRefs(user),
           this.userProfileService.getChildren(user.uid).pipe(
-            switchMap((children: Profile[]) => 
-              children.length > 0 
+            switchMap((children: Profile[]) =>
+              children.length > 0
                 ? combineLatest(
-                    children.map(child => {
-                      // Create a User-like object with uid from child.id
-                      const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
-                      return this.fbService.getUserTeamRefs(childUser);
-                    })
-                  )
+                  children.map(child => {
+                    // Create a User-like object with uid from child.id
+                    const childUser = { uid: child.id } as User;
+                    console.log("Child User:", childUser);
+                    return this.fbService.getUserTeamRefs(childUser);
+                  })
+                )
                 : of([])
             ),
             map(childrenTeams => childrenTeams.flat()),
@@ -412,10 +413,10 @@ export class ChampionshipPage implements OnInit {
         } else if (teams.length === 0) {
           return of([]); // If no teams found, return an empty array
         }
-  
+
         // Filter to get only the specific team if `this.team.id` is set
         const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
-  
+
         // Fetch games for all relevant teams
         return combineLatest(
           relevantTeams.map((team) =>
@@ -480,7 +481,7 @@ export class ChampionshipPage implements OnInit {
           // tap((allGames) => console.log("All games:", allGames)),
           // Sort games globally by date (newest first)
           map((allGames) => allGames.sort((a, b) => b.dateTime.seconds - a.dateTime.seconds)),
-  
+
           catchError((err) => {
             console.error("Error in getTeamGamesPast:", err);
             return of([]); // Return an empty array on error
@@ -503,20 +504,35 @@ export class ChampionshipPage implements OnInit {
       .catch((e) => {
         console.log(e);
       });*/
-    
 
-    const modal = await this.modalCtrl.create({
-      component: ChampionshipDetailPage,
-      presentingElement: await this.modalCtrl.getTop(),
-      // presentingElement: this.routerOutlet.nativeEl,
-      canDismiss: true,
-      cssClass: 'transparent-modal',
-      showBackdrop: true,
-      componentProps: {
-        data: game,
-        isFuture: isFuture,
-      },
-    });
+    const topModal = await this.modalCtrl.getTop();
+    let modal;
+    if (topModal) {
+       modal = await this.modalCtrl.create({
+        component: ChampionshipDetailPage,
+        presentingElement: topModal,
+        // presentingElement: this.routerOutlet.nativeEl,
+        canDismiss: true,
+        cssClass: 'transparent-modal',
+        showBackdrop: true,
+        componentProps: {
+          data: game,
+          isFuture: isFuture,
+        },
+      });
+    } else {
+       modal = await this.modalCtrl.create({
+        component: ChampionshipDetailPage,
+        presentingElement: this.routerOutlet.nativeEl,
+        canDismiss: true,
+        cssClass: 'transparent-modal',
+        showBackdrop: true,
+        componentProps: {
+          data: game,
+          isFuture: isFuture,
+        },
+      });
+    }
     modal.present();
 
     const { data, role } = await modal.onWillDismiss();

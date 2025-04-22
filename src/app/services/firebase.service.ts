@@ -39,7 +39,7 @@ import { Profile } from "../models/user";
 export class FirebaseService {
   user: User;
   constructor(
-    private readonly firestore: Firestore = inject(Firestore),
+    private readonly firestore: Firestore,
     private readonly authService: AuthService
   ) { }
 

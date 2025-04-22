@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 export class ExerciseService {
 
   constructor(
-    private readonly firestore: Firestore = inject(Firestore),
+    private readonly firestore: Firestore,
   ) { }
 
   getExerciseRef(): Observable<any> {

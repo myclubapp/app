@@ -7,6 +7,7 @@ import {
   // IonRouterOutlet,
   MenuController,
   ModalController,
+  NavController,
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
@@ -42,10 +43,10 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { Profile } from "src/app/models/user";
 
 @Component({
-    selector: "app-trainings",
-    templateUrl: "./trainings.page.html",
-    styleUrls: ["./trainings.page.scss"],
-    standalone: false
+  selector: "app-trainings",
+  templateUrl: "./trainings.page.html",
+  styleUrls: ["./trainings.page.scss"],
+  standalone: false
 })
 export class TrainingsPage implements OnInit {
   @Input("team") team: Team;
@@ -77,7 +78,7 @@ export class TrainingsPage implements OnInit {
 
   constructor(
     public toastController: ToastController,
-    // private readonly routerOutlet: IonRouterOutlet,
+    private readonly routerOutlet: IonRouterOutlet,
     private readonly modalController: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -86,6 +87,7 @@ export class TrainingsPage implements OnInit {
     private readonly alertCtrl: AlertController,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService,
+    private navCtrl: NavController,
     // private filterService: FilterService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -204,16 +206,16 @@ export class TrainingsPage implements OnInit {
             tap((children) => {
               this.children = children;
             }),
-            switchMap((children: Profile[]) => 
-              children.length > 0 
+            switchMap((children: Profile[]) =>
+              children.length > 0
                 ? combineLatest(
-                    children.map(child => {
-                      // Create a User-like object with uid from child.id
-                      const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
-                      return this.fbService.getUserTeamRefs(childUser);
-                    })
-                  )
+                  children.map(child => {
+                    // Create a User-like object with uid from child.id
+                    const childUser = { uid: child.id } as User;
+                    console.log("Child User:", childUser);
+                    return this.fbService.getUserTeamRefs(childUser);
+                  })
+                )
                 : of([])
             ),
             map(childrenTeams => childrenTeams.flat()),
@@ -240,18 +242,18 @@ export class TrainingsPage implements OnInit {
         } else if (teams.length === 0) {
           return of([])
         };
-      
+
         const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
-        
+
         // Hole Team-Mitglieder einmalig pro Team
         const teamMembersMap$ = combineLatest(
-          relevantTeams.map(team => 
+          relevantTeams.map(team =>
             this.fbService.getTeamMemberRefs(team.id).pipe(
               map(members => ({ teamId: team.id, members }))
             )
           )
         ).pipe(
-          map(teamMembers => 
+          map(teamMembers =>
             teamMembers.reduce((acc, curr) => {
               acc[curr.teamId] = curr.members;
               return acc;
@@ -259,7 +261,7 @@ export class TrainingsPage implements OnInit {
           ),
           shareReplay(1) // Cache das Ergebnis
         );
-      
+
         return combineLatest([
           teamMembersMap$,
           combineLatest(
@@ -297,7 +299,7 @@ export class TrainingsPage implements OnInit {
                 att.status === true &&
                 teamMembers.some(member => member.id === att.id)
               );
-  
+
               return {
                 ...item.training,
                 attendees: item.attendees,
@@ -310,8 +312,8 @@ export class TrainingsPage implements OnInit {
               };
             });
           }),
-          map((allTrainings) => 
-            allTrainings.sort((a, b) => 
+          map((allTrainings) =>
+            allTrainings.sort((a, b) =>
               Timestamp.fromMillis(a.startDate).seconds - Timestamp.fromMillis(b.startDate).seconds
             )
           )
@@ -336,16 +338,16 @@ export class TrainingsPage implements OnInit {
         return combineLatest([
           this.fbService.getUserTeamRefs(user),
           this.userProfileService.getChildren(user.uid).pipe(
-            switchMap((children: Profile[]) => 
-              children.length > 0 
+            switchMap((children: Profile[]) =>
+              children.length > 0
                 ? combineLatest(
-                    children.map(child => {
-                      // Create a User-like object with uid from child.id
-                      const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
-                      return this.fbService.getUserTeamRefs(childUser);
-                    })
-                  )
+                  children.map(child => {
+                    // Create a User-like object with uid from child.id
+                    const childUser = { uid: child.id } as User;
+                    console.log("Child User:", childUser);
+                    return this.fbService.getUserTeamRefs(childUser);
+                  })
+                )
                 : of([])
             ),
             map(childrenTeams => childrenTeams.flat()),
@@ -370,18 +372,18 @@ export class TrainingsPage implements OnInit {
         } else if (teams.length === 0) {
           return of([])
         };
-  
+
         const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
-        
+
         // Hole Team-Mitglieder einmalig pro Team
         const teamMembersMap$ = combineLatest(
-          relevantTeams.map(team => 
+          relevantTeams.map(team =>
             this.fbService.getTeamMemberRefs(team.id).pipe(
               map(members => ({ teamId: team.id, members }))
             )
           )
         ).pipe(
-          map(teamMembers => 
+          map(teamMembers =>
             teamMembers.reduce((acc, curr) => {
               acc[curr.teamId] = curr.members;
               return acc;
@@ -389,7 +391,7 @@ export class TrainingsPage implements OnInit {
           ),
           shareReplay(1)
         );
-  
+
         return combineLatest([
           teamMembersMap$,
           combineLatest(
@@ -445,7 +447,7 @@ export class TrainingsPage implements OnInit {
                 att.status === true &&
                 teamMembers.some(member => member.id === att.id)
               );
-  
+
               return {
                 ...item.training,
                 attendees: item.attendees,
@@ -458,8 +460,8 @@ export class TrainingsPage implements OnInit {
               };
             });
           }),
-          map((allTrainings) => 
-            allTrainings.sort((b, a) => 
+          map((allTrainings) =>
+            allTrainings.sort((b, a) =>
               Timestamp.fromMillis(a.startDate).seconds - Timestamp.fromMillis(b.startDate).seconds
             )
           )
@@ -473,18 +475,37 @@ export class TrainingsPage implements OnInit {
   }
 
   async openTrainingDetailModal(training: Training, isFuture: boolean) {
-    // const presentingElement = await this.modalCtrl.getTop();
-    const modal = await this.modalController.create({
-      component: TrainingDetailPage,
-      presentingElement: await this.modalController.getTop(),
-      // presentingElement: this.routerOutlet.nativeEl,
-      canDismiss: true,
-      showBackdrop: true,
-      componentProps: {
-        data: training,
-        isFuture: isFuture,
-      },
-    });
+
+    const topModal = await this.modalController.getTop();
+    let modal;
+    if (topModal) {
+      // const presentingElement = await this.modalCtrl.getTop();
+      modal = await this.modalController.create({
+        component: TrainingDetailPage,
+        presentingElement: topModal,
+        // presentingElement: this.routerOutlet.nativeEl,
+        canDismiss: true,
+        showBackdrop: true,
+        componentProps: {
+          data: training,
+          isFuture: isFuture,
+        },
+      });
+    } else {
+
+       modal = await this.modalController.create({
+        component: TrainingDetailPage,
+        presentingElement: this.routerOutlet.nativeEl,
+        canDismiss: true,
+        showBackdrop: true,
+        componentProps: {
+          data: training,
+          isFuture: isFuture,
+        },
+      });
+    }
+
+
     modal.present();
 
     const { data, role } = await modal.onWillDismiss();
@@ -582,7 +603,7 @@ export class TrainingsPage implements OnInit {
     // console.log("children", children);
     // Sammle alle möglichen Team-Mitglieder (aktueller Benutzer + Kinder)
     const possibleMembers = [this.user, ...children.map(child => ({ uid: child.id }))];
-    
+
     // Filtere die tatsächlichen Team-Mitglieder
     const teamMemberIds = teamMembers.map(member => member.id);
     const validMembers = possibleMembers.filter(member => teamMemberIds.includes(member.uid));
@@ -610,10 +631,10 @@ export class TrainingsPage implements OnInit {
       const alert = await this.alertCtrl.create({
         header: await lastValueFrom(this.translate.get("common.select_member")),
         inputs: await Promise.all(validMembers.map(async member => {
-          const profile = member.uid === this.user.uid 
+          const profile = member.uid === this.user.uid
             ? { firstName: "Ich", lastName: "" }  // Für den aktuellen Benutzer
             : await lastValueFrom(this.userProfileService.getUserProfileById(member.uid));
-          
+
           return {
             type: 'radio',
             label: `${profile.firstName} ${profile.lastName}`,
@@ -647,7 +668,7 @@ export class TrainingsPage implements OnInit {
     newStartDate.setHours(Number(training.timeFrom.substring(0, 2)));
 
     const trainingThreshold = training.team.trainingThreshold || 0;
-    
+
     if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * trainingThreshold)) && status == false && trainingThreshold) {
       console.log("too late");
       await this.tooLateToggle();

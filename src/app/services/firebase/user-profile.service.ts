@@ -33,7 +33,7 @@ import { DeviceId, DeviceInfo } from "@capacitor/device";
 })
 export class UserProfileService {
   constructor(
-    private firestore: Firestore = inject(Firestore),
+    private firestore: Firestore,
     private readonly storage: Storage,
     private readonly authService: AuthService
   ) {}
