@@ -10,11 +10,8 @@ import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
   Observable,
-  Subscription,
   catchError,
   combineLatest,
-  finalize,
-  first,
   forkJoin,
   lastValueFrom,
   map,
@@ -24,14 +21,11 @@ import {
   take,
   tap,
 } from "rxjs";
-import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { MemberPage } from "../member/member.page";
 import { ClubMemberListPage } from "../club-member-list/club-member-list.page";
 import { ClubAdminListPage } from "../club-admin-list/club-admin-list.page";
-import { TeamListPage } from "../team-list/team-list.page";
 import { ClubTeamListPage } from "../club-team-list/club-team-list.page";
 import { ClubRequestListPage } from "../club-request-list/club-request-list.page";
 import { Timestamp } from "firebase/firestore";

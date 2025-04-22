@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, Input, OnInit, Optional } from "@angular/core";
-import { MyClubAppWidget } from 'myclub-widget-plugin';
 import {
   AlertController,
   IonItemSliding,
@@ -15,7 +14,6 @@ import {
   Subscription,
   catchError,
   combineLatest,
-  first,
   lastValueFrom,
   map,
   mergeMap,
@@ -37,7 +35,6 @@ import { Team } from "src/app/models/team";
 // import { FilterService } from "src/app/services/filter.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
-import { Club } from "src/app/models/club";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { Profile } from "src/app/models/user";
 

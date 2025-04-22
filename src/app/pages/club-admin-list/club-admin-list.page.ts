@@ -1,26 +1,20 @@
-import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   ModalController,
   NavParams,
   ToastController,
-  IonList,
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import {
   BehaviorSubject,
   Observable,
-  Subscription,
   catchError,
   combineLatest,
   debounceTime,
-  finalize,
-  forkJoin,
   lastValueFrom,
   map,
   of,
-  shareReplay,
-  startWith,
   switchMap,
   take,
   tap,
@@ -30,7 +24,6 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { MemberPage } from "../member/member.page";
 import { Profile } from "src/app/models/user";
-import { User } from "firebase/auth";
 import { Club } from "src/app/models/club";
 
 @Component({
