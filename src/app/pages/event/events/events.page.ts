@@ -56,6 +56,7 @@ export class EventsPage implements OnInit {
   activatedRouteSub: Subscription;
 
   subscription: Subscription;
+  children: Profile[] = [];
 
   constructor(
     public toastController: ToastController,
@@ -168,8 +169,11 @@ export class EventsPage implements OnInit {
         if (!user) return of([]);
         // Get user's teams and children's teams
         return combineLatest([
-          this.fbService.getUserTeamRefs(user),
+          this.fbService.getUserClubRefs(user),
           this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+            }),
             switchMap((children: Profile[]) => 
               children.length > 0 
                 ? combineLatest(
@@ -213,9 +217,8 @@ export class EventsPage implements OnInit {
                   clubEvents.map((event) =>
                     this.eventService.getClubEventAttendeesRef(club.id, event.id).pipe(
                       map((attendees) => {
-                        const userAttendee = attendees.find(
-                          (att) => att.id == this.user.uid
-                        );
+                        const attendeeIds = [this.user.uid, ...this.children.map(child => child.id)];
+                        const userAttendee = attendees.find((att) => attendeeIds.includes(att.id));
                         const status = userAttendee ? userAttendee.status : null;
                         return {
                           ...event,
@@ -269,7 +272,40 @@ export class EventsPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.fbService.getUserClubRefs(user);
+        // Get user's teams and children's teams
+        return combineLatest([
+          this.fbService.getUserTeamRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+            }),
+            switchMap((children: Profile[]) => 
+              children.length > 0 
+                ? combineLatest(
+                    children.map(child => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.fbService.getUserClubRefs(childUser);
+                    })
+                  )
+                : of([])
+            ),
+            map(childrenClubs => childrenClubs.flat()),
+            tap((clubs) => console.log("Children Clubs:", clubs)),
+            catchError((error) => {
+              console.error("Error fetching children clubs:", error);
+              return of([]);
+            })
+          )
+        ]).pipe(
+          map(([userClubs, childrenClubs]) => {
+            const allClubs = [...userClubs, ...childrenClubs];
+            return allClubs.filter((club, index, self) =>
+              index === self.findIndex((c) => c.id === club.id)
+            );
+          })
+        );
       }),
       // tap((clubs) => console.log("Teams:", clubs)),
       mergeMap((teams) => {
@@ -285,9 +321,8 @@ export class EventsPage implements OnInit {
                       .getClubEventAttendeesRef(team.id, game.id)
                       .pipe(
                         map((attendees) => {
-                          const userAttendee = attendees.find(
-                            (att) => att.id == this.user.uid
-                          );
+                          const attendeeIds = [this.user.uid, ...this.children.map(child => child.id)];
+                          const userAttendee = attendees.find((att) => attendeeIds.includes(att.id));
                           const status = userAttendee
                             ? userAttendee.status
                             : null; // default to false if user is not found in attendees list

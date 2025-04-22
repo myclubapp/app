@@ -30,6 +30,8 @@ import { HelferDetailPage } from "../helfer-detail/helfer-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
 import { ActivatedRoute, Router } from "@angular/router";
+import { Profile } from "src/app/models/user";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 
 @Component({
     selector: "app-helfer",
@@ -50,6 +52,8 @@ export class HelferPage implements OnInit {
 
   activatedRouteSub: Subscription;
 
+  children: Profile[] = [];
+
   constructor(
     public toastController: ToastController,
     private readonly routerOutlet: IonRouterOutlet,
@@ -61,6 +65,7 @@ export class HelferPage implements OnInit {
     private translate: TranslateService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
+    private userProfileService: UserProfileService
   ) {
     this.menuCtrl.enable(true, "menu");
 
@@ -130,7 +135,40 @@ export class HelferPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.fbService.getUserClubRefs(user);
+        // Get user's teams and children's teams
+        return combineLatest([
+          this.fbService.getUserClubRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+            }),
+            switchMap((children: Profile[]) => 
+              children.length > 0 
+                ? combineLatest(
+                    children.map(child => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.fbService.getUserClubRefs(childUser);
+                    })
+                  )
+                : of([])
+            ),
+            map(childrenClubs => childrenClubs.flat()),
+            tap((clubs) => console.log("Children Clubs:", clubs)),
+            catchError((error) => {
+              console.error("Error fetching children clubs:", error);
+              return of([]);
+            })
+          )
+        ]).pipe(
+          map(([userClubs, childrenClubs]) => {
+            const allClubs = [...userClubs, ...childrenClubs];
+            return allClubs.filter((club, index, self) =>
+              index === self.findIndex((c) => c.id === club.id)
+            );
+          })
+        );
       }),
       // tap((clubs) => console.log("Clubs:", clubs)),
       mergeMap((clubs) => {
@@ -211,80 +249,6 @@ export class HelferPage implements OnInit {
     );
   }
 
-  getHelferEvent2() {
-    return this.authService.getUser$().pipe(
-      take(1),
-      tap((user) => {
-        this.user = user;
-      }),
-      switchMap((user) => {
-        if (!user) return of([]);
-        return this.fbService.getUserClubRefs(user);
-      }),
-      tap((clubs) => console.log("Teams:", clubs)),
-      mergeMap((clubs) => {
-        if (clubs.length === 0) return of([]);
-        return combineLatest(
-          clubs.map((club) =>
-            this.eventService.getClubHelferEventRefs(club.id).pipe(
-              switchMap((clubevents) => {
-                if (clubevents.length === 0) return of([]);
-                return combineLatest(
-                  clubevents.map((event) =>
-                    this.eventService
-                      .getClubHelferEventAttendeesRef(club.id, event.id)
-                      .pipe(
-                        map((attendees) => {
-                          const userAttendee = attendees.find(
-                            (att) => att.id == this.user.uid
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null; // default to false if user is not found in attendees list
-                          return {
-                            ...event,
-                            attendees,
-                            status: status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true
-                            ).length,
-                            clubId: club.id,
-                          };
-                        }),
-                        catchError(() =>
-                          of({
-                            ...event,
-                            attendees: [],
-                            status: null,
-                            countAttendees: 0,
-                            clubId: club.id,
-                          })
-                        ) // If error, return game with empty attendees
-                      )
-                  )
-                );
-              }),
-              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each club
-              catchError(() => of([])) // If error in fetching events, return empty array
-            )
-          )
-        ).pipe(
-          map((clubsevents) => clubsevents.flat()), // Flatten to get all events across all clubs
-          map((allEvents) =>
-            allEvents.sort((a, b) =>
-              Timestamp.fromMillis(a.date).seconds - Timestamp.fromMillis(b.date).seconds
-            ) // Sort events by date
-          )
-        );
-      }),
-      // tap((results) => console.log("Final results with all events:", results)),
-      catchError((err) => {
-        console.error("Error in getTeameventsUpcoming:", err);
-        return of([]); // Return an empty array on error
-      })
-    );
-  }
-
   getHelferEventPast() {
     return this.authService.getUser$().pipe(
       take(1),
@@ -293,7 +257,40 @@ export class HelferPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.fbService.getUserClubRefs(user);
+        // Get user's teams and children's teams
+        return combineLatest([
+          this.fbService.getUserClubRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+            }),
+            switchMap((children: Profile[]) => 
+              children.length > 0 
+                ? combineLatest(
+                    children.map(child => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.fbService.getUserClubRefs(childUser);
+                    })
+                  )
+                : of([])
+            ),
+            map(childrenClubs => childrenClubs.flat()),
+            tap((clubs) => console.log("Children Clubs:", clubs)),
+            catchError((error) => {
+              console.error("Error fetching children clubs:", error);
+              return of([]);
+            })
+          )
+        ]).pipe(
+          map(([userClubs, childrenClubs]) => {
+            const allClubs = [...userClubs, ...childrenClubs];
+            return allClubs.filter((club, index, self) =>
+              index === self.findIndex((c) => c.id === club.id)
+            );
+          })
+        );
       }),
       // tap((clubs) => console.log("Teams:", clubs)),
       mergeMap((clubs) => {
