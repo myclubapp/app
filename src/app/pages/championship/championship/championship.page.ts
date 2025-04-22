@@ -133,7 +133,8 @@ export class ChampionshipPage implements OnInit {
         } else if (teams.length === 0) {
           return of([])
         };
-        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+        let relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+        relevantTeams = [...new Set(relevantTeams.map(team => team.id))].map(id => relevantTeams.find(team => team.id === id));
         // console.log("relevant teams : ", relevantTeams);
         return combineLatest(
           relevantTeams.map((team) =>
