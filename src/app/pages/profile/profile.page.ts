@@ -263,6 +263,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
           console.log("No user found");
           return of(null); // Return null or appropriate default value if user is not logged in
         }
+        this.user = user;
         return this.profileService.getUserProfile(user).pipe(
           tap((profile: Profile) => {
             if (profile && profile.dateOfBirth) {

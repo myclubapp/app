@@ -17,7 +17,7 @@ export class InfoPage implements OnInit {
   deviceInfo: DeviceInfo;
 
   constructor(
-    public swUpdate: SwUpdate
+    public swUpdate: SwUpdate,
   ) { }
 
   async ngOnInit() {

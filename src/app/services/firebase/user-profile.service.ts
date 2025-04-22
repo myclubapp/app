@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 
-import { User } from "@angular/fire/auth";
+import { User, updateProfile } from "@angular/fire/auth";
 import {
   Firestore,
   collection,
@@ -71,13 +71,17 @@ export class UserProfileService {
     );
     await uploadString(storageRef, photo.base64String, "base64", {});
     const url = await getDownloadURL(storageRef);
+
+    await updateProfile(user, { photoURL: url });
+
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { profilePicture: url });
   }
 
-  setUserProfile(userProfile: Profile) {
+  async setUserProfile(userProfile: Profile) {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    await updateProfile(user, { displayName: userProfile.firstName + " " + userProfile.lastName });
    
     return updateDoc(userProfileRef, { userProfile });
   }
