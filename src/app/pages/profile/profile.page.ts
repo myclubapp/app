@@ -72,6 +72,8 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   kidsRequests$: Observable<any[]>;
   children$: Observable<any[]>;
 
+  parents$: Observable<Profile[]>;
+
   public alertButtonsEmail = [];
   public alertInputsEmail = [];
   public alertButtonsAddress = [];
@@ -120,9 +122,14 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
       );
   
       this.children$ = this.profileService.getChildren(userProfile.id).pipe(
-      
         tap((children) => {
           console.log(children);
+        })
+      );
+
+      this.parents$ = this.profileService.getParents(userProfile.id).pipe(
+        tap((parents) => {
+          console.log(parents);
         })
       );
     });

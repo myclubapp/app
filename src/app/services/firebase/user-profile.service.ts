@@ -53,6 +53,11 @@ export class UserProfileService {
     return collectionData(childrenRef, { idField: "id" }) as Observable<any[]>;
   }
 
+  getParents(userId: string) {
+    const parentsRef = collection(this.firestore, `userProfile/${userId}/parents`);
+    return collectionData(parentsRef, { idField: "id" }) as Observable<any[]>;
+  }
+
   deleteKidRequest(userId: string, requestId: string) {
     const userKidsRef = collection(this.firestore, `userProfile/${userId}/kidsRequests`);
     return deleteDoc(doc(userKidsRef, requestId));
