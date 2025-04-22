@@ -228,9 +228,24 @@ export class TrainingsPage implements OnInit {
                   if (teamTrainings.length === 0) return of([]);
                   return combineLatest(
                     teamTrainings.map((training) => combineLatest([
-                      this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id),
-                      this.exerciseService.getTeamTrainingExerciseRefs(team.id, training.id),
-                      this.fbService.getTeamRef(team.id),
+                      this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id).pipe(
+                        catchError((err) => {
+                          console.error("Permission error in fetching getTeamTrainingsAttendeesRef:", err);
+                          return of([]);
+                        }),
+                      ),
+                      this.exerciseService.getTeamTrainingExerciseRefs(team.id, training.id).pipe(
+                        catchError((err) => {
+                          console.error("Permission error in fetching getTeamTrainingExerciseRefs:", err);
+                          return of([]);
+                        }),
+                      ),
+                      this.fbService.getTeamRef(team.id).pipe(
+                        catchError((err) => {
+                          console.error("Permission error in fetching getTeamRef:", err);
+                          return of({});
+                        }),
+                      ),
                       of(team.id), // Übergebe die teamId statt erneut Members zu laden
                     ]).pipe(
                       map(([attendees, exercises, teamDetails, teamId]) => ({
@@ -392,7 +407,7 @@ export class TrainingsPage implements OnInit {
         );
       }),
       catchError((err) => {
-        console.error("Error in getTeamTrainingsUpcoming:", err);
+        console.error("Error in getTeamTrainingPast:", err);
         return of([]);
       })
     );
