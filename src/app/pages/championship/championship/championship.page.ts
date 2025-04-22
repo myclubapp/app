@@ -1,9 +1,8 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit, Optional } from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
   IonRouterOutlet,
-  // IonRouterOutlet,
   MenuController,
   ModalController,
   NavController,
@@ -79,7 +78,7 @@ export class ChampionshipPage implements OnInit {
 
   constructor(
     public toastController: ToastController,
-    private readonly routerOutlet: IonRouterOutlet,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -505,21 +504,24 @@ export class ChampionshipPage implements OnInit {
         console.log(e);
       });*/
 
-    const topModal = await this.modalCtrl.getTop();
+      const topModal = await this.modalCtrl.getTop();
+      const presentingElement = topModal || this.routerOutlet?.nativeEl;
+      
+    const modal = await this.modalCtrl.create({
+      component: ChampionshipDetailPage,
+      presentingElement,
+      canDismiss: true,
+      cssClass: 'transparent-modal',
+      showBackdrop: true,
+      componentProps: {
+        data: game,
+        isFuture: isFuture,
+      },
+    });
+    /*
     let modal;
     if (topModal) {
-       modal = await this.modalCtrl.create({
-        component: ChampionshipDetailPage,
-        presentingElement: topModal,
-        // presentingElement: this.routerOutlet.nativeEl,
-        canDismiss: true,
-        cssClass: 'transparent-modal',
-        showBackdrop: true,
-        componentProps: {
-          data: game,
-          isFuture: isFuture,
-        },
-      });
+     
     } else {
        modal = await this.modalCtrl.create({
         component: ChampionshipDetailPage,
@@ -532,7 +534,7 @@ export class ChampionshipPage implements OnInit {
           isFuture: isFuture,
         },
       });
-    }
+    }*/
     modal.present();
 
     const { data, role } = await modal.onWillDismiss();

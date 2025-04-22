@@ -1,10 +1,9 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit, Optional } from "@angular/core";
 import { MyClubAppWidget } from 'myclub-widget-plugin';
 import {
   AlertController,
   IonItemSliding,
   IonRouterOutlet,
-  // IonRouterOutlet,
   MenuController,
   ModalController,
   NavController,
@@ -78,7 +77,7 @@ export class TrainingsPage implements OnInit {
 
   constructor(
     public toastController: ToastController,
-    private readonly routerOutlet: IonRouterOutlet,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly modalController: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -477,20 +476,23 @@ export class TrainingsPage implements OnInit {
   async openTrainingDetailModal(training: Training, isFuture: boolean) {
 
     const topModal = await this.modalController.getTop();
-    let modal;
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+    
+    const modal = await this.modalController.create({
+      component: TrainingDetailPage,
+      presentingElement,
+      // presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: training,
+        isFuture: isFuture,
+      },
+    });
+    /*let modal;
     if (topModal) {
       // const presentingElement = await this.modalCtrl.getTop();
-      modal = await this.modalController.create({
-        component: TrainingDetailPage,
-        presentingElement: topModal,
-        // presentingElement: this.routerOutlet.nativeEl,
-        canDismiss: true,
-        showBackdrop: true,
-        componentProps: {
-          data: training,
-          isFuture: isFuture,
-        },
-      });
+     
     } else {
 
        modal = await this.modalController.create({
@@ -503,7 +505,7 @@ export class TrainingsPage implements OnInit {
           isFuture: isFuture,
         },
       });
-    }
+    }*/
 
 
     modal.present();
