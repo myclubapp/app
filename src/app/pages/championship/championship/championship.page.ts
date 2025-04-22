@@ -70,6 +70,8 @@ export class ChampionshipPage implements OnInit {
   clubAdminList$!: Observable<Club[]>;
   teamAdminList$!: Observable<Team[]>;
 
+
+  children: Profile[] = [];
   /*filterList: any[] = [];
   filterValue: string = "";
   */
@@ -223,6 +225,9 @@ export class ChampionshipPage implements OnInit {
         return combineLatest([
           this.fbService.getUserTeamRefs(user),
           this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+            }),
             switchMap((children: Profile[]) => 
               children.length > 0 
                 ? combineLatest(
@@ -301,8 +306,8 @@ export class ChampionshipPage implements OnInit {
                       ), // Fetching team details
                     ]).pipe(
                       map(([attendees, teamDetails]) => {
-                        // status: item.attendees.find((att) => [this.user.uid, ...children.map(child => child.id)].includes(att.id))?.status ?? null,
-                        const userAttendee = attendees.find((att) => att.id === this.user.uid);
+                        const attendeeIds = [this.user.uid, ...this.children.map(child => child.id)];
+                        const userAttendee = attendees.find((att) => attendeeIds.includes(att.id));
                         return {
                           ...game,
                           team: teamDetails,
@@ -438,7 +443,8 @@ export class ChampionshipPage implements OnInit {
                       ), // Fetching team details
                     ]).pipe(
                       map(([attendees, teamDetails]) => {
-                        const userAttendee = attendees.find((att) => att.id === this.user.uid);
+                        const attendeeIds = [this.user.uid, ...this.children.map(child => child.id)];
+                        const userAttendee = attendees.find((att) => attendeeIds.includes(att.id));
                         // status: item.attendees.find((att) => [this.user.uid, ...children.map(child => child.id)].includes(att.id))?.status ?? null,
                         return {
                           ...game,

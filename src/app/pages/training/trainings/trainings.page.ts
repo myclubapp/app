@@ -63,6 +63,8 @@ export class TrainingsPage implements OnInit {
 
   teamAdminList$: Observable<Team[]>;
   activatedRouteSub: Subscription;
+
+  children: Profile[] = [];
   // teamList$: Observable<Team[]>;
   // filterList: any[] = [];
   // filterValue: string = "";
@@ -199,6 +201,9 @@ export class TrainingsPage implements OnInit {
         return combineLatest([
           this.fbService.getUserTeamRefs(user),
           this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+            }),
             switchMap((children: Profile[]) => 
               children.length > 0 
                 ? combineLatest(
@@ -298,8 +303,8 @@ export class TrainingsPage implements OnInit {
                 attendees: item.attendees,
                 exercises: item.exercises,
                 team: item.teamDetails || {},
-                // status: item.attendees.find((att) => [this.user.uid, ...children.map(child => child.id)].includes(att.id))?.status ?? null,
-                status: item.attendees.find((att) => att.id == this.user.uid)?.status ?? null,
+                status: item.attendees.find((att) => [this.user.uid, ...this.children.map(child => child.id)].includes(att.id))?.status ?? null,
+                // status: item.attendees.find((att) => att.id == this.user.uid)?.status ?? null,
                 countAttendees: validAttendees.length,
                 teamId: item.teamId,
               };
@@ -446,8 +451,8 @@ export class TrainingsPage implements OnInit {
                 attendees: item.attendees,
                 exercises: item.exercises,
                 team: item.teamDetails || {},
-                // status: item.attendees.find((att) => [this.user.uid, ...children.map(child => child.id)].includes(att.id))?.status ?? null,
-                status: item.attendees.find((att) => att.id == this.user.uid)?.status ?? null,
+                status: item.attendees.find((att) => [this.user.uid, ...this.children.map(child => child.id)].includes(att.id))?.status ?? null,
+                // status: item.attendees.find((att) => att.id == this.user.uid)?.status ?? null,
                 countAttendees: validAttendees.length,
                 teamId: item.teamId,
               };
