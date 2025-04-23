@@ -179,6 +179,7 @@ export class TrainingsPage implements OnInit {
           countAttendees: 0,
           attendees: undefined,
           exercises: undefined,
+          children: undefined,
         };
         this.openTrainingDetailModal(training, true);
       } else {
@@ -296,15 +297,23 @@ export class TrainingsPage implements OnInit {
                 teamMembers.some(member => member.id === att.id)
               );
 
+              // Füge die Kinderinformationen hinzu
+              const relevantChildren = teamMembers
+                .filter(att => this.children.some(child => child.id === att.id))
+                .map(att => {
+                  const child = this.children.find(child => child.id === att.id);
+                  return child ? {firstName: child.firstName, lastName: child.lastName} : {};
+                });
+
               return {
                 ...item.training,
                 attendees: item.attendees,
                 exercises: item.exercises,
                 team: item.teamDetails || {},
                 status: item.attendees.find((att) => [this.user.uid, ...this.children.map(child => child.id)].includes(att.id))?.status ?? null,
-                // status: item.attendees.find((att) => att.id == this.user.uid)?.status ?? null,
                 countAttendees: validAttendees.length,
                 teamId: item.teamId,
+                children: relevantChildren // Hinzufügen der Kinderinformationen
               };
             });
           }),
@@ -444,11 +453,19 @@ export class TrainingsPage implements OnInit {
                 teamMembers.some(member => member.id === att.id)
               );
 
+              const relevantChildren = teamMembers
+              .filter(att => this.children.some(child => child.id === att.id))
+              .map(att => {
+                const child = this.children.find(child => child.id === att.id);
+                return child ? {firstName: child.firstName, lastName: child.lastName} : {};
+              });
+
               return {
                 ...item.training,
                 attendees: item.attendees,
                 exercises: item.exercises,
                 team: item.teamDetails || {},
+                children: relevantChildren,
                 status: item.attendees.find((att) => [this.user.uid, ...this.children.map(child => child.id)].includes(att.id))?.status ?? null,
                 // status: item.attendees.find((att) => att.id == this.user.uid)?.status ?? null,
                 countAttendees: validAttendees.length,
@@ -579,7 +596,7 @@ export class TrainingsPage implements OnInit {
           training.id
         );
       }
-      await this.presentToast();
+      await this.presentToast(this.user.uid);
     } catch (error) {
       console.error("Error during toggleAll operation:", error);
       // Optionally handle the error, e.g., show an error message
@@ -590,6 +607,7 @@ export class TrainingsPage implements OnInit {
   toggleItem(slidingItem: IonItemSliding, status: boolean, training: any) {
     console.log("toggleItem", training);
     slidingItem.closeOpened();
+    this.toggle(status, training);
   }
 
   async toggle(status: boolean, training: any) {
@@ -678,13 +696,14 @@ export class TrainingsPage implements OnInit {
         training.id,
         userId
       );
-      this.presentToast();
+      this.presentToast(userId);
     }
   }
 
-  async presentToast() {
+  async presentToast(userId: string) {
+    const profile = await lastValueFrom(this.userProfileService.getUserProfileById(userId).pipe(take(1)));
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.success__saved")),
+      message: await lastValueFrom(this.translate.get("common.success__saved")) + ": " + profile.firstName + " " + profile.lastName,
       color: "primary",
       duration: 1500,
       position: "top",

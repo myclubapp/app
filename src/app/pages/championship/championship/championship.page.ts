@@ -308,10 +308,19 @@ export class ChampionshipPage implements OnInit {
                       map(([attendees, teamDetails]) => {
                         const attendeeIds = [this.user.uid, ...this.children.map(child => child.id)];
                         const userAttendee = attendees.find((att) => attendeeIds.includes(att.id));
+                        // Füge die Kinderinformationen hinzu
+                        const relevantChildren = attendeeIds
+                          .filter(att => this.children.some(child => child.id == att))
+                          .map(att => {
+                            const child = this.children.find(child => child.id == att);
+                            return child ? { firstName: child.firstName, lastName: child.lastName } : {};
+                          });
+
                         return {
                           ...game,
                           team: teamDetails,
                           attendees,
+                          children: relevantChildren,
                           status: userAttendee ? userAttendee.status : null,
                           countAttendees: attendees.filter((att) => att.status === true).length,
                           teamId: team.id,
@@ -321,6 +330,7 @@ export class ChampionshipPage implements OnInit {
                         ...game,
                         team: null,
                         attendees: [],
+                        children: [],
                         status: null,
                         countAttendees: 0,
                         teamId: team.id,
@@ -446,10 +456,19 @@ export class ChampionshipPage implements OnInit {
                         const attendeeIds = [this.user.uid, ...this.children.map(child => child.id)];
                         const userAttendee = attendees.find((att) => attendeeIds.includes(att.id));
                         // status: item.attendees.find((att) => [this.user.uid, ...children.map(child => child.id)].includes(att.id))?.status ?? null,
+                        // Füge die Kinderinformationen hinzu
+                        const relevantChildren = attendeeIds
+                          .filter(att => this.children.some(child => child.id == att))
+                          .map(att => {
+                            const child = this.children.find(child => child.id == att);
+                            return child ? { firstName: child.firstName, lastName: child.lastName } : {};
+                          });
+                        console.log("relevantChildren", relevantChildren);
                         return {
                           ...game,
                           team: teamDetails,
                           attendees,
+                          children: relevantChildren,
                           status: userAttendee ? userAttendee.status : null,
                           countAttendees: attendees.filter((att) => att.status === true).length,
                           teamId: team.id,
@@ -459,6 +478,7 @@ export class ChampionshipPage implements OnInit {
                         ...game,
                         team: null,
                         attendees: [],
+                        children: [],
                         status: null,
                         countAttendees: 0,
                         teamId: team.id,
@@ -504,9 +524,9 @@ export class ChampionshipPage implements OnInit {
         console.log(e);
       });*/
 
-      const topModal = await this.modalCtrl.getTop();
-      const presentingElement = topModal || this.routerOutlet?.nativeEl;
-      
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: ChampionshipDetailPage,
       presentingElement,

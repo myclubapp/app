@@ -34,4 +34,5 @@ export interface Training {
   countAttendees: number;
   attendees: any;
   exercises: any;
+  children: any;
 }

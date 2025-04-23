@@ -81,7 +81,7 @@
     <ion-list *ngIf="trainingList.length > 0" lines="full">
       <ion-list-header>
         <ion-label>{{"training.upcomming__training" | translate}}</ion-label>
-        <ion-button (click)="toggleAll()" size="small" fill="clear"> {{"common.alle_anmelden" | translate}}</ion-button>
+        <ion-button *ngIf="children.length == 0" (click)="toggleAll()" size="small" fill="clear"> {{"common.alle_anmelden" | translate}}</ion-button>
       </ion-list-header>
       <ion-item>
         <ion-label slot="start">
@@ -118,6 +118,9 @@
             </h3>
             <h3 *ngIf="training.exercises.length > 0">
               <ion-badge color="light">{{training.exercises.length}} Übungen vorhanden</ion-badge>
+            </h3>
+            <h3 >
+              <ion-badge *ngFor="let child of training.children" color="light">{{child.firstName}} {{child.lastName}} </ion-badge>
             </h3>
           </ion-label>
           <ion-badge slot="end" (click)="openTrainingDetailModal(training,true)" color="primary">{{training.countAttendees}}</ion-badge>
@@ -195,6 +198,9 @@
             <h3>
               <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
               {{training.liga}} {{training.teamName}}
+            </h3>
+            <h3 >
+              <ion-badge *ngFor="let child of training.children" color="light">{{child.firstName}} {{child.lastName}} </ion-badge>
             </h3>
           </ion-label>
           <ion-badge slot="end" (click)="openTrainingDetailModal(training,false)" color="primary">{{training.countAttendees}}</ion-badge>
