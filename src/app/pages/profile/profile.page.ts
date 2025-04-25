@@ -32,6 +32,7 @@ import {
   CameraDirection,
   CameraResultType,
   Photo,
+  PermissionStatus,
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { catchError, first, switchMap, take, tap } from "rxjs/operators";
@@ -52,10 +53,10 @@ import { Timestamp } from "firebase/firestore";
 import { MemberPage } from "../member/member.page";
 
 @Component({
-    selector: "app-profile",
-    templateUrl: "./profile.page.html",
-    styleUrls: ["./profile.page.scss"],
-    standalone: false
+  selector: "app-profile",
+  templateUrl: "./profile.page.html",
+  styleUrls: ["./profile.page.scss"],
+  standalone: false
 })
 export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   userProfile$: Observable<Profile>;
@@ -77,7 +78,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   public alertButtonsEmail = [];
   public alertInputsEmail = [];
   public alertButtonsAddress = [];
-  public alertInputsAddress= [];
+  public alertInputsAddress = [];
 
   private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
@@ -114,13 +115,13 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     this.clubList$ = this.fbService.getClubList();
 
     this.userProfile$.pipe(take(1)).subscribe((userProfile) => {
-      
+
       this.kidsRequests$ = this.profileService.getKidsRequests(userProfile.id).pipe(
         tap((kidsRequests) => {
           console.log(kidsRequests);
         })
       );
-  
+
       this.children$ = this.profileService.getChildren(userProfile.id).pipe(
         tap((children) => {
           console.log(children);
@@ -253,46 +254,46 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  ngOnDestroy() { 
-    if (this.profileSubscription){
+  ngOnDestroy() {
+    if (this.profileSubscription) {
       this.profileSubscription.unsubscribe();
     }
-    if (this.userSubscription){
+    if (this.userSubscription) {
       this.userSubscription.unsubscribe();
     }
   }
 
   async showPicture(imageUrl: string) {
-  const alert = await this.alertController.create({
-    header: await lastValueFrom(this.translate.get('profile.profile_picture')),
-    message: `<img src="${imageUrl}" alt="Profilbild" style="width: 100%; max-width: 300px; height: auto;">`,
-    buttons: [{
-      text: await lastValueFrom(this.translate.get('common.close')),
-      role: 'cancel'
-    }],
-    cssClass: 'profile-picture-alert'
-  });
+    const alert = await this.alertController.create({
+      header: await lastValueFrom(this.translate.get('profile.profile_picture')),
+      message: `<img src="${imageUrl}" alt="Profilbild" style="width: 100%; max-width: 300px; height: auto;">`,
+      buttons: [{
+        text: await lastValueFrom(this.translate.get('common.close')),
+        role: 'cancel'
+      }],
+      cssClass: 'profile-picture-alert'
+    });
 
-  await alert.present();
-}
-async openMember(member: Profile) {
-  
-  const modal = await this.modalCtrl.create({
-    component: MemberPage,
-    presentingElement: this.routerOutlet.nativeEl,
-    canDismiss: true,
-    showBackdrop: true,
-    componentProps: {
-      data: member,
-    },
-  });
-  modal.present();
-
-  const { data, role } = await modal.onWillDismiss();
-
-  if (role === "confirm") {
+    await alert.present();
   }
-}
+  async openMember(member: Profile) {
+
+    const modal = await this.modalCtrl.create({
+      component: MemberPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: member,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
 
   getUserProfile(): Observable<any> {
     // Replace 'any' with the actual type of the user profile
@@ -334,40 +335,53 @@ async openMember(member: Profile) {
 
   }
 
-
   async takePicture() {
-    const loading = await this.loadingController.create({
-      message: await lastValueFrom(
-        this.translate.get("profile.profile_pic__uploaded")
-      ),
-      showBackdrop: true,
-      backdropDismiss: false,
-      translucent: true,
-      spinner: "circular",
-    });
+    try {
+      const result: PermissionStatus = await Camera.checkPermissions();
+      if (result.camera !== "granted") {
+        const requestResult = await Camera.requestPermissions();
+        if (requestResult.camera !== "granted") {
+          console.log("Camera permission denied");
+          return;
+        }
+        console.log("Camera permission granted");
+        return;
+      }
 
-    const image: Photo = await Camera.getPhoto({
-      quality: 90,
-      allowEditing: true,
-      resultType: CameraResultType.Base64,
-      correctOrientation: true,
-      height: 400,
-      width: 400,
-      direction: CameraDirection.Front,
-    });
+      const loading = await this.loadingController.create({
+        message: await lastValueFrom(
+          this.translate.get("profile.profile_pic__uploaded")
+        ),
+        showBackdrop: true,
+        backdropDismiss: false,
+        translucent: true,
+        spinner: "circular",
+      });
+      const image: Photo = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true,
+        resultType: CameraResultType.Base64,
+        correctOrientation: true,
+        height: 400,
+        width: 400,
+        direction: CameraDirection.Front,
+      });
 
-    loading.present();
-    // image.webPath will contain a path that can be set as an image src.
-    // You can access the original file using image.path, which can be
-    // passed to the Filesystem API to read the raw data of the image,
-    // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-    // var imageUrl = image.base64String;
-    // console.log(image);
+      loading.present();
+      // image.webPath will contain a path that can be set as an image src.
+      // You can access the original file using image.path, which can be
+      // passed to the Filesystem API to read the raw data of the image,
+      // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
+      // var imageUrl = image.base64String;
+      // console.log(image);
 
-    // const user: User = await this.authService.getUser();
-    await this.profileService.setUserProfilePicture(image);
-    loading.dismiss();
-    await this.presentToastTakePicture();
+      // const user: User = await this.authService.getUser();
+      await this.profileService.setUserProfilePicture(image);
+      loading.dismiss();
+      await this.presentToastTakePicture();
+    } catch (error) {
+      console.error("Error taking picture", error.message);
+    }
   }
 
   async deleteClubRequest(request) {
@@ -404,7 +418,7 @@ async openMember(member: Profile) {
             await this.router.navigateByUrl("/logout");
           },
         },
-       
+
       ],
     });
     alert.present();
@@ -638,12 +652,12 @@ async openMember(member: Profile) {
       event.detail.value,
       fieldname
     );
-    if (fieldname == 'language'){
+    if (fieldname == 'language') {
       // console.log(event.detail.value)
       this.translate.use(event.detail.value);
     }
-  } 
-  
+  }
+
   async addKidRequest() {
     const children = await lastValueFrom(this.children$.pipe(take(1)));
     if (children.length >= 3) {
@@ -667,7 +681,7 @@ async openMember(member: Profile) {
         {
           text: await lastValueFrom(this.translate.get('common.add')),
           role: 'confirm',
-          handler: (data:any) => {
+          handler: (data: any) => {
             this.profileService.addKidRequest(this.user.uid, data.email);
           }
         }

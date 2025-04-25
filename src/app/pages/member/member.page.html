@@ -26,6 +26,10 @@
 
         <ion-label>{{userProfile.firstName}} {{userProfile.lastName}}</ion-label>
       </ion-item>
+      <ion-item *ngIf="isRequest && isParent">
+        <ion-icon slot="start" name="people-circle-outline"></ion-icon>
+        <ion-label>{{"common.parents" | translate}}</ion-label>
+      </ion-item>
       <ion-item>
         <ion-icon slot="start" name="mail"></ion-icon>
         <ion-label>{{userProfile.email}}</ion-label>
@@ -46,17 +50,55 @@
           <ion-label>
             {{ userProfile.dateOfBirth?.toDate() | date: 'dd.MM.YYYY ' }}
           </ion-label>
-          <ion-icon
-            size="small"
-            color="primary"
-            name="copy-outline"
-            slot="end"
-            (click)="copy(userProfile.dateOfBirth)"
-          ></ion-icon>
+          <ion-icon size="small" color="primary" name="copy-outline" slot="end"
+            (click)="copy(userProfile.dateOfBirth)"></ion-icon>
         </ion-item>
       </ng-container>
 
     </ion-list>
+
+    <ion-list *ngIf="children$ | async as childrenList" [inset]="true">
+      <ion-list-header *ngIf="childrenList.length > 0">
+        <ion-label>
+          {{ "common.children" | translate}}
+        </ion-label>
+      </ion-list-header>
+
+      <ion-item *ngFor="let child of childrenList" (click)="openMember(child)" detail="true">
+        <ion-avatar (click)="openMember(child)" slot="start">
+          <img *ngIf="!child.profilePicture" alt="Silhouette of a person's head"
+            src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+          <img *ngIf="child.profilePicture" src="{{child?.profilePicture}}" />
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ child.firstName }} {{ child.lastName }}</h2>
+          <p>{{ child.email }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="parents$ | async as parentsList" [inset]="true">
+      <ion-list-header *ngIf="parentsList.length > 0">
+        
+        <ion-label>
+          {{ "common.parents" | translate}}
+        </ion-label>
+      </ion-list-header>
+
+      <ion-item *ngFor="let parent of parentsList" (click)="openMember(parent)" detail="true">
+        <ion-avatar (click)="openMember(parent)" slot="start">
+          <img *ngIf="!parent.profilePicture" alt="Silhouette of a person's head"
+            src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+          <img *ngIf="parent.profilePicture" src="{{parent?.profilePicture}}" />
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ parent.firstName }} {{ parent.lastName }}</h2>
+          <p>{{ parent.email }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+
 
     <div class="ion-padding" *ngIf="isRequest">
       <ion-button expand="block" color="success" id="present-alert-approve">

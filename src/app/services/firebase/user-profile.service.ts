@@ -49,6 +49,7 @@ export class UserProfileService {
   }
   
   getChildren(userId: string) {
+    console.log("getChildren: " + userId);
     const childrenRef = collection(this.firestore, `userProfile/${userId}/children`);
     return collectionData(childrenRef, { idField: "id" }) as Observable<any[]>;
   }

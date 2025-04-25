@@ -80,6 +80,7 @@ export class ClubRequestListPage implements OnInit {
               if (!this.groupArray.includes(groupByChar)) {
                 this.groupArray.push(groupByChar);
               }
+              // console.log("profile: " + JSON.stringify(profile));
               return {
                 ...profile,
                 groupBy: groupByChar,

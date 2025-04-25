@@ -181,7 +181,8 @@
         "kids.max_reached_message": "Du kannst maximal 3 Kinder hinzufügen.",
         "children": "Kinder",
         "confirm_delete_request": "Möchtest du diese Anfrage wirklich löschen?",
-        "no_children": "Keine Kinder vorhanden"
+        "no_children": "Keine Kinder vorhanden",
+        "parents": "Eltern"
     },
     "tabs": {},
     "team": {
@@ -329,6 +330,12 @@
         "language__french": "Französisch",
         "language__italian": "Italienisch",
         "language__english": "Englisch",
-        "confirmation": "Bestätigung"
+        "confirmation": "Bestätigung",
+        "parents": "Eltern",
+        "children": "Kinder",
+        "select_member": "Mitglied auswählen"
+    },
+    "club-parents-list": {
+        "delete_parent__confirm": "Möchtest du den Elternteil wirklich löschen?"
     }
 }

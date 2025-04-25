@@ -173,7 +173,8 @@
         "kids.max_reached_message": "You can add up to 3 children.",
         "children": "Children",
         "confirm_delete_request": "Do you really want to delete this request?",
-        "no_children": "No children available"
+        "no_children": "No children available",
+        "delete_parent__confirm": "Do you really want to delete the parent?"
     },
     "tabs": {},
     "team": {},
@@ -303,6 +304,12 @@
         "language__french": "French",
         "language__italian": "Italian",
         "language__english": "English",
-        "confirmation": "Confirmation"
+        "confirmation": "Confirmation",
+        "parents": "Parents",
+        "children": "Children",
+        "select_member": "Select member"
+    },
+    "club-parents-list": {
+        "delete_parent__confirm": "Do you really want to delete the parent?"
     }
 }

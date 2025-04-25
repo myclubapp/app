@@ -32,6 +32,7 @@ import { Timestamp } from "firebase/firestore";
 import { HelferPunkteClubPage } from "../helfer/helfer-punkte-club/helfer-punkte-club.page";
 import { Club } from "src/app/models/club";
 import { ClubSubscriptionPage } from "../club-subscription/club-subscription.page";
+import { ClubParentsListPage } from "../club-parents-list/club-parents-list.page";
 
 @Component({
     selector: "app-club",
@@ -275,6 +276,30 @@ export class ClubPage implements OnInit {
     if (role === "confirm") {
     }
   }
+
+  async openParentList() {
+    console.log("open Club Parents List");
+    const modal = await this.modalCtrl.create({
+      component: ClubParentsListPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        club: this.club
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+
+
+
+
   /*
     async openRequestMember(member: Profile) {
       console.log("open Request Member");

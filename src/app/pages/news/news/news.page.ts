@@ -48,6 +48,8 @@ import { Team } from "src/app/models/team";
 import { TranslateService } from "@ngx-translate/core";
 import { NotificationPage } from "../notification/notification.page";
 import { NotificationService } from "src/app/services/firebase/notification.service";
+import { Profile } from "src/app/models/user";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 
 @Component({
     selector: "app-news",
@@ -73,6 +75,8 @@ export class NewsPage implements OnInit {
   faEnvelope: any = faEnvelope;
   faCopy: any = faCopy;
 
+  children: Profile[] = [];
+
   notifications$: Observable<any[]>;
 
   newsList$: Observable<News[]>;
@@ -89,6 +93,7 @@ export class NewsPage implements OnInit {
     private readonly menuCtrl: MenuController,
     public animationCtrl: AnimationController,
     private translate: TranslateService,
+    private userProfileService: UserProfileService,
     // private route: ActivatedRoute,
     private router: Router
   ) {
@@ -169,7 +174,43 @@ export class NewsPage implements OnInit {
         if (!user) throw new Error("User not found");
         this.user = user;
       }),
-      switchMap(user => this.fbService.getUserClubRefs(user)), // Get user's club references
+      switchMap((user) => {
+        if (!user) return of([]);
+        // Get user's teams and children's teams
+        return combineLatest([
+          this.fbService.getUserClubRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+            }),
+            switchMap((children: Profile[]) => 
+              children.length > 0 
+                ? combineLatest(
+                    children.map(child => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.fbService.getUserClubRefs(childUser);
+                    })
+                  )
+                : of([])
+            ),
+            map(childrenClubs => childrenClubs.flat()),
+            tap((clubs) => console.log("Children Clubs:", clubs)),
+            catchError((error) => {
+              console.error("Error fetching children clubs:", error);
+              return of([]);
+            })
+          )
+        ]).pipe(
+          map(([userClubs, childrenClubs]) => {
+            const allClubs = [...userClubs, ...childrenClubs];
+            return allClubs.filter((club, index, self) =>
+              index === self.findIndex((c) => c.id === club.id)
+            );
+          })
+        );
+      }),
       switchMap(clubs => {
         if (!clubs.length) {
           console.log("No clubs associated with the user.");

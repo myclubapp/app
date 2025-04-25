@@ -240,6 +240,12 @@
         "language__german": "Deutsch",
         "language__french": "Französisch",
         "language__italian": "Italienisch",
-        "language__english": "Englisch"
+        "language__english": "Englisch",
+        "parents": "Genitori",
+        "children": "Bambini",
+        "select_member": "Seleziona membro"
+    },
+    "club-parents-list": {
+        "delete_parent__confirm": "Vuoi davvero eliminare il genitore?"
     }
 }

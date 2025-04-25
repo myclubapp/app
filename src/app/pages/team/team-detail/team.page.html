@@ -40,20 +40,26 @@
         <ion-note slot="end">{{team['teamMembers'].length}}</ion-note>
       </ion-item>
 
-      <ion-item detail="true" (click)="openAdminList()">
-        <ion-icon name="shield-half-outline" slot="start"></ion-icon>
-        <ion-label> Administratoren </ion-label>
-        <ion-note slot="end">{{team['teamAdmins'].length}}</ion-note>
-      </ion-item>
-
-      <ion-item detail="true" (click)="openTeamTrainings()">
-        <ion-icon name="barbell-outline" slot="start"></ion-icon>
-        <ion-label> Trainings </ion-label>
-        <ion-note slot="end"></ion-note>
-      </ion-item>
+      <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+          <ion-item *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)" detail="true"
+            (click)="openAdminList()">
+            <ion-icon name="shield-half-outline" slot="start"></ion-icon>
+            <ion-label> Administratoren </ion-label>
+            <ion-note slot="end">{{team['teamAdmins'].length}}</ion-note>
+          </ion-item>
+     
+          <ion-item *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)" detail="true"
+            (click)="openTeamTrainings()">
+            <ion-icon name="barbell-outline" slot="start"></ion-icon>
+            <ion-label> Trainings </ion-label>
+            <ion-note slot="end"></ion-note>
+          </ion-item>
+        </ng-container>
+      </ng-container>
 
       <ng-container *ngIf="clubList$ | async as clubList">
-        <ion-item *ngIf="enableChampionship(clubList)" detail="true" (click)="openTeamGames()">
+        <ion-item *ngIf="enableChampionship(clubList) && team.type !='Club'" detail="true" (click)="openTeamGames()">
           <ion-icon name="trophy-outline" slot="start"></ion-icon>
           <ion-label> Meisterschaftspiele </ion-label>
           <ion-note slot="end"></ion-note>

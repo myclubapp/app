@@ -64,23 +64,34 @@
         <ion-note slot="end">{{club['clubRequests'].length}}</ion-note>
       </ion-item>
 
+
       <ion-item detail="true" (click)="openMemberList()">
         <ion-icon name="people-circle-outline" slot="start"></ion-icon>
         <ion-label> {{"common.members" | translate}} </ion-label>
         <ion-note slot="end">{{club['clubMembers'].length}}</ion-note>
       </ion-item>
 
-      <ion-item detail="true" (click)="openAdminList()">
-        <ion-icon name="shield-half-outline" slot="start"></ion-icon>
-        <ion-label> {{"common.admins" | translate}} </ion-label>
-        <ion-note slot="end">{{club['clubAdmins'].length}}</ion-note>
-      </ion-item>
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-item *ngIf="isClubAdmin(clubAdminList, this.club.id)" detail="true" (click)="openAdminList()">
+          <ion-icon name="shield-half-outline" slot="start"></ion-icon>
+          <ion-label> {{"common.admins" | translate}} </ion-label>
+          <ion-note slot="end">{{club['clubAdmins'].length}}</ion-note>
+        </ion-item>
+      </ng-container>
+
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-item *ngIf="isClubAdmin(clubAdminList, this.club.id)" detail="true" (click)="openParentList()">
+          <ion-icon name="people-circle-outline" slot="start"></ion-icon>
+          <ion-label> {{"common.parents" | translate}} </ion-label>
+        </ion-item>
+      </ng-container>
 
       <ion-item detail="true" (click)="openTeamList()">
         <ion-icon name="people-outline" slot="start"></ion-icon>
         <ion-label> {{"common.teams" | translate}} </ion-label>
         <ion-note slot="end">{{club['clubTeams'].length}}</ion-note>
       </ion-item>
+
       <ng-container *ngIf="club.hasFeatureHelferEvent">
         <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
           <ion-item *ngIf="isClubAdmin(clubAdminList, this.club.id)" detail="true" (click)="openHelferPunkteClub()">
@@ -138,8 +149,8 @@
       <ion-item>
         <ion-icon slot="start" name="mail-outline">
         </ion-icon>
-        <ion-input (ionChange)="changeEmail($event)" labelPlacement="stacked" [label]='"profile.email" | translate' type="email"
-          attr.aria-label='{{"common.email" | translate}}' [value]="club.email">
+        <ion-input (ionChange)="changeEmail($event)" labelPlacement="stacked" [label]='"profile.email" | translate'
+          type="email" attr.aria-label='{{"common.email" | translate}}' [value]="club.email">
         </ion-input>
       </ion-item>
       <ion-item *ngIf="club.wordpress">

@@ -241,6 +241,12 @@
         "language__french": "Französisch",
         "language__italian": "Italienisch",
         "language__english": "Englisch",
-        "confirmation": "Confirmation"
+        "confirmation": "Confirmation",
+        "parents": "Parents",
+        "children": "Enfants",
+        "select_member": "Sélectionner un membre"
+    },
+    "club-parents-list": {
+        "delete_parent__confirm": "Voulez-vous vraiment supprimer le parent ?"
     }
 }

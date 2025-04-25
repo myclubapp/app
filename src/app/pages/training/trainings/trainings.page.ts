@@ -650,7 +650,7 @@ export class TrainingsPage implements OnInit {
         inputs: await Promise.all(validMembers.map(async member => {
           const profile = member.uid === this.user.uid
             ? { firstName: "Ich", lastName: "" }  // Für den aktuellen Benutzer
-            : await lastValueFrom(this.userProfileService.getUserProfileById(member.uid));
+            : await lastValueFrom(this.userProfileService.getUserProfileById(member.uid).pipe(take(1)));
 
           return {
             type: 'radio',
@@ -665,6 +665,7 @@ export class TrainingsPage implements OnInit {
           },
           {
             text: await lastValueFrom(this.translate.get("common.ok")),
+            role: "confirm",
             handler: (selectedId) => {
               if (selectedId) {
                 this.processToggle(selectedId, status, training);
