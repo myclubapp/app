@@ -61,7 +61,7 @@ Wir verwenden [conventionalcommits](https://www.conventionalcommits.org/en/) fü
 
 #### Prettier & Husky
 
-Folgen Sie der [Anleitung](https://typicode.github.io/husky/get-started.html) für die Installation:
+Folgen Sie der [Anleitung](npm install --save-dev husky) für die Installation:
 
 ```bash
 # Installation
