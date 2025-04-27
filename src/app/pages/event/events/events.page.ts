@@ -167,7 +167,6 @@ export class EventsPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        // Get user's teams and children's teams
         return combineLatest([
           this.fbService.getUserClubRefs(user),
           this.userProfileService.getChildren(user.uid).pipe(
@@ -202,7 +201,6 @@ export class EventsPage implements OnInit {
           })
         );
       }),
-      // tap((clubs) => console.log("Clubs:", clubs)),
       mergeMap((clubs) => {
         if (clubs.length === 0) return of([]);
         return combineLatest(
@@ -272,9 +270,8 @@ export class EventsPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        // Get user's teams and children's teams
         return combineLatest([
-          this.fbService.getUserTeamRefs(user),
+          this.fbService.getUserClubRefs(user),
           this.userProfileService.getChildren(user.uid).pipe(
             tap((children) => {
               this.children = children;
@@ -307,42 +304,40 @@ export class EventsPage implements OnInit {
           })
         );
       }),
-      // tap((clubs) => console.log("Teams:", clubs)),
-      mergeMap((teams) => {
-        if (teams.length === 0) return of([]);
+      mergeMap((clubs) => {
+        if (clubs.length === 0) return of([]);
         return combineLatest(
-          teams.map((team) =>
-            this.eventService.getClubEventsPastRef(team.id).pipe(
-              switchMap((teamevents) => {
-                if (teamevents.length === 0) return of([]);
+          clubs.map((club) =>
+            combineLatest([
+              this.eventService.getClubEventsPastRef(club.id),
+              this.fbService.getClubRef(club.id) // Fetch the club details here
+            ]).pipe(
+              switchMap(([clubEvents, clubDetails]) => {
+                if (clubEvents.length === 0) return of([]);
                 return combineLatest(
-                  teamevents.map((game) =>
-                    this.eventService
-                      .getClubEventAttendeesRef(team.id, game.id)
-                      .pipe(
-                        map((attendees) => {
+                  clubEvents.map((event) =>
+                    this.eventService.getClubEventAttendeesRef(club.id, event.id).pipe(
+                      map((attendees) => {
                           const attendeeIds = [this.user.uid, ...this.children.map(child => child.id)];
                           const userAttendee = attendees.find((att) => attendeeIds.includes(att.id));
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null; // default to false if user is not found in attendees list
+                          const status = userAttendee ? userAttendee.status : null;
                           return {
-                            ...game,
+                            ...event,
                             attendees,
-                            status: status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true
-                            ).length,
-                            teamId: team.id,
+                            status,
+                            countAttendees: attendees.filter((att) => att.status == true).length,
+                            clubId: club.id,
+                            club: clubDetails // Append club details to each event
                           };
                         }),
                         catchError(() =>
                           of({
-                            ...game,
+                            ...event,
                             attendees: [],
                             status: null,
                             countAttendees: 0,
-                            teamId: team.id,
+                            clubId: club.id,
+                            club: clubDetails // Also provide club details here in case of error
                           })
                         ) // If error, return game with empty attendees
                       )

@@ -357,11 +357,12 @@
     </ion-list>-->
 
     <ion-list *ngIf="parents$ | async as parents" lines="full" [inset]="true">
-      <ion-list-header> 
-        <ion-label>Vollmachten</ion-label>
+      <ion-list-header *ngIf="parents.length > 0">
+        <ion-label>{{'profile.parents' | translate}}</ion-label>
       </ion-list-header>
+
       <ion-item *ngFor="let parent of parents" detail="true" (click)="openMember(parent)">
-        <ion-avatar  slot="start">
+        <ion-avatar slot="start">
           <img *ngIf="!parent.profilePicture" alt="Silhouette of a person's head"
             src="https://ionicframework.com/docs/img/demos/avatar.svg" />
           <img *ngIf="parent.profilePicture" src="{{parent?.profilePicture}}" />
@@ -372,18 +373,17 @@
         </ion-label>
       </ion-item>
     </ion-list>
-      
-
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
         <ion-label> {{"profile.children" | translate}}</ion-label>
-        <ion-button *ngIf="(children$ | async)?.length < 3" (click)="addKidRequest()">{{"profile.kidsrequestadd" | translate}}</ion-button>
+        <ion-button *ngIf="(children$ | async)?.length < 3" (click)="addKidRequest()">{{"profile.kidsrequestadd" |
+          translate}}</ion-button>
       </ion-list-header>
       <ng-container *ngIf="children$ | async as children">
-      
+
         <ion-item *ngFor="let child of children" detail="true" (click)="openMember(child)">
-          <ion-avatar  slot="start">
+          <ion-avatar slot="start">
             <img *ngIf="!child.profilePicture" alt="Silhouette of a person's head"
               src="https://ionicframework.com/docs/img/demos/avatar.svg" />
             <img *ngIf="child.profilePicture" src="{{child?.profilePicture}}" />
@@ -400,10 +400,10 @@
     </ion-list>
 
     <ng-container *ngIf="kidsRequests$ | async as kidsRequests">
-    <ion-list *ngIf="kidsRequests.length > 0" lines="full" [inset]="true">
-      <ion-list-header>
-        <ion-label> {{"profile.kidsRequests" | translate}}</ion-label>
-      </ion-list-header>
+      <ion-list *ngIf="kidsRequests.length > 0" lines="full" [inset]="true">
+        <ion-list-header>
+          <ion-label> {{"profile.kidsRequests" | translate}}</ion-label>
+        </ion-list-header>
 
 
         <ion-item *ngFor="let kidRequest of kidsRequests">
@@ -426,8 +426,6 @@
         {{'profile.delete__profile' | translate}}
       </ion-button>
     </div>
-
-
 
   </ng-container>
 

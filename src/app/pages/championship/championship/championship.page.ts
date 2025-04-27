@@ -224,7 +224,7 @@ export class ChampionshipPage implements OnInit {
         // Get user's teams and children's teams
         return combineLatest([
           this.fbService.getUserTeamRefs(user),
-          this.userProfileService.getChildren(user.uid).pipe(
+          this.userProfileService.getChildren(user.uid).pipe( 
             tap((children) => {
               this.children = children;
             }),
@@ -248,6 +248,7 @@ export class ChampionshipPage implements OnInit {
             })
           )
         ]).pipe(
+          
           map(([userTeams, childrenTeams]) => {
             const allTeams = [...userTeams, ...childrenTeams];
             return allTeams.filter((team, index, self) =>
@@ -282,6 +283,7 @@ export class ChampionshipPage implements OnInit {
         return combineLatest(
           relevantTeams.map((team) =>
             this.championshipService.getTeamGamesRefs(team.id).pipe(
+              
               catchError((err) => {
                 console.error("Permission error in fetching getTeamGamesRefs:", team.id, err);
                 return of([]); // Return an empty array if permission error occurs
@@ -305,6 +307,7 @@ export class ChampionshipPage implements OnInit {
                         }),
                       ), // Fetching team details
                     ]).pipe(
+                      
                       map(([attendees, teamDetails]) => {
                         const attendeeIds = [this.user.uid, ...this.children.map(child => child.id)];
                         const userAttendee = attendees.find((att) => attendeeIds.includes(att.id));
@@ -347,6 +350,7 @@ export class ChampionshipPage implements OnInit {
             )
           )
         ).pipe(
+
           // Flatten all games across all teams into a single array
           map((teamsGames) => teamsGames.flat()),
           // tap((allGames) => console.log("All games:", allGames)),
@@ -455,7 +459,6 @@ export class ChampionshipPage implements OnInit {
                       map(([attendees, teamDetails]) => {
                         const attendeeIds = [this.user.uid, ...this.children.map(child => child.id)];
                         const userAttendee = attendees.find((att) => attendeeIds.includes(att.id));
-                        // status: item.attendees.find((att) => [this.user.uid, ...children.map(child => child.id)].includes(att.id))?.status ?? null,
                         // Füge die Kinderinformationen hinzu
                         const relevantChildren = attendeeIds
                           .filter(att => this.children.some(child => child.id == att))
@@ -463,7 +466,6 @@ export class ChampionshipPage implements OnInit {
                             const child = this.children.find(child => child.id == att);
                             return child ? { firstName: child.firstName, lastName: child.lastName } : {};
                           });
-                        console.log("relevantChildren", relevantChildren);
                         return {
                           ...game,
                           team: teamDetails,
