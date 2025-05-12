@@ -1,4 +1,10 @@
-import { ChangeDetectorRef, Component, Input, OnInit, Optional } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+  Optional,
+} from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
@@ -42,7 +48,7 @@ import { Profile } from "src/app/models/user";
   selector: "app-trainings",
   templateUrl: "./trainings.page.html",
   styleUrls: ["./trainings.page.scss"],
-  standalone: false
+  standalone: false,
 })
 export class TrainingsPage implements OnInit {
   @Input("team") team: Team;
@@ -56,7 +62,6 @@ export class TrainingsPage implements OnInit {
   trainingListPast$: Observable<Training[]>;
 
   subscription: Subscription;
-
 
   teamAdminList$: Observable<Team[]>;
   activatedRouteSub: Subscription;
@@ -88,11 +93,9 @@ export class TrainingsPage implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private exerciseService: ExerciseService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
   ) {
     this.menuCtrl.enable(true, "menu");
-
-
   }
 
   ngOnInit() {
@@ -104,7 +107,7 @@ export class TrainingsPage implements OnInit {
 
     this.handleNavigationData();
 
-
+    /*this.subscription = this.trainingList$.pipe(
     /*this.subscription = this.trainingList$.pipe(
       tap(async (trainings) => {
         const training = trainings[0];
@@ -127,10 +130,7 @@ export class TrainingsPage implements OnInit {
 
       })
     ).subscribe();*/
-
-
   }
-
 
   ngOnDestroy() {
     if (this.activatedRouteSub) {
@@ -141,20 +141,23 @@ export class TrainingsPage implements OnInit {
     }
   }
 
-
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
     // console.log(teamAdminList, teamId)
-    return teamAdminList && teamAdminList.some(team => team.id === teamId);
+    return teamAdminList && teamAdminList.some((team) => team.id === teamId);
   }
 
-
   async close() {
-
     return await this.modalController.dismiss(null, "close");
   }
   handleNavigationData() {
-    this.activatedRouteSub = this.activatedRoute.url.subscribe(data => {
-      if (this.router && this.router.getCurrentNavigation() && this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state["type"] === "training") {
+    this.activatedRouteSub = this.activatedRoute.url.subscribe((data) => {
+      if (
+        this.router &&
+        this.router.getCurrentNavigation() &&
+        this.router.getCurrentNavigation().extras &&
+        this.router.getCurrentNavigation().extras.state &&
+        this.router.getCurrentNavigation().extras.state["type"] === "training"
+      ) {
         const pushData = this.router.getCurrentNavigation().extras.state;
         console.log("PUSHDATA " + pushData);
         let training: Training = {
@@ -206,57 +209,61 @@ export class TrainingsPage implements OnInit {
             switchMap((children: Profile[]) =>
               children.length > 0
                 ? combineLatest(
-                  children.map(child => {
-                    // Create a User-like object with uid from child.id
-                    const childUser = { uid: child.id } as User;
-                    console.log("Child User:", childUser);
-                    return this.fbService.getUserTeamRefs(childUser);
-                  })
-                )
-                : of([])
+                    children.map((child) => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.fbService.getUserTeamRefs(childUser);
+                    }),
+                  )
+                : of([]),
             ),
-            map(childrenTeams => childrenTeams.flat()),
+            map((childrenTeams) => childrenTeams.flat()),
             tap((teams) => console.log("Children Teams:", teams)),
             catchError((error) => {
               console.error("Error fetching children teams:", error);
               return of([]);
-            })
-          )
+            }),
+          ),
         ]).pipe(
           map(([userTeams, childrenTeams]) => {
             const allTeams = [...userTeams, ...childrenTeams];
-            return allTeams.filter((team, index, self) =>
-              index === self.findIndex((t) => t.id === team.id)
+            return allTeams.filter(
+              (team, index, self) =>
+                index === self.findIndex((t) => t.id === team.id),
             );
-          })
+          }),
         );
       }),
       // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
         console.log("Teams:", teams);
         if (this.team && this.team.id) {
-          teams.push({ id: this.team.id })
+          teams.push({ id: this.team.id });
         } else if (teams.length === 0) {
-          return of([])
-        };
+          return of([]);
+        }
 
-        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+        const relevantTeams =
+          this.team && this.team.id
+            ? teams.filter((team) => team.id === this.team.id)
+            : teams;
 
         // Hole Team-Mitglieder einmalig pro Team
         const teamMembersMap$ = combineLatest(
-          relevantTeams.map(team =>
-            this.fbService.getTeamMemberRefs(team.id).pipe(
-              map(members => ({ teamId: team.id, members }))
-            )
-          )
+          relevantTeams.map((team) =>
+            this.fbService
+              .getTeamMemberRefs(team.id)
+              .pipe(map((members) => ({ teamId: team.id, members }))),
+          ),
         ).pipe(
-          map(teamMembers =>
+          map((teamMembers) =>
             teamMembers.reduce((acc, curr) => {
               acc[curr.teamId] = curr.members;
               return acc;
-            }, {})
+            }, {}),
           ),
-          shareReplay(1) // Cache das Ergebnis
+          shareReplay(1), // Cache das Ergebnis
         );
 
         return combineLatest([
@@ -268,41 +275,78 @@ export class TrainingsPage implements OnInit {
                 switchMap((teamTrainings) => {
                   if (teamTrainings.length === 0) return of([]);
                   return combineLatest(
-                    teamTrainings.map((training) => combineLatest([
-                      this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id),
-                      this.exerciseService.getTeamTrainingExerciseRefs(team.id, training.id),
-                      this.fbService.getTeamRef(team.id),
-                      of(team.id), // Übergebe die teamId statt erneut Members zu laden
-                    ]).pipe(
-                      map(([attendees, exercises, teamDetails, teamId]) => ({
-                        training,
-                        attendees,
-                        exercises,
-                        teamDetails,
-                        teamId
-                      }))
-                    ))
+                    teamTrainings.map((training) =>
+                      combineLatest([
+                        this.trainingService
+                          .getTeamTrainingsAttendeesRef(team.id, training.id)
+                          .pipe(
+                            catchError((err) => {
+                              console.error(
+                                "Permission error in fetching getTeamTrainingsAttendeesRef:",
+                                err,
+                              );
+                              return of([]);
+                            }),
+                          ),
+                        this.exerciseService
+                          .getTeamTrainingExerciseRefs(team.id, training.id)
+                          .pipe(
+                            catchError((err) => {
+                              console.error(
+                                "Permission error in fetching getTeamTrainingExerciseRefs:",
+                                err,
+                              );
+                              return of([]);
+                            }),
+                          ),
+                        this.fbService.getTeamRef(team.id).pipe(
+                          catchError((err) => {
+                            console.error(
+                              "Permission error in fetching getTeamRef:",
+                              err,
+                            );
+                            return of({});
+                          }),
+                        ),
+                        of(team.id), // Übergebe die teamId statt erneut Members zu laden
+                      ]).pipe(
+                        map(([attendees, exercises, teamDetails, teamId]) => ({
+                          training,
+                          attendees,
+                          exercises,
+                          teamDetails,
+                          teamId,
+                        })),
+                      ),
+                    ),
                   );
-                })
-              )
-            })
-          )
+                }),
+              );
+            }),
+          ),
         ]).pipe(
           map(([teamMembersMap, teamsTrainings]) => {
             const flattenedTrainings = teamsTrainings.flat();
-            return flattenedTrainings.map(item => {
+            return flattenedTrainings.map((item) => {
               const teamMembers = teamMembersMap[item.teamId] || [];
-              const validAttendees = item.attendees.filter((att) =>
-                att.status === true &&
-                teamMembers.some(member => member.id === att.id)
+              const validAttendees = item.attendees.filter(
+                (att) =>
+                  att.status === true &&
+                  teamMembers.some((member) => member.id === att.id),
               );
 
               // Füge die Kinderinformationen hinzu
               const relevantChildren = teamMembers
-                .filter(att => this.children.some(child => child.id === att.id))
-                .map(att => {
-                  const child = this.children.find(child => child.id === att.id);
-                  return child ? {firstName: child.firstName, lastName: child.lastName} : {};
+                .filter((att) =>
+                  this.children.some((child) => child.id === att.id),
+                )
+                .map((att) => {
+                  const child = this.children.find(
+                    (child) => child.id === att.id,
+                  );
+                  return child
+                    ? { firstName: child.firstName, lastName: child.lastName }
+                    : {};
                 });
 
               return {
@@ -310,24 +354,32 @@ export class TrainingsPage implements OnInit {
                 attendees: item.attendees,
                 exercises: item.exercises,
                 team: item.teamDetails || {},
-                status: item.attendees.find((att) => [this.user.uid, ...this.children.map(child => child.id)].includes(att.id))?.status ?? null,
+                status:
+                  item.attendees.find((att) =>
+                    [
+                      this.user.uid,
+                      ...this.children.map((child) => child.id),
+                    ].includes(att.id),
+                  )?.status ?? null,
                 countAttendees: validAttendees.length,
                 teamId: item.teamId,
-                children: relevantChildren // Hinzufügen der Kinderinformationen
+                children: relevantChildren, // Hinzufügen der Kinderinformationen
               };
             });
           }),
           map((allTrainings) =>
-            allTrainings.sort((a, b) =>
-              Timestamp.fromMillis(a.startDate).seconds - Timestamp.fromMillis(b.startDate).seconds
-            )
-          )
+            allTrainings.sort(
+              (a, b) =>
+                Timestamp.fromMillis(a.startDate).seconds -
+                Timestamp.fromMillis(b.startDate).seconds,
+            ),
+          ),
         );
       }),
       catchError((err) => {
         console.error("Error in getTeamTrainingsUpcoming:", err);
         return of([]);
-      })
+      }),
     );
   }
 
@@ -346,119 +398,153 @@ export class TrainingsPage implements OnInit {
             switchMap((children: Profile[]) =>
               children.length > 0
                 ? combineLatest(
-                  children.map(child => {
-                    // Create a User-like object with uid from child.id
-                    const childUser = { uid: child.id } as User;
-                    console.log("Child User:", childUser);
-                    return this.fbService.getUserTeamRefs(childUser);
-                  })
-                )
-                : of([])
+                    children.map((child) => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.fbService.getUserTeamRefs(childUser);
+                    }),
+                  )
+                : of([]),
             ),
-            map(childrenTeams => childrenTeams.flat()),
+            map((childrenTeams) => childrenTeams.flat()),
             tap((teams) => console.log("Children Teams:", teams)),
             catchError((error) => {
               console.error("Error fetching children teams:", error);
               return of([]);
-            })
-          )
+            }),
+          ),
         ]).pipe(
           map(([userTeams, childrenTeams]) => {
             const allTeams = [...userTeams, ...childrenTeams];
-            return allTeams.filter((team, index, self) =>
-              index === self.findIndex((t) => t.id === team.id)
+            return allTeams.filter(
+              (team, index, self) =>
+                index === self.findIndex((t) => t.id === team.id),
             );
-          })
+          }),
         );
       }),
       mergeMap((teams) => {
         if (this.team && this.team.id) {
-          teams.push({ id: this.team.id })
+          teams.push({ id: this.team.id });
         } else if (teams.length === 0) {
-          return of([])
-        };
+          return of([]);
+        }
 
-        const relevantTeams = this.team && this.team.id ? teams.filter(team => team.id === this.team.id) : teams;
+        const relevantTeams =
+          this.team && this.team.id
+            ? teams.filter((team) => team.id === this.team.id)
+            : teams;
 
         // Hole Team-Mitglieder einmalig pro Team
         const teamMembersMap$ = combineLatest(
-          relevantTeams.map(team =>
-            this.fbService.getTeamMemberRefs(team.id).pipe(
-              map(members => ({ teamId: team.id, members }))
-            )
-          )
+          relevantTeams.map((team) =>
+            this.fbService
+              .getTeamMemberRefs(team.id)
+              .pipe(map((members) => ({ teamId: team.id, members }))),
+          ),
         ).pipe(
-          map(teamMembers =>
+          map((teamMembers) =>
             teamMembers.reduce((acc, curr) => {
               acc[curr.teamId] = curr.members;
               return acc;
-            }, {})
+            }, {}),
           ),
-          shareReplay(1)
+          shareReplay(1),
         );
 
         return combineLatest([
           teamMembersMap$,
           combineLatest(
             relevantTeams.map((team) => {
-              return this.trainingService.getTeamTrainingsPastRefs(team.id).pipe(
-                catchError((err) => {
-                  console.error("Permission error in fetching getTeamTrainingsRefs:", team.id, err);
-                  return of([]);
-                }),
-                switchMap((teamTrainings) => {
-                  if (teamTrainings.length === 0) return of([]);
-                  return combineLatest(
-                    teamTrainings.map((training) => combineLatest([
-                      this.trainingService.getTeamTrainingsAttendeesRef(team.id, training.id).pipe(
-                        catchError((err) => {
-                          console.error("Permission error in fetching getTeamTrainingsAttendeesRef:", err);
-                          return of([]);
-                        }),
+              return this.trainingService
+                .getTeamTrainingsPastRefs(team.id)
+                .pipe(
+                  catchError((err) => {
+                    console.error(
+                      "Permission error in fetching getTeamTrainingsRefs:",
+                      team.id,
+                      err,
+                    );
+                    return of([]);
+                  }),
+                  switchMap((teamTrainings) => {
+                    if (teamTrainings.length === 0) return of([]);
+                    return combineLatest(
+                      teamTrainings.map((training) =>
+                        combineLatest([
+                          this.trainingService
+                            .getTeamTrainingsAttendeesRef(team.id, training.id)
+                            .pipe(
+                              catchError((err) => {
+                                console.error(
+                                  "Permission error in fetching getTeamTrainingsAttendeesRef:",
+                                  err,
+                                );
+                                return of([]);
+                              }),
+                            ),
+                          this.exerciseService
+                            .getTeamTrainingExerciseRefs(team.id, training.id)
+                            .pipe(
+                              catchError((err) => {
+                                console.error(
+                                  "Permission error in fetching getTeamTrainingExerciseRefs:",
+                                  err,
+                                );
+                                return of([]);
+                              }),
+                            ),
+                          this.fbService.getTeamRef(team.id).pipe(
+                            catchError((err) => {
+                              console.error(
+                                "Permission error in fetching getTeamRef:",
+                                err,
+                              );
+                              return of({});
+                            }),
+                          ),
+                          of(team.id), // Übergebe die teamId statt erneut Members zu laden
+                        ]).pipe(
+                          map(
+                            ([attendees, exercises, teamDetails, teamId]) => ({
+                              training,
+                              attendees,
+                              exercises,
+                              teamDetails,
+                              teamId,
+                            }),
+                          ),
+                        ),
                       ),
-                      this.exerciseService.getTeamTrainingExerciseRefs(team.id, training.id).pipe(
-                        catchError((err) => {
-                          console.error("Permission error in fetching getTeamTrainingExerciseRefs:", err);
-                          return of([]);
-                        }),
-                      ),
-                      this.fbService.getTeamRef(team.id).pipe(
-                        catchError((err) => {
-                          console.error("Permission error in fetching getTeamRef:", err);
-                          return of({});
-                        }),
-                      ),
-                      of(team.id), // Übergebe die teamId statt erneut Members zu laden
-                    ]).pipe(
-                      map(([attendees, exercises, teamDetails, teamId]) => ({
-                        training,
-                        attendees,
-                        exercises,
-                        teamDetails,
-                        teamId
-                      }))
-                    ))
-                  );
-                })
-              )
-            })
-          )
+                    );
+                  }),
+                );
+            }),
+          ),
         ]).pipe(
           map(([teamMembersMap, teamsTrainings]) => {
             const flattenedTrainings = teamsTrainings.flat();
-            return flattenedTrainings.map(item => {
+            return flattenedTrainings.map((item) => {
               const teamMembers = teamMembersMap[item.teamId] || [];
-              const validAttendees = item.attendees.filter((att) =>
-                att.status === true &&
-                teamMembers.some(member => member.id === att.id)
+              const validAttendees = item.attendees.filter(
+                (att) =>
+                  att.status === true &&
+                  teamMembers.some((member) => member.id === att.id),
               );
 
               const relevantChildren = teamMembers
-              .filter(att => this.children.some(child => child.id === att.id))
-              .map(att => {
-                const child = this.children.find(child => child.id === att.id);
-                return child ? {firstName: child.firstName, lastName: child.lastName} : {};
-              });
+                .filter((att) =>
+                  this.children.some((child) => child.id === att.id),
+                )
+                .map((att) => {
+                  const child = this.children.find(
+                    (child) => child.id === att.id,
+                  );
+                  return child
+                    ? { firstName: child.firstName, lastName: child.lastName }
+                    : {};
+                });
 
               return {
                 ...item.training,
@@ -466,7 +552,13 @@ export class TrainingsPage implements OnInit {
                 exercises: item.exercises,
                 team: item.teamDetails || {},
                 children: relevantChildren,
-                status: item.attendees.find((att) => [this.user.uid, ...this.children.map(child => child.id)].includes(att.id))?.status ?? null,
+                status:
+                  item.attendees.find((att) =>
+                    [
+                      this.user.uid,
+                      ...this.children.map((child) => child.id),
+                    ].includes(att.id),
+                  )?.status ?? null,
                 // status: item.attendees.find((att) => att.id == this.user.uid)?.status ?? null,
                 countAttendees: validAttendees.length,
                 teamId: item.teamId,
@@ -474,24 +566,25 @@ export class TrainingsPage implements OnInit {
             });
           }),
           map((allTrainings) =>
-            allTrainings.sort((b, a) =>
-              Timestamp.fromMillis(a.startDate).seconds - Timestamp.fromMillis(b.startDate).seconds
-            )
-          )
+            allTrainings.sort(
+              (b, a) =>
+                Timestamp.fromMillis(a.startDate).seconds -
+                Timestamp.fromMillis(b.startDate).seconds,
+            ),
+          ),
         );
       }),
       catchError((err) => {
-        console.error("Error in getTeamTrainingsUpcoming:", err);
+        console.error("Error in getTeamTrainingPast:", err);
         return of([]);
-      })
+      }),
     );
   }
 
   async openTrainingDetailModal(training: Training, isFuture: boolean) {
-
     const topModal = await this.modalController.getTop();
     const presentingElement = topModal || this.routerOutlet?.nativeEl;
-    
+
     const modal = await this.modalController.create({
       component: TrainingDetailPage,
       presentingElement,
@@ -520,7 +613,6 @@ export class TrainingsPage implements OnInit {
         },
       });
     }*/
-
 
     modal.present();
 
@@ -576,7 +668,9 @@ export class TrainingsPage implements OnInit {
     slidingItem.closeOpened();
     await this.trainingService.deleteTeamTraining(training.teamId, training.id);
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.success__training_deleted")),
+      message: await lastValueFrom(
+        this.translate.get("common.success__training_deleted"),
+      ),
       color: "danger",
       duration: 1500,
       position: "top",
@@ -586,14 +680,18 @@ export class TrainingsPage implements OnInit {
 
   async toggleAll() {
     try {
-      const trainingList = await lastValueFrom(this.trainingList$.pipe(take(1)));
+      const trainingList = await lastValueFrom(
+        this.trainingList$.pipe(take(1)),
+      );
 
       for (const training of trainingList) {
-        console.log(`Set Status true for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`);
+        console.log(
+          `Set Status true for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`,
+        );
         await this.trainingService.setTeamTrainingAttendeeStatus(
           true,
           training.teamId,
-          training.id
+          training.id,
         );
       }
       await this.presentToast(this.user.uid);
@@ -602,7 +700,6 @@ export class TrainingsPage implements OnInit {
       // Optionally handle the error, e.g., show an error message
     }
   }
-
 
   toggleItem(slidingItem: IonItemSliding, status: boolean, training: any) {
     console.log("toggleItem", training);
@@ -613,21 +710,32 @@ export class TrainingsPage implements OnInit {
   async toggle(status: boolean, training: any) {
     // console.log("toggle", training, status);
     // Hole die Team-Mitglieder
-    const teamMembers = await lastValueFrom(this.fbService.getTeamMemberRefs(training.teamId).pipe(take(1)));
+    const teamMembers = await lastValueFrom(
+      this.fbService.getTeamMemberRefs(training.teamId).pipe(take(1)),
+    );
     // console.log("teamMembers", teamMembers);
     // Hole die Kinder des aktuellen Benutzers
-    const children = await lastValueFrom(this.userProfileService.getChildren(this.user.uid).pipe(take(1)));
+    const children = await lastValueFrom(
+      this.userProfileService.getChildren(this.user.uid).pipe(take(1)),
+    );
     // console.log("children", children);
     // Sammle alle möglichen Team-Mitglieder (aktueller Benutzer + Kinder)
-    const possibleMembers = [this.user, ...children.map(child => ({ uid: child.id }))];
+    const possibleMembers = [
+      this.user,
+      ...children.map((child) => ({ uid: child.id })),
+    ];
 
     // Filtere die tatsächlichen Team-Mitglieder
-    const teamMemberIds = teamMembers.map(member => member.id);
-    const validMembers = possibleMembers.filter(member => teamMemberIds.includes(member.uid));
+    const teamMemberIds = teamMembers.map((member) => member.id);
+    const validMembers = possibleMembers.filter((member) =>
+      teamMemberIds.includes(member.uid),
+    );
 
     if (validMembers.length === 0) {
       const toast = await this.toastController.create({
-        message: await lastValueFrom(this.translate.get("common.error__no_team_member")),
+        message: await lastValueFrom(
+          this.translate.get("common.error__no_team_member"),
+        ),
         color: "danger",
         duration: 1500,
         position: "top",
@@ -647,21 +755,28 @@ export class TrainingsPage implements OnInit {
       // Wenn mehrere Mitglieder gefunden wurden, zeige einen Auswahlalert
       const alert = await this.alertCtrl.create({
         header: await lastValueFrom(this.translate.get("common.select_member")),
-        inputs: await Promise.all(validMembers.map(async member => {
-          const profile = member.uid === this.user.uid
-            ? { firstName: "Ich", lastName: "" }  // Für den aktuellen Benutzer
-            : await lastValueFrom(this.userProfileService.getUserProfileById(member.uid).pipe(take(1)));
+        inputs: await Promise.all(
+          validMembers.map(async (member) => {
+            const profile =
+              member.uid === this.user.uid
+                ? { firstName: "Ich", lastName: "" } // Für den aktuellen Benutzer
+                : await lastValueFrom(
+                    this.userProfileService
+                      .getUserProfileById(member.uid)
+                      .pipe(take(1)),
+                  );
 
-          return {
-            type: 'radio',
-            label: `${profile.firstName} ${profile.lastName}`,
-            value: member.uid
-          };
-        })),
+            return {
+              type: "radio",
+              label: `${profile.firstName} ${profile.lastName}`,
+              value: member.uid,
+            };
+          }),
+        ),
         buttons: [
           {
             text: await lastValueFrom(this.translate.get("common.cancel")),
-            role: 'cancel'
+            role: "cancel",
           },
           {
             text: await lastValueFrom(this.translate.get("common.ok")),
@@ -670,9 +785,9 @@ export class TrainingsPage implements OnInit {
               if (selectedId) {
                 this.processToggle(selectedId, status, training);
               }
-            }
-          }
-        ]
+            },
+          },
+        ],
       });
       await alert.present();
     }
@@ -680,14 +795,19 @@ export class TrainingsPage implements OnInit {
 
   private async processToggle(userId: string, status: boolean, training: any) {
     console.log(
-      `Set Status ${status} for user ${userId} and team ${training.teamId} and training ${training.id}`
+      `Set Status ${status} for user ${userId} and team ${training.teamId} and training ${training.id}`,
     );
     const newStartDate = training.date.toDate();
     newStartDate.setHours(Number(training.timeFrom.substring(0, 2)));
 
     const trainingThreshold = training.team.trainingThreshold || 0;
 
-    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * trainingThreshold)) && status == false && trainingThreshold) {
+    if (
+      newStartDate.getTime() - new Date().getTime() <
+        1000 * 60 * 60 * trainingThreshold &&
+      status == false &&
+      trainingThreshold
+    ) {
       console.log("too late");
       await this.tooLateToggle();
     } else {
@@ -695,16 +815,23 @@ export class TrainingsPage implements OnInit {
         status,
         training.teamId,
         training.id,
-        userId
+        userId,
       );
       this.presentToast(userId);
     }
   }
 
   async presentToast(userId: string) {
-    const profile = await lastValueFrom(this.userProfileService.getUserProfileById(userId).pipe(take(1)));
+    const profile = await lastValueFrom(
+      this.userProfileService.getUserProfileById(userId).pipe(take(1)),
+    );
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.success__saved")) + ": " + profile.firstName + " " + profile.lastName,
+      message:
+        (await lastValueFrom(this.translate.get("common.success__saved"))) +
+        ": " +
+        profile.firstName +
+        " " +
+        profile.lastName,
       color: "primary",
       duration: 1500,
       position: "top",
@@ -716,15 +843,16 @@ export class TrainingsPage implements OnInit {
     const alert = await this.alertCtrl.create({
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
-      buttons: [{
-        role: "",
-        text: "OK",
-        handler: (data) => {
-          console.log(data)
-        }
-      }]
-    })
-    alert.present()
+      buttons: [
+        {
+          role: "",
+          text: "OK",
+          handler: (data) => {
+            console.log(data);
+          },
+        },
+      ],
+    });
+    alert.present();
   }
-
 }

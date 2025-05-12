@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, NgZone, OnInit } from "@angular/core";
 import { SwUpdate, VersionEvent } from "@angular/service-worker";
-import { Capacitor } from '@capacitor/core';
-import { StatusBar, Style } from '@capacitor/status-bar';
-import { Platform } from '@ionic/angular';
-import { SafeArea } from 'capacitor-plugin-safe-area';
+import { Capacitor } from "@capacitor/core";
+import { StatusBar, Style } from "@capacitor/status-bar";
+import { Platform } from "@ionic/angular";
+import { SafeArea } from "capacitor-plugin-safe-area";
 
 import {
   AlertController,
@@ -11,7 +11,7 @@ import {
   ModalController,
   ToastController,
 } from "@ionic/angular";
-import { App } from '@capacitor/app';
+import { App } from "@capacitor/app";
 import { Dialog } from "@capacitor/dialog";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
@@ -39,7 +39,7 @@ import { lastValueFrom } from "rxjs";
   selector: "app-root",
   templateUrl: "app.component.html",
   styleUrls: ["app.component.scss"],
-  standalone: false
+  standalone: false,
 })
 export class AppComponent implements OnInit, AfterViewInit {
   public email: string;
@@ -48,9 +48,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   clubList$: Observable<Club[]>;
 
-
   private clubListSub: Subscription;
-
 
   user: User;
   deviceId: DeviceId;
@@ -60,7 +58,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   userHasClub: boolean = false;
 
   constructor(
-
     private platform: Platform,
     private readonly swUpdate: SwUpdate,
     private readonly modalCtrl: ModalController,
@@ -75,27 +72,30 @@ export class AppComponent implements OnInit, AfterViewInit {
     private translate: TranslateService,
     public toastController: ToastController,
     private ngZone: NgZone,
-
   ) {
     this.initializeApp();
-
 
     onAuthStateChanged(this.authService.auth, async (user) => {
       if (user) {
         // 0. LOGIN
         this.email = user.email;
         this.user = user;
+        console.log(">>> user.metadata", user.metadata);
+        console.log(">>> lastSignInTime", user.metadata?.lastSignInTime);
+        await this.user.getIdToken();
+        // console.log(">>> token", token);
 
         if (!user.emailVerified) {
-          const navOnboardingEmail = await this.router.navigateByUrl('/onboarding-email');
+          const navOnboardingEmail =
+            await this.router.navigateByUrl("/onboarding-email");
           if (navOnboardingEmail) {
-            console.log('Navigation success to onboarding Email Page');
+            console.log("Navigation success to onboarding Email Page");
           } else {
-            console.error('Navigation ERROR to onboarding Email Page');
+            console.error("Navigation ERROR to onboarding Email Page");
           }
         } else {
-          console.log("E-Mail IS verified. Go ahead..")
-          console.log(user.email, user.displayName, user.emailVerified)
+          console.log("E-Mail IS verified. Go ahead..");
+          console.log(user.email, user.displayName, user.emailVerified);
           this.clubListSub = this.clubList$
             .pipe(
               take(1),
@@ -103,49 +103,54 @@ export class AppComponent implements OnInit, AfterViewInit {
                 if (clubList.length == 0) {
                   console.log("NO! Club Data received. > Call Club Onboarding");
                   try {
-                    const navOnboardingClub = await this.router.navigateByUrl('/onboarding-club');
+                    const navOnboardingClub =
+                      await this.router.navigateByUrl("/onboarding-club");
                     if (navOnboardingClub) {
-                      console.log('Navigation success to onboarding Club Page');
+                      console.log("Navigation success to onboarding Club Page");
                     } else {
-                      console.error('Navigation ERROR to onboarding Club Page');
+                      console.error("Navigation ERROR to onboarding Club Page");
                     }
                   } catch (error) {
-                    console.error('Navigation Exception:', error);
+                    console.error("Navigation Exception:", error);
                     window.location.reload();
                   }
                 } else {
                   // CHECK SUBSCRIPTION FOR CLUB
                   // console.log(clubList.find((club:any)=>club.subscriptionActive == false ))
 
-                  if (clubList.find((club: any) => club.subscriptionActive == false)) {
-                    console.log("NO SUBSCRIPTION FOUND")
+                  if (
+                    clubList.find(
+                      (club: any) => club.subscriptionActive == false,
+                    )
+                  ) {
+                    console.log("NO SUBSCRIPTION FOUND");
                     const modal = await this.modalCtrl.create({
                       component: ClubSubscriptionPage,
                       presentingElement: await this.modalCtrl.getTop(),
                       canDismiss: true,
                       showBackdrop: true,
                       componentProps: {
-                        clubId: clubList.find((club: any) => club.subscriptionActive == false).id,
+                        clubId: clubList.find(
+                          (club: any) => club.subscriptionActive == false,
+                        ).id,
                       },
                     });
                     modal.present();
 
                     const { role } = await modal.onWillDismiss();
-                    console.log(role)
+                    console.log(role);
                     if (role === "close" || role == "backdrop") {
                       this.authService.logout();
                     }
                   } else {
-                    console.log("Club is active")
+                    console.log("Club is active");
                   }
-
                 }
-              })
+              }),
             )
             .subscribe();
         }
         // }
-
 
         // SEt DEVICE INFOS
         this.deviceInfo = await Device.getInfo();
@@ -162,10 +167,7 @@ export class AppComponent implements OnInit, AfterViewInit {
           // Register Web Push, if available
         }
 
-
-
         // this.platform.ready().then(async () => {
-
 
         // })
         // READ USER LANGUAGE FROM DATABASE if AVAILABLE
@@ -179,26 +181,23 @@ export class AppComponent implements OnInit, AfterViewInit {
         console.log("User is signed out");
         this.menuCtrl.enable(false, "menu");
         this.email = "";
-        const navLogout = await this.router.navigateByUrl('/login');
+        const navLogout = await this.router.navigateByUrl("/login");
         if (navLogout) {
-          console.log('Navigation SUCCESS to Logout Page');
+          console.log("Navigation SUCCESS to Logout Page");
         } else {
-          console.error('Navigation ERROR to Logout Page');
+          console.error("Navigation ERROR to Logout Page");
         }
       }
     });
-
-
   }
 
-
   ngAfterViewInit() {
-    console.log('CSS DEBUG: AppComponent View initialized');
+    console.log("CSS DEBUG: AppComponent View initialized");
     this.setStatusBarAndSafeArea();
 
     // iOS only
-    window.addEventListener('statusTap', () => {
-      const content = document.querySelector('ion-content');
+    window.addEventListener("statusTap", () => {
+      const content = document.querySelector("ion-content");
       if (content) {
         content.scrollToTop(500);
       }
@@ -243,9 +242,8 @@ export class AppComponent implements OnInit, AfterViewInit {
           // });
           // await toast.present();
         }
-      }
+      },
     );
-
   }
 
   ngOnDestroy() {
@@ -256,7 +254,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     if (this.clubListSub) {
       this.clubListSub.unsubscribe();
     }
-
   }
 
   initializeApp(): void {
@@ -271,48 +268,95 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   private async setStatusBarAndSafeArea() {
-
     setTimeout(async () => {
       const { statusBarHeight } = await SafeArea.getStatusBarHeight();
       console.log("DEBUG CSS:  statusbarHeight", statusBarHeight);
 
       try {
-        const marginTop = getComputedStyle(document.querySelector('.android ion-app')).getPropertyValue('margin-top');
-        const numericValue = parseInt(marginTop.replace('px', ''));
+        const marginTop = getComputedStyle(
+          document.querySelector(".android ion-app"),
+        ).getPropertyValue("margin-top");
+        const numericValue = parseInt(marginTop.replace("px", ""));
         console.log("DEBUG CSS:  marginTop", numericValue);
       } catch (error) {
         console.log("DEBUG CSS:  marginTop from app.component.scss", error);
       }
 
-      const safeAreaTop = Number(getComputedStyle(document.documentElement).getPropertyValue('--ion-safe-area-top').replace('px', ''));
-      const safeAreaBottom = Number(getComputedStyle(document.documentElement).getPropertyValue('--ion-safe-area-bottom').replace('px', ''));
-      console.log("DEBUG CSS:  safeAreaTop --ion-safe-area-top / bottom Value: ", safeAreaTop, safeAreaBottom);
+      const safeAreaTop = Number(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue("--ion-safe-area-top")
+          .replace("px", ""),
+      );
+      const safeAreaBottom = Number(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue("--ion-safe-area-bottom")
+          .replace("px", ""),
+      );
+      console.log(
+        "DEBUG CSS:  safeAreaTop --ion-safe-area-top / bottom Value: ",
+        safeAreaTop,
+        safeAreaBottom,
+      );
 
       const { insets } = await SafeArea.getSafeAreaInsets();
-      console.log("DEBUG CSS: insets via SafeArea Plugin: ", JSON.stringify(insets));
+      console.log(
+        "DEBUG CSS: insets via SafeArea Plugin: ",
+        JSON.stringify(insets),
+      );
 
       //Top
-      if (Capacitor.isNativePlatform() && Capacitor.getPlatform() == 'android') {
+      if (
+        Capacitor.isNativePlatform() &&
+        Capacitor.getPlatform() == "android"
+      ) {
         if (safeAreaTop != insets.top || insets.top > 0) {
-          document.documentElement.style.setProperty('--ion-safe-area-top', `${insets.top}px`);
-          console.log("DEBUG CSS: Update --ion-safe-area-top Value: ", insets.top);
+          document.documentElement.style.setProperty(
+            "--ion-safe-area-top",
+            `${insets.top}px`,
+          );
+          console.log(
+            "DEBUG CSS: Update --ion-safe-area-top Value: ",
+            insets.top,
+          );
         } else {
-          console.log("DEBUG CSS: No Update --ion-safe-area-top Value: ", insets.top);
+          console.log(
+            "DEBUG CSS: No Update --ion-safe-area-top Value: ",
+            insets.top,
+          );
         }
 
         //Bottom
         if (safeAreaBottom != insets.bottom || insets.bottom > 0) {
-          document.documentElement.style.setProperty('--ion-safe-area-bottom', `${insets.bottom}px`);
-          console.log("DEBUG CSS: Update --ion-safe-area-bottom Value: ", insets.bottom);
+          document.documentElement.style.setProperty(
+            "--ion-safe-area-bottom",
+            `${insets.bottom}px`,
+          );
+          console.log(
+            "DEBUG CSS: Update --ion-safe-area-bottom Value: ",
+            insets.bottom,
+          );
         } else {
-          console.log("DEBUG CSS: No Update --ion-safe-area-bottom Value: ", insets.bottom);
+          console.log(
+            "DEBUG CSS: No Update --ion-safe-area-bottom Value: ",
+            insets.bottom,
+          );
         }
       }
 
-      const safeAreaTopAfter = getComputedStyle(document.documentElement).getPropertyValue('--ion-safe-area-top');
-      console.log("DEBUG CSS: safeAreaTopAfter --ion-safe-area-top Value: ", safeAreaTopAfter);
-      const safeAreaBottomAfter = getComputedStyle(document.documentElement).getPropertyValue('--ion-safe-area-bottom');
-      console.log("DEBUG CSS: safeAreaBottomAfter --ion-safe-area-bottom Value: ", safeAreaBottomAfter);
+      const safeAreaTopAfter = getComputedStyle(
+        document.documentElement,
+      ).getPropertyValue("--ion-safe-area-top");
+      console.log(
+        "DEBUG CSS: safeAreaTopAfter --ion-safe-area-top Value: ",
+        safeAreaTopAfter,
+      );
+      const safeAreaBottomAfter = getComputedStyle(
+        document.documentElement,
+      ).getPropertyValue("--ion-safe-area-bottom");
+      console.log(
+        "DEBUG CSS: safeAreaBottomAfter --ion-safe-area-bottom Value: ",
+        safeAreaBottomAfter,
+      );
 
       if (Capacitor.isPluginAvailable("StatusBar")) {
         console.log("StatusBar is available");
@@ -323,41 +367,46 @@ export class AppComponent implements OnInit, AfterViewInit {
         });
 
         // Set initial theme
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (prefersDark) { // Dark Mode
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        if (prefersDark) {
+          // Dark Mode
           await StatusBar.setStyle({ style: Style.Dark });
-          await StatusBar.setBackgroundColor({ color: '#795deb' });
-        } else { // Light Mode  
+          await StatusBar.setBackgroundColor({ color: "#795deb" });
+        } else {
+          // Light Mode
           await StatusBar.setStyle({ style: Style.Light });
-          await StatusBar.setBackgroundColor({ color: '#339bde' });
+          await StatusBar.setBackgroundColor({ color: "#339bde" });
         }
 
         // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', async (e) => {
-          const newColorScheme = e.matches ? 'dark' : 'light';
-          console.log('System theme changed to:', newColorScheme);
-          if (newColorScheme == 'dark') {
-            await StatusBar.setStyle({ style: Style.Dark });
-            await StatusBar.setBackgroundColor({ color: '#795deb' });
-          } else {
-            await StatusBar.setStyle({ style: Style.Light });
-            await StatusBar.setBackgroundColor({ color: '#339bde' });
-          }
-        });
+        window
+          .matchMedia("(prefers-color-scheme: dark)")
+          .addEventListener("change", async (e) => {
+            const newColorScheme = e.matches ? "dark" : "light";
+            console.log("System theme changed to:", newColorScheme);
+            if (newColorScheme == "dark") {
+              await StatusBar.setStyle({ style: Style.Dark });
+              await StatusBar.setBackgroundColor({ color: "#795deb" });
+            } else {
+              await StatusBar.setStyle({ style: Style.Light });
+              await StatusBar.setBackgroundColor({ color: "#339bde" });
+            }
+          });
       } else {
         console.log("Status Bar not supported");
       }
     }, 100);
-
   }
 
   private registerBackButton() {
-    App.addListener('backButton', async ({ canGoBack }) => {
+    App.addListener("backButton", async ({ canGoBack }) => {
       // console.log("backbutton", canGoBack);
       // console.log(">", this.router.lastSuccessfulNavigation)
       // console.log(">>", this.router.getCurrentNavigation())
       // console.log(">>>", window.history.length);
-      const modal = await this.modalCtrl.getTop()
+      const modal = await this.modalCtrl.getTop();
       if (modal) {
         modal.dismiss();
         return;
@@ -399,7 +448,9 @@ export class AppComponent implements OnInit, AfterViewInit {
         result.value == "en" ||
         result.value == "it"
       ) {
-        console.log("Set Fallback Language to Device Language: " + result.value);
+        console.log(
+          "Set Fallback Language to Device Language: " + result.value,
+        );
         this.translate.use(result.value);
       } else {
         console.log("Set Fallback Language to DE");
@@ -416,8 +467,8 @@ export class AppComponent implements OnInit, AfterViewInit {
         take(1),
         tap((user) => (this.user = user)),
         switchMap((user) =>
-          user ? this.profileService.getUserProfile(user) : of(null)
-        )
+          user ? this.profileService.getUserProfile(user) : of(null),
+        ),
       )
       .subscribe((profile) => {
         if (profile) {
@@ -621,10 +672,14 @@ export class AppComponent implements OnInit, AfterViewInit {
     */
   }
   enableHelferEvents(clubList) {
-    return clubList && clubList.some(club => club.hasFeatureHelferEvent == true);
+    return (
+      clubList && clubList.some((club) => club.hasFeatureHelferEvent == true)
+    );
   }
   enableChampionship(clubList) {
-    return clubList && clubList.some(club => club.hasFeatureChampionship == true);
+    return (
+      clubList && clubList.some((club) => club.hasFeatureChampionship == true)
+    );
   }
 
   async presentAlertUpdateVersion() {
@@ -705,23 +760,27 @@ export class AppComponent implements OnInit, AfterViewInit {
           // Register with Apple / Google to receive push via APNS/FCM
           await PushNotifications.register();
         } catch (error) {
-          console.error('Fehler bei der Push-Registrierung:', error);
+          console.error("Fehler bei der Push-Registrierung:", error);
           const toast = await this.toastController.create({
-            message: await lastValueFrom(this.translate.get("error__push_notification_not_available")),
+            message: await lastValueFrom(
+              this.translate.get("error__push_notification_not_available"),
+            ),
             duration: 3000,
-            color: 'danger'
+            color: "danger",
           });
           await toast.present();
         }
       } else {
-        console.warn('Push-Benachrichtigungen wurden nicht erlaubt');
+        console.warn("Push-Benachrichtigungen wurden nicht erlaubt");
       }
     } catch (error) {
-      console.error('Fehler beim Anfordern der Push-Berechtigungen:', error);
+      console.error("Fehler beim Anfordern der Push-Berechtigungen:", error);
       const toast = await this.toastController.create({
-        message: await lastValueFrom(this.translate.get("error_device_not_support_push_notifications")),
+        message: await lastValueFrom(
+          this.translate.get("error_device_not_support_push_notifications"),
+        ),
         duration: 3000,
-        color: 'danger'
+        color: "danger",
       });
       await toast.present();
     }
@@ -739,7 +798,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       });
 
       PushNotifications.addListener("registrationError", (error: any) => {
-        console.error('Registration error:', error);
+        console.error("Registration error:", error);
       });
 
       PushNotifications.addListener(
@@ -749,7 +808,10 @@ export class AppComponent implements OnInit, AfterViewInit {
             console.log("PUSH MESSAGE RECEIVED");
             console.log("TYPE:  " + notification.data.type);
 
-            if (notification.data.type && notification.data.type === "helferEvent") {
+            if (
+              notification.data.type &&
+              notification.data.type === "helferEvent"
+            ) {
               const { value } = await Dialog.confirm({
                 title: notification.title,
                 message: notification.body,
@@ -759,11 +821,13 @@ export class AppComponent implements OnInit, AfterViewInit {
 
               if (value) {
                 this.ngZone.run(() => {
-                  this.router.navigateByUrl("/t/helfer", {
-                    state: notification.data,
-                  }).catch(e => {
-                    console.error('Navigation error:', e);
-                  });
+                  this.router
+                    .navigateByUrl("/t/helfer", {
+                      state: notification.data,
+                    })
+                    .catch((e) => {
+                      console.error("Navigation error:", e);
+                    });
                 });
               }
             } else if (
@@ -775,14 +839,16 @@ export class AppComponent implements OnInit, AfterViewInit {
                 message: notification.body,
                 okButtonTitle: "Öffnen",
                 cancelButtonTitle: "Abbrechen",
-              })
+              });
               if (value) {
                 this.ngZone.run(() => {
-                  this.router.navigateByUrl("/t/events", {
-                    state: notification.data,
-                  }).catch(e => {
-                    console.error('Navigation error:', e);
-                  });
+                  this.router
+                    .navigateByUrl("/t/events", {
+                      state: notification.data,
+                    })
+                    .catch((e) => {
+                      console.error("Navigation error:", e);
+                    });
                 });
               }
             } else if (
@@ -794,7 +860,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 message: notification.body,
                 okButtonTitle: "Öffnen",
                 cancelButtonTitle: "Abbrechen",
-              })
+              });
               if (value) {
               }
             } else if (
@@ -806,7 +872,7 @@ export class AppComponent implements OnInit, AfterViewInit {
                 message: notification.body,
                 okButtonTitle: "Öffnen",
                 cancelButtonTitle: "Abbrechen",
-              })
+              });
               if (value) {
               }
             } else if (
@@ -818,14 +884,16 @@ export class AppComponent implements OnInit, AfterViewInit {
                 message: notification.body,
                 okButtonTitle: "Öffnen",
                 cancelButtonTitle: "Abbrechen",
-              })
+              });
               if (value) {
                 this.ngZone.run(() => {
-                  this.router.navigateByUrl("/t/news", {
-                    state: notification.data,
-                  }).catch(e => {
-                    console.error('Navigation error:', e);
-                  });
+                  this.router
+                    .navigateByUrl("/t/news", {
+                      state: notification.data,
+                    })
+                    .catch((e) => {
+                      console.error("Navigation error:", e);
+                    });
                 });
               }
             } else if (
@@ -837,14 +905,16 @@ export class AppComponent implements OnInit, AfterViewInit {
                 message: notification.body,
                 okButtonTitle: "Öffnen",
                 cancelButtonTitle: "Abbrechen",
-              })
+              });
               if (value) {
                 this.ngZone.run(() => {
-                  this.router.navigateByUrl("/t/news", {
-                    state: notification.data,
-                  }).catch(e => {
-                    console.error('Navigation error:', e);
-                  });
+                  this.router
+                    .navigateByUrl("/t/news", {
+                      state: notification.data,
+                    })
+                    .catch((e) => {
+                      console.error("Navigation error:", e);
+                    });
                 });
               }
             } else if (
@@ -856,14 +926,16 @@ export class AppComponent implements OnInit, AfterViewInit {
                 message: notification.body,
                 okButtonTitle: "Öffnen",
                 cancelButtonTitle: "Abbrechen",
-              })
+              });
               if (value) {
                 this.ngZone.run(() => {
-                  this.router.navigateByUrl("/t/training", {
-                    state: notification.data,
-                  }).catch(e => {
-                    console.error('Navigation error:', e);
-                  });
+                  this.router
+                    .navigateByUrl("/t/training", {
+                      state: notification.data,
+                    })
+                    .catch((e) => {
+                      console.error("Navigation error:", e);
+                    });
                 });
               }
             } else {
@@ -874,19 +946,19 @@ export class AppComponent implements OnInit, AfterViewInit {
               });
             }
           } catch (error) {
-            console.error('Error processing push notification:', error);
+            console.error("Error processing push notification:", error);
           }
-        }
+        },
       );
 
       PushNotifications.addListener(
         "pushNotificationActionPerformed",
         (notification: ActionPerformed) => {
           console.log(notification);
-        }
+        },
       );
     } catch (error) {
-      console.error('Error setting up push notification listeners:', error);
+      console.error("Error setting up push notification listeners:", error);
     }
   }
 }
