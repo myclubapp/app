@@ -32,9 +32,10 @@ import {
   CameraDirection,
   CameraResultType,
   Photo,
+  PermissionStatus,
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { catchError, switchMap, take, tap } from "rxjs/operators";
+import { catchError, first, switchMap, take, tap } from "rxjs/operators";
 import {
   AlertController,
   IonRouterOutlet,
@@ -49,49 +50,39 @@ import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
 import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
 import { Timestamp } from "firebase/firestore";
+import { MemberPage } from "../member/member.page";
 
 @Component({
-    selector: "app-profile",
-    templateUrl: "./profile.page.html",
-    styleUrls: ["./profile.page.scss"],
-    standalone: false
+  selector: "app-profile",
+  templateUrl: "./profile.page.html",
+  styleUrls: ["./profile.page.scss"],
+  standalone: false,
 })
 export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   userProfile$: Observable<Profile>;
-  
+  user$: Observable<User>;
+  user: User;
+  userSubscription: Subscription;
   profileSubscription: Subscription;
-
 
   teamList$: Observable<Team[]>;
   clubList$: Observable<Club[]>;
 
-  user$: Observable<User>;
-  user: User;
+  kidsRequests$: Observable<any[]>;
+  children$: Observable<any[]>;
+
+  parents$: Observable<Profile[]>;
 
   public alertButtonsEmail = [];
   public alertInputsEmail = [];
   public alertButtonsAddress = [];
-  public alertInputsAddress= [];
+  public alertInputsAddress = [];
 
   private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
   localDateString: string;
-
-  kidAlertButtons = [
-    {
-      text: this.translate.instant('common.cancel'),
-      role: 'cancel',
-    },
-    {
-      text: this.translate.instant('common.add'),
-      role: 'confirm',
-      handler: (data) => {
-        this.addKid(data.email);
-      },
-    },
-  ];
 
   constructor(
     // private readonly swPush: SwPush,
@@ -120,12 +111,37 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
 
     this.clubList$ = this.fbService.getClubList();
 
+    this.userProfile$.pipe(take(1)).subscribe((userProfile) => {
+      this.kidsRequests$ = this.profileService
+        .getKidsRequests(userProfile.id)
+        .pipe(
+          tap((kidsRequests) => {
+            console.log(kidsRequests);
+          }),
+        );
+
+      this.children$ = this.profileService.getChildren(userProfile.id).pipe(
+        tap((children) => {
+          console.log(children);
+        }),
+      );
+
+      this.parents$ = this.profileService.getParents(userProfile.id).pipe(
+        tap((parents) => {
+          console.log(parents);
+        }),
+      );
+    });
+
+    this.user$ = this.authService.getUser$();
+    this.userSubscription = this.user$.pipe(take(1)).subscribe((user) => {
+      this.user = user;
+    });
   }
 
   ngAfterViewInit(): void {
     console.log("ngAfterViewInit called");
-
-    this.profileSubscription = this.userProfile$.subscribe(async profile => {
+    this.profileSubscription = this.userProfile$.subscribe(async (profile) => {
       if (profile) {
         this.setupAlerts(profile);
       }
@@ -133,7 +149,9 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   enableHelferEvents(clubList) {
-    return clubList && clubList.some(club => club.hasFeatureHelferEvent == true);
+    return (
+      clubList && clubList.some((club) => club.hasFeatureHelferEvent == true)
+    );
   }
   setupAlerts(profile: Profile) {
     this.alertInputsEmail = [
@@ -142,7 +160,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         placeholder: this.translate.instant("profile.change_email_old_label"),
         name: "oldEmail",
         type: "email",
-        value: profile.email
+        value: profile.email,
       },
       {
         label: this.translate.instant("profile.change_email_new_label"),
@@ -164,13 +182,18 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         text: this.translate.instant("common.save"),
         handler: async (data) => {
           console.log(data);
-          if (data.oldEmail !== data.newEmail && data.oldEmail.length > 0 && data.newEmail.length > 0) {
+          if (
+            data.oldEmail !== data.newEmail &&
+            data.oldEmail.length > 0 &&
+            data.newEmail.length > 0
+          ) {
             try {
-              const verifyEmail = await this.authService.verifyBeforeUpdateEmail(data.newEmail);
+              const verifyEmail =
+                await this.authService.verifyBeforeUpdateEmail(data.newEmail);
               console.log(verifyEmail);
               const updatedProfile = await this.profileChange(
                 { detail: { value: data.newEmail } },
-                "email"
+                "email",
               );
               await this.authService.logout();
             } catch (e) {
@@ -192,14 +215,18 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     this.alertInputsAddress = [
       {
         label: this.translate.instant("profile.change_address_streetandnumber"),
-        placeholder: this.translate.instant("profile.change_address_streetandnumber"),
+        placeholder: this.translate.instant(
+          "profile.change_address_streetandnumber",
+        ),
         name: "streetAndNumber",
         type: "text",
         value: profile.streetAndNumber,
       },
       {
         label: this.translate.instant("profile.change_address_postalcode"),
-        placeholder: this.translate.instant("profile.change_address_postalcode"),
+        placeholder: this.translate.instant(
+          "profile.change_address_postalcode",
+        ),
         name: "postalcode",
         type: "number",
         value: profile.postalcode,
@@ -227,33 +254,62 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         handler: async (data) => {
           console.log(data);
           await this.profileChange({ detail: { value: data.city } }, "city");
-          await this.profileChange({ detail: { value: data.postalcode } }, "postalcode");
-          await this.profileChange({ detail: { value: data.streetAndNumber } }, "streetAndNumber");
+          await this.profileChange(
+            { detail: { value: data.postalcode } },
+            "postalcode",
+          );
+          await this.profileChange(
+            { detail: { value: data.streetAndNumber } },
+            "streetAndNumber",
+          );
         },
       },
     ];
   }
 
-
-  ngOnDestroy() { 
-    if (this.profileSubscription){
+  ngOnDestroy() {
+    if (this.profileSubscription) {
       this.profileSubscription.unsubscribe();
+    }
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
     }
   }
 
   async showPicture(imageUrl: string) {
-  const alert = await this.alertController.create({
-    header: await lastValueFrom(this.translate.get('profile.profile_picture')),
-    message: `<img src="${imageUrl}" alt="Profilbild" style="width: 100%; max-width: 300px; height: auto;">`,
-    buttons: [{
-      text: await lastValueFrom(this.translate.get('common.close')),
-      role: 'cancel'
-    }],
-    cssClass: 'profile-picture-alert'
-  });
+    const alert = await this.alertController.create({
+      header: await lastValueFrom(
+        this.translate.get("profile.profile_picture"),
+      ),
+      message: `<img src="${imageUrl}" alt="Profilbild" style="width: 100%; max-width: 300px; height: auto;">`,
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.close")),
+          role: "cancel",
+        },
+      ],
+      cssClass: "profile-picture-alert",
+    });
 
-  await alert.present();
-}
+    await alert.present();
+  }
+  async openMember(member: Profile) {
+    const modal = await this.modalCtrl.create({
+      component: MemberPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: member,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
 
   getUserProfile(): Observable<any> {
     // Replace 'any' with the actual type of the user profile
@@ -267,69 +323,84 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         return this.profileService.getUserProfile(user).pipe(
           tap((profile: Profile) => {
             if (profile && profile.dateOfBirth) {
-              this.localDateString = this.convertToLocalDateString(profile.dateOfBirth.toDate());
+              this.localDateString = this.convertToLocalDateString(
+                profile.dateOfBirth.toDate(),
+              );
             } else {
-              this.localDateString = '1970-01-01T00:00:00.000Z'
+              this.localDateString = "1970-01-01T00:00:00.000Z";
             }
-          })
+          }),
         );
       }),
       catchError((err) => {
         console.error("Error fetching user profile", err);
         return of(null); // Handle the error and return a default value
-      })
+      }),
     );
   }
   convertToLocalDateString(date: Date): string {
-    const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+    const localDate = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000,
+    );
     return localDate.toISOString();
   }
-  getClubRequestList() { }
-  getTeamRequestList() { }
-  getPushDeviceList() { }
+  getClubRequestList() {}
+  getTeamRequestList() {}
+  getPushDeviceList() {}
 
   async onDateChange(event: CustomEvent) {
-
-    event.detail.value = Timestamp.fromDate(new Date(event.detail.value))
+    event.detail.value = Timestamp.fromDate(new Date(event.detail.value));
 
     this.profileChange(event, "dateOfBirth");
-
   }
 
-
   async takePicture() {
-    const loading = await this.loadingController.create({
-      message: await lastValueFrom(
-        this.translate.get("profile.profile_pic__uploaded")
-      ),
-      showBackdrop: true,
-      backdropDismiss: false,
-      translucent: true,
-      spinner: "circular",
-    });
+    try {
+      const result: PermissionStatus = await Camera.checkPermissions();
+      if (result.camera !== "granted") {
+        const requestResult = await Camera.requestPermissions();
+        if (requestResult.camera !== "granted") {
+          console.log("Camera permission denied");
+          return;
+        }
+        console.log("Camera permission granted");
+        return;
+      }
 
-    const image: Photo = await Camera.getPhoto({
-      quality: 90,
-      allowEditing: true,
-      resultType: CameraResultType.Base64,
-      correctOrientation: true,
-      height: 400,
-      width: 400,
-      direction: CameraDirection.Front,
-    });
+      const loading = await this.loadingController.create({
+        message: await lastValueFrom(
+          this.translate.get("profile.profile_pic__uploaded"),
+        ),
+        showBackdrop: true,
+        backdropDismiss: false,
+        translucent: true,
+        spinner: "circular",
+      });
+      const image: Photo = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true,
+        resultType: CameraResultType.Base64,
+        correctOrientation: true,
+        height: 400,
+        width: 400,
+        direction: CameraDirection.Front,
+      });
 
-    loading.present();
-    // image.webPath will contain a path that can be set as an image src.
-    // You can access the original file using image.path, which can be
-    // passed to the Filesystem API to read the raw data of the image,
-    // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-    // var imageUrl = image.base64String;
-    // console.log(image);
+      loading.present();
+      // image.webPath will contain a path that can be set as an image src.
+      // You can access the original file using image.path, which can be
+      // passed to the Filesystem API to read the raw data of the image,
+      // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
+      // var imageUrl = image.base64String;
+      // console.log(image);
 
-    // const user: User = await this.authService.getUser();
-    await this.profileService.setUserProfilePicture(image);
-    loading.dismiss();
-    await this.presentToastTakePicture();
+      // const user: User = await this.authService.getUser();
+      await this.profileService.setUserProfilePicture(image);
+      loading.dismiss();
+      await this.presentToastTakePicture();
+    } catch (error) {
+      console.error("Error taking picture", error.message);
+    }
   }
 
   async deleteClubRequest(request) {
@@ -345,7 +416,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   async deleteProfile() {
     const alert = await this.alertController.create({
       message: await lastValueFrom(
-        this.translate.get("profile.delete_profile__confirm")
+        this.translate.get("profile.delete_profile__confirm"),
       ),
       buttons: [
         {
@@ -366,7 +437,6 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
             await this.router.navigateByUrl("/logout");
           },
         },
-       
       ],
     });
     alert.present();
@@ -395,7 +465,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   async presentToast() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(
-        this.translate.get("profile.request_success__deleted")
+        this.translate.get("profile.request_success__deleted"),
       ),
       duration: 1500,
       position: "top",
@@ -407,7 +477,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   async presentCancelToast() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(
-        this.translate.get("onboarding.warning__action_canceled")
+        this.translate.get("onboarding.warning__action_canceled"),
       ),
       duration: 1500,
       position: "top",
@@ -419,7 +489,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   async presentToastTakePicture() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(
-        this.translate.get("profile.success__profile_pic_changed")
+        this.translate.get("profile.success__profile_pic_changed"),
       ),
       duration: 1500,
       position: "top",
@@ -451,7 +521,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   async togglePushModule(event, module) {
     await this.profileService.changeSettingsPushModule(
       event.detail.checked,
-      module
+      module,
     );
     this.toastActionSaved();
   }
@@ -464,7 +534,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
 
   async toggleEmailReporting(event) {
     await this.profileService.changeSettingsEmailReporting(
-      event.detail.checked
+      event.detail.checked,
     );
     console.log("email");
     this.toastActionSaved();
@@ -560,7 +630,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   async presentDeleteProfile() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(
-        this.translate.get("profile.success__profile_deleted")
+        this.translate.get("profile.success__profile_deleted"),
       ),
       duration: 1500,
       position: "top",
@@ -573,7 +643,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   async presentErrorDeleteProfile() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(
-        this.translate.get("profile.error__while_deleting_msg")
+        this.translate.get("profile.error__while_deleting_msg"),
       ),
       duration: 1500,
       position: "top",
@@ -598,30 +668,95 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     console.log(event);
     await this.profileService.changeProfileAttribute(
       event.detail.value,
-      fieldname
+      fieldname,
     );
-    if (fieldname == 'language'){
+    if (fieldname == "language") {
       // console.log(event.detail.value)
       this.translate.use(event.detail.value);
     }
-  } 
-  
-  async addKid(email: string) {
-    try {
-      // Hier Logik zum Senden der Verifizierungs-E-Mail implementieren
-      await this.profileService.addKid(email);
-      await this.presentToast();
-    } catch (error) {
-      await this.presentToast();
-    }
   }
 
-  async removeKid(email: string) {
-    try {
-      await this.profileService.removeKid(email);
-      await this.presentToast();
-    } catch (error) {
-      await this.presentToast();
+  async addKidRequest() {
+    const children = await lastValueFrom(this.children$.pipe(take(1)));
+    if (children.length >= 3) {
+      const alert = await this.alertController.create({
+        header: await lastValueFrom(
+          this.translate.get("profile.kids.max_reached_header"),
+        ),
+        message: await lastValueFrom(
+          this.translate.get("profile.kids.max_reached_message"),
+        ),
+        buttons: [await lastValueFrom(this.translate.get("common.ok"))],
+      });
+      await alert.present();
+      return;
     }
+
+    const alert = await this.alertController.create({
+      header: await lastValueFrom(
+        this.translate.get("profile.kids.add_header"),
+      ),
+      message: await lastValueFrom(
+        this.translate.get("profile.kids.add_message"),
+      ),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "cancel",
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.add")),
+          role: "confirm",
+          handler: (data: any) => {
+            this.profileService.addKidRequest(this.user.uid, data.email);
+          },
+        },
+      ],
+      inputs: [
+        {
+          name: "email",
+          type: "email",
+          placeholder: await lastValueFrom(
+            this.translate.get("profile.kids.email_placeholder"),
+          ),
+          attributes: {
+            autocomplete: "email",
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  async deleteKidRequest(userId: string, requestId: string) {
+    const alert = await this.alertController.create({
+      header: await lastValueFrom(this.translate.get("common.confirmation")),
+      message: await lastValueFrom(
+        this.translate.get("profile.confirm_delete_request"),
+      ),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.no")),
+          role: "cancel",
+          handler: () => {
+            console.log("Löschen abgebrochen");
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.yes")),
+          role: "confirm",
+          handler: async () => {
+            try {
+              await this.profileService.deleteKidRequest(userId, requestId);
+              await this.presentToast();
+            } catch (error) {
+              console.error("Fehler beim Löschen des Requests", error);
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 }

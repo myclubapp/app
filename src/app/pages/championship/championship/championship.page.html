@@ -106,6 +106,9 @@
                 <ion-icon slot="icon-only" color="danger" name="close-circle-outline"></ion-icon>
                 Spiel gelöscht
               </h3>
+              <h3 >
+                <ion-badge *ngFor="let child of game.children" color="light">{{child.firstName}} {{child.lastName}} </ion-badge>
+              </h3>
             </ion-label>
             <ion-note slot="end" (click)="openChampionshipDetailModal(game, true)">
               <ion-badge color="primary">{{game.countAttendees}}</ion-badge>
@@ -197,6 +200,9 @@
               <h3 *ngIf="game.result">
                 <ion-icon slot="icon-only" name="podium-outline"></ion-icon>
                 {{game.result}}
+              </h3>
+              <h3 >
+                <ion-badge *ngFor="let child of game.children" color="light">{{child.firstName}} {{child.lastName}} </ion-badge>
               </h3>
             </ion-label>
             <ion-note slot="end" (click)="openChampionshipDetailModal(game, false)">

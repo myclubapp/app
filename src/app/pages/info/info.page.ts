@@ -1,24 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { Device, DeviceId, DeviceInfo } from '@capacitor/device';
-import { Browser, OpenOptions } from '@capacitor/browser';
+import { Component, OnInit } from "@angular/core";
+import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
+import { Browser, OpenOptions } from "@capacitor/browser";
 import packagejson from "./../../../../package.json";
-import { SwUpdate } from '@angular/service-worker';
+import { SwUpdate } from "@angular/service-worker";
 @Component({
-  selector: 'app-info',
-  templateUrl: './info.page.html',
-  styleUrls: ['./info.page.scss'],
-  standalone: false
+  selector: "app-info",
+  templateUrl: "./info.page.html",
+  styleUrls: ["./info.page.scss"],
+  standalone: false,
 })
 export class InfoPage implements OnInit {
-
   public appVersion: string = packagejson.version;
   public buildNumber: string = packagejson.buildNumber;
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
 
-  constructor(
-    public swUpdate: SwUpdate,
-  ) { }
+  constructor(public swUpdate: SwUpdate) {}
 
   async ngOnInit() {
     this.deviceId = await Device.getId();
@@ -26,15 +23,14 @@ export class InfoPage implements OnInit {
   }
 
   async openTCSite() {
-    await Browser.open({ url: 'https://my-club.app/terms-and-conditions-de/' });
-  };
+    await Browser.open({ url: "https://my-club.app/terms-and-conditions-de/" });
+  }
 
   async openPPSite() {
-    await Browser.open({ url: 'https://my-club.app/privacy-policy-de/', });
-  };
+    await Browser.open({ url: "https://my-club.app/privacy-policy-de/" });
+  }
 
   async checkForUpdates() {
-
     try {
       const update = await this.swUpdate.checkForUpdate();
       if (update) {
@@ -45,7 +41,6 @@ export class InfoPage implements OnInit {
         } else {
           console.log("Already on latest version");
         }
-
       } else {
         console.log("No update available");
       }
@@ -53,5 +48,4 @@ export class InfoPage implements OnInit {
       console.error("Error checking for updates", error);
     }
   }
-
 }

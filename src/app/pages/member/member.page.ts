@@ -38,6 +38,8 @@ export class MemberPage implements OnInit {
   userProfile$: Observable<Profile>;
   skeleton = new Array(12);
 
+  isParent: boolean;
+
   teamAdminList$: Observable<Team[]>;
   clubAdminList$: Observable<Club[]>;
   isAdmin$: Observable<boolean>;
@@ -46,6 +48,8 @@ export class MemberPage implements OnInit {
 
   alertButtonsApproveClub = [];
 
+  children$: Observable<Profile[]>;
+  parents$: Observable<Profile[]>;
   constructor(
     private readonly modalCtrl: ModalController,
     private readonly alertCtrl: AlertController,
@@ -53,16 +57,33 @@ export class MemberPage implements OnInit {
     private readonly profileService: UserProfileService,
     private readonly fbService: FirebaseService,
     private navParams: NavParams,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) { }
 
   ngOnInit() {
     this.isRequest = this.navParams.get("isRequest");
+    this.isParent = this.navParams.get("data").isParent || false;
     this.clubId = this.navParams.get("clubId");
     this.teamId = this.navParams.get("teamId");
     this.userProfile = this.navParams.get("data");
+    console.log("isParent: " + this.userProfile.isParent);
+
     // this.userProfile$ = of(this.userProfile);
     this.userProfile$ = this.getUserProfile(this.userProfile.id);
+
+    this.children$ = this.profileService.getChildren(this.userProfile.id).pipe(
+      take(1),
+      tap((children) => {
+        console.log("children: " + children);
+      })
+    );
+
+    this.parents$ = this.profileService.getParents(this.userProfile.id).pipe(
+      take(1),
+      tap((parents) => {
+        console.log("parents: " + parents);
+      })
+    );
 
     this.setupAlerts();
 
@@ -118,7 +139,7 @@ export class MemberPage implements OnInit {
 
   async handleAddMember() {
     try {
-      await this.fbService.approveUserClubRequest(this.clubId, this.userProfile.id);
+      await this.fbService.approveUserClubRequest(this.clubId, this.userProfile.id, this.isParent);
       const message = await lastValueFrom(this.translate.get("club.success__user_added"));
       const toast = await this.toastCtrl.create({
         message,
@@ -127,6 +148,10 @@ export class MemberPage implements OnInit {
         position: "top",
       });
       await toast.present();
+      if (this.isParent) {
+        this.close();
+        return;
+      }
       this.getTeamAndClubTeamsAsAdmin();
       this.close();
     } catch (error) {
@@ -268,6 +293,28 @@ export class MemberPage implements OnInit {
       },
     });*/
   }
+
+  async openMember(member: Profile) {
+    const modal = await this.modalCtrl.create({
+      component: MemberPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: member,
+        clubId: this.clubId,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+
+
+  }
+
 
 
   async deleteClubRequest(user) {

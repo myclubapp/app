@@ -10,11 +10,8 @@ import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
   Observable,
-  Subscription,
   catchError,
   combineLatest,
-  finalize,
-  first,
   forkJoin,
   lastValueFrom,
   map,
@@ -24,20 +21,18 @@ import {
   take,
   tap,
 } from "rxjs";
-import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { MemberPage } from "../member/member.page";
 import { ClubMemberListPage } from "../club-member-list/club-member-list.page";
 import { ClubAdminListPage } from "../club-admin-list/club-admin-list.page";
-import { TeamListPage } from "../team-list/team-list.page";
 import { ClubTeamListPage } from "../club-team-list/club-team-list.page";
 import { ClubRequestListPage } from "../club-request-list/club-request-list.page";
 import { Timestamp } from "firebase/firestore";
 import { HelferPunkteClubPage } from "../helfer/helfer-punkte-club/helfer-punkte-club.page";
 import { Club } from "src/app/models/club";
 import { ClubSubscriptionPage } from "../club-subscription/club-subscription.page";
+import { ClubParentsListPage } from "../club-parents-list/club-parents-list.page";
 
 @Component({
     selector: "app-club",
@@ -281,6 +276,30 @@ export class ClubPage implements OnInit {
     if (role === "confirm") {
     }
   }
+
+  async openParentList() {
+    console.log("open Club Parents List");
+    const modal = await this.modalCtrl.create({
+      component: ClubParentsListPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        club: this.club
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+
+
+
+
   /*
     async openRequestMember(member: Profile) {
       console.log("open Request Member");

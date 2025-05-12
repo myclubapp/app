@@ -12,6 +12,7 @@
     "project": ["./tsconfig.json"]
   },
   "rules": {
+    "@typescript-eslint/no-unused-vars": ["warn", { "vars": "all" }],
     "semi": ["error", "always"],
     "quotes": ["error", "double"]
   }

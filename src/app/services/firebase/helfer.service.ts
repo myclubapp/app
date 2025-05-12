@@ -22,7 +22,7 @@ import { orderBy, query, where } from 'firebase/firestore';
 export class HelferService {
   user: User;
   constructor(
-    private readonly firestore: Firestore = inject(Firestore),
+    private readonly firestore: Firestore,
     private readonly authService: AuthService
   ) {
 

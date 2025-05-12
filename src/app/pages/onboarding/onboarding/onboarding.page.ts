@@ -255,7 +255,17 @@ export class OnboardingPage implements OnInit {
     console.log(club);
 
     if (club.active) {
+    
       const alert = await this.alertCtrl.create({
+        inputs: [
+          {
+            type: "checkbox",
+            label: "Ich möchte als Elternteil eingetragen werden",
+            name: "parent",
+            value: "parent",
+            checked: false,
+          }
+        ],
         message:
           (await lastValueFrom(
             this.translate.get("onboarding.do_you_want_to_join__club")
@@ -276,7 +286,7 @@ export class OnboardingPage implements OnInit {
             text: await lastValueFrom(this.translate.get("common.yes")),
             handler: async (data: any) => {
               try {
-                await this.fbService.setClubRequest(club.id, this.user.uid)
+                await this.fbService.setClubRequest(club.id, this.user.uid, data.isParent)
                 await this.presentRequestToast();
                 await this.presentRequestSentAlert(club.name);
               } catch (err) {

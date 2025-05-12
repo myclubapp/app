@@ -91,6 +91,7 @@ export class ChampionshipDetailPage implements OnInit {
   async geolocationPermission() {
     console.log("Überprüfe Standort-Berechtigungen...");
     try {
+    
       const permission: PermissionStatus = await Geolocation.checkPermissions();
       console.log("Aktueller Berechtigungsstatus:", permission.location, permission.coarseLocation);
 
@@ -115,7 +116,8 @@ export class ChampionshipDetailPage implements OnInit {
         default:
           console.log("Unbekannter Berechtigungsstatus");
           return false;
-      }
+        }
+     
     } catch (e) {
       console.error("Fehler bei der Berechtigungsabfrage:", e);
       return false;

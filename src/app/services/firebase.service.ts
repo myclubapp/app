@@ -39,7 +39,7 @@ import { Profile } from "../models/user";
 export class FirebaseService {
   user: User;
   constructor(
-    private readonly firestore: Firestore = inject(Firestore),
+    private readonly firestore: Firestore,
     private readonly authService: AuthService
   ) { }
 
@@ -495,6 +495,18 @@ export class FirebaseService {
     }) as Observable<Profile[]>;
   }
 
+  getClubParentsRefs(clubId: string): Observable<Profile[]> {
+    // console.log(clubId);
+    const clubParentRefList = collection(
+      this.firestore,
+      `club/${clubId}/parents`
+    );
+    return collectionData(clubParentRefList, {
+      idField: "id",
+    }) as Observable<Profile[]>;
+  }
+
+
 
   getClubMemberRef(clubId: string, userId: string): Observable<Profile> {
     const clubMemberRef = doc(this.firestore, `club/${clubId}/members/${userId}`);
@@ -610,12 +622,13 @@ export class FirebaseService {
     return docData(requestRef, { idField: "id" }) as Observable<any>;
   }
 
-  approveUserClubRequest(clubId: string, userId: string): Promise<any> {
+  approveUserClubRequest(clubId: string, userId: string, isParent: boolean): Promise<any> {
     // console.log("club " + clubId, " / userid " + userId);
     return setDoc(
       doc(this.firestore, `/club/${clubId}/requests/${userId}`),
       { 
         approveDateTime: Timestamp.now(),
+        isParent: isParent,
         approve: true,
       },
       {
@@ -623,6 +636,31 @@ export class FirebaseService {
       }
     );
   }
+
+  async approveParentClubRequest(clubId: string, userId: string): Promise<any> {
+    // console.log("club " + clubId, " / userid " + userId);
+    // Trigger runs only for changed, so we need to set the parent to true first
+    await setDoc(
+      doc(this.firestore, `/club/${clubId}/requests/${userId}`),
+      { },
+      {
+        merge: true,
+      }
+    );
+    // Then trigger update event on backend --> handled
+    return setDoc(
+      doc(this.firestore, `/club/${clubId}/requests/${userId}`),
+      { 
+        approveDateTime: Timestamp.now(),
+        isParent: true,
+        approve: true,
+      },
+      {
+        merge: true,
+      }
+    );
+  }
+
   async approveUserTeamRequest(teamId: string, userId: string): Promise<any> {
     // trigger create event on backend -> not handled, because no status field for approve
     await setDoc(
@@ -696,13 +734,14 @@ export class FirebaseService {
     }) as Observable<Profile[]>;
   }
   // User Perspective via Requests
-  async setClubRequest(clubId: string, userId: string) {
+  async setClubRequest(clubId: string, userId: string, isParent: boolean) {
     // const user = await this.authService.getUser();
     const clubRef = doc(this.firestore, `/club/${clubId}`);
     return setDoc(
       doc(this.firestore, `userProfile/${userId}/clubRequests`, clubId),
       {
         clubRef: clubRef,
+        isParent: isParent,
       }
     );
   }
@@ -781,6 +820,12 @@ export class FirebaseService {
       {
         merge: true,
       }
+    );
+  }
+
+  async deleteClubParent(clubId: string, userId: string): Promise<any> {
+    await deleteDoc(
+      doc(this.firestore, `club/${clubId}/parents/${userId}`),
     );
   }
 

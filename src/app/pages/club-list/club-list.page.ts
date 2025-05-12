@@ -4,17 +4,14 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { Observable, Subscription, take, tap } from "rxjs";
 import { User } from "@angular/fire/auth";
 import { ClubPage } from "../club/club.page";
-import {
-  IonRouterOutlet,
-  ModalController,
-} from "@ionic/angular";
+import { IonRouterOutlet, ModalController } from "@ionic/angular";
 import { Router } from "@angular/router";
 
 @Component({
-    selector: "app-club-list",
-    templateUrl: "./club-list.page.html",
-    styleUrls: ["./club-list.page.scss"],
-    standalone: false
+  selector: "app-club-list",
+  templateUrl: "./club-list.page.html",
+  styleUrls: ["./club-list.page.scss"],
+  standalone: false,
 })
 export class ClubListPage implements OnInit {
   subscription: Subscription;
@@ -27,27 +24,32 @@ export class ClubListPage implements OnInit {
     private readonly router: Router,
     private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
-
-  ) { }
+  ) {}
 
   ngOnInit() {
-
     this.clubList$ = this.fbService.getClubList();
-    if (this.router.getCurrentNavigation() && this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state["type"] === 'clubRequestAdmin') {
-      this.subscription = this.fbService.getClubRef(this.router.getCurrentNavigation().extras.state["clubId"]).pipe(
-        take(1),
-        tap(club => {
-          this.openModal(club);
-        })
-      ).subscribe();
+    if (
+      this.router.getCurrentNavigation() &&
+      this.router.getCurrentNavigation().extras &&
+      this.router.getCurrentNavigation().extras.state &&
+      this.router.getCurrentNavigation().extras.state["type"] ===
+        "clubRequestAdmin"
+    ) {
+      this.subscription = this.fbService
+        .getClubRef(this.router.getCurrentNavigation().extras.state["clubId"])
+        .pipe(
+          take(1),
+          tap((club) => {
+            this.openModal(club);
+          }),
+        )
+        .subscribe();
     }
-
   }
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-
   }
   async openModal(club: Club) {
     // const presentingElement = await this.modalCtrl.getTop();

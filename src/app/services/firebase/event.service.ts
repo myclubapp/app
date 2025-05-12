@@ -23,7 +23,7 @@ import { AuthService } from "../auth.service";
 })
 export class EventService {
   constructor(
-    private firestore: Firestore = inject(Firestore),
+    private firestore: Firestore,
     private readonly authService: AuthService
   ) {}
 

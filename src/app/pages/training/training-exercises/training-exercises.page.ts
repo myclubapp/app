@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Browser } from "@capacitor/browser";
 import { IonItemSliding, ItemReorderEventDetail, ModalController, NavParams, ToastController } from "@ionic/angular";
-import { Observable, filter, first, lastValueFrom, map, pipe, take } from "rxjs";
+import { Observable, lastValueFrom, map, take } from "rxjs";
 import { Training } from "src/app/models/training";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { TeamExercisesPage } from "../../team/team-exercises/team-exercises.page";

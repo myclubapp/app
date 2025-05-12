@@ -32,7 +32,7 @@ export class TrainingService {
 
   teamList: any[] = [];
   constructor(
-    private firestore: Firestore = inject(Firestore),
+    private firestore: Firestore,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService
   ) {}

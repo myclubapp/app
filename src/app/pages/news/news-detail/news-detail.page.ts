@@ -10,7 +10,6 @@ import {
   faLinkedin,
 } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faCopy } from '@fortawesome/free-solid-svg-icons';
-import { DomSanitizer } from '@angular/platform-browser';
 import { Observable, take, tap } from 'rxjs';
 import { NewsService } from 'src/app/services/firebase/news.service';
 

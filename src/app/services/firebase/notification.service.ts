@@ -20,7 +20,7 @@ import { limit } from "firebase/firestore";
 export class NotificationService {
 
   constructor(
-    private firestore: Firestore = inject(Firestore),
+    private firestore: Firestore,
     private readonly authService: AuthService) { }
 
 

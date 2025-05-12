@@ -61,7 +61,7 @@ Wir verwenden [conventionalcommits](https://www.conventionalcommits.org/en/) fü
 
 #### Prettier & Husky
 
-Folgen Sie der [Anleitung](https://typicode.github.io/husky/get-started.html) für die Installation:
+Folgen Sie der [Anleitung](npm install --save-dev husky) für die Installation:
 
 ```bash
 # Installation
@@ -70,6 +70,14 @@ npx husky init
 
 # Pre-commit Hook in .husky/pre_commit konfigurieren
 npx pretty-quick --staged
+
+# This tells your system: “Hey, this file is a script that can be executed.”
+chmod +x .husky/pre-commit
+
+# make some changes
+git add .
+git commit -m "your new message"
+git push
 ```
 
 #### Asset-Generierung
@@ -86,12 +94,14 @@ pwa-asset-generator ./resources/icon_dark.png -i ./src/index.html -m ./src/manif
 ```
 
 Zusätzliche Tools:
+
 - Icon Generator für Manifest: [Link](https://manifest-gen.netlify.app/)
 - Favicon Generator: [Link](https://www.hoststar.ch/de/tools/favicon-generator)
 
 ## 🌍 Internationalisierung
 
 Unterstützte Sprachen:
+
 - 🇨🇭 Deutsch (Schweiz)
 - 🇨🇭 Französisch (Schweiz)
 - 🇨🇭 Italienisch (Schweiz)
@@ -102,12 +112,14 @@ Unterstützte Sprachen:
 ### Web Deployment
 
 Die App ist als PWA verfügbar unter:
+
 - [my-club.app](https://my-club.app)
 - [my-club.web.app](https://my-club.web.app)
 
 ### Native Apps
 
 Für iOS/Android Build:
+
 ```bash
 ionic capacitor add ios
 ionic capacitor add android
@@ -116,6 +128,7 @@ ionic capacitor add android
 ## 💎 MY-CLUB-PREMIUM
 
 Premium-Version mit:
+
 - Eigene Domain
 - Individuelles Design
 - Massgeschneiderte Funktionen
@@ -123,28 +136,35 @@ Premium-Version mit:
 ### Bestehende Premium Implementierungen
 
 #### 🏑 Unihockey
+
 - Kadetten Unihockey Schaffhausen ([kadetten-unihockey.web.app](https://kadetten-unihockey.web.app))
 - UHC Winterthur United ([uhc-win-u.web.app](https://uhc-win-u.web.app)) (White Label im Aufbau)
 - STV Spreitenbach ([stv-spreitenbach.web.app](https://stv-spreitenbach.web.app)) (White Label im Aufbau)
 
 #### 🏐 Volleyball
+
 - VBC Schaffhausen ([vbc-schaffhausen.web.app](https://vbc-schaffhausen.web.app)) (White Label im Aufbau)
 
 #### 🤾 Handball
+
 - Kadetten Handball Schaffhausen ([kadetten-handball.web.app](https://kadetten-handball.web.app)) (White Label im Aufbau)
 
 #### 🏋️ Turnverein
+
 - Keine Custom Implementierungen
 
 #### 🏀 Basketball
+
 - Keine Custom Implementierungen
 
 #### 🤝 Verbände
+
 - swissunihockey (White Label im Aufbau)
 - swissvolley (White Label im Aufbau)
 - swisshandball (White Label im Aufbau)
 
 ### Weitere Custom Apps
+
 - Unihockey: [unihockey.web.app](https://unihockey.web.app)
 
 ## 📚 Dokumentation

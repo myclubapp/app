@@ -169,7 +169,20 @@
         "success__profile_deleted": "Profil erfolgreich gelöscht",
         "error__while_deleting_msg": "Fehler beim löschen des Profils",
         "language": "Sprache",
-        "select__language":"Sprache auswählen"
+        "select__language":"Sprache auswählen",
+        "kidsRequests": "Kinder Anfragen",
+        "kids.verified": "Verifiziert",
+        "kids.pending": "Ausstehend",
+        "kidsrequestadd": "hinzufügen",
+        "kids.add_header": "Kind hinzufügen",
+        "kids.add_message": "Bitte gib die E-Mail-Adresse des Kindes ein, das du hinzufügen möchtest.",
+        "kids.email_placeholder": "E-Mail-Adresse des Kindes",
+        "kids.max_reached_header": "Maximale Anzahl an Kindern erreicht",
+        "kids.max_reached_message": "Du kannst maximal 3 Kinder hinzufügen.",
+        "children": "Kinder",
+        "confirm_delete_request": "Möchtest du diese Anfrage wirklich löschen?",
+        "no_children": "Keine Kinder vorhanden",
+        "parents": "Eltern"
     },
     "tabs": {},
     "team": {
@@ -316,6 +329,13 @@
         "language__german": "Deutsch",
         "language__french": "Französisch",
         "language__italian": "Italienisch",
-        "language__english": "Englisch"
+        "language__english": "Englisch",
+        "confirmation": "Bestätigung",
+        "parents": "Eltern",
+        "children": "Kinder",
+        "select_member": "Mitglied auswählen"
+    },
+    "club-parents-list": {
+        "delete_parent__confirm": "Möchtest du den Elternteil wirklich löschen?"
     }
 }

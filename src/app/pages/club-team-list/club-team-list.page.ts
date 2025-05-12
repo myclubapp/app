@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, ToastController } from '@ionic/angular';
-import { IonRouterOutlet, NavParams } from '@ionic/angular/common';
+import { NavParams } from '@ionic/angular/common';
 import { Observable, lastValueFrom } from 'rxjs';
 import { Team } from 'src/app/models/team';
 import { FirebaseService } from 'src/app/services/firebase.service';

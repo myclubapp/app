@@ -34,4 +34,5 @@ export interface Profile {
 
   // Business Logic Fields
   isAdmin: boolean;
+  isParent: boolean;
 }

@@ -34,6 +34,8 @@ import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
 import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
 import { ActivatedRoute, Router } from "@angular/router";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { Profile } from "src/app/models/user";
 
 @Component({
     selector: "app-events",
@@ -54,6 +56,7 @@ export class EventsPage implements OnInit {
   activatedRouteSub: Subscription;
 
   subscription: Subscription;
+  children: Profile[] = [];
 
   constructor(
     public toastController: ToastController,
@@ -66,7 +69,8 @@ export class EventsPage implements OnInit {
     private readonly menuCtrl: MenuController,
     private translate: TranslateService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private userProfileService: UserProfileService
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -75,7 +79,7 @@ export class EventsPage implements OnInit {
     this.eventList$ = this.getClubEvent();
     this.eventListPast$ = this.getClubEventPast();
 
-    this.subscription = this.eventList$.pipe(
+    /*this.subscription = this.eventList$.pipe(
       tap(async (events) => {
         const event = events[0];
         console.log('Widget Value for Key=NextEvent: ', event?.name);
@@ -96,7 +100,7 @@ export class EventsPage implements OnInit {
         }
 
       })
-    ).subscribe();
+    ).subscribe();*/
 
 
     //Create Events, Helfer, News
@@ -163,9 +167,40 @@ export class EventsPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.fbService.getUserClubRefs(user);
+        return combineLatest([
+          this.fbService.getUserClubRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+            }),
+            switchMap((children: Profile[]) => 
+              children.length > 0 
+                ? combineLatest(
+                    children.map(child => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.fbService.getUserClubRefs(childUser);
+                    })
+                  )
+                : of([])
+            ),
+            map(childrenClubs => childrenClubs.flat()),
+            tap((clubs) => console.log("Children Clubs:", clubs)),
+            catchError((error) => {
+              console.error("Error fetching children clubs:", error);
+              return of([]);
+            })
+          )
+        ]).pipe(
+          map(([userClubs, childrenClubs]) => {
+            const allClubs = [...userClubs, ...childrenClubs];
+            return allClubs.filter((club, index, self) =>
+              index === self.findIndex((c) => c.id === club.id)
+            );
+          })
+        );
       }),
-      // tap((clubs) => console.log("Clubs:", clubs)),
       mergeMap((clubs) => {
         if (clubs.length === 0) return of([]);
         return combineLatest(
@@ -180,9 +215,8 @@ export class EventsPage implements OnInit {
                   clubEvents.map((event) =>
                     this.eventService.getClubEventAttendeesRef(club.id, event.id).pipe(
                       map((attendees) => {
-                        const userAttendee = attendees.find(
-                          (att) => att.id == this.user.uid
-                        );
+                        const attendeeIds = [this.user.uid, ...this.children.map(child => child.id)];
+                        const userAttendee = attendees.find((att) => attendeeIds.includes(att.id));
                         const status = userAttendee ? userAttendee.status : null;
                         return {
                           ...event,
@@ -236,45 +270,74 @@ export class EventsPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.fbService.getUserClubRefs(user);
+        return combineLatest([
+          this.fbService.getUserClubRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+            }),
+            switchMap((children: Profile[]) => 
+              children.length > 0 
+                ? combineLatest(
+                    children.map(child => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.fbService.getUserClubRefs(childUser);
+                    })
+                  )
+                : of([])
+            ),
+            map(childrenClubs => childrenClubs.flat()),
+            tap((clubs) => console.log("Children Clubs:", clubs)),
+            catchError((error) => {
+              console.error("Error fetching children clubs:", error);
+              return of([]);
+            })
+          )
+        ]).pipe(
+          map(([userClubs, childrenClubs]) => {
+            const allClubs = [...userClubs, ...childrenClubs];
+            return allClubs.filter((club, index, self) =>
+              index === self.findIndex((c) => c.id === club.id)
+            );
+          })
+        );
       }),
-      // tap((clubs) => console.log("Teams:", clubs)),
-      mergeMap((teams) => {
-        if (teams.length === 0) return of([]);
+      mergeMap((clubs) => {
+        if (clubs.length === 0) return of([]);
         return combineLatest(
-          teams.map((team) =>
-            this.eventService.getClubEventsPastRef(team.id).pipe(
-              switchMap((teamevents) => {
-                if (teamevents.length === 0) return of([]);
+          clubs.map((club) =>
+            combineLatest([
+              this.eventService.getClubEventsPastRef(club.id),
+              this.fbService.getClubRef(club.id) // Fetch the club details here
+            ]).pipe(
+              switchMap(([clubEvents, clubDetails]) => {
+                if (clubEvents.length === 0) return of([]);
                 return combineLatest(
-                  teamevents.map((game) =>
-                    this.eventService
-                      .getClubEventAttendeesRef(team.id, game.id)
-                      .pipe(
-                        map((attendees) => {
-                          const userAttendee = attendees.find(
-                            (att) => att.id == this.user.uid
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null; // default to false if user is not found in attendees list
+                  clubEvents.map((event) =>
+                    this.eventService.getClubEventAttendeesRef(club.id, event.id).pipe(
+                      map((attendees) => {
+                          const attendeeIds = [this.user.uid, ...this.children.map(child => child.id)];
+                          const userAttendee = attendees.find((att) => attendeeIds.includes(att.id));
+                          const status = userAttendee ? userAttendee.status : null;
                           return {
-                            ...game,
+                            ...event,
                             attendees,
-                            status: status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true
-                            ).length,
-                            teamId: team.id,
+                            status,
+                            countAttendees: attendees.filter((att) => att.status == true).length,
+                            clubId: club.id,
+                            club: clubDetails // Append club details to each event
                           };
                         }),
                         catchError(() =>
                           of({
-                            ...game,
+                            ...event,
                             attendees: [],
                             status: null,
                             countAttendees: 0,
-                            teamId: team.id,
+                            clubId: club.id,
+                            club: clubDetails // Also provide club details here in case of error
                           })
                         ) // If error, return game with empty attendees
                       )

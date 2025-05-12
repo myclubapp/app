@@ -36,7 +36,7 @@
       </ion-button>
     </div>
 
-    <ion-list [inset]="true" *ngIf="filteredClubMembers$ | async as clubMemberList">
+    <ion-list [inset]="true" *ngIf="filteredClubMembers$ | async as clubMemberList else loading">
       <ion-item-group>
         <ng-container *ngFor="let groupBy of groupArray">
           <ion-item-divider color="light">
@@ -85,40 +85,81 @@
 
 
 <ng-template #loading>
-  <ion-header [translucent]="true">
-    <ion-toolbar>
+  <ion-list [inset]="true">
+    <ion-item-group>
+      <ion-item-divider color="light">
+        <ion-label><ion-skeleton-text animated style="width: 20%"></ion-skeleton-text></ion-label>
+      </ion-item-divider>
 
-      <ion-title>{{"common.members" | translate}}</ion-title>
-      <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
+      <!-- Mitglied 1 -->
+      <ion-item>
+        <ion-avatar slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-avatar>
+        <ion-label>
+          <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+        </ion-label>
+        <ion-label slot="end">
+          <ion-skeleton-text animated style="width: 80%; height: 20px;"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
 
-  <ion-content [fullscreen]="true">
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-title size="large">{{"common.members" | translate}}</ion-title>
-      </ion-toolbar>
-    </ion-header>
+      <!-- Mitglied 2 -->
+      <ion-item>
+        <ion-avatar slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-avatar>
+        <ion-label>
+          <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+        </ion-label>
+        <ion-label slot="end">
+          <ion-skeleton-text animated style="width: 60%; height: 20px;"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
 
-    <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
-      placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
+      <!-- Mitglied 3 -->
+      <ion-item>
+        <ion-avatar slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-avatar>
+        <ion-label>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </ion-label>
+        <ion-label slot="end">
+          <ion-skeleton-text animated style="width: 70%; height: 20px;"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
 
-    <ion-list [inset]="true">
+      <ion-item-divider color="light">
+        <ion-label><ion-skeleton-text animated style="width: 15%"></ion-skeleton-text></ion-label>
+      </ion-item-divider>
 
-      <ion-item-group>
-        <ng-container *ngFor="let groupBy of groupArray">
-          <ion-item-divider color="light">
-            <ion-label> {{groupBy}} </ion-label>
-          </ion-item-divider>
+      <!-- Mitglied 4 -->
+      <ion-item>
+        <ion-avatar slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-avatar>
+        <ion-label>
+          <ion-skeleton-text animated style="width: 65%"></ion-skeleton-text>
+        </ion-label>
+        <ion-label slot="end">
+          <ion-skeleton-text animated style="width: 40%; height: 20px;"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
 
-
-        </ng-container>
-      </ion-item-group>
-    </ion-list>
-
-  </ion-content>
-
+      <!-- Mitglied 5 -->
+      <ion-item>
+        <ion-avatar slot="start">
+          <ion-skeleton-text animated></ion-skeleton-text>
+        </ion-avatar>
+        <ion-label>
+          <ion-skeleton-text animated style="width: 55%"></ion-skeleton-text>
+        </ion-label>
+        <ion-label slot="end">
+          <ion-skeleton-text animated style="width: 75%; height: 20px;"></ion-skeleton-text>
+        </ion-label>
+      </ion-item>
+    </ion-item-group>
+  </ion-list>
 
 </ng-template>

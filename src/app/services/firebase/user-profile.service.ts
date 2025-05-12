@@ -12,6 +12,7 @@ import {
   DocumentReference,
   setDoc,
   DocumentData,
+  addDoc,
 } from "@angular/fire/firestore";
 import {
   Storage,
@@ -32,21 +33,54 @@ import { DeviceId, DeviceInfo } from "@capacitor/device";
 })
 export class UserProfileService {
   constructor(
-    private firestore: Firestore = inject(Firestore),
+    private firestore: Firestore,
     private readonly storage: Storage,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
-  addKid(email: string) {
-   /* const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { kids: email });*/
+  addKidRequest(userId: string, email: string) {
+    const userKidsRef = collection(
+      this.firestore,
+      `userProfile/${userId}/kidsRequests`,
+    );
+    return addDoc(userKidsRef, {
+      email: email,
+      createdAt: new Date(),
+      verified: false,
+    });
   }
 
-  removeKid(email: string) {
-    /* const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { kids: email });*/
+  getKidsRequests(userId: string) {
+    const userKidsRef = collection(
+      this.firestore,
+      `userProfile/${userId}/kidsRequests`,
+    );
+    return collectionData(userKidsRef, { idField: "id" }) as Observable<any[]>;
+  }
+
+  getChildren(userId: string) {
+    console.log("getChildren: " + userId);
+    const childrenRef = collection(
+      this.firestore,
+      `userProfile/${userId}/children`,
+    );
+    return collectionData(childrenRef, { idField: "id" }) as Observable<any[]>;
+  }
+
+  getParents(userId: string) {
+    const parentsRef = collection(
+      this.firestore,
+      `userProfile/${userId}/parents`,
+    );
+    return collectionData(parentsRef, { idField: "id" }) as Observable<any[]>;
+  }
+
+  deleteKidRequest(userId: string, requestId: string) {
+    const userKidsRef = collection(
+      this.firestore,
+      `userProfile/${userId}/kidsRequests`,
+    );
+    return deleteDoc(doc(userKidsRef, requestId));
   }
 
   getUserProfile(user: User): Observable<Profile> {
@@ -57,7 +91,7 @@ export class UserProfileService {
   getUserProfileById(userId: string): Observable<Profile> {
     const userProfileRef: DocumentReference = doc(
       this.firestore,
-      `userProfile/${userId}`
+      `userProfile/${userId}`,
     );
     // if (userProfileRef.id) {
     return docData(userProfileRef, { idField: "id" }) as Observable<Profile>;
@@ -67,7 +101,7 @@ export class UserProfileService {
     const user = this.authService.auth.currentUser;
     const storageRef = ref(
       this.storage,
-      `userProfile/${user.uid}/profilePicture/picture.${photo.format}`
+      `userProfile/${user.uid}/profilePicture/picture.${photo.format}`,
     );
     await uploadString(storageRef, photo.base64String, "base64", {});
     const url = await getDownloadURL(storageRef);
@@ -81,8 +115,10 @@ export class UserProfileService {
   async setUserProfile(userProfile: Profile) {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    await updateProfile(user, { displayName: userProfile.firstName + " " + userProfile.lastName });
-   
+    await updateProfile(user, {
+      displayName: userProfile.firstName + " " + userProfile.lastName,
+    });
+
     return updateDoc(userProfileRef, { userProfile });
   }
 
@@ -90,7 +126,7 @@ export class UserProfileService {
     const user = this.authService.auth.currentUser;
     const pushDeviceListRef = collection(
       this.firestore,
-      `userProfile/${user.uid}/push`
+      `userProfile/${user.uid}/push`,
     );
     return collectionData(pushDeviceListRef, {
       idField: "id",
@@ -101,14 +137,14 @@ export class UserProfileService {
     sub: PushSubscription, // WebPush
     deviceId: DeviceId,
     deviceInfo: DeviceInfo,
-    token: string // native
+    token: string, // native
   ) {
     const user = this.authService.auth.currentUser;
     const pushObject = JSON.stringify(sub);
     const userProfileRef: DocumentReference<DocumentData> = doc(
       this.firestore,
       // `userProfile/${user.uid}/push/${deviceId.identifier}`
-      `userProfile/${user.uid}/push/${deviceInfo.model}`
+      `userProfile/${user.uid}/push/${deviceInfo.model}`,
     );
 
     return setDoc(userProfileRef, {
@@ -127,7 +163,7 @@ export class UserProfileService {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(
       this.firestore,
-      `userProfile/${user.uid}/push/${deviceId}`
+      `userProfile/${user.uid}/push/${deviceId}`,
     );
     return deleteDoc(userProfileRef);
   }

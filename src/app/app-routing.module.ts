@@ -158,6 +158,10 @@ const routes: Routes = [
         (m) => m.NotFoundPageModule
       ),
   },
+  {
+    path: 'club-parents-list',
+    loadChildren: () => import('./pages/club-parents-list/club-parents-list.module').then( m => m.ClubParentsListPageModule)
+  },
 
 
 ];

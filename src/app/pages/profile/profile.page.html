@@ -16,11 +16,13 @@
 
   <ng-container *ngIf="userProfile$ | async as userProfile">
     <ion-list lines="full" [inset]="true">
-
       <ion-item lines="none" class="ion-text-center profile-item">
         <div class="profile-image-container">
           <ion-avatar class="profile-avatar">
-            <img alt="{{userProfile.firstName}}" src="{{userProfile.profilePicture}}" />
+            <img
+              alt="{{userProfile.firstName}}"
+              src="{{userProfile.profilePicture}}"
+            />
           </ion-avatar>
           <ion-button class="camera-button" (click)="takePicture()">
             <ion-icon slot="icon-only" name="camera"></ion-icon>
@@ -32,16 +34,26 @@
       </ion-list-header>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" [label]='"common.first__name" | translate'
-          attr.aria-label='{{"common.first__name" | translate}}' (ionChange)="profileChange($event, 'firstName')"
-          [(ngModel)]="userProfile.firstName" value="{{userProfile.firstName}}">
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"common.first__name" | translate'
+          attr.aria-label='{{"common.first__name" | translate}}'
+          (ionChange)="profileChange($event, 'firstName')"
+          [(ngModel)]="userProfile.firstName"
+          value="{{userProfile.firstName}}"
+        >
         </ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" [label]='"common.last__name" | translate'
-          attr.aria-label='{{"common.last__name" | translate}}' (ionChange)="profileChange($event, 'lastName')"
-          [(ngModel)]="userProfile.lastName" value="{{userProfile.lastName}}">
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"common.last__name" | translate'
+          attr.aria-label='{{"common.last__name" | translate}}'
+          (ionChange)="profileChange($event, 'lastName')"
+          [(ngModel)]="userProfile.lastName"
+          value="{{userProfile.lastName}}"
+        >
         </ion-input>
       </ion-item>
 
@@ -56,25 +68,46 @@
         <ion-label position="">
           {{"profile.birthdate" | translate}}:
         </ion-label>
-        <ion-datetime-button slot="end" datetime="dateOfBirth"></ion-datetime-button>
+        <ion-datetime-button
+          slot="end"
+          datetime="dateOfBirth"
+        ></ion-datetime-button>
 
         <ion-modal [keepContentsMounted]="true">
           <ng-template>
-            <ion-datetime (ionChange)="onDateChange($event)" [firstDayOfWeek]="1" presentation="date" id="dateOfBirth"
-              value="{{localDateString}}"></ion-datetime>
+            <ion-datetime
+              (ionChange)="onDateChange($event)"
+              [firstDayOfWeek]="1"
+              presentation="date"
+              id="dateOfBirth"
+              value="{{localDateString}}"
+            ></ion-datetime>
           </ng-template>
         </ion-modal>
       </ion-item>
 
       <ion-item>
-        <ion-select aria-label="'profile.language' | translate" [label]="'profile.language' | translate"
-          [(ngModel)]="userProfile.language" (ionChange)="profileChange($event, 'language')"
-          [placeholder]="'profile.select__language' | translate" [cancelText]="'common.cancel' | translate"
-          [okText]="'common.save' | translate">
-          <ion-select-option value="de">{{"common.language__german" | translate}}</ion-select-option>
-          <ion-select-option value="fr">{{"common.language__french" | translate}}</ion-select-option>
-          <ion-select-option value="it">{{"common.language__italian" | translate}}</ion-select-option>
-          <ion-select-option value="en">{{"common.language__english" | translate}}</ion-select-option>
+        <ion-select
+          aria-label="'profile.language' | translate"
+          [label]="'profile.language' | translate"
+          [(ngModel)]="userProfile.language"
+          (ionChange)="profileChange($event, 'language')"
+          [placeholder]="'profile.select__language' | translate"
+          [cancelText]="'common.cancel' | translate"
+          [okText]="'common.save' | translate"
+        >
+          <ion-select-option value="de"
+            >{{"common.language__german" | translate}}</ion-select-option
+          >
+          <ion-select-option value="fr"
+            >{{"common.language__french" | translate}}</ion-select-option
+          >
+          <ion-select-option value="it"
+            >{{"common.language__italian" | translate}}</ion-select-option
+          >
+          <ion-select-option value="en"
+            >{{"common.language__english" | translate}}</ion-select-option
+          >
         </ion-select>
       </ion-item>
     </ion-list>
@@ -84,9 +117,15 @@
       </ion-list-header>
 
       <ion-item>
-        <ion-input labelPlacement="stacked" [label]='"profile.phonenumber" | translate'
-          attr.aria-label='{{"profile.phonenumber" | translate}}' [(ngModel)]="userProfile.phonenumber" tel
-          value="{{userProfile.phonenumber}}" (ionChange)="profileChange($event, 'phonenumber')">
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"profile.phonenumber" | translate'
+          attr.aria-label='{{"profile.phonenumber" | translate}}'
+          [(ngModel)]="userProfile.phonenumber"
+          tel
+          value="{{userProfile.phonenumber}}"
+          (ionChange)="profileChange($event, 'phonenumber')"
+        >
         </ion-input>
       </ion-item>
       <!--
@@ -98,15 +137,24 @@
       </ion-item> -->
 
       <ion-item id="present-alert-email" detail="true">
-        <ion-input labelPlacement="stacked" [label]='"profile.email" | translate' type="email"
-          attr.aria-label='{{"profile.email" | translate}}' readonly [value]="userProfile.email">
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"profile.email" | translate'
+          type="email"
+          attr.aria-label='{{"profile.email" | translate}}'
+          readonly
+          [value]="userProfile.email"
+        >
         </ion-input>
       </ion-item>
 
-      <ion-alert trigger="present-alert-email" [header]='"profile.change_email_header" | translate'
-        [message]='"profile.change_email_message" | translate' [buttons]="alertButtonsEmail"
-        [inputs]="alertInputsEmail"></ion-alert>
-
+      <ion-alert
+        trigger="present-alert-email"
+        [header]='"profile.change_email_header" | translate'
+        [message]='"profile.change_email_message" | translate'
+        [buttons]="alertButtonsEmail"
+        [inputs]="alertInputsEmail"
+      ></ion-alert>
 
       <!--<ion-item (click)="changeAddress(userProfile)" detail="true">
         <ion-input labelPlacement="stacked" [label]='"profile.address" | translate'
@@ -116,15 +164,21 @@
       </ion-item>-->
 
       <ion-item id="present-alert-address" detail="true">
-        <ion-input labelPlacement="stacked" [label]='"profile.address" | translate'
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"profile.address" | translate'
           attr.aria-label='{{"profile.address" | translate}}'
-          value="{{userProfile.streetAndNumber}} {{userProfile.postalcode}} {{userProfile.city}}">
+          value="{{userProfile.streetAndNumber}} {{userProfile.postalcode}} {{userProfile.city}}"
+        >
         </ion-input>
       </ion-item>
-      <ion-alert trigger="present-alert-address" [header]='"profile.change_address_header" | translate'
-        [message]='"profile.change_address_message" | translate' [buttons]="alertButtonsAddress"
-        [inputs]="alertInputsAddress"></ion-alert>
-
+      <ion-alert
+        trigger="present-alert-address"
+        [header]='"profile.change_address_header" | translate'
+        [message]='"profile.change_address_message" | translate'
+        [buttons]="alertButtonsAddress"
+        [inputs]="alertInputsAddress"
+      ></ion-alert>
     </ion-list>
 
     <!--<ion-list lines="full" [inset]="true">
@@ -141,7 +195,6 @@
       </ion-item>
     </ion-list>-->
 
-
     <ng-container *ngIf="clubList$ | async as clubList">
       <ng-container *ngIf="enableHelferEvents(clubList)">
         <ion-list lines="full" [inset]="true">
@@ -149,14 +202,11 @@
             <ion-label> {{ "profile.diverses" | translate}} </ion-label>
           </ion-list-header>
 
-
           <ion-item detail="true" (click)="openHelferPunkte()">
             <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
             <ion-label> {{ "common.helper_points" | translate}} </ion-label>
           </ion-item>
-
         </ion-list>
-
       </ng-container>
     </ng-container>
 
@@ -205,77 +255,149 @@
       <ion-accordion-group>
         <ion-accordion value="settingsPush">
           <ion-item slot="header">
-            <ion-icon slot="start" color="primary" name="notifications-outline"></ion-icon>
+            <ion-icon
+              slot="start"
+              color="primary"
+              name="notifications-outline"
+            ></ion-icon>
             <ion-label> {{"profile.push__message" | translate}} </ion-label>
           </ion-item>
           <div slot="content">
             <ion-item>
-              <ion-icon *ngIf="userProfile.settingsPush" slot="start" color="success"
-                name="notifications-circle"></ion-icon>
-              <ion-icon *ngIf="!userProfile.settingsPush" slot="start" color="danger"
-                name="notifications-off-circle"></ion-icon>
+              <ion-icon
+                *ngIf="userProfile.settingsPush"
+                slot="start"
+                color="success"
+                name="notifications-circle"
+              ></ion-icon>
+              <ion-icon
+                *ngIf="!userProfile.settingsPush"
+                slot="start"
+                color="danger"
+                name="notifications-off-circle"
+              ></ion-icon>
 
-              <ion-toggle attr.aria-label='{{"profile.push__message" | translate}}'
-                value="{{userProfile?.settingsPush}}" [checked]="userProfile.settingsPush" [enableOnOffLabels]="true"
-                (ionChange)="togglePush($event)">
+              <ion-toggle
+                attr.aria-label='{{"profile.push__message" | translate}}'
+                value="{{userProfile?.settingsPush}}"
+                [checked]="userProfile.settingsPush"
+                [enableOnOffLabels]="true"
+                (ionChange)="togglePush($event)"
+              >
                 <ion-label>
                   {{"profile.push__message__activate" | translate}}
                 </ion-label>
-                <ion-note class="ion-text-wrap" *ngIf="userProfile.settingsPush" color="medium">
-                  {{"profile.push__message__deactivate" |
-                  translate}}</ion-note>
-
+                <ion-note
+                  class="ion-text-wrap"
+                  *ngIf="userProfile.settingsPush"
+                  color="medium"
+                >
+                  {{"profile.push__message__deactivate" | translate}}</ion-note
+                >
               </ion-toggle>
-
             </ion-item>
             <ion-item disabled="{{!userProfile.settingsPush}}">
-              <ion-icon size="small" slot="start" name="newspaper-outline"></ion-icon>
-              <ion-toggle labelPlacement="start" attr.aria-label='{{"common.news" | translate}}'
-                value="{{userProfile?.settingsPushNews}}" slot="end" [checked]="userProfile.settingsPushNews"
-                [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'News')"></ion-toggle>
+              <ion-icon
+                size="small"
+                slot="start"
+                name="newspaper-outline"
+              ></ion-icon>
+              <ion-toggle
+                labelPlacement="start"
+                attr.aria-label='{{"common.news" | translate}}'
+                value="{{userProfile?.settingsPushNews}}"
+                slot="end"
+                [checked]="userProfile.settingsPushNews"
+                [enableOnOffLabels]="true"
+                (ionChange)="togglePushModule($event, 'News')"
+              ></ion-toggle>
               <ion-label> {{"common.news" | translate}} </ion-label>
             </ion-item>
 
             <!-- TODO ADD CHECK FOR CLUB-->
             <ion-item disabled="{{!userProfile.settingsPush}}">
               <ion-icon size="small" slot="start" name="newspaper"></ion-icon>
-              <ion-toggle labelPlacement="start" attr.aria-label='{{"common.newsVerband" | translate}}'
-                value="{{userProfile?.settingsPushNewsVerband}}" slot="end"
-                [checked]="userProfile.settingsPushNewsVerband" [enableOnOffLabels]="true"
-                (ionChange)="togglePushModule($event, 'NewsVerband')"></ion-toggle>
+              <ion-toggle
+                labelPlacement="start"
+                attr.aria-label='{{"common.newsVerband" | translate}}'
+                value="{{userProfile?.settingsPushNewsVerband}}"
+                slot="end"
+                [checked]="userProfile.settingsPushNewsVerband"
+                [enableOnOffLabels]="true"
+                (ionChange)="togglePushModule($event, 'NewsVerband')"
+              ></ion-toggle>
               <ion-label> {{"common.newsVerband" | translate}} </ion-label>
             </ion-item>
 
             <ion-item disabled="{{!userProfile.settingsPush}}">
-              <ion-icon size="small" slot="start" name="barbell-outline"></ion-icon>
-              <ion-toggle labelPlacement="start" attr.aria-label='{{"common.training" | translate}}'
-                value="{{userProfile?.settingsPushTraining}}" slot="end" [checked]="userProfile.settingsPushTraining"
-                [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'Training')"></ion-toggle>
+              <ion-icon
+                size="small"
+                slot="start"
+                name="barbell-outline"
+              ></ion-icon>
+              <ion-toggle
+                labelPlacement="start"
+                attr.aria-label='{{"common.training" | translate}}'
+                value="{{userProfile?.settingsPushTraining}}"
+                slot="end"
+                [checked]="userProfile.settingsPushTraining"
+                [enableOnOffLabels]="true"
+                (ionChange)="togglePushModule($event, 'Training')"
+              ></ion-toggle>
               <ion-label> {{"common.training" | translate}} </ion-label>
             </ion-item>
 
             <ion-item disabled="{{!userProfile.settingsPush}}">
-              <ion-icon size="small" slot="start" name="trophy-outline"></ion-icon>
-              <ion-toggle labelPlacement="start" attr.aria-label='{{"common.championship" | translate}}'
-                value="{{userProfile?.settingsPushChampionship}}" slot="end"
-                [checked]="userProfile.settingsPushChampionship" [enableOnOffLabels]="true"
-                (ionChange)="togglePushModule($event, 'Championship')"></ion-toggle>
+              <ion-icon
+                size="small"
+                slot="start"
+                name="trophy-outline"
+              ></ion-icon>
+              <ion-toggle
+                labelPlacement="start"
+                attr.aria-label='{{"common.championship" | translate}}'
+                value="{{userProfile?.settingsPushChampionship}}"
+                slot="end"
+                [checked]="userProfile.settingsPushChampionship"
+                [enableOnOffLabels]="true"
+                (ionChange)="togglePushModule($event, 'Championship')"
+              ></ion-toggle>
               <ion-label> {{"common.championship" | translate}} </ion-label>
             </ion-item>
 
             <ion-item disabled="{{!userProfile.settingsPush}}">
-              <ion-icon size="small" slot="start" name="calendar-outline"></ion-icon>
-              <ion-toggle labelPlacement="start" attr.aria-label='{{"common.events" | translate}}'
-                value="{{userProfile?.settingsPushEvent}}" slot="end" [checked]="userProfile.settingsPushEvent"
-                [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'Event')"></ion-toggle>
+              <ion-icon
+                size="small"
+                slot="start"
+                name="calendar-outline"
+              ></ion-icon>
+              <ion-toggle
+                labelPlacement="start"
+                attr.aria-label='{{"common.events" | translate}}'
+                value="{{userProfile?.settingsPushEvent}}"
+                slot="end"
+                [checked]="userProfile.settingsPushEvent"
+                [enableOnOffLabels]="true"
+                (ionChange)="togglePushModule($event, 'Event')"
+              ></ion-toggle>
               <ion-label> {{"common.events" | translate}} </ion-label>
             </ion-item>
 
             <ion-item disabled="{{!userProfile.settingsPush}}">
-              <ion-icon size="small" slot="start" name="help-buoy-outline"></ion-icon>
-              <ion-toggle labelPlacement="start" attr.aria-label='{{"common.helper" | translate}}'
-                value="{{userProfile?.settingsPushHelfer}}" slot="end" [checked]="userProfile.settingsPushHelfer"
-                [enableOnOffLabels]="true" (ionChange)="togglePushModule($event, 'Helfer')"></ion-toggle>
+              <ion-icon
+                size="small"
+                slot="start"
+                name="help-buoy-outline"
+              ></ion-icon>
+              <ion-toggle
+                labelPlacement="start"
+                attr.aria-label='{{"common.helper" | translate}}'
+                value="{{userProfile?.settingsPushHelfer}}"
+                slot="end"
+                [checked]="userProfile.settingsPushHelfer"
+                [enableOnOffLabels]="true"
+                (ionChange)="togglePushModule($event, 'Helfer')"
+              ></ion-toggle>
               <ion-label> {{"common.helper" | translate}} </ion-label>
             </ion-item>
           </div>
@@ -283,27 +405,53 @@
 
         <ion-accordion value="settingsEmail">
           <ion-item slot="header">
-            <ion-icon slot="start" color="secondary" name="mail-outline"></ion-icon>
+            <ion-icon
+              slot="start"
+              color="secondary"
+              name="mail-outline"
+            ></ion-icon>
             <ion-label> {{"profile.email__messages" | translate}} </ion-label>
           </ion-item>
           <div slot="content">
             <ion-item>
-              <ion-icon *ngIf="userProfile.settingsEmail" slot="start" color="success" name="mail"></ion-icon>
-              <ion-icon *ngIf="!userProfile.settingsEmail" slot="start" color="danger" name="mail-outline"></ion-icon>
+              <ion-icon
+                *ngIf="userProfile.settingsEmail"
+                slot="start"
+                color="success"
+                name="mail"
+              ></ion-icon>
+              <ion-icon
+                *ngIf="!userProfile.settingsEmail"
+                slot="start"
+                color="danger"
+                name="mail-outline"
+              ></ion-icon>
 
-              <ion-toggle color="secondary" attr.aria-label='{{"profile.email__messages" | translate}}'
-                value="{{userProfile?.settingsEmail}}" [checked]="userProfile.settingsEmail" [enableOnOffLabels]="true"
-                (ionChange)="toggleEmail($event)">
-                <ion-label> {{"profile.email__messages" | translate}} </ion-label>
+              <ion-toggle
+                color="secondary"
+                attr.aria-label='{{"profile.email__messages" | translate}}'
+                value="{{userProfile?.settingsEmail}}"
+                [checked]="userProfile.settingsEmail"
+                [enableOnOffLabels]="true"
+                (ionChange)="toggleEmail($event)"
+              >
+                <ion-label>
+                  {{"profile.email__messages" | translate}}
+                </ion-label>
               </ion-toggle>
             </ion-item>
             <ion-item>
               <ion-icon slot="start" size="small" name="analytics"></ion-icon>
-              <ion-toggle color="secondary" labelPlacement="start"
+              <ion-toggle
+                color="secondary"
+                labelPlacement="start"
                 attr.aria-label='{{"profile.email__messages_report" | translate}}'
-                value="{{userProfile?.settingsEmailReporting}}" slot="end"
-                [checked]="userProfile.settingsEmailReporting" [enableOnOffLabels]="true"
-                (ionChange)="toggleEmailReporting($event)"></ion-toggle>
+                value="{{userProfile?.settingsEmailReporting}}"
+                slot="end"
+                [checked]="userProfile.settingsEmailReporting"
+                [enableOnOffLabels]="true"
+                (ionChange)="toggleEmailReporting($event)"
+              ></ion-toggle>
               <ion-label>
                 {{"profile.email__messages_report" | translate}}
               </ion-label>
@@ -355,55 +503,109 @@
       </ion-item>
 
     </ion-list>-->
+    <ng-container *ngIf="parents$ | async as parents">
+      <ion-list *ngIf="parents.length > 0" lines="full" [inset]="true">
+        <ion-list-header *ngIf="parents.length > 0">
+          <ion-label>{{'profile.parents' | translate}}</ion-label>
+        </ion-list-header>
+
+        <ion-item
+          *ngFor="let parent of parents"
+          detail="true"
+          (click)="openMember(parent)"
+        >
+          <ion-avatar slot="start">
+            <img
+              *ngIf="!parent.profilePicture"
+              alt="Silhouette of a person's head"
+              src="https://ionicframework.com/docs/img/demos/avatar.svg"
+            />
+            <img
+              *ngIf="parent.profilePicture"
+              src="{{parent?.profilePicture}}"
+            />
+          </ion-avatar>
+          <ion-label>
+            <h2>{{parent?.firstName}} {{parent?.lastName}}</h2>
+            <p>{{parent?.email}}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ng-container>
+
+    <ion-list lines="full" [inset]="true">
+      <ion-list-header>
+        <ion-label> {{"profile.children" | translate}}</ion-label>
+        <ion-button
+          *ngIf="(children$ | async)?.length < 3"
+          (click)="addKidRequest()"
+          >{{"profile.kidsrequestadd" | translate}}</ion-button
+        >
+      </ion-list-header>
+      <ng-container *ngIf="children$ | async as children">
+        <ion-item
+          *ngFor="let child of children"
+          detail="true"
+          (click)="openMember(child)"
+        >
+          <ion-avatar slot="start">
+            <img
+              *ngIf="!child.profilePicture"
+              alt="Silhouette of a person's head"
+              src="https://ionicframework.com/docs/img/demos/avatar.svg"
+            />
+            <img *ngIf="child.profilePicture" src="{{child?.profilePicture}}" />
+          </ion-avatar>
+          <ion-label>
+            <h2>{{child?.firstName}} {{child?.lastName}}</h2>
+            <p>{{child?.email}}</p>
+          </ion-label>
+        </ion-item>
+        <ion-item *ngIf="children.length === 0">
+          <ion-label> {{"profile.no_children" | translate}}</ion-label>
+        </ion-item>
+      </ng-container>
+    </ion-list>
+
+    <ng-container *ngIf="kidsRequests$ | async as kidsRequests">
+      <ion-list *ngIf="kidsRequests.length > 0" lines="full" [inset]="true">
+        <ion-list-header>
+          <ion-label> {{"profile.kidsRequests" | translate}}</ion-label>
+        </ion-list-header>
+
+        <ion-item *ngFor="let kidRequest of kidsRequests">
+          <ion-label>
+            <h2>{{kidRequest.email}}</h2>
+            <p *ngIf="kidRequest.verified" color="success">
+              {{"profile.kids.verified" | translate}}
+            </p>
+            <p *ngIf="!kidRequest.verified" color="warning">
+              {{"profile.kids.pending" | translate}}
+            </p>
+          </ion-label>
+          <ion-button
+            slot="end"
+            color="danger"
+            (click)="deleteKidRequest(userProfile.id, kidRequest.id)"
+          >
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+    </ng-container>
+
     <div class="ion-padding">
-      <ion-button fill="outline" expand="block" color="danger" (click)="deleteProfile()">
+      <ion-button
+        fill="outline"
+        expand="block"
+        color="danger"
+        (click)="deleteProfile()"
+      >
         <ion-icon slot="start" name="trash"></ion-icon>
         {{'profile.delete__profile' | translate}}
       </ion-button>
     </div>
-
-            <!--
-    <ion-list lines="full" [inset]="true">
-      <ion-list-header>
-        <ion-label> {{"profile.kids" | translate}} </ion-label>
-      </ion-list-header>
-
-
-      <ion-item *ngFor="let kid of userProfile.kids">
-        <ion-label>
-          <h2>{{kid.email}}</h2>
-          <p *ngIf="kid.verified" color="success">{{"profile.kids.verified" | translate}}</p>
-          <p *ngIf="!kid.verified" color="warning">{{"profile.kids.pending" | translate}}</p>
-        </ion-label>
-        <ion-button slot="end" color="danger" (click)="removeKid(kid.email)">
-          <ion-icon slot="icon-only" name="trash"></ion-icon>
-        </ion-button>
-      </ion-item>
-
-          <ion-item id="add-kid-alert" detail="true">
-            <ion-icon slot="start" name="person-add-outline"></ion-icon>
-            <ion-label>{{"profile.kids.add" | translate}}</ion-label>
-          </ion-item>
-          
-          <ion-alert trigger="add-kid-alert"
-          [header]='"profile.kids.add_header" | translate'
-          [message]='"profile.kids.add_message" | translate'
-          [buttons]="kidAlertButtons"
-          [inputs]="[
-          {
-            name: 'email',
-            type: 'email',
-            placeholder: 'profile.kids.email_placeholder' | translate,
-            attributes: {
-              autocomplete: 'email'
-            }
-          }
-          ]">
-        </ion-alert>
-     
-    </ion-list>   -->
   </ng-container>
-
 
   <!-- 
   <ng-container *ngIf="clubList$ | async as clubList; else loadingClub">

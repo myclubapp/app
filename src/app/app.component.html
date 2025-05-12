@@ -47,6 +47,9 @@
                 </ng-container>
                 <ion-item routerDirection="root" [routerLink]="['/profile']" lines="none" detail="true"
                   routerLinkActive="selected">
+                  <!--<ion-avatar class="menu-avatar" size="small" slot="start">
+                    <img *ngIf="user?.photoURL" src="{{user?.photoURL}}" />
+                  </ion-avatar>-->
                   <ion-icon slot="start" name="person-circle-outline"></ion-icon>
                   <ion-label>{{"common.profile" | translate}}</ion-label>
                 </ion-item>
