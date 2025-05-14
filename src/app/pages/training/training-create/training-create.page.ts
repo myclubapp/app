@@ -1,5 +1,10 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { AlertController, ModalController, NavParams, ToastController } from "@ionic/angular";
+import {
+  AlertController,
+  ModalController,
+  NavParams,
+  ToastController,
+} from "@ionic/angular";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
 import {
@@ -27,7 +32,7 @@ import { TrainingService } from "src/app/services/firebase/training.service";
   selector: "app-training-create",
   templateUrl: "./training-create.page.html",
   styleUrls: ["./training-create.page.scss"],
-  standalone: false
+  standalone: false,
 })
 export class TrainingCreatePage implements OnInit {
   @Input("data") trainingCopy: Training;
@@ -45,19 +50,20 @@ export class TrainingCreatePage implements OnInit {
     private readonly toastController: ToastController,
 
     private fbService: FirebaseService,
-    public navParams: NavParams
+    public navParams: NavParams,
   ) {
-
     const now = new Date();
-    const utcNow = new Date(Date.UTC(
-      now.getUTCFullYear(),
-      now.getUTCMonth(),
-      now.getUTCDate(),
-      now.getUTCHours(),
-      now.getUTCMinutes(),
-      0,
-      0
-    ));
+    const utcNow = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        now.getUTCHours(),
+        now.getUTCMinutes(),
+        0,
+        0,
+      ),
+    );
 
     this.training = {
       id: "",
@@ -88,6 +94,8 @@ export class TrainingCreatePage implements OnInit {
       exercises: [],
       countAttendees: 0,
       children: [],
+      cancelled: false,
+      cancelledReason: "",
     };
   }
 
@@ -96,7 +104,6 @@ export class TrainingCreatePage implements OnInit {
     console.log(this.trainingCopy);
     if (this.trainingCopy.id) {
       this.training = this.trainingCopy;
-
 
       const now = new Date();
       /*const utcNow = new Date(Date.UTC(
@@ -112,9 +119,7 @@ export class TrainingCreatePage implements OnInit {
       this.training.timeTo = now.toISOString();
       this.training.startDate = now.toISOString();
       this.training.endDate = now.toISOString();
-
     }
-
 
     this.teamAdminList$ = this.fbService.getTeamAdminList();
     this.teamAdminList$.forEach((teamList) => {
@@ -123,7 +128,7 @@ export class TrainingCreatePage implements OnInit {
     });
   }
 
-  ngOnDestroy(): void { }
+  ngOnDestroy(): void {}
 
   changeTimeFrom(ev) {
     /*console.log("changeTimeFrom local time: " + ev.detail.value);
@@ -160,7 +165,6 @@ export class TrainingCreatePage implements OnInit {
     ).toISOString();
   }*/
 
-
   changeStartDate(ev) {
     /*console.log("changeStartDate " + ev.detail.value);
     if (this.training.startDate > this.training.endDate) {
@@ -185,11 +189,13 @@ export class TrainingCreatePage implements OnInit {
     const day = dateObj.getDate();
 
     // Parse the time string (handling ISO format like "2025-03-03T21:00:00")
-    let hours = 0, minutes = 0, seconds = 0;
+    let hours = 0,
+      minutes = 0,
+      seconds = 0;
 
-    if (typeof timeValue === 'string') {
+    if (typeof timeValue === "string") {
       // Check if it's ISO format with "T" separator
-      if (timeValue.includes('T')) {
+      if (timeValue.includes("T")) {
         // Parse ISO format (2025-03-03T21:00:00)
         const timeObj = new Date(timeValue);
         hours = timeObj.getHours();
@@ -197,7 +203,7 @@ export class TrainingCreatePage implements OnInit {
         seconds = timeObj.getSeconds();
       } else {
         // Fallback to original parsing for "HH:MM:SS" format
-        const timeParts = timeValue.split(':');
+        const timeParts = timeValue.split(":");
         hours = parseInt(timeParts[0], 10) || 0;
         minutes = parseInt(timeParts[1], 10) || 0;
         seconds = parseInt(timeParts[2], 10) || 0;
@@ -209,10 +215,16 @@ export class TrainingCreatePage implements OnInit {
     }
 
     // Create a new date with combined date and time
-    const combinedDateTime = new Date(year, month, day, hours, minutes, seconds);
+    const combinedDateTime = new Date(
+      year,
+      month,
+      day,
+      hours,
+      minutes,
+      seconds,
+    );
     return combinedDateTime;
   }
-
 
   async createTraining() {
     console.log(`Start Date before calculation: ${this.training.startDate}`);
@@ -222,40 +234,46 @@ export class TrainingCreatePage implements OnInit {
     console.log(`End Time before calculation: ${this.training.timeTo}`);
 
     // Überprüfe grundlegende Felder
-    if (!this.training.name  || !this.training.location 
-      || !this.training.streetAndNumber|| !this.training.postalCode 
-      || !this.training.city || !this.training.teamId || 
-      !this.training.timeFrom || !this.training.timeTo) {
+    if (
+      !this.training.name ||
+      !this.training.location ||
+      !this.training.streetAndNumber ||
+      !this.training.postalCode ||
+      !this.training.city ||
+      !this.training.teamId ||
+      !this.training.timeFrom ||
+      !this.training.timeTo
+    ) {
       this.toastActionError({ message: "Bitte füllen Sie alle Felder aus." });
       return null;
     }
 
-
     // Bestätigungsdialog anzeigen
     const alert = await this.alertController.create({
-      header: 'Bestätigung',
-      message: 'Soll der Training erstellt werden?',
+      header: "Bestätigung",
+      message: "Soll der Training erstellt werden?",
       buttons: [
         {
-          text: 'Abbrechen', role: 'cancel',
+          text: "Abbrechen",
+          role: "cancel",
           handler: () => {
-            console.log('Training-Erstellung abgebrochen');
-          }
+            console.log("Training-Erstellung abgebrochen");
+          },
         },
         {
-          text: 'Erstellen', role: 'confirm',
+          text: "Erstellen",
+          role: "confirm",
           handler: async () => {
-
             // Combine start date with time from
             const combinedStartDateTime = this.combineDateAndTime(
               this.training.startDate,
-              this.training.timeFrom  // ISO format: "2025-03-03T21:00:00"
+              this.training.timeFrom, // ISO format: "2025-03-03T21:00:00"
             );
 
             // Combine end date with time to
             const combinedEndDateTime = this.combineDateAndTime(
               this.training.endDate,
-              this.training.timeTo    // ISO format: "2025-03-03T21:00:00"
+              this.training.timeTo, // ISO format: "2025-03-03T21:00:00"
             );
 
             // Or if you want to update the original fields:
@@ -265,19 +283,24 @@ export class TrainingCreatePage implements OnInit {
             this.training.endDate = combinedEndDateTime.toISOString();
             this.training.timeTo = combinedEndDateTime.toISOString();
 
-
-            console.log(`Start Date after calculation: ${this.training.startDate}`);
-            console.log(`Start Time after calculation: ${this.training.timeFrom}`);
+            console.log(
+              `Start Date after calculation: ${this.training.startDate}`,
+            );
+            console.log(
+              `Start Time after calculation: ${this.training.timeFrom}`,
+            );
 
             console.log(`End Date after calculation: ${this.training.endDate}`);
             console.log(`End Time after calculation: ${this.training.timeTo}`);
 
             delete this.training.attendees;
 
-            const training = await this.trainingService.setCreateTraining(this.training).catch(e => {
-              console.log(e.message);
-              this.toastActionError(e);
-            });
+            const training = await this.trainingService
+              .setCreateTraining(this.training)
+              .catch((e) => {
+                console.log(e.message);
+                this.toastActionError(e);
+              });
 
             if (training) {
               console.log(training.id);
@@ -285,17 +308,15 @@ export class TrainingCreatePage implements OnInit {
             }
 
             return null;
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
     await alert.present();
     return null;
 
     // Überprüfe, ob die Start- und Endzeiten korrekt sind
-
-
   }
 
   async toastActionError(error) {
@@ -308,5 +329,4 @@ export class TrainingCreatePage implements OnInit {
 
     await toast.present();
   }
-
 }

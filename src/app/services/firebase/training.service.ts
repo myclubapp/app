@@ -11,13 +11,11 @@ import {
   query,
   where,
   docData,
+  updateDoc,
 } from "@angular/fire/firestore";
 
 // import firebase from 'firebase/compat/app';
-import {
-  Observable,
-  Subscription,
-} from "rxjs";
+import { Observable, Subscription } from "rxjs";
 
 import { AuthService } from "src/app/services/auth.service";
 import { Training } from "src/app/models/training";
@@ -34,7 +32,7 @@ export class TrainingService {
   constructor(
     private firestore: Firestore,
     private readonly authService: AuthService,
-    private readonly fbService: FirebaseService
+    private readonly fbService: FirebaseService,
   ) {}
 
   async setCreateTraining(training: Training) {
@@ -43,7 +41,7 @@ export class TrainingService {
     // console.log(training);
     return addDoc(
       collection(this.firestore, `userProfile/${user.uid}/trainings`),
-      training
+      training,
     );
   }
 
@@ -51,26 +49,26 @@ export class TrainingService {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const gameRef = doc(
       this.firestore,
-      `teams/${teamId}/trainings/${trainingId}`
+      `teams/${teamId}/trainings/${trainingId}`,
     );
     return docData(gameRef, { idField: "id" }) as Observable<Training>;
   }
 
   /* TEAM TrainingS */
   getTeamTrainingsRefs(teamId: string): Observable<Training[]> {
-    console.log(`Read Team Trainings List Ref ${teamId}`)
+    console.log(`Read Team Trainings List Ref ${teamId}`);
     const trainingsRefList = collection(
       this.firestore,
-      `teams/${teamId}/trainings`
+      `teams/${teamId}/trainings`,
     );
     const q = query(
       trainingsRefList,
       where(
         "date", // date = endDate
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600  * 1)) // 1 Hour after training ends
-      )
-      ,orderBy("date", "asc"),
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 1)), // 1 Hour after training ends
+      ),
+      orderBy("date", "asc"),
     );
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       Training[]
@@ -82,18 +80,18 @@ export class TrainingService {
     // console.log(`Read Team Trainings List Ref ${teamId}`)
     const trainingsRefList = collection(
       this.firestore,
-      `teams/${teamId}/trainings`
+      `teams/${teamId}/trainings`,
     );
     const q = query(
       trainingsRefList,
       where(
         "date", //  date = endDate of training
         "<",
-        Timestamp.fromDate(new Date(Date.now())) // sofort als "vergangen" anzeigen
+        Timestamp.fromDate(new Date(Date.now())), // sofort als "vergangen" anzeigen
       ),
       orderBy("date", "desc"),
-      limit(20) 
-    ); 
+      limit(20),
+    );
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       Training[]
     >;
@@ -113,12 +111,12 @@ export class TrainingService {
   /* TEAM TrainingS ATTENDEES */
   getTeamTrainingsAttendeesRef(
     teamId: string,
-    trainingId: string
+    trainingId: string,
   ): Observable<any[]> {
     // console.log(`Read Team Trainings Attendees List Ref ${teamId} with Training ${trainingId}`)
     const attendeesRefList = collection(
       this.firestore,
-      `teams/${teamId}/trainings/${trainingId}/attendees`
+      `teams/${teamId}/trainings/${trainingId}/attendees`,
     );
     return collectionData(attendeesRefList, {
       idField: "id",
@@ -129,12 +127,12 @@ export class TrainingService {
   async setTeamTrainingAttendeeStatus(
     status: boolean,
     teamId: string,
-    trainingId: string
+    trainingId: string,
   ) {
     const user = this.authService.auth.currentUser;
     const statusRef = doc(
       this.firestore,
-      `teams/${teamId}/trainings/${trainingId}/attendees/${user.uid}`
+      `teams/${teamId}/trainings/${trainingId}/attendees/${user.uid}`,
     );
     return await setDoc(statusRef, { status });
   }
@@ -147,7 +145,7 @@ export class TrainingService {
   ) {
     const statusRef = doc(
       this.firestore,
-      `teams/${teamId}/trainings/${trainingId}/attendees/${memberId}`
+      `teams/${teamId}/trainings/${trainingId}/attendees/${memberId}`,
     );
     return await setDoc(statusRef, { status });
   }
@@ -155,8 +153,20 @@ export class TrainingService {
   deleteTeamTraining(teamId: string, trainingId: string) {
     const gameRef = doc(
       this.firestore,
-      `teams/${teamId}/trainings/${trainingId}`
+      `teams/${teamId}/trainings/${trainingId}`,
     );
     return deleteDoc(gameRef);
+  }
+
+  async updateTraining(
+    teamId: string,
+    trainingId: string,
+    data: Partial<Training>,
+  ) {
+    const trainingRef = doc(
+      this.firestore,
+      `teams/${teamId}/trainings/${trainingId}`,
+    );
+    return await updateDoc(trainingRef, data);
   }
 }

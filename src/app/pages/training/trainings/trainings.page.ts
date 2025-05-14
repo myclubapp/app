@@ -183,6 +183,8 @@ export class TrainingsPage implements OnInit {
           attendees: undefined,
           exercises: undefined,
           children: undefined,
+          cancelled: false,
+          cancelledReason: "",
         };
         this.openTrainingDetailModal(training, true);
       } else {
@@ -349,8 +351,10 @@ export class TrainingsPage implements OnInit {
                     : {};
                 });
 
+              // console.log("Training status:" , item.training.cancelled , item.training.startDate.toDate().toISOString()) ;
               return {
                 ...item.training,
+                cancelled: item.training.cancelled ?? false,
                 attendees: item.attendees,
                 exercises: item.exercises,
                 team: item.teamDetails || {},
@@ -548,6 +552,7 @@ export class TrainingsPage implements OnInit {
 
               return {
                 ...item.training,
+                cancelled: item.training.cancelled ?? false,
                 attendees: item.attendees,
                 exercises: item.exercises,
                 team: item.teamDetails || {},
@@ -854,5 +859,87 @@ export class TrainingsPage implements OnInit {
       ],
     });
     alert.present();
+  }
+
+  async cancelTraining(slidingItem: IonItemSliding, training: any) {
+    slidingItem.closeOpened();
+
+    const alert = await this.alertCtrl.create({
+      header: await lastValueFrom(
+        this.translate.get("training.cancel_training"),
+      ),
+      message: await lastValueFrom(
+        this.translate.get("training.cancel_training_confirm"),
+      ),
+      inputs: [
+        {
+          name: "reason",
+          type: "textarea",
+          placeholder: await lastValueFrom(
+            this.translate.get("training.cancel_reason_placeholder"),
+          ),
+          attributes: {
+            maxlength: 200,
+          },
+        },
+      ],
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "cancel",
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.confirm")),
+          handler: async (data) => {
+            if (!data.reason) {
+              const errorToast = await this.toastController.create({
+                message: await lastValueFrom(
+                  this.translate.get("training.cancel_reason_required"),
+                ),
+                duration: 2000,
+                position: "bottom",
+                color: "danger",
+              });
+              errorToast.present();
+              return false;
+            }
+
+            try {
+              await this.trainingService.updateTraining(
+                training.teamId,
+                training.id,
+                {
+                  cancelled: true,
+                  cancelledReason: data.reason,
+                },
+              );
+              const toast = await this.toastController.create({
+                message: await lastValueFrom(
+                  this.translate.get("training.training_cancelled"),
+                ),
+                duration: 2000,
+                position: "bottom",
+              });
+              toast.present();
+              return true;
+            } catch (error) {
+              console.error("Error cancelling training:", error);
+              const toast = await this.toastController.create({
+                message: await lastValueFrom(
+                  this.translate.get("common.error"),
+                ),
+                duration: 2000,
+                position: "bottom",
+                color: "danger",
+              });
+              toast.present();
+              return false;
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 }

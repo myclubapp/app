@@ -3,7 +3,9 @@
     <ion-toolbar>
       <ion-title>{{"common.details" | translate}}</ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -16,9 +18,14 @@
       </ion-toolbar>
     </ion-header>
 
-
-
     <ion-list [inset]="true">
+      <ion-item *ngIf="training.cancelled === true">
+        <ion-icon slot="start" color="danger" name="alert-circle"></ion-icon>
+        <ion-label>
+          <h2>Training abgesagt:</h2>
+          <h3>{{training.cancelledReason}}</h3>
+        </ion-label>
+      </ion-item>
 
       <ion-item>
         <ion-icon slot="start" name="home-outline"></ion-icon>
@@ -40,7 +47,9 @@
       <ion-item>
         <ion-icon slot="start" name="location-outline"></ion-icon>
         <ion-label class="ion-text-wrap">
-          <h2>{{training.location}} {{training.streetAndNumber}} {{training.city}}</h2>
+          <h2>
+            {{training.location}} {{training.streetAndNumber}} {{training.city}}
+          </h2>
         </ion-label>
       </ion-item>
 
@@ -59,9 +68,12 @@
       </ion-item>
     </ion-list>
 
-
     <ng-container *ngIf="clubList$ | async as clubList">
-      <ion-list *ngIf="enableTrainingExercise(clubList)" [inset]="true" lines="none">
+      <ion-list
+        *ngIf="enableTrainingExercise(clubList)"
+        [inset]="true"
+        lines="none"
+      >
         <ion-item (click)="openTrainingExerciseModal()" detail="true">
           <ion-label>Übungen</ion-label>
           <ng-container *ngIf="exerciseList$ | async as exerciseList">
@@ -81,19 +93,36 @@
         {{"common.attendances__absences" | translate}}
       </ion-list-header>
       <ion-item class="myclubStatus">
-        <ng-container *ngIf="training.hasOwnProperty('status'); else loadingStatus">
-          <ion-fab-button (click)="toggle(true, training)" size="small" color="warning" slot="start"
-            *ngIf="training.status === null">
+        <ng-container
+          *ngIf="training.hasOwnProperty('status'); else loadingStatus"
+        >
+          <ion-fab-button
+            (click)="toggle(true, training)"
+            size="small"
+            color="warning"
+            slot="start"
+            *ngIf="training.status === null"
+          >
             <ion-icon name="help-circle"> </ion-icon>
           </ion-fab-button>
 
-          <ion-fab-button (click)="toggle(true, training)" size="small" color="danger" slot="start"
-            *ngIf="training.status === false">
+          <ion-fab-button
+            (click)="toggle(true, training)"
+            size="small"
+            color="danger"
+            slot="start"
+            *ngIf="training.status === false"
+          >
             <ion-icon name="close-circle"> </ion-icon>
           </ion-fab-button>
 
-          <ion-fab-button (click)="toggle(false, training)" size="small" color="success" slot="start"
-            *ngIf="training.status === true">
+          <ion-fab-button
+            (click)="toggle(false, training)"
+            size="small"
+            color="success"
+            slot="start"
+            *ngIf="training.status === true"
+          >
             <ion-icon name="checkmark-circle"> </ion-icon>
           </ion-fab-button>
 
@@ -101,43 +130,76 @@
         </ng-container>
       </ion-item>
       <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-        <ion-item *ngIf="training['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList, training.teamId)">
-          <ion-icon color="warning" slot="start" name="help-circle">
-          </ion-icon>
-          <ion-label>{{"common.noreply" | translate}}: {{training['unrespondedMembers'].length}}</ion-label>
+        <ion-item
+          *ngIf="training['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList, training.teamId)"
+        >
+          <ion-icon color="warning" slot="start" name="help-circle"> </ion-icon>
+          <ion-label
+            >{{"common.noreply" | translate}}:
+            {{training['unrespondedMembers'].length}}</ion-label
+          >
 
-          <ion-button fill="clear" (click)="toggleAll(true, training)"> {{"common.alle_anmelden" |
-            translate}}</ion-button>
+          <ion-button fill="clear" (click)="toggleAll(true, training)">
+            {{"common.alle_anmelden" | translate}}</ion-button
+          >
         </ion-item>
       </ng-container>
     </ion-list>
 
     <ion-list [inset]="true">
       <ion-accordion-group [multiple]="true" [value]="['yes']">
-        <ion-accordion value="yes" *ngIf="training['attendeeListTrue'].length > 0">
+        <ion-accordion
+          value="yes"
+          *ngIf="training['attendeeListTrue'].length > 0"
+        >
           <ion-item slot="header" color="light">
-            <ion-label>{{"common.present" | translate}}:
-              {{training['attendeeListTrue'].length}}</ion-label>
+            <ion-label
+              >{{"common.present" | translate}}:
+              {{training['attendeeListTrue'].length}}</ion-label
+            >
           </ion-item>
           <div slot="content">
             <!-- class="ion-padding"-->
             <ion-list>
-              <ion-item-sliding #item *ngFor="let member of training['attendeeListTrue']">
+              <ion-item-sliding
+                #item
+                *ngFor="let member of training['attendeeListTrue']"
+              >
                 <ion-item detail="true">
-                  <ion-icon color="success" slot="start" name="checkmark-circle">
+                  <ion-icon
+                    color="success"
+                    slot="start"
+                    name="checkmark-circle"
+                  >
                   </ion-icon>
 
-                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
-                  <ion-badge *ngFor="let role of member.roles" slot="end">{{role}}</ion-badge>
+                  <ion-label (click)="openMember(member)"
+                    >{{member.firstName}} {{member.lastName}}</ion-label
+                  >
+                  <ion-badge *ngFor="let role of member.roles" slot="end"
+                    >{{role}}</ion-badge
+                  >
                 </ion-item>
                 <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-                  <ion-item-options *ngIf="isTeamAdmin(teamAdminList, training.teamId)" side="end">
-                    <ion-item-option color="success" *ngIf="member.status === false || member.status === null"
-                      (click)="toggleItem(item, true, training, member.id)">
-                      <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                  <ion-item-options
+                    *ngIf="isTeamAdmin(teamAdminList, training.teamId)"
+                    side="end"
+                  >
+                    <ion-item-option
+                      color="success"
+                      *ngIf="member.status === false || member.status === null"
+                      (click)="toggleItem(item, true, training, member.id)"
+                    >
+                      <ion-icon
+                        slot="icon-only"
+                        name="checkmark-circle"
+                      ></ion-icon>
                     </ion-item-option>
-                    <ion-item-option color="danger" *ngIf="member.status === true || member.status === null"
-                      (click)="toggleItem(item, false, training, member.id)">
+                    <ion-item-option
+                      color="danger"
+                      *ngIf="member.status === true || member.status === null"
+                      (click)="toggleItem(item, false, training, member.id)"
+                    >
                       <ion-icon slot="icon-only" name="close-circle"></ion-icon>
                     </ion-item-option>
                   </ion-item-options>
@@ -146,30 +208,54 @@
             </ion-list>
           </div>
         </ion-accordion>
-        <ion-accordion value="no" *ngIf="training['attendeeListFalse'].length > 0">
+        <ion-accordion
+          value="no"
+          *ngIf="training['attendeeListFalse'].length > 0"
+        >
           <ion-item slot="header" color="light">
-            <ion-label>{{"common.absent" | translate}}:
-              {{training['attendeeListFalse'].length}}</ion-label>
+            <ion-label
+              >{{"common.absent" | translate}}:
+              {{training['attendeeListFalse'].length}}</ion-label
+            >
           </ion-item>
           <div slot="content">
             <!-- class="ion-padding"-->
             <ion-list>
-              <ion-item-sliding #item *ngFor="let member of training['attendeeListFalse']">
+              <ion-item-sliding
+                #item
+                *ngFor="let member of training['attendeeListFalse']"
+              >
                 <ion-item detail="true">
                   <ion-icon color="danger" slot="start" name="close-circle">
                   </ion-icon>
 
-                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
-                  <ion-badge *ngFor="let role of member.roles" slot="end">{{role}}</ion-badge>
+                  <ion-label (click)="openMember(member)"
+                    >{{member.firstName}} {{member.lastName}}</ion-label
+                  >
+                  <ion-badge *ngFor="let role of member.roles" slot="end"
+                    >{{role}}</ion-badge
+                  >
                 </ion-item>
                 <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-                  <ion-item-options *ngIf="isTeamAdmin(teamAdminList, training.teamId)" side="end">
-                    <ion-item-option color="success" *ngIf="member.status === false || member.status === null"
-                      (click)="toggleItem(item, true, training, member.id)">
-                      <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                  <ion-item-options
+                    *ngIf="isTeamAdmin(teamAdminList, training.teamId)"
+                    side="end"
+                  >
+                    <ion-item-option
+                      color="success"
+                      *ngIf="member.status === false || member.status === null"
+                      (click)="toggleItem(item, true, training, member.id)"
+                    >
+                      <ion-icon
+                        slot="icon-only"
+                        name="checkmark-circle"
+                      ></ion-icon>
                     </ion-item-option>
-                    <ion-item-option color="danger" *ngIf="member.status === true || member.status === null"
-                      (click)="toggleItem(item, false, training, member.id)">
+                    <ion-item-option
+                      color="danger"
+                      *ngIf="member.status === true || member.status === null"
+                      (click)="toggleItem(item, false, training, member.id)"
+                    >
                       <ion-icon slot="icon-only" name="close-circle"></ion-icon>
                     </ion-item-option>
                   </ion-item-options>
@@ -178,10 +264,15 @@
             </ion-list>
           </div>
         </ion-accordion>
-        <ion-accordion value="null" *ngIf="training['unrespondedMembers'].length > 0">
+        <ion-accordion
+          value="null"
+          *ngIf="training['unrespondedMembers'].length > 0"
+        >
           <ion-item slot="header" color="light">
-            <ion-label>{{"common.noreply" | translate}}:
-              {{training['unrespondedMembers'].length}}</ion-label>
+            <ion-label
+              >{{"common.noreply" | translate}}:
+              {{training['unrespondedMembers'].length}}</ion-label
+            >
             <!--            <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
               <ion-button
                 *ngIf="training['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList, training.teamId)"
@@ -192,28 +283,46 @@
           <div slot="content">
             <!-- class="ion-padding"-->
             <ion-list>
-              <ion-item-sliding #item *ngFor="let member of training['unrespondedMembers']">
+              <ion-item-sliding
+                #item
+                *ngFor="let member of training['unrespondedMembers']"
+              >
                 <ion-item detail="true">
                   <ion-icon color="warning" slot="start" name="help-circle">
                   </ion-icon>
 
-                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
-                  <ion-badge *ngFor="let role of member.roles" slot="end">{{role}}</ion-badge>
+                  <ion-label (click)="openMember(member)"
+                    >{{member.firstName}} {{member.lastName}}</ion-label
+                  >
+                  <ion-badge *ngFor="let role of member.roles" slot="end"
+                    >{{role}}</ion-badge
+                  >
                 </ion-item>
                 <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-                  <ion-item-options *ngIf="isTeamAdmin(teamAdminList, training.teamId)" side="end">
-                    <ion-item-option color="success" *ngIf="member.status === false || member.status === null"
-                      (click)="toggleItem(item, true, training, member.id)">
-                      <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                  <ion-item-options
+                    *ngIf="isTeamAdmin(teamAdminList, training.teamId)"
+                    side="end"
+                  >
+                    <ion-item-option
+                      color="success"
+                      *ngIf="member.status === false || member.status === null"
+                      (click)="toggleItem(item, true, training, member.id)"
+                    >
+                      <ion-icon
+                        slot="icon-only"
+                        name="checkmark-circle"
+                      ></ion-icon>
                     </ion-item-option>
-                    <ion-item-option color="danger" *ngIf="member.status === true || member.status === null"
-                      (click)="toggleItem(item, false, training, member.id)">
+                    <ion-item-option
+                      color="danger"
+                      *ngIf="member.status === true || member.status === null"
+                      (click)="toggleItem(item, false, training, member.id)"
+                    >
                       <ion-icon slot="icon-only" name="close-circle"></ion-icon>
                     </ion-item-option>
                   </ion-item-options>
                 </ng-container>
               </ion-item-sliding>
-
             </ion-list>
           </div>
         </ion-accordion>
@@ -235,7 +344,10 @@
         <ion-skeleton-text animated style="width: 100px"></ion-skeleton-text>
       </ion-title>
       <ion-buttons slot="primary">
-        <ion-skeleton-text animated style="width: 80px; height: 20px; margin: 0 10px;"></ion-skeleton-text>
+        <ion-skeleton-text
+          animated
+          style="width: 80px; height: 20px; margin: 0 10px"
+        ></ion-skeleton-text>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -299,7 +411,11 @@
         <ion-label>
           <ion-skeleton-text animated style="width: 100px"></ion-skeleton-text>
         </ion-label>
-        <ion-skeleton-text slot="end" animated style="width: 40px; margin-right: 16px"></ion-skeleton-text>
+        <ion-skeleton-text
+          slot="end"
+          animated
+          style="width: 40px; margin-right: 16px"
+        ></ion-skeleton-text>
       </ion-item>
     </ion-list>
 
@@ -308,10 +424,14 @@
       <ion-list-header>
         <ion-skeleton-text animated style="width: 140px"></ion-skeleton-text>
       </ion-list-header>
-      
+
       <!-- My Status -->
       <ion-item>
-        <ion-skeleton-text animated slot="start" style="width: 40px; height: 40px; border-radius: 50%">
+        <ion-skeleton-text
+          animated
+          slot="start"
+          style="width: 40px; height: 40px; border-radius: 50%"
+        >
         </ion-skeleton-text>
         <ion-label>
           <ion-skeleton-text animated style="width: 100px"></ion-skeleton-text>
@@ -324,7 +444,11 @@
         <ion-label>
           <ion-skeleton-text animated style="width: 120px"></ion-skeleton-text>
         </ion-label>
-        <ion-skeleton-text slot="end" animated style="width: 80px"></ion-skeleton-text>
+        <ion-skeleton-text
+          slot="end"
+          animated
+          style="width: 80px"
+        ></ion-skeleton-text>
       </ion-item>
     </ion-list>
 
@@ -335,7 +459,10 @@
         <ion-accordion value="yes">
           <ion-item slot="header" color="light">
             <ion-label>
-              <ion-skeleton-text animated style="width: 150px"></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 150px"
+              ></ion-skeleton-text>
             </ion-label>
           </ion-item>
           <div slot="content">
@@ -344,17 +471,32 @@
               <ion-item>
                 <ion-icon slot="start" name="checkmark-circle"></ion-icon>
                 <ion-label>
-                  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                  <ion-skeleton-text
+                    animated
+                    style="width: 60%"
+                  ></ion-skeleton-text>
                 </ion-label>
-                <ion-skeleton-text slot="end" style="width: 60px; margin: 0 8px"></ion-skeleton-text>
-                <ion-skeleton-text slot="end" style="width: 60px"></ion-skeleton-text>
+                <ion-skeleton-text
+                  slot="end"
+                  style="width: 60px; margin: 0 8px"
+                ></ion-skeleton-text>
+                <ion-skeleton-text
+                  slot="end"
+                  style="width: 60px"
+                ></ion-skeleton-text>
               </ion-item>
               <ion-item>
                 <ion-icon slot="start" name="checkmark-circle"></ion-icon>
                 <ion-label>
-                  <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+                  <ion-skeleton-text
+                    animated
+                    style="width: 70%"
+                  ></ion-skeleton-text>
                 </ion-label>
-                <ion-skeleton-text slot="end" style="width: 60px"></ion-skeleton-text>
+                <ion-skeleton-text
+                  slot="end"
+                  style="width: 60px"
+                ></ion-skeleton-text>
               </ion-item>
             </ion-list>
           </div>
@@ -364,7 +506,10 @@
         <ion-accordion value="no">
           <ion-item slot="header" color="light">
             <ion-label>
-              <ion-skeleton-text animated style="width: 130px"></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 130px"
+              ></ion-skeleton-text>
             </ion-label>
           </ion-item>
         </ion-accordion>
@@ -373,7 +518,10 @@
         <ion-accordion value="null">
           <ion-item slot="header" color="light">
             <ion-label>
-              <ion-skeleton-text animated style="width: 140px"></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 140px"
+              ></ion-skeleton-text>
             </ion-label>
           </ion-item>
         </ion-accordion>

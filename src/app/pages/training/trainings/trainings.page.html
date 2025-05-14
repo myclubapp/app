@@ -73,7 +73,6 @@
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">{{"common.training" | translate}}</ion-title>
-
     </ion-toolbar>
   </ion-header>
 
@@ -81,7 +80,14 @@
     <ion-list *ngIf="trainingList.length > 0" lines="full">
       <ion-list-header>
         <ion-label>{{"training.upcomming__training" | translate}}</ion-label>
-        <ion-button *ngIf="children.length == 0" (click)="toggleAll()" size="small" fill="clear"> {{"common.alle_anmelden" | translate}}</ion-button>
+        <ion-button
+          *ngIf="children.length == 0"
+          (click)="toggleAll()"
+          size="small"
+          fill="clear"
+        >
+          {{"common.alle_anmelden" | translate}}</ion-button
+        >
       </ion-list-header>
       <ion-item>
         <ion-label slot="start">
@@ -93,12 +99,37 @@
       </ion-item>
       <ion-item-sliding #item *ngFor="let training of trainingList">
         <ion-item type="button" detail="true">
-          <ion-icon *ngIf="training.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
-            (click)="toggle(true, training)"></ion-icon>
-          <ion-icon *ngIf="training.status === false" slot="icon-only" color="danger" slot="start" name="close-circle"
-            (click)="toggle( true, training)"></ion-icon>
-          <ion-icon *ngIf="training.status === true" slot="icon-only" color="success" slot="start"
-            name="checkmark-circle" (click)="toggle(false, training)"></ion-icon>
+          <ion-icon
+            *ngIf="training.status === null"
+            slot="icon-only"
+            color="warning"
+            slot="start"
+            name="help-circle"
+            (click)="toggle(true, training)"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="training.status === false"
+            slot="icon-only"
+            color="danger"
+            slot="start"
+            name="close-circle"
+            (click)="toggle( true, training)"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="training.status === true"
+            slot="icon-only"
+            color="success"
+            slot="start"
+            name="checkmark-circle"
+            (click)="toggle(false, training)"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="training.cancelled === true"
+            slot="icon-only"
+            color="danger"
+            slot="start"
+            name="alert-circle"
+          ></ion-icon>
           <ion-label (click)="openTrainingDetailModal(training, true)">
             <h2>{{training.name}}</h2>
             <h3>
@@ -109,7 +140,8 @@
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="location-outline"></ion-icon>
-              {{training.location}} {{training.streetAndNumber}} {{training.city}}
+              {{training.location}} {{training.streetAndNumber}}
+              {{training.city}}
             </h3>
 
             <h3>
@@ -117,33 +149,63 @@
               {{training.liga}} {{training.teamName}}
             </h3>
             <h3 *ngIf="training.exercises.length > 0">
-              <ion-badge color="light">{{training.exercises.length}} Übungen vorhanden</ion-badge>
+              <ion-badge color="light"
+                >{{training.exercises.length}} Übungen vorhanden</ion-badge
+              >
             </h3>
-            <h3 >
-              <ion-badge *ngFor="let child of training.children" color="light">{{child.firstName}} {{child.lastName}} </ion-badge>
+            <h3>
+              <ion-badge *ngFor="let child of training.children" color="light"
+                >{{child.firstName}} {{child.lastName}}
+              </ion-badge>
             </h3>
           </ion-label>
-          <ion-badge slot="end" (click)="openTrainingDetailModal(training,true)" color="primary">{{training.countAttendees}}</ion-badge>
-
+          <ion-badge
+            slot="end"
+            (click)="openTrainingDetailModal(training,true)"
+            color="primary"
+            >{{training.countAttendees}}</ion-badge
+          >
         </ion-item>
 
         <ion-item-options side="start">
-          <ion-item-option color="success" *ngIf="training.status === false || training.status === null"
-            (click)="toggleItem(item, true, training)">
+          <ion-item-option
+            color="success"
+            *ngIf="training.status === false || training.status === null"
+            (click)="toggleItem(item, true, training)"
+          >
             <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
           </ion-item-option>
-          <ion-item-option color="danger" *ngIf="training.status === true || training.status === null"
-            (click)="toggleItem(item, false, training)">
+          <ion-item-option
+            color="danger"
+            *ngIf="training.status === true || training.status === null"
+            (click)="toggleItem(item, false, training)"
+          >
             <ion-icon slot="icon-only" name="close-circle"></ion-icon>
           </ion-item-option>
         </ion-item-options>
 
         <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-          <ion-item-options side="end" *ngIf="isTeamAdmin(teamAdminList, training.teamId)">
-            <ion-item-option color="medium" (click)="copyTraining(item, training)">
+          <ion-item-options
+            side="end"
+            *ngIf="isTeamAdmin(teamAdminList, training.teamId)"
+          >
+            <ion-item-option
+              color="warning"
+              *ngIf="!training.cancelled"
+              (click)="cancelTraining(item, training)"
+            >
+              <ion-icon slot="icon-only" name="alert-circle"></ion-icon>
+            </ion-item-option>
+            <ion-item-option
+              color="medium"
+              (click)="copyTraining(item, training)"
+            >
               <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
             </ion-item-option>
-            <ion-item-option color="danger" (click)="deleteTraining(item, training)">
+            <ion-item-option
+              color="danger"
+              (click)="deleteTraining(item, training)"
+            >
               <ion-icon slot="icon-only" name="trash"></ion-icon>
             </ion-item-option>
           </ion-item-options>
@@ -154,7 +216,6 @@
     <ion-list class="ion-padding" *ngIf="trainingList.length==0">
       <ion-list-header>
         <ion-label>{{"training.upcomming__training" | translate}}</ion-label>
-       
       </ion-list-header>
       <ion-item>
         <ion-note> {{"training.no_training__found" | translate}} </ion-note>
@@ -162,7 +223,9 @@
     </ion-list>
   </ng-container>
 
-  <ng-container *ngIf="trainingListPast$ | async as trainingListPast; else loading">
+  <ng-container
+    *ngIf="trainingListPast$ | async as trainingListPast; else loading"
+  >
     <ion-list *ngIf="trainingListPast.length > 0" lines="full">
       <ion-list-header>
         <ion-label>{{"training.past__training" | translate}}</ion-label>
@@ -177,17 +240,41 @@
       </ion-item>
       <ion-item-sliding #item *ngFor="let training of trainingListPast">
         <ion-item type="button" detail="true">
-          <ion-icon *ngIf="training.status === null" slot="icon-only" color="warning" slot="start"
-            name="help-circle"></ion-icon>
-          <ion-icon *ngIf="training.status === false" slot="icon-only" color="danger" slot="start"
-            name="close-circle"></ion-icon>
-          <ion-icon *ngIf="training.status === true" slot="icon-only" color="success" slot="start"
-            name="checkmark-circle"></ion-icon>
+          <ion-icon
+            *ngIf="training.status === null"
+            slot="icon-only"
+            color="warning"
+            slot="start"
+            name="help-circle"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="training.status === false"
+            slot="icon-only"
+            color="danger"
+            slot="start"
+            name="close-circle"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="training.status === true"
+            slot="icon-only"
+            color="success"
+            slot="start"
+            name="checkmark-circle"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="training.cancelled"
+            slot="icon-only"
+            color="danger"
+            slot="start"
+            name="alert-circle"
+            (click)="toggle(true, training)"
+          ></ion-icon>
           <ion-label (click)="openTrainingDetailModal(training, false)">
             <h2>{{training.name}}</h2>
             <h3>
               <ion-icon slot="icon-only" name="location-outline"></ion-icon>
-              {{training.location}} {{training.streetAndNumber}} {{training.city}}
+              {{training.location}} {{training.streetAndNumber}}
+              {{training.city}}
             </h3>
             <h3>
               <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
@@ -199,16 +286,25 @@
               <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
               {{training.liga}} {{training.teamName}}
             </h3>
-            <h3 >
-              <ion-badge *ngFor="let child of training.children" color="light">{{child.firstName}} {{child.lastName}} </ion-badge>
+            <h3>
+              <ion-badge *ngFor="let child of training.children" color="light"
+                >{{child.firstName}} {{child.lastName}}
+              </ion-badge>
             </h3>
           </ion-label>
-          <ion-badge slot="end" (click)="openTrainingDetailModal(training,false)" color="primary">{{training.countAttendees}}</ion-badge>
-
+          <ion-badge
+            slot="end"
+            (click)="openTrainingDetailModal(training,false)"
+            color="primary"
+            >{{training.countAttendees}}</ion-badge
+          >
         </ion-item>
 
         <ion-item-options side="end">
-          <ion-item-option color="medium" (click)="copyTraining(item, training)">
+          <ion-item-option
+            color="medium"
+            (click)="copyTraining(item, training)"
+          >
             <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
           </ion-item-option>
         </ion-item-options>
@@ -226,7 +322,12 @@
   </ng-container>
 
   <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-    <ion-fab *ngIf="teamAdminList.length > 0" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab
+      *ngIf="teamAdminList.length > 0"
+      vertical="bottom"
+      horizontal="end"
+      slot="fixed"
+    >
       <ion-fab-button (click)="openTrainingCreateModal()">
         <ion-icon name="add-outline"></ion-icon>
       </ion-fab-button>
@@ -238,23 +339,50 @@
   <ion-list>
     <ion-grid>
       <ion-row>
-        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
+        <ion-col
+          size-lg="4"
+          size-md="6"
+          size-sm="6"
+          size="12"
+          *ngFor="let item of skeleton"
+        >
           <ion-card>
             <ion-card-header>
               <ion-card-subtitle>
-                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%"
+                ></ion-skeleton-text>
               </ion-card-subtitle>
               <ion-card-title>
-                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%"
+                ></ion-skeleton-text>
               </ion-card-title>
             </ion-card-header>
 
             <ion-card-content>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
             </ion-card-content>
           </ion-card>
         </ion-col>
