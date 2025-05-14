@@ -158,6 +158,14 @@
                 >{{child.firstName}} {{child.lastName}}
               </ion-badge>
             </h3>
+            <h3 *ngIf="training.cancelled === true">
+              <ion-icon
+                slot="icon-only"
+                color="danger"
+                name="alert-circle"
+              ></ion-icon>
+              <ion-text color="danger"> {{training.cancelledReason}} </ion-text>
+            </h3>
           </ion-label>
           <ion-badge
             slot="end"
