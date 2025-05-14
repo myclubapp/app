@@ -100,7 +100,7 @@
       <ion-item-sliding #item *ngFor="let training of trainingList">
         <ion-item type="button" detail="true">
           <ion-icon
-            *ngIf="training.status === null"
+            *ngIf="training.status === null && !training.cancelled"
             slot="icon-only"
             color="warning"
             slot="start"
@@ -108,7 +108,7 @@
             (click)="toggle(true, training)"
           ></ion-icon>
           <ion-icon
-            *ngIf="training.status === false"
+            *ngIf="training.status === false && !training.cancelled"
             slot="icon-only"
             color="danger"
             slot="start"
@@ -116,7 +116,7 @@
             (click)="toggle( true, training)"
           ></ion-icon>
           <ion-icon
-            *ngIf="training.status === true"
+            *ngIf="training.status === true && !training.cancelled"
             slot="icon-only"
             color="success"
             slot="start"
@@ -175,7 +175,7 @@
           >
         </ion-item>
 
-        <ion-item-options side="start">
+        <ion-item-options side="start" *ngIf="!training?.cancelled">
           <ion-item-option
             color="success"
             *ngIf="training.status === false || training.status === null"

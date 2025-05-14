@@ -26,7 +26,6 @@
           <h3>{{training.cancelledReason}}</h3>
         </ion-label>
       </ion-item>
-
       <ion-item>
         <ion-icon slot="start" name="home-outline"></ion-icon>
         <ion-label class="ion-text-wrap">
@@ -92,7 +91,7 @@
       <ion-list-header>
         {{"common.attendances__absences" | translate}}
       </ion-list-header>
-      <ion-item class="myclubStatus">
+      <ion-item class="myclubStatus" *ngIf="!training?.cancelled">
         <ng-container
           *ngIf="training.hasOwnProperty('status'); else loadingStatus"
         >
