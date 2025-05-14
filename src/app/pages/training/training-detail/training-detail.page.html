@@ -22,7 +22,7 @@
       <ion-item *ngIf="training.cancelled === true">
         <ion-icon slot="start" color="danger" name="alert-circle"></ion-icon>
         <ion-label>
-          <h2>Training abgesagt:</h2>
+          <h2>{{"training.cancelled" | translate}}:</h2>
           <h3>{{training.cancelledReason}}</h3>
         </ion-label>
       </ion-item>

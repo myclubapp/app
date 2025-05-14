@@ -1,252 +1,253 @@
 {
-    "login": {
-        "login__title": "Connectez-vous avec votre compte",
-        "forget__password": "Mot de passe oublié ?",
-        "signin_create__account": "créer un nouveau compte",
-        "register": "S'inscrire",
-        "error__no_acount_found": "Aucun compte trouvé avec cette adresse e-mail",
-        "error__invalid_username_password": "La combinaison du nom d'utilisateur et du mot de passe est incorrecte.",
-        "error__network_connection": "Il y a un problème de connexion réseau",
-        "mistake": "Erreur"
-    },
-    "logout": {
-        "logout__success": "Déconnexion réussie !",
-        "back_to__login": "retour à la connexion",
-        "backgroud_image__alt": "Image de fond"
-    },
-    "reset-password": {
-        "try__login_again": "Essayez de vous connecter à nouveau ?",
-        "reset__password": "Réinitialiser le mot de passe",
-        "check__email_for_reset_link": "Vérifiez vos e-mails pour un lien de réinitialisation de mot de passe"
-    },
-    "signup": {
-        "signup__title": "Créer un nouveau compte",
-        "already_have__acount": "déjà enregistré ?",
-        "to__register": "Pour s'enregistrer",
-        "account__created": "Compte créé",
-        "account__created_description": "Votre compte a été créé avec succès. Veuillez confirmer votre adresse e-mail.",
-        "email__already_in_use": "Email déjà utilisé"
-    },
-    "championship": {
-        "past__games": "Jeux passés",
-        "games": "Jeux",
-        "table": "Tableau",
-        "legend": "Légende",
-        "games__total": "Jeux totaux",
-        "victories": "Victoires",
-        "defeat": "Défaites",
-        "goal__record": "Record de buts",
-        "points": "Points",
-        "upcomming__games": "Jeux à venir"
-    },
-    "championship-detail": {},
-    "club": {
-        "want_to_add__user__to_club_string": "Voulez-vous ajouter {userName} à votre club ?",
-        "success__user_added": "l'utilisateur a été ajouté avec succès au club",
-        "select__team": "Sélectionner l'équipe",
-        "want_to_add__user__to_team_string": "Voulez-vous ajouter {userName} à une équipe ?",
-        "add": "ajouter",
-        "success__added_user_to_team_string": "{userName} a été ajouté avec succès à {length} équipe(s)",
-        "action__canceled": "Action annulée",
-        "trainaing__presence": "Présence à l'entraînement"
-    },
-    "club-list": {
-        "my__clubs": "Mes clubs"
-    },
-    "event-add": {
-        "new__event": "Nouvel événement",
-        "is__closed__event": "Événement fermé"
-    },
-    "event-detail": {},
-    "events": {
-        "event": "Événements",
-        "upcomming__events": "Événements à venir",
-        "past__events": "Événements passés"
-    },
-    "follow": {
-        "follow": "suivre"
-    },
-    "helfer": {
-        "upcomming__helper_event": "Événements de bénévoles à venir",
-        "past__helper_events": "Événements de bénévoles passés"
-    },
-    "helfer-add": {
-        "new__helper_event": "Nouvel événement de bénévole"
-    },
-    "helfer-detail": {
-        "helfer_innen_for": "Bénévoles pour",
-        "add_members": "Ajouter des membres",
-        "add_members_title": "Ajouter des membres au créneau",
-        "add_members_message": "Sélectionnez les membres que vous souhaitez ajouter au créneau :",
-        "no_members_available": "Aucun autre membre disponible"
-    },
-    "info": {
-        "information": "Information",
-        "terms__and_conditions": "Termes et conditions",
-        "privacy__policy": "Politique de confidentialité",
-        "info_description": "liitu consulting gmbh, Schaffhouse, Suisse",
-        "app__version": "Version de l'application"
-    },
-    "news": {
-        "filter__news": "Filtrer les actualités",
-        "filter__by_club_team": "Filtrer par club ou équipes."
-    },
-    "news-detail": {},
-    "not-found": {
-        "not_found": "Non trouvé"
-    },
-    "onboarding": {
-        "join__club": "Rejoindre un club",
-        "search_by_club__pholder": "Rechercher par club",
-        "do_you_want_to_join__club": "Voulez-vous rejoindre le club ?",
-        "success__request_sent": "Demande envoyée avec succès",
-        "warning__action_canceled": "Action a été annulée",
-        "success__application_sent": "Candidature envoyée avec succès",
-        "success__application_sent_desc": "Votre candidature a été envoyée avec succès au club. Dès que votre candidature aura été approuvée, nous vous informerons de nouveau."
-    },
-    "onboarding-team": {
-        "onboarding__team": "Équipe d'intégration"
-    },
-    "profile": {
-        "email": "Email",
-        "generally": "En général",
-        "open__club_inquiry": "Demandes de club ouvertes",
-        "open__team_request": "Demandes d'équipe ouvertes",
-        "notifications": "Notifications",
-        "push__message": "Messages push",
-        "email__messages_report": "Rapports de messages e-mail",
-        "email__messages": "messages e-mail",
-        "push__notifications": "Notifications push",
-        "push__notifications_devices": "Appareils push enregistrés",
-        "current__device": "appareil actuel",
-        "push__registeration": "Inscription push",
-        "delete__profile": "Zone de danger : Supprimer le profil",
-        "profile_pic__uploaded": "Photo de profil en cours de téléchargement",
-        "delete_profile__confirm": "Voulez-vous vraiment supprimer le profil ?",
-        "request_success__deleted": "Demande supprimée avec succès",
-        "success__profile_pic_changed": "Photo de profil changée avec succès",
-        "error__push_notification_not_available": "Notification push non disponible",
-        "error_device_not_support_push_notifications": "Malheureusement, votre appareil/navigateur ne prend pas en charge les notifications push.",
-        "error_push_service_not_available": "Service de notification push non disponible",
-        "error_text": "Malheureusement, une erreur est survenue :",
-        "push_notification__permission_desc": "Les notifications push doivent-elles être activées pour cet appareil ?",
-        "error_push_token": "Erreur d'enregistrement du jeton push",
-        "success__profile_deleted": "Profil supprimé avec succès",
-        "error__while_deleting_msg": "Erreur lors de la suppression du profil",
-        "language": "Langue",
-        "select__language": "Choisir la langue",
-        "kidsRequests": "Demandes d'enfants",
-        "kids.verified": "Vérifié",
-        "kids.pending": "En attente",
-        "kidsrequestadd": "Ajouter",
-        "kids.add_header": "Ajouter un enfant",
-        "kids.add_message": "Veuillez saisir l'adresse e-mail de l'enfant que vous souhaitez ajouter.",
-        "kids.email_placeholder": "Adresse e-mail de l'enfant",
-        "kids.max_reached_header": "Nombre maximal d'enfants atteint",
-        "kids.max_reached_message": "Vous pouvez ajouter jusqu'à 3 enfants",
-        "children": "Enfants",
-        "confirm_delete_request": "Voulez-vous vraiment supprimer cette demande ?",
-        "no_children": "Aucun enfant disponible"
-    },
-    "tabs": {},
-    "team": {},
-    "team-list": {
-        "my__teams": "Mes équipes"
-    },
-    "training-create": {
-        "new__training": "Nouvel entraînement",
-        "team": "Équipe",
-        "start__training": "Commencer l'entraînement",
-        "end__training": "Terminer l'entraînement",
-        "series__settings": "Paramètres de série",
-        "daily": "Quotidien",
-        "weekly": "Hebdomadaire",
-        "repeat": "Répéter",
-        "first__training": "Premier entraînement",
-        "last__training": "Dernier entraînement"
-    },
-    "traning-detail": {},
-    "training": {
-        "upcomming__training": "Entraînements à venir",
-        "no_training__found": "aucun entraînement trouvé",
-        "past__training": "Entraînements passés",
-        "news__filter": "Filtrer les nouvelles",
-        "news__filer__desc": "Filtrer par club ou équipes."
-    },
-    "side_bar": {
-        "administration": "Administration",
-        "info__and__help": "Infos et aide",
-        "my__club": "Mon club",
-        "my__team": "Mon équipe",
-        "version": "Version"
-    },
-    "common": {
-        "or": "Ou",
-        "email__address": "Adresse e-mail",
-        "password": "Mot de passe",
-        "general__error_occurred": "Une erreur générale s'est produite",
-        "ok": "OK",
-        "forget__password": "Mot de passe oublié ?",
-        "error__invalid_form": "Le formulaire est encore incorrect",
-        "please__wait": "Veuillez patienter",
-        "first__name": "Prénom",
-        "last__name": "Nom de famille",
-        "mountain_background__alt": "Image de fond montagnes",
-        "mistake": "Erreur",
-        "status": "Statut",
-        "participant": "Participant",
-        "championship": "Championnat",
-        "changes__saved": "Les modifications ont été enregistrées",
-        "name": "Nom",
-        "details": "Détails",
-        "attendances__absences": "Présences/Absences",
-        "my__status": "Mon statut",
-        "present": "Présent",
-        "absent": "Absent",
-        "close": "Fermer",
-        "success__saved": "Modifications enregistrées avec succès",
-        "no_of__members": "Nombre de membres",
-        "average__age": "Âge moyen",
-        "requests": "Demandes",
-        "members": "Membres",
-        "admins": "Administrateurs",
-        "cancel": "Annuler",
-        "create": "Créer",
-        "club": "Club",
-        "description": "Description",
-        "location": "Lieu",
-        "street__house_number": "Rue & numéro de maison",
-        "postal__code": "Code postal",
-        "locality": "Localité",
-        "start__event": "Début de l'événement",
-        "end__event": "Fin de l'événement",
-        "start__date": "Date de début",
-        "end__date": "Date de fin",
-        "no_event__found": "aucun événement trouvé",
-        "delete": "Supprimer",
-        "helper": "Aide",
-        "news": "Actualités",
-        "yes": "Oui",
-        "no": "Non",
-        "logout": "Se déconnecter",
-        "profile": "Profil",
-        "loading": "Chargement",
-        "training": "Entraînement",
-        "events": "Événements",
-        "edit": "Modifier",
-        "all": "Tout",
-        "no__answer": "Pas de réponse",
-        "event__details": "Détails de l'événement",
-        "language__german": "Deutsch",
-        "language__french": "Französisch",
-        "language__italian": "Italienisch",
-        "language__english": "Englisch",
-        "confirmation": "Confirmation",
-        "parents": "Parents",
-        "children": "Enfants",
-        "select_member": "Sélectionner un membre"
-    },
-    "club-parents-list": {
-        "delete_parent__confirm": "Voulez-vous vraiment supprimer le parent ?"
-    }
+  "login": {
+    "login__title": "Connectez-vous avec votre compte",
+    "forget__password": "Mot de passe oublié ?",
+    "signin_create__account": "créer un nouveau compte",
+    "register": "S'inscrire",
+    "error__no_acount_found": "Aucun compte trouvé avec cette adresse e-mail",
+    "error__invalid_username_password": "La combinaison du nom d'utilisateur et du mot de passe est incorrecte.",
+    "error__network_connection": "Il y a un problème de connexion réseau",
+    "mistake": "Erreur"
+  },
+  "logout": {
+    "logout__success": "Déconnexion réussie !",
+    "back_to__login": "retour à la connexion",
+    "backgroud_image__alt": "Image de fond"
+  },
+  "reset-password": {
+    "try__login_again": "Essayez de vous connecter à nouveau ?",
+    "reset__password": "Réinitialiser le mot de passe",
+    "check__email_for_reset_link": "Vérifiez vos e-mails pour un lien de réinitialisation de mot de passe"
+  },
+  "signup": {
+    "signup__title": "Créer un nouveau compte",
+    "already_have__acount": "déjà enregistré ?",
+    "to__register": "Pour s'enregistrer",
+    "account__created": "Compte créé",
+    "account__created_description": "Votre compte a été créé avec succès. Veuillez confirmer votre adresse e-mail.",
+    "email__already_in_use": "Email déjà utilisé"
+  },
+  "championship": {
+    "past__games": "Jeux passés",
+    "games": "Jeux",
+    "table": "Tableau",
+    "legend": "Légende",
+    "games__total": "Jeux totaux",
+    "victories": "Victoires",
+    "defeat": "Défaites",
+    "goal__record": "Record de buts",
+    "points": "Points",
+    "upcomming__games": "Jeux à venir"
+  },
+  "championship-detail": {},
+  "club": {
+    "want_to_add__user__to_club_string": "Voulez-vous ajouter {userName} à votre club ?",
+    "success__user_added": "l'utilisateur a été ajouté avec succès au club",
+    "select__team": "Sélectionner l'équipe",
+    "want_to_add__user__to_team_string": "Voulez-vous ajouter {userName} à une équipe ?",
+    "add": "ajouter",
+    "success__added_user_to_team_string": "{userName} a été ajouté avec succès à {length} équipe(s)",
+    "action__canceled": "Action annulée",
+    "trainaing__presence": "Présence à l'entraînement"
+  },
+  "club-list": {
+    "my__clubs": "Mes clubs"
+  },
+  "event-add": {
+    "new__event": "Nouvel événement",
+    "is__closed__event": "Événement fermé"
+  },
+  "event-detail": {},
+  "events": {
+    "event": "Événements",
+    "upcomming__events": "Événements à venir",
+    "past__events": "Événements passés"
+  },
+  "follow": {
+    "follow": "suivre"
+  },
+  "helfer": {
+    "upcomming__helper_event": "Événements de bénévoles à venir",
+    "past__helper_events": "Événements de bénévoles passés"
+  },
+  "helfer-add": {
+    "new__helper_event": "Nouvel événement de bénévole"
+  },
+  "helfer-detail": {
+    "helfer_innen_for": "Bénévoles pour",
+    "add_members": "Ajouter des membres",
+    "add_members_title": "Ajouter des membres au créneau",
+    "add_members_message": "Sélectionnez les membres que vous souhaitez ajouter au créneau :",
+    "no_members_available": "Aucun autre membre disponible"
+  },
+  "info": {
+    "information": "Information",
+    "terms__and_conditions": "Termes et conditions",
+    "privacy__policy": "Politique de confidentialité",
+    "info_description": "liitu consulting gmbh, Schaffhouse, Suisse",
+    "app__version": "Version de l'application"
+  },
+  "news": {
+    "filter__news": "Filtrer les actualités",
+    "filter__by_club_team": "Filtrer par club ou équipes."
+  },
+  "news-detail": {},
+  "not-found": {
+    "not_found": "Non trouvé"
+  },
+  "onboarding": {
+    "join__club": "Rejoindre un club",
+    "search_by_club__pholder": "Rechercher par club",
+    "do_you_want_to_join__club": "Voulez-vous rejoindre le club ?",
+    "success__request_sent": "Demande envoyée avec succès",
+    "warning__action_canceled": "Action a été annulée",
+    "success__application_sent": "Candidature envoyée avec succès",
+    "success__application_sent_desc": "Votre candidature a été envoyée avec succès au club. Dès que votre candidature aura été approuvée, nous vous informerons de nouveau."
+  },
+  "onboarding-team": {
+    "onboarding__team": "Équipe d'intégration"
+  },
+  "profile": {
+    "email": "Email",
+    "generally": "En général",
+    "open__club_inquiry": "Demandes de club ouvertes",
+    "open__team_request": "Demandes d'équipe ouvertes",
+    "notifications": "Notifications",
+    "push__message": "Messages push",
+    "email__messages_report": "Rapports de messages e-mail",
+    "email__messages": "messages e-mail",
+    "push__notifications": "Notifications push",
+    "push__notifications_devices": "Appareils push enregistrés",
+    "current__device": "appareil actuel",
+    "push__registeration": "Inscription push",
+    "delete__profile": "Zone de danger : Supprimer le profil",
+    "profile_pic__uploaded": "Photo de profil en cours de téléchargement",
+    "delete_profile__confirm": "Voulez-vous vraiment supprimer le profil ?",
+    "request_success__deleted": "Demande supprimée avec succès",
+    "success__profile_pic_changed": "Photo de profil changée avec succès",
+    "error__push_notification_not_available": "Notification push non disponible",
+    "error_device_not_support_push_notifications": "Malheureusement, votre appareil/navigateur ne prend pas en charge les notifications push.",
+    "error_push_service_not_available": "Service de notification push non disponible",
+    "error_text": "Malheureusement, une erreur est survenue :",
+    "push_notification__permission_desc": "Les notifications push doivent-elles être activées pour cet appareil ?",
+    "error_push_token": "Erreur d'enregistrement du jeton push",
+    "success__profile_deleted": "Profil supprimé avec succès",
+    "error__while_deleting_msg": "Erreur lors de la suppression du profil",
+    "language": "Langue",
+    "select__language": "Choisir la langue",
+    "kidsRequests": "Demandes d'enfants",
+    "kids.verified": "Vérifié",
+    "kids.pending": "En attente",
+    "kidsrequestadd": "Ajouter",
+    "kids.add_header": "Ajouter un enfant",
+    "kids.add_message": "Veuillez saisir l'adresse e-mail de l'enfant que vous souhaitez ajouter.",
+    "kids.email_placeholder": "Adresse e-mail de l'enfant",
+    "kids.max_reached_header": "Nombre maximal d'enfants atteint",
+    "kids.max_reached_message": "Vous pouvez ajouter jusqu'à 3 enfants",
+    "children": "Enfants",
+    "confirm_delete_request": "Voulez-vous vraiment supprimer cette demande ?",
+    "no_children": "Aucun enfant disponible"
+  },
+  "tabs": {},
+  "team": {},
+  "team-list": {
+    "my__teams": "Mes équipes"
+  },
+  "training-create": {
+    "new__training": "Nouvel entraînement",
+    "team": "Équipe",
+    "start__training": "Commencer l'entraînement",
+    "end__training": "Terminer l'entraînement",
+    "series__settings": "Paramètres de série",
+    "daily": "Quotidien",
+    "weekly": "Hebdomadaire",
+    "repeat": "Répéter",
+    "first__training": "Premier entraînement",
+    "last__training": "Dernier entraînement"
+  },
+  "traning-detail": {},
+  "training": {
+    "upcomming__training": "Entraînements à venir",
+    "no_training__found": "aucun entraînement trouvé",
+    "past__training": "Entraînements passés",
+    "news__filter": "Filtrer les nouvelles",
+    "news__filer__desc": "Filtrer par club ou équipes.",
+    "cancelled": "Entraînement annulé :"
+  },
+  "side_bar": {
+    "administration": "Administration",
+    "info__and__help": "Infos et aide",
+    "my__club": "Mon club",
+    "my__team": "Mon équipe",
+    "version": "Version"
+  },
+  "common": {
+    "or": "Ou",
+    "email__address": "Adresse e-mail",
+    "password": "Mot de passe",
+    "general__error_occurred": "Une erreur générale s'est produite",
+    "ok": "OK",
+    "forget__password": "Mot de passe oublié ?",
+    "error__invalid_form": "Le formulaire est encore incorrect",
+    "please__wait": "Veuillez patienter",
+    "first__name": "Prénom",
+    "last__name": "Nom de famille",
+    "mountain_background__alt": "Image de fond montagnes",
+    "mistake": "Erreur",
+    "status": "Statut",
+    "participant": "Participant",
+    "championship": "Championnat",
+    "changes__saved": "Les modifications ont été enregistrées",
+    "name": "Nom",
+    "details": "Détails",
+    "attendances__absences": "Présences/Absences",
+    "my__status": "Mon statut",
+    "present": "Présent",
+    "absent": "Absent",
+    "close": "Fermer",
+    "success__saved": "Modifications enregistrées avec succès",
+    "no_of__members": "Nombre de membres",
+    "average__age": "Âge moyen",
+    "requests": "Demandes",
+    "members": "Membres",
+    "admins": "Administrateurs",
+    "cancel": "Annuler",
+    "create": "Créer",
+    "club": "Club",
+    "description": "Description",
+    "location": "Lieu",
+    "street__house_number": "Rue & numéro de maison",
+    "postal__code": "Code postal",
+    "locality": "Localité",
+    "start__event": "Début de l'événement",
+    "end__event": "Fin de l'événement",
+    "start__date": "Date de début",
+    "end__date": "Date de fin",
+    "no_event__found": "aucun événement trouvé",
+    "delete": "Supprimer",
+    "helper": "Aide",
+    "news": "Actualités",
+    "yes": "Oui",
+    "no": "Non",
+    "logout": "Se déconnecter",
+    "profile": "Profil",
+    "loading": "Chargement",
+    "training": "Entraînement",
+    "events": "Événements",
+    "edit": "Modifier",
+    "all": "Tout",
+    "no__answer": "Pas de réponse",
+    "event__details": "Détails de l'événement",
+    "language__german": "Deutsch",
+    "language__french": "Französisch",
+    "language__italian": "Italienisch",
+    "language__english": "Englisch",
+    "confirmation": "Confirmation",
+    "parents": "Parents",
+    "children": "Enfants",
+    "select_member": "Sélectionner un membre"
+  },
+  "club-parents-list": {
+    "delete_parent__confirm": "Voulez-vous vraiment supprimer le parent ?"
+  }
 }

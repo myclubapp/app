@@ -219,7 +219,8 @@
     "cancel_training_confirm": "Möchten Sie dieses Training wirklich absagen?",
     "training_cancelled": "Training wurde erfolgreich abgesagt",
     "cancel_reason_placeholder": "Grund für die Absage eingeben",
-    "cancel_reason_required": "Bitte geben Sie einen Grund für die Absage an"
+    "cancel_reason_required": "Bitte geben Sie einen Grund für die Absage an",
+    "cancelled": "Training abgesagt:"
   },
   "side_bar": {
     "administration": "Administration",
