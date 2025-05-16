@@ -11,7 +11,9 @@
       </ion-buttons>-->
       <ion-title>{{team?.name}}</ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -42,15 +44,21 @@
 
       <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
         <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-          <ion-item *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)" detail="true"
-            (click)="openAdminList()">
+          <ion-item
+            *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
+            detail="true"
+            (click)="openAdminList()"
+          >
             <ion-icon name="shield-half-outline" slot="start"></ion-icon>
             <ion-label> Administratoren </ion-label>
             <ion-note slot="end">{{team['teamAdmins'].length}}</ion-note>
           </ion-item>
-     
-          <ion-item *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)" detail="true"
-            (click)="openTeamTrainings()">
+
+          <ion-item
+            *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
+            detail="true"
+            (click)="openTeamTrainings()"
+          >
             <ion-icon name="barbell-outline" slot="start"></ion-icon>
             <ion-label> Trainings </ion-label>
             <ion-note slot="end"></ion-note>
@@ -59,17 +67,24 @@
       </ng-container>
 
       <ng-container *ngIf="clubList$ | async as clubList">
-        <ion-item *ngIf="enableChampionship(clubList) && team.type !='Club'" detail="true" (click)="openTeamGames()">
+        <ion-item
+          *ngIf="enableChampionship(clubList) && team.type !='Club'"
+          detail="true"
+          (click)="openTeamGames()"
+        >
           <ion-icon name="trophy-outline" slot="start"></ion-icon>
           <ion-label> Meisterschaftspiele </ion-label>
           <ion-note slot="end"></ion-note>
         </ion-item>
       </ng-container>
-
     </ion-list>
 
     <ng-container *ngIf="clubList$ | async as clubList">
-      <ion-list *ngIf="enableTrainingExercise(clubList)" [inset]="true" lines="none">
+      <ion-list
+        *ngIf="enableTrainingExercise(clubList)"
+        [inset]="true"
+        lines="none"
+      >
         <ion-item (click)="openTeamTrainingExercise()" detail="true">
           <ion-icon name="barbell-outline" slot="start"></ion-icon>
           <ion-label>Übungen</ion-label>
@@ -79,27 +94,46 @@
 
     <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
       <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-list *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)" lines="full"
-          [inset]="true">
+        <ion-list
+          *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
+          lines="full"
+          [inset]="true"
+        >
           <ion-list-header>
             <ion-label> Grenzwerte für Abmeldungen </ion-label>
           </ion-list-header>
           <ion-item>
             <ion-icon name="barbell-outline" slot="start"></ion-icon>
-            <ion-input labelPlacement="fixed" label="Training" type="number" [value]="team.trainingThreshold"
-              (ionInput)="onInput($event, 'trainingThreshold')"></ion-input>
+            <ion-input
+              labelPlacement="fixed"
+              label="Training"
+              type="number"
+              [value]="team.trainingThreshold"
+              (ionInput)="onInput($event, 'trainingThreshold')"
+            ></ion-input>
           </ion-item>
           <ng-container *ngIf="clubList$ | async as clubList">
             <ion-item *ngIf="enableChampionship(clubList)">
               <ion-icon name="trophy-outline" slot="start"></ion-icon>
-              <ion-input labelPlacement="fixed" label="Meisterschaft" type="number" [value]="team.championshipThreshold"
-                (ionInput)="onInput($event, 'championshipThreshold')"></ion-input>
+              <ion-input
+                labelPlacement="fixed"
+                label="Meisterschaft"
+                type="number"
+                [value]="team.championshipThreshold"
+                (ionInput)="onInput($event, 'championshipThreshold')"
+              ></ion-input>
             </ion-item>
           </ng-container>
         </ion-list>
-        <ion-note *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)" color="medium"
-          style="display:block" class="ion-margin-horizontal ion-padding-horizontal ion-text-wrap">
-          Anzahl Stunden vor Beginn des Spiels, Trainings oder Veranstaltung</ion-note>
+        <ion-note
+          *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
+          color="medium"
+          style="display: block"
+          class="ion-margin-horizontal ion-padding-horizontal ion-text-wrap"
+        >
+          Anzahl Stunden vor Beginn des Spiels, Trainings oder
+          Veranstaltung</ion-note
+        >
       </ng-container>
     </ng-container>
 
@@ -128,6 +162,17 @@
         </ion-button>
       </ion-item>
 
+      <!--<ion-item >
+        <ion-icon name="key" slot="start"></ion-icon>
+        <ion-label> {{team.apiKey}} </ion-label>
+      </ion-item>-->
+    </ion-list>
+
+    <ion-list lines="full" [inset]="true">
+      <ion-list-header>
+        <ion-label> {{ "common.support" | translate}} </ion-label>
+      </ion-list-header>
+
       <ion-item>
         <ion-icon name="heart-circle-outline" slot="start"></ion-icon>
         <ion-label> {{team.type}} </ion-label>
@@ -136,19 +181,31 @@
         <ion-icon name="time" slot="start" color="medium"></ion-icon>
         <ion-note> {{team.updated | date:'dd.MM.YYYY HH:mm'}} Uhr</ion-note>
       </ion-item>
+      <ion-item *ngIf="team.externalId">
+        <ion-icon
+          name="help-circle-outline"
+          slot="start"
+          color="medium"
+        ></ion-icon>
+        <ion-note>Support ID: {{team.externalId}} </ion-note>
+      </ion-item>
+
       <!--<ion-item >
         <ion-icon name="key" slot="start"></ion-icon>
-        <ion-label> {{team.apiKey}} </ion-label>
+        <ion-label> {{club.apiKey}} </ion-label>
       </ion-item>-->
     </ion-list>
-
-
 
     <div class="ion-padding">
       <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
         <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-          <ion-button *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
-            fill="outline" expand="block" color="danger" (click)="deleteTeam()">
+          <ion-button
+            *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
+            fill="outline"
+            expand="block"
+            color="danger"
+            (click)="deleteTeam()"
+          >
             <ion-icon slot="start" name="trash"></ion-icon>
             {{ "team.delete" | translate}}
           </ion-button>
@@ -241,9 +298,16 @@
 <ng-template #header>
   <ion-header [translucent]="true">
     <ion-toolbar>
-      <ion-title><ion-skeleton-text [animated]="true" style="width: 60%;"></ion-skeleton-text></ion-title>
+      <ion-title
+        ><ion-skeleton-text
+          [animated]="true"
+          style="width: 60%"
+        ></ion-skeleton-text
+      ></ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -251,11 +315,13 @@
   <ion-content [fullscreen]="true">
     <ion-header collapse="condense">
       <ion-toolbar>
-        <ion-title size="large"><ion-skeleton-text [animated]="true"
-            style="width: 60%;"></ion-skeleton-text></ion-title>
+        <ion-title size="large"
+          ><ion-skeleton-text
+            [animated]="true"
+            style="width: 60%"
+          ></ion-skeleton-text
+        ></ion-title>
       </ion-toolbar>
     </ion-header>
   </ion-content>
-
-
 </ng-template>

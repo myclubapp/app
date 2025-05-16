@@ -208,6 +208,12 @@
           <ion-icon slot="icon-only" name="open-outline"></ion-icon>
         </ion-button>
       </ion-item>
+    </ion-list>
+
+    <ion-list lines="full" [inset]="true">
+      <ion-list-header>
+        <ion-label> {{ "common.support" | translate}} </ion-label>
+      </ion-list-header>
       <ion-item>
         <ion-icon name="heart-circle-outline" slot="start"></ion-icon>
         <ion-label> {{club.type}} </ion-label>
@@ -215,6 +221,14 @@
       <ion-item>
         <ion-icon name="time" slot="start" color="medium"></ion-icon>
         <ion-note> {{club.updated | date:'dd.MM.YYYY HH:mm'}} Uhr</ion-note>
+      </ion-item>
+      <ion-item *ngIf="club.externalId">
+        <ion-icon
+          name="help-circle-outline"
+          slot="start"
+          color="medium"
+        ></ion-icon>
+        <ion-note>Support ID: {{club.externalId}} </ion-note>
       </ion-item>
 
       <!--<ion-item >

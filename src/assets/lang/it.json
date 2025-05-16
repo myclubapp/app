@@ -172,7 +172,9 @@
     "past__training": "Allenamenti passati",
     "news__filter": "Filtra notizie",
     "news__filer__desc": "Filtra per club o squadre.",
-    "cancelled": "Allenamento annullato:"
+    "cancelled": "Allenamento annullato",
+    "cancelled_reason": "Motivo dell'annullamento",
+    "cancelled_reason_placeholder": "Inserisci il motivo dell'annullamento"
   },
   "side_bar": {
     "administration": "Amministrazione",
@@ -244,7 +246,8 @@
     "language__english": "Englisch",
     "parents": "Genitori",
     "children": "Bambini",
-    "select_member": "Seleziona membro"
+    "select_member": "Seleziona membro",
+    "support": "Supporto"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Vuoi davvero eliminare il genitore?"

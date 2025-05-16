@@ -9,10 +9,10 @@ capacitor-google-map {
   width: 275px;
   height: 400px;
 }
-*/ 
+*/
 
 capacitor-google-map {
-  display: block;
+  display: inline-block;
   width: 100%;
   height: 300px; // adjust as needed
   z-index: 1;
@@ -23,4 +23,3 @@ ion-fab {
   top: 32px;
   right: 16px;
 }
-

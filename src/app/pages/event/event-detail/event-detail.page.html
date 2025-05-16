@@ -2,14 +2,23 @@
   <ion-header [translucent]="true">
     <ion-toolbar>
       <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-buttons *ngIf="isClubAdmin(clubAdminList, this.event.clubId)" slot="secondary">
-          <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
-          <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
+        <ion-buttons
+          *ngIf="isClubAdmin(clubAdminList, this.event.clubId)"
+          slot="secondary"
+        >
+          <ion-button *ngIf="!allowEdit" (click)="edit()"
+            >{{"common.edit" | translate}}</ion-button
+          >
+          <ion-button *ngIf="allowEdit" (click)="edit()"
+            >{{"common.done" | translate}}</ion-button
+          >
         </ion-buttons>
       </ng-container>
       <ion-title>{{"common.details" | translate}}</ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -30,7 +39,6 @@
         </ion-label>
       </ion-item>
 
-
       <ion-item>
         <ion-icon slot="start" name="calendar-outline"></ion-icon>
         <ion-label>
@@ -45,7 +53,7 @@
         <ion-icon slot="start" name="location-outline"></ion-icon>
         <ion-label class="ion-text-wrap">
           <h2>{{event.location}}</h2>
-          <h2>{{event.streetAndNumber}} </h2>
+          <h2>{{event.streetAndNumber}}</h2>
           <h2>{{event.postalCode}} {{event.city}}</h2>
         </ion-label>
       </ion-item>
@@ -78,64 +86,96 @@
       </ion-item>
     </ion-list>
 
-
-
     <!-- CHANGE MODE-->
     <ng-container *ngIf="allowEdit">
       <ion-list [inset]="true">
         <ion-item>
-          <ion-input [label]='"common.name" | translate' label-placement="stacked"
-            (ionChange)="updateEvent($event, 'name')" [value]="event.name">
+          <ion-input
+            [label]='"common.name" | translate'
+            label-placement="stacked"
+            (ionChange)="updateEvent($event, 'name')"
+            [value]="event.name"
+          >
           </ion-input>
         </ion-item>
         <ion-item>
-          <ion-textarea [autoGrow]="true" (ionChange)="updateEvent($event, 'description')"
-            [label]='"common.description" | translate' label-placement="stacked" [value]="event.description">
+          <ion-textarea
+            [autoGrow]="true"
+            (ionChange)="updateEvent($event, 'description')"
+            [label]='"common.description" | translate'
+            label-placement="stacked"
+            [value]="event.description"
+          >
           </ion-textarea>
         </ion-item>
       </ion-list>
 
       <ion-list [inset]="true">
         <ion-item>
-          <ion-input (ionChange)="updateEvent($event, 'location')" [label]='"common.location" | translate'
-            label-placement="stacked" [value]="event.location">
+          <ion-input
+            (ionChange)="updateEvent($event, 'location')"
+            [label]='"common.location" | translate'
+            label-placement="stacked"
+            [value]="event.location"
+          >
           </ion-input>
         </ion-item>
         <ion-item>
-          <ion-input (ionChange)="updateEvent($event, 'streetAndNumber')"
-            [label]='"common.street__house_number" | translate' label-placement="stacked"
-            [value]="event.streetAndNumber">
+          <ion-input
+            (ionChange)="updateEvent($event, 'streetAndNumber')"
+            [label]='"common.street__house_number" | translate'
+            label-placement="stacked"
+            [value]="event.streetAndNumber"
+          >
           </ion-input>
         </ion-item>
         <ion-item>
-          <ion-input (ionChange)="updateEvent($event, 'postalCode')" [label]="'common.postal__code' | translate"
-            label-placement="stacked" [value]="event.postalCode">
+          <ion-input
+            (ionChange)="updateEvent($event, 'postalCode')"
+            [label]="'common.postal__code' | translate"
+            label-placement="stacked"
+            [value]="event.postalCode"
+          >
           </ion-input>
         </ion-item>
         <ion-item>
-          <ion-input (ionChange)="updateEvent($event, 'city')" [label]='"common.locality" | translate'
-            label-placement="stacked" [value]="event.city">
+          <ion-input
+            (ionChange)="updateEvent($event, 'city')"
+            [label]='"common.locality" | translate'
+            label-placement="stacked"
+            [value]="event.city"
+          >
           </ion-input>
         </ion-item>
       </ion-list>
 
-
       <ion-list [inset]="true">
         <ion-item>
-          <ion-input (ionChange)="updateEvent($event, 'link_web')" [label]="'common.link__web' | translate"
-            label-placement="stacked" type="url" [value]="event.link_web"
-            [placeholder]="'common.link__placeholder' | translate">
+          <ion-input
+            (ionChange)="updateEvent($event, 'link_web')"
+            [label]="'common.link__web' | translate"
+            label-placement="stacked"
+            type="url"
+            [value]="event.link_web"
+            [placeholder]="'common.link__placeholder' | translate"
+          >
           </ion-input>
         </ion-item>
         <ion-item>
-          <ion-input (ionChange)="updateEvent($event, 'link_poll')" [label]="'common.link__poll' | translate"
-            label-placement="stacked" type="url" [value]="event.link_poll"
-            [placeholder]="'common.link__placeholder' | translate">
+          <ion-input
+            (ionChange)="updateEvent($event, 'link_poll')"
+            [label]="'common.link__poll' | translate"
+            label-placement="stacked"
+            type="url"
+            [value]="event.link_poll"
+            [placeholder]="'common.link__placeholder' | translate"
+          >
           </ion-input>
         </ion-item>
       </ion-list>
 
       <ion-list [inset]="true">
+        <!--
         <ion-item id="timeFromItem">
           <ion-label position="">
             {{"common.start__event" | translate}}:
@@ -191,36 +231,60 @@
             </ng-template>
           </ion-modal>
         </ion-item>
+      -->
 
         <ion-item>
           <ion-label position="default">
             {{"event-add.is__closed__event" | translate}}
           </ion-label>
-          <ion-toggle slot="end" (ionChange)="updateEvent($event, 'closedEvent')" [checked]="event.closedEvent"></ion-toggle>
+          <ion-toggle
+            slot="end"
+            (ionChange)="updateEvent($event, 'closedEvent')"
+            [checked]="event.closedEvent"
+          ></ion-toggle>
         </ion-item>
-
       </ion-list>
     </ng-container>
 
-
-    <ion-list [inset]="true" lines="none" *ngIf="isFuture && !allowEdit && !event.closedEvent">
+    <ion-list
+      [inset]="true"
+      lines="none"
+      *ngIf="isFuture && !allowEdit && !event.closedEvent"
+    >
       <ion-list-header>
         {{"common.attendances__absences" | translate}}
       </ion-list-header>
       <ion-item class="myclubStatus">
-        <ng-container *ngIf="event.hasOwnProperty('status'); else loadingStatus">
-          <ion-fab-button (click)="toggle(true, event)" size="small" color="warning" slot="start"
-            *ngIf="event.status === null">
+        <ng-container
+          *ngIf="event.hasOwnProperty('status'); else loadingStatus"
+        >
+          <ion-fab-button
+            (click)="toggle(true, event)"
+            size="small"
+            color="warning"
+            slot="start"
+            *ngIf="event.status === null"
+          >
             <ion-icon name="help-circle"> </ion-icon>
           </ion-fab-button>
 
-          <ion-fab-button (click)="toggle(true, event)" size="small" color="danger" slot="start"
-            *ngIf="event.status === false">
+          <ion-fab-button
+            (click)="toggle(true, event)"
+            size="small"
+            color="danger"
+            slot="start"
+            *ngIf="event.status === false"
+          >
             <ion-icon name="close-circle"> </ion-icon>
           </ion-fab-button>
 
-          <ion-fab-button (click)="toggle(false, event)" size="small" color="success" slot="start"
-            *ngIf="event.status === true">
+          <ion-fab-button
+            (click)="toggle(false, event)"
+            size="small"
+            color="success"
+            slot="start"
+            *ngIf="event.status === true"
+          >
             <ion-icon name="checkmark-circle"> </ion-icon>
           </ion-fab-button>
 
@@ -234,25 +298,41 @@
       <ion-accordion-group [multiple]="true" [value]="['yes']">
         <ion-accordion value="yes">
           <ion-item slot="header" color="light">
-            <ion-label>{{"common.present" | translate}}: {{event['attendeeListTrue'].length}}</ion-label>
+            <ion-label
+              >{{"common.present" | translate}}:
+              {{event['attendeeListTrue'].length}}</ion-label
+            >
           </ion-item>
           <div slot="content">
             <ion-list>
-              <ion-item-sliding #item *ngFor="let member of event['attendeeListTrue']">
+              <ion-item-sliding
+                #item
+                *ngFor="let member of event['attendeeListTrue']"
+              >
                 <ion-item detail="true">
-                  <ion-icon color="success" slot="start" name="checkmark-circle"></ion-icon>
-                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
+                  <ion-icon
+                    color="success"
+                    slot="start"
+                    name="checkmark-circle"
+                  ></ion-icon>
+                  <ion-label (click)="openMember(member)"
+                    >{{member.firstName}} {{member.lastName}}</ion-label
+                  >
                 </ion-item>
 
-
-                  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                    <ion-item-options *ngIf="isClubAdmin(clubAdminList, event.clubId)" side="end">
-                      <ion-item-option color="danger" (click)="toggleItem(item, false, event, member.id)">
-                        <ion-icon slot="icon-only" name="close-circle"></ion-icon>
-                      </ion-item-option>
-                    </ion-item-options>
-                  </ng-container>
-
+                <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+                  <ion-item-options
+                    *ngIf="isClubAdmin(clubAdminList, event.clubId)"
+                    side="end"
+                  >
+                    <ion-item-option
+                      color="danger"
+                      (click)="toggleItem(item, false, event, member.id)"
+                    >
+                      <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                    </ion-item-option>
+                  </ion-item-options>
+                </ng-container>
               </ion-item-sliding>
             </ion-list>
           </div>
@@ -260,24 +340,44 @@
 
         <ion-accordion value="no">
           <ion-item slot="header" color="light">
-            <ion-label>{{"common.absent" | translate}}: {{event['attendeeListFalse'].length}}</ion-label>
+            <ion-label
+              >{{"common.absent" | translate}}:
+              {{event['attendeeListFalse'].length}}</ion-label
+            >
           </ion-item>
           <div slot="content">
             <ion-list>
-              <ion-item-sliding #item *ngFor="let member of event['attendeeListFalse']">
+              <ion-item-sliding
+                #item
+                *ngFor="let member of event['attendeeListFalse']"
+              >
                 <ion-item detail="true">
-                  <ion-icon color="danger" slot="start" name="close-circle"></ion-icon>
-                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
+                  <ion-icon
+                    color="danger"
+                    slot="start"
+                    name="close-circle"
+                  ></ion-icon>
+                  <ion-label (click)="openMember(member)"
+                    >{{member.firstName}} {{member.lastName}}</ion-label
+                  >
                 </ion-item>
-                
-                  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                    <ion-item-options *ngIf="isClubAdmin(clubAdminList, event.clubId)" side="end">
-                      <ion-item-option color="success" (click)="toggleItem(item, true, event, member.id)">
-                        <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-                      </ion-item-option>
-                    </ion-item-options>
-                  </ng-container>
-                
+
+                <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+                  <ion-item-options
+                    *ngIf="isClubAdmin(clubAdminList, event.clubId)"
+                    side="end"
+                  >
+                    <ion-item-option
+                      color="success"
+                      (click)="toggleItem(item, true, event, member.id)"
+                    >
+                      <ion-icon
+                        slot="icon-only"
+                        name="checkmark-circle"
+                      ></ion-icon>
+                    </ion-item-option>
+                  </ion-item-options>
+                </ng-container>
               </ion-item-sliding>
             </ion-list>
           </div>
@@ -285,27 +385,50 @@
 
         <ion-accordion value="null">
           <ion-item slot="header" color="light">
-            <ion-label>{{"common.noreply" | translate}}: {{event['unrespondedMembers'].length}}</ion-label>
+            <ion-label
+              >{{"common.noreply" | translate}}:
+              {{event['unrespondedMembers'].length}}</ion-label
+            >
           </ion-item>
           <div slot="content">
             <ion-list>
-              <ion-item-sliding #item *ngFor="let member of event['unrespondedMembers']">
+              <ion-item-sliding
+                #item
+                *ngFor="let member of event['unrespondedMembers']"
+              >
                 <ion-item detail="true">
-                  <ion-icon color="warning" slot="start" name="help-circle"></ion-icon>
-                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
+                  <ion-icon
+                    color="warning"
+                    slot="start"
+                    name="help-circle"
+                  ></ion-icon>
+                  <ion-label (click)="openMember(member)"
+                    >{{member.firstName}} {{member.lastName}}</ion-label
+                  >
                 </ion-item>
-                
-                  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                    <ion-item-options *ngIf="isClubAdmin(clubAdminList, event.clubId)" side="end">
-                      <ion-item-option color="success" (click)="toggleItem(item, true, event, member.id)">
-                        <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-                      </ion-item-option>
-                      <ion-item-option color="danger" (click)="toggleItem(item, false, event, member.id)">
-                        <ion-icon slot="icon-only" name="close-circle"></ion-icon>
-                      </ion-item-option>
-                    </ion-item-options>
-                  </ng-container>
 
+                <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+                  <ion-item-options
+                    *ngIf="isClubAdmin(clubAdminList, event.clubId)"
+                    side="end"
+                  >
+                    <ion-item-option
+                      color="success"
+                      (click)="toggleItem(item, true, event, member.id)"
+                    >
+                      <ion-icon
+                        slot="icon-only"
+                        name="checkmark-circle"
+                      ></ion-icon>
+                    </ion-item-option>
+                    <ion-item-option
+                      color="danger"
+                      (click)="toggleItem(item, false, event, member.id)"
+                    >
+                      <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                    </ion-item-option>
+                  </ion-item-options>
+                </ng-container>
               </ion-item-sliding>
             </ion-list>
           </div>
@@ -326,13 +449,22 @@
   <ion-header [translucent]="true">
     <ion-toolbar>
       <ion-buttons slot="secondary">
-        <ion-skeleton-text animated style="width: 80px; height: 20px; margin: 0 10px;"></ion-skeleton-text>
+        <ion-skeleton-text
+          animated
+          style="width: 80px; height: 20px; margin: 0 10px"
+        ></ion-skeleton-text>
       </ion-buttons>
       <ion-title>
-        <ion-skeleton-text animated style="width: 100px; margin: 0 auto;"></ion-skeleton-text>
+        <ion-skeleton-text
+          animated
+          style="width: 100px; margin: 0 auto"
+        ></ion-skeleton-text>
       </ion-title>
       <ion-buttons slot="primary">
-        <ion-skeleton-text animated style="width: 80px; height: 20px; margin: 0 10px;"></ion-skeleton-text>
+        <ion-skeleton-text
+          animated
+          style="width: 80px; height: 20px; margin: 0 10px"
+        ></ion-skeleton-text>
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -342,7 +474,7 @@
     <ion-header collapse="condense">
       <ion-toolbar>
         <ion-title size="large">
-          <ion-skeleton-text animated style="width: 150px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 150px"></ion-skeleton-text>
         </ion-title>
       </ion-toolbar>
     </ion-header>
@@ -402,7 +534,11 @@
         <ion-skeleton-text animated style="width: 140px"></ion-skeleton-text>
       </ion-list-header>
       <ion-item>
-        <ion-skeleton-text animated slot="start" style="width: 40px; height: 40px; border-radius: 50%;">
+        <ion-skeleton-text
+          animated
+          slot="start"
+          style="width: 40px; height: 40px; border-radius: 50%"
+        >
         </ion-skeleton-text>
         <ion-label>
           <ion-skeleton-text animated style="width: 100px"></ion-skeleton-text>
@@ -417,23 +553,40 @@
         <ion-accordion value="yes">
           <ion-item slot="header" color="light">
             <ion-label>
-              <ion-skeleton-text animated style="width: 150px"></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 150px"
+              ></ion-skeleton-text>
             </ion-label>
           </ion-item>
           <div slot="content">
             <ion-list>
               <ion-item>
-                <ion-skeleton-text animated slot="start" style="width: 24px; height: 24px; border-radius: 50%;">
+                <ion-skeleton-text
+                  animated
+                  slot="start"
+                  style="width: 24px; height: 24px; border-radius: 50%"
+                >
                 </ion-skeleton-text>
                 <ion-label>
-                  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                  <ion-skeleton-text
+                    animated
+                    style="width: 60%"
+                  ></ion-skeleton-text>
                 </ion-label>
               </ion-item>
               <ion-item>
-                <ion-skeleton-text animated slot="start" style="width: 24px; height: 24px; border-radius: 50%;">
+                <ion-skeleton-text
+                  animated
+                  slot="start"
+                  style="width: 24px; height: 24px; border-radius: 50%"
+                >
                 </ion-skeleton-text>
                 <ion-label>
-                  <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+                  <ion-skeleton-text
+                    animated
+                    style="width: 70%"
+                  ></ion-skeleton-text>
                 </ion-label>
               </ion-item>
             </ion-list>
@@ -444,7 +597,10 @@
         <ion-accordion value="no">
           <ion-item slot="header" color="light">
             <ion-label>
-              <ion-skeleton-text animated style="width: 130px"></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 130px"
+              ></ion-skeleton-text>
             </ion-label>
           </ion-item>
         </ion-accordion>
@@ -453,7 +609,10 @@
         <ion-accordion value="null">
           <ion-item slot="header" color="light">
             <ion-label>
-              <ion-skeleton-text animated style="width: 140px"></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 140px"
+              ></ion-skeleton-text>
             </ion-label>
           </ion-item>
         </ion-accordion>

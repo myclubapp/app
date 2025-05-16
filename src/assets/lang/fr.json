@@ -172,7 +172,9 @@
     "past__training": "Entraînements passés",
     "news__filter": "Filtrer les nouvelles",
     "news__filer__desc": "Filtrer par club ou équipes.",
-    "cancelled": "Entraînement annulé :"
+    "cancelled": "Entraînement annulé",
+    "cancelled_reason": "Raison de l'annulation",
+    "cancelled_reason_placeholder": "Entrer la raison de l'annulation"
   },
   "side_bar": {
     "administration": "Administration",
@@ -245,7 +247,8 @@
     "confirmation": "Confirmation",
     "parents": "Parents",
     "children": "Enfants",
-    "select_member": "Sélectionner un membre"
+    "select_member": "Sélectionner un membre",
+    "support": "Support"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Voulez-vous vraiment supprimer le parent ?"

@@ -1,6 +1,19 @@
 <ng-container *ngIf="training$ | async as training; else loading">
   <ion-header [translucent]="true">
     <ion-toolbar>
+      <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+        <ion-buttons
+          *ngIf="isTeamAdmin(teamAdminList, training.teamId)"
+          slot="secondary"
+        >
+          <ion-button *ngIf="!allowEdit" (click)="edit()"
+            >{{"common.edit" | translate}}</ion-button
+          >
+          <ion-button *ngIf="allowEdit" (click)="edit()"
+            >{{"common.done" | translate}}</ion-button
+          >
+        </ion-buttons>
+      </ng-container>
       <ion-title>{{"common.details" | translate}}</ion-title>
       <ion-buttons slot="primary">
         <ion-button (click)="close()"
@@ -18,11 +31,11 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-list [inset]="true">
+    <ion-list [inset]="true" *ngIf="!allowEdit">
       <ion-item *ngIf="training.cancelled === true">
         <ion-icon slot="start" color="danger" name="alert-circle"></ion-icon>
         <ion-label>
-          <h2>{{"training.cancelled" | translate}}:</h2>
+          <h2>{{"training.cancelled" | translate}}</h2>
           <h3>{{training.cancelledReason}}</h3>
         </ion-label>
       </ion-item>
@@ -69,7 +82,7 @@
 
     <ng-container *ngIf="clubList$ | async as clubList">
       <ion-list
-        *ngIf="enableTrainingExercise(clubList)"
+        *ngIf="enableTrainingExercise(clubList) && !allowEdit"
         [inset]="true"
         lines="none"
       >
@@ -87,7 +100,7 @@
       </ion-list>
     </ng-container>
 
-    <ion-list [inset]="true" lines="none" *ngIf="isFuture">
+    <ion-list [inset]="true" lines="none" *ngIf="isFuture && !allowEdit">
       <ion-list-header>
         {{"common.attendances__absences" | translate}}
       </ion-list-header>
@@ -145,7 +158,7 @@
       </ng-container>
     </ion-list>
 
-    <ion-list [inset]="true">
+    <ion-list [inset]="true" *ngIf="!allowEdit">
       <ion-accordion-group [multiple]="true" [value]="['yes']">
         <ion-accordion
           value="yes"
@@ -158,7 +171,6 @@
             >
           </ion-item>
           <div slot="content">
-            <!-- class="ion-padding"-->
             <ion-list>
               <ion-item-sliding
                 #item
@@ -218,7 +230,6 @@
             >
           </ion-item>
           <div slot="content">
-            <!-- class="ion-padding"-->
             <ion-list>
               <ion-item-sliding
                 #item
@@ -272,15 +283,8 @@
               >{{"common.noreply" | translate}}:
               {{training['unrespondedMembers'].length}}</ion-label
             >
-            <!--            <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-              <ion-button
-                *ngIf="training['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList, training.teamId)"
-                fill="clear" slot="end" (click)="toggleAll(true, training)"> {{"common.alle_anmelden" |
-                translate}}</ion-button>
-            </ng-container>-->
           </ion-item>
           <div slot="content">
-            <!-- class="ion-padding"-->
             <ion-list>
               <ion-item-sliding
                 #item
@@ -327,6 +331,139 @@
         </ion-accordion>
       </ion-accordion-group>
     </ion-list>
+
+    <!-- CHANGE MODE-->
+    <ng-container *ngIf="allowEdit">
+      <ion-list [inset]="true">
+        <ion-item>
+          <ion-checkbox
+            labelPlacement="end"
+            (ionChange)="updateTraining($event, 'cancelled')"
+            [checked]="training.cancelled"
+          >
+            {{"training.cancelled" | translate}}
+          </ion-checkbox>
+        </ion-item>
+
+        <ion-item *ngIf="training.cancelled">
+          <ion-input
+            [label]='"training.cancelled_reason" | translate'
+            label-placement="stacked"
+            (ionChange)="updateTraining($event, 'cancelledReason')"
+            [value]="training.cancelledReason"
+          >
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            [label]='"common.name" | translate'
+            label-placement="stacked"
+            (ionChange)="updateTraining($event, 'name')"
+            [value]="training.name"
+          >
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-textarea
+            [autoGrow]="true"
+            (ionChange)="updateTraining($event, 'description')"
+            [label]='"common.description" | translate'
+            label-placement="stacked"
+            [value]="training.description"
+          >
+          </ion-textarea>
+        </ion-item>
+      </ion-list>
+
+      <ion-list [inset]="true">
+        <ion-item>
+          <ion-input
+            (ionChange)="updateTraining($event, 'location')"
+            [label]='"common.location" | translate'
+            label-placement="stacked"
+            [value]="training.location"
+          >
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            (ionChange)="updateTraining($event, 'streetAndNumber')"
+            [label]='"common.street__house_number" | translate'
+            label-placement="stacked"
+            [value]="training.streetAndNumber"
+          >
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            (ionChange)="updateTraining($event, 'city')"
+            [label]='"common.locality" | translate'
+            label-placement="stacked"
+            [value]="training.city"
+          >
+          </ion-input>
+        </ion-item>
+      </ion-list>
+      <!--
+      <ion-list [inset]="true">
+        <ion-item id="timeFromItem">
+          <ion-label position="">
+            {{"common.start__event" | translate}}:
+          </ion-label>
+          <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
+
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime presentation="time" id="timeFrom" (ionChange)="changeTimeFrom($event)"
+                (ionChange)="updateTraining($event, 'timeFrom')" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+                [value]="training.timeFrom"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+
+        <ion-item id="timeToItem">
+          <ion-label position=""> {{"common.end__event" | translate}}: </ion-label>
+          <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
+
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime (ionChange)="updateTraining($event, 'timeTo')" presentation="time" id="timeTo"
+                minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" [value]="training.timeTo"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+
+        <ion-item id="startDateItem">
+          <ion-label position="default">
+            {{"common.start__date" | translate}}:
+          </ion-label>
+          <ion-datetime-button slot="end" datetime="startDate"></ion-datetime-button>
+
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime (ionChange)="updateTraining($event, 'startDate')" [firstDayOfWeek]="1"
+                (ionChange)="changeStartDate($event)" presentation="date" id="startDate"
+                [value]="training.startDate"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+
+        <ion-item id="endDateItem">
+          <ion-label position="default">
+            {{"common.end__date" | translate}}:
+          </ion-label>
+          <ion-datetime-button slot="end" datetime="endDate"></ion-datetime-button>
+
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime (ionChange)="updateTraining($event, 'endDate')" [firstDayOfWeek]="1" presentation="date"
+                id="endDate" [value]="training.endDate"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+      </ion-list>-->
+    </ng-container>
   </ion-content>
 </ng-container>
 

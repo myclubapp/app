@@ -14,10 +14,10 @@ PODS:
     - Capacitor
   - CapacitorDialog (7.0.1):
     - Capacitor
-  - CapacitorGeolocation (7.1.1):
+  - CapacitorGeolocation (7.1.2):
     - Capacitor
     - IONGeolocationLib (~> 1.0)
-  - CapacitorGoogleMaps (7.0.1):
+  - CapacitorGoogleMaps (7.0.2):
     - Capacitor
     - Google-Maps-iOS-Utils (~> 5.0)
     - GoogleMaps (~> 8.4)
@@ -209,8 +209,8 @@ SPEC CHECKSUMS:
   CapacitorCordova: 5967b9ba03915ef1d585469d6e31f31dc49be96f
   CapacitorDevice: fe3f190e1d718f4607bdc6b73993433d1c84f409
   CapacitorDialog: 9b934329026b2b0ffa56939bb06df3c67541a2ab
-  CapacitorGeolocation: 8f8ac02ceaeb203a4762f8dc4ff5119e3f7fa50a
-  CapacitorGoogleMaps: b8730f29cfbe1ca0b8caa8ac2b2db230162e02b7
+  CapacitorGeolocation: 8c86a3afea574c84447c17905da96f2356ad913e
+  CapacitorGoogleMaps: a91ce2f4026faa2bb0a1f45c287deff4aeade82a
   CapacitorHaptics: 70e47470fa1a6bd6338cd102552e3846b7f9a1b3
   CapacitorKeyboard: 969647d0ca2e5c737d7300088e2517aa832434e2
   CapacitorNetwork: 07ec4c69c1bb696f41c23e00d31bda1bbb221bba
@@ -237,4 +237,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: a9084d06c1039f57374ac151e37ed2d56c4c5681
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

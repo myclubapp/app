@@ -200,7 +200,9 @@
     "past__training": "Past training",
     "news__filter": "Filter news",
     "news__filer__desc": "Filter by club or team.",
-    "cancelled": "Training cancelled:"
+    "cancelled": "Training cancelled",
+    "cancelled_reason": "Reason for cancellation",
+    "cancelled_reason_placeholder": "Enter reason for cancellation"
   },
   "side_bar": {
     "administration": "Administration",
@@ -308,7 +310,8 @@
     "confirmation": "Confirmation",
     "parents": "Parents",
     "children": "Children",
-    "select_member": "Select member"
+    "select_member": "Select member",
+    "support": "Support"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Do you really want to delete the parent?"

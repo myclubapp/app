@@ -1,13 +1,13 @@
 {
   "name": "CapacitorGeolocation",
-  "version": "7.1.1",
+  "version": "7.1.2",
   "summary": "The Geolocation API provides simple methods for getting and tracking the current position of the device using GPS, along with altitude, heading, and speed information if available.",
   "license": "MIT",
   "homepage": "https://github.com/ionic-team/capacitor-geolocation.git",
   "authors": "Outsystems",
   "source": {
     "git": "https://github.com/ionic-team/capacitor-geolocation.git",
-    "tag": "7.1.1"
+    "tag": "7.1.2"
   },
   "source_files": "ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}",
   "platforms": {
