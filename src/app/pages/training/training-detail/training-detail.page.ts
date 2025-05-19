@@ -93,10 +93,9 @@ export class TrainingDetailPage implements OnInit {
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
     return teamAdminList && teamAdminList.some((team) => team.id === teamId);
   }
-  enableTrainingExercise(clubList) {
+  enableMyClubPro(clubList) {
     return (
-      clubList &&
-      clubList.some((club) => club.hasFeatureTrainingExercise == true)
+      clubList && clubList.some((club) => club.hasFeatureMyClubPro == true)
     );
   }
 

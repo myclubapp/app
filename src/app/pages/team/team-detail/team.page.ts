@@ -101,13 +101,7 @@ export class TeamPage implements OnInit {
   }
 
   ngOnDestroy() {}
-  enableTrainingExercise(clubList) {
-    return (
-      clubList &&
-      clubList.some((club) => club.hasFeatureTrainingExercise == true) &&
-      clubList.some((club) => this.team.clubId == club.id)
-    );
-  }
+
   enableChampionship(clubList) {
     return (
       clubList &&
@@ -115,10 +109,10 @@ export class TeamPage implements OnInit {
       clubList.some((club) => this.team.clubId == club.id)
     );
   }
-  enableExtendedFeatures(clubList) {
+  enableMyClubPro(clubList) {
     return (
       clubList &&
-      clubList.some((club) => club.hasExtendedFeatures == true) &&
+      clubList.some((club) => club.hasFeatureMyClubPro == true) &&
       clubList.some((club) => this.team.clubId == club.id)
     );
   }

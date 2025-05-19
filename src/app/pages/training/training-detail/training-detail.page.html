@@ -82,7 +82,7 @@
 
     <ng-container *ngIf="clubList$ | async as clubList">
       <ion-list
-        *ngIf="enableTrainingExercise(clubList) && !allowEdit"
+        *ngIf="enableMyClubPro(clubList) && !allowEdit"
         [inset]="true"
         lines="none"
       >

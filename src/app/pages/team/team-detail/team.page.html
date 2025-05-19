@@ -86,7 +86,7 @@
         >
           <ng-container *ngIf="clubList$ | async as clubList">
             <ion-list
-              *ngIf="enableTrainingExercise(clubList)"
+              *ngIf="enableMyClubPro(clubList)"
               [inset]="true"
               lines="none"
             >
@@ -95,7 +95,7 @@
               </ion-list-header>
               <ion-item (click)="openTeamTrainingExercise()" detail="true">
                 <ion-icon name="barbell-outline" slot="start"></ion-icon>
-                <ion-label>Übungen</ion-label>
+                <ion-label>Übungen </ion-label>
               </ion-item>
             </ion-list>
           </ng-container>
@@ -110,7 +110,7 @@
         >
           <ng-container *ngIf="clubList$ | async as clubList">
             <ion-list
-              *ngIf="enableExtendedFeatures(clubList)"
+              *ngIf="enableMyClubPro(clubList)"
               [inset]="true"
               lines="none"
             >
