@@ -67,7 +67,14 @@
   "events": {
     "event": "Events",
     "upcomming__events": "Upcoming events",
-    "past__events": "Past events"
+    "past__events": "Past events",
+    "cancel_event": "Cancel event",
+    "cancel_event_confirm": "Do you really want to cancel this event?",
+    "event_cancelled": "Event was successfully cancelled",
+    "cancel_reason_placeholder": "Enter reason for cancellation",
+    "cancel_reason_required": "Please provide a reason for cancellation",
+    "cancelled": "Event cancelled",
+    "cancelled_reason": "Reason for cancellation"
   },
   "follow": {
     "follow": "Follow"

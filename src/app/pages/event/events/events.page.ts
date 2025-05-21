@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { MyClubAppWidget } from 'myclub-widget-plugin';
+import { MyClubAppWidget } from "myclub-widget-plugin";
 
 import {
   IonItemSliding,
@@ -38,10 +38,10 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { Profile } from "src/app/models/user";
 
 @Component({
-    selector: "app-events",
-    templateUrl: "./events.page.html",
-    styleUrls: ["./events.page.scss"],
-    standalone: false
+  selector: "app-events",
+  templateUrl: "./events.page.html",
+  styleUrls: ["./events.page.scss"],
+  standalone: false,
 })
 export class EventsPage implements OnInit {
   skeleton = new Array(12);
@@ -70,7 +70,7 @@ export class EventsPage implements OnInit {
     private translate: TranslateService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -102,13 +102,11 @@ export class EventsPage implements OnInit {
       })
     ).subscribe();*/
 
-
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
 
     this.handleNavigationData();
   }
-
 
   ngOnDestroy() {
     if (this.activatedRouteSub) {
@@ -120,32 +118,36 @@ export class EventsPage implements OnInit {
   }
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+    return clubAdminList && clubAdminList.some((club) => club.id === clubId);
   }
 
   handleNavigationData() {
     this.activatedRouteSub = this.activatedRoute.url.subscribe(() => {
       const navigation = this.router.getCurrentNavigation();
-      if (navigation && navigation.extras.state && navigation.extras.state["type"] === 'clubEvent') {
+      if (
+        navigation &&
+        navigation.extras.state &&
+        navigation.extras.state["type"] === "clubEvent"
+      ) {
         const pushData = navigation.extras.state;
-        console.log('PUSHDATA', JSON.stringify(pushData));
+        console.log("PUSHDATA", JSON.stringify(pushData));
         const clubEvent: Veranstaltung = {
           id: pushData["id"],
-          name: '',
-          description: '',
-          location: '',
-          streetAndNumber: '',
-          postalCode: '',
-          city: '',
+          name: "",
+          description: "",
+          location: "",
+          streetAndNumber: "",
+          postalCode: "",
+          city: "",
           date: Timestamp.now(),
-          startDate: '',
-          endDate: '',
-          timeFrom: '',
-          timeTo: '',
+          startDate: "",
+          endDate: "",
+          timeFrom: "",
+          timeTo: "",
           clubId: pushData["clubId"],
-          clubName: '',
-          link_poll: '',
-          link_web: '',
+          clubName: "",
+          link_poll: "",
+          link_web: "",
           status: false,
           attendees: undefined,
           countAttendees: 0,
@@ -154,7 +156,7 @@ export class EventsPage implements OnInit {
         };
         this.openEventDetailModal(clubEvent, true);
       } else {
-        console.log('no data');
+        console.log("no data");
       }
     });
   }
@@ -173,32 +175,33 @@ export class EventsPage implements OnInit {
             tap((children) => {
               this.children = children;
             }),
-            switchMap((children: Profile[]) => 
-              children.length > 0 
+            switchMap((children: Profile[]) =>
+              children.length > 0
                 ? combineLatest(
-                    children.map(child => {
+                    children.map((child) => {
                       // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
                       console.log("Child User:", childUser);
                       return this.fbService.getUserClubRefs(childUser);
-                    })
+                    }),
                   )
-                : of([])
+                : of([]),
             ),
-            map(childrenClubs => childrenClubs.flat()),
+            map((childrenClubs) => childrenClubs.flat()),
             tap((clubs) => console.log("Children Clubs:", clubs)),
             catchError((error) => {
               console.error("Error fetching children clubs:", error);
               return of([]);
-            })
-          )
+            }),
+          ),
         ]).pipe(
           map(([userClubs, childrenClubs]) => {
             const allClubs = [...userClubs, ...childrenClubs];
-            return allClubs.filter((club, index, self) =>
-              index === self.findIndex((c) => c.id === club.id)
+            return allClubs.filter(
+              (club, index, self) =>
+                index === self.findIndex((c) => c.id === club.id),
             );
-          })
+          }),
         );
       }),
       mergeMap((clubs) => {
@@ -207,58 +210,72 @@ export class EventsPage implements OnInit {
           clubs.map((club) =>
             combineLatest([
               this.eventService.getClubEventsRef(club.id),
-              this.fbService.getClubRef(club.id) // Fetch the club details here
+              this.fbService.getClubRef(club.id), // Fetch the club details here
             ]).pipe(
               switchMap(([clubEvents, clubDetails]) => {
                 if (clubEvents.length === 0) return of([]);
                 return combineLatest(
                   clubEvents.map((event) =>
-                    this.eventService.getClubEventAttendeesRef(club.id, event.id).pipe(
-                      map((attendees) => {
-                        const attendeeIds = [this.user.uid, ...this.children.map(child => child.id)];
-                        const userAttendee = attendees.find((att) => attendeeIds.includes(att.id));
-                        const status = userAttendee ? userAttendee.status : null;
-                        return {
-                          ...event,
-                          attendees,
-                          status,
-                          countAttendees: attendees.filter((att) => att.status == true).length,
-                          clubId: club.id,
-                          club: clubDetails // Append club details to each event
-                        };
-                      }),
-                      catchError(() =>
-                        of({
-                          ...event,
-                          attendees: [],
-                          status: null,
-                          countAttendees: 0,
-                          clubId: club.id,
-                          club: clubDetails // Also provide club details here in case of error
-                        })
-                      )
-                    )
-                  )
+                    this.eventService
+                      .getClubEventAttendeesRef(club.id, event.id)
+                      .pipe(
+                        map((attendees) => {
+                          const attendeeIds = [
+                            this.user.uid,
+                            ...this.children.map((child) => child.id),
+                          ];
+                          const userAttendee = attendees.find((att) =>
+                            attendeeIds.includes(att.id),
+                          );
+                          const status = userAttendee
+                            ? userAttendee.status
+                            : null;
+                          return {
+                            ...event,
+                            attendees,
+                            status,
+                            countAttendees: attendees.filter(
+                              (att) => att.status == true,
+                            ).length,
+                            clubId: club.id,
+                            club: clubDetails, // Append club details to each event
+                          };
+                        }),
+                        catchError(() =>
+                          of({
+                            ...event,
+                            attendees: [],
+                            status: null,
+                            countAttendees: 0,
+                            clubId: club.id,
+                            club: clubDetails, // Also provide club details here in case of error
+                          }),
+                        ),
+                      ),
+                  ),
                 );
               }),
               map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
-              catchError(() => of([])) // If error in fetching events, return empty array
-            )
-          )
+              catchError(() => of([])), // If error in fetching events, return empty array
+            ),
+          ),
         ).pipe(
           map((clubsEvents) => clubsEvents.flat()), // Flatten to get all events across all clubs
-          map((allEvents) =>
-            allEvents.sort((a, b) =>
-              Timestamp.fromMillis(a.date).seconds - Timestamp.fromMillis(b.date).seconds
-            ) // Sort events by date
-          )
+          map(
+            (allEvents) =>
+              allEvents.sort(
+                (a, b) =>
+                  Timestamp.fromMillis(a.date).seconds -
+                  Timestamp.fromMillis(b.date).seconds,
+              ), // Sort events by date
+          ),
         );
       }),
       // tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
         console.error("Error in getClubEvent:", err);
         return of([]); // Return an empty array on error
-      })
+      }),
     );
   }
 
@@ -276,32 +293,33 @@ export class EventsPage implements OnInit {
             tap((children) => {
               this.children = children;
             }),
-            switchMap((children: Profile[]) => 
-              children.length > 0 
+            switchMap((children: Profile[]) =>
+              children.length > 0
                 ? combineLatest(
-                    children.map(child => {
+                    children.map((child) => {
                       // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
                       console.log("Child User:", childUser);
                       return this.fbService.getUserClubRefs(childUser);
-                    })
+                    }),
                   )
-                : of([])
+                : of([]),
             ),
-            map(childrenClubs => childrenClubs.flat()),
+            map((childrenClubs) => childrenClubs.flat()),
             tap((clubs) => console.log("Children Clubs:", clubs)),
             catchError((error) => {
               console.error("Error fetching children clubs:", error);
               return of([]);
-            })
-          )
+            }),
+          ),
         ]).pipe(
           map(([userClubs, childrenClubs]) => {
             const allClubs = [...userClubs, ...childrenClubs];
-            return allClubs.filter((club, index, self) =>
-              index === self.findIndex((c) => c.id === club.id)
+            return allClubs.filter(
+              (club, index, self) =>
+                index === self.findIndex((c) => c.id === club.id),
             );
-          })
+          }),
         );
       }),
       mergeMap((clubs) => {
@@ -310,24 +328,35 @@ export class EventsPage implements OnInit {
           clubs.map((club) =>
             combineLatest([
               this.eventService.getClubEventsPastRef(club.id),
-              this.fbService.getClubRef(club.id) // Fetch the club details here
+              this.fbService.getClubRef(club.id), // Fetch the club details here
             ]).pipe(
               switchMap(([clubEvents, clubDetails]) => {
                 if (clubEvents.length === 0) return of([]);
                 return combineLatest(
                   clubEvents.map((event) =>
-                    this.eventService.getClubEventAttendeesRef(club.id, event.id).pipe(
-                      map((attendees) => {
-                          const attendeeIds = [this.user.uid, ...this.children.map(child => child.id)];
-                          const userAttendee = attendees.find((att) => attendeeIds.includes(att.id));
-                          const status = userAttendee ? userAttendee.status : null;
+                    this.eventService
+                      .getClubEventAttendeesRef(club.id, event.id)
+                      .pipe(
+                        map((attendees) => {
+                          const attendeeIds = [
+                            this.user.uid,
+                            ...this.children.map((child) => child.id),
+                          ];
+                          const userAttendee = attendees.find((att) =>
+                            attendeeIds.includes(att.id),
+                          );
+                          const status = userAttendee
+                            ? userAttendee.status
+                            : null;
                           return {
                             ...event,
                             attendees,
                             status,
-                            countAttendees: attendees.filter((att) => att.status == true).length,
+                            countAttendees: attendees.filter(
+                              (att) => att.status == true,
+                            ).length,
                             clubId: club.id,
-                            club: clubDetails // Append club details to each event
+                            club: clubDetails, // Append club details to each event
                           };
                         }),
                         catchError(() =>
@@ -337,105 +366,114 @@ export class EventsPage implements OnInit {
                             status: null,
                             countAttendees: 0,
                             clubId: club.id,
-                            club: clubDetails // Also provide club details here in case of error
-                          })
-                        ) // If error, return game with empty attendees
-                      )
-                  )
+                            club: clubDetails, // Also provide club details here in case of error
+                          }),
+                        ), // If error, return game with empty attendees
+                      ),
+                  ),
                 );
               }),
               map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
-              catchError(() => of([])) // If error in fetching events, return empty array
-            )
-          )
+              catchError(() => of([])), // If error in fetching events, return empty array
+            ),
+          ),
         ).pipe(
           map((teamsevents) => teamsevents.flat()), // Flatten to get all events across all teams
-          map((allEvents) =>
-            allEvents.sort((a, b) => {
-              // console.log(a);
-              return Timestamp.fromMillis(b.date).seconds - Timestamp.fromMillis(a.date).seconds;
-            }
-              
-              // a.startDate.getTime() - b.dateTime.getTime()
-              // 
-            ) // Sort events by date
-          )
+          map(
+            (allEvents) =>
+              allEvents.sort(
+                (a, b) => {
+                  // console.log(a);
+                  return (
+                    Timestamp.fromMillis(b.date).seconds -
+                    Timestamp.fromMillis(a.date).seconds
+                  );
+                },
+
+                // a.startDate.getTime() - b.dateTime.getTime()
+                //
+              ), // Sort events by date
+          ),
         );
       }),
       // tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
         console.error("Error in getClubEventPast:", err);
         return of([]); // Return an empty array on error
-      })
+      }),
     );
   }
 
-
   async toggle(status: boolean, event: Veranstaltung | any) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`,
     );
     const newStartDate = event.date.toDate();
     newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
     // console.log(newStartDate);
 
     // Get team threshold via training.teamId
-    console.log("Grenzwert ")
+    console.log("Grenzwert ");
     const eventThreshold = event.club.eventThreshold || 0;
     console.log(eventThreshold);
     // Verpätete Abmeldung?
-    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * eventThreshold)) && status == false && eventThreshold) {
+    if (
+      newStartDate.getTime() - new Date().getTime() <
+        1000 * 60 * 60 * eventThreshold &&
+      status == false &&
+      eventThreshold
+    ) {
       console.log("too late");
       await this.tooLateToggle();
-
     } else {
       // OK
       await this.eventService.setClubEventAttendeeStatus(
         status,
         event.clubId,
-        event.id
+        event.id,
       );
       this.presentToast();
     }
-
   }
-
 
   async toggleItem(
     slidingItem: IonItemSliding,
     status: boolean,
-    event: Veranstaltung | any
+    event: Veranstaltung | any,
   ) {
     slidingItem.closeOpened();
 
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`,
     );
     const newStartDate = event.date.toDate();
     newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
     // console.log(newStartDate);
 
     // Get team threshold via training.teamId
-    console.log("Grenzwert ")
+    console.log("Grenzwert ");
     const eventThreshold = event.club.eventThreshold || 0;
     console.log(eventThreshold);
 
     // Verpätete Abmeldung?
-    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * eventThreshold)) && status == false && eventThreshold) {
+    if (
+      newStartDate.getTime() - new Date().getTime() <
+        1000 * 60 * 60 * eventThreshold &&
+      status == false &&
+      eventThreshold
+    ) {
       console.log("too late");
       await this.tooLateToggle();
-
     } else {
       // OK
       await this.eventService.setClubEventAttendeeStatus(
         status,
         event.clubId,
-        event.id
+        event.id,
       );
       this.presentToast();
     }
   }
-
 
   async presentToast() {
     const toast = await this.toastController.create({
@@ -493,7 +531,9 @@ export class EventsPage implements OnInit {
     slidingItem.closeOpened();
     await this.eventService.deleteClubEvent(event.clubId, event.id);
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.success__event_deleted")),
+      message: await lastValueFrom(
+        this.translate.get("common.success__event_deleted"),
+      ),
       color: "danger",
       duration: 1500,
       position: "top",
@@ -501,19 +541,101 @@ export class EventsPage implements OnInit {
     toast.present();
   }
 
+  async cancelEvent(slidingItem: IonItemSliding, event: any) {
+    slidingItem.closeOpened();
+
+    const alert = await this.alertCtrl.create({
+      header: await lastValueFrom(this.translate.get("events.cancel_event")),
+      message: await lastValueFrom(
+        this.translate.get("events.cancel_event_confirm"),
+      ),
+      inputs: [
+        {
+          name: "reason",
+          type: "textarea",
+          placeholder: await lastValueFrom(
+            this.translate.get("events.cancel_reason_placeholder"),
+          ),
+          attributes: {
+            maxlength: 200,
+          },
+        },
+      ],
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "cancel",
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.confirm")),
+          handler: async (data) => {
+            if (!data.reason) {
+              const errorToast = await this.toastController.create({
+                message: await lastValueFrom(
+                  this.translate.get("events.cancel_reason_required"),
+                ),
+                duration: 2000,
+                position: "bottom",
+                color: "danger",
+              });
+              errorToast.present();
+              return false;
+            }
+
+            try {
+              await this.eventService.changeClubEvent(
+                {
+                  cancelled: true,
+                  cancelledReason: data.reason,
+                },
+                event.clubId,
+                event.id,
+              );
+              const toast = await this.toastController.create({
+                message: await lastValueFrom(
+                  this.translate.get("events.event_cancelled"),
+                ),
+                duration: 2000,
+                position: "bottom",
+              });
+              toast.present();
+              return true;
+            } catch (error) {
+              console.error("Error cancelling event:", error);
+              const toast = await this.toastController.create({
+                message: await lastValueFrom(
+                  this.translate.get("common.error"),
+                ),
+                duration: 2000,
+                position: "bottom",
+                color: "danger",
+              });
+              toast.present();
+              return false;
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
   async tooLateToggle() {
     const alert = await this.alertCtrl.create({
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
-      buttons: [{
-        role: "",
-        text: "OK",
-        handler: (data) => {
-          console.log(data)
-        }
-      }]
-    })
-    alert.present()
+      buttons: [
+        {
+          role: "",
+          text: "OK",
+          handler: (data) => {
+            console.log(data);
+          },
+        },
+      ],
+    });
+    alert.present();
   }
   async openFilter(ev: Event) {
     /*

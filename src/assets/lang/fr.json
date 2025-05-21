@@ -61,7 +61,14 @@
   "events": {
     "event": "Événements",
     "upcomming__events": "Événements à venir",
-    "past__events": "Événements passés"
+    "past__events": "Événements passés",
+    "cancel_event": "Annuler l'événement",
+    "cancel_event_confirm": "Voulez-vous vraiment annuler cet événement ?",
+    "event_cancelled": "L'événement a été annulé avec succès",
+    "cancel_reason_placeholder": "Entrer la raison de l'annulation",
+    "cancel_reason_required": "Veuillez indiquer une raison pour l'annulation",
+    "cancelled": "Événement annulé",
+    "cancelled_reason": "Raison de l'annulation"
   },
   "follow": {
     "follow": "suivre"

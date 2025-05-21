@@ -60,8 +60,15 @@
   "event-detail": {},
   "events": {
     "event": "Eventi",
-    "upcomming__events": "Eventi imminenti",
-    "past__events": "Eventi passati"
+    "upcomming__events": "Eventi in arrivo",
+    "past__events": "Eventi passati",
+    "cancel_event": "Annulla evento",
+    "cancel_event_confirm": "Vuoi davvero annullare questo evento?",
+    "event_cancelled": "Evento annullato con successo",
+    "cancel_reason_placeholder": "Inserisci il motivo dell'annullamento",
+    "cancel_reason_required": "Fornisci un motivo per l'annullamento",
+    "cancelled": "Evento annullato",
+    "cancelled_reason": "Motivo dell'annullamento"
   },
   "follow": {
     "follow": "segui"

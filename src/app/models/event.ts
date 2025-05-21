@@ -33,6 +33,8 @@ export interface Veranstaltung {
   countNeeded: number;
   countAttendees: number;
   closedEvent: boolean;
+  cancelled?: boolean;
+  cancelledReason?: string;
 }
 export interface HelferEvent extends Veranstaltung {
   schichten?: [Schicht];

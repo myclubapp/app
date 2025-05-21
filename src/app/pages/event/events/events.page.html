@@ -39,7 +39,7 @@
 
       <ion-item-sliding #item *ngFor="let event of eventsList">
         <ion-item type="button" detail="true">
-          <ng-container *ngIf="!event.closedEvent">
+          <ng-container *ngIf="!event.closedEvent && !event.cancelled">
             <ion-icon
               *ngIf="event.status === null"
               slot="icon-only"
@@ -73,6 +73,14 @@
               name="information-circle"
             ></ion-icon>
           </ng-container>
+          <ng-container *ngIf="event.cancelled">
+            <ion-icon
+              slot="icon-only"
+              color="danger"
+              slot="start"
+              name="alert-circle"
+            ></ion-icon>
+          </ng-container>
           <ion-label (click)="openEventDetailModal(event, true)">
             <h2>{{event.name}}</h2>
             <h3>
@@ -83,6 +91,14 @@
             <h3>
               <ion-icon slot="icon-only" name="location-outline"></ion-icon>
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
+            </h3>
+            <h3 *ngIf="event.cancelled === true">
+              <ion-icon
+                slot="icon-only"
+                color="danger"
+                name="alert-circle"
+              ></ion-icon>
+              <ion-text color="danger"> {{event.cancelledReason}} </ion-text>
             </h3>
           </ion-label>
           <ion-badge
@@ -117,6 +133,13 @@
             side="end"
             *ngIf="isClubAdmin(clubAdminList, event.clubId)"
           >
+            <ion-item-option
+              color="warning"
+              *ngIf="!event.cancelled"
+              (click)="cancelEvent(item, event)"
+            >
+              <ion-icon slot="icon-only" name="alert-circle"></ion-icon>
+            </ion-item-option>
             <ion-item-option
               color="primary"
               (click)="createHelferEvent(item, event)"

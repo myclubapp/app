@@ -32,6 +32,13 @@
     </ion-header>
 
     <ion-list [inset]="true" *ngIf="!allowEdit">
+      <ion-item *ngIf="event.cancelled === true">
+        <ion-icon slot="start" color="danger" name="alert-circle"></ion-icon>
+        <ion-label>
+          <h2>{{"events.cancelled" | translate}}</h2>
+          <h3>{{event.cancelledReason}}</h3>
+        </ion-label>
+      </ion-item>
       <ion-item>
         <ion-icon slot="start" name="home-outline"></ion-icon>
         <ion-label class="ion-text-wrap">
@@ -89,6 +96,26 @@
     <!-- CHANGE MODE-->
     <ng-container *ngIf="allowEdit">
       <ion-list [inset]="true">
+        <ion-item>
+          <ion-checkbox
+            labelPlacement="end"
+            (ionChange)="updateEvent($event, 'cancelled')"
+            [checked]="event.cancelled"
+          >
+            {{"events.cancelled" | translate}}
+          </ion-checkbox>
+        </ion-item>
+
+        <ion-item *ngIf="event.cancelled">
+          <ion-input
+            [label]='"events.cancelled_reason" | translate'
+            label-placement="stacked"
+            (ionChange)="updateEvent($event, 'cancelledReason')"
+            [value]="event.cancelledReason"
+          >
+          </ion-input>
+        </ion-item>
+
         <ion-item>
           <ion-input
             [label]='"common.name" | translate'

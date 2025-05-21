@@ -252,11 +252,9 @@ export class EventDetailPage implements OnInit {
   }
   async updateEvent(event, field) {
     console.log(field, event.detail);
-    if (field === "closedEvent") {
-      this.eventHasChanged[field] = event.detail.checked;
-    } else {
-      this.eventHasChanged[field] = event.detail.value;
-    }
+    this.eventHasChanged[field] = event.detail.hasOwnProperty("checked")
+      ? event.detail.checked
+      : event.detail.value;
   }
 
   async openUrl(url: string) {
@@ -287,7 +285,6 @@ export class EventDetailPage implements OnInit {
     );
     const newStartDate = event.date.toDate();
     newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
-    // console.log(newStartDate);
 
     // Get team threshold via training.teamId
     console.log("Grenzwert ");

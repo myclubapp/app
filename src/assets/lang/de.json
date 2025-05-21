@@ -72,7 +72,14 @@
   "events": {
     "event": "Veranstaltungen",
     "upcomming__events": "Kommende Veranstaltungen",
-    "past__events": "Vergangene Veranstaltungen"
+    "past__events": "Vergangene Veranstaltungen",
+    "cancel_event": "Veranstaltung absagen",
+    "cancel_event_confirm": "Möchten Sie diese Veranstaltung wirklich absagen?",
+    "event_cancelled": "Veranstaltung wurde erfolgreich abgesagt",
+    "cancel_reason_placeholder": "Grund für die Absage eingeben",
+    "cancel_reason_required": "Bitte geben Sie einen Grund für die Absage an",
+    "cancelled": "Veranstaltung abgesagt",
+    "cancelled_reason": "Grund für die Absage"
   },
   "follow": {
     "follow": "folgen"
