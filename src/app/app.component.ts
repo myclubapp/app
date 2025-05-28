@@ -259,6 +259,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   initializeApp(): void {
+    //for menu layout enable/disable
+    this.clubList$ = this.fbService.getClubList().pipe(take(1));
+
     // this.setStatusBarAndSafeArea();
     this.showSplashScreen();
     this.setDefaultLanguage();
