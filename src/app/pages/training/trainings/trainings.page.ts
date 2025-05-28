@@ -669,16 +669,49 @@ export class TrainingsPage implements OnInit {
 
   async deleteTraining(slidingItem: IonItemSliding, training) {
     slidingItem.closeOpened();
-    await this.trainingService.deleteTeamTraining(training.teamId, training.id);
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(
-        this.translate.get("common.success__training_deleted"),
+
+    const result = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(
+        this.translate.get("training.delete_training"),
       ),
-      color: "danger",
-      duration: 1500,
-      position: "top",
+      message: await lastValueFrom(
+        this.translate.get("training.delete_training_confirm"),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
     });
-    toast.present();
+
+    if (result) {
+      try {
+        // Zuerst das Training absagen
+        await this.trainingService.updateTraining(
+          training.teamId,
+          training.id,
+          {
+            cancelled: true,
+            cancelledReason: await lastValueFrom(
+              this.translate.get("training.deleted_reason"),
+            ),
+          },
+        );
+
+        // Dann das Training löschen
+        await this.trainingService.deleteTeamTraining(
+          training.teamId,
+          training.id,
+        );
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(
+            this.translate.get("common.success__training_deleted"),
+          ),
+        );
+      } catch (error) {
+        console.error("Error deleting training:", error);
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
+    }
   }
 
   async toggleAll() {

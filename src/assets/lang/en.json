@@ -277,7 +277,11 @@
     "copy": "Copy Training",
     "delete": "Delete Training",
     "cancel_reason_required": "Please enter a reason for cancellation",
-    "training_cancelled": "Training has been cancelled successfully"
+    "training_cancelled": "Training has been cancelled successfully",
+    "delete_training": "Delete training",
+    "delete_training_confirm": "Do you really want to delete this training?",
+    "deleted_reason": "Training was deleted",
+    "create_training_confirm": "Should the training be created?"
   },
   "side_bar": {
     "administration": "Administration",

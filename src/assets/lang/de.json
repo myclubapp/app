@@ -294,7 +294,11 @@
     "all_members_responded": "Alle Mitglieder haben bereits zu- oder abgesagt",
     "actions": "Training Aktionen",
     "copy": "Training kopieren",
-    "delete": "Training löschen"
+    "delete": "Training löschen",
+    "delete_training": "Training löschen",
+    "delete_training_confirm": "Möchten Sie dieses Training wirklich löschen?",
+    "deleted_reason": "Training wurde gelöscht",
+    "create_training_confirm": "Soll das Training erstellt werden?"
   },
   "side_bar": {
     "administration": "Administration",

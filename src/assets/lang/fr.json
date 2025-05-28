@@ -253,7 +253,11 @@
     "delete": "Supprimer l'entraînement",
     "cancel_reason_placeholder": "Entrez la raison de l'annulation",
     "cancel_reason_required": "Veuillez entrer une raison pour l'annulation",
-    "training_cancelled": "L'entraînement a été annulé avec succès"
+    "training_cancelled": "L'entraînement a été annulé avec succès",
+    "delete_training": "Supprimer l'entraînement",
+    "delete_training_confirm": "Voulez-vous vraiment supprimer cet entraînement ?",
+    "deleted_reason": "L'entraînement a été supprimé",
+    "create_training_confirm": "Voulez-vous créer cet entraînement ?"
   },
   "side_bar": {
     "administration": "Administration",
