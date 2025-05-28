@@ -1,12 +1,21 @@
 {
   "login": {
-    "login__title": "Accedi con il tuo account",
+    "login__title": "Accedi al tuo account",
     "forget__password": "Password dimenticata?",
     "signin_create__account": "crea un nuovo account",
     "register": "Registrati",
     "error__no_acount_found": "Nessun account trovato con questo indirizzo email",
-    "error__invalid_username_password": "La combinazione di username e password è errata.",
+    "error__invalid_username_password": "La combinazione nome utente/password non è corretta.",
+    "error__invalid_login_credentials": "La combinazione nome utente/password non è corretta.",
+    "error__invalid_credentials": "La combinazione nome utente/password non è valida.",
     "error__network_connection": "C'è un problema con la connessione di rete",
+    "error": "Errore",
+    "loading": "Caricamento in corso...",
+    "error_message": "Si è verificato un errore",
+    "error_user_not_found": "Nessun utente trovato con questo indirizzo email",
+    "error_wrong_password": "Password errata",
+    "error_invalid_email": "Indirizzo email non valido",
+    "error_user_disabled": "Questo utente è stato disabilitato",
     "mistake": "Errore"
   },
   "logout": {
@@ -60,15 +69,21 @@
   "event-detail": {},
   "events": {
     "event": "Eventi",
-    "upcomming__events": "Eventi in arrivo",
+    "upcomming__events": "Eventi futuri",
     "past__events": "Eventi passati",
     "cancel_event": "Annulla evento",
     "cancel_event_confirm": "Vuoi davvero annullare questo evento?",
     "event_cancelled": "Evento annullato con successo",
     "cancel_reason_placeholder": "Inserisci il motivo dell'annullamento",
-    "cancel_reason_required": "Fornisci un motivo per l'annullamento",
+    "cancel_reason_required": "Inserisci un motivo per l'annullamento",
     "cancelled": "Evento annullato",
-    "cancelled_reason": "Motivo dell'annullamento"
+    "cancelled_reason": "Motivo dell'annullamento",
+    "send_reminder": "Invia promemoria",
+    "send_reminder_confirm": "Vuoi inviare un promemoria a {{count}} membri che non hanno ancora risposto?",
+    "reminder_sent": "Promemoria inviato con successo",
+    "all_members_responded": "Tutti i membri hanno già risposto",
+    "create_helfer": "Crea evento aiutante",
+    "actions": "Azioni evento"
   },
   "follow": {
     "follow": "segui"
@@ -85,7 +100,33 @@
     "add_members": "Aggiungi membri",
     "add_members_title": "Aggiungi membri al turno",
     "add_members_message": "Seleziona i membri che desideri aggiungere al turno:",
-    "no_members_available": "Nessun altro membro disponibile"
+    "no_members_available": "Nessun altro membro disponibile",
+    "cannot_unregister": "Impossibile annullare l'iscrizione",
+    "contact_trainer_team": "Si prega di contattare direttamente lo staff per annullare l'iscrizione",
+    "enough_helpers": "Abbastanza volontari",
+    "shift_has_enough_helpers": "Il turno ha già abbastanza volontari",
+    "edit_shift": "Modifica turno",
+    "description": "Descrizione",
+    "number_of_helpers": "Numero di volontari",
+    "helper_points": "Numero di punti volontariato",
+    "time_from": "Ora di inizio",
+    "time_to": "Ora di fine",
+    "delete_shift": "Elimina turno",
+    "confirm_delete_shift": "Vuoi davvero eliminare questo turno?",
+    "create_shift": "Crea turno",
+    "create_new_shift": "Crea un nuovo turno di volontariato.",
+    "add": "Aggiungi",
+    "delete_helper": "Elimina volontario",
+    "confirm_delete_helper": "Vuoi davvero eliminare questo volontario?",
+    "helper_deleted": "Il volontario è stato eliminato con successo.",
+    "error_deleting_helper": "Si è verificato un errore durante l'eliminazione del volontario. Riprova più tardi.",
+    "planned_shifts": "Turni pianificati",
+    "confirmed_shifts": "Turni confermati",
+    "confirmed_by": "Confermato da:",
+    "on_date": "il",
+    "points": "Punti",
+    "settings": "Impostazioni",
+    "helper_points_label": "Punti volontariato"
   },
   "info": {
     "information": "Informazioni",
@@ -109,7 +150,22 @@
     "success__request_sent": "Richiesta inviata con successo",
     "warning__action_canceled": "Azione annullata",
     "success__application_sent": "Candidatura inviata con successo",
-    "success__application_sent_desc": "La tua candidatura è stata inviata con successo al club. Non appena sarà approvata, ti informeremo nuovamente."
+    "success__application_sent_desc": "La tua candidatura è stata inviata con successo al club. Non appena sarà approvata, ti informeremo nuovamente.",
+    "no_club_found": "Nessun club trovato",
+    "no_club_found_message": "Per utilizzare myclub, devi prima unirti a un club. Vuoi unirti a un club?",
+    "open_club_requests": "Richieste di club aperte",
+    "open_club_requests_message": "Hai già richieste di club aperte.",
+    "join_new_club": "Unisciti a un nuovo club",
+    "manage_profile": "Gestisci profilo",
+    "no_team_found": "Nessuna squadra trovata",
+    "no_team_found_message": "Non sei ancora stato assegnato a una squadra, ma non è un problema. Puoi facilmente unirti a una squadra o eliminare la tua richiesta di club nel tuo profilo.",
+    "join_team": "Unisciti alla squadra",
+    "show_profile": "Mostra profilo",
+    "register_as_parent": "Registrati come genitore",
+    "activate_club": "Attiva club",
+    "activate_club_message": "Per continuare, il tuo club deve essere attivato.",
+    "select_team": "Seleziona squadra",
+    "select_team_message": "Seleziona la tua squadra dall'elenco."
   },
   "onboarding-team": {
     "onboarding__team": "Team di onboarding"
@@ -153,7 +209,9 @@
     "kids.max_reached_message": "Puoi aggiungere fino a 3 bambini",
     "children": "Bambini",
     "confirm_delete_request": "Vuoi davvero eliminare questa richiesta?",
-    "no_children": "Nessun bambino disponibile"
+    "no_children": "Nessun bambino aggiunto",
+    "parents_notification_info": "I genitori saranno anche informati degli eventi del loro bambino.",
+    "children_notification_info": "Come genitore, sarai informato di tutti gli eventi importanti dei tuoi figli."
   },
   "tabs": {},
   "team": {},
@@ -174,14 +232,25 @@
   },
   "traning-detail": {},
   "training": {
-    "upcomming__training": "Allenamenti imminenti",
+    "upcomming__training": "Allenamenti in arrivo",
     "no_training__found": "nessun allenamento trovato",
     "past__training": "Allenamenti passati",
     "news__filter": "Filtra notizie",
-    "news__filer__desc": "Filtra per club o squadre.",
+    "news__filer__desc": "Filtra per club o squadra.",
     "cancelled": "Allenamento annullato",
     "cancelled_reason": "Motivo dell'annullamento",
-    "cancelled_reason_placeholder": "Inserisci il motivo dell'annullamento"
+    "cancelled_reason_placeholder": "Inserisci il motivo dell'annullamento",
+    "send_reminder": "Invia promemoria",
+    "send_reminder_confirm": "Vuoi inviare un promemoria a {{count}} membri che non hanno ancora risposto?",
+    "reminder_sent": "Il promemoria è stato inviato con successo",
+    "no_pending_responses": "Nessuna risposta in sospeso",
+    "all_members_responded": "Tutti i membri hanno già risposto",
+    "actions": "Azioni allenamento",
+    "cancel_training": "Annulla allenamento",
+    "copy": "Copia allenamento",
+    "delete": "Elimina allenamento",
+    "cancel_reason_required": "Inserisci un motivo per l'annullamento",
+    "training_cancelled": "L'allenamento è stato annullato con successo"
   },
   "side_bar": {
     "administration": "Amministrazione",
@@ -254,9 +323,56 @@
     "parents": "Genitori",
     "children": "Bambini",
     "select_member": "Seleziona membro",
-    "support": "Supporto"
+    "support": "Supporto",
+    "open": "Apri",
+    "load": "Carica",
+    "app_update_available": "Aggiornamento app disponibile",
+    "app_update_message": "È disponibile una nuova versione {version}. Caricare la nuova versione?"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Vuoi davvero eliminare il genitore?"
+  },
+  "club-subscription": {
+    "subscription": "Abbonamento",
+    "active": "Attivo",
+    "canceled": "Annullato",
+    "month": "Mese",
+    "year": "Anno",
+    "paid": "Pagato",
+    "created": "Creato il",
+    "current_period_start": "Data di inizio",
+    "current_period_end": "Data di fine",
+    "ended_at": "Terminato il"
+  },
+  "club-request-list": {
+    "requests": "Richieste",
+    "approve": "Approva",
+    "reject": "Rifiuta",
+    "no_requests": "Nessuna richiesta disponibile"
+  },
+  "club-team-list": {
+    "teams": "Squadre",
+    "add_team": "Aggiungi squadra",
+    "no_teams": "Nessuna squadra disponibile"
+  },
+  "club-admin-list": {
+    "admins": "Amministratori",
+    "add_admin": "Aggiungi amministratore",
+    "no_admins": "Nessun amministratore disponibile"
+  },
+  "team-admin-list": {
+    "admins": "Amministratori",
+    "add_admin": "Aggiungi amministratore",
+    "no_admins": "Nessun amministratore disponibile"
+  },
+  "member": {
+    "member_details": "Dettagli membro",
+    "contact_info": "Informazioni di contatto",
+    "sport_info": "Informazioni sportive",
+    "license_number": "Numero di licenza",
+    "birthdate": "Data di nascita",
+    "phone": "Numero di telefono",
+    "email": "Email",
+    "address": "Indirizzo"
   }
 }

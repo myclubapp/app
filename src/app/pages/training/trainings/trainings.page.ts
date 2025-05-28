@@ -43,6 +43,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { Profile } from "src/app/models/user";
+import { UiService } from "src/app/services/ui.service";
 
 @Component({
   selector: "app-trainings",
@@ -94,6 +95,7 @@ export class TrainingsPage implements OnInit {
     private activatedRoute: ActivatedRoute,
     private exerciseService: ExerciseService,
     private userProfileService: UserProfileService,
+    private uiService: UiService,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -142,8 +144,7 @@ export class TrainingsPage implements OnInit {
   }
 
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
-    // console.log(teamAdminList, teamId)
-    return teamAdminList && teamAdminList.some((team) => team.id === teamId);
+    return this.fbService.isTeamAdmin(teamAdminList, teamId);
   }
 
   async close() {
@@ -214,14 +215,12 @@ export class TrainingsPage implements OnInit {
                     children.map((child) => {
                       // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
                       return this.fbService.getUserTeamRefs(childUser);
                     }),
                   )
                 : of([]),
             ),
             map((childrenTeams) => childrenTeams.flat()),
-            tap((teams) => console.log("Children Teams:", teams)),
             catchError((error) => {
               console.error("Error fetching children teams:", error);
               return of([]);
@@ -237,9 +236,7 @@ export class TrainingsPage implements OnInit {
           }),
         );
       }),
-      // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
-        console.log("Teams:", teams);
         if (this.team && this.team.id) {
           teams.push({ id: this.team.id });
         } else if (teams.length === 0) {
@@ -265,7 +262,7 @@ export class TrainingsPage implements OnInit {
               return acc;
             }, {}),
           ),
-          shareReplay(1), // Cache das Ergebnis
+          shareReplay(1),
         );
 
         return combineLatest([
@@ -273,7 +270,6 @@ export class TrainingsPage implements OnInit {
           combineLatest(
             relevantTeams.map((team) => {
               return this.trainingService.getTeamTrainingsRefs(team.id).pipe(
-                // ... existing training service code ...
                 switchMap((teamTrainings) => {
                   if (teamTrainings.length === 0) return of([]);
                   return combineLatest(
@@ -310,7 +306,7 @@ export class TrainingsPage implements OnInit {
                             return of({});
                           }),
                         ),
-                        of(team.id), // Übergebe die teamId statt erneut Members zu laden
+                        of(team.id),
                       ]).pipe(
                         map(([attendees, exercises, teamDetails, teamId]) => ({
                           training,
@@ -337,7 +333,6 @@ export class TrainingsPage implements OnInit {
                   teamMembers.some((member) => member.id === att.id),
               );
 
-              // Füge die Kinderinformationen hinzu
               const relevantChildren = teamMembers
                 .filter((att) =>
                   this.children.some((child) => child.id === att.id),
@@ -351,7 +346,6 @@ export class TrainingsPage implements OnInit {
                     : {};
                 });
 
-              // console.log("Training status:" , item.training.cancelled , item.training.startDate.toDate().toISOString()) ;
               return {
                 ...item.training,
                 cancelled: item.training.cancelled ?? false,
@@ -367,7 +361,7 @@ export class TrainingsPage implements OnInit {
                   )?.status ?? null,
                 countAttendees: validAttendees.length,
                 teamId: item.teamId,
-                children: relevantChildren, // Hinzufügen der Kinderinformationen
+                children: relevantChildren,
               };
             });
           }),
@@ -628,11 +622,14 @@ export class TrainingsPage implements OnInit {
   }
 
   async openTrainingCreateModal() {
+    const topModal = await this.modalController.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalController.create({
       component: TrainingCreatePage,
       // presentingElement: this.routerOutlet.nativeEl,
-      presentingElement: await this.modalController.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -649,12 +646,13 @@ export class TrainingsPage implements OnInit {
 
   async copyTraining(slidingItem: IonItemSliding, training) {
     slidingItem.closeOpened();
+    const topModal = await this.modalController.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
 
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalController.create({
       component: TrainingCreatePage,
-      // presentingElement: this.routerOutlet.nativeEl,
-      presentingElement: await this.modalController.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -699,7 +697,7 @@ export class TrainingsPage implements OnInit {
           training.id,
         );
       }
-      await this.presentToast(this.user.uid);
+      await this.presentToast();
     } catch (error) {
       console.error("Error during toggleAll operation:", error);
       // Optionally handle the error, e.g., show an error message
@@ -822,54 +820,79 @@ export class TrainingsPage implements OnInit {
         training.id,
         userId,
       );
-      this.presentToast(userId);
+      this.presentToast();
     }
   }
 
-  async presentToast(userId: string) {
-    const profile = await lastValueFrom(
-      this.userProfileService.getUserProfileById(userId).pipe(take(1)),
+  async presentToast() {
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.success__saved")),
     );
-    const toast = await this.toastController.create({
-      message:
-        (await lastValueFrom(this.translate.get("common.success__saved"))) +
-        ": " +
-        profile.firstName +
-        " " +
-        profile.lastName,
-      color: "primary",
-      duration: 1500,
-      position: "top",
+  }
+
+  async presentErrorToast(error) {
+    await this.uiService.showErrorToast(error.message);
+  }
+
+  private async showDeleteTrainingConfirmationAlert() {
+    await this.uiService.showConfirmDialog({
+      header: "Training löschen",
+      message: "Möchten Sie dieses Training wirklich löschen?",
+      confirmText: "Ja",
+      cancelText: "Nein",
     });
-    toast.present();
+  }
+
+  private async showDeleteTrainingSuccessAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Erfolg",
+      message: "Das Training wurde erfolgreich gelöscht.",
+    });
+  }
+
+  private async showDeleteTrainingErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Fehler",
+      message:
+        "Beim Löschen des Trainings ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    });
+  }
+
+  private async showCancelTrainingConfirmationAlert() {
+    await this.uiService.showConfirmDialog({
+      header: "Training absagen",
+      message: "Möchten Sie dieses Training wirklich absagen?",
+      confirmText: "Ja",
+      cancelText: "Nein",
+    });
+  }
+
+  private async showCancelTrainingSuccessAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Erfolg",
+      message: "Das Training wurde erfolgreich abgesagt.",
+    });
+  }
+
+  private async showCancelTrainingErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Fehler",
+      message:
+        "Beim Absagen des Trainings ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    });
   }
 
   async tooLateToggle() {
-    const alert = await this.alertCtrl.create({
+    await this.uiService.showInfoDialog({
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
-      buttons: [
-        {
-          role: "",
-          text: "OK",
-          handler: (data) => {
-            console.log(data);
-          },
-        },
-      ],
     });
-    alert.present();
   }
 
-  async cancelTraining(slidingItem: IonItemSliding, training: any) {
-    slidingItem.closeOpened();
-
-    const alert = await this.alertCtrl.create({
+  async cancelTraining(training: any) {
+    const result = await this.uiService.showFormDialog({
       header: await lastValueFrom(
         this.translate.get("training.cancel_training"),
-      ),
-      message: await lastValueFrom(
-        this.translate.get("training.cancel_training_confirm"),
       ),
       inputs: [
         {
@@ -883,63 +906,127 @@ export class TrainingsPage implements OnInit {
           },
         },
       ],
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    console.log("Dialog result:", result);
+
+    const reason = result?.reason ?? result?.values?.reason;
+    if (reason) {
+      try {
+        await this.trainingService.updateTraining(
+          training.teamId,
+          training.id,
+          {
+            cancelled: true,
+            cancelledReason: reason,
+          },
+        );
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(
+            this.translate.get("training.training_cancelled"),
+          ),
+        );
+      } catch (error) {
+        console.error("Error cancelling training:", error);
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
+    } else {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(
+          this.translate.get("training.cancel_reason_required"),
+        ),
+      );
+    }
+  }
+
+  async sendReminder(training: any) {
+    // Hole alle Teammitglieder
+    const teamMembers = await lastValueFrom(
+      this.fbService.getTeamMemberRefs(training.teamId).pipe(take(1)),
+    );
+
+    // Hole alle Teilnehmer des Trainings
+    const attendees = await lastValueFrom(
+      this.trainingService
+        .getTeamTrainingsAttendeesRef(training.teamId, training.id)
+        .pipe(take(1)),
+    );
+
+    // Filtere Mitglieder, die noch nicht geantwortet haben
+    const pendingMembers = teamMembers.filter(
+      (member) => !attendees.some((attendee) => attendee.id === member.id),
+    );
+
+    if (pendingMembers.length === 0) {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(
+          this.translate.get("training.all_members_responded"),
+        ),
+      );
+      return;
+    }
+    console.log("pendingMembers", pendingMembers.length);
+
+    const result = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(this.translate.get("training.send_reminder")),
+      message: await lastValueFrom(
+        this.translate.get("training.send_reminder_confirm", {
+          count: pendingMembers.length,
+        }),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    if (result) {
+      try {
+        await this.trainingService.sendReminder(training.teamId, training.id);
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(this.translate.get("training.reminder_sent")),
+        );
+      } catch (error) {
+        console.error("Error sending reminder:", error);
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
+    }
+  }
+
+  async openTrainingActions(slidingItem: IonItemSliding, training: any) {
+    slidingItem.closeOpened();
+
+    const actionSheet = await this.uiService.showActionSheet({
+      header: await lastValueFrom(this.translate.get("training.actions")),
       buttons: [
         {
-          text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: "cancel",
+          text: await lastValueFrom(
+            this.translate.get("training.cancel_training"),
+          ),
+          icon: "alert-circle-outline",
+          handler: () => {
+            this.cancelTraining(training);
+          },
         },
         {
-          text: await lastValueFrom(this.translate.get("common.confirm")),
-          handler: async (data) => {
-            if (!data.reason) {
-              const errorToast = await this.toastController.create({
-                message: await lastValueFrom(
-                  this.translate.get("training.cancel_reason_required"),
-                ),
-                duration: 2000,
-                position: "bottom",
-                color: "danger",
-              });
-              errorToast.present();
-              return false;
-            }
-
-            try {
-              await this.trainingService.updateTraining(
-                training.teamId,
-                training.id,
-                {
-                  cancelled: true,
-                  cancelledReason: data.reason,
-                },
-              );
-              const toast = await this.toastController.create({
-                message: await lastValueFrom(
-                  this.translate.get("training.training_cancelled"),
-                ),
-                duration: 2000,
-                position: "bottom",
-              });
-              toast.present();
-              return true;
-            } catch (error) {
-              console.error("Error cancelling training:", error);
-              const toast = await this.toastController.create({
-                message: await lastValueFrom(
-                  this.translate.get("common.error"),
-                ),
-                duration: 2000,
-                position: "bottom",
-                color: "danger",
-              });
-              toast.present();
-              return false;
-            }
+          text: await lastValueFrom(
+            this.translate.get("training.send_reminder"),
+          ),
+          icon: "notifications-outline",
+          handler: () => {
+            this.sendReminder(training);
           },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          // icon: "close",
+          role: "destructive",
         },
       ],
     });
-
-    await alert.present();
   }
 }

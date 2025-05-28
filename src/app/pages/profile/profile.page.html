@@ -531,6 +531,9 @@
           </ion-label>
         </ion-item>
       </ion-list>
+      <ion-note class="ion-padding-horizontal">
+        {{"profile.parents_notification_info" | translate}}
+      </ion-note>
     </ng-container>
 
     <ion-list lines="full" [inset]="true">
@@ -565,6 +568,9 @@
           <ion-label> {{"profile.no_children" | translate}}</ion-label>
         </ion-item>
       </ng-container>
+      <ion-note class="ion-padding-horizontal">
+        {{"profile.children_notification_info" | translate}}
+      </ion-note>
     </ion-list>
 
     <ng-container *ngIf="kidsRequests$ | async as kidsRequests">

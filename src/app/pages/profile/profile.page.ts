@@ -4,6 +4,7 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   OnDestroy,
+  Optional,
 } from "@angular/core";
 import {
   combineLatest,
@@ -19,6 +20,7 @@ import { PushNotifications } from "@capacitor/push-notifications";
 // Services
 import { FirebaseService } from "src/app/services/firebase.service";
 import { AuthService } from "src/app/services/auth.service";
+import { UiService } from "src/app/services/ui.service";
 
 // Push
 // import { SwPush } from "@angular/service-worker";
@@ -96,7 +98,8 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     private readonly alertController: AlertController,
     private translate: TranslateService,
     private readonly modalCtrl: ModalController,
-    private readonly routerOutlet: IonRouterOutlet,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
+    private readonly uiService: UiService,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -153,18 +156,26 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
       clubList && clubList.some((club) => club.hasFeatureHelferEvent == true)
     );
   }
-  setupAlerts(profile: Profile) {
+  async setupAlerts(profile: Profile) {
     this.alertInputsEmail = [
       {
-        label: this.translate.instant("profile.change_email_old_label"),
-        placeholder: this.translate.instant("profile.change_email_old_label"),
+        label: await lastValueFrom(
+          this.translate.get("profile.change_email_old_label"),
+        ),
+        placeholder: await lastValueFrom(
+          this.translate.get("profile.change_email_old_label"),
+        ),
         name: "oldEmail",
         type: "email",
         value: profile.email,
       },
       {
-        label: this.translate.instant("profile.change_email_new_label"),
-        placeholder: this.translate.instant("profile.change_email_new_label"),
+        label: await lastValueFrom(
+          this.translate.get("profile.change_email_new_label"),
+        ),
+        placeholder: await lastValueFrom(
+          this.translate.get("profile.change_email_new_label"),
+        ),
         name: "newEmail",
         type: "email",
       },
@@ -172,14 +183,14 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
 
     this.alertButtonsEmail = [
       {
-        text: this.translate.instant("common.cancel"),
-        role: "destructive",
+        text: await lastValueFrom(this.translate.get("common.cancel")),
+        role: "cancel",
         handler: (data) => {
           console.log(data);
         },
       },
       {
-        text: this.translate.instant("common.save"),
+        text: await lastValueFrom(this.translate.get("common.save")),
         handler: async (data) => {
           console.log(data);
           if (
@@ -200,7 +211,11 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
               if (e.code == "auth/operation-not-allowed") {
                 console.log(e.message);
               } else if (e.code == "auth/requires-recent-login") {
-                alert("bitte ausloggen und nochmals probieren.");
+                alert(
+                  await lastValueFrom(
+                    this.translate.get("profile.error_please_logout"),
+                  ),
+                );
               } else {
                 console.log(JSON.stringify(e));
               }
@@ -214,26 +229,34 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
 
     this.alertInputsAddress = [
       {
-        label: this.translate.instant("profile.change_address_streetandnumber"),
-        placeholder: this.translate.instant(
-          "profile.change_address_streetandnumber",
+        label: await lastValueFrom(
+          this.translate.get("profile.change_address_streetandnumber"),
+        ),
+        placeholder: await lastValueFrom(
+          this.translate.get("profile.change_address_streetandnumber"),
         ),
         name: "streetAndNumber",
         type: "text",
         value: profile.streetAndNumber,
       },
       {
-        label: this.translate.instant("profile.change_address_postalcode"),
-        placeholder: this.translate.instant(
-          "profile.change_address_postalcode",
+        label: await lastValueFrom(
+          this.translate.get("profile.change_address_postalcode"),
+        ),
+        placeholder: await lastValueFrom(
+          this.translate.get("profile.change_address_postalcode"),
         ),
         name: "postalcode",
         type: "number",
         value: profile.postalcode,
       },
       {
-        label: this.translate.instant("profile.change_address_city"),
-        placeholder: this.translate.instant("profile.change_address_city"),
+        label: await lastValueFrom(
+          this.translate.get("profile.change_address_city"),
+        ),
+        placeholder: await lastValueFrom(
+          this.translate.get("profile.change_address_city"),
+        ),
         name: "city",
         type: "text",
         value: profile.city,
@@ -242,15 +265,15 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
 
     this.alertButtonsAddress = [
       {
-        text: this.translate.instant("common.cancel"),
-        role: "destructive",
+        text: await lastValueFrom(this.translate.get("common.cancel")),
+        role: "cancel",
         handler: (data) => {
           console.log(data);
         },
       },
       {
-        text: this.translate.instant("common.save"),
-        role: "",
+        text: await lastValueFrom(this.translate.get("common.save")),
+        role: "confirm",
         handler: async (data) => {
           console.log(data);
           await this.profileChange({ detail: { value: data.city } }, "city");
@@ -463,16 +486,9 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async presentToast() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(
-        this.translate.get("profile.request_success__deleted"),
-      ),
-      duration: 1500,
-      position: "top",
-      color: "success",
-    });
-
-    await toast.present();
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.success__saved")),
+    );
   }
   async presentCancelToast() {
     const toast = await this.toastController.create({
@@ -758,5 +774,82 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     });
 
     await alert.present();
+  }
+
+  async presentErrorToast(error) {
+    await this.uiService.showErrorToast(error.message);
+  }
+
+  private async showEmailChangeConfirmationAlert() {
+    await this.uiService.showConfirmDialog({
+      header: "E-Mail ändern",
+      message: "Möchten Sie Ihre E-Mail-Adresse wirklich ändern?",
+      confirmText: "Ja",
+      cancelText: "Nein",
+    });
+  }
+
+  private async showEmailChangeSuccessAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Erfolg",
+      message: "Ihre E-Mail-Adresse wurde erfolgreich geändert.",
+    });
+  }
+
+  private async showEmailChangeErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Fehler",
+      message:
+        "Beim Ändern der E-Mail-Adresse ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    });
+  }
+
+  private async showAddressChangeConfirmationAlert() {
+    await this.uiService.showConfirmDialog({
+      header: "Adresse ändern",
+      message: "Möchten Sie Ihre Adresse wirklich ändern?",
+      confirmText: "Ja",
+      cancelText: "Nein",
+    });
+  }
+
+  private async showAddressChangeSuccessAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Erfolg",
+      message: "Ihre Adresse wurde erfolgreich geändert.",
+    });
+  }
+
+  private async showAddressChangeErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Fehler",
+      message:
+        "Beim Ändern der Adresse ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    });
+  }
+
+  private async showProfileDeleteConfirmationAlert() {
+    await this.uiService.showConfirmDialog({
+      header: "Profil löschen",
+      message:
+        "Möchten Sie Ihr Profil wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      confirmText: "Ja",
+      cancelText: "Nein",
+    });
+  }
+
+  private async showProfileDeleteSuccessAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Erfolg",
+      message: "Ihr Profil wurde erfolgreich gelöscht.",
+    });
+  }
+
+  private async showProfileDeleteErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Fehler",
+      message:
+        "Beim Löschen des Profils ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    });
   }
 }

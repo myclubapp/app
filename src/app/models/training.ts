@@ -37,4 +37,5 @@ export interface Training {
   children: any;
   cancelled: boolean;
   cancelledReason: string;
+  lastReminderSent?: Timestamp;
 }

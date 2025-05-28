@@ -3,7 +3,6 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>{{"events.event" | translate}}</ion-title>
     <!-- <ion-buttons slot="end">
       <ion-button *ngIf="!filterValue" (click)="openFilter($event)">
         <ion-icon slot="icon-only" name="filter"></ion-icon>
@@ -133,26 +132,19 @@
             side="end"
             *ngIf="isClubAdmin(clubAdminList, event.clubId)"
           >
-            <ion-item-option
-              color="warning"
-              *ngIf="!event.cancelled"
-              (click)="cancelEvent(item, event)"
-            >
-              <ion-icon slot="icon-only" name="alert-circle"></ion-icon>
-            </ion-item-option>
-            <ion-item-option
-              color="primary"
-              (click)="createHelferEvent(item, event)"
-            >
-              <ion-icon slot="icon-only" name="help-buoy-outline"></ion-icon>
+            <ion-item-option color="danger" (click)="deleteEvent(item, event)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
             </ion-item-option>
 
             <ion-item-option color="medium" (click)="copyEvent(item, event)">
               <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
             </ion-item-option>
 
-            <ion-item-option color="danger" (click)="deleteEvent(item, event)">
-              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            <ion-item-option
+              color="primary"
+              (click)="openEventActions(item, event)"
+            >
+              <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
             </ion-item-option>
           </ion-item-options>
         </ng-container>
@@ -229,19 +221,19 @@
             side="end"
             *ngIf="isClubAdmin(clubAdminList, event.clubId)"
           >
-            <ion-item-option
-              color="primary"
-              (click)="createHelferEvent(item, event)"
-            >
-              <ion-icon slot="icon-only" name="help-buoy-outline"></ion-icon>
+            <ion-item-option color="danger" (click)="deleteEvent(item, event)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
             </ion-item-option>
 
             <ion-item-option color="medium" (click)="copyEvent(item, event)">
               <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
             </ion-item-option>
 
-            <ion-item-option color="danger" (click)="deleteEvent(item, event)">
-              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            <ion-item-option
+              color="primary"
+              (click)="openEventActions(item, event)"
+            >
+              <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
             </ion-item-option>
           </ion-item-options>
         </ng-container>

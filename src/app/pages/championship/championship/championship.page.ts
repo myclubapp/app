@@ -40,6 +40,7 @@ import { GamePreviewPage } from "../game-preview/game-preview.page";
 import { Club } from "src/app/models/club";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { Profile } from "src/app/models/user";
+import { UiService } from "src/app/services/ui.service";
 
 @Component({
   selector: "app-championship",
@@ -94,6 +95,7 @@ export class ChampionshipPage implements OnInit {
     private navCtrl: NavController,
     private translate: TranslateService,
     private userProfileService: UserProfileService,
+    private uiService: UiService,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -109,11 +111,10 @@ export class ChampionshipPage implements OnInit {
 
   ngOnDestroy(): void {}
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some((club) => club.id === clubId);
+    return this.fbService.isClubAdmin(clubAdminList, clubId);
   }
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
-    // console.log(teamAdminList, teamId)
-    return teamAdminList && teamAdminList.some((team) => team.id === teamId);
+    return this.fbService.isTeamAdmin(teamAdminList, teamId);
   }
 
   getTeamsWithRankingsForYear(year: string) {
@@ -712,13 +713,13 @@ export class ChampionshipPage implements OnInit {
   }
 
   async presentToast() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.changes__saved")),
-      color: "primary",
-      duration: 1500,
-      position: "top",
-    });
-    toast.present();
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.changes__saved")),
+    );
+  }
+
+  async toastActionError(error) {
+    await this.uiService.showErrorToast(error.message);
   }
 
   async shareSocialMedia(slidingItem: IonItemSliding, game) {
@@ -761,20 +762,10 @@ export class ChampionshipPage implements OnInit {
   }
 
   async tooLateToggle() {
-    const alert = await this.alertCtrl.create({
+    await this.uiService.showInfoDialog({
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
-      buttons: [
-        {
-          role: "",
-          text: "OK",
-          handler: (data) => {
-            console.log(data);
-          },
-        },
-      ],
     });
-    alert.present();
   }
   /*  async openFilter(ev: Event) {
 

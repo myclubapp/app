@@ -1,6 +1,12 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Browser } from "@capacitor/browser";
-import { IonItemSliding, ItemReorderEventDetail, ModalController, NavParams, ToastController } from "@ionic/angular";
+import {
+  IonItemSliding,
+  ItemReorderEventDetail,
+  ModalController,
+  NavParams,
+  ToastController,
+} from "@ionic/angular";
 import { Observable, lastValueFrom, map, take } from "rxjs";
 import { Training } from "src/app/models/training";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
@@ -10,10 +16,10 @@ import { Team } from "src/app/models/team";
 import { FirebaseService } from "src/app/services/firebase.service";
 
 @Component({
-    selector: "app-training-exercises",
-    templateUrl: "./training-exercises.page.html",
-    styleUrls: ["./training-exercises.page.scss"],
-    standalone: false
+  selector: "app-training-exercises",
+  templateUrl: "./training-exercises.page.html",
+  styleUrls: ["./training-exercises.page.scss"],
+  standalone: false,
 })
 export class TrainingExercisesPage implements OnInit {
   @Input("training") training: Training;
@@ -39,24 +45,24 @@ export class TrainingExercisesPage implements OnInit {
     private translate: TranslateService,
   ) {
     this.teamAdminList$ = this.fbService.getTeamAdminList();
-
   }
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
-    return teamAdminList && teamAdminList.some(team => team.id === teamId);
+    return this.fbService.isTeamAdmin(teamAdminList, teamId);
   }
 
   ngOnInit() {
     this.training = this.navParams.get("training");
-    this.teamTrainingExerciseList$ = this.exerciseService.getTeamTrainingExerciseRefs(this.training.teamId, this.training.id);
-
+    this.teamTrainingExerciseList$ =
+      this.exerciseService.getTeamTrainingExerciseRefs(
+        this.training.teamId,
+        this.training.id,
+      );
   }
-  ngOnDestroy(): void {
-  
-  }
+  ngOnDestroy(): void {}
   handleReorder(ev: CustomEvent<ItemReorderEventDetail>, list) {
     // The `from` and `to` properties contain the index of the item
     // when the drag started and ended, respectively
-    console.log('Dragged from index', ev.detail.from, 'to', ev.detail.to);
+    console.log("Dragged from index", ev.detail.from, "to", ev.detail.to);
 
     // Finish the reorder and position the item in the DOM based on
     // where the gesture ended. This method can also be called directly
@@ -64,23 +70,30 @@ export class TrainingExercisesPage implements OnInit {
     const newList = ev.detail.complete(list);
 
     let index = 0;
-    for (const element of newList){
-      this.exerciseService.updateTeamTrainingExerciseOrder(this.training.teamId,this.training.id, element.id, index);
-    
+    for (const element of newList) {
+      this.exerciseService.updateTeamTrainingExerciseOrder(
+        this.training.teamId,
+        this.training.id,
+        element.id,
+        index,
+      );
+
       index++;
     }
-
-
   }
   handleSearch(event) {
     console.log(event.detail.value);
 
     this.exerciseListTemplate$ = this.exerciseListTemplateBackup$.pipe(
       take(1),
-      map(items => {
-        return items.filter(element => element.title.toLowerCase().includes(event.detail.value.toLowerCase()));
-      })
-    )
+      map((items) => {
+        return items.filter((element) =>
+          element.title
+            .toLowerCase()
+            .includes(event.detail.value.toLowerCase()),
+        );
+      }),
+    );
   }
 
   edit() {
@@ -91,9 +104,13 @@ export class TrainingExercisesPage implements OnInit {
     }
   }
 
-  removeExercise(slidingItem: IonItemSliding, exercise){
+  removeExercise(slidingItem: IonItemSliding, exercise) {
     slidingItem.closeOpened();
-    this.exerciseService.removeTeamTrainingExercise(this.training.teamId,this.training.id, exercise);
+    this.exerciseService.removeTeamTrainingExercise(
+      this.training.teamId,
+      this.training.id,
+      exercise,
+    );
     this.toastActionCanceled();
   }
 
@@ -105,27 +122,26 @@ export class TrainingExercisesPage implements OnInit {
 
   openExercise(exercise) {
     Browser.open({
-      url: exercise.link
-    })
+      url: exercise.link,
+    });
   }
 
-  async openTeamTrainingExercise(){
-      const modal = await this.modalCtrl.create({
-        component: TeamExercisesPage,
-        presentingElement: await this.modalCtrl.getTop(),
-        canDismiss: true,
-        showBackdrop: true,
-        componentProps: {
-          training: this.training
-        },
-      });
-      modal.present();
-  
-      const { data, role } = await modal.onWillDismiss();
-  
-      if (role === "confirm") {
-      }
-  
+  async openTeamTrainingExercise() {
+    const modal = await this.modalCtrl.create({
+      component: TeamExercisesPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        training: this.training,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
   }
 
   async toastActionSaved() {
@@ -141,7 +157,9 @@ export class TrainingExercisesPage implements OnInit {
 
   async toastActionCanceled() {
     const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("common.success__exercise_deleted")),
+      message: await lastValueFrom(
+        this.translate.get("common.success__exercise_deleted"),
+      ),
       duration: 1500,
       position: "top",
       color: "danger",
@@ -166,5 +184,4 @@ export class TrainingExercisesPage implements OnInit {
   async confirm() {
     return await this.modalCtrl.dismiss(null, "confirm");
   }
-
 }

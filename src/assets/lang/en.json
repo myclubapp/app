@@ -1,15 +1,21 @@
 {
   "login": {
-    "login__title": "Sign in with your account",
+    "login__title": "Sign in to your account",
     "forget__password": "Forgot password?",
-    "signin_create__account": "Create a new account",
+    "signin_create__account": "create a new account",
     "register": "Register",
     "error__no_acount_found": "No account found with this email address",
-    "error__invalid_username_password": "The combination of username and password is incorrect.",
-    "error__invalid_login_credentials": "The combination of username and password is incorrect.",
-    "error__invalid_credentials": "The combination of username and password is invalid.",
+    "error__invalid_username_password": "The username/password combination is incorrect.",
+    "error__invalid_login_credentials": "The username/password combination is incorrect.",
+    "error__invalid_credentials": "The username/password combination is invalid.",
     "error__network_connection": "There is a problem with the network connection",
-    "error": "Error"
+    "error": "Error",
+    "loading": "Loading...",
+    "error_message": "An error has occurred",
+    "error_user_not_found": "No user found with this email address",
+    "error_wrong_password": "Wrong password",
+    "error_invalid_email": "Invalid email address",
+    "error_user_disabled": "This user has been disabled"
   },
   "logout": {
     "logout__success": "Logout was successful!",
@@ -74,7 +80,13 @@
     "cancel_reason_placeholder": "Enter reason for cancellation",
     "cancel_reason_required": "Please provide a reason for cancellation",
     "cancelled": "Event cancelled",
-    "cancelled_reason": "Reason for cancellation"
+    "cancelled_reason": "Reason for cancellation",
+    "send_reminder": "Send reminder",
+    "send_reminder_confirm": "Do you want to send a reminder to {{count}} members who haven't responded yet?",
+    "reminder_sent": "Reminder was sent successfully",
+    "all_members_responded": "All members have already responded",
+    "create_helfer": "Create Helper Event",
+    "actions": "Event Actions"
   },
   "follow": {
     "follow": "Follow"
@@ -92,7 +104,33 @@
     "add_members": "Add members",
     "add_members_title": "Add members to shift",
     "add_members_message": "Select the members you want to add to the shift:",
-    "no_members_available": "No more members available"
+    "no_members_available": "No more members available",
+    "cannot_unregister": "Unregistration not possible",
+    "contact_trainer_team": "Please contact the trainer team directly to unregister",
+    "enough_helpers": "Enough helpers",
+    "shift_has_enough_helpers": "The shift already has enough helpers",
+    "edit_shift": "Edit shift",
+    "description": "Description",
+    "number_of_helpers": "Number of helpers",
+    "helper_points": "Number of helper points",
+    "time_from": "Time from",
+    "time_to": "Time to",
+    "delete_shift": "Delete shift",
+    "confirm_delete_shift": "Do you really want to delete this shift?",
+    "create_shift": "Create shift",
+    "create_new_shift": "Create a new helper shift.",
+    "add": "Add",
+    "delete_helper": "Delete helper",
+    "confirm_delete_helper": "Do you really want to delete this helper?",
+    "helper_deleted": "The helper was successfully deleted.",
+    "error_deleting_helper": "An error occurred while deleting the helper. Please try again later.",
+    "planned_shifts": "Planned shifts",
+    "confirmed_shifts": "Confirmed shifts",
+    "confirmed_by": "Confirmed by:",
+    "on_date": "on",
+    "points": "Points",
+    "settings": "Settings",
+    "helper_points_label": "Helper points"
   },
   "info": {
     "information": "Information",
@@ -118,7 +156,22 @@
     "success__application_sent": "Application sent successfully",
     "success__application_sent_desc": "Your application has been successfully sent to the club. We will inform you via email once your application is approved.",
     "success__activate_pplication_sent": "Activation request sent successfully",
-    "success__activate_application_sent_desc": "Your request is being reviewed. We will inform you via email once your request is approved."
+    "success__activate_application_sent_desc": "Your request is being reviewed. We will inform you via email once your request is approved.",
+    "no_club_found": "No club found",
+    "no_club_found_message": "To use myclub, you need to join a club first. Do you want to join a club?",
+    "open_club_requests": "Open club requests",
+    "open_club_requests_message": "You already have open club requests.",
+    "join_new_club": "Join new club",
+    "manage_profile": "Manage profile",
+    "no_team_found": "No team found",
+    "no_team_found_message": "You haven't been assigned to a team yet, but that's not a problem. You can easily join a team or delete your club request in your profile.",
+    "join_team": "Join team",
+    "show_profile": "Show profile",
+    "register_as_parent": "Register as parent",
+    "activate_club": "Activate club",
+    "activate_club_message": "To continue, your club must be activated.",
+    "select_team": "Select team",
+    "select_team_message": "Please select your team from the list."
   },
   "onboarding-team": {
     "onboarding__team": "Onboarding team"
@@ -180,8 +233,10 @@
     "kids.max_reached_message": "You can add up to 3 children.",
     "children": "Children",
     "confirm_delete_request": "Do you really want to delete this request?",
-    "no_children": "No children available",
-    "delete_parent__confirm": "Do you really want to delete the parent?"
+    "no_children": "No children added",
+    "delete_parent__confirm": "Do you really want to delete the parent?",
+    "parents_notification_info": "Parents will also be notified about their child's events.",
+    "children_notification_info": "As a parent, you will be notified about all important events of your children."
   },
   "tabs": {},
   "team": {},
@@ -209,7 +264,18 @@
     "news__filer__desc": "Filter by club or team.",
     "cancelled": "Training cancelled",
     "cancelled_reason": "Reason for cancellation",
-    "cancelled_reason_placeholder": "Enter reason for cancellation"
+    "cancelled_reason_placeholder": "Enter reason for cancellation",
+    "send_reminder": "Send reminder",
+    "send_reminder_confirm": "Do you want to send a reminder to {{count}} members who haven't responded yet?",
+    "reminder_sent": "Reminder was sent successfully",
+    "no_pending_responses": "No pending responses",
+    "all_members_responded": "All members have already responded",
+    "actions": "Training Actions",
+    "cancel_training": "Cancel Training",
+    "copy": "Copy Training",
+    "delete": "Delete Training",
+    "cancel_reason_required": "Please enter a reason for cancellation",
+    "training_cancelled": "Training has been cancelled successfully"
   },
   "side_bar": {
     "administration": "Administration",
@@ -318,9 +384,56 @@
     "parents": "Parents",
     "children": "Children",
     "select_member": "Select member",
-    "support": "Support"
+    "support": "Support",
+    "open": "Open",
+    "load": "Load",
+    "app_update_available": "App update available",
+    "app_update_message": "A new version {version} is available. Load new version?"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Do you really want to delete the parent?"
+  },
+  "club-subscription": {
+    "subscription": "Subscription",
+    "active": "Active",
+    "canceled": "Canceled",
+    "month": "Month",
+    "year": "Year",
+    "paid": "Paid",
+    "created": "Created on",
+    "current_period_start": "Start date",
+    "current_period_end": "End date",
+    "ended_at": "Ended on"
+  },
+  "club-request-list": {
+    "requests": "Requests",
+    "approve": "Approve",
+    "reject": "Reject",
+    "no_requests": "No requests available"
+  },
+  "club-team-list": {
+    "teams": "Teams",
+    "add_team": "Add team",
+    "no_teams": "No teams available"
+  },
+  "club-admin-list": {
+    "admins": "Administrators",
+    "add_admin": "Add administrator",
+    "no_admins": "No administrators available"
+  },
+  "team-admin-list": {
+    "admins": "Administrators",
+    "add_admin": "Add administrator",
+    "no_admins": "No administrators available"
+  },
+  "member": {
+    "member_details": "Member details",
+    "contact_info": "Contact information",
+    "sport_info": "Sport information",
+    "license_number": "License number",
+    "birthdate": "Birthdate",
+    "phone": "Phone number",
+    "email": "Email",
+    "address": "Address"
   }
 }

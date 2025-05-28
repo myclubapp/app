@@ -4,6 +4,8 @@ import {
   ModalController,
   NavParams,
   ToastController,
+  IonRouterOutlet,
+  IonItemSliding,
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
@@ -47,6 +49,8 @@ import { Club } from "src/app/models/club";
 import { TeamExercisesPage } from "../team-exercises/team-exercises.page";
 import { ChampionshipPage } from "../../championship/championship/championship.page";
 import { TrainingsPage } from "../../training/trainings/trainings.page";
+import { UiService } from "src/app/services/ui.service";
+import { Optional } from "@angular/core";
 
 @Component({
   selector: "app-team",
@@ -67,7 +71,7 @@ export class TeamPage implements OnInit {
 
   clubList$: Observable<Club[]>;
   clubAdminList$: Observable<Club[]>;
-  teamAdminList$: Observable<Club[]>;
+  teamAdminList$: Observable<Team[]>;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -80,6 +84,8 @@ export class TeamPage implements OnInit {
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
     private translate: TranslateService,
+    private readonly uiService: UiService,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
   ) {}
 
   ngOnInit() {
@@ -93,11 +99,10 @@ export class TeamPage implements OnInit {
     this.teamAdminList$ = this.fbService.getTeamAdminList();
   }
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some((club) => club.id === clubId);
+    return this.fbService.isClubAdmin(clubAdminList, clubId);
   }
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
-    // console.log(teamAdminList, teamId)
-    return teamAdminList && teamAdminList.some((team) => team.id === teamId);
+    return this.fbService.isTeamAdmin(teamAdminList, teamId);
   }
 
   ngOnDestroy() {}
@@ -118,35 +123,16 @@ export class TeamPage implements OnInit {
   }
 
   async deleteTeam() {
-    const alert = await this.alertCtrl.create({
-      message: await lastValueFrom(
-        this.translate.get("team.delete_team__confirm"),
-      ),
-      buttons: [
-        {
-          text: await lastValueFrom(this.translate.get("common.no")),
-          role: "destructive",
-          handler: () => {
-            console.log("nein");
-            this.presentCancelToast();
-          },
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.yes")),
-          handler: async () => {
-            await this.fbService.deleteTeam(this.team.id);
-            this.close();
-          },
-        },
-      ],
-    });
-    alert.present();
+    await this.showDeleteTeamConfirmationAlert();
   }
 
   async openTeamTrainingExercise() {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: TeamExercisesPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -267,9 +253,12 @@ export class TeamPage implements OnInit {
 
   async openMemberList() {
     console.log("open Team Member List");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: TeamMemberListPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -286,9 +275,12 @@ export class TeamPage implements OnInit {
 
   async openAdminList() {
     console.log("open Team Admin ");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: TeamAdminListPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -304,17 +296,13 @@ export class TeamPage implements OnInit {
   }
 
   async openTeamTrainings() {
-    /*const navOnboardingClub = await this.router.navigateByUrl('/t/training');
-    if (navOnboardingClub) {
-      console.log('Navigation success to onboarding Club Page');
-    } else {
-      console.error('Navigation ERROR to onboarding Club Page');
-    }*/
-
     console.log("open Team Trainings ");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: TrainingsPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -332,9 +320,12 @@ export class TeamPage implements OnInit {
 
   async openTeamGames() {
     console.log("open Team Games ");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: ChampionshipPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -364,9 +355,12 @@ export class TeamPage implements OnInit {
 
   async openMember(member: Profile) {
     console.log("openMember");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: MemberPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -519,37 +513,14 @@ export class TeamPage implements OnInit {
   }
 
   async toastActionSaved() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.success__saved")),
-      duration: 1500,
-      position: "top",
-      color: "success",
-    });
-
-    await toast.present();
+    await this.presentToast();
   }
   async presentCancelToast() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(
-        this.translate.get("onboarding.warning__action_canceled"),
-      ),
-      duration: 1500,
-      position: "top",
-      color: "danger",
-    });
-
-    await toast.present();
+    await this.presentErrorToast(new Error("Action canceled"));
   }
 
   async toastActionError(error) {
-    const toast = await this.toastController.create({
-      message: error.message,
-      duration: 1500,
-      position: "top",
-      color: "danger",
-    });
-
-    await toast.present();
+    await this.presentErrorToast(error);
   }
 
   edit() {
@@ -566,5 +537,39 @@ export class TeamPage implements OnInit {
 
   async confirm() {
     return await this.modalCtrl.dismiss(this.team, "confirm");
+  }
+
+  async presentToast() {
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.success__saved")),
+    );
+  }
+
+  async presentErrorToast(error) {
+    await this.uiService.showErrorToast(error.message);
+  }
+
+  private async showDeleteTeamConfirmationAlert() {
+    await this.uiService.showConfirmDialog({
+      header: "Team löschen",
+      message: "Möchten Sie dieses Team wirklich löschen?",
+      confirmText: "Ja",
+      cancelText: "Nein",
+    });
+  }
+
+  private async showDeleteTeamSuccessAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Erfolg",
+      message: "Das Team wurde erfolgreich gelöscht.",
+    });
+  }
+
+  private async showDeleteTeamErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Fehler",
+      message:
+        "Beim Löschen des Teams ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    });
   }
 }

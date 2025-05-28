@@ -96,59 +96,57 @@ export class AppComponent implements OnInit, AfterViewInit {
         } else {
           console.log("E-Mail IS verified. Go ahead..");
           console.log(user.email, user.displayName, user.emailVerified);
-          this.clubListSub = this.clubList$
-            .pipe(
-              take(1),
-              tap(async (clubList) => {
-                if (clubList.length == 0) {
-                  console.log("NO! Club Data received. > Call Club Onboarding");
-                  try {
-                    const navOnboardingClub =
-                      await this.router.navigateByUrl("/onboarding-club");
-                    if (navOnboardingClub) {
-                      console.log("Navigation success to onboarding Club Page");
-                    } else {
-                      console.error("Navigation ERROR to onboarding Club Page");
-                    }
-                  } catch (error) {
-                    console.error("Navigation Exception:", error);
-                    window.location.reload();
-                  }
+
+          try {
+            const clubList = await lastValueFrom(
+              this.fbService.getClubList().pipe(take(1)),
+            );
+
+            if (clubList.length === 0) {
+              console.log("NO! Club Data received. > Call Club Onboarding");
+              try {
+                const navOnboardingClub =
+                  await this.router.navigateByUrl("/onboarding-club");
+                if (navOnboardingClub) {
+                  console.log("Navigation success to onboarding Club Page");
                 } else {
-                  // CHECK SUBSCRIPTION FOR CLUB
-                  // console.log(clubList.find((club:any)=>club.subscriptionActive == false ))
-
-                  if (
-                    clubList.find(
-                      (club: any) => club.subscriptionActive == false,
-                    )
-                  ) {
-                    console.log("NO SUBSCRIPTION FOUND");
-                    const modal = await this.modalCtrl.create({
-                      component: ClubSubscriptionPage,
-                      presentingElement: await this.modalCtrl.getTop(),
-                      canDismiss: true,
-                      showBackdrop: true,
-                      componentProps: {
-                        clubId: clubList.find(
-                          (club: any) => club.subscriptionActive == false,
-                        ).id,
-                      },
-                    });
-                    modal.present();
-
-                    const { role } = await modal.onWillDismiss();
-                    console.log(role);
-                    if (role === "close" || role == "backdrop") {
-                      this.authService.logout();
-                    }
-                  } else {
-                    console.log("Club is active");
-                  }
+                  console.error("Navigation ERROR to onboarding Club Page");
                 }
-              }),
-            )
-            .subscribe();
+              } catch (error) {
+                console.error("Navigation Exception:", error);
+                window.location.reload();
+              }
+            } else {
+              const inactiveClub = clubList.find(
+                (club: any) => club.subscriptionActive === false,
+              );
+
+              if (inactiveClub) {
+                console.log("NO SUBSCRIPTION FOUND");
+                const modal = await this.modalCtrl.create({
+                  component: ClubSubscriptionPage,
+                  presentingElement: await this.modalCtrl.getTop(),
+                  canDismiss: true,
+                  showBackdrop: true,
+                  componentProps: {
+                    clubId: inactiveClub.id,
+                  },
+                });
+                modal.present();
+
+                const { role } = await modal.onWillDismiss();
+                console.log(role);
+                if (role === "close" || role === "backdrop") {
+                  this.authService.logout();
+                }
+              } else {
+                console.log("Club is active");
+                // await this.router.navigateByUrl("/t/news");
+              }
+            }
+          } catch (error) {
+            console.error("Error processing club list:", error);
+          }
         }
         // }
 
@@ -209,7 +207,6 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.registerBackButton();
     });
 
-    this.clubList$ = this.fbService.getClubList();
     Network.addListener(
       "networkStatusChange",
       async (status: ConnectionStatus) => {
@@ -551,91 +548,110 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   async presentAlertNoClub() {
+    const translations = await Promise.all([
+      lastValueFrom(this.translate.get("onboarding.no_club_found")),
+      lastValueFrom(this.translate.get("onboarding.no_club_found_message")),
+      lastValueFrom(this.translate.get("common.yes")),
+      lastValueFrom(this.translate.get("common.logout")),
+    ]);
+
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
-      header: "Kein Club gefunden",
+      header: translations[0],
       subHeader: "",
-      message:
-        "Damit du myclub nutzen kannst, musst du zuerst einem Club beitreten. Möchtest du einem Club beitreten?",
+      message: translations[1],
       buttons: [
         {
-          text: "Ja",
-          handler: () => {
-            this.router.navigateByUrl("onboarding", {});
-          },
+          text: translations[2],
+          role: "confirm",
         },
         {
-          text: "Logout",
+          text: translations[3],
           role: "cancel",
-          handler: () => {
-            this.authService.logout();
-          },
         },
       ],
     });
 
     await alert.present();
+    const { role } = await alert.onWillDismiss();
 
-    const { role } = await alert.onDidDismiss();
-    console.log("onDidDismiss resolved with role", role);
+    if (role === "confirm") {
+      await this.router.navigateByUrl("onboarding", {});
+    } else if (role === "cancel") {
+      await this.authService.logout();
+    }
   }
 
   async presentClubRequstOpen() {
+    const translations = await Promise.all([
+      lastValueFrom(this.translate.get("onboarding.open_club_requests")),
+      lastValueFrom(
+        this.translate.get("onboarding.open_club_requests_message"),
+      ),
+      lastValueFrom(this.translate.get("onboarding.join_new_club")),
+      lastValueFrom(this.translate.get("onboarding.manage_profile")),
+    ]);
+
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
-      header: "Offene Club-Anfragen vorhanden",
+      header: translations[0],
       subHeader: "",
-      message: "Du hast berets offene Club anfragen.",
+      message: translations[1],
       buttons: [
         {
-          text: "Neuen Club beitreten",
-          handler: () => {
-            this.router.navigateByUrl("onboarding", {});
-          },
+          text: translations[2],
+          role: "confirm",
         },
         {
-          text: "Profil verwalten",
+          text: translations[3],
           role: "cancel",
-          handler: () => {
-            this.router.navigateByUrl("profile", {});
-          },
         },
       ],
     });
 
     await alert.present();
+    const { role } = await alert.onWillDismiss();
 
-    const { role } = await alert.onDidDismiss();
-    console.log("onDidDismiss resolved with role", role);
+    if (role === "confirm") {
+      await this.router.navigateByUrl("onboarding", {});
+    } else if (role === "cancel") {
+      await this.router.navigateByUrl("profile", {});
+    }
   }
 
   async presentAlertNoTeam() {
+    const translations = await Promise.all([
+      lastValueFrom(this.translate.get("onboarding.no_team_found")),
+      lastValueFrom(this.translate.get("onboarding.no_team_found_message")),
+      lastValueFrom(this.translate.get("onboarding.join_team")),
+      lastValueFrom(this.translate.get("onboarding.show_profile")),
+    ]);
+
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
-      header: "Kein Team gefunden",
+      header: translations[0],
       subHeader: "",
-      message:
-        "Du wurdest noch keinem Team zugeteilt aber das ist kein Problem. Du kannst ganz einfach einem Team beitreten oder deinen Club Antrag im Profil wieder löschen.",
+      message: translations[1],
       buttons: [
         {
-          text: "Team beitreten",
-          handler: () => {
-            this.router.navigateByUrl("team-list", {});
-          },
+          text: translations[2],
+          role: "confirm",
         },
         {
-          text: "Profil anzeigen",
-          handler: () => {
-            this.router.navigateByUrl("profile", {});
-          },
+          text: translations[3],
+          role: "cancel",
         },
       ],
     });
 
     await alert.present();
+    const { role } = await alert.onWillDismiss();
 
-    const { role } = await alert.onDidDismiss();
-    console.log("onDidDismiss resolved with role", role);
+    if (role === "confirm") {
+      await this.router.navigateByUrl("team-list", {});
+    } else if (role === "cancel") {
+      await this.router.navigateByUrl("profile", {});
+    }
   }
 
   async presentAlertEmailNotVerified() {
@@ -683,35 +699,44 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   async presentAlertUpdateVersion() {
+    const translations = await Promise.all([
+      lastValueFrom(this.translate.get("common.app_update_available")),
+      lastValueFrom(
+        this.translate.get("common.app_update_message", {
+          version: this.appVersion,
+        }),
+      ),
+      lastValueFrom(this.translate.get("common.cancel")),
+      lastValueFrom(this.translate.get("common.load")),
+    ]);
+
     const alert = await this.alertController.create({
-      // cssClass: 'my-custom-class',
-      header: "App Update verfügbar",
-      message: `Eine neue Version ${this.appVersion} ist verfügbar. Neue Version laden?`,
+      header: translations[0],
+      message: translations[1],
       backdropDismiss: false,
       buttons: [
         {
-          text: "Abbrechen",
+          text: translations[2],
           role: "cancel",
-          cssClass: "secondary",
-          handler: (data: any) => {
-            // console.log('Confirm Cancel: data');
-          },
         },
         {
-          text: "Laden",
-          handler: async () => {
-            const resolver = await this.swUpdate.activateUpdate();
-            if (resolver) {
-              window.location.reload();
-            } else {
-              console.log("Already on latest version");
-            }
-          },
+          text: translations[3],
+          role: "confirm",
         },
       ],
     });
 
     await alert.present();
+    const { role } = await alert.onWillDismiss();
+
+    if (role === "confirm") {
+      const resolver = await this.swUpdate.activateUpdate();
+      if (resolver) {
+        window.location.reload();
+      } else {
+        console.log("Already on latest version");
+      }
+    }
   }
 
   async logout() {
@@ -751,20 +776,20 @@ export class AppComponent implements OnInit, AfterViewInit {
   }*/
   async registerNotifications() {
     try {
-      // Request permission to use push notifications
-      // iOS will prompt user and return if they granted permission or not
-      // Android will just grant without prompting
       const result = await PushNotifications.requestPermissions();
       if (result.receive === "granted") {
         try {
-          // Register with Apple / Google to receive push via APNS/FCM
           await PushNotifications.register();
         } catch (error) {
           console.error("Fehler bei der Push-Registrierung:", error);
-          const toast = await this.toastController.create({
-            message: await lastValueFrom(
+          const translations = await Promise.all([
+            lastValueFrom(
               this.translate.get("error__push_notification_not_available"),
             ),
+          ]);
+
+          const toast = await this.toastController.create({
+            message: translations[0],
             duration: 3000,
             color: "danger",
           });
@@ -775,10 +800,14 @@ export class AppComponent implements OnInit, AfterViewInit {
       }
     } catch (error) {
       console.error("Fehler beim Anfordern der Push-Berechtigungen:", error);
-      const toast = await this.toastController.create({
-        message: await lastValueFrom(
+      const translations = await Promise.all([
+        lastValueFrom(
           this.translate.get("error_device_not_support_push_notifications"),
         ),
+      ]);
+
+      const toast = await this.toastController.create({
+        message: translations[0],
         duration: 3000,
         color: "danger",
       });
@@ -808,141 +837,54 @@ export class AppComponent implements OnInit, AfterViewInit {
             console.log("PUSH MESSAGE RECEIVED");
             console.log("TYPE:  " + notification.data.type);
 
-            if (
-              notification.data.type &&
-              notification.data.type === "helferEvent"
-            ) {
-              const { value } = await Dialog.confirm({
-                title: notification.title,
-                message: notification.body,
-                okButtonTitle: "Öffnen",
-                cancelButtonTitle: "Abbrechen",
-              });
+            const translations = await Promise.all([
+              lastValueFrom(this.translate.get("common.open")),
+              lastValueFrom(this.translate.get("common.cancel")),
+              lastValueFrom(this.translate.get("common.ok")),
+            ]);
 
-              if (value) {
-                this.ngZone.run(() => {
+            const { value } = await Dialog.confirm({
+              title: notification.title,
+              message: notification.body,
+              okButtonTitle: translations[0],
+              cancelButtonTitle: translations[1],
+            });
+
+            if (value) {
+              this.ngZone.run(async () => {
+                let route = "";
+                switch (notification.data.type) {
+                  case "helferEvent":
+                    route = "/t/helfer";
+                    break;
+                  case "clubEvent":
+                    route = "/t/events";
+                    break;
+                  case "news":
+                  case "clubNews":
+                    route = "/t/news";
+                    break;
+                  case "training":
+                    route = "/t/training";
+                    break;
+                  default:
+                    Dialog.confirm({
+                      title: notification.title,
+                      message: notification.body,
+                      okButtonTitle: translations[2],
+                    });
+                    return;
+                }
+
+                if (route) {
                   this.router
-                    .navigateByUrl("/t/helfer", {
+                    .navigateByUrl(route, {
                       state: notification.data,
                     })
                     .catch((e) => {
                       console.error("Navigation error:", e);
                     });
-                });
-              }
-            } else if (
-              notification.data.type &&
-              notification.data.type === "clubEvent"
-            ) {
-              const { value } = await Dialog.confirm({
-                title: notification.title,
-                message: notification.body,
-                okButtonTitle: "Öffnen",
-                cancelButtonTitle: "Abbrechen",
-              });
-              if (value) {
-                this.ngZone.run(() => {
-                  this.router
-                    .navigateByUrl("/t/events", {
-                      state: notification.data,
-                    })
-                    .catch((e) => {
-                      console.error("Navigation error:", e);
-                    });
-                });
-              }
-            } else if (
-              notification.data.type &&
-              notification.data.type === "clubRequest"
-            ) {
-              const { value } = await Dialog.confirm({
-                title: notification.title,
-                message: notification.body,
-                okButtonTitle: "Öffnen",
-                cancelButtonTitle: "Abbrechen",
-              });
-              if (value) {
-              }
-            } else if (
-              notification.data.type &&
-              notification.data.type === "clubRequestAdmin"
-            ) {
-              const { value } = await Dialog.confirm({
-                title: notification.title,
-                message: notification.body,
-                okButtonTitle: "Öffnen",
-                cancelButtonTitle: "Abbrechen",
-              });
-              if (value) {
-              }
-            } else if (
-              notification.data.type &&
-              notification.data.type === "news"
-            ) {
-              const { value } = await Dialog.confirm({
-                title: notification.title,
-                message: notification.body,
-                okButtonTitle: "Öffnen",
-                cancelButtonTitle: "Abbrechen",
-              });
-              if (value) {
-                this.ngZone.run(() => {
-                  this.router
-                    .navigateByUrl("/t/news", {
-                      state: notification.data,
-                    })
-                    .catch((e) => {
-                      console.error("Navigation error:", e);
-                    });
-                });
-              }
-            } else if (
-              notification.data.type &&
-              notification.data.type === "clubNews"
-            ) {
-              const { value } = await Dialog.confirm({
-                title: notification.title,
-                message: notification.body,
-                okButtonTitle: "Öffnen",
-                cancelButtonTitle: "Abbrechen",
-              });
-              if (value) {
-                this.ngZone.run(() => {
-                  this.router
-                    .navigateByUrl("/t/news", {
-                      state: notification.data,
-                    })
-                    .catch((e) => {
-                      console.error("Navigation error:", e);
-                    });
-                });
-              }
-            } else if (
-              notification.data.type &&
-              notification.data.type === "training"
-            ) {
-              const { value } = await Dialog.confirm({
-                title: notification.title,
-                message: notification.body,
-                okButtonTitle: "Öffnen",
-                cancelButtonTitle: "Abbrechen",
-              });
-              if (value) {
-                this.ngZone.run(() => {
-                  this.router
-                    .navigateByUrl("/t/training", {
-                      state: notification.data,
-                    })
-                    .catch((e) => {
-                      console.error("Navigation error:", e);
-                    });
-                });
-              }
-            } else {
-              Dialog.confirm({
-                title: notification.title,
-                message: notification.body,
-                okButtonTitle: "OK",
+                }
               });
             }
           } catch (error) {
