@@ -167,6 +167,18 @@ export class TrainingService {
       this.firestore,
       `teams/${teamId}/trainings/${trainingId}`,
     );
-    return await updateDoc(trainingRef, data);
+    return updateDoc(trainingRef, data);
+  }
+
+  async sendReminder(teamId: string, trainingId: string) {
+    console.log("sendReminder", teamId, trainingId);
+    const trainingRef = doc(
+      this.firestore,
+      `teams/${teamId}/trainings/${trainingId}`,
+    );
+
+    return updateDoc(trainingRef, {
+      lastReminderSent: Timestamp.now(),
+    });
   }
 }

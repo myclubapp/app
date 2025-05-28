@@ -36,6 +36,8 @@ import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
 import { ActivatedRoute, Router } from "@angular/router";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { Profile } from "src/app/models/user";
+import { UiService } from "src/app/services/ui.service";
+import { Optional } from "@angular/core";
 
 @Component({
   selector: "app-events",
@@ -60,7 +62,7 @@ export class EventsPage implements OnInit {
 
   constructor(
     public toastController: ToastController,
-    private readonly routerOutlet: IonRouterOutlet,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly alertCtrl: AlertController,
     private readonly modalCtrl: ModalController,
     private readonly authService: AuthService,
@@ -71,6 +73,7 @@ export class EventsPage implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private userProfileService: UserProfileService,
+    private uiService: UiService,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -118,7 +121,7 @@ export class EventsPage implements OnInit {
   }
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some((club) => club.id === clubId);
+    return this.fbService.isClubAdmin(clubAdminList, clubId);
   }
 
   handleNavigationData() {
@@ -476,22 +479,20 @@ export class EventsPage implements OnInit {
   }
 
   async presentToast() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.changes__saved")),
-      color: "primary",
-      duration: 1500,
-      position: "top",
-    });
-    toast.present();
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.changes__saved")),
+    );
   }
 
   async copyEvent(slidingItem: IonItemSliding, event: Veranstaltung) {
     slidingItem.closeOpened();
 
-    // const presentingElement = await this.modalCtrl.getTop();
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: EventAddPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -506,13 +507,13 @@ export class EventsPage implements OnInit {
     }
   }
 
-  async createHelferEvent(slidingItem: IonItemSliding, event: Veranstaltung) {
-    slidingItem.closeOpened();
+  async createHelferEvent(event: Veranstaltung) {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
 
-    // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: HelferAddPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -541,14 +542,9 @@ export class EventsPage implements OnInit {
     toast.present();
   }
 
-  async cancelEvent(slidingItem: IonItemSliding, event: any) {
-    slidingItem.closeOpened();
-
-    const alert = await this.alertCtrl.create({
+  async cancelEvent(event: any) {
+    const result = await this.uiService.showFormDialog({
       header: await lastValueFrom(this.translate.get("events.cancel_event")),
-      message: await lastValueFrom(
-        this.translate.get("events.cancel_event_confirm"),
-      ),
       inputs: [
         {
           name: "reason",
@@ -561,81 +557,46 @@ export class EventsPage implements OnInit {
           },
         },
       ],
-      buttons: [
-        {
-          text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: "cancel",
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.confirm")),
-          handler: async (data) => {
-            if (!data.reason) {
-              const errorToast = await this.toastController.create({
-                message: await lastValueFrom(
-                  this.translate.get("events.cancel_reason_required"),
-                ),
-                duration: 2000,
-                position: "bottom",
-                color: "danger",
-              });
-              errorToast.present();
-              return false;
-            }
-
-            try {
-              await this.eventService.changeClubEvent(
-                {
-                  cancelled: true,
-                  cancelledReason: data.reason,
-                },
-                event.clubId,
-                event.id,
-              );
-              const toast = await this.toastController.create({
-                message: await lastValueFrom(
-                  this.translate.get("events.event_cancelled"),
-                ),
-                duration: 2000,
-                position: "bottom",
-              });
-              toast.present();
-              return true;
-            } catch (error) {
-              console.error("Error cancelling event:", error);
-              const toast = await this.toastController.create({
-                message: await lastValueFrom(
-                  this.translate.get("common.error"),
-                ),
-                duration: 2000,
-                position: "bottom",
-                color: "danger",
-              });
-              toast.present();
-              return false;
-            }
-          },
-        },
-      ],
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
     });
 
-    await alert.present();
+    if (result) {
+      if (!result.reason) {
+        await this.uiService.showErrorToast(
+          await lastValueFrom(
+            this.translate.get("events.cancel_reason_required"),
+          ),
+        );
+        return;
+      }
+
+      try {
+        await this.eventService.changeClubEvent(
+          {
+            cancelled: true,
+            cancelledReason: result.reason,
+          },
+          event.clubId,
+          event.id,
+        );
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(this.translate.get("events.event_cancelled")),
+        );
+      } catch (error) {
+        console.error("Error cancelling event:", error);
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
+    }
   }
 
   async tooLateToggle() {
-    const alert = await this.alertCtrl.create({
+    await this.uiService.showInfoDialog({
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
-      buttons: [
-        {
-          role: "",
-          text: "OK",
-          handler: (data) => {
-            console.log(data);
-          },
-        },
-      ],
     });
-    alert.present();
   }
   async openFilter(ev: Event) {
     /*
@@ -710,10 +671,12 @@ export class EventsPage implements OnInit {
   }
 
   async openEventCreateModal() {
-    // const presentingElement = await this.modalCtrl.getTop();
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: EventAddPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -731,9 +694,12 @@ export class EventsPage implements OnInit {
   async openEventDetailModal(event: Veranstaltung, isFuture: boolean) {
     console.log("Open Modal");
     console.log(JSON.stringify(event));
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: EventDetailPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -747,5 +713,91 @@ export class EventsPage implements OnInit {
 
     if (role === "confirm") {
     }
+  }
+
+  async sendReminder(event: any) {
+    // Hole alle Club-Mitglieder
+    const clubMembers = await lastValueFrom(
+      this.fbService.getClubMemberRefs(event.clubId).pipe(take(1)),
+    );
+
+    // Hole alle Teilnehmer des Events
+    const attendees = await lastValueFrom(
+      this.eventService
+        .getClubEventAttendeesRef(event.clubId, event.id)
+        .pipe(take(1)),
+    );
+
+    // Filtere Mitglieder, die noch nicht geantwortet haben
+    const pendingMembers = clubMembers.filter(
+      (member) => !attendees.some((attendee) => attendee.id === member.id),
+    );
+
+    if (pendingMembers.length === 0) {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("events.all_members_responded")),
+      );
+      return;
+    }
+
+    const result = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(this.translate.get("events.send_reminder")),
+      message: await lastValueFrom(
+        this.translate.get("events.send_reminder_confirm", {
+          count: pendingMembers.length,
+        }),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    if (result) {
+      try {
+        await this.eventService.sendReminder(event.clubId, event.id);
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(this.translate.get("events.reminder_sent")),
+        );
+      } catch (error) {
+        console.error("Error sending reminder:", error);
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
+    }
+  }
+
+  async openEventActions(slidingItem: IonItemSliding, event: any) {
+    slidingItem.closeOpened();
+    const actionSheet = await this.uiService.showActionSheet({
+      header: await lastValueFrom(this.translate.get("events.actions")),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("events.create_helfer")),
+          icon: "help-buoy-outline",
+          handler: () => {
+            this.createHelferEvent(event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("events.cancel_event")),
+          icon: "alert-circle-outline",
+          handler: () => {
+            this.cancelEvent(event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("events.send_reminder")),
+          icon: "notifications-outline",
+          handler: () => {
+            this.sendReminder(event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          // icon: "close",
+          role: "destructive",
+        },
+      ],
+    });
   }
 }

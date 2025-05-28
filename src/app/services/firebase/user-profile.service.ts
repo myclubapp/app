@@ -13,6 +13,11 @@ import {
   setDoc,
   DocumentData,
   addDoc,
+  enableIndexedDbPersistence,
+  getDoc,
+  getDocs,
+  query,
+  where,
 } from "@angular/fire/firestore";
 import {
   Storage,
@@ -27,16 +32,31 @@ import { Photo } from "@capacitor/camera";
 
 import { AuthService } from "../auth.service";
 import { DeviceId, DeviceInfo } from "@capacitor/device";
+import { shareReplay, take } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
 })
 export class UserProfileService {
+  private profileCache: Map<string, Observable<Profile>> = new Map();
+  private readonly CACHE_DURATION = 10 * 60 * 1000; // 10 Minuten
+
   constructor(
     private firestore: Firestore,
     private readonly storage: Storage,
     private readonly authService: AuthService,
-  ) {}
+  ) {
+    // Aktiviere Offline Persistence
+    enableIndexedDbPersistence(this.firestore).catch((err) => {
+      if (err.code === "failed-precondition") {
+        console.warn(
+          "Offline Persistence konnte nicht aktiviert werden. Möglicherweise läuft bereits eine andere Instanz.",
+        );
+      } else if (err.code === "unimplemented") {
+        console.warn("Der Browser unterstützt keine Offline Persistence.");
+      }
+    });
+  }
 
   addKidRequest(userId: string, email: string) {
     const userKidsRef = collection(
@@ -75,6 +95,28 @@ export class UserProfileService {
     return collectionData(parentsRef, { idField: "id" }) as Observable<any[]>;
   }
 
+  async addParent(userId: string, parentId: string) {
+    const parentRef = doc(
+      this.firestore,
+      `userProfile/${userId}/parents/${parentId}`,
+    );
+    return setDoc(parentRef, {
+      addedAt: new Date(),
+      parentId: parentId,
+    });
+  }
+
+  async addChild(userId: string, childId: string) {
+    const childRef = doc(
+      this.firestore,
+      `userProfile/${userId}/children/${childId}`,
+    );
+    return setDoc(childRef, {
+      addedAt: new Date(),
+      childId: childId,
+    });
+  }
+
   deleteKidRequest(userId: string, requestId: string) {
     const userKidsRef = collection(
       this.firestore,
@@ -89,12 +131,22 @@ export class UserProfileService {
   }
 
   getUserProfileById(userId: string): Observable<Profile> {
+    const cachedProfile = this.profileCache.get(userId);
+    if (cachedProfile) {
+      return cachedProfile;
+    }
+
     const userProfileRef: DocumentReference = doc(
       this.firestore,
       `userProfile/${userId}`,
     );
-    // if (userProfileRef.id) {
-    return docData(userProfileRef, { idField: "id" }) as Observable<Profile>;
+
+    const profile$ = docData(userProfileRef, { idField: "id" }).pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    ) as Observable<Profile>;
+
+    this.profileCache.set(userId, profile$);
+    return profile$;
   }
 
   async setUserProfilePicture(photo: Photo) {
@@ -195,6 +247,14 @@ export class UserProfileService {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { [fieldname]: value });
+  }
+
+  async deleteChild(userId: string, childId: string) {
+    const childRef = doc(
+      this.firestore,
+      `userProfile/${userId}/children/${childId}`,
+    );
+    return deleteDoc(childRef);
   }
 
   /*

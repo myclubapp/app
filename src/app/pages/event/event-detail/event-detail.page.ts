@@ -227,7 +227,7 @@ export class EventDetailPage implements OnInit {
   }
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some((club) => club.id === clubId);
+    return this.fbService.isClubAdmin(clubAdminList, clubId);
   }
   async edit() {
     if (this.allowEdit) {

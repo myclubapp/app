@@ -1,7 +1,14 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+  Optional,
+} from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
+  IonRouterOutlet,
   ModalController,
   NavParams,
   ToastController,
@@ -35,6 +42,7 @@ import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
+import { UiService } from "src/app/services/ui.service";
 
 @Component({
   selector: "app-training-detail",
@@ -64,6 +72,7 @@ export class TrainingDetailPage implements OnInit {
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
     private platform: Platform,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly userProfileService: UserProfileService,
     private readonly fbService: FirebaseService,
     private readonly trainingService: TrainingService,
@@ -72,6 +81,7 @@ export class TrainingDetailPage implements OnInit {
     private readonly authService: AuthService,
     private translate: TranslateService,
     private readonly exerciseService: ExerciseService,
+    private readonly uiService: UiService,
   ) {}
 
   ngOnInit() {
@@ -91,7 +101,7 @@ export class TrainingDetailPage implements OnInit {
   ngOnDestroy() {}
 
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
-    return teamAdminList && teamAdminList.some((team) => team.id === teamId);
+    return this.fbService.isTeamAdmin(teamAdminList, teamId);
   }
   enableMyClubPro(clubList) {
     return (
@@ -286,14 +296,7 @@ export class TrainingDetailPage implements OnInit {
   }
 
   async toastActionError(error) {
-    const toast = await this.toastController.create({
-      message: error.message,
-      duration: 1500,
-      position: "top",
-      color: "danger",
-    });
-
-    await toast.present();
+    await this.presentErrorToast(error);
   }
 
   async toggle(status: boolean, training: any) {
@@ -348,19 +351,48 @@ export class TrainingDetailPage implements OnInit {
   }
 
   async presentToast() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.success__saved")),
-      color: "success",
-      duration: 1500,
-      position: "top",
-    });
-    toast.present();
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.success__saved")),
+    );
   }
+
+  async presentErrorToast(error) {
+    await this.uiService.showErrorToast(error.message);
+  }
+
+  private async showDeleteTrainingConfirmationAlert() {
+    await this.uiService.showConfirmDialog({
+      header: "Training löschen",
+      message: "Möchten Sie dieses Training wirklich löschen?",
+      confirmText: "Ja",
+      cancelText: "Nein",
+    });
+  }
+
+  private async showDeleteTrainingSuccessAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Erfolg",
+      message: "Das Training wurde erfolgreich gelöscht.",
+    });
+  }
+
+  private async showDeleteTrainingErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Fehler",
+      message:
+        "Beim Löschen des Trainings ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    });
+  }
+
   async openMember(member: Profile) {
     console.log("openMember");
+
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: MemberPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -375,6 +407,9 @@ export class TrainingDetailPage implements OnInit {
     }
   }
   async openTrainingExerciseModal() {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: TrainingExercisesPage,
