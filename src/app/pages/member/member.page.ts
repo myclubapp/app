@@ -92,16 +92,22 @@ export class MemberPage implements OnInit {
     this.userProfile$ = this.getUserProfile(this.userProfile.id);
 
     this.children$ = this.profileService.getChildren(this.userProfile.id).pipe(
-      take(1),
       tap((children) => {
         console.log("children: " + children);
+      }),
+      catchError((error) => {
+        console.error("Error fetching children:", error);
+        return of([]);
       }),
     );
 
     this.parents$ = this.profileService.getParents(this.userProfile.id).pipe(
-      take(1),
       tap((parents) => {
         console.log("parents: " + parents);
+      }),
+      catchError((error) => {
+        console.error("Error fetching parents:", error);
+        return of([]);
       }),
     );
 

@@ -210,8 +210,10 @@
     "children": "Enfants",
     "confirm_delete_request": "Voulez-vous vraiment supprimer cette demande ?",
     "no_children": "Aucun enfant ajouté",
-    "parents_notification_info": "Les parents seront également informés des événements de leur enfant.",
-    "children_notification_info": "En tant que parent, vous serez informé de tous les événements importants de vos enfants."
+    "parents_notification_info": "Les parents sont également informés des événements de leur enfant.",
+    "children_notification_info": "En tant que parent, vous serez informé de tous les événements importants concernant vos enfants.",
+    "confirm_delete_child": "Voulez-vous vraiment supprimer cet enfant de votre profil ?",
+    "success_child_deleted": "L'enfant a été supprimé avec succès du profil"
   },
   "tabs": {},
   "team": {},

@@ -244,7 +244,9 @@
     "no_children": "Keine Kinder hinzugefügt",
     "parents": "Eltern",
     "parents_notification_info": "Eltern werden ebenfalls über Ereignisse ihres Kindes informiert.",
-    "children_notification_info": "Als Elternteil werden Sie über alle wichtigen Ereignisse Ihrer Kinder informiert."
+    "children_notification_info": "Als Elternteil werden Sie über alle wichtigen Ereignisse Ihrer Kinder informiert.",
+    "confirm_delete_child": "Möchten Sie dieses Kind wirklich aus Ihrem Profil entfernen?",
+    "success_child_deleted": "Kind wurde erfolgreich aus dem Profil entfernt"
   },
   "tabs": {},
   "team": {

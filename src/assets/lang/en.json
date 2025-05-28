@@ -235,8 +235,10 @@
     "confirm_delete_request": "Do you really want to delete this request?",
     "no_children": "No children added",
     "delete_parent__confirm": "Do you really want to delete the parent?",
-    "parents_notification_info": "Parents will also be notified about their child's events.",
-    "children_notification_info": "As a parent, you will be notified about all important events of your children."
+    "parents_notification_info": "Parents are also notified about their child's events.",
+    "children_notification_info": "As a parent, you will be notified about all important events regarding your children.",
+    "confirm_delete_child": "Do you really want to remove this child from your profile?",
+    "success_child_deleted": "Child has been successfully removed from profile"
   },
   "tabs": {},
   "team": {},

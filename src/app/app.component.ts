@@ -141,7 +141,12 @@ export class AppComponent implements OnInit, AfterViewInit {
                 }
               } else {
                 console.log("Club is active");
-                // await this.router.navigateByUrl("/t/news");
+
+                const currentPath = this.router.url;
+                if (currentPath === "/login") {
+                  this.menuCtrl.enable(true, "menu");
+                  await this.router.navigateByUrl("/t");
+                }
               }
             }
           } catch (error) {

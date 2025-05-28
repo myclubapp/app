@@ -14,6 +14,10 @@ import {
   DocumentData,
   addDoc,
   enableIndexedDbPersistence,
+  getDoc,
+  getDocs,
+  query,
+  where,
 } from "@angular/fire/firestore";
 import {
   Storage,
@@ -89,6 +93,28 @@ export class UserProfileService {
       `userProfile/${userId}/parents`,
     );
     return collectionData(parentsRef, { idField: "id" }) as Observable<any[]>;
+  }
+
+  async addParent(userId: string, parentId: string) {
+    const parentRef = doc(
+      this.firestore,
+      `userProfile/${userId}/parents/${parentId}`,
+    );
+    return setDoc(parentRef, {
+      addedAt: new Date(),
+      parentId: parentId,
+    });
+  }
+
+  async addChild(userId: string, childId: string) {
+    const childRef = doc(
+      this.firestore,
+      `userProfile/${userId}/children/${childId}`,
+    );
+    return setDoc(childRef, {
+      addedAt: new Date(),
+      childId: childId,
+    });
   }
 
   deleteKidRequest(userId: string, requestId: string) {
@@ -221,6 +247,14 @@ export class UserProfileService {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { [fieldname]: value });
+  }
+
+  async deleteChild(userId: string, childId: string) {
+    const childRef = doc(
+      this.firestore,
+      `userProfile/${userId}/children/${childId}`,
+    );
+    return deleteDoc(childRef);
   }
 
   /*

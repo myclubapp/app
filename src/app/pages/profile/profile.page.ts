@@ -852,4 +852,29 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         "Beim Löschen des Profils ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
     });
   }
+
+  async deleteChild(child: Profile) {
+    const confirmed = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(this.translate.get("common.confirmation")),
+      message: await lastValueFrom(
+        this.translate.get("profile.confirm_delete_child"),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.yes")),
+      cancelText: await lastValueFrom(this.translate.get("common.no")),
+    });
+
+    if (confirmed) {
+      try {
+        await this.profileService.deleteChild(this.user.uid, child.id);
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(
+            this.translate.get("profile.success_child_deleted"),
+          ),
+        );
+      } catch (error) {
+        console.error("Fehler beim Löschen des Kindes", error);
+        await this.uiService.showErrorToast(error.message);
+      }
+    }
+  }
 }

@@ -91,7 +91,7 @@
               <ion-icon slot="icon-only" name="location-outline"></ion-icon>
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
             </h3>
-            <h3 *ngIf="event.cancelled === true">
+            <h3 *ngIf="event.cancelled === true && event.cancelledReason">
               <ion-icon
                 slot="icon-only"
                 color="danger"
@@ -176,21 +176,28 @@
       <ion-item-sliding #item *ngFor="let event of eventsListPast">
         <ion-item type="button" detail="true">
           <ion-icon
-            *ngIf="event.status === null"
+            *ngIf="event.cancelled"
+            slot="icon-only"
+            color="danger"
+            slot="start"
+            name="alert-circle"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="!event.cancelled && event.status === null"
             slot="icon-only"
             color="warning"
             slot="start"
             name="help-circle"
           ></ion-icon>
           <ion-icon
-            *ngIf="event.status === false"
+            *ngIf="!event.cancelled && event.status === false"
             slot="icon-only"
             color="danger"
             slot="start"
             name="close-circle"
           ></ion-icon>
           <ion-icon
-            *ngIf="event.status === true"
+            *ngIf="!event.cancelled && event.status === true"
             slot="icon-only"
             color="success"
             slot="start"
@@ -206,6 +213,14 @@
             <h3>
               <ion-icon slot="icon-only" name="location-outline"></ion-icon>
               {{event.location}} {{event.streetAndNumber}} {{event.city}}
+            </h3>
+            <h3 *ngIf="event.cancelled === true && event.cancelledReason">
+              <ion-icon
+                slot="icon-only"
+                color="danger"
+                name="alert-circle"
+              ></ion-icon>
+              <ion-text color="danger"> {{event.cancelledReason}} </ion-text>
             </h3>
           </ion-label>
           <ion-badge
