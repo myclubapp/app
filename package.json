@@ -1,7 +1,7 @@
 {
   "name": "myclub",
   "version": "2.0.0",
-  "buildNumber": "159",
+  "buildNumber": "160",
   "author": "liitu consulting gmbh",
   "homepage": "https://my-club.app/",
   "scripts": {
@@ -61,8 +61,8 @@
     "@fortawesome/fontawesome-svg-core": "6.7.2",
     "@fortawesome/free-brands-svg-icons": "6.7.2",
     "@fortawesome/free-solid-svg-icons": "6.7.2",
-    "@ionic/angular": "8.5.7",
-    "@ionic/angular-server": "8.5.7",
+    "@ionic/angular": "8.5.8",
+    "@ionic/angular-server": "8.5.8",
     "@ionic/pwa-elements": "3.3.0",
     "@ngx-translate/core": "^16.0.4",
     "@ngx-translate/http-loader": "^16.0.1",

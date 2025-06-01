@@ -171,7 +171,15 @@
     "activate_club": "Activate club",
     "activate_club_message": "To continue, your club must be activated.",
     "select_team": "Select team",
-    "select_team_message": "Please select your team from the list."
+    "select_team_message": "Please select your team from the list.",
+    "join_club_title": "Join your club",
+    "join_club_description": "To complete your profile setup, you need to join a club first.",
+    "sports": {
+      "unihockey": "Floorball",
+      "volleyball": "Volleyball",
+      "handball": "Handball",
+      "gymnastics": "Gymnastics"
+    }
   },
   "onboarding-team": {
     "onboarding__team": "Onboarding team"

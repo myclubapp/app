@@ -165,7 +165,15 @@
     "activate_club": "Attiva club",
     "activate_club_message": "Per continuare, il tuo club deve essere attivato.",
     "select_team": "Seleziona squadra",
-    "select_team_message": "Seleziona la tua squadra dall'elenco."
+    "select_team_message": "Seleziona la tua squadra dall'elenco.",
+    "join_club_title": "Unisciti al tuo club",
+    "join_club_description": "Per completare la configurazione del tuo profilo, devi prima unirti a un club.",
+    "sports": {
+      "unihockey": "Unihockey",
+      "volleyball": "Pallavolo",
+      "handball": "Pallamano",
+      "gymnastics": "Ginnastica"
+    }
   },
   "onboarding-team": {
     "onboarding__team": "Team di onboarding"

@@ -176,7 +176,15 @@
     "activate_club": "Club aktivieren",
     "activate_club_message": "Um fortzufahren, muss dein Club aktiviert werden.",
     "select_team": "Team auswählen",
-    "select_team_message": "Bitte wähle dein Team aus der Liste aus."
+    "select_team_message": "Bitte wähle dein Team aus der Liste aus.",
+    "join_club_title": "Trete deinem Club bei",
+    "join_club_description": "Damit wir dein Profil fertig einrichten könnnen, musst du zuerst einem Club beitreten.",
+    "sports": {
+      "unihockey": "Unihockey",
+      "volleyball": "Volleyball",
+      "handball": "Handball",
+      "gymnastics": "Turnverein"
+    }
   },
   "onboarding-team": {
     "onboarding__team": "Onboarding-Team"
