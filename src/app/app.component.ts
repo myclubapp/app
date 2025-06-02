@@ -34,6 +34,7 @@ import {
 } from "@capacitor/push-notifications";
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 import { lastValueFrom } from "rxjs";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: "app-root",
@@ -68,6 +69,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private translate: TranslateService,
     private uiService: UiService,
     private ngZone: NgZone,
+    private http: HttpClient,
   ) {
     this.initializeApp();
 
@@ -350,21 +352,21 @@ export class AppComponent implements OnInit, AfterViewInit {
         if (prefersDark) {
           // Dark Mode
           await StatusBar.setStyle({ style: Style.Dark });
-          // Force dark mode media query
           document.documentElement.style.colorScheme = "dark";
-          const darkColor = getComputedStyle(document.documentElement)
+          const darkColor = getComputedStyle(document.body)
             .getPropertyValue("--ion-color-primary")
             .trim();
           await StatusBar.setBackgroundColor({ color: darkColor });
+          console.log("DEBUG CSS: darkColor", darkColor);
         } else {
           // Light Mode
           await StatusBar.setStyle({ style: Style.Light });
-          // Force light mode media query
           document.documentElement.style.colorScheme = "light";
-          const lightColor = getComputedStyle(document.documentElement)
+          const lightColor = getComputedStyle(document.body)
             .getPropertyValue("--ion-color-primary")
             .trim();
           await StatusBar.setBackgroundColor({ color: lightColor });
+          console.log("DEBUG CSS: lightColor", lightColor);
         }
 
         // Listen for system theme changes
@@ -375,17 +377,15 @@ export class AppComponent implements OnInit, AfterViewInit {
             console.log("System theme changed to:", newColorScheme);
             if (newColorScheme == "dark") {
               await StatusBar.setStyle({ style: Style.Dark });
-              // Force dark mode media query
               document.documentElement.style.colorScheme = "dark";
-              const darkColor = getComputedStyle(document.documentElement)
+              const darkColor = getComputedStyle(document.body)
                 .getPropertyValue("--ion-color-primary")
                 .trim();
               await StatusBar.setBackgroundColor({ color: darkColor });
             } else {
               await StatusBar.setStyle({ style: Style.Light });
-              // Force light mode media query
               document.documentElement.style.colorScheme = "light";
-              const lightColor = getComputedStyle(document.documentElement)
+              const lightColor = getComputedStyle(document.body)
                 .getPropertyValue("--ion-color-primary")
                 .trim();
               await StatusBar.setBackgroundColor({ color: lightColor });
