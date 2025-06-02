@@ -341,7 +341,21 @@
     "open": "Apri",
     "load": "Carica",
     "app_update_available": "Aggiornamento app disponibile",
-    "app_update_message": "È disponibile una nuova versione {version}. Caricare la nuova versione?"
+    "app_update_message": "È disponibile una nuova versione ({{version}}). Vuoi aggiornare ora?",
+    "offline": "Sei offline",
+    "online": "Sei online",
+    "error__push_notification_not_available": "Notifica push non disponibile",
+    "error_device_not_support_push_notifications": "Il tuo dispositivo/browser non supporta le notifiche push",
+    "success__copy": "Copiato con successo",
+    "action__canceled": "Azione annullata",
+    "success__saved": "Salvato con successo",
+    "app_update_available": "Aggiornamento app disponibile",
+    "app_update_message": "È disponibile una nuova versione ({{version}}). Vuoi aggiornare ora?",
+    "cancel": "Annulla",
+    "load": "Carica",
+    "confirm": "Conferma",
+    "ok": "OK",
+    "save": "Salva"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Vuoi davvero eliminare il genitore?"

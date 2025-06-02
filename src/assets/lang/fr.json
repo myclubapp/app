@@ -343,7 +343,21 @@
     "open": "Ouvrir",
     "load": "Charger",
     "app_update_available": "Mise à jour de l'application disponible",
-    "app_update_message": "Une nouvelle version {version} est disponible. Charger la nouvelle version ?"
+    "app_update_message": "Une nouvelle version ({{version}}) est disponible. Voulez-vous mettre à jour maintenant ?",
+    "offline": "Vous êtes hors ligne",
+    "online": "Vous êtes en ligne",
+    "error__push_notification_not_available": "Notification push non disponible",
+    "error_device_not_support_push_notifications": "Votre appareil/navigateur ne prend pas en charge les notifications push",
+    "success__copy": "Copié avec succès",
+    "action__canceled": "Action annulée",
+    "success__saved": "Enregistré avec succès",
+    "app_update_available": "Mise à jour de l'application disponible",
+    "app_update_message": "Une nouvelle version ({{version}}) est disponible. Voulez-vous mettre à jour maintenant ?",
+    "cancel": "Annuler",
+    "load": "Charger",
+    "confirm": "Confirmer",
+    "ok": "OK",
+    "save": "Enregistrer"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Voulez-vous vraiment supprimer le parent ?"

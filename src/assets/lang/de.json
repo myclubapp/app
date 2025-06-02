@@ -429,7 +429,21 @@
     "open": "Öffnen",
     "load": "Laden",
     "app_update_available": "App Update verfügbar",
-    "app_update_message": "Eine neue Version {version} ist verfügbar. Neue Version laden?"
+    "app_update_message": "Eine neue Version {version} ist verfügbar. Neue Version laden?",
+    "offline": "Du bist offline",
+    "online": "Du bist online",
+    "error__push_notification_not_available": "Push-Benachrichtigung nicht verfügbar",
+    "error_device_not_support_push_notifications": "Leider unterstützt Ihr Gerät/Browser keine Push-Benachrichtigungen",
+    "success__copy": "Erfolgreich kopiert",
+    "action__canceled": "Aktion abgebrochen",
+    "success__saved": "Erfolgreich gespeichert",
+    "app_update_available": "App-Update verfügbar",
+    "app_update_message": "Eine neue Version ({{version}}) ist verfügbar. Möchten Sie jetzt aktualisieren?",
+    "cancel": "Abbrechen",
+    "load": "Laden",
+    "confirm": "Bestätigen",
+    "ok": "OK",
+    "save": "Speichern"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Möchtest du den Elternteil wirklich löschen?"

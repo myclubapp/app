@@ -9,7 +9,6 @@ import {
   AlertController,
   MenuController,
   ModalController,
-  ToastController,
 } from "@ionic/angular";
 import { App } from "@capacitor/app";
 import { Dialog } from "@capacitor/dialog";
@@ -25,6 +24,7 @@ import { Device, DeviceId, DeviceInfo, LanguageTag } from "@capacitor/device";
 import { Network, ConnectionStatus } from "@capacitor/network";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "./models/club";
+import { UiService } from "./services/ui.service";
 
 import {
   ActionPerformed,
@@ -48,8 +48,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   clubList$: Observable<Club[]>;
 
-  private clubListSub: Subscription;
-
   user: User;
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
@@ -61,8 +59,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     private platform: Platform,
     private readonly swUpdate: SwUpdate,
     private readonly modalCtrl: ModalController,
-    // private readonly routerOutlet: IonRouterOutlet,
-    // private readonly swPush: SwPush,
     private readonly alertController: AlertController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -70,7 +66,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     private readonly router: Router,
     public readonly menuCtrl: MenuController,
     private translate: TranslateService,
-    public toastController: ToastController,
+    private uiService: UiService,
     private ngZone: NgZone,
   ) {
     this.initializeApp();
@@ -216,33 +212,13 @@ export class AppComponent implements OnInit, AfterViewInit {
       "networkStatusChange",
       async (status: ConnectionStatus) => {
         if (!status.connected) {
-          // const toast = await this.toastController.create({
-          //   message: "Du bist offline",
-          //   duration: 3000,
-          //   position: "top",
-          //   buttons: [
-          //     {
-          //       // text:"Ok",
-          //       icon: "cloud-offline-outline"
-          //     }
-          //   ],
-          //   color: "danger",
-          // });
-          // await toast.present();
+          await this.uiService.showErrorToast(
+            await lastValueFrom(this.translate.get("common.offline")),
+          );
         } else {
-          // const toast = await this.toastController.create({
-          //   message: "Du bist online",
-          //   duration: 1500,
-          //   position: "top",
-          //   color: "success",
-          //   buttons: [
-          //     {
-          //       // text:"Ok",
-          //       icon: "wifi-outline"
-          //     }
-          //   ],
-          // });
-          // await toast.present();
+          await this.uiService.showSuccessToast(
+            await lastValueFrom(this.translate.get("common.online")),
+          );
         }
       },
     );
@@ -252,10 +228,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     Network.removeAllListeners();
 
     App.removeAllListeners();
-
-    if (this.clubListSub) {
-      this.clubListSub.unsubscribe();
-    }
   }
 
   initializeApp(): void {
@@ -796,12 +768,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             ),
           ]);
 
-          const toast = await this.toastController.create({
-            message: translations[0],
-            duration: 3000,
-            color: "danger",
-          });
-          await toast.present();
+          const toast = await this.uiService.showErrorToast(translations[0]);
         }
       } else {
         console.warn("Push-Benachrichtigungen wurden nicht erlaubt");
@@ -814,12 +781,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         ),
       ]);
 
-      const toast = await this.toastController.create({
-        message: translations[0],
-        duration: 3000,
-        color: "danger",
-      });
-      await toast.present();
+      const toast = await this.uiService.showErrorToast(translations[0]);
     }
 
     try {

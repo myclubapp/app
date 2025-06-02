@@ -402,7 +402,21 @@
     "open": "Open",
     "load": "Load",
     "app_update_available": "App update available",
-    "app_update_message": "A new version {version} is available. Load new version?"
+    "app_update_message": "A new version ({{version}}) is available. Would you like to update now?",
+    "offline": "You are offline",
+    "online": "You are online",
+    "error__push_notification_not_available": "Push notification not available",
+    "error_device_not_support_push_notifications": "Your device/browser does not support push notifications",
+    "success__copy": "Successfully copied",
+    "action__canceled": "Action canceled",
+    "success__saved": "Successfully saved",
+    "app_update_available": "App update available",
+    "app_update_message": "A new version ({{version}}) is available. Would you like to update now?",
+    "cancel": "Cancel",
+    "load": "Load",
+    "confirm": "Confirm",
+    "ok": "OK",
+    "save": "Save"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Do you really want to delete the parent?"

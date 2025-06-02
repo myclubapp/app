@@ -279,57 +279,43 @@
 </ion-content>
 
 <ng-template #loading>
-  <ion-list *ngIf="loading">
-    <ion-grid>
-      <ion-row>
-        <ion-col
-          size-lg="4"
-          size-md="6"
-          size-sm="6"
-          size="12"
-          *ngFor="let item of skeleton"
-        >
-          <ion-card>
-            <ion-card-header>
-              <ion-card-subtitle>
-                <ion-skeleton-text
-                  animated
-                  style="width: 60%"
-                ></ion-skeleton-text>
-              </ion-card-subtitle>
-              <ion-card-title>
-                <ion-skeleton-text
-                  animated
-                  style="width: 80%"
-                ></ion-skeleton-text>
-              </ion-card-title>
-            </ion-card-header>
-
-            <ion-card-content>
-              <ion-skeleton-text
-                animated
-                style="width: 80%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 60%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 80%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 60%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 80%"
-              ></ion-skeleton-text>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label slot="start">
+        <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+      </ion-label>
+      <ion-label slot="end">
+        <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <ion-item *ngFor="let item of skeleton">
+      <ion-icon slot="start">
+        <ion-skeleton-text
+          animated
+          style="width: 24px; height: 24px; border-radius: 50%"
+        ></ion-skeleton-text>
+      </ion-icon>
+      <ion-label>
+        <h2>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </h2>
+        <h3>
+          <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+          <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+        </h3>
+        <h3>
+          <ion-icon slot="icon-only" name="location-outline"></ion-icon>
+          <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+        </h3>
+      </ion-label>
+      <ion-badge slot="end">
+        <ion-skeleton-text animated style="width: 20px"></ion-skeleton-text>
+      </ion-badge>
+    </ion-item>
   </ion-list>
 </ng-template>
