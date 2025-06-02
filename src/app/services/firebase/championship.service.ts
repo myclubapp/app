@@ -14,7 +14,7 @@ import {
   where,
 } from "@angular/fire/firestore";
 import { orderBy } from "firebase/firestore";
-import { Observable } from "rxjs";
+import { Observable, shareReplay } from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "../auth.service";
 
@@ -24,14 +24,16 @@ import { AuthService } from "../auth.service";
 export class ChampionshipService {
   constructor(
     private readonly authService: AuthService,
-    private firestore: Firestore) {
-
-  }
+    private firestore: Firestore,
+  ) {}
 
   /* TEAM GAME */
 
   getTeamRankingTable(teamId: string, year: string): Observable<any[]> {
-    const tableRef = collection(this.firestore, `teams/${teamId}/ranking/${year}/table`);
+    const tableRef = collection(
+      this.firestore,
+      `teams/${teamId}/ranking/${year}/table`,
+    );
     return collectionData(tableRef, { idField: "id" }) as Observable<any[]>;
   }
 
@@ -43,7 +45,9 @@ export class ChampionshipService {
   getTeamGameRef(teamId: string, gameId: string): Observable<Game> {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const gameRef = doc(this.firestore, `teams/${teamId}/games/${gameId}`);
-    return docData(gameRef, { idField: "id" }) as Observable<Game>;
+    return docData(gameRef, { idField: "id" }).pipe(
+      shareReplay(10),
+    ) as Observable<Game>;
   }
 
   /* TEAM GAMES */
@@ -55,13 +59,13 @@ export class ChampionshipService {
       where(
         "dateTime",
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)) // 2h lang das "alte Spiel" anzeigen
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)), // 2h lang das "alte Spiel" anzeigen
       ),
-      orderBy('dateTime', 'asc')
+      orderBy("dateTime", "asc"),
     ); // heute - 1 Tag
-    return collectionData(q, { idField: "id" }) as Observable<
-      Game[]
-    >;
+    return collectionData(q, { idField: "id" }).pipe(
+      shareReplay(1),
+    ) as Observable<Game[]>;
   }
 
   // PAST 20 Entries
@@ -73,14 +77,14 @@ export class ChampionshipService {
       where(
         "dateTime",
         "<",
-        Timestamp.fromDate(new Date(Date.now())) // sofort in "vergangen" anzeigen
+        Timestamp.fromDate(new Date(Date.now())), // sofort in "vergangen" anzeigen
       ),
       limit(20),
-      orderBy('dateTime', 'desc')
+      orderBy("dateTime", "desc"),
     ); // heute - 1 Tag
-    return collectionData(q, { idField: "id" }) as Observable<
-      Game[]
-    >;
+    return collectionData(q, { idField: "id" }).pipe(
+      shareReplay(1),
+    ) as Observable<Game[]>;
   }
 
   /* CLUB GAMES */
@@ -91,13 +95,13 @@ export class ChampionshipService {
       where(
         "dateTime",
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)) // 2h lang das "alte Spiel" anzeigen
+        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)), // 2h lang das "alte Spiel" anzeigen
       ),
-      orderBy('dateTime', 'asc')
+      orderBy("dateTime", "asc"),
     ); // heute - 1 Tag
-    return collectionData(q, { idField: "id" }) as Observable<
-      Game[]
-    >;
+    return collectionData(q, { idField: "id" }).pipe(
+      shareReplay(1),
+    ) as Observable<Game[]>;
   }
 
   /* TEAM GAMES ATTENDEES */
@@ -105,23 +109,19 @@ export class ChampionshipService {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const attendeesRefList = collection(
       this.firestore,
-      `teams/${teamId}/games/${gameId}/attendees`
+      `teams/${teamId}/games/${gameId}/attendees`,
     );
     return collectionData(attendeesRefList, {
       idField: "id",
-    }) as Observable<any[]>;
+    }).pipe(shareReplay(1)) as Observable<any[]>;
   }
 
   /* SET TEAM GAMES ATTENDEE Status */
-  setTeamGameAttendeeStatus(
-    status: boolean,
-    teamId: string,
-    gameId: string
-  ) {
+  setTeamGameAttendeeStatus(status: boolean, teamId: string, gameId: string) {
     const user = this.authService.auth.currentUser;
     const statusRef = doc(
       this.firestore,
-      `teams/${teamId}/games/${gameId}/attendees/${user.uid}`
+      `teams/${teamId}/games/${gameId}/attendees/${user.uid}`,
     );
     return setDoc(statusRef, { status });
   }
@@ -133,20 +133,17 @@ export class ChampionshipService {
   ) {
     const statusRef = doc(
       this.firestore,
-      `teams/${teamId}/games/${gameId}/attendees/${memberId}`
+      `teams/${teamId}/games/${gameId}/attendees/${memberId}`,
     );
     return setDoc(statusRef, { status });
   }
 
   deleteTeamGame(teamId: string, gameId: string) {
-    const gameRef = doc(
-      this.firestore,
-      `teams/${teamId}/games/${gameId}`
-    );
+    const gameRef = doc(this.firestore, `teams/${teamId}/games/${gameId}`);
 
     const attendeesRefList = collection(
       this.firestore,
-      `teams/${teamId}/games/${gameId}/attendees`
+      `teams/${teamId}/games/${gameId}/attendees`,
     );
 
     return deleteDoc(gameRef);

@@ -108,6 +108,7 @@ export class FirebaseService {
           (club): club is Club => club !== null && club !== undefined,
         ),
       ),
+      shareReplay(1),
       catchError((err) => {
         console.error("Error in getClubList:", err);
         return of([]);
@@ -138,6 +139,7 @@ export class FirebaseService {
           (club): club is Club => club !== null && club !== undefined,
         ),
       ),
+      shareReplay(1),
       catchError((err) => {
         console.error("Error in getClubList:", err);
         return of([]);
@@ -168,6 +170,7 @@ export class FirebaseService {
           (club): club is Club => club && club.id === clubId,
         ),
       ),
+      shareReplay(1),
       catchError((err) => {
         console.error("Error in getClubAdminListByClubId:", err);
         return of([]);
@@ -208,6 +211,7 @@ export class FirebaseService {
           .filter((team): team is Team => team !== null && team !== undefined)
           .sort((a, b) => a.name.localeCompare(b.name)),
       ),
+      shareReplay(1),
       catchError((err) => {
         console.error("Error in getTeamList:", err);
         return of([]);
@@ -248,6 +252,7 @@ export class FirebaseService {
           .filter((team): team is Team => team !== null && team !== undefined)
           .sort((a, b) => a.name.localeCompare(b.name)),
       ),
+      shareReplay(1),
       catchError((err) => {
         console.error("Error in getTeamAdminList:", err);
         return of([]);
@@ -291,6 +296,7 @@ export class FirebaseService {
           )
           .sort((a, b) => a.name.localeCompare(b.name)),
       ),
+      shareReplay(1),
       catchError((err) => {
         console.error("Error in getTeamAdminListByClubId:", err);
         return of([]);
@@ -340,7 +346,7 @@ export class FirebaseService {
         }
         return filteredTeams.sort((a, b) => a.name.localeCompare(b.name));
       }),
-
+      shareReplay(1),
       catchError((err) => {
         console.error("Fehler beim Laden der Club-Teams:", err);
         return of([]);
@@ -355,7 +361,7 @@ export class FirebaseService {
     );
     return collectionData(clubMemberRefList, {
       idField: "id",
-    }) as Observable<Profile[]>;
+    }).pipe(shareReplay(1)) as Observable<Profile[]>;
   }
 
   getClubParentsRefs(clubId: string): Observable<Profile[]> {
@@ -365,7 +371,7 @@ export class FirebaseService {
     );
     return collectionData(clubParentRefList, {
       idField: "id",
-    }) as Observable<Profile[]>;
+    }).pipe(shareReplay(1)) as Observable<Profile[]>;
   }
 
   getClubMemberRef(clubId: string, userId: string): Observable<Profile> {
@@ -375,7 +381,7 @@ export class FirebaseService {
     );
     return docData(clubMemberRef, {
       idField: "id",
-    }) as unknown as Observable<Profile>;
+    }).pipe(shareReplay(1)) as unknown as Observable<Profile>;
   }
 
   getClubAdminRefs(clubId: string): Observable<Profile[]> {
@@ -385,7 +391,7 @@ export class FirebaseService {
     );
     return collectionData(clubMemberRefList, {
       idField: "id",
-    }) as Observable<Profile[]>;
+    }).pipe(shareReplay(1)) as Observable<Profile[]>;
   }
 
   getClubRequestRefs(clubId: string): Observable<Profile[]> {
@@ -410,7 +416,9 @@ export class FirebaseService {
 
   getTeamRef(teamId) {
     const teamRef = doc(this.firestore, `/teams/${teamId}`);
-    return docData(teamRef, { idField: "id" }) as Observable<Team>;
+    return docData(teamRef, { idField: "id" }).pipe(
+      shareReplay(10),
+    ) as Observable<Team>;
   }
 
   getUserTeamRefs(user: User): Observable<Team[]> {
@@ -420,7 +428,7 @@ export class FirebaseService {
     );
     return collectionData(teamRefList, {
       idField: "id",
-    }) as Observable<Team[]>;
+    }).pipe(shareReplay(1)) as Observable<Team[]>;
   }
 
   getUserTeamAdminRefs(user: User): Observable<Team[]> {
@@ -430,7 +438,7 @@ export class FirebaseService {
     );
     return collectionData(teamRefList, {
       idField: "id",
-    }) as Observable<Team[]>;
+    }).pipe(shareReplay(1)) as Observable<Team[]>;
   }
 
   getUserClubAdminRefs(user: User): Observable<Club[]> {
@@ -440,7 +448,7 @@ export class FirebaseService {
     );
     return collectionData(clubRefList, {
       idField: "id",
-    }) as Observable<Club[]>;
+    }).pipe(shareReplay(1)) as Observable<Club[]>;
   }
 
   getUserClubRequestRefs(user: User): Observable<any> {
@@ -483,7 +491,7 @@ export class FirebaseService {
     const teamRefList = collection(this.firestore, `club/${clubId}/teams`);
     return collectionData(teamRefList, {
       idField: "id",
-    }) as Observable<Team[]>;
+    }).pipe(shareReplay(1)) as Observable<Team[]>;
   }
 
   getTeamMemberRefs(teamId: string): Observable<Profile[]> {
@@ -493,7 +501,7 @@ export class FirebaseService {
     );
     return collectionData(teamMemberRefList, {
       idField: "id",
-    }) as Observable<Profile[]>;
+    }).pipe(shareReplay(1)) as Observable<Profile[]>;
   }
 
   getTeamAdminRefs(teamId: string): Observable<Profile[]> {
@@ -503,7 +511,7 @@ export class FirebaseService {
     );
     return collectionData(teamMemberRefList, {
       idField: "id",
-    }) as Observable<Profile[]>;
+    }).pipe(shareReplay(1)) as Observable<Profile[]>;
   }
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
@@ -516,7 +524,9 @@ export class FirebaseService {
 
   getClubRef(clubId: string) {
     const clubRef = doc(this.firestore, `club/${clubId}`);
-    return docData(clubRef, { idField: "id" }) as unknown as Observable<Club>;
+    return docData(clubRef, { idField: "id" }).pipe(
+      shareReplay(1),
+    ) as unknown as Observable<Club>;
   }
 
   getUserClubRefs(user: User): Observable<Club[]> {
@@ -526,14 +536,14 @@ export class FirebaseService {
     );
     return collectionData(clubRefList, {
       idField: "id",
-    }) as Observable<Club[]>;
+    }).pipe(shareReplay(1)) as Observable<Club[]>;
   }
 
   getClubTeamsRef(clubId: string): Observable<Team[]> {
     const clubTeamRefList = collection(this.firestore, `club/${clubId}/teams`);
     return collectionData(clubTeamRefList, {
       idField: "id",
-    }) as Observable<Team[]>;
+    }).pipe(shareReplay(1)) as Observable<Team[]>;
   }
 
   addClubTeam(team, clubId) {

@@ -18,7 +18,7 @@ import {
 import { Observable, lastValueFrom } from "rxjs";
 import { HelferEvent, Veranstaltung } from "src/app/models/event";
 import { AuthService } from "../auth.service";
-import { take } from "rxjs/operators";
+import { shareReplay, take } from "rxjs/operators";
 import { FirebaseService } from "../firebase.service";
 
 @Injectable({
@@ -44,7 +44,9 @@ export class EventService {
   getClubEventRef(clubId: string, eventId: string): Observable<Veranstaltung> {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const eventRef = doc(this.firestore, `club/${clubId}/events/${eventId}`);
-    return docData(eventRef, { idField: "id" }) as Observable<Veranstaltung>;
+    return docData(eventRef, { idField: "id" }).pipe(
+      shareReplay(10),
+    ) as Observable<Veranstaltung>;
   }
 
   getClubEventsRef(clubId: string): Observable<Veranstaltung[]> {
@@ -59,7 +61,7 @@ export class EventService {
     ); // StartDatum der Veranstaltung - 12h
     return collectionData(q, {
       idField: "id",
-    }) as unknown as Observable<Veranstaltung[]>;
+    }).pipe(shareReplay(1)) as unknown as Observable<Veranstaltung[]>;
   }
   getClubEventsPastRef(clubId: string): Observable<Veranstaltung[]> {
     const eventsRefList = collection(this.firestore, `club/${clubId}/events`);
@@ -75,7 +77,7 @@ export class EventService {
 
     return collectionData(q, {
       idField: "id",
-    }) as unknown as Observable<Veranstaltung[]>;
+    }).pipe(shareReplay(1)) as unknown as Observable<Veranstaltung[]>;
   }
 
   getClubEventAttendeesRef(clubId: string, eventId: string): Observable<any[]> {
@@ -85,7 +87,7 @@ export class EventService {
     );
     return collectionData(attendeesRefList, {
       idField: "id",
-    }) as unknown as Observable<any[]>;
+    }).pipe(shareReplay(1)) as unknown as Observable<any[]>;
   }
   async setClubEventAttendeeStatus(
     status: boolean,
@@ -141,7 +143,9 @@ export class EventService {
       this.firestore,
       `club/${clubId}/helferEvents/${eventId}`,
     );
-    return docData(eventRef, { idField: "id" }) as Observable<HelferEvent>;
+    return docData(eventRef, { idField: "id" }).pipe(
+      shareReplay(10),
+    ) as Observable<HelferEvent>;
   }
 
   getClubHelferEventRefsByDate(
@@ -163,7 +167,7 @@ export class EventService {
     ); // StartDatum der Veranstaltung - 12h
     return collectionData(q, {
       idField: "id",
-    }) as unknown as Observable<HelferEvent[]>;
+    }).pipe(shareReplay(1)) as unknown as Observable<HelferEvent[]>;
   }
 
   getClubHelferEventRefs(clubId: string): Observable<HelferEvent[]> {
@@ -181,7 +185,7 @@ export class EventService {
     ); // StartDatum der Veranstaltung - 12h
     return collectionData(q, {
       idField: "id",
-    }) as unknown as Observable<HelferEvent[]>;
+    }).pipe(shareReplay(1)) as unknown as Observable<HelferEvent[]>;
   }
   getClubHelferEventPastRefs(clubId: string): Observable<HelferEvent[]> {
     const eventsRefList = collection(
@@ -200,7 +204,7 @@ export class EventService {
 
     return collectionData(q, {
       idField: "id",
-    }) as Observable<HelferEvent[]>;
+    }).pipe(shareReplay(1)) as Observable<HelferEvent[]>;
   }
 
   getClubHelferEventAttendeesRef(
@@ -213,7 +217,7 @@ export class EventService {
     );
     return collectionData(attendeesRefList, {
       idField: "id",
-    }) as Observable<any[]>;
+    }).pipe(shareReplay(1)) as Observable<any[]>;
   }
 
   getClubHelferEventSchichtenRef(
@@ -226,7 +230,7 @@ export class EventService {
     );
     return collectionData(schichtenRefList, {
       idField: "id",
-    }) as Observable<any[]>;
+    }).pipe(shareReplay(10)) as Observable<any[]>;
   }
 
   addNewHelferEventSchicht(clubId: string, eventId: string, schicht: any) {
@@ -276,7 +280,7 @@ export class EventService {
     // console.log(schichtAttendeesListRef.id, schichtAttendeesListRef.path);
     return collectionData(schichtAttendeesListRef, {
       idField: "id",
-    }) as Observable<any[]>;
+    }).pipe(shareReplay(1)) as Observable<any[]>;
   }
 
   setClubHelferEventSchichtAttendeeStatus(

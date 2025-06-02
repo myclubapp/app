@@ -46,16 +46,7 @@ export class UserProfileService {
     private readonly storage: Storage,
     private readonly authService: AuthService,
   ) {
-    // Aktiviere Offline Persistence
-    enableIndexedDbPersistence(this.firestore).catch((err) => {
-      if (err.code === "failed-precondition") {
-        console.warn(
-          "Offline Persistence konnte nicht aktiviert werden. Möglicherweise läuft bereits eine andere Instanz.",
-        );
-      } else if (err.code === "unimplemented") {
-        console.warn("Der Browser unterstützt keine Offline Persistence.");
-      }
-    });
+    // Aktiviere Offline Persistenz
   }
 
   addKidRequest(userId: string, email: string) {
@@ -127,26 +118,20 @@ export class UserProfileService {
 
   getUserProfile(user: User): Observable<Profile> {
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return docData(userProfileRef, { idField: "id" }) as Observable<Profile>;
+    return docData(userProfileRef, { idField: "id" }).pipe(
+      shareReplay(40),
+    ) as Observable<Profile>;
   }
 
   getUserProfileById(userId: string): Observable<Profile> {
-    const cachedProfile = this.profileCache.get(userId);
-    if (cachedProfile) {
-      return cachedProfile;
-    }
-
     const userProfileRef: DocumentReference = doc(
       this.firestore,
       `userProfile/${userId}`,
     );
 
-    const profile$ = docData(userProfileRef, { idField: "id" }).pipe(
-      shareReplay({ bufferSize: 1, refCount: true }),
+    return docData(userProfileRef, { idField: "id" }).pipe(
+      shareReplay({ bufferSize: 50, refCount: true }),
     ) as Observable<Profile>;
-
-    this.profileCache.set(userId, profile$);
-    return profile$;
   }
 
   async setUserProfilePicture(photo: Photo) {

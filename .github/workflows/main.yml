@@ -28,7 +28,7 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 # -------------------------------------------------------------          
-# Default App Unihockey Verband
+# Default App swiss unihockey
 # -------------------------------------------------------------          
   build_unihockey:
     needs: build_myclub
@@ -52,7 +52,7 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}  
 # -------------------------------------------------------------          
-# Default App Volleyball Verband          
+# Default App Swiss Volley   
 # -------------------------------------------------------------          
   build_volleyball:
     needs: build_myclub
@@ -76,7 +76,7 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}  
 # -------------------------------------------------------------          
-# Default App Handball Verband
+# Default App Handball Schweiz
 # -------------------------------------------------------------          
   build_handball:
     needs: build_myclub
@@ -100,7 +100,7 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}  
 # -------------------------------------------------------------          
-# Default App Turnverein Verband
+# Default App Schweizerischer Turnverband
 # -------------------------------------------------------------          
   build_turnverein:
     needs: build_myclub

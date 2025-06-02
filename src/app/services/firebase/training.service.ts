@@ -15,7 +15,7 @@ import {
 } from "@angular/fire/firestore";
 
 // import firebase from 'firebase/compat/app';
-import { Observable, Subscription } from "rxjs";
+import { Observable, shareReplay, Subscription } from "rxjs";
 
 import { AuthService } from "src/app/services/auth.service";
 import { Training } from "src/app/models/training";
@@ -51,7 +51,9 @@ export class TrainingService {
       this.firestore,
       `teams/${teamId}/trainings/${trainingId}`,
     );
-    return docData(gameRef, { idField: "id" }) as Observable<Training>;
+    return docData(gameRef, { idField: "id" }).pipe(
+      shareReplay(10),
+    ) as Observable<Training>;
   }
 
   /* TEAM TrainingS */
@@ -70,9 +72,9 @@ export class TrainingService {
       ),
       orderBy("date", "asc"),
     );
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
-      Training[]
-    >;
+    return collectionData(q, { idField: "id" }).pipe(
+      shareReplay(1),
+    ) as unknown as Observable<Training[]>;
   }
 
   // PAST 20 Entries
@@ -92,9 +94,9 @@ export class TrainingService {
       orderBy("date", "desc"),
       limit(20),
     );
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
-      Training[]
-    >;
+    return collectionData(q, { idField: "id" }).pipe(
+      shareReplay(1),
+    ) as unknown as Observable<Training[]>;
   }
 
   /* CLUB TrainingS
@@ -120,7 +122,7 @@ export class TrainingService {
     );
     return collectionData(attendeesRefList, {
       idField: "id",
-    }) as unknown as Observable<any[]>;
+    }).pipe(shareReplay(1)) as unknown as Observable<any[]>;
   }
 
   /* TEAM TrainingS ATTENDEE Status */
