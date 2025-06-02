@@ -21,7 +21,7 @@
   "logout": {
     "logout__success": "Déconnexion réussie !",
     "back_to__login": "retour à la connexion",
-    "backgroud_image__alt": "Image de fond"
+    "logout_background__alt": "Image de fond pour la page de déconnexion"
   },
   "reset-password": {
     "try__login_again": "Essayez de vous connecter à nouveau ?",
@@ -275,7 +275,7 @@
     "version": "Version"
   },
   "common": {
-    "or": "Ou",
+    "or": "ou",
     "email__address": "Adresse e-mail",
     "password": "Mot de passe",
     "general__error_occurred": "Une erreur générale s'est produite",
@@ -284,7 +284,7 @@
     "error__invalid_form": "Le formulaire est encore incorrect",
     "please__wait": "Veuillez patienter",
     "first__name": "Prénom",
-    "last__name": "Nom de famille",
+    "last__name": "Nom",
     "mountain_background__alt": "Image de fond montagnes",
     "mistake": "Erreur",
     "status": "Statut",
@@ -357,7 +357,9 @@
     "load": "Charger",
     "confirm": "Confirmer",
     "ok": "OK",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "reset_password_background__alt": "Image de fond pour la page de réinitialisation du mot de passe",
+    "signup_background__alt": "Image de fond pour la page d'inscription"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Voulez-vous vraiment supprimer le parent ?"

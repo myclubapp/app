@@ -26,6 +26,8 @@
         <ion-select
           [label]="'training-create.team' | translate"
           label-placement="stacked"
+          [cancelText]="'common.cancel' | translate"
+          [okText]="'common.ok' | translate"
           [(ngModel)]="training.teamId"
           value="{{training.teamId}}"
         >
@@ -115,6 +117,8 @@
         label-placement="stacked"
         value="{{training.repeatFrequency}}"
         [(ngModel)]="training.repeatFrequency"
+        [cancelText]="'common.cancel' | translate"
+        [okText]="'common.ok' | translate"
       >
         <ion-select-option value="D"
           >{{"training-create.daily" | translate}}</ion-select-option
@@ -128,6 +132,8 @@
         label-placement="stacked"
         value="{{training.repeatAmount}}"
         [(ngModel)]="training.repeatAmount"
+        [cancelText]="'common.cancel' | translate"
+        [okText]="'common.ok' | translate"
       >
         <ion-select-option value="1">1</ion-select-option>
         <ion-select-option value="2">2</ion-select-option>

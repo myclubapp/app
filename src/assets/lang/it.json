@@ -21,7 +21,7 @@
   "logout": {
     "logout__success": "Logout eseguito con successo!",
     "back_to__login": "torna al login",
-    "backgroud_image__alt": "Immagine di sfondo"
+    "logout_background__alt": "Immagine di sfondo per la pagina di logout"
   },
   "reset-password": {
     "try__login_again": "Prova a loggarti di nuovo?",
@@ -274,7 +274,7 @@
     "version": "Versione"
   },
   "common": {
-    "or": "O",
+    "or": "o",
     "email__address": "Indirizzo email",
     "password": "Password",
     "general__error_occurred": "Si è verificato un errore generale",
@@ -355,7 +355,9 @@
     "load": "Carica",
     "confirm": "Conferma",
     "ok": "OK",
-    "save": "Salva"
+    "save": "Salva",
+    "reset_password_background__alt": "Immagine di sfondo per la pagina di reset password",
+    "signup_background__alt": "Immagine di sfondo per la pagina di registrazione"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Vuoi davvero eliminare il genitore?"

@@ -350,11 +350,21 @@ export class AppComponent implements OnInit, AfterViewInit {
         if (prefersDark) {
           // Dark Mode
           await StatusBar.setStyle({ style: Style.Dark });
-          await StatusBar.setBackgroundColor({ color: "#795deb" });
+          // Force dark mode media query
+          document.documentElement.style.colorScheme = "dark";
+          const darkColor = getComputedStyle(document.documentElement)
+            .getPropertyValue("--ion-color-primary")
+            .trim();
+          await StatusBar.setBackgroundColor({ color: darkColor });
         } else {
           // Light Mode
           await StatusBar.setStyle({ style: Style.Light });
-          await StatusBar.setBackgroundColor({ color: "#339bde" });
+          // Force light mode media query
+          document.documentElement.style.colorScheme = "light";
+          const lightColor = getComputedStyle(document.documentElement)
+            .getPropertyValue("--ion-color-primary")
+            .trim();
+          await StatusBar.setBackgroundColor({ color: lightColor });
         }
 
         // Listen for system theme changes
@@ -365,10 +375,20 @@ export class AppComponent implements OnInit, AfterViewInit {
             console.log("System theme changed to:", newColorScheme);
             if (newColorScheme == "dark") {
               await StatusBar.setStyle({ style: Style.Dark });
-              await StatusBar.setBackgroundColor({ color: "#795deb" });
+              // Force dark mode media query
+              document.documentElement.style.colorScheme = "dark";
+              const darkColor = getComputedStyle(document.documentElement)
+                .getPropertyValue("--ion-color-primary")
+                .trim();
+              await StatusBar.setBackgroundColor({ color: darkColor });
             } else {
               await StatusBar.setStyle({ style: Style.Light });
-              await StatusBar.setBackgroundColor({ color: "#339bde" });
+              // Force light mode media query
+              document.documentElement.style.colorScheme = "light";
+              const lightColor = getComputedStyle(document.documentElement)
+                .getPropertyValue("--ion-color-primary")
+                .trim();
+              await StatusBar.setBackgroundColor({ color: lightColor });
             }
           });
       } else {

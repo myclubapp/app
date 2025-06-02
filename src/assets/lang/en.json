@@ -20,7 +20,7 @@
   "logout": {
     "logout__success": "Logout was successful!",
     "back_to__login": "Back to login",
-    "backgroud_image__alt": "Background image"
+    "logout_background__alt": "Background image for logout page"
   },
   "reset-password": {
     "try__login_again": "Try logging in again?",
@@ -416,7 +416,9 @@
     "load": "Load",
     "confirm": "Confirm",
     "ok": "OK",
-    "save": "Save"
+    "save": "Save",
+    "reset_password_background__alt": "Background image for password reset page",
+    "signup_background__alt": "Background image for signup page"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Do you really want to delete the parent?"

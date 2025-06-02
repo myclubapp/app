@@ -20,7 +20,7 @@
   "logout": {
     "logout__success": "Logout war erfolgreich!",
     "back_to__login": "zurück zum Login",
-    "backgroud_image__alt": "Hintergrundbild"
+    "logout_background__alt": "Hintergrundbild für die Logout-Seite"
   },
   "reset-password": {
     "try__login_again": "Login nochmals probieren?",
@@ -343,7 +343,7 @@
     "link__poll": "Umfrage",
     "link__placeholder": "https://",
     "confirm": "bestätigen",
-    "or": "Oder",
+    "or": "oder",
     "email__address": "E-Mail Adresse",
     "password": "Passwort",
     "general__error_occurred": "Es ist ein allgemeiner Fehler aufgetreten",
@@ -443,7 +443,9 @@
     "load": "Laden",
     "confirm": "Bestätigen",
     "ok": "OK",
-    "save": "Speichern"
+    "save": "Speichern",
+    "reset_password_background__alt": "Hintergrundbild für die Passwort-Reset-Seite",
+    "signup_background__alt": "Hintergrundbild für die Registrierungsseite"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Möchtest du den Elternteil wirklich löschen?"
