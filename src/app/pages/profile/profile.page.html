@@ -110,6 +110,55 @@
           >
         </ion-select>
       </ion-item>
+
+      <!-- Geschlecht -->
+      <ion-item>
+        <ion-select
+          [label]="'profile.gender' | translate"
+          [(ngModel)]="userProfile.gender"
+          (ionChange)="profileChange($event, 'gender')"
+          [placeholder]="'profile.please_select' | translate"
+        >
+          <ion-select-option value="m"
+            >{{'profile.gender.male' | translate}}</ion-select-option
+          >
+          <ion-select-option value="w"
+            >{{'profile.gender.female' | translate}}</ion-select-option
+          >
+          <ion-select-option value="d"
+            >{{'profile.gender.diverse' | translate}}</ion-select-option
+          >
+        </ion-select>
+      </ion-item>
+
+      <!-- Nationalität -->
+      <ion-item>
+        <ion-select
+          [label]="'profile.nationality' | translate"
+          [(ngModel)]="userProfile.nationality"
+          (ionChange)="profileChange($event, 'nationality')"
+          [placeholder]="'profile.please_select' | translate"
+        >
+          <ion-select-option value="CH">Schweiz</ion-select-option>
+          <ion-select-option value="DE">Deutschland</ion-select-option>
+          <ion-select-option value="IT">Italien</ion-select-option>
+          <ion-select-option value="FR">Frankreich</ion-select-option>
+          <ion-select-option value="AT">Österreich</ion-select-option>
+          <ion-select-option value="LI">Liechtenstein</ion-select-option>
+          <ion-select-option value="Andere">Andere</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- AHV Nummer -->
+      <ion-item>
+        <ion-input
+          [label]="'profile.ahv_number' | translate"
+          [(ngModel)]="userProfile.ahvNumber"
+          (ionChange)="profileChange($event, 'ahvNumber')"
+          placeholder="756.XXXX.XXXX.XX"
+        >
+        </ion-input>
+      </ion-item>
     </ion-list>
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
@@ -166,12 +215,30 @@
       <ion-item id="present-alert-address" detail="true">
         <ion-input
           labelPlacement="stacked"
-          [label]='"profile.address" | translate'
+          [label]="'profile.address' | translate"
           attr.aria-label='{{"profile.address" | translate}}'
-          value="{{userProfile.streetAndNumber}} {{userProfile.postalcode}} {{userProfile.city}}"
+          value="{{userProfile.street}} {{userProfile.houseNumber}} {{userProfile.postalcode}} {{userProfile.city}}"
         >
         </ion-input>
       </ion-item>
+      <!-- Land -->
+      <ion-item>
+        <ion-select
+          [label]="'profile.country' | translate"
+          [(ngModel)]="userProfile.country"
+          (ionChange)="profileChange($event, 'country')"
+          [placeholder]="'profile.please_select' | translate"
+        >
+          <ion-select-option value="CH">Schweiz</ion-select-option>
+          <ion-select-option value="DE">Deutschland</ion-select-option>
+          <ion-select-option value="IT">Italien</ion-select-option>
+          <ion-select-option value="FR">Frankreich</ion-select-option>
+          <ion-select-option value="AT">Österreich</ion-select-option>
+          <ion-select-option value="LI">Liechtenstein</ion-select-option>
+          <ion-select-option value="Andere">Andere</ion-select-option>
+        </ion-select>
+      </ion-item>
+
       <ion-alert
         trigger="present-alert-address"
         [header]='"profile.change_address_header" | translate'

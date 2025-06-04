@@ -5,35 +5,21 @@ import {
   NavParams,
   ToastController,
   IonRouterOutlet,
-  IonItemSliding,
+  LoadingController,
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
-import { User } from "firebase/auth";
-import { Router, NavigationBehaviorOptions } from "@angular/router";
 import {
   Observable,
-  Subscription,
   catchError,
   combineLatest,
-  concat,
-  concatAll,
-  concatMap,
-  defaultIfEmpty,
-  finalize,
   forkJoin,
-  from,
   lastValueFrom,
   map,
-  merge,
-  mergeMap,
   of,
-  shareReplay,
   startWith,
   switchMap,
   take,
   tap,
-  timeout,
-  toArray,
 } from "rxjs";
 import { Browser } from "@capacitor/browser";
 import { Team } from "src/app/models/team";
@@ -51,6 +37,9 @@ import { ChampionshipPage } from "../../championship/championship/championship.p
 import { TrainingsPage } from "../../training/trainings/trainings.page";
 import { UiService } from "src/app/services/ui.service";
 import { Optional } from "@angular/core";
+import { TrainingService } from "src/app/services/firebase/training.service";
+import { ChampionshipService } from "src/app/services/firebase/championship.service";
+import { JugendundsportService } from "src/app/services/jugendundsport.service";
 
 @Component({
   selector: "app-team",
@@ -62,6 +51,7 @@ export class TeamPage implements OnInit {
   @Input("data") team: Team;
 
   team$: Observable<any>;
+  isLoading = false;
 
   allowEdit: boolean = false;
 
@@ -78,19 +68,19 @@ export class TeamPage implements OnInit {
     // private readonly router: Router,
     public navParams: NavParams,
     private readonly alertCtrl: AlertController,
-    private readonly toastController: ToastController,
     private readonly userProfileService: UserProfileService,
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
-    private cdr: ChangeDetectorRef,
     private translate: TranslateService,
     private readonly uiService: UiService,
+    private readonly jugendundsportService: JugendundsportService,
+    private readonly loadingCtrl: LoadingController,
     @Optional() private readonly routerOutlet: IonRouterOutlet,
   ) {}
 
   ngOnInit() {
     this.team = this.navParams.get("data");
-    this.team$ = of(this.team);
+    // this.team$ = of(this.team);
 
     this.team$ = this.getTeam(this.team.id);
     // TODO GET CLUB BASED ON TEAM
@@ -123,7 +113,31 @@ export class TeamPage implements OnInit {
   }
 
   async deleteTeam() {
-    await this.showDeleteTeamConfirmationAlert();
+    const confirmed = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(this.translate.get("team.delete.header")),
+      message: await lastValueFrom(this.translate.get("team.delete.message")),
+      confirmText: await lastValueFrom(
+        this.translate.get("team.delete.confirm"),
+      ),
+      cancelText: await lastValueFrom(this.translate.get("team.delete.cancel")),
+    });
+
+    if (confirmed) {
+      try {
+        // Lösche das Team selbst
+        await this.fbService.deleteTeam(this.team.id);
+
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(this.translate.get("team.delete.success")),
+        );
+        await this.modalCtrl.dismiss(null, "deleted");
+      } catch (error) {
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("team.delete.error")),
+        );
+        console.error("Fehler beim Löschen des Teams:", error);
+      }
+    }
   }
 
   async openTeamTrainingExercise() {
@@ -141,7 +155,7 @@ export class TeamPage implements OnInit {
     });
     modal.present();
 
-    const { data, role } = await modal.onWillDismiss();
+    const { role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
     }
@@ -267,7 +281,7 @@ export class TeamPage implements OnInit {
     });
     modal.present();
 
-    const { data, role } = await modal.onWillDismiss();
+    const { role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
     }
@@ -289,7 +303,7 @@ export class TeamPage implements OnInit {
     });
     modal.present();
 
-    const { data, role } = await modal.onWillDismiss();
+    const { role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
     }
@@ -312,7 +326,7 @@ export class TeamPage implements OnInit {
     });
     modal.present();
 
-    const { data, role } = await modal.onWillDismiss();
+    const { role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
     }
@@ -335,7 +349,7 @@ export class TeamPage implements OnInit {
     });
     modal.present();
 
-    const { data, role } = await modal.onWillDismiss();
+    const { role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
     }
@@ -369,7 +383,7 @@ export class TeamPage implements OnInit {
     });
     modal.present();
 
-    const { data, role } = await modal.onWillDismiss();
+    const { role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
     }
@@ -531,6 +545,110 @@ export class TeamPage implements OnInit {
     }
   }
 
+  async changeJahresbeitrag(team: Team) {
+    const alert = await this.alertCtrl.create({
+      header: "Jahresbeitrag ändern",
+      inputs: [
+        {
+          name: "wert",
+          type: "number",
+          placeholder: "Wert",
+          value: team.jahresbeitragWert,
+        },
+        {
+          name: "waehrung",
+          type: "text",
+          placeholder: "Währung (z.B. CHF)",
+          value: team.jahresbeitragWaehrung,
+        },
+      ],
+      buttons: [
+        {
+          text: "Abbrechen",
+          role: "cancel",
+        },
+        {
+          text: "Speichern",
+          handler: async (data) => {
+            try {
+              await this.fbService.setTeamThreshold(
+                this.team.id,
+                "jahresbeitragWert",
+                Number(data.wert),
+              );
+              await this.fbService.setTeamThreshold(
+                this.team.id,
+                "jahresbeitragWaehrung",
+                data.waehrung,
+              );
+              await this.presentToast();
+            } catch (error) {
+              await this.presentErrorToast(error);
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  async exportTrainingData() {
+    const loading = await this.loadingCtrl.create({
+      message: "Export wird vorbereitet...",
+      spinner: "circular",
+    });
+    await loading.present();
+
+    try {
+      await this.jugendundsportService.exportTrainingData(this.team);
+    } finally {
+      await loading.dismiss();
+    }
+  }
+
+  async exportChampionshipData() {
+    const loading = await this.loadingCtrl.create({
+      message: "Export wird vorbereitet...",
+      spinner: "circular",
+    });
+    await loading.present();
+
+    try {
+      await this.jugendundsportService.exportChampionshipData(this.team);
+    } finally {
+      await loading.dismiss();
+    }
+  }
+
+  async exportAttendanceData() {
+    const loading = await this.loadingCtrl.create({
+      message: "Export wird vorbereitet...",
+      spinner: "circular",
+    });
+    await loading.present();
+
+    try {
+      await this.jugendundsportService.exportAttendanceData(this.team);
+    } finally {
+      await loading.dismiss();
+    }
+  }
+
+  async exportPersonData() {
+    const loading = await this.loadingCtrl.create({
+      message: "Export wird vorbereitet...",
+      spinner: "circular",
+    });
+    await loading.present();
+
+    try {
+      await this.jugendundsportService.exportPersonData(this.team);
+    } finally {
+      await loading.dismiss();
+    }
+  }
+
   async close() {
     return await this.modalCtrl.dismiss(null, "close");
   }
@@ -547,29 +665,5 @@ export class TeamPage implements OnInit {
 
   async presentErrorToast(error) {
     await this.uiService.showErrorToast(error.message);
-  }
-
-  private async showDeleteTeamConfirmationAlert() {
-    await this.uiService.showConfirmDialog({
-      header: "Team löschen",
-      message: "Möchten Sie dieses Team wirklich löschen?",
-      confirmText: "Ja",
-      cancelText: "Nein",
-    });
-  }
-
-  private async showDeleteTeamSuccessAlert() {
-    await this.uiService.showInfoDialog({
-      header: "Erfolg",
-      message: "Das Team wurde erfolgreich gelöscht.",
-    });
-  }
-
-  private async showDeleteTeamErrorAlert() {
-    await this.uiService.showInfoDialog({
-      header: "Fehler",
-      message:
-        "Beim Löschen des Teams ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
-    });
   }
 }

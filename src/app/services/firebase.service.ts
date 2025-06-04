@@ -10,6 +10,8 @@ import {
   setDoc,
   Timestamp,
   updateDoc,
+  limit,
+  orderBy,
 } from "@angular/fire/firestore";
 
 import {
@@ -23,6 +25,8 @@ import {
   take,
   tap,
   shareReplay,
+  last,
+  takeLast,
 } from "rxjs";
 import { Club } from "../models/club";
 import { Team } from "../models/team";
@@ -31,6 +35,7 @@ import { User } from "@angular/fire/auth";
 import { AuthService } from "src/app/services/auth.service";
 import { query, where } from "@angular/fire/firestore";
 import { Profile } from "../models/user";
+import { collectionGroup } from "firebase/firestore";
 
 @Injectable({
   providedIn: "root",
@@ -108,7 +113,7 @@ export class FirebaseService {
           (club): club is Club => club !== null && club !== undefined,
         ),
       ),
-      shareReplay(1),
+      // shareReplay(),
       catchError((err) => {
         console.error("Error in getClubList:", err);
         return of([]);
@@ -849,16 +854,85 @@ export class FirebaseService {
   }
 
   searchClubListRef(searchString: string): Observable<Club[]> {
-    const clubRefList = collection(this.firestore, `club/`);
-    return collectionData(clubRefList, { idField: "id" }) as Observable<Club[]>;
+    console.log("DEBUG: Suche nach:", searchString);
+    const clubRefList = collection(this.firestore, "club");
+
+    return collectionData(clubRefList, { idField: "id" }).pipe(
+      tap((clubs) => {
+        // console.log("DEBUG: Alle Clubs aus Firebase:", clubs);
+        console.log("DEBUG: Anzahl gefundener Clubs:", clubs.length);
+        console.log("DEBUG: Clubs:", clubs);
+      }),
+      shareReplay(1),
+      map((clubs) => {
+        const filteredClubs = clubs.filter(
+          (club) =>
+            club["name"] &&
+            club["name"].toLowerCase().includes(searchString.toLowerCase()),
+        );
+        console.log("DEBUG: Gefilterte Clubs:", filteredClubs);
+        return filteredClubs;
+      }),
+      // take(1),
+      //takeLast(1),
+      catchError((error) => {
+        console.error("Fehler beim Laden der Clubs:", error);
+        return of([]);
+      }),
+    ) as Observable<Club[]>;
+  }
+
+  getClubsByContactEmail(): Observable<Club[]> {
+    return this.authService.getUser$().pipe(
+      take(1),
+      switchMap((user) => {
+        if (!user) return of([]);
+        const q = query(
+          collectionGroup(this.firestore, "contacts"),
+          where("email", "==", user.email),
+        );
+        return collectionData(q, { idField: "id" }).pipe(
+          tap((contacts) => {
+            console.log("DEBUG: Gefundene Kontakte:", contacts);
+          }),
+          mergeMap((contacts) => {
+            if (contacts.length === 0) return of([]);
+            return combineLatest(
+              contacts.map((contact) => {
+                const clubId = contact["clubId"];
+                if (!clubId) {
+                  console.warn("Kontakt ohne clubId gefunden:", contact);
+                  return of(null);
+                }
+                return this.getClubRef(clubId).pipe(
+                  catchError((error) => {
+                    console.error(
+                      `Fehler beim Laden des Clubs ${clubId}:`,
+                      error,
+                    );
+                    return of(null);
+                  }),
+                );
+              }),
+            );
+          }),
+          map((clubs) => clubs.filter((club): club is Club => club !== null)),
+          tap((clubs) => {
+            console.log("DEBUG: Gefundene Clubs:", clubs);
+          }),
+          catchError((error) => {
+            console.error("Fehler beim Laden der Clubs:", error);
+            return of([]);
+          }),
+        );
+      }),
+    );
   }
 
   getActiveClubList(): Observable<Club[]> {
     const clubRefList = collection(this.firestore, `club/`);
     const q = query(clubRefList, where("active", "==", true));
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
-      Club[]
-    >;
+    return collectionData(q, { idField: "id" }) as Observable<Club[]>;
   }
 
   checkoutSubscription(clubId, price, product) {
@@ -898,5 +972,16 @@ export class FirebaseService {
     return docData(checkoutSessionRef, {
       idField: "id",
     }) as unknown as Observable<any>;
+  }
+
+  getTeamTrainings(teamId: string): Observable<any[]> {
+    const trainingsRef = collection(
+      this.firestore,
+      "teams",
+      teamId,
+      "trainings",
+    );
+    const q = query(trainingsRef, orderBy("date", "desc"));
+    return collectionData(q) as Observable<any[]>;
   }
 }

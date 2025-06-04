@@ -173,7 +173,8 @@
       "volleyball": "Volleyball",
       "handball": "Handball",
       "gymnastics": "Gymnastique"
-    }
+    },
+    "linked_clubs": "Clubs liés"
   },
   "onboarding-team": {
     "onboarding__team": "Équipe d'intégration"
@@ -213,8 +214,16 @@
     "kids.add_header": "Ajouter un enfant",
     "kids.add_message": "Veuillez saisir l'adresse e-mail de l'enfant que vous souhaitez ajouter.",
     "kids.email_placeholder": "Adresse e-mail de l'enfant",
-    "kids.max_reached_header": "Nombre maximal d'enfants atteint",
-    "kids.max_reached_message": "Vous pouvez ajouter jusqu'à 3 enfants",
+    "kids.max_reached_header": "Nombre maximum d'enfants atteint",
+    "kids.max_reached_message": "Vous pouvez ajouter un maximum de 3 enfants.",
+    "gender": "Genre",
+    "gender.male": "Masculin",
+    "gender.female": "Féminin",
+    "gender.diverse": "Divers (pas pour J+S)",
+    "nationality": "Nationalité",
+    "country": "Pays",
+    "ahv_number": "Numéro AVS",
+    "please_select": "Veuillez sélectionner",
     "children": "Enfants",
     "confirm_delete_request": "Voulez-vous vraiment supprimer cette demande ?",
     "no_children": "Aucun enfant ajouté",
@@ -224,7 +233,20 @@
     "success_child_deleted": "L'enfant a été supprimé avec succès du profil"
   },
   "tabs": {},
-  "team": {},
+  "team": {
+    "delete_button": "Supprimer l'équipe",
+    "delete": {
+      "header": "Supprimer l'équipe",
+      "message": "Voulez-vous vraiment supprimer cette équipe ?",
+      "confirm": "Oui",
+      "cancel": "Non",
+      "success": "L'équipe a été supprimée avec succès",
+      "error": "Une erreur s'est produite lors de la suppression de l'équipe. Veuillez réessayer plus tard."
+    },
+    "delete_team__confirm": "Voulez-vous vraiment supprimer cette équipe ?",
+    "training_exercises": "Entraînement & Exercices (bientôt disponible)",
+    "exercises": "Exercices"
+  },
   "team-list": {
     "my__teams": "Mes équipes"
   },
@@ -249,23 +271,8 @@
     "news__filer__desc": "Filtrer par club ou équipe.",
     "cancelled": "Entraînement annulé",
     "cancelled_reason": "Raison de l'annulation",
-    "cancelled_reason_placeholder": "Entrer la raison de l'annulation",
-    "send_reminder": "Envoyer un rappel",
-    "send_reminder_confirm": "Voulez-vous envoyer un rappel à {{count}} membres qui n'ont pas encore répondu ?",
-    "reminder_sent": "Le rappel a été envoyé avec succès",
-    "no_pending_responses": "Aucune réponse en attente",
-    "all_members_responded": "Tous les membres ont déjà répondu",
-    "actions": "Actions d'entraînement",
-    "cancel_training": "Annuler l'entraînement",
-    "copy": "Copier l'entraînement",
-    "delete": "Supprimer l'entraînement",
-    "cancel_reason_placeholder": "Entrez la raison de l'annulation",
-    "cancel_reason_required": "Veuillez entrer une raison pour l'annulation",
-    "training_cancelled": "L'entraînement a été annulé avec succès",
-    "delete_training": "Supprimer l'entraînement",
-    "delete_training_confirm": "Voulez-vous vraiment supprimer cet entraînement ?",
-    "deleted_reason": "L'entraînement a été supprimé",
-    "create_training_confirm": "Voulez-vous créer cet entraînement ?"
+    "exercises": "Exercices",
+    "no_exercises": "Aucun exercice disponible"
   },
   "side_bar": {
     "administration": "Administration",
@@ -359,7 +366,8 @@
     "ok": "OK",
     "save": "Enregistrer",
     "reset_password_background__alt": "Image de fond pour la page de réinitialisation du mot de passe",
-    "signup_background__alt": "Image de fond pour la page d'inscription"
+    "signup_background__alt": "Image de fond pour la page d'inscription",
+    "change_address_street": "Rue"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Voulez-vous vraiment supprimer le parent ?"

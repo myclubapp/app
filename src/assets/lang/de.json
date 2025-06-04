@@ -184,7 +184,8 @@
       "volleyball": "Volleyball",
       "handball": "Handball",
       "gymnastics": "Turnverein"
-    }
+    },
+    "linked_clubs": "Verknüpfte Clubs"
   },
   "onboarding-team": {
     "onboarding__team": "Onboarding-Team"
@@ -206,7 +207,7 @@
 
     "change_address_header": "Wohnadresse ändern",
     "change_address_message": "Ändere hier deine Wohnadresse.",
-    "change_address_streetandnumber": "Strasse und Hausnummer",
+    "change_address_street": "Strasse",
     "change_address_postalcode": "Postleitzahl",
     "change_address_city": "Ortschaft",
 
@@ -247,6 +248,14 @@
     "kids.email_placeholder": "E-Mail-Adresse des Kindes",
     "kids.max_reached_header": "Maximale Anzahl an Kindern erreicht",
     "kids.max_reached_message": "Du kannst maximal 3 Kinder hinzufügen.",
+    "gender": "Geschlecht",
+    "gender.male": "Männlich",
+    "gender.female": "Weiblich",
+    "gender.diverse": "Divers (nicht für J+S)",
+    "nationality": "Nationalität",
+    "country": "Land",
+    "ahv_number": "AHV Nummer",
+    "please_select": "Bitte wählen",
     "children": "Kinder",
     "confirm_delete_request": "Möchtest du diese Anfrage wirklich löschen?",
     "no_children": "Keine Kinder hinzugefügt",
@@ -258,8 +267,23 @@
   },
   "tabs": {},
   "team": {
-    "delete": "Team löschen",
-    "delete_team__confirm": "Möchtest du das Team wirklich löschen?"
+    "delete_button": "Team löschen",
+    "delete": {
+      "header": "Team löschen",
+      "message": "Möchten Sie dieses Team wirklich löschen?",
+      "confirm": "Ja",
+      "cancel": "Nein",
+      "success": "Das Team wurde erfolgreich gelöscht",
+      "error": "Beim Löschen des Teams ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+    },
+    "delete_team__confirm": "Möchtest du das Team wirklich löschen?",
+    "training_exercises": "Training & Übungen (bald verfügbar)",
+    "exercises": "Übungen",
+    "export": {
+      "no_trainings": "Keine Trainingsdaten zum Exportieren vorhanden",
+      "success": "Trainingsdaten wurden erfolgreich exportiert",
+      "error": "Beim Exportieren der Trainingsdaten ist ein Fehler aufgetreten"
+    }
   },
   "team-list": {
     "my__teams": "Meine Teams",
@@ -294,7 +318,8 @@
     "cancel_reason_required": "Bitte geben Sie einen Grund für die Absage an",
     "cancelled": "Training abgesagt",
     "cancelled_reason": "Grund für die Absage",
-    "cancelled_reason_placeholder": "Grund für die Absage eingeben",
+    "exercises": "Übungen",
+    "no_exercises": "Keine Übungen vorhanden",
     "send_reminder": "Erinnerung senden",
     "send_reminder_confirm": "Möchten Sie eine Erinnerung an {{count}} Mitglieder senden, die noch nicht geantwortet haben?",
     "reminder_sent": "Erinnerung wurde erfolgreich gesendet",
@@ -434,16 +459,6 @@
     "online": "Du bist online",
     "error__push_notification_not_available": "Push-Benachrichtigung nicht verfügbar",
     "error_device_not_support_push_notifications": "Leider unterstützt Ihr Gerät/Browser keine Push-Benachrichtigungen",
-    "success__copy": "Erfolgreich kopiert",
-    "action__canceled": "Aktion abgebrochen",
-    "success__saved": "Erfolgreich gespeichert",
-    "app_update_available": "App-Update verfügbar",
-    "app_update_message": "Eine neue Version ({{version}}) ist verfügbar. Möchten Sie jetzt aktualisieren?",
-    "cancel": "Abbrechen",
-    "load": "Laden",
-    "confirm": "Bestätigen",
-    "ok": "OK",
-    "save": "Speichern",
     "reset_password_background__alt": "Hintergrundbild für die Passwort-Reset-Seite",
     "signup_background__alt": "Hintergrundbild für die Registrierungsseite"
   },

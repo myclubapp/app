@@ -87,13 +87,13 @@
         lines="none"
       >
         <ion-item (click)="openTrainingExerciseModal()" detail="true">
-          <ion-label>Übungen</ion-label>
+          <ion-label>{{"training.exercises" | translate}}</ion-label>
           <ng-container *ngIf="exerciseList$ | async as exerciseList">
             <ion-badge *ngIf="exerciseList.length > 0" slot="end">
               {{exerciseList.length}}
             </ion-badge>
             <ion-note *ngIf="exerciseList.length == 0">
-              Keine Übungen vorhanden
+              {{"training.no_exercises" | translate}}
             </ion-note>
           </ng-container>
         </ion-item>

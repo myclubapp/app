@@ -179,7 +179,8 @@
       "volleyball": "Volleyball",
       "handball": "Handball",
       "gymnastics": "Gymnastics"
-    }
+    },
+    "linked_clubs": "Linked Clubs"
   },
   "onboarding-team": {
     "onboarding__team": "Onboarding team"
@@ -200,7 +201,7 @@
     "change_email_new_label": "New email address",
     "change_address_header": "Change residential address",
     "change_address_message": "Change your residential address here.",
-    "change_address_streetandnumber": "Street and house number",
+    "change_address_street": "Street",
     "change_address_postalcode": "Postal code",
     "change_address_city": "City",
     "open__club_inquiry": "Open club inquiries",
@@ -237,8 +238,8 @@
     "kids.add_header": "Add child",
     "kids.add_message": "Please enter the email address of the child you want to add.",
     "kids.email_placeholder": "Child's email address",
-    "kids.max_reached_header": "Maximum children reached",
-    "kids.max_reached_message": "You can add up to 3 children.",
+    "kids.max_reached_header": "Maximum number of children reached",
+    "kids.max_reached_message": "You can add a maximum of 3 children.",
     "children": "Children",
     "confirm_delete_request": "Do you really want to delete this request?",
     "no_children": "No children added",
@@ -246,10 +247,31 @@
     "parents_notification_info": "Parents are also notified about their child's events.",
     "children_notification_info": "As a parent, you will be notified about all important events regarding your children.",
     "confirm_delete_child": "Do you really want to remove this child from your profile?",
-    "success_child_deleted": "Child has been successfully removed from profile"
+    "success_child_deleted": "Child has been successfully removed from profile",
+    "gender": "Gender",
+    "gender.male": "Male",
+    "gender.female": "Female",
+    "gender.diverse": "Diverse (not for J+S)",
+    "nationality": "Nationality",
+    "country": "Country",
+    "ahv_number": "AHV Number",
+    "please_select": "Please select"
   },
   "tabs": {},
-  "team": {},
+  "team": {
+    "delete_button": "Delete Team",
+    "delete": {
+      "header": "Delete Team",
+      "message": "Do you really want to delete this team?",
+      "confirm": "Yes",
+      "cancel": "No",
+      "success": "The team has been successfully deleted",
+      "error": "An error occurred while deleting the team. Please try again later."
+    },
+    "delete_team__confirm": "Do you really want to delete this team?",
+    "training_exercises": "Training & Exercises (coming soon)",
+    "exercises": "Exercises"
+  },
   "team-list": {
     "my__teams": "My teams"
   },
@@ -289,7 +311,9 @@
     "delete_training": "Delete training",
     "delete_training_confirm": "Do you really want to delete this training?",
     "deleted_reason": "Training was deleted",
-    "create_training_confirm": "Should the training be created?"
+    "create_training_confirm": "Should the training be created?",
+    "exercises": "Exercises",
+    "no_exercises": "No exercises available"
   },
   "side_bar": {
     "administration": "Administration",

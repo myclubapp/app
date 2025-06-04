@@ -1,8 +1,9 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { Browser } from "@capacitor/browser";
 import {
   AlertController,
   MenuController,
+  ModalController,
   ToastController,
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
@@ -17,6 +18,10 @@ import {
   switchMap,
   take,
   tap,
+  Subject,
+  debounceTime,
+  distinctUntilChanged,
+  takeUntil,
 } from "rxjs";
 import { Club } from "src/app/models/club";
 import { Profile } from "src/app/models/user";
@@ -32,6 +37,9 @@ import { UiService } from "src/app/services/ui.service";
   standalone: false,
 })
 export class OnboardingClubPage implements OnInit {
+  @Input("closable")
+  closable: boolean = false;
+
   clubListSV: Club[];
   clubListSU: Club[];
   clubListSH: Club[];
@@ -39,15 +47,19 @@ export class OnboardingClubPage implements OnInit {
   clubListSub: Subscription;
   user: User;
   userProfile$: Observable<Profile>;
+  clubListByContactEmail$: Observable<Club[]>;
 
   private subscription: Subscription;
   private subscriptionActiveClubList: Subscription;
+
+  private searchSubject = new Subject<string>();
+  private destroy$ = new Subject<void>();
 
   constructor(
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
     private translate: TranslateService,
-    private readonly toastController: ToastController,
+    private readonly modalCtrl: ModalController,
     private readonly alertController: AlertController,
     private readonly profileService: UserProfileService,
     public readonly menuCtrl: MenuController,
@@ -62,6 +74,24 @@ export class OnboardingClubPage implements OnInit {
     this.clubListSV = [];
     this.clubListSH = [];
     this.clubListST = [];
+
+    // Setup search subscription
+    this.searchSubject
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((searchValue) => {
+        this.performSearch(searchValue);
+      });
+
+    this.clubListByContactEmail$ = this.fbService.getClubsByContactEmail().pipe(
+      tap((clubs) => {
+        console.log("DEBUG: Clubs by contact email:", clubs);
+      }),
+      catchError((error) => {
+        console.error("Error fetching clubs by contact email:", error);
+        return of([]);
+      }),
+    );
+
     this.subscription = this.authService
       .getUser$()
       .pipe(
@@ -80,6 +110,8 @@ export class OnboardingClubPage implements OnInit {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   getUserProfile(): Observable<any> {
@@ -314,40 +346,60 @@ export class OnboardingClubPage implements OnInit {
   }
 
   handleChange(event: any) {
-    console.log(event.detail.value);
-    const searchValue = event.detail.value;
+    const searchValue = event.detail.value?.trim();
+    this.searchSubject.next(searchValue);
+  }
 
-    if (event.detail.value) {
-      console.log("before club search");
-      // Search
-      this.clubListSub = this.fbService
-        .searchClubListRef(event.detail.value)
-        .pipe(
-          take(1),
-          // tap(clubs => console.log(clubs.length)),
-          map((clubs: Club[]) =>
-            clubs.filter((searchClub) =>
-              searchClub.name
-                .toLowerCase()
-                .includes(event.detail.value.toLowerCase()),
-            ),
-          ),
-          // return club.name.search(searchValue)
-        )
-        .subscribe((data: any) => {
-          console.log(data);
-          this.clubListSU = data.filter((el) => el.type == "swissunihockey");
-          this.clubListSV = data.filter((el) => el.type == "swissvolley");
-          this.clubListSH = data.filter((el) => el.type == "swisshandball");
-          this.clubListST = data.filter((el) => el.type == "swissturnverband");
-        });
-    } else {
-      this.clubListSU = [];
-      this.clubListSV = [];
-      this.clubListSH = [];
-      this.clubListST = [];
-      // this.activeClubList = this.activeClubListBackup;
+  private performSearch(searchValue: string) {
+    console.log("DEBUG: performSearch", searchValue);
+    if (!searchValue) {
+      this.resetClubLists();
+      return;
     }
+
+    if (this.clubListSub) {
+      this.clubListSub.unsubscribe();
+    }
+
+    this.clubListSub = this.fbService
+      .searchClubListRef(searchValue)
+      .pipe(
+        tap((clubs: Club[]) => {
+          console.log("DEBUG: Gefundene Clubs:", clubs);
+        }),
+        catchError((error) => {
+          console.error("Fehler bei der Club-Suche:", error);
+          this.uiService.showErrorToast(
+            "Fehler bei der Suche. Bitte versuchen Sie es später erneut.",
+          );
+          return of([]);
+        }),
+      )
+      .subscribe({
+        next: (data: Club[]) => {
+          console.log("DEBUG: Finale Club-Liste:", data);
+          this.clubListSU = data.filter((el) => el.type === "swissunihockey");
+          this.clubListSV = data.filter((el) => el.type === "swissvolley");
+          this.clubListSH = data.filter((el) => el.type === "swisshandball");
+          this.clubListST = data.filter((el) => el.type === "swissturnverband");
+        },
+        error: (error) => {
+          console.error("Fehler beim Verarbeiten der Suchergebnisse:", error);
+          this.resetClubLists();
+        },
+      });
+  }
+
+  private resetClubLists() {
+    this.clubListSU = [];
+    this.clubListSV = [];
+    this.clubListSH = [];
+    this.clubListST = [];
+  }
+
+  async close() {
+    return await this.modalCtrl.dismiss(null, "close");
+    // this.navController.pop();
   }
 
   async logout() {

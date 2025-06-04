@@ -173,7 +173,8 @@
       "volleyball": "Pallavolo",
       "handball": "Pallamano",
       "gymnastics": "Ginnastica"
-    }
+    },
+    "linked_clubs": "Club collegati"
   },
   "onboarding-team": {
     "onboarding__team": "Team di onboarding"
@@ -214,7 +215,15 @@
     "kids.add_message": "Inserisci l'indirizzo email del bambino che desideri aggiungere.",
     "kids.email_placeholder": "Indirizzo email del bambino",
     "kids.max_reached_header": "Numero massimo di bambini raggiunto",
-    "kids.max_reached_message": "Puoi aggiungere fino a 3 bambini",
+    "kids.max_reached_message": "Puoi aggiungere un massimo di 3 bambini.",
+    "gender": "Genere",
+    "gender.male": "Maschile",
+    "gender.female": "Femminile",
+    "gender.diverse": "Diverso (non per J+S)",
+    "nationality": "Nazionalità",
+    "country": "Paese",
+    "ahv_number": "Numero AVS",
+    "please_select": "Seleziona",
     "children": "Bambini",
     "confirm_delete_request": "Vuoi davvero eliminare questa richiesta?",
     "no_children": "Nessun bambino aggiunto",
@@ -224,7 +233,20 @@
     "success_child_deleted": "Il bambino è stato rimosso con successo dal profilo"
   },
   "tabs": {},
-  "team": {},
+  "team": {
+    "delete_button": "Elimina squadra",
+    "delete": {
+      "header": "Elimina squadra",
+      "message": "Vuoi davvero eliminare questa squadra?",
+      "confirm": "Sì",
+      "cancel": "No",
+      "success": "La squadra è stata eliminata con successo",
+      "error": "Si è verificato un errore durante l'eliminazione della squadra. Riprova più tardi."
+    },
+    "delete_team__confirm": "Vuoi davvero eliminare questa squadra?",
+    "training_exercises": "Allenamento & Esercizi (presto disponibile)",
+    "exercises": "Esercizi"
+  },
   "team-list": {
     "my__teams": "Le mie squadre"
   },
@@ -249,6 +271,8 @@
     "news__filer__desc": "Filtra per club o squadra.",
     "cancelled": "Allenamento annullato",
     "cancelled_reason": "Motivo dell'annullamento",
+    "exercises": "Esercizi",
+    "no_exercises": "Nessun esercizio disponibile",
     "cancelled_reason_placeholder": "Inserisci il motivo dell'annullamento",
     "send_reminder": "Invia promemoria",
     "send_reminder_confirm": "Vuoi inviare un promemoria a {{count}} membri che non hanno ancora risposto?",
@@ -357,7 +381,8 @@
     "ok": "OK",
     "save": "Salva",
     "reset_password_background__alt": "Immagine di sfondo per la pagina di reset password",
-    "signup_background__alt": "Immagine di sfondo per la pagina di registrazione"
+    "signup_background__alt": "Immagine di sfondo per la pagina di registrazione",
+    "change_address_street": "Via"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Vuoi davvero eliminare il genitore?"

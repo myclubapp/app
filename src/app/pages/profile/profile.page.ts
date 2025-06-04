@@ -235,9 +235,20 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         placeholder: await lastValueFrom(
           this.translate.get("profile.change_address_streetandnumber"),
         ),
-        name: "streetAndNumber",
+        name: "street",
         type: "text",
-        value: profile.streetAndNumber,
+        value: profile.street,
+      },
+      {
+        label: await lastValueFrom(
+          this.translate.get("profile.change_address_housenumber"),
+        ),
+        placeholder: await lastValueFrom(
+          this.translate.get("profile.change_address_housenumber"),
+        ),
+        name: "houseNumber",
+        type: "text",
+        value: profile.houseNumber,
       },
       {
         label: await lastValueFrom(
@@ -282,8 +293,16 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
             "postalcode",
           );
           await this.profileChange(
-            { detail: { value: data.streetAndNumber } },
+            { detail: { value: data.street } },
+            "street",
+          );
+          await this.profileChange(
+            { detail: { value: data.street + " " + data.houseNumber } },
             "streetAndNumber",
+          );
+          await this.profileChange(
+            { detail: { value: data.houseNumber } },
+            "houseNumber",
           );
         },
       },

@@ -218,9 +218,10 @@ export class AppComponent implements OnInit, AfterViewInit {
             await lastValueFrom(this.translate.get("common.offline")),
           );
         } else {
-          await this.uiService.showSuccessToast(
+          console.log("Network is connected");
+          /* await this.uiService.showSuccessToast(
             await lastValueFrom(this.translate.get("common.online")),
-          );
+          );*/
         }
       },
     );

@@ -1,7 +1,13 @@
 <ion-content>
-  <ion-fab vertical="top" horizontal="end">
+  <ion-fab vertical="top" horizontal="end" *ngIf="!closable">
     <ion-fab-button size="small" (click)="logout()">
       <ion-icon name="log-out-outline" size="small"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab vertical="top" horizontal="end" *ngIf="closable">
+    <ion-fab-button size="small" (click)="close()">
+      <ion-icon name="close-outline" size="small"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 
@@ -95,6 +101,25 @@
                 </ion-avatar>
                 <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
               </ion-item>
+
+              <ng-container
+                *ngIf="clubListByContactEmail$ | async as clubListByContactEmail"
+              >
+                <ion-list-header *ngIf="clubListByContactEmail.length > 0">
+                  {{ 'onboarding.linked_clubs' | translate }}
+                </ion-list-header>
+                <ion-item
+                  (click)="joinClub(club)"
+                  lines="full"
+                  *ngFor="let club of clubListByContactEmail"
+                  button
+                >
+                  <ion-avatar slot="start">
+                    <img alt="{{club.name}}" src="{{club.logo}}" />
+                  </ion-avatar>
+                  <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
+                </ion-item>
+              </ng-container>
             </ion-list>
           </ion-card-content>
         </ion-card>

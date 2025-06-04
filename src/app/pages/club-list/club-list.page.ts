@@ -11,6 +11,7 @@ import {
 } from "@ionic/angular";
 import { Router } from "@angular/router";
 import { Optional } from "@angular/core";
+import { OnboardingClubPage } from "../onboarding/onboarding-club/onboarding-club.page";
 
 @Component({
   selector: "app-club-list",
@@ -79,6 +80,25 @@ export class ClubListPage implements OnInit {
   }
 
   async joinClubAlert() {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
+    const modal = await this.modalCtrl.create({
+      component: OnboardingClubPage,
+      presentingElement,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        closable: true,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+
     /*
     let _inputs = [];
     for (let club of this.activeClubList) {
