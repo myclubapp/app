@@ -48,9 +48,12 @@
                     type="password"
                     required
                     placeholder="Gib dein Passwort ein"
+                    (ionFocus)="isPasswordFocused = true"
+                    (ionBlur)="isPasswordFocused = false"
                   >
                     <ion-input-password-toggle
                       slot="end"
+                      *ngIf="isPasswordFocused"
                     ></ion-input-password-toggle>
                   </ion-input>
                 </ion-item>

@@ -30,6 +30,7 @@ export class LoginPage implements OnInit {
   public user: UserCredentialLogin;
   public authForm: UntypedFormGroup;
   public show: boolean;
+  public isPasswordFocused: boolean = false;
 
   constructor(
     private readonly alertCtrl: AlertController,

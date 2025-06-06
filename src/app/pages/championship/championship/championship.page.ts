@@ -385,7 +385,7 @@ export class ChampionshipPage implements OnInit {
             });
           }),
           map((allGames) =>
-            allGames.sort((a, b) => b.dateTime.seconds - a.dateTime.seconds),
+            allGames.sort((a, b) => a.dateTime.seconds - b.dateTime.seconds),
           ),
         );
       }),
