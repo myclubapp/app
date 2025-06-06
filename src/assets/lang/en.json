@@ -255,22 +255,66 @@
     "nationality": "Nationality",
     "country": "Country",
     "ahv_number": "AHV Number",
-    "please_select": "Please select"
+    "please_select": "Please select",
+    "change_email": {
+      "header": "Change email",
+      "message": "Do you really want to change your email address?",
+      "success": "Your email address has been successfully changed.",
+      "error": "An error occurred while changing your email address. Please try again later."
+    },
+    "change_address": {
+      "header": "Change address",
+      "message": "Do you really want to change your address?",
+      "success": "Your address has been successfully changed.",
+      "error": "An error occurred while changing your address. Please try again later."
+    },
+    "delete": {
+      "header": "Delete profile",
+      "message": "Do you really want to delete your profile? This action cannot be undone.",
+      "success": "Your profile has been successfully deleted.",
+      "error": "An error occurred while deleting your profile. Please try again later."
+    }
   },
   "tabs": {},
   "team": {
     "delete_button": "Delete Team",
-    "delete": {
-      "header": "Delete Team",
-      "message": "Do you really want to delete this team?",
-      "confirm": "Yes",
-      "cancel": "No",
-      "success": "The team has been successfully deleted",
-      "error": "An error occurred while deleting the team. Please try again later."
+    "export": {
+      "header": "Export",
+      "success": "Export successful",
+      "error": "Error during export",
+      "no_trainings": "No trainings found for the selected period",
+      "no_games": "No games found for the selected period",
+      "no_members": "No team members found",
+      "date_range": {
+        "header": "Select period",
+        "start": "From",
+        "end": "To",
+        "export": "Export",
+        "cancel": "Cancel"
+      }
     },
-    "delete_team__confirm": "Do you really want to delete this team?",
+    "delete": {
+      "header": "Delete team",
+      "message": "Do you really want to delete this team? This action cannot be undone.",
+      "confirm": "Yes, delete",
+      "cancel": "Cancel",
+      "success": "Team successfully deleted",
+      "error": "Error while deleting team"
+    },
     "training_exercises": "Training & Exercises (coming soon)",
-    "exercises": "Exercises"
+    "exercises": "Exercises",
+    "add_admin": {
+      "header": "Add administrator",
+      "add": "Add",
+      "cancel": "Cancel",
+      "no_members": "No available members found"
+    },
+    "add_member": {
+      "header": "Add member",
+      "add": "Add",
+      "cancel": "Cancel",
+      "no_members": "No available members found"
+    }
   },
   "team-list": {
     "my__teams": "My teams"
@@ -443,7 +487,20 @@
     "ok": "OK",
     "save": "Save",
     "reset_password_background__alt": "Background image for password reset page",
-    "signup_background__alt": "Background image for signup page"
+    "signup_background__alt": "Background image for signup page",
+    "countries": {
+      "CH": "Switzerland",
+      "DE": "Germany",
+      "IT": "Italy",
+      "FR": "France",
+      "AT": "Austria",
+      "LI": "Liechtenstein",
+      "other": "Other"
+    },
+    "success": "Success",
+    "error": "Error",
+    "success__copy": "Copied to clipboard",
+    "confirm_delete_checkbox": "I confirm that I want to delete this item"
   },
   "club-parents-list": {
     "delete_parent__confirm": "Do you really want to delete the parent?"

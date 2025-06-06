@@ -222,14 +222,6 @@
         <ion-icon name="time" slot="start" color="medium"></ion-icon>
         <ion-note> {{club.updated | date:'dd.MM.YYYY HH:mm'}} Uhr</ion-note>
       </ion-item>
-      <ion-item *ngIf="club.externalId">
-        <ion-icon
-          name="help-circle-outline"
-          slot="start"
-          color="medium"
-        ></ion-icon>
-        <ion-note>Support ID: {{club.externalId}} </ion-note>
-      </ion-item>
 
       <!--<ion-item >
         <ion-icon name="key" slot="start"></ion-icon>
@@ -343,6 +335,10 @@
   </ion-list>
 </ng-container>
 -->
+
+    <ion-text class="ion-text-center" color="medium">
+      <p>Club ID: {{club.id}}</p>
+    </ion-text>
   </ion-content>
 </ng-container>
 <ng-template #noRequests>

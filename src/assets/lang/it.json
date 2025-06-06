@@ -230,22 +230,67 @@
     "parents_notification_info": "I genitori vengono anche informati degli eventi del loro bambino.",
     "children_notification_info": "Come genitore, sarai informato di tutti gli eventi importanti riguardanti i tuoi figli.",
     "confirm_delete_child": "Vuoi davvero rimuovere questo bambino dal tuo profilo?",
-    "success_child_deleted": "Il bambino è stato rimosso con successo dal profilo"
+    "success_child_deleted": "Il bambino è stato rimosso con successo dal profilo",
+    "change_email": {
+      "header": "Modifica e-mail",
+      "message": "Vuoi davvero modificare il tuo indirizzo e-mail?",
+      "success": "Il tuo indirizzo e-mail è stato modificato con successo.",
+      "error": "Si è verificato un errore durante la modifica del tuo indirizzo e-mail. Riprova più tardi."
+    },
+    "change_address": {
+      "header": "Modifica indirizzo",
+      "message": "Vuoi davvero modificare il tuo indirizzo?",
+      "success": "Il tuo indirizzo è stato modificato con successo.",
+      "error": "Si è verificato un errore durante la modifica del tuo indirizzo. Riprova più tardi."
+    },
+    "delete": {
+      "header": "Elimina profilo",
+      "message": "Vuoi davvero eliminare il tuo profilo? Questa azione non può essere annullata.",
+      "success": "Il tuo profilo è stato eliminato con successo.",
+      "error": "Si è verificato un errore durante l'eliminazione del tuo profilo. Riprova più tardi."
+    }
   },
   "tabs": {},
   "team": {
     "delete_button": "Elimina squadra",
+    "export": {
+      "header": "Esporta",
+      "success": "Esportazione riuscita",
+      "error": "Errore durante l'esportazione",
+      "no_trainings": "Nessun allenamento trovato nel periodo selezionato",
+      "no_games": "Nessuna partita trovata nel periodo selezionato",
+      "no_members": "Nessun membro della squadra trovato",
+      "date_range": {
+        "header": "Seleziona periodo",
+        "start": "Da",
+        "end": "A",
+        "export": "Esporta",
+        "cancel": "Annulla"
+      }
+    },
     "delete": {
       "header": "Elimina squadra",
-      "message": "Vuoi davvero eliminare questa squadra?",
-      "confirm": "Sì",
-      "cancel": "No",
-      "success": "La squadra è stata eliminata con successo",
-      "error": "Si è verificato un errore durante l'eliminazione della squadra. Riprova più tardi."
+      "message": "Vuoi davvero eliminare questa squadra? Questa azione non può essere annullata.",
+      "confirm": "Sì, elimina",
+      "cancel": "Annulla",
+      "success": "Squadra eliminata con successo",
+      "error": "Errore durante l'eliminazione della squadra"
     },
     "delete_team__confirm": "Vuoi davvero eliminare questa squadra?",
     "training_exercises": "Allenamento & Esercizi (presto disponibile)",
-    "exercises": "Esercizi"
+    "exercises": "Esercizi",
+    "add_admin": {
+      "header": "Aggiungi amministratore",
+      "add": "Aggiungi",
+      "cancel": "Annulla",
+      "no_members": "Nessun membro disponibile trovato"
+    },
+    "add_member": {
+      "header": "Aggiungi membro",
+      "add": "Aggiungi",
+      "cancel": "Annulla",
+      "no_members": "Nessun membro disponibile trovato"
+    }
   },
   "team-list": {
     "my__teams": "Le mie squadre"
@@ -370,7 +415,7 @@
     "online": "Sei online",
     "error__push_notification_not_available": "Notifica push non disponibile",
     "error_device_not_support_push_notifications": "Il tuo dispositivo/browser non supporta le notifiche push",
-    "success__copy": "Copiato con successo",
+    "success__copy": "Copiato negli appunti",
     "action__canceled": "Azione annullata",
     "success__saved": "Salvato con successo",
     "app_update_available": "Aggiornamento app disponibile",
@@ -378,12 +423,21 @@
     "cancel": "Annulla",
     "load": "Carica",
     "confirm": "Conferma",
-    "confirm_delete_checkbox": "Confermo di voler davvero eliminare questa voce",
+    "confirm_delete_checkbox": "Confermo di voler eliminare questo elemento",
     "ok": "OK",
     "save": "Salva",
     "reset_password_background__alt": "Immagine di sfondo per la pagina di reset password",
     "signup_background__alt": "Immagine di sfondo per la pagina di registrazione",
-    "change_address_street": "Via"
+    "change_address_street": "Via",
+    "countries": {
+      "CH": "Svizzera",
+      "DE": "Germania",
+      "IT": "Italia",
+      "FR": "Francia",
+      "AT": "Austria",
+      "LI": "Liechtenstein",
+      "other": "Altro"
+    }
   },
   "club-parents-list": {
     "delete_parent__confirm": "Vuoi davvero eliminare il genitore?"

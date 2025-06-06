@@ -263,26 +263,66 @@
     "parents_notification_info": "Eltern werden ebenfalls über Ereignisse ihres Kindes informiert.",
     "children_notification_info": "Als Elternteil werden Sie über alle wichtigen Ereignisse Ihrer Kinder informiert.",
     "confirm_delete_child": "Möchten Sie dieses Kind wirklich aus Ihrem Profil entfernen?",
-    "success_child_deleted": "Kind wurde erfolgreich aus dem Profil entfernt"
+    "success_child_deleted": "Kind wurde erfolgreich aus dem Profil entfernt",
+    "change_email": {
+      "header": "E-Mail ändern",
+      "message": "Möchten Sie Ihre E-Mail-Adresse wirklich ändern?",
+      "success": "Ihre E-Mail-Adresse wurde erfolgreich geändert.",
+      "error": "Beim Ändern der E-Mail-Adresse ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+    },
+    "change_address": {
+      "header": "Adresse ändern",
+      "message": "Möchten Sie Ihre Adresse wirklich ändern?",
+      "success": "Ihre Adresse wurde erfolgreich geändert.",
+      "error": "Beim Ändern der Adresse ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+    },
+    "delete": {
+      "header": "Profil löschen",
+      "message": "Möchten Sie Ihr Profil wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "success": "Ihr Profil wurde erfolgreich gelöscht.",
+      "error": "Beim Löschen des Profils ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+    }
   },
   "tabs": {},
   "team": {
     "delete_button": "Team löschen",
     "delete": {
       "header": "Team löschen",
-      "message": "Möchten Sie dieses Team wirklich löschen?",
-      "confirm": "Ja",
-      "cancel": "Nein",
-      "success": "Das Team wurde erfolgreich gelöscht",
-      "error": "Beim Löschen des Teams ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+      "message": "Möchten Sie dieses Team wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "confirm": "Ja, löschen",
+      "cancel": "Abbrechen",
+      "success": "Team wurde erfolgreich gelöscht",
+      "error": "Fehler beim Löschen des Teams"
     },
     "delete_team__confirm": "Möchtest du das Team wirklich löschen?",
     "training_exercises": "Training & Übungen (bald verfügbar)",
     "exercises": "Übungen",
     "export": {
-      "no_trainings": "Keine Trainingsdaten zum Exportieren vorhanden",
-      "success": "Trainingsdaten wurden erfolgreich exportiert",
-      "error": "Beim Exportieren der Trainingsdaten ist ein Fehler aufgetreten"
+      "header": "Export",
+      "success": "Export erfolgreich",
+      "error": "Fehler beim Export",
+      "no_trainings": "Keine Trainings im ausgewählten Zeitraum gefunden",
+      "no_games": "Keine Spiele im ausgewählten Zeitraum gefunden",
+      "no_members": "Keine Teammitglieder gefunden",
+      "date_range": {
+        "header": "Zeitraum auswählen",
+        "start": "Von",
+        "end": "Bis",
+        "export": "Exportieren",
+        "cancel": "Abbrechen"
+      }
+    },
+    "add_admin": {
+      "header": "Administrator hinzufügen",
+      "add": "Hinzufügen",
+      "cancel": "Abbrechen",
+      "no_members": "Keine verfügbaren Mitglieder gefunden"
+    },
+    "add_member": {
+      "header": "Mitglied hinzufügen",
+      "add": "Hinzufügen",
+      "cancel": "Abbrechen",
+      "no_members": "Keine verfügbaren Mitglieder gefunden"
     }
   },
   "team-list": {
@@ -346,9 +386,9 @@
     "notifications_open": "Ungelesene Benachrichtigungen",
     "notifications_read": "Gelesene Benachrichtigungen",
     "teams": "Teams",
-    "success__copy": "Wert erfolgreich kopiert",
+    "success__copy": "In die Zwischenablage kopiert",
     "month": "Monat",
-    "action__canceled": "Aktion wurde abgebrochen",
+    "action__canceled": "Aktion abgebrochen",
     "year": "Jahr",
     "paid": "bezahlt",
     "created": "Gekauft am",
@@ -367,16 +407,16 @@
     "link__web": "Webseite / Weitere Informationen",
     "link__poll": "Umfrage",
     "link__placeholder": "https://",
-    "confirm": "bestätigen",
-    "confirm_delete_checkbox": "Ich bestätige, dass ich diesen Eintrag wirklich löschen möchte",
+    "confirm": "Bestätigen",
+    "confirm_delete_checkbox": "Ich bestätige, dass ich dieses Element wirklich löschen möchte",
     "or": "oder",
     "email__address": "E-Mail Adresse",
     "password": "Passwort",
     "general__error_occurred": "Es ist ein allgemeiner Fehler aufgetreten",
     "ok": "OK",
-    "save": "speichern",
+    "save": "Speichern",
     "done": "fertig",
-    "cancel": "abbrechen",
+    "cancel": "Abbrechen",
     "create": "erstellen",
     "forget__password": "Passwort vergessen?",
     "email_sent": "E-Mail versendet",
@@ -461,7 +501,16 @@
     "error__push_notification_not_available": "Push-Benachrichtigung nicht verfügbar",
     "error_device_not_support_push_notifications": "Leider unterstützt Ihr Gerät/Browser keine Push-Benachrichtigungen",
     "reset_password_background__alt": "Hintergrundbild für die Passwort-Reset-Seite",
-    "signup_background__alt": "Hintergrundbild für die Registrierungsseite"
+    "signup_background__alt": "Hintergrundbild für die Registrierungsseite",
+    "countries": {
+      "CH": "Schweiz",
+      "DE": "Deutschland",
+      "IT": "Italien",
+      "FR": "Frankreich",
+      "AT": "Österreich",
+      "LI": "Liechtenstein",
+      "other": "Andere"
+    }
   },
   "club-parents-list": {
     "delete_parent__confirm": "Möchtest du den Elternteil wirklich löschen?"

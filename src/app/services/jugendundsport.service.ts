@@ -97,11 +97,13 @@ export class JugendundsportService {
     }
   }
 
-  async exportTrainingData(team: Team) {
+  async exportTrainingData(team: Team, startDate: Date, endDate: Date) {
     try {
       // Trainingsdaten abrufen
       const trainings = await lastValueFrom(
-        this.trainingService.getTeamTrainingsPastRefs(team.id).pipe(take(1)),
+        this.trainingService
+          .getTeamTrainingsByDateRange(team.id, startDate, endDate)
+          .pipe(take(1)),
       );
 
       if (!trainings || trainings.length === 0) {
@@ -152,7 +154,7 @@ export class JugendundsportService {
 
       await this.downloadCSV(
         csvContent,
-        `J+S_Trainings_${team.name}_${new Date().toISOString().split("T")[0]}.csv`,
+        `J+S_Trainings_${team.name}_${startDate.toISOString().split("T")[0]}_${endDate.toISOString().split("T")[0]}.csv`,
         "team.export.success",
       );
     } catch (error) {
@@ -163,11 +165,13 @@ export class JugendundsportService {
     }
   }
 
-  async exportChampionshipData(team: Team) {
+  async exportChampionshipData(team: Team, startDate: Date, endDate: Date) {
     try {
       // Meisterschaftsspiele abrufen
       const games = await lastValueFrom(
-        this.championshipService.getTeamGamesPastRefs(team.id).pipe(take(1)),
+        this.championshipService
+          .getTeamGamesByDateRange(team.id, startDate, endDate)
+          .pipe(take(1)),
       );
 
       if (!games || games.length === 0) {
@@ -211,7 +215,7 @@ export class JugendundsportService {
 
       await this.downloadCSV(
         csvContent,
-        `J+S_Spiele_${team.name}_${new Date().toISOString().split("T")[0]}.csv`,
+        `J+S_Spiele_${team.name}_${startDate.toISOString().split("T")[0]}_${endDate.toISOString().split("T")[0]}.csv`,
         "team.export.success",
       );
     } catch (error) {
@@ -222,11 +226,13 @@ export class JugendundsportService {
     }
   }
 
-  async exportAttendanceData(team: Team) {
+  async exportAttendanceData(team: Team, startDate: Date, endDate: Date) {
     try {
       // Trainingsdaten abrufen
       const trainings = await lastValueFrom(
-        this.trainingService.getTeamTrainingsPastRefs(team.id).pipe(take(1)),
+        this.trainingService
+          .getTeamTrainingsByDateRange(team.id, startDate, endDate)
+          .pipe(take(1)),
       );
 
       if (!trainings || trainings.length === 0) {
@@ -320,7 +326,7 @@ export class JugendundsportService {
 
       await this.downloadCSV(
         csvContent,
-        `AWK_Anwesenheiten_${team.name}_${new Date().toISOString().split("T")[0]}.csv`,
+        `AWK_Anwesenheiten_${team.name}_${startDate.toISOString().split("T")[0]}_${endDate.toISOString().split("T")[0]}.csv`,
         "team.export.success",
       );
     } catch (error) {

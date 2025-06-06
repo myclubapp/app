@@ -140,15 +140,21 @@
               <ion-list-header>
                 <ion-label> Jugend+Sport Export</ion-label>
               </ion-list-header>
-              <ion-item detail="true" (click)="exportTrainingData()">
+              <ion-item detail="true" (click)="openDateRangeDialog('training')">
                 <ion-icon name="download-outline" slot="start"></ion-icon>
                 <ion-label>Aktivitäten J+S-Kurse (Trainings)</ion-label>
               </ion-item>
-              <ion-item detail="true" (click)="exportChampionshipData()">
+              <ion-item
+                detail="true"
+                (click)="openDateRangeDialog('championship')"
+              >
                 <ion-icon name="download-outline" slot="start"></ion-icon>
                 <ion-label>Aktivitäten J+S-Kurse (Wettkämpfe)</ion-label>
               </ion-item>
-              <ion-item detail="true" (click)="exportAttendanceData()">
+              <ion-item
+                detail="true"
+                (click)="openDateRangeDialog('attendance')"
+              >
                 <ion-icon name="download-outline" slot="start"></ion-icon>
                 <ion-label>Anwesenheitskontrolle (AWK)</ion-label>
               </ion-item>
@@ -262,14 +268,6 @@
         <ion-icon name="time" slot="start" color="medium"></ion-icon>
         <ion-note> {{team.updated | date:'dd.MM.YYYY HH:mm'}} Uhr</ion-note>
       </ion-item>
-      <ion-item *ngIf="team.externalId">
-        <ion-icon
-          name="help-circle-outline"
-          slot="start"
-          color="medium"
-        ></ion-icon>
-        <ion-note>Support ID: {{team.externalId}} </ion-note>
-      </ion-item>
 
       <!--<ion-item >
         <ion-icon name="key" slot="start"></ion-icon>
@@ -293,6 +291,10 @@
         </ng-container>
       </ng-container>
     </div>
+
+    <ion-text class="ion-text-center" color="medium">
+      <p>Team ID: {{team.id}}</p>
+    </ion-text>
 
     <!-- <ion-list [inset]="true" *ngIf="team['teamRequests'].length > 0">
       <ion-list-header>

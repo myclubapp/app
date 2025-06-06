@@ -92,9 +92,9 @@
           [label]="'profile.language' | translate"
           [(ngModel)]="userProfile.language"
           (ionChange)="profileChange($event, 'language')"
-          [placeholder]="'profile.select__language' | translate"
+          [placeholder]="'profile.please_select' | translate"
+          [okText]="'common.ok' | translate"
           [cancelText]="'common.cancel' | translate"
-          [okText]="'common.save' | translate"
         >
           <ion-select-option value="de"
             >{{"common.language__german" | translate}}</ion-select-option
@@ -118,6 +118,8 @@
           [(ngModel)]="userProfile.gender"
           (ionChange)="profileChange($event, 'gender')"
           [placeholder]="'profile.please_select' | translate"
+          [okText]="'common.ok' | translate"
+          [cancelText]="'common.cancel' | translate"
         >
           <ion-select-option value="m"
             >{{'profile.gender.male' | translate}}</ion-select-option
@@ -138,14 +140,30 @@
           [(ngModel)]="userProfile.nationality"
           (ionChange)="profileChange($event, 'nationality')"
           [placeholder]="'profile.please_select' | translate"
+          [okText]="'common.ok' | translate"
+          [cancelText]="'common.cancel' | translate"
         >
-          <ion-select-option value="CH">Schweiz</ion-select-option>
-          <ion-select-option value="DE">Deutschland</ion-select-option>
-          <ion-select-option value="IT">Italien</ion-select-option>
-          <ion-select-option value="FR">Frankreich</ion-select-option>
-          <ion-select-option value="AT">Österreich</ion-select-option>
-          <ion-select-option value="LI">Liechtenstein</ion-select-option>
-          <ion-select-option value="Andere">Andere</ion-select-option>
+          <ion-select-option value="CH"
+            >{{ 'common.countries.CH' | translate }}</ion-select-option
+          >
+          <ion-select-option value="DE"
+            >{{ 'common.countries.DE' | translate }}</ion-select-option
+          >
+          <ion-select-option value="IT"
+            >{{ 'common.countries.IT' | translate }}</ion-select-option
+          >
+          <ion-select-option value="FR"
+            >{{ 'common.countries.FR' | translate }}</ion-select-option
+          >
+          <ion-select-option value="AT"
+            >{{ 'common.countries.AT' | translate }}</ion-select-option
+          >
+          <ion-select-option value="LI"
+            >{{ 'common.countries.LI' | translate }}</ion-select-option
+          >
+          <ion-select-option value="other"
+            >{{ 'common.countries.other' | translate }}</ion-select-option
+          >
         </ion-select>
       </ion-item>
 
@@ -228,14 +246,30 @@
           [(ngModel)]="userProfile.country"
           (ionChange)="profileChange($event, 'country')"
           [placeholder]="'profile.please_select' | translate"
+          [okText]="'common.ok' | translate"
+          [cancelText]="'common.cancel' | translate"
         >
-          <ion-select-option value="CH">Schweiz</ion-select-option>
-          <ion-select-option value="DE">Deutschland</ion-select-option>
-          <ion-select-option value="IT">Italien</ion-select-option>
-          <ion-select-option value="FR">Frankreich</ion-select-option>
-          <ion-select-option value="AT">Österreich</ion-select-option>
-          <ion-select-option value="LI">Liechtenstein</ion-select-option>
-          <ion-select-option value="Andere">Andere</ion-select-option>
+          <ion-select-option value="CH"
+            >{{ 'common.countries.CH' | translate }}</ion-select-option
+          >
+          <ion-select-option value="DE"
+            >{{ 'common.countries.DE' | translate }}</ion-select-option
+          >
+          <ion-select-option value="IT"
+            >{{ 'common.countries.IT' | translate }}</ion-select-option
+          >
+          <ion-select-option value="FR"
+            >{{ 'common.countries.FR' | translate }}</ion-select-option
+          >
+          <ion-select-option value="AT"
+            >{{ 'common.countries.AT' | translate }}</ion-select-option
+          >
+          <ion-select-option value="LI"
+            >{{ 'common.countries.LI' | translate }}</ion-select-option
+          >
+          <ion-select-option value="other"
+            >{{ 'common.countries.other' | translate }}</ion-select-option
+          >
         </ion-select>
       </ion-item>
 
@@ -689,21 +723,6 @@
       </ion-list>
     </ng-container>
 
-    <!-- Support ID-->
-    <ion-list [inset]="true">
-      <ion-list-header>
-        <ion-label> {{"common.support" | translate}} </ion-label>
-      </ion-list-header>
-      <ion-item>
-        <ion-icon
-          name="information-circle-outline"
-          slot="start"
-          color="medium"
-        ></ion-icon>
-        <ion-note>Profile ID: {{userProfile.id}} </ion-note>
-      </ion-item>
-    </ion-list>
-
     <div class="ion-padding">
       <ion-button
         fill="outline"
@@ -715,6 +734,10 @@
         {{'profile.delete__profile' | translate}}
       </ion-button>
     </div>
+
+    <ion-text class="ion-text-center" color="medium">
+      <p>Profile ID: {{userProfile.id}}</p>
+    </ion-text>
   </ng-container>
 
   <!-- 

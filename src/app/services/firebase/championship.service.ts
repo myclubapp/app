@@ -87,6 +87,23 @@ export class ChampionshipService {
     ) as Observable<Game[]>;
   }
 
+  getTeamGamesByDateRange(
+    teamId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Observable<Game[]> {
+    const gamesRefList = collection(this.firestore, `teams/${teamId}/games`);
+    const q = query(
+      gamesRefList,
+      where("dateTime", ">=", Timestamp.fromDate(startDate)),
+      where("dateTime", "<=", Timestamp.fromDate(endDate)),
+      orderBy("dateTime", "asc"),
+    );
+    return collectionData(q, { idField: "id" }).pipe(
+      shareReplay(1),
+    ) as Observable<Game[]>;
+  }
+
   /* CLUB GAMES */
   getClubGamesRef(clubId: string): Observable<Game[]> {
     const gamesRefList = collection(this.firestore, `club/${clubId}/games`);

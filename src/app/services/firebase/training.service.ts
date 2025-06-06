@@ -99,6 +99,26 @@ export class TrainingService {
     ) as unknown as Observable<Training[]>;
   }
 
+  getTeamTrainingsByDateRange(
+    teamId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Observable<Training[]> {
+    const trainingsRefList = collection(
+      this.firestore,
+      `teams/${teamId}/trainings`,
+    );
+    const q = query(
+      trainingsRefList,
+      where("date", ">=", Timestamp.fromDate(startDate)),
+      where("date", "<=", Timestamp.fromDate(endDate)),
+      orderBy("date", "asc"),
+    );
+    return collectionData(q, { idField: "id" }).pipe(
+      shareReplay(1),
+    ) as unknown as Observable<Training[]>;
+  }
+
   /* CLUB TrainingS
   getClubTrainingsRef(clubId: string): Observable<Training> {
     const trainingsRefList = collection(

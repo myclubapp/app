@@ -171,7 +171,7 @@ export class OnboardingClubPage implements OnInit {
         buttons: [
           {
             text: await lastValueFrom(this.translate.get("common.cancel")),
-            role: "cancel",
+            role: "destructive",
           },
           {
             text: await lastValueFrom(this.translate.get("common.confirm")),
@@ -183,7 +183,7 @@ export class OnboardingClubPage implements OnInit {
 
       const teamResult = await alertTeam.onWillDismiss();
 
-      if (teamResult.role === "cancel") {
+      if (teamResult.role === "destructive" || "cancel") {
         await this.presentCancelToast();
         return;
       }
