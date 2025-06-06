@@ -5,7 +5,13 @@ import {
   OnDestroy,
   Optional,
 } from "@angular/core";
-import { lastValueFrom, Observable, of, Subscription } from "rxjs";
+import {
+  combineLatest,
+  lastValueFrom,
+  Observable,
+  of,
+  Subscription,
+} from "rxjs";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
 import { User } from "@angular/fire/auth";
 import { PushNotifications } from "@capacitor/push-notifications";
@@ -118,12 +124,28 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         );
 
       this.children$ = this.profileService.getChildren(userProfile.id).pipe(
+        switchMap((children) => {
+          if (!children.length) return of([]);
+          return combineLatest(
+            children.map((child) =>
+              this.profileService.getUserProfileById(child.id),
+            ),
+          );
+        }),
         tap((children) => {
           console.log(children);
         }),
       );
 
       this.parents$ = this.profileService.getParents(userProfile.id).pipe(
+        switchMap((parents) => {
+          if (!parents.length) return of([]);
+          return combineLatest(
+            parents.map((parent) =>
+              this.profileService.getUserProfileById(parent.id),
+            ),
+          );
+        }),
         tap((parents) => {
           console.log(parents);
         }),

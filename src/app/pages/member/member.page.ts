@@ -92,6 +92,14 @@ export class MemberPage implements OnInit {
     this.userProfile$ = this.getUserProfile(this.userProfile.id);
 
     this.children$ = this.profileService.getChildren(this.userProfile.id).pipe(
+      switchMap((children) => {
+        if (!children.length) return of([]);
+        return combineLatest(
+          children.map((child) =>
+            this.profileService.getUserProfileById(child.id),
+          ),
+        );
+      }),
       tap((children) => {
         console.log("children: " + children);
       }),
@@ -102,8 +110,16 @@ export class MemberPage implements OnInit {
     );
 
     this.parents$ = this.profileService.getParents(this.userProfile.id).pipe(
+      switchMap((parents) => {
+        if (!parents.length) return of([]);
+        return combineLatest(
+          parents.map((parent) =>
+            this.profileService.getUserProfileById(parent.id),
+          ),
+        );
+      }),
       tap((parents) => {
-        console.log("parents: " + parents);
+        console.log("parents with details: ", parents);
       }),
       catchError((error) => {
         console.error("Error fetching parents:", error);
