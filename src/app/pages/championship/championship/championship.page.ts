@@ -294,7 +294,7 @@ export class ChampionshipPage implements OnInit {
           teamMembersMap$,
           combineLatest(
             relevantTeams.map((team) =>
-              this.championshipService.getTeamGamesPastRefs(team.id).pipe(
+              this.championshipService.getTeamGamesRefs(team.id).pipe(
                 catchError((err) => {
                   console.error(
                     "Permission error in fetching getTeamGamesRefs:",
