@@ -1,18 +1,10 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  Input,
-  OnInit,
-  ViewChild,
-} from "@angular/core";
+import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
   ModalController,
   // NavController,
   NavParams,
-  ToastController,
   Platform,
 } from "@ionic/angular";
 import { Game } from "src/app/models/game";
@@ -24,7 +16,7 @@ import {
   Position,
 } from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import { combineLatest, forkJoin, lastValueFrom, Observable, of } from "rxjs";
+import { forkJoin, lastValueFrom, Observable, of } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "@angular/fire/auth";
 import { catchError, map, switchMap, take, tap } from "rxjs/operators";
@@ -57,11 +49,12 @@ export class ChampionshipDetailPage implements OnInit {
 
   mode = "yes";
 
-  //   user$: Observable<User>;
+  user$: Observable<User>;
   user: User;
-
   coordinates: Position;
   teamAdminList$: Observable<Team[]>;
+  children: Profile[];
+  showStatus: boolean;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -70,10 +63,8 @@ export class ChampionshipDetailPage implements OnInit {
     private readonly userProfileService: UserProfileService,
     private readonly alertCtrl: AlertController,
     private readonly championshipService: ChampionshipService,
-    private readonly toastController: ToastController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
-    private cdr: ChangeDetectorRef,
     private translate: TranslateService,
     private uiService: UiService,
   ) {
@@ -81,11 +72,22 @@ export class ChampionshipDetailPage implements OnInit {
     this.teamAdminList$ = this.fbService.getTeamAdminList();
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.game = this.navParams.get("data");
+    this.isFuture = this.navParams.get("isFuture");
     this.game$ = this.getGame(this.game.teamId, this.game.id);
-
+    this.user$ = this.authService.getUser$();
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    await this.initUserAndChildren();
     this.geolocationPermission();
+  }
+
+  private async initUserAndChildren() {
+    this.user = await lastValueFrom(this.authService.getUser$().pipe(take(1)));
+    this.children = await lastValueFrom(
+      this.userProfileService.getChildren(this.user.uid).pipe(take(1)),
+    );
+    this.showStatus = !(this.children && this.children.length > 0);
   }
 
   async geolocationPermission() {
@@ -161,10 +163,18 @@ export class ChampionshipDetailPage implements OnInit {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => {
-        // this.setMap();
         this.user = user;
         if (!user) throw new Error("User not found");
       }),
+      switchMap((user) => {
+        return this.userProfileService.getChildren(user.uid).pipe(
+          tap((children) => {
+            this.children = children;
+            console.log("children", this.children);
+          }),
+        );
+      }),
+
       switchMap(() => this.championshipService.getTeamGameRef(teamId, gameId)),
       switchMap((game) => {
         if (!game) return of(null);
@@ -246,12 +256,24 @@ export class ChampionshipDetailPage implements OnInit {
                               a.firstName.localeCompare(b.firstName),
                             ); // Ensuring 'status: null' is explicitly set
 
-                          const userAttendee = attendeeDetails.find(
-                            (att) => att.id === this.user.uid,
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null;
+                          const relevantChildren = teamMembers
+                            .filter((att) =>
+                              this.children.some(
+                                (child) => child.id === att.id,
+                              ),
+                            )
+                            .map((att) => {
+                              const child = this.children.find(
+                                (child) => child.id === att.id,
+                              );
+                              return child
+                                ? {
+                                    firstName: child.firstName,
+                                    lastName: child.lastName,
+                                  }
+                                : {};
+                            });
+
                           return {
                             ...game,
                             team, // Add team details here
@@ -260,7 +282,20 @@ export class ChampionshipDetailPage implements OnInit {
                             attendeeListTrue,
                             attendeeListFalse,
                             unrespondedMembers,
-                            status,
+                            children: relevantChildren,
+                            status: attendeeDetails
+                              .filter((att) =>
+                                [
+                                  this.user.uid,
+                                  ...this.children.map((child) => child.id),
+                                ].includes(att.id),
+                              )
+                              .map((att) => ({
+                                id: att.id,
+                                status: att.status,
+                                firstName: att.firstName,
+                                lastName: att.lastName,
+                              })),
                           };
                         }),
                         catchError((err) => {
@@ -269,13 +304,14 @@ export class ChampionshipDetailPage implements OnInit {
                             ...game,
                             team, // Add team details here
                             teamId: teamId,
+                            children: [],
                             attendees: [],
                             attendeeListTrue: [],
                             attendeeListFalse: [],
                             unrespondedMembers: teamMembersWithDetails
                               .filter((member) => member !== null)
                               .map((member) => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
-                            status: null,
+                            status: [], // Empty array for status in case of error
                           });
                         }),
                       );
@@ -288,11 +324,12 @@ export class ChampionshipDetailPage implements OnInit {
                   ...game,
                   team, // Add team details here
                   teamId: teamId,
+                  children: [],
                   attendees: [],
                   attendeeListTrue: [],
                   attendeeListFalse: [],
                   unrespondedMembers: [],
-                  status: null,
+                  status: [], // Empty array for status in case of error
                 });
               }),
             );
@@ -343,56 +380,43 @@ export class ChampionshipDetailPage implements OnInit {
     alert.present();
   }
 
-  async toggle(status: boolean, game: any) {
+  async processToggle(userId: string, status: boolean, game: any) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`,
+      `Set Status ${status} for user ${userId} and team ${game.teamId} and game ${game.id}`,
     );
-    console.log(game);
     const newStartDate = game.dateTime.toDate();
     newStartDate.setHours(Number(game.time.substring(0, 2)));
-    console.log(newStartDate);
 
-    // Get team threshold via training.teamId
-    console.log("Grenzwert ");
-    const championshipTreshold = game.team.championshipThreshold || 0;
-    console.log(championshipTreshold);
-    // Verpätete Abmeldung?
+    const championshipThreshold = game.team.championshipThreshold || 0;
+
     if (
       newStartDate.getTime() - new Date().getTime() <
-        1000 * 60 * 60 * championshipTreshold &&
+        1000 * 60 * 60 * championshipThreshold &&
       status == false &&
-      championshipTreshold
+      championshipThreshold
     ) {
       console.log("too late");
       await this.tooLateToggle();
     } else {
-      // OK
-      await this.championshipService.setTeamGameAttendeeStatus(
+      await this.championshipService.setTeamGameAttendeeStatusAdmin(
         status,
         game.teamId,
         game.id,
+        userId,
       );
       this.presentToast();
     }
   }
+
   async toggleItem(
-    slidingItem: IonItemSliding,
+    item: IonItemSliding,
     status: boolean,
-    game: Game,
+    game: any,
     memberId: string,
   ) {
-    slidingItem.closeOpened();
-
-    console.log(
-      `Set Status ${status} for user ${memberId} and team ${game.teamId} and game ${game.id}`,
-    );
-    await this.championshipService.setTeamGameAttendeeStatusAdmin(
-      status,
-      game.teamId,
-      game.id,
-      memberId,
-    );
-    this.presentToast();
+    console.log("toggleItem", item, status, game, memberId);
+    await item.close();
+    await this.processToggle(memberId, status, game);
   }
 
   async toastActionError(error) {

@@ -69,6 +69,7 @@ export class HelferPage implements OnInit {
     private activatedRoute: ActivatedRoute,
     private userProfileService: UserProfileService,
     private uiService: UiService,
+    private readonly alertCtrl: AlertController,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -423,13 +424,84 @@ export class HelferPage implements OnInit {
     );
   }
   async toggle(status: boolean, event: HelferEvent) {
-    console.log(
-      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and training ${event.id}`,
+    // Hole die Club-Mitglieder
+    const clubMembers = await lastValueFrom(
+      this.fbService.getClubMemberRefs(event.clubId).pipe(take(1)),
     );
-    await this.eventService.setClubHelferEventAttendeeStatus(
+    // Hole die Kinder des aktuellen Benutzers
+    const children = await lastValueFrom(
+      this.userProfileService.getChildren(this.user.uid).pipe(take(1)),
+    );
+    // Sammle alle möglichen Mitglieder (aktueller Benutzer + Kinder)
+    const possibleMembers = [
+      this.user,
+      ...children.map((child) => ({ uid: child.id })),
+    ];
+    // Filtere die tatsächlichen Club-Mitglieder
+    const clubMemberIds = clubMembers.map((member) => member.id);
+    const validMembers = possibleMembers.filter((member) =>
+      clubMemberIds.includes(member.uid),
+    );
+    if (validMembers.length === 0) {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("common.error__no_club_member")),
+      );
+      return;
+    }
+    if (validMembers.length === 1) {
+      // Nur ein Kind oder nur Elternteil: direkt zusagen
+      await this.processToggle(validMembers[0].uid, status, event);
+    } else {
+      // Mehrere Kinder/Eltern: Auswahl anzeigen
+      const alert = await this.alertCtrl.create({
+        header: await lastValueFrom(this.translate.get("common.select_member")),
+        inputs: await Promise.all(
+          validMembers.map(async (member) => {
+            const profile =
+              member.uid === this.user.uid
+                ? { firstName: "Ich", lastName: "" }
+                : await lastValueFrom(
+                    this.userProfileService
+                      .getUserProfileById(member.uid)
+                      .pipe(take(1)),
+                  );
+            return {
+              type: "radio" as const,
+              label: `${profile.firstName} ${profile.lastName}`,
+              value: member.uid,
+            };
+          }),
+        ),
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("common.cancel")),
+            role: "cancel",
+          },
+          {
+            text: await lastValueFrom(this.translate.get("common.ok")),
+            role: "confirm",
+            handler: (selectedId) => {
+              if (selectedId) {
+                this.processToggle(selectedId, status, event);
+              }
+            },
+          },
+        ],
+      });
+      await alert.present();
+    }
+  }
+
+  private async processToggle(
+    userId: string,
+    status: boolean,
+    event: HelferEvent,
+  ) {
+    await this.eventService.setClubHelferEventAttendeeStatusAdmin(
       status,
       event.clubId,
       event.id,
+      userId,
     );
     this.presentToast();
   }

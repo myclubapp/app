@@ -6,10 +6,10 @@ export interface Game {
   date: string;
   time: string;
   dateTime: Timestamp;
-  
+
   location: string;
   city: string;
-  
+
   longitude: string;
   latitude: string;
   liga: string;
@@ -42,7 +42,7 @@ export interface Game {
   teamRef: any;
 
   // Business Logic Fields
-  status: boolean;
+  status: any;
   countAttendees: number;
   attendees: any;
   children: any;

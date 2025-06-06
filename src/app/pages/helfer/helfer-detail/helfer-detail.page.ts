@@ -55,6 +55,9 @@ export class HelferDetailPage implements OnInit {
   clubAdminList$: Observable<Club[]>;
   eventHasChanged: any;
 
+  teamAdminList$: Observable<any[]>;
+  children: Profile[] = [];
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -71,21 +74,16 @@ export class HelferDetailPage implements OnInit {
 
   async ngOnInit() {
     this.event = this.navParams.get("data");
-    this.event$ = of(this.event);
-    // console.log("data here:   " + this.event.clubId, this.event.id);
-    // this.event$ = of(this.event);
-
-    // GET HELFEREVENT && BASIC ATTENDEE
+    this.isFuture = this.navParams.get("isFuture");
     this.event$ = this.getHelferEvent(this.event.clubId, this.event.id);
 
-    // GET SCHICHTEN
+    this.clubAdminList$ = this.fbService.getClubAdminList();
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+
     this.schichten$ = this.getHelferEventSchichtenWithAttendees(
       this.event.clubId,
       this.event.id,
     );
-
-    //Create Events, Helfer, News
-    this.clubAdminList$ = this.fbService.getClubAdminList();
     this.eventHasChanged = {};
   }
 
@@ -125,120 +123,15 @@ export class HelferDetailPage implements OnInit {
         this.user = user;
         if (!user) throw new Error("User not found");
       }),
-      switchMap(() => this.eventService.getClubHelferEventRef(clubId, eventId)),
-      switchMap((event) => {
-        if (!event) return of(null);
-
-        // Fetch club details
-        return this.fbService.getClubRef(clubId).pipe(
-          switchMap((club) => {
-            if (!club) return of(null);
-
-            // Fetch all club members first
-            return this.fbService.getClubMemberRefs(clubId).pipe(
-              switchMap((clubMembers) => {
-                const clubMemberProfiles$ = clubMembers.map((member) =>
-                  this.userProfileService.getUserProfileById(member.id).pipe(
-                    take(1),
-                    catchError((err) => {
-                      console.log(
-                        `Failed to fetch profile for club member ${member.id}:`,
-                        err,
-                      );
-                      return of({
-                        id: member.id,
-                        firstName: "Unknown",
-                        lastName: "Unknown",
-                        status: null,
-                      });
-                    }),
-                  ),
-                );
-
-                // Fetch all attendees next
-                return forkJoin(clubMemberProfiles$).pipe(
-                  switchMap((clubMembersWithDetails) => {
-                    return this.eventService
-                      .getClubHelferEventAttendeesRef(clubId, eventId)
-                      .pipe(
-                        map((attendees) => {
-                          const attendeeDetails = attendees
-                            .map((attendee) => {
-                              const detail = clubMembersWithDetails.find(
-                                (member) => member && member.id === attendee.id,
-                              );
-                              return detail
-                                ? { ...detail, status: attendee.status }
-                                : null;
-                            })
-                            .filter((item) => item !== null);
-
-                          const attendeeListTrue = attendeeDetails.filter(
-                            (att) => att && att.status === true,
-                          );
-                          const attendeeListFalse = attendeeDetails.filter(
-                            (att) => att && att.status === false,
-                          );
-                          const respondedIds = new Set(
-                            attendeeDetails.map((att) => att.id),
-                          );
-                          const unrespondedMembers =
-                            clubMembersWithDetails.filter(
-                              (member) =>
-                                member && !respondedIds.has(member.id),
-                            );
-
-                          const userAttendee = attendeeDetails.find(
-                            (att) => att && att.id === this.user.uid,
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null;
-
-                          return {
-                            ...event,
-                            club,
-                            attendees: attendeeDetails,
-                            attendeeListTrue,
-                            attendeeListFalse,
-                            unrespondedMembers,
-                            status,
-                          };
-                        }),
-                        catchError((err) => {
-                          console.error("Error fetching attendees:", err);
-                          return of({
-                            ...event,
-                            club,
-                            attendees: [],
-                            attendeeListTrue: [],
-                            attendeeListFalse: [],
-                            unrespondedMembers: clubMembersWithDetails.filter(
-                              (member) => member !== null,
-                            ),
-                            status: null,
-                          });
-                        }),
-                      );
-                  }),
-                );
-              }),
-              catchError((err) => {
-                console.error("Error fetching club members:", err);
-                return of({
-                  ...event,
-                  club,
-                  attendees: [],
-                  attendeeListTrue: [],
-                  attendeeListFalse: [],
-                  unrespondedMembers: [],
-                  status: null,
-                });
-              }),
-            );
+      switchMap((user) => {
+        return this.userProfileService.getChildren(user.uid).pipe(
+          tap((children) => {
+            this.children = children;
+            console.log("children", this.children);
           }),
         );
       }),
+      switchMap(() => this.eventService.getClubHelferEventRef(clubId, eventId)),
       catchError((err) => {
         console.error("Error in getHelferEventWithAttendees:", err);
         return of(null);
@@ -323,25 +216,26 @@ export class HelferDetailPage implements OnInit {
                                   member && !respondedIds.has(member.id),
                               );
 
-                            // Find the user's attendee details to get the user's status
-                            const userAttendee = attendeeDetails.find(
-                              (att) => att.id === this.user.uid,
-                            );
-                            const userStatus = userAttendee
-                              ? userAttendee.status
-                              : null;
-                            const userConfirmed = userAttendee
-                              ? userAttendee.confirmed
-                              : null;
-
                             return {
                               ...schicht,
                               attendees: attendeeDetails,
                               attendeeListTrue,
                               attendeeListFalse,
                               unrespondedMembers,
-                              status: userStatus, // Status of the logged-in user as an attendee
-                              confirmed: userConfirmed,
+                              status: attendeeDetails
+                                .filter((att) =>
+                                  [
+                                    this.user.uid,
+                                    ...this.children.map((child) => child.id),
+                                  ].includes(att.id),
+                                )
+                                .map((att) => ({
+                                  id: att.id,
+                                  status: att.status,
+                                  confirmed: att.confirmed,
+                                  firstName: att.firstName,
+                                  lastName: att.lastName,
+                                })),
                             };
                           }),
                           catchError((err) => {
@@ -482,7 +376,7 @@ export class HelferDetailPage implements OnInit {
     memberId: string,
   ) {
     slidingItem.closeOpened();
-
+    console.log("toggleSchichtItem", status, event, schicht, memberId);
     await this.eventService.setClubHelferEventSchichtAttendeeStatusAdmin(
       status,
       event.clubId,
@@ -493,48 +387,89 @@ export class HelferDetailPage implements OnInit {
     this.presentToast();
   }
 
-  async toggleSchicht(status: boolean, event, schicht) {
-    console.log(`Set Status ${status}`);
-
-    // Set "global status" as well.. ? Doesn't make sense..
-    // this.toggle(status, this.event);
-
-    console.log(
-      `Set Status ${status} for user ${this.user.uid} and Club ${event.clubId} and event ${event.id}`,
+  async toggleSchicht(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    event,
+    schicht,
+  ) {
+    // Hole die Club-Mitglieder
+    const clubMembers = await lastValueFrom(
+      this.fbService.getClubMemberRefs(event.clubId).pipe(take(1)),
     );
-    const newStartDate = event.date.toDate();
-    newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
-    // console.log(newStartDate);
-
-    // Get team threshold via training.teamId
-    console.log("Grenzwert ");
-    const helferThreshold = event.club.helferThreshold || 0;
-    console.log(helferThreshold);
-
-    if (
-      schicht["attendeeListTrue"].length >= schicht.countNeeded &&
-      status == true
-    ) {
-      console.log("too many");
-      this.tooMany();
-    } else if (
-      newStartDate.getTime() - new Date().getTime() <
-        1000 * 60 * 60 * helferThreshold &&
-      status == false &&
-      helferThreshold
-    ) {
-      // Verpätete Abmeldung?
-      console.log("too late");
-      await this.tooLateToggle();
-    } else {
-      // OK
-      await this.eventService.setClubHelferEventSchichtAttendeeStatus(
-        status,
-        event.clubId,
-        event.id,
-        schicht.id,
+    // Hole die Kinder des aktuellen Benutzers
+    const children = await lastValueFrom(
+      this.userProfileService.getChildren(this.user.uid).pipe(take(1)),
+    );
+    // Sammle alle möglichen Mitglieder (aktueller Benutzer + Kinder)
+    const possibleMembers = [
+      this.user,
+      ...children.map((child) => ({ uid: child.id })),
+    ];
+    // Filtere die tatsächlichen Club-Mitglieder
+    const clubMemberIds = clubMembers.map((member) => member.id);
+    const validMembers = possibleMembers.filter((member) =>
+      clubMemberIds.includes(member.uid),
+    );
+    if (validMembers.length === 0) {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("common.error__no_club_member")),
       );
-      this.presentToast();
+      return;
+    }
+    if (validMembers.length === 1) {
+      // Nur ein Kind oder nur Elternteil: direkt zusagen
+      await this.toggleSchichtItem(
+        slidingItem,
+        status,
+        event,
+        schicht,
+        validMembers[0].uid,
+      );
+    } else {
+      // Mehrere Kinder/Eltern: Auswahl anzeigen
+      const alert = await this.alertCtrl.create({
+        header: await lastValueFrom(this.translate.get("common.select_member")),
+        inputs: await Promise.all(
+          validMembers.map(async (member) => {
+            const profile =
+              member.uid === this.user.uid
+                ? { firstName: "Ich", lastName: "" }
+                : await lastValueFrom(
+                    this.userProfileService
+                      .getUserProfileById(member.uid)
+                      .pipe(take(1)),
+                  );
+            return {
+              type: "radio" as const,
+              label: `${profile.firstName} ${profile.lastName}`,
+              value: member.uid,
+            };
+          }),
+        ),
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("common.cancel")),
+            role: "cancel",
+          },
+          {
+            text: await lastValueFrom(this.translate.get("common.ok")),
+            role: "confirm",
+            handler: (selectedId) => {
+              if (selectedId) {
+                this.toggleSchichtItem(
+                  slidingItem,
+                  status,
+                  event,
+                  schicht,
+                  selectedId,
+                );
+              }
+            },
+          },
+        ],
+      });
+      await alert.present();
     }
   }
 
@@ -557,40 +492,6 @@ export class HelferDetailPage implements OnInit {
     }
   }
 
-  async toggle(status: boolean, event: HelferEvent | any) {
-    console.log(
-      `Set Status ${status} for user ${this.user.uid} and Club ${this.event.clubId} and event ${event.id}`,
-    );
-    const newStartDate = event.date.toDate();
-    newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
-    // console.log(newStartDate);
-
-    // Get team threshold via training.teamId
-    console.log("Grenzwert ");
-    const helferThreshold = event.club.helferThreshold || 0;
-    console.log(helferThreshold);
-
-    if (event.count >= event.countNeeded) {
-      console.log("too many");
-    } else if (
-      newStartDate.getTime() - new Date().getTime() <
-        1000 * 60 * 60 * helferThreshold &&
-      status == false &&
-      helferThreshold
-    ) {
-      // Verpätete Abmeldung?
-      console.log("too late");
-      await this.tooLateToggle();
-    } else {
-      // OK
-      await this.eventService.setClubHelferEventAttendeeStatus(
-        status,
-        this.event.clubId,
-        event.id,
-      );
-      this.presentToast();
-    }
-  }
   async tooLateToggle() {
     await this.uiService.showInfoDialog({
       header: await lastValueFrom(

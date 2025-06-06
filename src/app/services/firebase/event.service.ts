@@ -362,6 +362,19 @@ export class EventService {
     return setDoc(statusRef, { status });
   }
 
+  async setClubHelferEventAttendeeStatusAdmin(
+    status: boolean,
+    clubId: string,
+    eventId: string,
+    memberId: string,
+  ) {
+    const statusRef = doc(
+      this.firestore,
+      `club/${clubId}/helferEvents/${eventId}/attendees/${memberId}`,
+    );
+    return await setDoc(statusRef, { status });
+  }
+
   async setCreateHelferEvent(event: HelferEvent) {
     const user = this.authService.auth.currentUser;
     // console.log("Helferevent");
@@ -466,8 +479,7 @@ export class EventService {
   ) {
     const statusRef = doc(
       this.firestore,
-      `teams/${teamId}/events/${eventId}/attendees/${userId}`
-    );
+      `teams/${teamId}/events/${eventId}/attendees/${userId}`    );
     return await setDoc(statusRef, { status });
   }
 

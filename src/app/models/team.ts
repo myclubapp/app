@@ -10,6 +10,8 @@ export interface Team {
   liga: string;
   type: string;
   updated: Timestamp;
+  trainingThreshold: number;
+  championshipThreshold: number;
   jahresbeitragWert?: number;
   jahresbeitragWaehrung?: string;
 }

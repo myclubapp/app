@@ -199,6 +199,7 @@ export class TrainingsPage implements OnInit {
       take(1),
       tap((user) => {
         this.user = user;
+        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         if (!user) return of([]);
@@ -208,6 +209,7 @@ export class TrainingsPage implements OnInit {
           this.userProfileService.getChildren(user.uid).pipe(
             tap((children) => {
               this.children = children;
+              console.log("children", this.children);
             }),
             switchMap((children: Profile[]) =>
               children.length > 0
@@ -270,6 +272,14 @@ export class TrainingsPage implements OnInit {
           combineLatest(
             relevantTeams.map((team) => {
               return this.trainingService.getTeamTrainingsRefs(team.id).pipe(
+                catchError((err) => {
+                  console.error(
+                    "Permission error in fetching getTeamTrainingsRefs:",
+                    team.id,
+                    err,
+                  );
+                  return of([]);
+                }),
                 switchMap((teamTrainings) => {
                   if (teamTrainings.length === 0) return of([]);
                   return combineLatest(
@@ -715,6 +725,7 @@ export class TrainingsPage implements OnInit {
   }
 
   async toggleAll() {
+    // User meldet sich für alle Trainings an
     try {
       const trainingList = await lastValueFrom(
         this.trainingList$.pipe(take(1)),
@@ -744,7 +755,6 @@ export class TrainingsPage implements OnInit {
   }
 
   async toggle(status: boolean, training: any) {
-    // console.log("toggle", training, status);
     // Hole die Team-Mitglieder
     const teamMembers = await lastValueFrom(
       this.fbService.getTeamMemberRefs(training.teamId).pipe(take(1)),
@@ -817,15 +827,15 @@ export class TrainingsPage implements OnInit {
           {
             text: await lastValueFrom(this.translate.get("common.ok")),
             role: "confirm",
-            handler: (selectedId) => {
-              if (selectedId) {
-                this.processToggle(selectedId, status, training);
-              }
-            },
           },
         ],
       });
       await alert.present();
+
+      const { data, role } = await alert.onDidDismiss();
+      if (role === "confirm" && data) {
+        await this.processToggle(data, status, training);
+      }
     }
   }
 

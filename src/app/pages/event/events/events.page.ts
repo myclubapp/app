@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { MyClubAppWidget } from "myclub-widget-plugin";
 
 import {
   IonItemSliding,
@@ -169,6 +168,7 @@ export class EventsPage implements OnInit {
       take(1),
       tap((user) => {
         this.user = user;
+        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         if (!user) return of([]);
@@ -223,12 +223,12 @@ export class EventsPage implements OnInit {
                       .getClubEventAttendeesRef(club.id, event.id)
                       .pipe(
                         map((attendees) => {
-                          const attendeeIds = [
+                          const allIds = [
                             this.user.uid,
-                            ...this.children.map((child) => child.id),
+                            ...(this.children?.map((child) => child.id) || []),
                           ];
                           const userAttendee = attendees.find((att) =>
-                            attendeeIds.includes(att.id),
+                            allIds.includes(att.id),
                           );
                           const status = userAttendee
                             ? userAttendee.status
@@ -408,32 +408,95 @@ export class EventsPage implements OnInit {
   }
 
   async toggle(status: boolean, event: Veranstaltung | any) {
-    console.log(
-      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`,
+    // Hole die Club-Mitglieder
+    const clubMembers = await lastValueFrom(
+      this.fbService.getClubMemberRefs(event.clubId).pipe(take(1)),
     );
+    // Hole die Kinder des aktuellen Benutzers
+    const children = await lastValueFrom(
+      this.userProfileService.getChildren(this.user.uid).pipe(take(1)),
+    );
+    // Sammle alle möglichen Mitglieder (aktueller Benutzer + Kinder)
+    const possibleMembers = [
+      this.user,
+      ...children.map((child) => ({ uid: child.id })),
+    ];
+    // Filtere die tatsächlichen Club-Mitglieder
+    const clubMemberIds = clubMembers.map((member) => member.id);
+    const validMembers = possibleMembers.filter((member) =>
+      clubMemberIds.includes(member.uid),
+    );
+    if (validMembers.length === 0) {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("common.error__no_club_member")),
+      );
+      return;
+    }
+    if (validMembers.length === 1) {
+      // Nur ein Kind oder nur Elternteil: direkt zusagen
+      await this.processToggle(validMembers[0].uid, status, event);
+    } else {
+      // Mehrere Kinder/Eltern: Auswahl anzeigen
+      const alert = await this.alertCtrl.create({
+        header: await lastValueFrom(this.translate.get("common.select_member")),
+        inputs: await Promise.all(
+          validMembers.map(async (member) => {
+            const profile =
+              member.uid === this.user.uid
+                ? { firstName: "Ich", lastName: "" }
+                : await lastValueFrom(
+                    this.userProfileService
+                      .getUserProfileById(member.uid)
+                      .pipe(take(1)),
+                  );
+            return {
+              type: "radio" as const,
+              label: `${profile.firstName} ${profile.lastName}`,
+              value: member.uid,
+            };
+          }),
+        ),
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("common.cancel")),
+            role: "cancel",
+          },
+          {
+            text: await lastValueFrom(this.translate.get("common.ok")),
+            role: "confirm",
+            handler: (selectedId) => {
+              if (selectedId) {
+                this.processToggle(selectedId, status, event);
+              }
+            },
+          },
+        ],
+      });
+      await alert.present();
+    }
+  }
+
+  private async processToggle(
+    userId: string,
+    status: boolean,
+    event: Veranstaltung | any,
+  ) {
     const newStartDate = event.date.toDate();
     newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
-    // console.log(newStartDate);
-
-    // Get team threshold via training.teamId
-    console.log("Grenzwert ");
     const eventThreshold = event.club.eventThreshold || 0;
-    console.log(eventThreshold);
-    // Verpätete Abmeldung?
     if (
       newStartDate.getTime() - new Date().getTime() <
         1000 * 60 * 60 * eventThreshold &&
       status == false &&
       eventThreshold
     ) {
-      console.log("too late");
       await this.tooLateToggle();
     } else {
-      // OK
-      await this.eventService.setClubEventAttendeeStatus(
+      await this.eventService.setClubEventAttendeeStatusAdmin(
         status,
         event.clubId,
         event.id,
+        userId,
       );
       this.presentToast();
     }

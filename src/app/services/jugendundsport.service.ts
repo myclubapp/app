@@ -7,6 +7,8 @@ import { lastValueFrom, take, forkJoin } from "rxjs";
 import { Team } from "../models/team";
 import { FirebaseService } from "./firebase.service";
 import { UserProfileService } from "./firebase/user-profile.service";
+import { Browser } from "@capacitor/browser";
+import { Capacitor } from "@capacitor/core";
 
 @Injectable({
   providedIn: "root",
@@ -52,6 +54,47 @@ export class JugendundsportService {
     if (diffInMinutes <= 0) diffInMinutes += 24 * 60; // Falls über Mitternacht
 
     return diffInMinutes.toString();
+  }
+
+  private async downloadCSV(
+    csvContent: string,
+    fileName: string,
+    successMessage: string,
+  ) {
+    try {
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+      if (Capacitor.isNativePlatform()) {
+        // Für mobile Apps: Konvertiere Blob zu Data URL
+        const reader = new FileReader();
+        const dataUrl = await new Promise<string>((resolve) => {
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        });
+        await Browser.open({ url: dataUrl });
+      } else {
+        // Für Web-Browser: Traditioneller Download
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", fileName);
+        link.style.visibility = "hidden";
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      await this.uiService.showSuccessToast(
+        await lastValueFrom(this.translate.get(successMessage)),
+      );
+    } catch (error) {
+      console.error("Fehler beim Herunterladen der CSV-Datei:", error);
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("team.export.error")),
+      );
+    }
   }
 
   async exportTrainingData(team: Team) {
@@ -107,24 +150,10 @@ export class JugendundsportService {
         ...csvData.map((row) => row.join(";")),
       ].join("\n");
 
-      // Blob erstellen und herunterladen
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      const url = URL.createObjectURL(blob);
-
-      link.setAttribute("href", url);
-      link.setAttribute(
-        "download",
+      await this.downloadCSV(
+        csvContent,
         `J+S_Trainings_${team.name}_${new Date().toISOString().split("T")[0]}.csv`,
-      );
-      link.style.visibility = "hidden";
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      await this.uiService.showSuccessToast(
-        await lastValueFrom(this.translate.get("team.export.success")),
+        "team.export.success",
       );
     } catch (error) {
       console.error("Fehler beim Exportieren der Trainingsdaten:", error);
@@ -180,24 +209,10 @@ export class JugendundsportService {
         ...csvData.map((row) => row.join(";")),
       ].join("\n");
 
-      // Blob erstellen und herunterladen
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      const url = URL.createObjectURL(blob);
-
-      link.setAttribute("href", url);
-      link.setAttribute(
-        "download",
+      await this.downloadCSV(
+        csvContent,
         `J+S_Spiele_${team.name}_${new Date().toISOString().split("T")[0]}.csv`,
-      );
-      link.style.visibility = "hidden";
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      await this.uiService.showSuccessToast(
-        await lastValueFrom(this.translate.get("team.export.success")),
+        "team.export.success",
       );
     } catch (error) {
       console.error("Fehler beim Exportieren der Spieldaten:", error);
@@ -303,24 +318,10 @@ export class JugendundsportService {
         ...csvData.map((row) => row.join(";")),
       ].join("\n");
 
-      // Blob erstellen und herunterladen
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      const url = URL.createObjectURL(blob);
-
-      link.setAttribute("href", url);
-      link.setAttribute(
-        "download",
+      await this.downloadCSV(
+        csvContent,
         `AWK_Anwesenheiten_${team.name}_${new Date().toISOString().split("T")[0]}.csv`,
-      );
-      link.style.visibility = "hidden";
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      await this.uiService.showSuccessToast(
-        await lastValueFrom(this.translate.get("team.export.success")),
+        "team.export.success",
       );
     } catch (error) {
       console.error("Fehler beim Exportieren der Anwesenheitsdaten:", error);
@@ -405,24 +406,10 @@ export class JugendundsportService {
         ...csvData.map((row) => row.join(";")),
       ].join("\n");
 
-      // Blob erstellen und herunterladen
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      const url = URL.createObjectURL(blob);
-
-      link.setAttribute("href", url);
-      link.setAttribute(
-        "download",
+      await this.downloadCSV(
+        csvContent,
         `J+S_Personen_${team.name}_${new Date().toISOString().split("T")[0]}.csv`,
-      );
-      link.style.visibility = "hidden";
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      await this.uiService.showSuccessToast(
-        await lastValueFrom(this.translate.get("team.export.success")),
+        "team.export.success",
       );
     } catch (error) {
       console.error("Fehler beim Exportieren der Personendaten:", error);

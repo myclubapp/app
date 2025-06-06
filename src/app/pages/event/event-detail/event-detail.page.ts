@@ -52,6 +52,8 @@ export class EventDetailPage implements OnInit {
 
   eventHasChanged: any;
 
+  children: Profile[] = [];
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
@@ -66,7 +68,6 @@ export class EventDetailPage implements OnInit {
 
   ngOnInit() {
     this.event = this.navParams.get("data");
-    this.event$ = of(this.event);
     this.event$ = this.getEvent(this.event.clubId, this.event.id);
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
@@ -79,6 +80,14 @@ export class EventDetailPage implements OnInit {
       tap((user) => {
         this.user = user;
         if (!user) throw new Error("User not found");
+      }),
+      switchMap((user) => {
+        return this.userProfileService.getChildren(user.uid).pipe(
+          tap((children) => {
+            this.children = children;
+            console.log("children", this.children);
+          }),
+        );
       }),
       switchMap(() => this.eventService.getClubEventRef(clubId, eventId)),
       switchMap((event) => {
@@ -150,13 +159,6 @@ export class EventDetailPage implements OnInit {
                               a.firstName.localeCompare(b.firstName),
                             );
 
-                          const userAttendee = attendeeDetails.find(
-                            (att) => att && att.id === this.user.uid,
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null;
-                          console.log(status);
                           return {
                             ...event,
                             club,
@@ -164,7 +166,19 @@ export class EventDetailPage implements OnInit {
                             attendeeListTrue,
                             attendeeListFalse,
                             unrespondedMembers,
-                            status,
+                            status: attendeeDetails
+                              .filter((att) =>
+                                [
+                                  this.user.uid,
+                                  ...this.children.map((child) => child.id),
+                                ].includes(att.id),
+                              )
+                              .map((att) => ({
+                                id: att.id,
+                                status: att.status,
+                                firstName: att.firstName,
+                                lastName: att.lastName,
+                              })),
                           };
                         }),
                         catchError((err) => {
@@ -270,27 +284,20 @@ export class EventDetailPage implements OnInit {
     memberId: string,
   ) {
     await item.close();
-    await this.eventService.setClubEventAttendeeStatusAdmin(
-      status,
-      event.clubId,
-      event.id,
-      memberId,
-    );
-    this.presentToast();
+    await this.processToggle(memberId, status, event);
   }
 
-  async toggle(status: boolean, event: Veranstaltung | any) {
+  async processToggle(userId: string, status: boolean, event: any) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and club ${this.event.clubId} and event ${event.id}`,
+      `Set Status ${status} for user ${userId} and team ${event.clubId} and event ${event.id}`,
     );
     const newStartDate = event.date.toDate();
     newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
 
-    // Get team threshold via training.teamId
-    console.log("Grenzwert ");
+    // console.log("Grenzwert ");
     const eventThreshold = event.club.eventThreshold || 0;
-    console.log(eventThreshold);
-    // Verpätete Abmeldung?
+    // console.log(eventThreshold);
+
     if (
       newStartDate.getTime() - new Date().getTime() <
         1000 * 60 * 60 * eventThreshold &&
@@ -301,14 +308,47 @@ export class EventDetailPage implements OnInit {
       await this.tooLateToggle();
     } else {
       // OK
-      await this.eventService.setClubEventAttendeeStatus(
+      await this.eventService.setClubEventAttendeeStatusAdmin(
         status,
         this.event.clubId,
         event.id,
+        userId,
       );
       this.presentToast();
     }
   }
+
+  /*
+    async toggle(status: boolean, event: Veranstaltung | any) {
+      console.log(
+        `Set Status ${status} for user ${this.user.uid} and club ${this.event.clubId} and event ${event.id}`,
+      );
+      const newStartDate = event.date.toDate();
+      newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
+  
+      // Get team threshold via training.teamId
+      console.log("Grenzwert ");
+      const eventThreshold = event.club.eventThreshold || 0;
+      console.log(eventThreshold);
+      // Verpätete Abmeldung?
+      if (
+        newStartDate.getTime() - new Date().getTime() <
+          1000 * 60 * 60 * eventThreshold &&
+        status == false &&
+        eventThreshold
+      ) {
+        console.log("too late");
+        await this.tooLateToggle();
+      } else {
+        // OK
+        await this.eventService.setClubEventAttendeeStatus(
+          status,
+          this.event.clubId,
+          event.id,
+        );
+        this.presentToast();
+      }
+    }*/
   async tooLateToggle() {
     const alert = await this.alertCtrl.create({
       header: "Abmelden nicht möglich",

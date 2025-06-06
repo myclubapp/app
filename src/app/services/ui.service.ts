@@ -236,4 +236,74 @@ export class UiService {
 
     await actionSheet.present();
   }
+
+  /**
+   * Zeigt einen Bestätigungsdialog für Löschvorgänge mit Checkbox an
+   */
+  async showDeleteConfirmDialog(options: {
+    header: string;
+    message: string;
+    confirmText?: string;
+    cancelText?: string;
+  }): Promise<boolean> {
+    const alert = await this.alertController.create({
+      header: options.header,
+      message: options.message,
+      inputs: [
+        {
+          type: "checkbox",
+          label: await lastValueFrom(
+            this.translate.get("common.confirm_delete_checkbox"),
+          ),
+          value: "confirm",
+          checked: false,
+        },
+      ],
+      buttons: [
+        {
+          text:
+            options.cancelText ||
+            (await lastValueFrom(this.translate.get("common.cancel"))),
+          role: "destructive",
+        },
+        {
+          text:
+            options.confirmText ||
+            (await lastValueFrom(this.translate.get("common.confirm"))),
+          role: "confirm",
+          cssClass: "confirm-button-disabled",
+        },
+      ],
+    });
+
+    await alert.present();
+
+    // Nach dem Rendern auf die DOM-Elemente zugreifen
+    setTimeout(() => {
+      const checkbox = document.querySelector(
+        'ion-alert input[type="checkbox"]',
+      );
+      const buttons = document.querySelectorAll(
+        "ion-alert button.alert-button",
+      );
+      // Der Confirm-Button ist der letzte Button
+      const confirmButton = buttons[buttons.length - 1];
+      if (checkbox && confirmButton) {
+        // Initial wirklich deaktivieren
+        confirmButton.setAttribute("disabled", "true");
+        checkbox.addEventListener("change", (ev: any) => {
+          if (ev.target.checked) {
+            confirmButton.classList.remove("confirm-button-disabled");
+            confirmButton.removeAttribute("disabled");
+          } else {
+            confirmButton.classList.add("confirm-button-disabled");
+            confirmButton.setAttribute("disabled", "true");
+          }
+        });
+      }
+    }, 100);
+
+    const { role, data } = await alert.onDidDismiss();
+    return role === "confirm" && data?.includes("confirm");
+  }
 }

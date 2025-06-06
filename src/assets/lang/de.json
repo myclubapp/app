@@ -368,6 +368,7 @@
     "link__poll": "Umfrage",
     "link__placeholder": "https://",
     "confirm": "bestätigen",
+    "confirm_delete_checkbox": "Ich bestätige, dass ich diesen Eintrag wirklich löschen möchte",
     "or": "oder",
     "email__address": "E-Mail Adresse",
     "password": "Passwort",

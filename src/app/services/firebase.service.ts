@@ -36,6 +36,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { query, where } from "@angular/fire/firestore";
 import { Profile } from "../models/user";
 import { collectionGroup } from "firebase/firestore";
+import { UserProfileService } from "./firebase/user-profile.service";
 
 @Injectable({
   providedIn: "root",
@@ -46,6 +47,7 @@ export class FirebaseService {
   constructor(
     private readonly firestore: Firestore,
     private readonly authService: AuthService,
+    private readonly userProfileService: UserProfileService,
   ) {}
 
   getProduct(productId: string) {
@@ -98,7 +100,38 @@ export class FirebaseService {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.getUserClubRefs(user);
+        return combineLatest([
+          this.getUserClubRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {}),
+            switchMap((children: Profile[]) =>
+              children.length > 0
+                ? combineLatest(
+                    children.map((child) => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      console.log("Child User:", childUser);
+                      return this.getUserClubRefs(childUser);
+                    }),
+                  )
+                : of([]),
+            ),
+            map((childrenClubs) => childrenClubs.flat()),
+            tap((clubs) => console.log("Children Clubs:", clubs)),
+            catchError((error) => {
+              console.error("Error fetching children clubs:", error);
+              return of([]);
+            }),
+          ),
+        ]).pipe(
+          map(([userClubs, childrenClubs]) => {
+            const allClubs = [...userClubs, ...childrenClubs];
+            return allClubs.filter(
+              (club, index, self) =>
+                index === self.findIndex((c) => c.id === club.id),
+            );
+          }),
+        );
       }),
       mergeMap((clubs) => {
         if (clubs.length === 0) return of([]);
@@ -191,7 +224,37 @@ export class FirebaseService {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.getUserTeamRefs(user);
+        // Get user's teams and children's teams
+        return combineLatest([
+          this.getUserTeamRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {}),
+            switchMap((children: Profile[]) =>
+              children.length > 0
+                ? combineLatest(
+                    children.map((child) => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      return this.getUserTeamRefs(childUser);
+                    }),
+                  )
+                : of([]),
+            ),
+            map((childrenTeams) => childrenTeams.flat()),
+            catchError((error) => {
+              console.error("Error fetching children teams:", error);
+              return of([]);
+            }),
+          ),
+        ]).pipe(
+          map(([userTeams, childrenTeams]) => {
+            const allTeams = [...userTeams, ...childrenTeams];
+            return allTeams.filter(
+              (team, index, self) =>
+                index === self.findIndex((t) => t.id === team.id),
+            );
+          }),
+        );
       }),
       mergeMap((teams) => {
         if (teams.length === 0) return of([]);

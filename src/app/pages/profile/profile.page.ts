@@ -2,17 +2,10 @@ import {
   Component,
   OnInit,
   AfterViewInit,
-  ChangeDetectorRef,
   OnDestroy,
   Optional,
 } from "@angular/core";
-import {
-  combineLatest,
-  lastValueFrom,
-  Observable,
-  of,
-  Subscription,
-} from "rxjs";
+import { lastValueFrom, Observable, of, Subscription } from "rxjs";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
 import { User } from "@angular/fire/auth";
 import { PushNotifications } from "@capacitor/push-notifications";
@@ -37,7 +30,7 @@ import {
   PermissionStatus,
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { catchError, first, switchMap, take, tap } from "rxjs/operators";
+import { catchError, switchMap, take, tap } from "rxjs/operators";
 import {
   AlertController,
   IonRouterOutlet,
@@ -456,32 +449,28 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     this.getTeamRequestList();
   }
   async deleteProfile() {
-    const alert = await this.alertController.create({
+    const confirmed = await this.uiService.showDeleteConfirmDialog({
+      header: await lastValueFrom(
+        this.translate.get("profile.delete__profile"),
+      ),
       message: await lastValueFrom(
         this.translate.get("profile.delete_profile__confirm"),
       ),
-      buttons: [
-        {
-          role: "destructive",
-          text: await lastValueFrom(this.translate.get("common.no")),
-          handler: () => {
-            console.log("nein");
-            this.presentCancelToast();
-          },
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.yes")),
-          handler: async () => {
-            await this.authService.deleteProfile().catch((error) => {
-              this.presentErrorDeleteProfile();
-            });
-            await this.presentDeleteProfile();
-            await this.router.navigateByUrl("/logout");
-          },
-        },
-      ],
+      confirmText: await lastValueFrom(this.translate.get("common.yes")),
+      cancelText: await lastValueFrom(this.translate.get("common.no")),
     });
-    alert.present();
+
+    if (confirmed) {
+      try {
+        await this.authService.deleteProfile();
+        await this.presentDeleteProfile();
+        await this.router.navigateByUrl("/logout");
+      } catch (error) {
+        await this.presentErrorDeleteProfile();
+      }
+    } else {
+      await this.presentCancelToast();
+    }
   }
 
   async openHelferPunkte() {

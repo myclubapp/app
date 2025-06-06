@@ -363,6 +363,7 @@
     "cancel": "Annuler",
     "load": "Charger",
     "confirm": "Confirmer",
+    "confirm_delete_checkbox": "Je confirme que je veux vraiment supprimer cette entrée",
     "ok": "OK",
     "save": "Enregistrer",
     "reset_password_background__alt": "Image de fond pour la page de réinitialisation du mot de passe",

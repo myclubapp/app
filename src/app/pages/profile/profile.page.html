@@ -661,6 +661,7 @@
       </ng-container>
     </ion-list>
 
+    <!-- Kinder Requests-->
     <ng-container *ngIf="kidsRequests$ | async as kidsRequests">
       <ion-list *ngIf="kidsRequests.length > 0" lines="full" [inset]="true">
         <ion-list-header>
@@ -687,6 +688,21 @@
         </ion-item>
       </ion-list>
     </ng-container>
+
+    <!-- Support ID-->
+    <ion-list [inset]="true">
+      <ion-list-header>
+        <ion-label> {{"common.support" | translate}} </ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-icon
+          name="information-circle-outline"
+          slot="start"
+          color="medium"
+        ></ion-icon>
+        <ion-note>Profile ID: {{userProfile.id}} </ion-note>
+      </ion-item>
+    </ion-list>
 
     <div class="ion-padding">
       <ion-button
