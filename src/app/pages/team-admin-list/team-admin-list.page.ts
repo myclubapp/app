@@ -34,10 +34,10 @@ import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
 
 @Component({
-    selector: 'app-team-admin-list',
-    templateUrl: './team-admin-list.page.html',
-    styleUrls: ['./team-admin-list.page.scss'],
-    standalone: false
+  selector: "app-team-admin-list",
+  templateUrl: "./team-admin-list.page.html",
+  styleUrls: ["./team-admin-list.page.scss"],
+  standalone: false,
 })
 export class TeamAdminListPage implements OnInit {
   @Input("team") team: any;
@@ -52,7 +52,7 @@ export class TeamAdminListPage implements OnInit {
 
   teamAdmins$: Observable<any[]>; // Observable for the full list of members
   filteredTeamAdmins$: Observable<any[]>; // Observable for filtered results
-  searchTerm = new BehaviorSubject<string>('');  // Initialized with an empty string
+  searchTerm = new BehaviorSubject<string>(""); // Initialized with an empty string
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -62,13 +62,12 @@ export class TeamAdminListPage implements OnInit {
     private readonly userProfileService: UserProfileService,
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
-    private translate: TranslateService
-  ) { }
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit() {
     this.team = this.navParams.get("team");
     if (this.team.roles && this.team.roles.lenght > 0) {
-
     } else {
       this.team.roles = [];
     }
@@ -81,12 +80,9 @@ export class TeamAdminListPage implements OnInit {
     this.clubAdminList$ = this.fbService.getClubAdminList();
   }
 
-  ngOnDestroy() {
-
-  }
+  ngOnDestroy() {}
 
   edit() {
-
     if (this.allowEdit) {
       this.allowEdit = false;
     } else {
@@ -95,72 +91,81 @@ export class TeamAdminListPage implements OnInit {
   }
 
   initializeTeamAdmins() {
-    this.groupArray = [];  // Initialize or clear the group array
+    this.groupArray = []; // Initialize or clear the group array
 
     this.teamAdmins$ = this.fbService.getTeamAdminRefs(this.team.id).pipe(
       // tap(() => console.log("Fetching team admins")),
-      switchMap(members => {
+      switchMap((members) => {
         if (members.length === 0) {
           console.log("No team admins found.");
           this.groupArray = [];
           return of([]); // Emit an empty array to keep the observable alive
         }
-        const profiles$ = members.map(member =>
+        const profiles$ = members.map((member) =>
           this.userProfileService.getUserProfileById(member.id).pipe(
-            map(profile => ({
+            map((profile) => ({
               ...member, // Spread member to retain all original attributes
               ...profile, // Spread profile to overwrite and add profile attributes
               firstName: profile.firstName || "Unknown",
               lastName: profile.lastName || "Unknown",
-              roles: member.roles || []
+              roles: member.roles || [],
             })),
-            catchError(() => of({
-              ...member,
-              firstName: "Unknown",
-              lastName: "Unknown",
-              roles: member.roles ||  [] // Ensure role or other attributes are included even in error
-            }))
-          )
+            catchError(() =>
+              of({
+                ...member,
+                firstName: "Unknown",
+                lastName: "Unknown",
+                roles: member.roles || [], // Ensure role or other attributes are included even in error
+              }),
+            ),
+          ),
         );
         return combineLatest(profiles$).pipe(
-          map(profiles => profiles
-            .filter(profile => profile !== undefined)
-            .sort((a, b) => a.firstName.localeCompare(b.firstName))
-            .map(profile => {
-              const groupByChar = profile.firstName.charAt(0).toUpperCase();
-              if (!this.groupArray.includes(groupByChar)) {
-                this.groupArray.push(groupByChar);
-              }
-              return {
-                ...profile,
-                groupBy: groupByChar,
-              };
-            })
-          )
+          map((profiles) =>
+            profiles
+              .filter((profile) => profile !== undefined)
+              .sort((a, b) => a.firstName.localeCompare(b.firstName))
+              .map((profile) => {
+                const groupByChar = profile.firstName.charAt(0).toUpperCase();
+                if (!this.groupArray.includes(groupByChar)) {
+                  this.groupArray.push(groupByChar);
+                }
+                return {
+                  ...profile,
+                  groupBy: groupByChar,
+                };
+              }),
+          ),
         );
       }),
-      catchError(err => {
+      catchError((err) => {
         console.error("Error fetching Team admins:", err);
         return of([]); // Emit an empty array on error
       }),
     );
 
-    this.filteredTeamAdmins$ = combineLatest([this.teamAdmins$, this.searchTerm]).pipe(
+    this.filteredTeamAdmins$ = combineLatest([
+      this.teamAdmins$,
+      this.searchTerm,
+    ]).pipe(
       debounceTime(300),
       map(([admins, term]) => {
         if (!term) return admins;
 
-        const filtered = admins.filter(admin =>
-          admin.firstName.toLowerCase().includes(term.toLowerCase()) ||
-          admin.lastName.toLowerCase().includes(term.toLowerCase()) ||
-          admin.roles.find(role=>role.toLowerCase().includes(term.toLowerCase()))
+        const filtered = admins.filter(
+          (admin) =>
+            admin.firstName.toLowerCase().includes(term.toLowerCase()) ||
+            admin.lastName.toLowerCase().includes(term.toLowerCase()) ||
+            admin.roles.find((role) =>
+              role.toLowerCase().includes(term.toLowerCase()),
+            ),
         );
         return filtered;
       }),
-      map(filtered => {
+      map((filtered) => {
         // Update the groupArray
         this.groupArray = [];
-        filtered.forEach(admin => {
+        filtered.forEach((admin) => {
           const groupByChar = admin.firstName.charAt(0).toUpperCase();
           if (!this.groupArray.includes(groupByChar)) {
             this.groupArray.push(groupByChar);
@@ -168,77 +173,92 @@ export class TeamAdminListPage implements OnInit {
         });
         return filtered;
       }),
-      tap(filtered => console.log("Filtered admins:", filtered.length)),
-      catchError(err => {
+      tap((filtered) => console.log("Filtered admins:", filtered.length)),
+      catchError((err) => {
         console.error("Error filtering admins:", err);
         return of([]);
-      })
+      }),
     );
   }
 
   handleSearch(event: any) {
-    const searchTerm = event.detail.value || '';
-    console.log('Handling Search Event:', searchTerm);
+    const searchTerm = event.detail.value || "";
+    console.log("Handling Search Event:", searchTerm);
     this.searchTerm.next(searchTerm.trim()); // Trim and update the search term
   }
 
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
-    return teamAdminList && teamAdminList.some(team => team.id === teamId);
+    return this.fbService.isTeamAdmin(teamAdminList, teamId);
   }
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+    return this.fbService.isClubAdmin(clubAdminList, clubId);
   }
   async addAdministratorToTeam() {
     if (!this.team || !this.team.clubId) {
-      console.error('No valid team or team reference found.');
+      console.error("No valid team or team reference found.");
       return;
     }
-  
+
     try {
-      console.log('Fetching members for team ID:', this.team.id);
+      console.log("Fetching members for team ID:", this.team.id);
       const members = await lastValueFrom(
         this.fbService.getTeamMemberRefs(this.team.id).pipe(
-          first()  // Takes the first emitted value then completes
-        )
+          first(), // Takes the first emitted value then completes
+        ),
       );
-      console.log('Members fetched:', members.length);
-  
+      console.log("Members fetched:", members.length);
+
       if (!members.length) {
-        console.log('No team members found.');
+        console.log("No team members found.");
         return;
       }
-  
-      const profiles = await Promise.all(members.map(member =>
-        lastValueFrom(this.userProfileService.getUserProfileById(member.id).pipe(
-          first(),
-          //tap(profiles=>console.log(profiles)),
-          catchError(err => {
-            console.error(`Error fetching profile for ${member.id}:`, err);
-            return of({ ...member, firstName: 'Unknown', lastName: 'Unknown' });
-          })
-        ))
-      ));
-  
-      const filteredProfiles = profiles.filter(profile => profile !== undefined);
-      console.log(filteredProfiles)
-      const newTeamMembers = this.filterNewTeamMembers(filteredProfiles, await lastValueFrom(this.teamAdmins$.pipe(take(1))));
-      console.log(newTeamMembers)
-      const memberSelectOptions = this.prepareMemberSelectOptions(newTeamMembers);
-      console.log(memberSelectOptions)  
+
+      const profiles = await Promise.all(
+        members.map((member) =>
+          lastValueFrom(
+            this.userProfileService.getUserProfileById(member.id).pipe(
+              first(),
+              //tap(profiles=>console.log(profiles)),
+              catchError((err) => {
+                console.error(`Error fetching profile for ${member.id}:`, err);
+                return of({
+                  ...member,
+                  firstName: "Unknown",
+                  lastName: "Unknown",
+                });
+              }),
+            ),
+          ),
+        ),
+      );
+
+      const filteredProfiles = profiles.filter(
+        (profile) => profile !== undefined,
+      );
+      console.log(filteredProfiles);
+      const newTeamMembers = this.filterNewTeamMembers(
+        filteredProfiles,
+        await lastValueFrom(this.teamAdmins$.pipe(take(1))),
+      );
+      console.log(newTeamMembers);
+      const memberSelectOptions =
+        this.prepareMemberSelectOptions(newTeamMembers);
+      console.log(memberSelectOptions);
       if (memberSelectOptions.length > 0) {
         await this.showAddMemberAlert(memberSelectOptions);
       } else {
-        console.log('No new members available to add.');
+        console.log("No new members available to add.");
       }
     } catch (err) {
-      console.error('Error in addMemberToTeam:', err);
+      console.error("Error in addMemberToTeam:", err);
     }
   }
-  
+
   filterNewTeamMembers(profiles, teamMembers) {
-    return profiles.filter(member =>
-      !teamMembers.some(teamMember => teamMember.id === member.id)
+    return profiles.filter(
+      (member) =>
+        !teamMembers.some((teamMember) => teamMember.id === member.id),
     );
   }
 
@@ -251,8 +271,8 @@ export class TeamAdminListPage implements OnInit {
     });
 
     // Map sorted members to checkbox options
-    return sortedMembers.map(member => ({
-      type: 'checkbox',
+    return sortedMembers.map((member) => ({
+      type: "checkbox",
       name: member.id,
       label: `${member.firstName} ${member.lastName}`,
       value: member.id,
@@ -267,14 +287,14 @@ export class TeamAdminListPage implements OnInit {
       buttons: [
         {
           text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: 'cancel',
-          handler: () => console.log('Cancel clicked'),
+          role: "cancel",
+          handler: () => console.log("Cancel clicked"),
         },
         {
           text: await lastValueFrom(this.translate.get("common.add")),
           handler: (selectedMembers) => {
-            selectedMembers.forEach(memberId => {
-              console.log(memberId)
+            selectedMembers.forEach((memberId) => {
+              console.log(memberId);
               this.approveTeamAdminRequest(this.team.id, memberId);
             });
           },
@@ -284,7 +304,7 @@ export class TeamAdminListPage implements OnInit {
     await alert.present();
   }
 
-/*
+  /*
   addAdministratorToTeam() {
     if (!this.team || !this.team.id) {
       console.error('No valid team or team reference found.');
@@ -377,14 +397,15 @@ export class TeamAdminListPage implements OnInit {
   }*/
 
   async approveTeamAdminRequest(teamId, adminId) {
-    await this.fbService.addTeamAdmin(teamId, adminId).then(() => {
-      this.toastActionSaved();
-    })
+    await this.fbService
+      .addTeamAdmin(teamId, adminId)
+      .then(() => {
+        this.toastActionSaved();
+      })
       .catch((err) => {
         this.toastActionError(err);
       });
   }
-
 
   async deleteTeamAdmin(member) {
     try {

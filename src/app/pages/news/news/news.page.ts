@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, Optional } from "@angular/core";
 import {
   IonRouterOutlet,
   LoadingController,
@@ -8,15 +8,15 @@ import {
   AnimationController,
   AlertController,
 } from "@ionic/angular";
-import { Router } from '@angular/router';
+import { Router } from "@angular/router";
 // import { ActivatedRoute } from '@angular/router';
 import { News } from "src/app/models/news";
 import {
   DomSanitizer,
   SafeHtml,
   SafeUrl,
-  SafeStyle
-} from '@angular/platform-browser';
+  SafeStyle,
+} from "@angular/platform-browser";
 import { Share } from "@capacitor/share";
 import { Device } from "@capacitor/device";
 
@@ -52,10 +52,10 @@ import { Profile } from "src/app/models/user";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 
 @Component({
-    selector: "app-news",
-    templateUrl: "./news.page.html",
-    styleUrls: ["./news.page.scss"],
-    standalone: false
+  selector: "app-news",
+  templateUrl: "./news.page.html",
+  styleUrls: ["./news.page.scss"],
+  standalone: false,
 })
 export class NewsPage implements OnInit {
   skeleton = new Array(12);
@@ -87,7 +87,7 @@ export class NewsPage implements OnInit {
     // private readonly sanitization: DomSanitizer,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
-    private readonly routerOutlet: IonRouterOutlet,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
     private readonly alertCtrl: AlertController,
     private readonly menuCtrl: MenuController,
@@ -95,7 +95,7 @@ export class NewsPage implements OnInit {
     private translate: TranslateService,
     private userProfileService: UserProfileService,
     // private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
   ) {
     this.menuCtrl.enable(true, "menu");
 
@@ -139,8 +139,6 @@ export class NewsPage implements OnInit {
       };
       this.openModal(news); 
     }*/
-
-
   }
 
   ngOnInit() {
@@ -157,20 +155,17 @@ export class NewsPage implements OnInit {
       if (state) {
         console.log(state); // 'someValue'
       } else {
-        console.log('No state provided');
+        console.log("No state provided");
       }
     }
   }
 
-
-  ngOnDestroy(): void {
-
-  }
+  ngOnDestroy(): void {}
 
   getNews() {
     return this.authService.getUser$().pipe(
       take(1),
-      tap(user => {
+      tap((user) => {
         if (!user) throw new Error("User not found");
         this.user = user;
       }),
@@ -183,35 +178,36 @@ export class NewsPage implements OnInit {
             tap((children) => {
               this.children = children;
             }),
-            switchMap((children: Profile[]) => 
-              children.length > 0 
+            switchMap((children: Profile[]) =>
+              children.length > 0
                 ? combineLatest(
-                    children.map(child => {
+                    children.map((child) => {
                       // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
                       console.log("Child User:", childUser);
                       return this.fbService.getUserClubRefs(childUser);
-                    })
+                    }),
                   )
-                : of([])
+                : of([]),
             ),
-            map(childrenClubs => childrenClubs.flat()),
+            map((childrenClubs) => childrenClubs.flat()),
             tap((clubs) => console.log("Children Clubs:", clubs)),
             catchError((error) => {
               console.error("Error fetching children clubs:", error);
               return of([]);
-            })
-          )
+            }),
+          ),
         ]).pipe(
           map(([userClubs, childrenClubs]) => {
             const allClubs = [...userClubs, ...childrenClubs];
-            return allClubs.filter((club, index, self) =>
-              index === self.findIndex((c) => c.id === club.id)
+            return allClubs.filter(
+              (club, index, self) =>
+                index === self.findIndex((c) => c.id === club.id),
             );
-          })
+          }),
         );
       }),
-      switchMap(clubs => {
+      switchMap((clubs) => {
         if (!clubs.length) {
           console.log("No clubs associated with the user.");
           /*this.router.navigateByUrl('/onboarding-club').then(navOnboardingClub=>{
@@ -226,35 +222,47 @@ export class NewsPage implements OnInit {
 
         // Fetch detailed information for each club
         return combineLatest(
-          clubs.map(club => this.fbService.getClubRef(club.id).pipe(
-            switchMap(clubDetail => {
-              if (!clubDetail) {
-                console.log(`No details found for club ID: ${club.id}`);
-                return of({ clubNews: [], typeNews: [] });
-              }
+          clubs.map((club) =>
+            this.fbService.getClubRef(club.id).pipe(
+              switchMap((clubDetail) => {
+                if (!clubDetail) {
+                  console.log(`No details found for club ID: ${club.id}`);
+                  return of({ clubNews: [], typeNews: [] });
+                }
 
-              const newsByClub$ = this.newsService.getClubNewsRef(club.id).pipe(
-                catchError(error => {
-                  console.error(`Error fetching news for club ID ${club.id}:`, error);
-                  return of([]);
-                })
-              );
+                const newsByClub$ = this.newsService
+                  .getClubNewsRef(club.id)
+                  .pipe(
+                    catchError((error) => {
+                      console.error(
+                        `Error fetching news for club ID ${club.id}:`,
+                        error,
+                      );
+                      return of([]);
+                    }),
+                  );
 
-              const newsByType$ = this.newsService.getNewsRef(clubDetail.type).pipe(
-                catchError(error => {
-                  console.error(`Error fetching news for type ${clubDetail.type}:`, error);
-                  return of([]);
-                })
-              );
+                const newsByType$ = this.newsService
+                  .getNewsRef(clubDetail.type)
+                  .pipe(
+                    catchError((error) => {
+                      console.error(
+                        `Error fetching news for type ${clubDetail.type}:`,
+                        error,
+                      );
+                      return of([]);
+                    }),
+                  );
 
-              return combineLatest([newsByClub$, newsByType$]).pipe(
-                map(([clubNews, typeNews]) => ({ clubNews, typeNews }))
-              );
-            })
-          ))
+                return combineLatest([newsByClub$, newsByType$]).pipe(
+                  map(([clubNews, typeNews]) => ({ clubNews, typeNews })),
+                );
+              }),
+            ),
+          ),
         );
       }),
-      map(newsArrays => {
+      map((newsArrays) => {
         const allNews = [];
 
         // Aggregate and flatten the news items
@@ -268,15 +276,18 @@ export class NewsPage implements OnInit {
 
         // Remove duplicates and sort
         return allNews
-          .filter((news, index, self) =>
-            index === self.findIndex((t) => t.id === news.id)
+          .filter(
+            (news, index, self) =>
+              index === self.findIndex((t) => t.id === news.id),
           )
-          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          .sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+          );
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error("Error fetching news:", error);
         return of([]);
-      })
+      }),
     );
   }
   getNotifications(): Observable<any[]> {
@@ -287,8 +298,8 @@ export class NewsPage implements OnInit {
       }),
       switchMap((user) => {
         return this.notificationService.getNotifications(user);
-      })
-    )
+      }),
+    );
   }
   async openNotification() {
     const modal = await this.modalCtrl.create({
@@ -296,8 +307,7 @@ export class NewsPage implements OnInit {
       presentingElement: this.routerOutlet.nativeEl,
       canDismiss: true,
       showBackdrop: true,
-      componentProps: {
-      },
+      componentProps: {},
       //   enterAnimation,
       //   leaveAnimation,
     });
@@ -306,7 +316,7 @@ export class NewsPage implements OnInit {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
-      console.log('Notification', data);
+      console.log("Notification", data);
       // console.log("TYPE:  " + data.type);
       if (data.type === "news" || data.type === "clubNews") {
         this.openModal(data);
@@ -314,7 +324,6 @@ export class NewsPage implements OnInit {
       }
     }
   }
-
 
   async openModal(news: News) {
     const modal = await this.modalCtrl.create({
@@ -347,7 +356,7 @@ export class NewsPage implements OnInit {
         text: news.leadText,
         url: news.url,
         dialogTitle: news.title,
-      }).catch((onrejected) => { });
+      }).catch((onrejected) => {});
     } else {
       await this.shareFallback(news);
     }

@@ -18,13 +18,21 @@
     <ion-list lines="full" [inset]="true">
       <ion-item>
         <ion-avatar slot="start">
-          <img *ngIf="!userProfile.profilePicture" alt="Silhouette of a person's head"
-            src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-          <img *ngIf="userProfile.profilePicture" alt="{{userProfile.firstName}} {{userProfile.lastName}}"
-            src="{{userProfile.profilePicture}}" />
+          <img
+            *ngIf="!userProfile.profilePicture"
+            alt="Silhouette of a person's head"
+            src="https://ionicframework.com/docs/img/demos/avatar.svg"
+          />
+          <img
+            *ngIf="userProfile.profilePicture"
+            alt="{{userProfile.firstName}} {{userProfile.lastName}}"
+            src="{{userProfile.profilePicture}}"
+          />
         </ion-avatar>
 
-        <ion-label>{{userProfile.firstName}} {{userProfile.lastName}}</ion-label>
+        <ion-label
+          >{{userProfile.firstName}} {{userProfile.lastName}}</ion-label
+        >
       </ion-item>
       <ion-item *ngIf="isRequest && isParent">
         <ion-icon slot="start" name="people-circle-outline"></ion-icon>
@@ -33,16 +41,30 @@
       <ion-item>
         <ion-icon slot="start" name="mail"></ion-icon>
         <ion-label>{{userProfile.email}}</ion-label>
-        <ion-icon size="small" color="primary" name="copy-outline" slot="end"
-          (click)="copy(userProfile.email)"></ion-icon>
+        <ion-icon
+          size="small"
+          color="primary"
+          name="copy-outline"
+          slot="end"
+          (click)="copy(userProfile.email)"
+        ></ion-icon>
       </ion-item>
       <ion-item *ngIf="!isRequest && userProfile.phonenumber">
         <ion-icon slot="start" name="call"></ion-icon>
         <ion-label>{{userProfile.phonenumber}}</ion-label>
-        <ion-icon size="small" color="primary" name="copy-outline" slot="end"
-          (click)="copy(userProfile.phonenumber)"></ion-icon>
+        <ion-icon
+          size="small"
+          color="primary"
+          name="copy-outline"
+          slot="end"
+          (click)="copy(userProfile.phonenumber)"
+        ></ion-icon>
       </ion-item>
 
+      <ion-item *ngIf="isRequest && $requestTeam | async as requestTeam">
+        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+        <ion-label>Angefragt für {{requestTeam.name}}</ion-label>
+      </ion-item>
 
       <ng-container *ngIf="isAdmin$ | async">
         <ion-item *ngIf="!isRequest && userProfile.dateOfBirth">
@@ -50,24 +72,33 @@
           <ion-label>
             {{ userProfile.dateOfBirth?.toDate() | date: 'dd.MM.YYYY ' }}
           </ion-label>
-          <ion-icon size="small" color="primary" name="copy-outline" slot="end"
-            (click)="copy(userProfile.dateOfBirth)"></ion-icon>
+          <ion-icon
+            size="small"
+            color="primary"
+            name="copy-outline"
+            slot="end"
+            (click)="copy(userProfile.dateOfBirth)"
+          ></ion-icon>
         </ion-item>
       </ng-container>
-
     </ion-list>
 
     <ion-list *ngIf="children$ | async as childrenList" [inset]="true">
       <ion-list-header *ngIf="childrenList.length > 0">
-        <ion-label>
-          {{ "common.children" | translate}}
-        </ion-label>
+        <ion-label> {{ "common.children" | translate}} </ion-label>
       </ion-list-header>
 
-      <ion-item *ngFor="let child of childrenList" (click)="openMember(child)" detail="true">
+      <ion-item
+        *ngFor="let child of childrenList"
+        (click)="openMember(child)"
+        detail="true"
+      >
         <ion-avatar (click)="openMember(child)" slot="start">
-          <img *ngIf="!child.profilePicture" alt="Silhouette of a person's head"
-            src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+          <img
+            *ngIf="!child.profilePicture"
+            alt="Silhouette of a person's head"
+            src="https://ionicframework.com/docs/img/demos/avatar.svg"
+          />
           <img *ngIf="child.profilePicture" src="{{child?.profilePicture}}" />
         </ion-avatar>
         <ion-label>
@@ -79,16 +110,20 @@
 
     <ion-list *ngIf="parents$ | async as parentsList" [inset]="true">
       <ion-list-header *ngIf="parentsList.length > 0">
-        
-        <ion-label>
-          {{ "common.parents" | translate}}
-        </ion-label>
+        <ion-label> {{ "common.parents" | translate}} </ion-label>
       </ion-list-header>
 
-      <ion-item *ngFor="let parent of parentsList" (click)="openMember(parent)" detail="true">
+      <ion-item
+        *ngFor="let parent of parentsList"
+        (click)="openMember(parent)"
+        detail="true"
+      >
         <ion-avatar (click)="openMember(parent)" slot="start">
-          <img *ngIf="!parent.profilePicture" alt="Silhouette of a person's head"
-            src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+          <img
+            *ngIf="!parent.profilePicture"
+            alt="Silhouette of a person's head"
+            src="https://ionicframework.com/docs/img/demos/avatar.svg"
+          />
           <img *ngIf="parent.profilePicture" src="{{parent?.profilePicture}}" />
         </ion-avatar>
         <ion-label>
@@ -98,46 +133,78 @@
       </ion-item>
     </ion-list>
 
-
-
     <div class="ion-padding" *ngIf="isRequest">
       <ion-button expand="block" color="success" id="present-alert-approve">
         {{ "common.approve_request" | translate}}
       </ion-button>
-      <ion-alert trigger="present-alert-approve" [header]="'club.request_approve_header' | translate"
+      <ion-alert
+        trigger="present-alert-approve"
+        [header]="'club.request_approve_header' | translate"
         [subHeader]="'club.request_approve_subheader' | translate"
-        [message]="'club.request_add_user_to_club' | translate" [buttons]="alertButtonsApproveClub"></ion-alert>
+        [message]="'club.request_add_user_to_club' | translate"
+        [buttons]="alertButtonsApproveClub"
+      ></ion-alert>
 
-      <ion-button fill="outline" expand="block" color="danger" (click)="deleteClubRequest(userProfile)">
+      <ion-button
+        fill="outline"
+        expand="block"
+        color="danger"
+        (click)="deleteClubRequest(userProfile)"
+      >
         {{ "common.delete_request" | translate}}
       </ion-button>
     </div>
-
   </ng-container>
-
 </ion-content>
 
 <ng-template #loading>
   <ion-list *ngIf="loading">
     <ion-grid>
       <ion-row>
-        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
+        <ion-col
+          size-lg="4"
+          size-md="6"
+          size-sm="6"
+          size="12"
+          *ngFor="let item of skeleton"
+        >
           <ion-card>
             <ion-card-header>
               <ion-card-subtitle>
-                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%"
+                ></ion-skeleton-text>
               </ion-card-subtitle>
               <ion-card-title>
-                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%"
+                ></ion-skeleton-text>
               </ion-card-title>
             </ion-card-header>
 
             <ion-card-content>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
             </ion-card-content>
           </ion-card>
         </ion-col>

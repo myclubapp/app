@@ -11,7 +11,7 @@ import {
   doc,
   limit,
 } from "@angular/fire/firestore";
-import { Observable, Observer } from "rxjs";
+import { Observable, Observer, shareReplay } from "rxjs";
 import { News } from "src/app/models/news";
 
 @Injectable({
@@ -25,19 +25,17 @@ export class NewsService {
   constructor(private firestore: Firestore) {}
 
   getNewsDetail(newsId: string): Observable<News> {
-    const newsRef = doc(
-      this.firestore,
-      `news/${newsId}`
-    );
-    return docData(newsRef, { idField: "id" }) as Observable<News>;
+    const newsRef = doc(this.firestore, `news/${newsId}`);
+    return docData(newsRef, { idField: "id" }).pipe(
+      shareReplay(10),
+    ) as Observable<News>;
   }
 
   getClubNewsDetail(clubId: string, newsId: string): Observable<News> {
-    const newsRef = doc(
-      this.firestore,
-      `club/${clubId}/news/${newsId}`
-    );
-    return docData(newsRef, { idField: "id" }) as Observable<News>;
+    const newsRef = doc(this.firestore, `club/${clubId}/news/${newsId}`);
+    return docData(newsRef, { idField: "id" }).pipe(
+      shareReplay(10),
+    ) as Observable<News>;
   }
 
   getNewsRef(type: string): Observable<News[]> {
@@ -50,11 +48,11 @@ export class NewsService {
       orderBy("date", "desc"),
       where("type", "==", type),
       where("date", ">=", this.fourtyDaysAgo.toISOString()),
-      limit(20)
+      limit(20),
     ); // heute - 20 Tage
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
-      News[]
-    >;
+    return collectionData(q, { idField: "id" }).pipe(
+      shareReplay(1),
+    ) as unknown as Observable<News[]>;
   }
 
   getClubNewsRef(clubId: string): Observable<News[]> {
@@ -64,11 +62,11 @@ export class NewsService {
       newssRefList,
       orderBy("date", "desc"),
       where("date", ">=", this.sixtyDaysAgo.toISOString()),
-      limit(20)
+      limit(20),
     ); // heute - 20 Tage
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
-      News[]
-    >;
+    return collectionData(q, { idField: "id" }).pipe(
+      shareReplay(1),
+    ) as unknown as Observable<News[]>;
   }
 
   getTeamNewsRef(teamId: string): Observable<News[]> {
@@ -78,11 +76,11 @@ export class NewsService {
       newssRefList,
       orderBy("date", "desc"),
       where("date", ">=", this.twentyDaysAgo.toISOString()),
-      limit(20)
+      limit(20),
     ); // heute - 20 Tage
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
-      News[]
-    >;
+    return collectionData(q, { idField: "id" }).pipe(
+      shareReplay(1),
+    ) as unknown as Observable<News[]>;
   }
 
   getGameReports(teamId: string): Observable<News[]> {
@@ -92,7 +90,7 @@ export class NewsService {
       newssRefList,
       orderBy("date", "desc"),
       where("date", ">=", this.twentyDaysAgo.toISOString()),
-      limit(20)
+      limit(20),
     ); // heute - 20 Tage
     return collectionData(q, { idField: "id" }) as unknown as Observable<
       News[]

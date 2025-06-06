@@ -3,7 +3,6 @@
 
 /** Ionic CSS Variables **/
 @media (prefers-color-scheme: light) {
-
   body {
     /** primary 
   --ion-color-primary: #339BDE;
@@ -24,10 +23,10 @@
 **/
 
     /** primary   **/
-    --ion-color-primary: rgb(255, 208, 0);
+    --ion-color-primary: #ffd000;
     --ion-color-primary-rgb: 255, 208, 0;
-    --ion-color-primary-contrast: #ffffff;
-    --ion-color-primary-contrast-rgb: 255, 255, 255;
+    --ion-color-primary-contrast: #000000;
+    --ion-color-primary-contrast-rgb: 0, 0, 0;
     --ion-color-primary-shade: #e0b700;
     --ion-color-primary-tint: #ffd51a;
 
@@ -127,10 +126,10 @@
 --ion-color-primary-tint: #866ded;
 ***/
 
-    --ion-color-primary: rgb(255, 208, 0);
+    --ion-color-primary: #ffd000;
     --ion-color-primary-rgb: 255, 208, 0;
-    --ion-color-primary-contrast: #ffffff;
-    --ion-color-primary-contrast-rgb: 255, 255, 255;
+    --ion-color-primary-contrast: #000000;
+    --ion-color-primary-contrast-rgb: 0, 0, 0;
     --ion-color-primary-shade: #e0b700;
     --ion-color-primary-tint: #ffd51a;
 

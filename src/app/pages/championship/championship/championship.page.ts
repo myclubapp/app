@@ -26,6 +26,7 @@ import {
   switchMap,
   take,
   tap,
+  shareReplay,
 } from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
@@ -40,6 +41,7 @@ import { GamePreviewPage } from "../game-preview/game-preview.page";
 import { Club } from "src/app/models/club";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { Profile } from "src/app/models/user";
+import { UiService } from "src/app/services/ui.service";
 
 @Component({
   selector: "app-championship",
@@ -94,6 +96,7 @@ export class ChampionshipPage implements OnInit {
     private navCtrl: NavController,
     private translate: TranslateService,
     private userProfileService: UserProfileService,
+    private uiService: UiService,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -109,11 +112,10 @@ export class ChampionshipPage implements OnInit {
 
   ngOnDestroy(): void {}
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some((club) => club.id === clubId);
+    return this.fbService.isClubAdmin(clubAdminList, clubId);
   }
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
-    // console.log(teamAdminList, teamId)
-    return teamAdminList && teamAdminList.some((team) => team.id === teamId);
+    return this.fbService.isTeamAdmin(teamAdminList, teamId);
   }
 
   getTeamsWithRankingsForYear(year: string) {
@@ -221,33 +223,29 @@ export class ChampionshipPage implements OnInit {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => {
-        if (user) {
-          this.user = user;
-        }
+        this.user = user;
+        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        // Get user's teams and children's teams
         return combineLatest([
           this.fbService.getUserTeamRefs(user),
           this.userProfileService.getChildren(user.uid).pipe(
             tap((children) => {
               this.children = children;
+              console.log("children", this.children);
             }),
             switchMap((children: Profile[]) =>
               children.length > 0
                 ? combineLatest(
                     children.map((child) => {
-                      // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
                       return this.fbService.getUserTeamRefs(childUser);
                     }),
                   )
                 : of([]),
             ),
             map((childrenTeams) => childrenTeams.flat()),
-            tap((teams) => console.log("Children Teams:", teams)),
             catchError((error) => {
               console.error("Error fetching children teams:", error);
               return of([]);
@@ -263,146 +261,137 @@ export class ChampionshipPage implements OnInit {
           }),
         );
       }),
-      // tap((teams) => console.log("Teams:", teams)),
       mergeMap((teams) => {
-        // Add the specific team if it exists
         if (this.team && this.team.id) {
-          teams.push({
-            id: this.team.id,
-            clubId: "",
-            name: "",
-            logo: "",
-            website: "",
-            portrait: "",
-            liga: "",
-            type: "",
-            updated: Timestamp.now(),
-          });
+          teams.push({ id: this.team.id });
         } else if (teams.length === 0) {
-          return of([]); // Return empty if there are no teams
+          return of([]);
         }
 
-        // Filter to get only the specific team if `this.team.id` is set
-        let relevantTeams =
+        const relevantTeams =
           this.team && this.team.id
             ? teams.filter((team) => team.id === this.team.id)
             : teams;
-        relevantTeams = [...new Set(relevantTeams.map((team) => team.id))].map(
-          (id) => relevantTeams.find((team) => team.id === id),
-        );
-        // Fetch games for all relevant teams
-        return combineLatest(
+
+        // Hole Team-Mitglieder einmalig pro Team
+        const teamMembersMap$ = combineLatest(
           relevantTeams.map((team) =>
-            this.championshipService.getTeamGamesRefs(team.id).pipe(
-              catchError((err) => {
-                console.error(
-                  "Permission error in fetching getTeamGamesRefs:",
-                  team.id,
-                  err,
-                );
-                return of([]); // Return an empty array if permission error occurs
-              }),
-              switchMap((teamGames) => {
-                if (teamGames.length === 0) return of([]);
-
-                return combineLatest(
-                  teamGames.map((game) =>
-                    combineLatest([
-                      this.championshipService
-                        .getTeamGameAttendeesRef(team.id, game.id)
-                        .pipe(
-                          catchError((err) => {
-                            console.error(
-                              "Permission error in fetching attendees:",
-                              err,
-                            );
-                            return of([]); // Return an empty array if permission error occurs
-                          }),
-                        ),
-                      this.fbService.getTeamRef(team.id).pipe(
-                        catchError((err) => {
-                          console.error(
-                            "Permission error in fetching getTeamRef:",
-                            err,
-                          );
-                          return of({}); // Return an empty array if permission error occurs
-                        }),
-                      ), // Fetching team details
-                    ]).pipe(
-                      map(([attendees, teamDetails]) => {
-                        const attendeeIds = [
-                          this.user.uid,
-                          ...this.children.map((child) => child.id),
-                        ];
-                        const userAttendee = attendees.find((att) =>
-                          attendeeIds.includes(att.id),
-                        );
-                        // Füge die Kinderinformationen hinzu
-                        const relevantChildren = attendeeIds
-                          .filter((att) =>
-                            this.children.some((child) => child.id == att),
-                          )
-                          .map((att) => {
-                            const child = this.children.find(
-                              (child) => child.id == att,
-                            );
-                            return child
-                              ? {
-                                  firstName: child.firstName,
-                                  lastName: child.lastName,
-                                }
-                              : {};
-                          });
-
-                        return {
-                          ...game,
-                          team: teamDetails,
-                          attendees,
-                          children: relevantChildren,
-                          status: userAttendee ? userAttendee.status : null,
-                          countAttendees: attendees.filter(
-                            (att) => att.status === true,
-                          ).length,
-                          teamId: team.id,
-                        };
-                      }),
-                      catchError(() =>
-                        of({
-                          ...game,
-                          team: null,
-                          attendees: [],
-                          children: [],
-                          status: null,
-                          countAttendees: 0,
-                          teamId: team.id,
-                        }),
-                      ),
-                    ),
-                  ),
-                );
-              }),
-              map((gamesWithAttendees) => gamesWithAttendees), // Combine games for each team
-              catchError((err) => {
-                console.error("Error fetching games for team:", err);
-                return of([]); // Return an empty array on error
-              }),
-            ),
+            this.fbService
+              .getTeamMemberRefs(team.id)
+              .pipe(map((members) => ({ teamId: team.id, members }))),
           ),
         ).pipe(
-          // Flatten all games across all teams into a single array
-          map((teamsGames) => teamsGames.flat()),
-          // tap((allGames) => console.log("All games:", allGames)),
+          map((teamMembers) =>
+            teamMembers.reduce((acc, curr) => {
+              acc[curr.teamId] = curr.members;
+              return acc;
+            }, {}),
+          ),
+          shareReplay(1),
+        );
 
-          // Sort games globally by their `dateTime` in ascending order (upcoming games)
+        return combineLatest([
+          teamMembersMap$,
+          combineLatest(
+            relevantTeams.map((team) =>
+              this.championshipService.getTeamGamesRefs(team.id).pipe(
+                catchError((err) => {
+                  console.error(
+                    "Permission error in fetching getTeamGamesRefs:",
+                    team.id,
+                    err,
+                  );
+                  return of([]);
+                }),
+                switchMap((teamGames) => {
+                  if (teamGames.length === 0) return of([]);
+                  return combineLatest(
+                    teamGames.map((game) =>
+                      combineLatest([
+                        this.championshipService
+                          .getTeamGameAttendeesRef(team.id, game.id)
+                          .pipe(
+                            catchError((err) => {
+                              console.error(
+                                "Permission error in fetching getTeamGameAttendeesRef:",
+                                err,
+                              );
+                              return of([]);
+                            }),
+                          ),
+                        this.fbService.getTeamRef(team.id).pipe(
+                          catchError((err) => {
+                            console.error(
+                              "Permission error in fetching getTeamRef:",
+                              err,
+                            );
+                            return of({});
+                          }),
+                        ),
+                        of(team.id),
+                      ]).pipe(
+                        map(([attendees, teamDetails, teamId]) => ({
+                          game,
+                          attendees,
+                          teamDetails,
+                          teamId,
+                        })),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+        ]).pipe(
+          map(([teamMembersMap, teamsGames]) => {
+            const flattenedGames = teamsGames.flat();
+            return flattenedGames.map((item) => {
+              const teamMembers = teamMembersMap[item.teamId] || [];
+              const validAttendees = item.attendees.filter(
+                (att) =>
+                  att.status === true &&
+                  teamMembers.some((member) => member.id === att.id),
+              );
+
+              const relevantChildren = teamMembers
+                .filter((att) =>
+                  this.children.some((child) => child.id === att.id),
+                )
+                .map((att) => {
+                  const child = this.children.find(
+                    (child) => child.id === att.id,
+                  );
+                  return child
+                    ? { firstName: child.firstName, lastName: child.lastName }
+                    : {};
+                });
+
+              return {
+                ...item.game,
+                team: item.teamDetails || {},
+                attendees: item.attendees,
+                children: relevantChildren,
+                status:
+                  item.attendees.find((att) =>
+                    [
+                      this.user.uid,
+                      ...this.children.map((child) => child.id),
+                    ].includes(att.id),
+                  )?.status ?? null,
+                countAttendees: validAttendees.length,
+                teamId: item.teamId,
+              };
+            });
+          }),
           map((allGames) =>
             allGames.sort((a, b) => a.dateTime.seconds - b.dateTime.seconds),
           ),
-
-          catchError((err) => {
-            console.error("Error in getTeamGamesUpcoming:", err);
-            return of([]); // Return an empty array on error
-          }),
         );
+      }),
+      catchError((err) => {
+        console.error("Error in getTeamGamesUpcoming:", err);
+        return of([]);
       }),
     );
   }
@@ -412,27 +401,28 @@ export class ChampionshipPage implements OnInit {
       take(1),
       tap((user) => {
         this.user = user;
+        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        // Get user's teams and children's teams
         return combineLatest([
           this.fbService.getUserTeamRefs(user),
           this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+              console.log("children", this.children);
+            }),
             switchMap((children: Profile[]) =>
               children.length > 0
                 ? combineLatest(
                     children.map((child) => {
-                      // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
                       return this.fbService.getUserTeamRefs(childUser);
                     }),
                   )
                 : of([]),
             ),
             map((childrenTeams) => childrenTeams.flat()),
-            tap((teams) => console.log("Children Teams:", teams)),
             catchError((error) => {
               console.error("Error fetching children teams:", error);
               return of([]);
@@ -449,141 +439,136 @@ export class ChampionshipPage implements OnInit {
         );
       }),
       mergeMap((teams) => {
-        // Add the current team (if any) to the list
         if (this.team && this.team.id) {
-          teams.push({
-            id: this.team.id,
-            clubId: "",
-            name: "",
-            logo: "",
-            website: "",
-            portrait: "",
-            liga: "",
-            type: "",
-            updated: Timestamp.now(),
-          });
+          teams.push({ id: this.team.id });
         } else if (teams.length === 0) {
-          return of([]); // If no teams found, return an empty array
+          return of([]);
         }
 
-        // Filter to get only the specific team if `this.team.id` is set
-        let relevantTeams =
+        const relevantTeams =
           this.team && this.team.id
             ? teams.filter((team) => team.id === this.team.id)
             : teams;
-        relevantTeams = [...new Set(relevantTeams.map((team) => team.id))].map(
-          (id) => relevantTeams.find((team) => team.id === id),
-        );
-        // Fetch games for all relevant teams
-        return combineLatest(
+
+        // Hole Team-Mitglieder einmalig pro Team
+        const teamMembersMap$ = combineLatest(
           relevantTeams.map((team) =>
-            this.championshipService.getTeamGamesPastRefs(team.id).pipe(
-              catchError((err) => {
-                console.error(
-                  "Permission error in fetching getTeamGamesRefs:",
-                  team.id,
-                  err,
-                );
-                return of([]); // Return an empty array if permission error occurs
-              }),
-              switchMap((teamGames) => {
-                if (teamGames.length === 0) return of([]);
-                return combineLatest(
-                  teamGames.map((game) =>
-                    combineLatest([
-                      this.championshipService
-                        .getTeamGameAttendeesRef(team.id, game.id)
-                        .pipe(
-                          catchError((err) => {
-                            console.error(
-                              "Permission error in fetching attendees:",
-                              err,
-                            );
-                            return of([]); // Return an empty array if permission error occurs
-                          }),
-                        ),
-                      this.fbService.getTeamRef(team.id).pipe(
-                        catchError((err) => {
-                          console.error(
-                            "Permission error in fetching getTeamRef:",
-                            err,
-                          );
-                          return of({}); // Return an empty object if permission error occurs
-                        }),
-                      ), // Fetching team details
-                    ]).pipe(
-                      map(([attendees, teamDetails]) => {
-                        const attendeeIds = [
-                          this.user.uid,
-                          ...this.children.map((child) => child.id),
-                        ];
-                        const userAttendee = attendees.find((att) =>
-                          attendeeIds.includes(att.id),
-                        );
-                        // Füge die Kinderinformationen hinzu
-                        const relevantChildren = attendeeIds
-                          .filter((att) =>
-                            this.children.some((child) => child.id == att),
-                          )
-                          .map((att) => {
-                            const child = this.children.find(
-                              (child) => child.id == att,
-                            );
-                            return child
-                              ? {
-                                  firstName: child.firstName,
-                                  lastName: child.lastName,
-                                }
-                              : {};
-                          });
-                        return {
-                          ...game,
-                          team: teamDetails,
-                          attendees,
-                          children: relevantChildren,
-                          status: userAttendee ? userAttendee.status : null,
-                          countAttendees: attendees.filter(
-                            (att) => att.status === true,
-                          ).length,
-                          teamId: team.id,
-                        };
-                      }),
-                      catchError(() =>
-                        of({
-                          ...game,
-                          team: null,
-                          attendees: [],
-                          children: [],
-                          status: null,
-                          countAttendees: 0,
-                          teamId: team.id,
-                        }),
-                      ),
-                    ),
-                  ),
-                );
-              }),
-              map((gamesWithAttendees) => gamesWithAttendees), // Combine games for a team
-              catchError((err) => {
-                console.error("Error fetching games for team:", err);
-                return of([]); // Return an empty array if error occurs
-              }),
-            ),
+            this.fbService
+              .getTeamMemberRefs(team.id)
+              .pipe(map((members) => ({ teamId: team.id, members }))),
           ),
         ).pipe(
-          // Flatten to get all games across all teams
-          map((teamsGames) => teamsGames.flat()),
-          // tap((allGames) => console.log("All games:", allGames)),
-          // Sort games globally by date (newest first)
-          map((allGames) =>
-            allGames.sort((a, b) => b.dateTime.seconds - a.dateTime.seconds),
+          map((teamMembers) =>
+            teamMembers.reduce((acc, curr) => {
+              acc[curr.teamId] = curr.members;
+              return acc;
+            }, {}),
           ),
-
-          catchError((err) => {
-            console.error("Error in getTeamGamesPast:", err);
-            return of([]); // Return an empty array on error
-          }),
+          shareReplay(1),
         );
+
+        return combineLatest([
+          teamMembersMap$,
+          combineLatest(
+            relevantTeams.map((team) =>
+              this.championshipService.getTeamGamesPastRefs(team.id).pipe(
+                catchError((err) => {
+                  console.error(
+                    "Permission error in fetching getTeamGamesRefs:",
+                    team.id,
+                    err,
+                  );
+                  return of([]);
+                }),
+                switchMap((teamGames) => {
+                  if (teamGames.length === 0) return of([]);
+                  return combineLatest(
+                    teamGames.map((game) =>
+                      combineLatest([
+                        this.championshipService
+                          .getTeamGameAttendeesRef(team.id, game.id)
+                          .pipe(
+                            catchError((err) => {
+                              console.error(
+                                "Permission error in fetching getTeamGameAttendeesRef:",
+                                err,
+                              );
+                              return of([]);
+                            }),
+                          ),
+                        this.fbService.getTeamRef(team.id).pipe(
+                          catchError((err) => {
+                            console.error(
+                              "Permission error in fetching getTeamRef:",
+                              err,
+                            );
+                            return of({});
+                          }),
+                        ),
+                        of(team.id),
+                      ]).pipe(
+                        map(([attendees, teamDetails, teamId]) => ({
+                          game,
+                          attendees,
+                          teamDetails,
+                          teamId,
+                        })),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+        ]).pipe(
+          map(([teamMembersMap, teamsGames]) => {
+            const flattenedGames = teamsGames.flat();
+            return flattenedGames.map((item) => {
+              const teamMembers = teamMembersMap[item.teamId] || [];
+              const validAttendees = item.attendees.filter(
+                (att) =>
+                  att.status === true &&
+                  teamMembers.some((member) => member.id === att.id),
+              );
+
+              const relevantChildren = teamMembers
+                .filter((att) =>
+                  this.children.some((child) => child.id === att.id),
+                )
+                .map((att) => {
+                  const child = this.children.find(
+                    (child) => child.id === att.id,
+                  );
+                  return child
+                    ? { firstName: child.firstName, lastName: child.lastName }
+                    : {};
+                });
+
+              return {
+                ...item.game,
+                team: item.teamDetails || {},
+                attendees: item.attendees,
+                children: relevantChildren,
+                status:
+                  item.attendees.find((att) =>
+                    [
+                      this.user.uid,
+                      ...this.children.map((child) => child.id),
+                    ].includes(att.id),
+                  )?.status ?? null,
+                countAttendees: validAttendees.length,
+                teamId: item.teamId,
+              };
+            });
+          }),
+          map((allGames) =>
+            allGames.sort((b, a) => a.dateTime.seconds - b.dateTime.seconds),
+          ),
+        );
+      }),
+      catchError((err) => {
+        console.error("Error in getTeamGamesUpcoming:", err);
+        return of([]);
       }),
     );
   }
@@ -643,19 +628,98 @@ export class ChampionshipPage implements OnInit {
 
   // List item
   async toggle(status: boolean, game: any) {
-    console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`,
+    // Hole die Team-Mitglieder
+    const teamMembers = await lastValueFrom(
+      this.fbService.getTeamMemberRefs(game.teamId).pipe(take(1)),
     );
-    console.log(game);
+
+    // Hole die Kinder des aktuellen Benutzers
+    const children = await lastValueFrom(
+      this.userProfileService.getChildren(this.user.uid).pipe(take(1)),
+    );
+
+    // Sammle alle möglichen Team-Mitglieder (aktueller Benutzer + Kinder)
+    const possibleMembers = [
+      this.user,
+      ...children.map((child) => ({ uid: child.id })),
+    ];
+
+    // Filtere die tatsächlichen Team-Mitglieder
+    const teamMemberIds = teamMembers.map((member) => member.id);
+    const validMembers = possibleMembers.filter((member) =>
+      teamMemberIds.includes(member.uid),
+    );
+
+    if (validMembers.length === 0) {
+      const toast = await this.toastController.create({
+        message: await lastValueFrom(
+          this.translate.get("common.error__no_team_member"),
+        ),
+        color: "danger",
+        duration: 1500,
+        position: "top",
+      });
+      toast.present();
+      return;
+    }
+
+    let selectedUserId: string;
+
+    if (validMembers.length === 1) {
+      // Wenn nur ein Mitglied gefunden wurde, verwende dieses
+      selectedUserId = validMembers[0].uid;
+      await this.processToggle(selectedUserId, status, game);
+    } else {
+      // Wenn mehrere Mitglieder gefunden wurden, zeige einen Auswahlalert
+      const alert = await this.alertCtrl.create({
+        header: await lastValueFrom(this.translate.get("common.select_member")),
+        inputs: await Promise.all(
+          validMembers.map(async (member) => {
+            const profile =
+              member.uid === this.user.uid
+                ? { firstName: "Ich", lastName: "" } // Für den aktuellen Benutzer
+                : await lastValueFrom(
+                    this.userProfileService
+                      .getUserProfileById(member.uid)
+                      .pipe(take(1)),
+                  );
+
+            return {
+              type: "radio",
+              label: `${profile.firstName} ${profile.lastName}`,
+              value: member.uid,
+            };
+          }),
+        ),
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("common.cancel")),
+            role: "cancel",
+          },
+          {
+            text: await lastValueFrom(this.translate.get("common.ok")),
+            role: "confirm",
+          },
+        ],
+      });
+      await alert.present();
+
+      const { data, role } = await alert.onDidDismiss();
+      if (role === "confirm" && data) {
+        await this.processToggle(data, status, game);
+      }
+    }
+  }
+
+  private async processToggle(userId: string, status: boolean, game: any) {
+    console.log(
+      `Set Status ${status} for user ${userId} and team ${game.teamId} and game ${game.id}`,
+    );
     const newStartDate = game.dateTime.toDate();
     newStartDate.setHours(Number(game.time.substring(0, 2)));
-    console.log(newStartDate);
 
-    // Get team threshold via training.teamId
-    console.log("Grenzwert ");
     const championshipTreshold = game.team.championshipThreshold || 0;
-    console.log(championshipTreshold);
-    // Verpätete Abmeldung?
+
     if (
       newStartDate.getTime() - new Date().getTime() <
         1000 * 60 * 60 * championshipTreshold &&
@@ -665,11 +729,11 @@ export class ChampionshipPage implements OnInit {
       console.log("too late");
       await this.tooLateToggle();
     } else {
-      // OK
-      await this.championshipService.setTeamGameAttendeeStatus(
+      await this.championshipService.setTeamGameAttendeeStatusAdmin(
         status,
         game.teamId,
         game.id,
+        userId,
       );
       this.presentToast();
     }
@@ -712,13 +776,13 @@ export class ChampionshipPage implements OnInit {
   }
 
   async presentToast() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.changes__saved")),
-      color: "primary",
-      duration: 1500,
-      position: "top",
-    });
-    toast.present();
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.changes__saved")),
+    );
+  }
+
+  async toastActionError(error) {
+    await this.uiService.showErrorToast(error.message);
   }
 
   async shareSocialMedia(slidingItem: IonItemSliding, game) {
@@ -761,20 +825,10 @@ export class ChampionshipPage implements OnInit {
   }
 
   async tooLateToggle() {
-    const alert = await this.alertCtrl.create({
+    await this.uiService.showInfoDialog({
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
-      buttons: [
-        {
-          role: "",
-          text: "OK",
-          handler: (data) => {
-            console.log(data);
-          },
-        },
-      ],
     });
-    alert.present();
   }
   /*  async openFilter(ev: Event) {
 

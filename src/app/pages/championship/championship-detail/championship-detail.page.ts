@@ -1,18 +1,10 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  Input,
-  OnInit,
-  ViewChild,
-} from "@angular/core";
+import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
   ModalController,
   // NavController,
   NavParams,
-  ToastController,
   Platform,
 } from "@ionic/angular";
 import { Game } from "src/app/models/game";
@@ -24,7 +16,7 @@ import {
   Position,
 } from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import { combineLatest, forkJoin, lastValueFrom, Observable, of } from "rxjs";
+import { forkJoin, lastValueFrom, Observable, of } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "@angular/fire/auth";
 import { catchError, map, switchMap, take, tap } from "rxjs/operators";
@@ -37,12 +29,13 @@ import { Profile } from "src/app/models/user";
 import { MemberPage } from "../../member/member.page";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { Team } from "src/app/models/team";
+import { UiService } from "src/app/services/ui.service";
 
 @Component({
   selector: "app-championship-detail",
   templateUrl: "./championship-detail.page.html",
   styleUrls: ["./championship-detail.page.scss"],
-  standalone: false
+  standalone: false,
 })
 export class ChampionshipDetailPage implements OnInit {
   @Input("data") game: Game;
@@ -56,11 +49,12 @@ export class ChampionshipDetailPage implements OnInit {
 
   mode = "yes";
 
-  //   user$: Observable<User>;
+  user$: Observable<User>;
   user: User;
-
   coordinates: Position;
   teamAdminList$: Observable<Team[]>;
+  children: Profile[];
+  showStatus: boolean;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -69,44 +63,55 @@ export class ChampionshipDetailPage implements OnInit {
     private readonly userProfileService: UserProfileService,
     private readonly alertCtrl: AlertController,
     private readonly championshipService: ChampionshipService,
-    private readonly toastController: ToastController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
-    private cdr: ChangeDetectorRef,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private uiService: UiService,
   ) {
     //  this.setMap();
     this.teamAdminList$ = this.fbService.getTeamAdminList();
   }
 
-
-  ngOnInit() {
+  async ngOnInit() {
     this.game = this.navParams.get("data");
+    this.isFuture = this.navParams.get("isFuture");
     this.game$ = this.getGame(this.game.teamId, this.game.id);
-
+    this.user$ = this.authService.getUser$();
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    await this.initUserAndChildren();
     this.geolocationPermission();
+  }
 
+  private async initUserAndChildren() {
+    this.user = await lastValueFrom(this.authService.getUser$().pipe(take(1)));
+    this.children = await lastValueFrom(
+      this.userProfileService.getChildren(this.user.uid).pipe(take(1)),
+    );
+    this.showStatus = !(this.children && this.children.length > 0);
   }
 
   async geolocationPermission() {
     console.log("Überprüfe Standort-Berechtigungen...");
     try {
-    
       const permission: PermissionStatus = await Geolocation.checkPermissions();
-      console.log("Aktueller Berechtigungsstatus:", permission.location, permission.coarseLocation);
+      console.log(
+        "Aktueller Berechtigungsstatus:",
+        permission.location,
+        permission.coarseLocation,
+      );
 
       switch (permission.location) {
-        case 'granted':
+        case "granted":
           console.log("Standort-Berechtigung bereits erteilt");
           return true;
 
-        case 'prompt':
-        case 'prompt-with-rationale':
+        case "prompt":
+        case "prompt-with-rationale":
           console.log("Frage Standort-Berechtigung an");
           const newPermission = await Geolocation.requestPermissions();
-          return newPermission.location === 'granted';
+          return newPermission.location === "granted";
 
-        case 'denied':
+        case "denied":
           console.log("Standort-Berechtigung verweigert");
           // Hier könnte man einen Alert anzeigen, der erklärt, warum die App
           // Standort-Berechtigungen benötigt und wie man sie in den Einstellungen aktivieren kann
@@ -116,8 +121,7 @@ export class ChampionshipDetailPage implements OnInit {
         default:
           console.log("Unbekannter Berechtigungsstatus");
           return false;
-        }
-     
+      }
     } catch (e) {
       console.error("Fehler bei der Berechtigungsabfrage:", e);
       return false;
@@ -125,21 +129,19 @@ export class ChampionshipDetailPage implements OnInit {
   }
 
   private async showLocationPermissionAlert() {
-    const alert = await this.alertCtrl.create({
-      header: 'Standort-Berechtigung benötigt',
-      message: 'Um die Karte und Navigationsfunktionen nutzen zu können, wird Zugriff auf Ihren Standort benötigt. Bitte aktivieren Sie die Standort-Berechtigung in den Einstellungen.',
-      buttons: ['OK']
+    await this.uiService.showInfoDialog({
+      header: "Standort-Berechtigung benötigt",
+      message:
+        "Um die Karte und Navigationsfunktionen nutzen zu können, wird Zugriff auf Ihren Standort benötigt. Bitte aktivieren Sie die Standort-Berechtigung in den Einstellungen.",
     });
-    await alert.present();
   }
 
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
-    // console.log(teamAdminList, teamId)
-    return teamAdminList && teamAdminList.some(team => team.id === teamId);
+    return this.fbService.isTeamAdmin(teamAdminList, teamId);
   }
 
   ionViewDidEnter() {
-    this.game$.pipe(take(1)).subscribe(game => {
+    this.game$.pipe(take(1)).subscribe((game) => {
       console.log(">> game", game);
       if (!this.newMap && game) {
         console.log("setMap");
@@ -151,7 +153,6 @@ export class ChampionshipDetailPage implements OnInit {
     });
   }
 
-
   ngOnDestroy() {
     if (this.newMap) {
       this.newMap.destroy();
@@ -162,111 +163,183 @@ export class ChampionshipDetailPage implements OnInit {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => {
-        // this.setMap();
         this.user = user;
         if (!user) throw new Error("User not found");
       }),
+      switchMap((user) => {
+        return this.userProfileService.getChildren(user.uid).pipe(
+          tap((children) => {
+            this.children = children;
+            console.log("children", this.children);
+          }),
+        );
+      }),
+
       switchMap(() => this.championshipService.getTeamGameRef(teamId, gameId)),
       switchMap((game) => {
         if (!game) return of(null);
 
         // Fetch team details
         return this.fbService.getTeamRef(teamId).pipe(
-          switchMap(team => {
+          switchMap((team) => {
             if (!team) return of(null);
-
 
             // Fetch all team members first
             return this.fbService.getTeamMemberRefs(teamId).pipe(
-              switchMap(teamMembers => {
-                const teamMemberProfiles$ = teamMembers.map(member =>
+              switchMap((teamMembers) => {
+                const teamMemberProfiles$ = teamMembers.map((member) =>
                   this.userProfileService.getUserProfileById(member.id).pipe(
                     take(1),
-                    map(profile => ({
+                    map((profile) => ({
                       ...member, // Spread member to retain all original attributes
                       ...profile, // Spread profile to overwrite and add profile attributes
                       firstName: profile.firstName || "Unknown",
                       lastName: profile.lastName || "Unknown",
-                      roles: member.roles || []
+                      roles: member.roles || [],
                     })),
-                    catchError(err => {
-                      console.log(`Failed to fetch profile for team member ${member.id}:`, err);
-                      return of({ ...member, firstName: "Unknown", lastName: "Unknown", roles: member.roles || [], status: null });
-                    })
-                  )
+                    catchError((err) => {
+                      console.log(
+                        `Failed to fetch profile for team member ${member.id}:`,
+                        err,
+                      );
+                      return of({
+                        ...member,
+                        firstName: "Unknown",
+                        lastName: "Unknown",
+                        roles: member.roles || [],
+                        status: null,
+                      });
+                    }),
+                  ),
                 );
                 // Fetch all attendees next
                 return forkJoin(teamMemberProfiles$).pipe(
-                  map(teamMembersWithDetails => teamMembersWithDetails.filter(member => member !== undefined)), // Filtering out undefined entries
-                  switchMap(teamMembersWithDetails => {
-                    return this.championshipService.getTeamGameAttendeesRef(teamId, gameId).pipe(
-                      map(attendees => {
-                        const attendeeDetails = attendees.map(attendee => {
-                          const detail = teamMembersWithDetails.find(member => member.id === attendee.id);
-                          return detail ? { ...detail, status: attendee.status } : null;
-                        }).filter(item => item !== null);
+                  map((teamMembersWithDetails) =>
+                    teamMembersWithDetails.filter(
+                      (member) => member !== undefined,
+                    ),
+                  ), // Filtering out undefined entries
+                  switchMap((teamMembersWithDetails) => {
+                    return this.championshipService
+                      .getTeamGameAttendeesRef(teamId, gameId)
+                      .pipe(
+                        map((attendees) => {
+                          const attendeeDetails = attendees
+                            .map((attendee) => {
+                              const detail = teamMembersWithDetails.find(
+                                (member) => member.id === attendee.id,
+                              );
+                              return detail
+                                ? { ...detail, status: attendee.status }
+                                : null;
+                            })
+                            .filter((item) => item !== null);
 
-                        const attendeeListTrue = attendeeDetails.filter(att => att.status === true)
-                          .sort((a, b) => a.firstName.localeCompare(b.firstName));
-                        const attendeeListFalse = attendeeDetails.filter(att => att.status === false)
-                          .sort((a, b) => a.firstName.localeCompare(b.firstName));
-                        const respondedIds = new Set(attendeeDetails.map(att => att.id));
-                        // Modify here to add 'status: null' for each unresponded member
-                        const unrespondedMembers = teamMembersWithDetails.filter(member => !respondedIds.has(member.id))
-                          .map(member => ({ ...member, status: null })).sort((a, b) => a.firstName.localeCompare(b.firstName)); // Ensuring 'status: null' is explicitly set
+                          const attendeeListTrue = attendeeDetails
+                            .filter((att) => att.status === true)
+                            .sort((a, b) =>
+                              a.firstName.localeCompare(b.firstName),
+                            );
+                          const attendeeListFalse = attendeeDetails
+                            .filter((att) => att.status === false)
+                            .sort((a, b) =>
+                              a.firstName.localeCompare(b.firstName),
+                            );
+                          const respondedIds = new Set(
+                            attendeeDetails.map((att) => att.id),
+                          );
+                          // Modify here to add 'status: null' for each unresponded member
+                          const unrespondedMembers = teamMembersWithDetails
+                            .filter((member) => !respondedIds.has(member.id))
+                            .map((member) => ({ ...member, status: null }))
+                            .sort((a, b) =>
+                              a.firstName.localeCompare(b.firstName),
+                            ); // Ensuring 'status: null' is explicitly set
 
-                        const userAttendee = attendeeDetails.find(att => att.id === this.user.uid);
-                        const status = userAttendee ? userAttendee.status : null;
-                        return {
-                          ...game,
-                          team, // Add team details here
-                          teamId: teamId,
-                          attendees: attendeeDetails,
-                          attendeeListTrue,
-                          attendeeListFalse,
-                          unrespondedMembers,
-                          status,
-                        };
-                      }),
-                      catchError(err => {
-                        console.error("Error fetching attendees:", err);
-                        return of({
-                          ...game,
-                          team, // Add team details here
-                          teamId: teamId,
-                          attendees: [],
-                          attendeeListTrue: [],
-                          attendeeListFalse: [],
-                          unrespondedMembers: teamMembersWithDetails.filter(member => member !== null)
-                            .map(member => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
-                          status: null
-                        });
-                      })
-                    );
+                          const relevantChildren = teamMembers
+                            .filter((att) =>
+                              this.children.some(
+                                (child) => child.id === att.id,
+                              ),
+                            )
+                            .map((att) => {
+                              const child = this.children.find(
+                                (child) => child.id === att.id,
+                              );
+                              return child
+                                ? {
+                                    firstName: child.firstName,
+                                    lastName: child.lastName,
+                                  }
+                                : {};
+                            });
+
+                          return {
+                            ...game,
+                            team, // Add team details here
+                            teamId: teamId,
+                            attendees: attendeeDetails,
+                            attendeeListTrue,
+                            attendeeListFalse,
+                            unrespondedMembers,
+                            children: relevantChildren,
+                            status: attendeeDetails
+                              .filter((att) =>
+                                [
+                                  this.user.uid,
+                                  ...this.children.map((child) => child.id),
+                                ].includes(att.id),
+                              )
+                              .map((att) => ({
+                                id: att.id,
+                                status: att.status,
+                                firstName: att.firstName,
+                                lastName: att.lastName,
+                              })),
+                          };
+                        }),
+                        catchError((err) => {
+                          console.error("Error fetching attendees:", err);
+                          return of({
+                            ...game,
+                            team, // Add team details here
+                            teamId: teamId,
+                            children: [],
+                            attendees: [],
+                            attendeeListTrue: [],
+                            attendeeListFalse: [],
+                            unrespondedMembers: teamMembersWithDetails
+                              .filter((member) => member !== null)
+                              .map((member) => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
+                            status: [], // Empty array for status in case of error
+                          });
+                        }),
+                      );
                   }),
                 );
               }),
-              catchError(err => {
+              catchError((err) => {
                 console.error("Error fetching team members:", err);
                 return of({
                   ...game,
                   team, // Add team details here
                   teamId: teamId,
+                  children: [],
                   attendees: [],
                   attendeeListTrue: [],
                   attendeeListFalse: [],
                   unrespondedMembers: [],
-                  status: null
+                  status: [], // Empty array for status in case of error
                 });
-              })
+              }),
             );
-          })
+          }),
         );
       }),
-      catchError(err => {
+      catchError((err) => {
         console.error("Error in getGameWithAttendees:", err);
         return of(null);
-      })
+      }),
     );
   }
   async toggleAll(status: boolean, game: Game) {
@@ -277,105 +350,83 @@ export class ChampionshipDetailPage implements OnInit {
         {
           text: "Nein",
           role: "cancel",
-          handler: () => {
-
-          }
+          handler: () => {},
         },
         {
           role: "",
           text: "OK",
           handler: async () => {
-            for (let member of game['unrespondedMembers']) {
+            for (let member of game["unrespondedMembers"]) {
               console.log(
-                `Set Status ${status} for user ${this.user.uid} and team ${this.game.teamId} and game ${game.id}`
+                `Set Status ${status} for user ${this.user.uid} and team ${this.game.teamId} and game ${game.id}`,
               );
-              await this.championshipService.setTeamGameAttendeeStatusAdmin(
-                status,
-                this.game.teamId,
-                game.id,
-                member.id,
-              ).catch(e => {
-                console.log(e.message);
-                this.toastActionError(e);
-              })
+              await this.championshipService
+                .setTeamGameAttendeeStatusAdmin(
+                  status,
+                  this.game.teamId,
+                  game.id,
+                  member.id,
+                )
+                .catch((e) => {
+                  console.log(e.message);
+                  this.toastActionError(e);
+                });
             }
             this.presentToast();
-          }
+          },
         },
-
-      ]
-    })
+      ],
+    });
     alert.present();
-
   }
 
-  async toggle(status: boolean, game: any) {
+  async processToggle(userId: string, status: boolean, game: any) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and game ${game.id}`
+      `Set Status ${status} for user ${userId} and team ${game.teamId} and game ${game.id}`,
     );
-    console.log(game)
     const newStartDate = game.dateTime.toDate();
     newStartDate.setHours(Number(game.time.substring(0, 2)));
-    console.log(newStartDate);
 
-    // Get team threshold via training.teamId
-    console.log("Grenzwert ")
-    const championshipTreshold = game.team.championshipThreshold || 0;
-    console.log(championshipTreshold);
-    // Verpätete Abmeldung?
-    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * championshipTreshold)) && status == false && championshipTreshold) {
+    const championshipThreshold = game.team.championshipThreshold || 0;
+
+    if (
+      newStartDate.getTime() - new Date().getTime() <
+        1000 * 60 * 60 * championshipThreshold &&
+      status == false &&
+      championshipThreshold
+    ) {
       console.log("too late");
       await this.tooLateToggle();
-
     } else {
-      // OK
-      await this.championshipService.setTeamGameAttendeeStatus(
+      await this.championshipService.setTeamGameAttendeeStatusAdmin(
         status,
         game.teamId,
-        game.id
+        game.id,
+        userId,
       );
       this.presentToast();
     }
-
   }
+
   async toggleItem(
-    slidingItem: IonItemSliding,
+    item: IonItemSliding,
     status: boolean,
-    game: Game,
+    game: any,
     memberId: string,
   ) {
-    slidingItem.closeOpened();
-
-    console.log(
-      `Set Status ${status} for user ${memberId} and team ${game.teamId} and game ${game.id}`
-    );
-    await this.championshipService.setTeamGameAttendeeStatusAdmin(
-      status,
-      game.teamId,
-      game.id,
-      memberId,
-    );
-    this.presentToast();
+    console.log("toggleItem", item, status, game, memberId);
+    await item.close();
+    await this.processToggle(memberId, status, game);
   }
 
   async toastActionError(error) {
-    const toast = await this.toastController.create({
-      message: error.message,
-      duration: 1500,
-      position: "top",
-      color: "danger",
-    });
-
-    await toast.present();
+    await this.uiService.showErrorToast(error.message);
   }
+
   async presentToast() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.success__saved")),
-      color: "primary",
-      duration: 1500,
-      position: "top",
-    });
-    toast.present();
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.success__saved")),
+    );
   }
 
   async close() {
@@ -485,18 +536,10 @@ export class ChampionshipDetailPage implements OnInit {
     }
   }
   async tooLateToggle() {
-    const alert = await this.alertCtrl.create({
+    await this.uiService.showInfoDialog({
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
-      buttons: [{
-        role: "",
-        text: "OK",
-        handler: (data) => {
-          console.log(data)
-        }
-      }]
-    })
-    alert.present()
+    });
   }
 
   async openMaps(game: Game) {
@@ -512,7 +555,7 @@ export class ChampionshipDetailPage implements OnInit {
           coordinates.coords.latitude +
           "," +
           coordinates.coords.longitude,
-      }).catch(e => {
+      }).catch((e) => {
         console.log(e);
       });
     } else {
@@ -522,10 +565,9 @@ export class ChampionshipDetailPage implements OnInit {
           game.latitude +
           "," +
           game.longitude,
-      }).catch(e => {
+      }).catch((e) => {
         console.log(e);
       });
     }
   }
 }
-

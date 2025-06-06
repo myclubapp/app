@@ -2,8 +2,8 @@ import {
   Component,
   OnInit,
   AfterViewInit,
-  ChangeDetectorRef,
   OnDestroy,
+  Optional,
 } from "@angular/core";
 import {
   combineLatest,
@@ -19,6 +19,7 @@ import { PushNotifications } from "@capacitor/push-notifications";
 // Services
 import { FirebaseService } from "src/app/services/firebase.service";
 import { AuthService } from "src/app/services/auth.service";
+import { UiService } from "src/app/services/ui.service";
 
 // Push
 // import { SwPush } from "@angular/service-worker";
@@ -35,7 +36,7 @@ import {
   PermissionStatus,
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { catchError, first, switchMap, take, tap } from "rxjs/operators";
+import { catchError, switchMap, take, tap } from "rxjs/operators";
 import {
   AlertController,
   IonRouterOutlet,
@@ -77,6 +78,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   public alertInputsEmail = [];
   public alertButtonsAddress = [];
   public alertInputsAddress = [];
+  public alertButtonsDelete = [];
 
   private readonly VAPID_PUBLIC_KEY =
     "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
@@ -96,7 +98,8 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     private readonly alertController: AlertController,
     private translate: TranslateService,
     private readonly modalCtrl: ModalController,
-    private readonly routerOutlet: IonRouterOutlet,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
+    private readonly uiService: UiService,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -121,12 +124,28 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         );
 
       this.children$ = this.profileService.getChildren(userProfile.id).pipe(
+        switchMap((children) => {
+          if (!children.length) return of([]);
+          return combineLatest(
+            children.map((child) =>
+              this.profileService.getUserProfileById(child.id),
+            ),
+          );
+        }),
         tap((children) => {
           console.log(children);
         }),
       );
 
       this.parents$ = this.profileService.getParents(userProfile.id).pipe(
+        switchMap((parents) => {
+          if (!parents.length) return of([]);
+          return combineLatest(
+            parents.map((parent) =>
+              this.profileService.getUserProfileById(parent.id),
+            ),
+          );
+        }),
         tap((parents) => {
           console.log(parents);
         }),
@@ -137,6 +156,45 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     this.userSubscription = this.user$.pipe(take(1)).subscribe((user) => {
       this.user = user;
     });
+
+    this.alertButtonsAddress = [
+      {
+        text: await lastValueFrom(this.translate.get("common.cancel")),
+        role: "cancel",
+      },
+      {
+        text: await lastValueFrom(this.translate.get("common.save")),
+        handler: (data) => {
+          this.saveAddress(data);
+        },
+      },
+    ];
+
+    this.alertButtonsEmail = [
+      {
+        text: await lastValueFrom(this.translate.get("common.cancel")),
+        role: "cancel",
+      },
+      {
+        text: await lastValueFrom(this.translate.get("common.save")),
+        handler: (data) => {
+          this.saveEmail(data);
+        },
+      },
+    ];
+
+    this.alertButtonsDelete = [
+      {
+        text: await lastValueFrom(this.translate.get("common.cancel")),
+        role: "cancel",
+      },
+      {
+        text: await lastValueFrom(this.translate.get("common.confirm")),
+        handler: () => {
+          this.deleteProfile();
+        },
+      },
+    ];
   }
 
   ngAfterViewInit(): void {
@@ -153,116 +211,75 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
       clubList && clubList.some((club) => club.hasFeatureHelferEvent == true)
     );
   }
-  setupAlerts(profile: Profile) {
+  async setupAlerts(profile: Profile) {
     this.alertInputsEmail = [
       {
-        label: this.translate.instant("profile.change_email_old_label"),
-        placeholder: this.translate.instant("profile.change_email_old_label"),
+        label: await lastValueFrom(
+          this.translate.get("profile.change_email_old_label"),
+        ),
+        placeholder: await lastValueFrom(
+          this.translate.get("profile.change_email_old_label"),
+        ),
         name: "oldEmail",
         type: "email",
         value: profile.email,
       },
       {
-        label: this.translate.instant("profile.change_email_new_label"),
-        placeholder: this.translate.instant("profile.change_email_new_label"),
+        label: await lastValueFrom(
+          this.translate.get("profile.change_email_new_label"),
+        ),
+        placeholder: await lastValueFrom(
+          this.translate.get("profile.change_email_new_label"),
+        ),
         name: "newEmail",
         type: "email",
       },
     ];
 
-    this.alertButtonsEmail = [
-      {
-        text: this.translate.instant("common.cancel"),
-        role: "destructive",
-        handler: (data) => {
-          console.log(data);
-        },
-      },
-      {
-        text: this.translate.instant("common.save"),
-        handler: async (data) => {
-          console.log(data);
-          if (
-            data.oldEmail !== data.newEmail &&
-            data.oldEmail.length > 0 &&
-            data.newEmail.length > 0
-          ) {
-            try {
-              const verifyEmail =
-                await this.authService.verifyBeforeUpdateEmail(data.newEmail);
-              console.log(verifyEmail);
-              const updatedProfile = await this.profileChange(
-                { detail: { value: data.newEmail } },
-                "email",
-              );
-              await this.authService.logout();
-            } catch (e) {
-              if (e.code == "auth/operation-not-allowed") {
-                console.log(e.message);
-              } else if (e.code == "auth/requires-recent-login") {
-                alert("bitte ausloggen und nochmals probieren.");
-              } else {
-                console.log(JSON.stringify(e));
-              }
-            }
-          } else {
-            console.log("error");
-          }
-        },
-      },
-    ];
-
     this.alertInputsAddress = [
       {
-        label: this.translate.instant("profile.change_address_streetandnumber"),
-        placeholder: this.translate.instant(
-          "profile.change_address_streetandnumber",
+        label: await lastValueFrom(
+          this.translate.get("profile.change_address_streetandnumber"),
         ),
-        name: "streetAndNumber",
+        placeholder: await lastValueFrom(
+          this.translate.get("profile.change_address_streetandnumber"),
+        ),
+        name: "street",
         type: "text",
-        value: profile.streetAndNumber,
+        value: profile.street,
       },
       {
-        label: this.translate.instant("profile.change_address_postalcode"),
-        placeholder: this.translate.instant(
-          "profile.change_address_postalcode",
+        label: await lastValueFrom(
+          this.translate.get("profile.change_address_housenumber"),
+        ),
+        placeholder: await lastValueFrom(
+          this.translate.get("profile.change_address_housenumber"),
+        ),
+        name: "houseNumber",
+        type: "text",
+        value: profile.houseNumber,
+      },
+      {
+        label: await lastValueFrom(
+          this.translate.get("profile.change_address_postalcode"),
+        ),
+        placeholder: await lastValueFrom(
+          this.translate.get("profile.change_address_postalcode"),
         ),
         name: "postalcode",
         type: "number",
         value: profile.postalcode,
       },
       {
-        label: this.translate.instant("profile.change_address_city"),
-        placeholder: this.translate.instant("profile.change_address_city"),
+        label: await lastValueFrom(
+          this.translate.get("profile.change_address_city"),
+        ),
+        placeholder: await lastValueFrom(
+          this.translate.get("profile.change_address_city"),
+        ),
         name: "city",
         type: "text",
         value: profile.city,
-      },
-    ];
-
-    this.alertButtonsAddress = [
-      {
-        text: this.translate.instant("common.cancel"),
-        role: "destructive",
-        handler: (data) => {
-          console.log(data);
-        },
-      },
-      {
-        text: this.translate.instant("common.save"),
-        role: "",
-        handler: async (data) => {
-          console.log(data);
-          await this.profileChange({ detail: { value: data.city } }, "city");
-          await this.profileChange(
-            { detail: { value: data.postalcode } },
-            "postalcode",
-          );
-          await this.profileChange(
-            { detail: { value: data.streetAndNumber } },
-            "streetAndNumber",
-          );
-        },
       },
     ];
   }
@@ -414,32 +431,28 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     this.getTeamRequestList();
   }
   async deleteProfile() {
-    const alert = await this.alertController.create({
+    const confirmed = await this.uiService.showDeleteConfirmDialog({
+      header: await lastValueFrom(
+        this.translate.get("profile.delete__profile"),
+      ),
       message: await lastValueFrom(
         this.translate.get("profile.delete_profile__confirm"),
       ),
-      buttons: [
-        {
-          role: "destructive",
-          text: await lastValueFrom(this.translate.get("common.no")),
-          handler: () => {
-            console.log("nein");
-            this.presentCancelToast();
-          },
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.yes")),
-          handler: async () => {
-            await this.authService.deleteProfile().catch((error) => {
-              this.presentErrorDeleteProfile();
-            });
-            await this.presentDeleteProfile();
-            await this.router.navigateByUrl("/logout");
-          },
-        },
-      ],
+      confirmText: await lastValueFrom(this.translate.get("common.yes")),
+      cancelText: await lastValueFrom(this.translate.get("common.no")),
     });
-    alert.present();
+
+    if (confirmed) {
+      try {
+        await this.authService.deleteProfile();
+        await this.presentDeleteProfile();
+        await this.router.navigateByUrl("/logout");
+      } catch (error) {
+        await this.presentErrorDeleteProfile();
+      }
+    } else {
+      await this.presentCancelToast();
+    }
   }
 
   async openHelferPunkte() {
@@ -463,16 +476,9 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async presentToast() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(
-        this.translate.get("profile.request_success__deleted"),
-      ),
-      duration: 1500,
-      position: "top",
-      color: "success",
-    });
-
-    await toast.present();
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.success__saved")),
+    );
   }
   async presentCancelToast() {
     const toast = await this.toastController.create({
@@ -686,7 +692,16 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         message: await lastValueFrom(
           this.translate.get("profile.kids.max_reached_message"),
         ),
-        buttons: [await lastValueFrom(this.translate.get("common.ok"))],
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("common.cancel")),
+            role: "destructive",
+          },
+          {
+            text: await lastValueFrom(this.translate.get("common.ok")),
+            role: "confirm",
+          },
+        ],
       });
       await alert.present();
       return;
@@ -702,7 +717,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
       buttons: [
         {
           text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: "cancel",
+          role: "destructive",
         },
         {
           text: await lastValueFrom(this.translate.get("common.add")),
@@ -758,5 +773,150 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     });
 
     await alert.present();
+  }
+
+  async presentErrorToast(error) {
+    await this.uiService.showErrorToast(error.message);
+  }
+
+  private async showEmailChangeConfirmationAlert() {
+    await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(
+        this.translate.get("profile.change_email.header"),
+      ),
+      message: await lastValueFrom(
+        this.translate.get("profile.change_email.message"),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.yes")),
+      cancelText: await lastValueFrom(this.translate.get("common.no")),
+    });
+  }
+
+  private async showEmailChangeSuccessAlert() {
+    await this.uiService.showInfoDialog({
+      header: await lastValueFrom(this.translate.get("common.success")),
+      message: await lastValueFrom(
+        this.translate.get("profile.change_email.success"),
+      ),
+    });
+  }
+
+  private async showEmailChangeErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: await lastValueFrom(this.translate.get("common.error")),
+      message: await lastValueFrom(
+        this.translate.get("profile.change_email.error"),
+      ),
+    });
+  }
+
+  private async showAddressChangeConfirmationAlert() {
+    await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(
+        this.translate.get("profile.change_address.header"),
+      ),
+      message: await lastValueFrom(
+        this.translate.get("profile.change_address.message"),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.yes")),
+      cancelText: await lastValueFrom(this.translate.get("common.no")),
+    });
+  }
+
+  private async showAddressChangeSuccessAlert() {
+    await this.uiService.showInfoDialog({
+      header: await lastValueFrom(this.translate.get("common.success")),
+      message: await lastValueFrom(
+        this.translate.get("profile.change_address.success"),
+      ),
+    });
+  }
+
+  private async showAddressChangeErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: await lastValueFrom(this.translate.get("common.error")),
+      message: await lastValueFrom(
+        this.translate.get("profile.change_address.error"),
+      ),
+    });
+  }
+
+  private async showProfileDeleteConfirmationAlert() {
+    await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(this.translate.get("profile.delete.header")),
+      message: await lastValueFrom(
+        this.translate.get("profile.delete.message"),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.yes")),
+      cancelText: await lastValueFrom(this.translate.get("common.no")),
+    });
+  }
+
+  private async showProfileDeleteSuccessAlert() {
+    await this.uiService.showInfoDialog({
+      header: await lastValueFrom(this.translate.get("common.success")),
+      message: await lastValueFrom(
+        this.translate.get("profile.delete.success"),
+      ),
+    });
+  }
+
+  private async showProfileDeleteErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: await lastValueFrom(this.translate.get("common.error")),
+      message: await lastValueFrom(this.translate.get("profile.delete.error")),
+    });
+  }
+
+  async deleteChild(child: Profile) {
+    const confirmed = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(this.translate.get("common.confirmation")),
+      message: await lastValueFrom(
+        this.translate.get("profile.confirm_delete_child"),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.yes")),
+      cancelText: await lastValueFrom(this.translate.get("common.no")),
+    });
+
+    if (confirmed) {
+      try {
+        await this.profileService.deleteChild(this.user.uid, child.id);
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(
+            this.translate.get("profile.success_child_deleted"),
+          ),
+        );
+      } catch (error) {
+        console.error("Fehler beim Löschen des Kindes", error);
+        await this.uiService.showErrorToast(error.message);
+      }
+    }
+  }
+
+  async saveAddress(data) {
+    // Implement the logic to save the address
+    console.log("Address saved:", data);
+    await this.profileChange({ detail: { value: data.city } }, "city");
+    await this.profileChange(
+      { detail: { value: data.postalcode } },
+      "postalcode",
+    );
+    await this.profileChange({ detail: { value: data.street } }, "street");
+    await this.profileChange(
+      { detail: { value: data.street + " " + data.houseNumber } },
+      "streetAndNumber",
+    );
+    await this.profileChange(
+      { detail: { value: data.houseNumber } },
+      "houseNumber",
+    );
+    await this.presentToast();
+  }
+
+  async saveEmail(data) {
+    // Implement the logic to save the email
+    console.log("Email saved:", data);
+    await this.profileChange({ detail: { value: data.newEmail } }, "email");
+    await this.presentToast();
   }
 }

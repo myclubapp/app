@@ -4,8 +4,14 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { Observable, Subscription, take, tap } from "rxjs";
 import { User } from "@angular/fire/auth";
 import { ClubPage } from "../club/club.page";
-import { IonRouterOutlet, ModalController } from "@ionic/angular";
+import {
+  IonRouterOutlet,
+  ModalController,
+  ToastController,
+} from "@ionic/angular";
 import { Router } from "@angular/router";
+import { Optional } from "@angular/core";
+import { OnboardingClubPage } from "../onboarding/onboarding-club/onboarding-club.page";
 
 @Component({
   selector: "app-club-list",
@@ -22,8 +28,9 @@ export class ClubListPage implements OnInit {
   constructor(
     private readonly fbService: FirebaseService,
     private readonly router: Router,
-    private readonly routerOutlet: IonRouterOutlet,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
+    private readonly toastCtrl: ToastController,
   ) {}
 
   ngOnInit() {
@@ -52,10 +59,12 @@ export class ClubListPage implements OnInit {
     }
   }
   async openModal(club: Club) {
-    // const presentingElement = await this.modalCtrl.getTop();
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: ClubPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -71,6 +80,25 @@ export class ClubListPage implements OnInit {
   }
 
   async joinClubAlert() {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
+    const modal = await this.modalCtrl.create({
+      component: OnboardingClubPage,
+      presentingElement,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        closable: true,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+
     /*
     let _inputs = [];
     for (let club of this.activeClubList) {
