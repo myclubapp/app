@@ -208,8 +208,8 @@
     "change_address_header": "Wohnadresse ändern",
     "change_address_message": "Ändere hier deine Wohnadresse.",
     "change_address_street": "Strasse",
-    "change_address_postalcode": "Postleitzahl",
-    "change_address_city": "Ortschaft",
+    "change_address_postalcode": "PLZ",
+    "change_address_city": "Stadt",
 
     "open__club_inquiry": "Offene Club-Anfragen",
     "open__team_request": "Offene Team-Anfragens",
@@ -281,7 +281,9 @@
       "message": "Möchten Sie Ihr Profil wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
       "success": "Ihr Profil wurde erfolgreich gelöscht.",
       "error": "Beim Löschen des Profils ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
-    }
+    },
+    "change_address_streetandnumber": "Strasse",
+    "change_address_housenumber": "Hausnummer"
   },
   "tabs": {},
   "team": {

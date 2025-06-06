@@ -202,8 +202,7 @@
     "change_address_header": "Change residential address",
     "change_address_message": "Change your residential address here.",
     "change_address_street": "Street",
-    "change_address_postalcode": "Postal code",
-    "change_address_city": "City",
+
     "open__club_inquiry": "Open club inquiries",
     "open__team_request": "Open team requests",
     "notifications": "Notifications",
@@ -273,7 +272,11 @@
       "message": "Do you really want to delete your profile? This action cannot be undone.",
       "success": "Your profile has been successfully deleted.",
       "error": "An error occurred while deleting your profile. Please try again later."
-    }
+    },
+    "change_address_streetandnumber": "Street",
+    "change_address_housenumber": "House number",
+    "change_address_postalcode": "Postal code",
+    "change_address_city": "City"
   },
   "tabs": {},
   "team": {

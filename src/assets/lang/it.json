@@ -248,7 +248,11 @@
       "message": "Vuoi davvero eliminare il tuo profilo? Questa azione non può essere annullata.",
       "success": "Il tuo profilo è stato eliminato con successo.",
       "error": "Si è verificato un errore durante l'eliminazione del tuo profilo. Riprova più tardi."
-    }
+    },
+    "change_address_streetandnumber": "Via",
+    "change_address_housenumber": "Numero civico",
+    "change_address_postalcode": "CAP",
+    "change_address_city": "Città"
   },
   "tabs": {},
   "team": {

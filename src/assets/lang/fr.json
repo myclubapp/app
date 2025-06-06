@@ -248,7 +248,11 @@
       "message": "Voulez-vous vraiment supprimer votre profil ? Cette action ne peut pas être annulée.",
       "success": "Votre profil a été supprimé avec succès.",
       "error": "Une erreur s'est produite lors de la suppression de votre profil. Veuillez réessayer plus tard."
-    }
+    },
+    "change_address_streetandnumber": "Rue",
+    "change_address_housenumber": "Numéro de maison",
+    "change_address_postalcode": "Code postal",
+    "change_address_city": "Ville"
   },
   "tabs": {},
   "team": {

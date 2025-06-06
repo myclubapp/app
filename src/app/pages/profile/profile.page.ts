@@ -692,7 +692,16 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         message: await lastValueFrom(
           this.translate.get("profile.kids.max_reached_message"),
         ),
-        buttons: [await lastValueFrom(this.translate.get("common.ok"))],
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("common.cancel")),
+            role: "destructive",
+          },
+          {
+            text: await lastValueFrom(this.translate.get("common.ok")),
+            role: "confirm",
+          },
+        ],
       });
       await alert.present();
       return;
@@ -708,7 +717,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
       buttons: [
         {
           text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: "cancel",
+          role: "destructive",
         },
         {
           text: await lastValueFrom(this.translate.get("common.add")),
