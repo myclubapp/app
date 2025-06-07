@@ -61,6 +61,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { LOCATION_INITIALIZED } from "@angular/common";
 
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
+
 import { HelferDetailPage } from "./pages/helfer/helfer-detail/helfer-detail.page";
 import { HelferAddPage } from "./pages/helfer/helfer-add/helfer-add.page";
 import { ClubMemberListPage } from "./pages/club-member-list/club-member-list.page";
@@ -76,6 +77,8 @@ import { HelferPunkteDetailPage } from "./pages/helfer/helfer-punkte-detail/helf
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 import { GamePreviewPage } from "./pages/championship/game-preview/game-preview.page";
 import { NotificationPage } from "./pages/news/notification/notification.page";
+import { ClubParentsListPage } from "./pages/club-parents-list/club-parents-list.page";
+import { ClubLinksPage } from "./pages/club-links/club-links.page";
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
@@ -129,18 +132,18 @@ const getConfig = () => {
     HelferDetailPage,
     HelferPunkteDetailPage,
     HelferAddPage,
-    // ChampionshipDetailPage,
     TrainingExercisesPage,
     TrainingDetailPage,
     TrainingCreatePage,
     GamePreviewPage,
     EventAddPage,
     EventDetailPage,
-    // OnboardingPage,
     ClubPage,
     ClubMemberListPage,
     ClubAdminListPage,
     ClubTeamListPage,
+    ClubLinksPage,
+    ClubParentsListPage,
     ClubRequestListPage,
     ClubSubscriptionPage,
     TeamPage,

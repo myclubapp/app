@@ -1,7 +1,17 @@
 import { Component, OnInit } from "@angular/core";
 import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { Observable, Subscription, take, tap } from "rxjs";
+import {
+  Observable,
+  Subscription,
+  switchMap,
+  take,
+  tap,
+  map,
+  catchError,
+  of,
+  combineLatest,
+} from "rxjs";
 import { User } from "@angular/fire/auth";
 import { ClubPage } from "../club/club.page";
 import {
@@ -12,6 +22,7 @@ import {
 import { Router } from "@angular/router";
 import { Optional } from "@angular/core";
 import { OnboardingClubPage } from "../onboarding/onboarding-club/onboarding-club.page";
+import { Browser } from "@capacitor/browser";
 
 @Component({
   selector: "app-club-list",
@@ -34,7 +45,25 @@ export class ClubListPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.clubList$ = this.fbService.getClubList();
+    this.clubList$ = this.fbService.getClubList().pipe(
+      switchMap((clubs) =>
+        combineLatest(
+          clubs.map((club) =>
+            this.fbService.getClubLinksShowOnCard(club.id).pipe(
+              map((links) => ({
+                ...club,
+                links: links,
+              })),
+            ),
+          ),
+        ),
+      ),
+      catchError((error) => {
+        console.error("Error loading clubs with links:", error);
+        return of([]);
+      }),
+    );
+
     if (
       this.router.getCurrentNavigation() &&
       this.router.getCurrentNavigation().extras &&
@@ -53,11 +82,30 @@ export class ClubListPage implements OnInit {
         .subscribe();
     }
   }
+
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
+
+  getLinkIcon(type: string): string {
+    switch (type) {
+      case "web":
+        return "globe-outline";
+      case "image":
+        return "image-outline";
+      case "pdf":
+        return "document-outline";
+      default:
+        return "link-outline";
+    }
+  }
+
+  async openLink(url: string) {
+    await Browser.open({ url });
+  }
+
   async openModal(club: Club) {
     const topModal = await this.modalCtrl.getTop();
     const presentingElement = topModal || this.routerOutlet?.nativeEl;
@@ -98,57 +146,5 @@ export class ClubListPage implements OnInit {
 
     if (role === "confirm") {
     }
-
-    /*
-    let _inputs = [];
-    for (let club of this.activeClubList) {
-      for (let myClub of this.clubList) {
-        if (myClub.id === club.id) {
-          // club nicht adden
-        } else {
-          _inputs.push({
-            label: club.name,
-            type: "radio",
-            value: club.id,
-          });
-        }
-      }
-    }
-
-    const alert = await this.alertController.create({
-      header: "Wähle deinen Club aus:",
-      buttons: [
-        {
-          text: "auswählen",
-          role: "confirm",
-          handler: (data: any) => {
-            console.log(data);
-            this.fbService
-              .setClubRequest(data, this.user)
-              .then(async (result) => {
-                const toast = await this.toastController.create({
-                  message: "Anfrage an Club gesendet",
-                  color: "primary",
-                  duration: 1500,
-                  position: "top",
-                });
-
-                await toast.present();
-              })
-              .catch((err) => {});
-          },
-        },
-        {
-          text: "abbrechen",
-          role: "cancel",
-          handler: () => {
-            console.log("abbrechen");
-          },
-        },
-      ],
-      inputs: _inputs,
-    });
-
-    await alert.present();*/
   }
 }

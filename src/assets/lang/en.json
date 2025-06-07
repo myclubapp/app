@@ -60,7 +60,19 @@
     "add": "Add",
     "success__added_user_to_team_string": "{userName} was successfully added to {length} team(s)",
     "action__canceled": "Action was canceled",
-    "trainaing__presence": "Training attendance"
+    "trainaing__presence": "Training attendance",
+    "details": "Club Details",
+    "links": "Links",
+    "add_link": "Add Link",
+    "link_title": "Link Title",
+    "link_description": "Link Description",
+    "link_type": "Link Type",
+    "link_type_web": "Website",
+    "link_type_image": "Image",
+    "link_type_pdf": "PDF",
+    "link_url": "URL",
+    "link_file": "File",
+    "show_on_card": "Show on Card"
   },
   "club-list": {
     "my__clubs": "My clubs"

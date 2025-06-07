@@ -57,7 +57,19 @@
     "add": "aggiungi",
     "success__added_user_to_team_string": "{userName} è stato aggiunto con successo a {length} squadra(e)",
     "action__canceled": "Azione annullata",
-    "trainaing__presence": "Presenza all'allenamento"
+    "trainaing__presence": "Presenza all'allenamento",
+    "details": "Dettagli del Club",
+    "links": "Link",
+    "add_link": "Aggiungi link",
+    "link_title": "Titolo del link",
+    "link_description": "Descrizione del link",
+    "link_type": "Tipo di link",
+    "link_type_web": "Sito web",
+    "link_type_image": "Immagine",
+    "link_type_pdf": "PDF",
+    "link_url": "URL",
+    "link_file": "File",
+    "show_on_card": "Mostra sulla scheda"
   },
   "club-list": {
     "my__clubs": "I miei club"

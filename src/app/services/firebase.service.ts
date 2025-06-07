@@ -12,8 +12,10 @@ import {
   updateDoc,
   limit,
   orderBy,
+  query,
+  where,
+  writeBatch,
 } from "@angular/fire/firestore";
-
 import {
   Observable,
   catchError,
@@ -31,12 +33,13 @@ import {
 import { Club } from "../models/club";
 import { Team } from "../models/team";
 import { User } from "@angular/fire/auth";
-
 import { AuthService } from "src/app/services/auth.service";
-import { query, where } from "@angular/fire/firestore";
 import { Profile } from "../models/user";
 import { collectionGroup } from "firebase/firestore";
 import { UserProfileService } from "./firebase/user-profile.service";
+import { ref, uploadBytes, getDownloadURL } from "@angular/fire/storage";
+import { ClubLink } from "../models/club-link";
+import { Storage } from "@angular/fire/storage";
 
 @Injectable({
   providedIn: "root",
@@ -46,6 +49,7 @@ export class FirebaseService {
 
   constructor(
     private readonly firestore: Firestore,
+    private readonly storage: Storage,
     private readonly authService: AuthService,
     private readonly userProfileService: UserProfileService,
   ) {}
@@ -92,7 +96,7 @@ export class FirebaseService {
     }) as Observable<any[]>;
   }
 
-  getClubList() {
+  getClubList(): Observable<Club[]> {
     return this.authService.getUser$().pipe(
       take(1),
       tap((user) => {
@@ -108,16 +112,13 @@ export class FirebaseService {
               children.length > 0
                 ? combineLatest(
                     children.map((child) => {
-                      // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
                       return this.getUserClubRefs(childUser);
                     }),
                   )
                 : of([]),
             ),
             map((childrenClubs) => childrenClubs.flat()),
-            tap((clubs) => console.log("Children Clubs:", clubs)),
             catchError((error) => {
               console.error("Error fetching children clubs:", error);
               return of([]);
@@ -146,7 +147,6 @@ export class FirebaseService {
           (club): club is Club => club !== null && club !== undefined,
         ),
       ),
-      // shareReplay(),
       catchError((err) => {
         console.error("Error in getClubList:", err);
         return of([]);
@@ -1046,5 +1046,77 @@ export class FirebaseService {
     );
     const q = query(trainingsRef, orderBy("date", "desc"));
     return collectionData(q) as Observable<any[]>;
+  }
+
+  // Club Links
+  getClubLinks(clubId: string): Observable<ClubLink[]> {
+    return collectionData(
+      query(
+        collection(this.firestore, `club/${clubId}/links`),
+        orderBy("order"),
+      ),
+      { idField: "id" },
+    ) as Observable<ClubLink[]>;
+  }
+
+  getClubLinksShowOnCard(clubId: string): Observable<ClubLink[]> {
+    return collectionData(
+      query(
+        collection(this.firestore, `club/${clubId}/links`),
+        where("showOnCard", "==", true),
+        orderBy("order"),
+      ),
+    ) as Observable<ClubLink[]>;
+  }
+
+  async addClubLink(
+    clubId: string,
+    link: Omit<ClubLink, "id" | "createdAt" | "updatedAt">,
+  ): Promise<void> {
+    const linksRef = collection(this.firestore, `club/${clubId}/links`);
+    const newLink = {
+      ...link,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    await addDoc(linksRef, newLink);
+  }
+
+  async updateClubLink(
+    clubId: string,
+    linkId: string,
+    link: Partial<ClubLink>,
+  ): Promise<void> {
+    const linkRef = doc(this.firestore, `club/${clubId}/links/${linkId}`);
+    await updateDoc(linkRef, {
+      ...link,
+      updatedAt: new Date(),
+    });
+  }
+
+  async deleteClubLink(clubId: string, linkId: string): Promise<void> {
+    const linkRef = doc(this.firestore, `club/${clubId}/links/${linkId}`);
+    return deleteDoc(linkRef);
+  }
+
+  async updateLinkOrder(
+    clubId: string,
+    links: { id: string; order: number }[],
+  ): Promise<void> {
+    const batch = writeBatch(this.firestore);
+
+    links.forEach((link) => {
+      const linkRef = doc(this.firestore, `club/${clubId}/links/${link.id}`);
+      batch.update(linkRef, { order: link.order, updatedAt: new Date() });
+    });
+
+    await batch.commit();
+  }
+
+  async uploadClubLinkFile(clubId: string, file: File): Promise<string> {
+    const filePath = `club/${clubId}/links/${Date.now()}_${file.name}`;
+    const storageRef = ref(this.storage, filePath);
+    await uploadBytes(storageRef, file);
+    return await getDownloadURL(storageRef);
   }
 }

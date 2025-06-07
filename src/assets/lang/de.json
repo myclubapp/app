@@ -62,7 +62,18 @@
     "success__added_user_to_team_string": "{userName} wurde erfolgreich {length} Team(s) hinzugefügt",
 
     "action__request_deleted": "Anfrage wurde abgelehnt",
-    "trainaing__presence": "Trainingspräsenz"
+    "trainaing__presence": "Trainingspräsenz",
+    "links": "Links",
+    "add_link": "Link hinzufügen",
+    "link_title": "Link Titel",
+    "link_description": "Link Beschreibung",
+    "link_type": "Link Typ",
+    "link_type_web": "Webseite",
+    "link_type_image": "Bild",
+    "link_type_pdf": "PDF",
+    "link_url": "URL",
+    "link_file": "Datei",
+    "show_on_card": "Auf Karte anzeigen"
   },
   "club-list": {
     "my__clubs": "Meine Clubs"

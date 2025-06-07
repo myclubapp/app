@@ -108,9 +108,17 @@
         <ion-label> {{"common.teams" | translate}} </ion-label>
         <ion-note slot="end">{{club['clubTeams'].length}}</ion-note>
       </ion-item>
+    </ion-list>
 
-      <ng-container *ngIf="club.hasFeatureHelferEvent">
-        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+    <ion-list [inset]="true">
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ng-container *ngIf="isClubAdmin(clubAdminList, this.club.id)">
+          <ion-item detail="true" (click)="openSubscription()">
+            <ion-icon name="card-outline" slot="start"></ion-icon>
+            <ion-label> {{"common.subscription" | translate}} </ion-label>
+            <ion-badge slot="end">{{club.subscriptionType}}</ion-badge>
+          </ion-item>
+
           <ion-item
             *ngIf="isClubAdmin(clubAdminList, this.club.id)"
             detail="true"
@@ -119,21 +127,12 @@
             <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
             <ion-label> Helferpunkte </ion-label>
           </ion-item>
-        </ng-container>
-      </ng-container>
-    </ion-list>
 
-    <ion-list [inset]="true">
-      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-item
-          *ngIf="isClubAdmin(clubAdminList, this.club.id)"
-          detail="true"
-          (click)="openSubscription()"
-        >
-          <ion-icon name="card-outline" slot="start"></ion-icon>
-          <ion-label> {{"common.subscription" | translate}} </ion-label>
-          <ion-badge slot="end">{{club.subscriptionType}}</ion-badge>
-        </ion-item>
+          <ion-item detail="true" (click)="openLinksList()">
+            <ion-icon name="link-outline" slot="start"></ion-icon>
+            <ion-label> {{"club.links" | translate}} </ion-label>
+          </ion-item>
+        </ng-container>
       </ng-container>
     </ion-list>
 

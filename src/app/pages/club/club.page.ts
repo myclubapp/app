@@ -34,8 +34,8 @@ import { HelferPunkteClubPage } from "../helfer/helfer-punkte-club/helfer-punkte
 import { Club } from "src/app/models/club";
 import { ClubSubscriptionPage } from "../club-subscription/club-subscription.page";
 import { ClubParentsListPage } from "../club-parents-list/club-parents-list.page";
-import { RouterOutlet } from "@angular/router";
 import { Optional } from "@angular/core";
+import { ClubLinksPage } from "../club-links/club-links.page";
 
 @Component({
   selector: "app-club",
@@ -362,6 +362,28 @@ export class ClubPage implements OnInit {
     const modal = await this.modalCtrl.create({
       component: ClubTeamListPage,
       presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        clubId: this.club.id,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+  async openLinksList() {
+    console.log("open Club Links List");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
+    const modal = await this.modalCtrl.create({
+      component: ClubLinksPage,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
