@@ -20,7 +20,7 @@ jobs:
       - name: Install Dependencies
         run: npm i --force
       - name: Build myclub App
-        run: npm run build:prod
+        run: npm run build:app-myclub
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@v12.8.0
         with:
@@ -44,7 +44,7 @@ jobs:
       - name: Install Dependencies
         run: npm i --force
       - name: Build Unihockey App
-        run: npm run build:prod
+        run: npm run build:app-unihockey
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@v12.8.0
         with:
