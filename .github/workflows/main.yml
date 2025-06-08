@@ -68,7 +68,7 @@ jobs:
       - name: Install Dependencies
         run: npm i --force
       - name: Build Volleyball App
-        run: npm run build:prod
+        run: npm run build:app-volleyball
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@v12.8.0
         with:
@@ -92,7 +92,7 @@ jobs:
       - name: Install Dependencies
         run: npm i --force
       - name: Build Handball App
-        run: npm run build:prod
+        run: npm run build:app-handball
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@v12.8.0
         with:
@@ -116,7 +116,7 @@ jobs:
       - name: Install Dependencies
         run: npm i --force
       - name: Build Turnverein App
-        run: npm run build:prod
+        run: npm run build:app-turnverein
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@v12.8.0
         with:
@@ -140,7 +140,7 @@ jobs:
       - name: Install Dependencies
         run: npm i --force
       - name: Build Fussball App
-        run: npm run build:prod
+        run: npm run build:app-fussball
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@v12.8.0
         with:
