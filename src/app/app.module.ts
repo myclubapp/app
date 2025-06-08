@@ -183,12 +183,15 @@ const getConfig = () => {
     }),
   ],
   providers: [
-    provideFirebaseApp(() => {
-      const init = initializeApp(environment.firebase);
-      return init;
-    }),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appInitializerFactory,
+      deps: [TranslateService, Injector],
+      multi: true,
+    },
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => {
-      const firestore = getFirestore(getApp());
+      const firestore = getFirestore();
       return firestore;
     }),
     provideAuth(() => {
@@ -199,21 +202,11 @@ const getConfig = () => {
       } else {
         return getAuth();
       }
-      // const auth = getAuth();
-      // setPersistence(auth,browserSessionPersistence);
-      // return auth;
     }),
     provideAnalytics(() => getAnalytics()),
     provideStorage(() => getStorage()),
     provideMessaging(() => getMessaging()),
-
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: appInitializerFactory,
-      deps: [TranslateService, Injector],
-      multi: true,
-    },
     provideHttpClient(withInterceptorsFromDi()),
   ],
 })
