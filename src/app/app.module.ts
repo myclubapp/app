@@ -116,13 +116,6 @@ export function appInitializerFactory(
     });
 }
 
-export function initializeFirebase() {
-  return () => {
-    const app = initializeApp(environment.firebase);
-    return app;
-  };
-}
-
 const getConfig = () => {
   let config = {};
   if (isPlatform("iphone")) {
@@ -208,6 +201,7 @@ const getConfig = () => {
     provideAnalytics(() => getAnalytics()),
     provideStorage(() => getStorage()),
     provideMessaging(() => getMessaging()),
+
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     {
       provide: APP_INITIALIZER,

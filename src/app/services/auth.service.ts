@@ -40,7 +40,7 @@ export class AuthService {
     // public auth: Auth,
     public auth: Auth, // = inject(Auth),
 
-    private readonly router: Router
+    private readonly router: Router,
   ) {
     // or use this version...
     this.user$ = authState(this.auth);
@@ -59,21 +59,20 @@ export class AuthService {
 
   async sendVerifyEmail() {
     this.auth.currentUser.getIdToken(true);
-    console.log("resend verification for user " + this.auth.currentUser.email)
+    console.log("resend verification for user " + this.auth.currentUser.email);
     return await sendEmailVerification(this.auth.currentUser);
   }
 
   async verifyBeforeUpdateEmail(email) {
     this.auth.currentUser.getIdToken(true);
-    return await verifyBeforeUpdateEmail(this.auth.currentUser, email)
-    
+    return await verifyBeforeUpdateEmail(this.auth.currentUser, email);
   }
 
   async signup(
     email: string,
     password: string,
     firstName: string,
-    lastName: string
+    lastName: string,
   ): Promise<UserCredential> {
     try {
       const newUserCredential: UserCredential =
@@ -82,7 +81,7 @@ export class AuthService {
       // const userProfileRef = collection(this.firestore, 'userProfile');
       const userProfileDocRef = doc(
         this.firestore,
-        `userProfile/${newUserCredential.user.uid}`
+        `userProfile/${newUserCredential.user.uid}`,
       );
       await setDoc(userProfileDocRef, {
         firstName,
@@ -112,7 +111,7 @@ export class AuthService {
 
   async logout(): Promise<any> {
     return signOut(this.auth);
-  
+
     // firebase.firestore().clearPersistence();
     /*const navLogout = await this.router.navigateByUrl("/logout");
     if (navLogout) {

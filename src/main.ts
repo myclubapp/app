@@ -9,7 +9,7 @@ import { environment } from "./environments/environment";
 import { defineCustomElements } from "@ionic/pwa-elements/loader";
 // import { defineCustomElements as defineCustomElementsGoogleMaps } from 'web-google-maps/dist/loader';
 import { defineCustomElements as defineCustomElementsSocialShare } from "web-social-share/dist/loader";
-import { defineCustomElements as defineCustomElementsCreateGamePreview } from "myclub-game-preview/loader"
+import { defineCustomElements as defineCustomElementsCreateGamePreview } from "myclub-game-preview/loader";
 
 if (environment.production) {
   enableProdMode();
