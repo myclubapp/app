@@ -80,6 +80,7 @@ import { NotificationPage } from "./pages/news/notification/notification.page";
 import { ClubParentsListPage } from "./pages/club-parents-list/club-parents-list.page";
 import { ClubLinksPage } from "./pages/club-links/club-links.page";
 import { ClubLinksCreatePage } from "./pages/club-links-create/club-links-create.page";
+import { ClubLinksEditPage } from "./pages/club-links-edit/club-links-edit.page";
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
@@ -146,6 +147,7 @@ const getConfig = () => {
     ClubParentsListPage,
     ClubLinksPage,
     ClubLinksCreatePage,
+    ClubLinksEditPage,
     ClubRequestListPage,
     ClubSubscriptionPage,
     TeamPage,

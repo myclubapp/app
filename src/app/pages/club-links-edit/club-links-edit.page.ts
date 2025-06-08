@@ -7,12 +7,12 @@ import { lastValueFrom } from "rxjs";
 import { UiService } from "src/app/services/ui.service";
 
 @Component({
-  selector: "app-club-links-create",
-  templateUrl: "./club-links-create.page.html",
-  styleUrls: ["./club-links-create.page.scss"],
+  selector: "app-club-links-edit",
+  templateUrl: "./club-links-edit.page.html",
+  styleUrls: ["./club-links-edit.page.scss"],
   standalone: false,
 })
-export class ClubLinksCreatePage implements OnInit {
+export class ClubLinksEditPage implements OnInit {
   @Input("linkData") linkCopy: ClubLink;
   @Input("clubId") clubId: string;
   link: any;
@@ -57,7 +57,7 @@ export class ClubLinksCreatePage implements OnInit {
     return this.modalCtrl.dismiss(null, "close");
   }
 
-  async createLink() {
+  async updateLink() {
     if (!this.link.title || !this.link.type || !this.link.description) {
       this.toastActionError({
         message:
@@ -69,7 +69,7 @@ export class ClubLinksCreatePage implements OnInit {
     const result = await this.uiService.showConfirmDialog({
       header: await lastValueFrom(this.translate.get("common.confirmation")),
       message: await lastValueFrom(
-        this.translate.get("link.create_link_confirm"),
+        this.translate.get("link.update_link_confirm"),
       ),
       confirmText: await lastValueFrom(this.translate.get("common.confirm")),
       cancelText: await lastValueFrom(this.translate.get("common.cancel")),
@@ -77,45 +77,22 @@ export class ClubLinksCreatePage implements OnInit {
 
     if (result) {
       try {
-        if (this.linkCopy?.id) {
-          // Update existing link
-          await this.fbService.updateClubLink(
+        // Update existing link
+        await this.fbService.updateClubLink(
+          this.clubId,
+          this.linkCopy.id,
+          this.link,
+        );
+        if (this.selectedFile) {
+          const fileUrl = await this.fbService.uploadClubLinkFile(
             this.clubId,
             this.linkCopy.id,
-            this.link,
+            this.selectedFile,
           );
-          if (this.selectedFile) {
-            const fileUrl = await this.fbService.uploadClubLinkFile(
-              this.clubId,
-              this.linkCopy.id,
-              this.selectedFile,
-            );
-            await this.fbService.updateClubLink(this.clubId, this.linkCopy.id, {
-              ...this.link,
-              url: fileUrl,
-            });
-          }
-        } else {
-          // Create new link
-          console.log("Create new link", this.link);
-          const newLinkRef = await this.fbService.addClubLink(
-            this.clubId,
-            this.link,
-          );
-          console.log("New link id", newLinkRef.id);
-          if (this.selectedFile) {
-            const fileUrl = await this.fbService.uploadClubLinkFile(
-              this.clubId,
-              newLinkRef.id,
-              this.selectedFile,
-            );
-            console.log("Upload file", fileUrl);
-            await this.fbService.updateClubLink(this.clubId, newLinkRef.id, {
-              ...this.link,
-              url: fileUrl,
-            });
-            console.log("Update link", this.link, fileUrl);
-          }
+          await this.fbService.updateClubLink(this.clubId, this.linkCopy.id, {
+            ...this.link,
+            url: fileUrl,
+          });
         }
 
         const toast = await this.toastCtrl.create({

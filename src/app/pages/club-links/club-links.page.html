@@ -52,7 +52,7 @@
             </ng-template>
             <ion-label class="ion-text-wrap">
               <h2>{{link.title}}</h2>
-              <p>{{link.description.slice(0, 50)}}...</p>
+              <p>{{link?.description.slice(0, 50)}}...</p>
             </ion-label>
           </ion-item>
           <ng-container *ngIf="clubAdminList$ | async as clubAdminList">

@@ -25,6 +25,7 @@ import { Club } from "src/app/models/club";
 import { Browser } from "@capacitor/browser";
 import { map } from "rxjs/operators";
 import { ClubLinksCreatePage } from "../club-links-create/club-links-create.page";
+import { ClubLinksEditPage } from "../club-links-edit/club-links-edit.page";
 
 @Component({
   selector: "app-club-links",
@@ -79,7 +80,7 @@ export class ClubLinksPage implements OnInit {
     const presentingElement = topModal || this.routerOutlet?.nativeEl;
 
     const modal = await this.modalCtrl.create({
-      component: ClubLinksCreatePage,
+      component: ClubLinksEditPage,
       presentingElement,
       canDismiss: true,
       showBackdrop: true,

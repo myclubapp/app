@@ -1,12 +1,11 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-
 import { IonicModule } from "@ionic/angular";
 
-import { ClubLinksPageRoutingModule } from "./club-links-routing.module";
+import { ClubLinksEditPageRoutingModule } from "./club-links-edit-routing.module";
 
-import { ClubLinksPage } from "./club-links.page";
+import { ClubLinksEditPage } from "./club-links-edit.page";
 import { TranslateModule } from "@ngx-translate/core";
 
 @NgModule({
@@ -15,8 +14,8 @@ import { TranslateModule } from "@ngx-translate/core";
     FormsModule,
     IonicModule,
     TranslateModule,
-    ClubLinksPageRoutingModule,
+    ClubLinksEditPageRoutingModule,
   ],
-  declarations: [ClubLinksPage],
+  declarations: [ClubLinksEditPage],
 })
-export class ClubLinksPageModule {}
+export class ClubLinksEditPageModule {}

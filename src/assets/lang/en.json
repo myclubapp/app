@@ -414,7 +414,9 @@
     "change_address_streetandnumber": "Street",
     "change_address_housenumber": "House number",
     "change_address_postalcode": "Postal code",
-    "change_address_city": "City"
+    "change_address_city": "City",
+    "add": "add",
+    "parent_info": "As a parent, you will be informed about all important events concerning your children."
   },
   "tabs": {},
   "team": {
@@ -554,13 +556,14 @@
     "address": "Address"
   },
   "link": {
-    "create_link": "Create Link",
+    "create_link": "New Link",
+    "edit_link": "Edit Link",
     "type": "Type",
     "type__web": "Website",
     "type__image": "Image",
     "type__pdf": "PDF",
     "url": "URL",
-    "show__on__card": "Show on Card",
+    "show__on__card": "Show on card",
     "create_link_confirm": "Do you really want to create this link?"
   }
 }

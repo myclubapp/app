@@ -389,7 +389,11 @@
     "change_address_streetandnumber": "Via",
     "change_address_housenumber": "Numero civico",
     "change_address_postalcode": "CAP",
-    "change_address_city": "Città"
+    "change_address_city": "Città",
+    "children": "Bambini",
+    "add": "aggiungi",
+    "no_children": "Nessun bambino aggiunto",
+    "parent_info": "Come genitore, sarai informato su tutti gli eventi importanti riguardanti i tuoi figli."
   },
   "tabs": {},
   "team": {
@@ -530,7 +534,8 @@
     "address": "Indirizzo"
   },
   "link": {
-    "create_link": "Crea link",
+    "create_link": "Nuovo link",
+    "edit_link": "Modifica link",
     "type": "Tipo",
     "type__web": "Sito web",
     "type__image": "Immagine",

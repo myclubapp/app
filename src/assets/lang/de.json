@@ -421,7 +421,11 @@
       "error": "Beim Löschen des Profils ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
     },
     "change_address_streetandnumber": "Strasse",
-    "change_address_housenumber": "Hausnummer"
+    "change_address_housenumber": "Hausnummer",
+    "children": "Kinder",
+    "add": "hinzufügen",
+    "no_children": "Keine Kinder hinzugefügt",
+    "parent_info": "Als Elternteil werden Sie über alle wichtigen Ereignisse Ihrer Kinder informiert."
   },
   "tabs": {},
   "team": {
@@ -568,12 +572,14 @@
   },
   "link": {
     "create_link": "Neuer Link",
+    "edit_link": "Link bearbeiten",
     "type": "Typ",
     "type__web": "Webseite",
     "type__image": "Bild",
     "type__pdf": "PDF",
     "url": "URL",
     "show__on__card": "Auf Karte anzeigen",
-    "create_link_confirm": "Möchten Sie diesen Link wirklich erstellen?"
+    "create_link_confirm": "Möchten Sie diesen Link wirklich erstellen?",
+    "update_link_confirm": "Möchten Sie diesen Link wirklich aktualisieren?"
   }
 }

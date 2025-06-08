@@ -132,7 +132,8 @@
                       (click)="toggleSchicht(item, true, event, schicht)"
                     ></ion-icon>
 
-                    <ion-label *ngIf="status.id === user.uid"
+                    <ion-label
+                      *ngIf="status.id === user.uid && schicht.status.length > 1"
                       >{{"common.my__status" | translate}}</ion-label
                     >
                     <ion-label *ngIf="status.id !== user.uid"
