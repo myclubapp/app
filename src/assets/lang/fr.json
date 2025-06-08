@@ -131,7 +131,8 @@
     "title": "Titre"
   },
   "login": {
-    "login__title": "Connectez-vous à votre compte",
+    "login__title": "Connectez-vous avec votre compte",
+    "loading": "Connexion en cours...",
     "signin_create__account": "créer un nouveau compte",
     "register": "S'inscrire",
     "error__no_acount_found": "Aucun compte trouvé avec cette adresse e-mail",

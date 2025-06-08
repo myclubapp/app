@@ -134,6 +134,7 @@
   },
   "login": {
     "login__title": "Melden Dich mit deinem Konto an",
+    "loading": "Anmeldung läuft...",
     "error__no_acount_found": "Kein Account mit dieser E-Mail-Adresse gefunden",
     "error__invalid_username_password": "Die Kombination aus Benutzername und Passwort ist falsch.",
     "error__invalid_login_credentials": "Die Kombination aus Benutzername und Passwort ist falsch.",

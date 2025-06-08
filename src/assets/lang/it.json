@@ -129,7 +129,8 @@
     "title": "Titolo"
   },
   "login": {
-    "login__title": "Accedi al tuo account",
+    "login__title": "Accedi con il tuo account",
+    "loading": "Accesso in corso...",
     "signin_create__account": "crea un nuovo account",
     "register": "Registrati",
     "error__no_acount_found": "Nessun account trovato con questo indirizzo email",

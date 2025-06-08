@@ -126,27 +126,27 @@ jobs:
 # -------------------------------------------------------------          
 # Default App Fussball Verband
 # -------------------------------------------------------------          
-  build_fussball:
-    needs: build_myclub
-    name: Build & Deploy Fussball App
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@master
-      - name: Config Node Version because of npm login issues.
-        uses: actions/setup-node@master
-        with:
-          node-version: 20
-      - name: Install Dependencies
-        run: npm i --force
-      - name: Build Fussball App
-        run: npm run build:app-fussball
-      - name: Deploy to Firebase
-        uses: w9jds/firebase-action@v12.8.0
-        with:
-          args: deploy --only hosting:app-fussball
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}                      
+#  build_fussball:
+#    needs: build_myclub
+#    name: Build & Deploy Fussball App#
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout Repo
+#        uses: actions/checkout@master
+#      - name: Config Node Version because of npm login issues.
+#        uses: actions/setup-node@master
+#        with:
+#          node-version: 20
+#      - name: Install Dependencies
+#        run: npm i --force
+#      - name: Build Fussball App
+#        run: npm run build:app-fussball
+#      - name: Deploy to Firebase
+#        uses: w9jds/firebase-action@v12.8.0
+#        with:
+#          args: deploy --only hosting:app-fussball
+#        env:
+#          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}                      
 # -------------------------------------------------------------          
 # Custom App Kadetten Unihockey
 # -------------------------------------------------------------          

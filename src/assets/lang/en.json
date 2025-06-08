@@ -131,7 +131,8 @@
     "title": "Title"
   },
   "login": {
-    "login__title": "Sign in to your account",
+    "login__title": "Sign in with your account",
+    "loading": "Signing in...",
     "error__no_acount_found": "No account found with this email address",
     "error__invalid_username_password": "The username/password combination is incorrect.",
     "error__invalid_login_credentials": "The username/password combination is incorrect.",
