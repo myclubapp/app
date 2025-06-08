@@ -151,7 +151,7 @@ jobs:
 # Custom App Kadetten Unihockey
 # -------------------------------------------------------------          
   build_kadetten:
-    needs: build_myclub
+    needs: build_unihockey
     name: Build & Deploy Kadetten Unihockey App
     runs-on: ubuntu-latest
     steps:
@@ -175,7 +175,7 @@ jobs:
 # Custom App UHC Winterthur United
 # -------------------------------------------------------------
   build_uhc_winu:
-    needs: [build_myclub]
+    needs: build_unihockey
     name: Build & Deploy UHC Winterthur United App
     runs-on: ubuntu-latest
     steps:
@@ -199,7 +199,7 @@ jobs:
 # Custom App STV Spreitenbach
 # -------------------------------------------------------------
   build_stv_spreitenbach:
-    needs: [build_myclub]
+    needs: build_unihockey
     name: Build & Deploy STV Spreitenbach App
     runs-on: ubuntu-latest
     steps:
@@ -223,7 +223,7 @@ jobs:
 # Custom App VBC Schaffhausen
 # -------------------------------------------------------------
   build_vbc_schaffhausen:
-    needs: [build_myclub]
+    needs: build_unihockey
     name: Build & Deploy VBC Schaffhausen App
     runs-on: ubuntu-latest
     steps:
@@ -247,7 +247,7 @@ jobs:
 # Custom App Kadetten Handball
 # -------------------------------------------------------------
   build_kadetten_handball:
-    needs: [build_myclub]
+    needs: build_unihockey
     name: Build & Deploy Kadetten Handball App
     runs-on: ubuntu-latest
     steps:
