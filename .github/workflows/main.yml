@@ -20,7 +20,7 @@ jobs:
       - name: Install Dependencies
         run: npm i --force
       - name: Build myclub App
-        run: npm run build:production
+        run: npm run build:prod
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@v12.8.0
         with:
