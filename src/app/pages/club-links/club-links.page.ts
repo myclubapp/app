@@ -3,7 +3,13 @@ import {
   ModalController,
   NavParams,
   ToastController,
+  ItemReorderEventDetail,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonReorder,
   IonReorderGroup,
+  IonItemSliding,
 } from "@ionic/angular";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { ClubLink } from "src/app/models/club-link";
@@ -18,6 +24,7 @@ import { map } from "rxjs/operators";
   templateUrl: "./club-links.page.html",
   styleUrls: ["./club-links.page.scss"],
   standalone: false,
+  // imports: [IonItem, IonLabel, IonList, IonReorder, IonReorderGroup],
 })
 export class ClubLinksPage implements OnInit {
   @Input("clubId") clubId: any;
@@ -65,14 +72,16 @@ export class ClubLinksPage implements OnInit {
     this.searchTerm.next(event.detail.value);
   }
 
-  async editLink(link: ClubLink) {
+  async editLink(item: IonItemSliding, link: ClubLink) {
+    item.close();
     this.newLink = { ...link };
     this.isAddingLink = true;
   }
   async openLink(url: string) {
     await Browser.open({ url });
   }
-  async deleteLink(linkId: string) {
+  async deleteLink(item: IonItemSliding, linkId: string) {
+    item.close();
     try {
       await this.fbService.deleteClubLink(this.clubId, linkId);
       const toast = await this.toastCtrl.create({
@@ -109,7 +118,7 @@ export class ClubLinksPage implements OnInit {
     }
   }
 
-  async doReorder(ev: any) {
+  async handleReorder(ev: CustomEvent<ItemReorderEventDetail>) {
     try {
       const links = await firstValueFrom(this.links$);
       const reorderedLinks = ev.detail.complete(links);
@@ -184,7 +193,17 @@ export class ClubLinksPage implements OnInit {
         linkData.url = fileUrl;
       }
 
-      await this.fbService.addClubLink(this.clubId, linkData);
+      if (this.newLink.id) {
+        // Update existing link
+        await this.fbService.updateClubLink(
+          this.clubId,
+          this.newLink.id,
+          linkData,
+        );
+      } else {
+        // Create new link
+        await this.fbService.addClubLink(this.clubId, linkData);
+      }
 
       this.isAddingLink = false;
       this.newLink = {
@@ -221,6 +240,7 @@ export class ClubLinksPage implements OnInit {
     }
 
     if (
+      !this.newLink.id &&
       (this.newLink.type === "image" || this.newLink.type === "pdf") &&
       !this.selectedFile
     ) {

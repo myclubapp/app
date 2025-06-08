@@ -108,6 +108,11 @@
         <ion-label> {{"common.teams" | translate}} </ion-label>
         <ion-note slot="end">{{club['clubTeams'].length}}</ion-note>
       </ion-item>
+
+      <ion-item detail="true" (click)="openLinksList()">
+        <ion-icon name="link-outline" slot="start"></ion-icon>
+        <ion-label> {{"club.links" | translate}} </ion-label>
+      </ion-item>
     </ion-list>
 
     <ion-list [inset]="true">
@@ -126,11 +131,6 @@
           >
             <ion-icon name="help-buoy-outline" slot="start"></ion-icon>
             <ion-label> Helferpunkte </ion-label>
-          </ion-item>
-
-          <ion-item detail="true" (click)="openLinksList()">
-            <ion-icon name="link-outline" slot="start"></ion-icon>
-            <ion-label> {{"club.links" | translate}} </ion-label>
           </ion-item>
         </ng-container>
       </ng-container>

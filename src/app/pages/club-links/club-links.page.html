@@ -32,33 +32,45 @@
 
     <ion-list [inset]="true" *ngIf="links$ | async as links else loading">
       <ion-reorder-group
-        (ionItemReorder)="doReorder($event)"
         [disabled]="!allowEdit"
+        (ionItemReorder)="handleReorder($any($event))"
       >
-        <ion-item-group>
-          <ion-item-sliding *ngFor="let link of links">
-            <ion-item detail="true" (click)="openLink(link.url)">
-              <ion-reorder slot="start" *ngIf="allowEdit"></ion-reorder>
-              <ion-icon [name]="getLinkIcon(link.type)" slot="start"></ion-icon>
-              <ion-label class="ion-text-wrap">
-                <h2>{{link.title}}</h2>
-                <p>{{link.description.slice(0, 50)}}...</p>
-              </ion-label>
-            </ion-item>
-            <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-              <ng-container *ngIf="isClubAdmin(clubAdminList, club.id)">
-                <ion-item-options side="end">
-                  <ion-item-option color="primary" (click)="editLink(link)">
-                    <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-                  </ion-item-option>
-                  <ion-item-option color="danger" (click)="deleteLink(link.id)">
-                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-                  </ion-item-option>
-                </ion-item-options>
-              </ng-container>
+        <ion-item-sliding #item *ngFor="let link of links">
+          <ion-item detail="true" (click)="openLink(link.url)">
+            <ion-reorder slot="start" *ngIf="allowEdit"></ion-reorder>
+            <ng-container *ngIf="link.type === 'image'; else defaultIcon">
+              <ion-avatar slot="start" style="width: 32px; height: 32px">
+                <img
+                  [src]="link.url"
+                  alt="{{link.title}}"
+                  style="width: 100%; height: 100%; object-fit: cover"
+                />
+              </ion-avatar>
             </ng-container>
-          </ion-item-sliding>
-        </ion-item-group>
+            <ng-template #defaultIcon>
+              <ion-icon [name]="getLinkIcon(link.type)" slot="start"></ion-icon>
+            </ng-template>
+            <ion-label class="ion-text-wrap">
+              <h2>{{link.title}}</h2>
+              <p>{{link.description.slice(0, 50)}}...</p>
+            </ion-label>
+          </ion-item>
+          <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+            <ng-container *ngIf="isClubAdmin(clubAdminList, club.id)">
+              <ion-item-options side="end">
+                <ion-item-option color="primary" (click)="editLink(item, link)">
+                  <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+                </ion-item-option>
+                <ion-item-option
+                  color="danger"
+                  (click)="deleteLink(item, link.id)"
+                >
+                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-item-option>
+              </ion-item-options>
+            </ng-container>
+          </ng-container>
+        </ion-item-sliding>
       </ion-reorder-group>
     </ion-list>
 
@@ -172,6 +184,19 @@
             >{{"club.link_file" | translate}}</ion-label
           >
           <ion-input type="file" (change)="onFileSelected($event)"></ion-input>
+        </ion-item>
+
+        <ion-item
+          *ngIf="newLink.type === 'image' && newLink.url && !selectedFile"
+        >
+          <ion-label position="stacked"
+            >{{"club.current_image" | translate}}</ion-label
+          >
+          <img
+            [src]="newLink.url"
+            alt="Current image"
+            style="max-width: 200px; max-height: 200px; object-fit: contain"
+          />
         </ion-item>
 
         <ion-item>
