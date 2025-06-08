@@ -9,13 +9,7 @@
           "beta-myclub"
         ],
         "app-myclub": [
-          "my-club",
-          "my-club-app",
-          "myclubmanagement"
-        ],
-        "app-fussball": [
-          "fussballclub",
-          "fussballclubapp"
+          "my-club"
         ],
         "app-basketball": [
           "basketballclub"
@@ -46,6 +40,9 @@
         ],
         "app-turnverein": [
           "turnverein"
+        ],
+        "app-fussball": [
+          "fussballclub"
         ]
       }
     }
