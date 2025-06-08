@@ -115,6 +115,14 @@ export function appInitializerFactory(
       });
     });
 }
+
+export function initializeFirebase() {
+  return () => {
+    const app = initializeApp(environment.firebase);
+    return app;
+  };
+}
+
 const getConfig = () => {
   let config = {};
   if (isPlatform("iphone")) {
@@ -183,17 +191,8 @@ const getConfig = () => {
     }),
   ],
   providers: [
-    {
-      provide: APP_INITIALIZER,
-      useFactory: appInitializerFactory,
-      deps: [TranslateService, Injector],
-      multi: true,
-    },
     provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideFirestore(() => {
-      const firestore = getFirestore();
-      return firestore;
-    }),
+    provideFirestore(() => getFirestore()),
     provideAuth(() => {
       if (Capacitor.isNativePlatform()) {
         return initializeAuth(getApp(), {
@@ -202,11 +201,20 @@ const getConfig = () => {
       } else {
         return getAuth();
       }
+      // const auth = getAuth();
+      // setPersistence(auth,browserSessionPersistence);
+      // return auth;
     }),
     provideAnalytics(() => getAnalytics()),
     provideStorage(() => getStorage()),
     provideMessaging(() => getMessaging()),
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appInitializerFactory,
+      deps: [TranslateService, Injector],
+      multi: true,
+    },
     provideHttpClient(withInterceptorsFromDi()),
   ],
 })
