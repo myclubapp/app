@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { ClubLink } from "./club-link";
 
 export interface Club {
   id: string;
@@ -13,10 +14,12 @@ export interface Club {
   phone: string;
   updated: Timestamp;
   roles: [];
+  helferThreshold: number;
+  eventThreshold: number;
   helferReportingDateFrom: string;
   helferReportingDateTo: string;
   helferPunkte: number;
-
+  links: ClubLink[];
 }
 export interface SwissUnihockeyClub extends Club {}
 

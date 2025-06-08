@@ -24,15 +24,50 @@
           size="12"
           *ngFor="let club of clubList$ | async"
         >
-          <ion-card (click)="openModal(club)">
-            <img src="{{club.logo}}" />
-            <ion-card-header>
-              <ion-card-subtitle> </ion-card-subtitle>
+          <ion-card>
+            <img
+              class="club-logo"
+              src="{{club.logo}}"
+              (click)="openModal(club)"
+            />
+            <ion-card-header (click)="openModal(club)">
+              <ion-card-subtitle>
+                <ion-badge> {{club.type}} </ion-badge></ion-card-subtitle
+              >
               <ion-card-title> {{club.name}} </ion-card-title>
             </ion-card-header>
 
-            <ion-card-content>
-              <ion-badge> {{club.type}} </ion-badge>
+            <ion-card-content class="ion-no-padding">
+              <ion-list *ngIf="club.links?.length > 0" lines="none">
+                <ion-item
+                  *ngFor="let link of club.links"
+                  lines="none"
+                  (click)="openLink(link.url)"
+                >
+                  <ng-container *ngIf="link.type === 'image'; else defaultIcon">
+                    <ion-avatar slot="start" style="width: 32px; height: 32px">
+                      <img
+                        [src]="link.url"
+                        alt="{{link.title}}"
+                        style="width: 100%; height: 100%; object-fit: cover"
+                      />
+                    </ion-avatar>
+                  </ng-container>
+                  <ng-template #defaultIcon>
+                    <ion-icon
+                      [name]="getLinkIcon(link.type)"
+                      slot="start"
+                    ></ion-icon>
+                  </ng-template>
+                  <ion-label class="ion-text-wrap">
+                    <h3>{{link.title}}</h3>
+                    <p>{{link.description.slice(0, 50)}}...</p>
+                  </ion-label>
+                  <ion-button fill="clear">
+                    <ion-icon slot="icon-only" name="open-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+              </ion-list>
             </ion-card-content>
           </ion-card>
         </ion-col>
@@ -40,12 +75,12 @@
     </ion-grid>
   </ion-list>
 
-  <!-- fab placed to the bottom end 
+  <!-- fab placed to the bottom end  -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="joinClubAlert()">
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
-  </ion-fab>-->
+  </ion-fab>
 </ion-content>
 
 <ng-template #loading>

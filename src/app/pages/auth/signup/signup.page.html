@@ -1,13 +1,22 @@
 <ion-content>
-
-  <ion-grid class="ion-no-padding" style="height: 100vh;">
-    <ion-row style="height: 100%;">
+  <ion-grid class="ion-no-padding" style="height: 100vh">
+    <ion-row style="height: 100%">
       <!-- Signup Form Column -->
-      <ion-col size-md="6" size-lg="5" style="display: flex; align-items: center; justify-content: center;">
-        <ion-card class="ion-no-margin" style="max-width: 500px; width: 100%;">
+      <ion-col
+        size-md="6"
+        size-lg="5"
+        style="display: flex; align-items: center; justify-content: center"
+      >
+        <ion-card class="ion-no-margin" style="max-width: 500px; width: 100%">
           <ion-card-content>
-            <ion-img src="assets/logo_trans.png" alt="Logo" style="max-height: 100px; max-width: 100px;"></ion-img>
-            <ion-card-title>{{'signup.signup__title' | translate}}</ion-card-title>
+            <ion-img
+              src="assets/logo_trans.png"
+              alt="Logo"
+              style="max-height: 100px; max-width: 100px"
+            ></ion-img>
+            <ion-card-title
+              >{{'signup.signup__title' | translate}}</ion-card-title
+            >
             <ion-text>
               <p>
                 {{'common.or' | translate}}
@@ -17,18 +26,30 @@
               </p>
             </ion-text>
             <!-- Signup Form Content Here -->
-            <form [formGroup]="authForm"  (keyup.enter)="submitCredentials(authForm)">
+            <form
+              [formGroup]="authForm"
+              (keyup.enter)="submitCredentials(authForm)"
+            >
               <ion-list [inset]="true">
-
                 <ion-item lines="full">
-                  <ion-input labelPlacement="floating" label="{{'common.email__address' | translate}}" type="email"
-                    formControlName="email" required></ion-input>
+                  <ion-input
+                    labelPlacement="floating"
+                    label="{{'common.email__address' | translate}}"
+                    type="email"
+                    formControlName="email"
+                    required
+                  ></ion-input>
                 </ion-item>
 
                 <ion-item lines="full">
-                  <ion-input labelPlacement="floating" label="{{'common.password' | translate}}" type="password"
-                    formControlName="password" required>
-                     <!--
+                  <ion-input
+                    labelPlacement="floating"
+                    label="{{'common.password' | translate}}"
+                    type="password"
+                    formControlName="password"
+                    required
+                  >
+                    <!--
                       NOT YET WORKING
                     <ion-input-password-toggle slot="end"></ion-input-password-toggle>
                      -->
@@ -36,17 +57,32 @@
                 </ion-item>
 
                 <ion-item lines="full">
-                  <ion-input labelPlacement="floating" label="{{'common.first__name' | translate}}" type="text"
-                    formControlName="firstName" required></ion-input>
+                  <ion-input
+                    labelPlacement="floating"
+                    label="{{'common.first__name' | translate}}"
+                    type="text"
+                    formControlName="firstName"
+                    required
+                  ></ion-input>
                 </ion-item>
 
                 <ion-item lines="full">
-                  <ion-input labelPlacement="floating" label="{{'common.last__name' | translate}}" type="text"
-                    formControlName="lastName" required></ion-input>
+                  <ion-input
+                    labelPlacement="floating"
+                    label="{{'common.last__name' | translate}}"
+                    type="text"
+                    formControlName="lastName"
+                    required
+                  ></ion-input>
                 </ion-item>
               </ion-list>
 
-              <ion-button (click)="submitCredentials(authForm)" expand="block" type="submit" class="ion-margin-top">
+              <ion-button
+                (click)="submitCredentials(authForm)"
+                expand="block"
+                type="submit"
+                class="ion-margin-top"
+              >
                 {{'signup.to__register' | translate}}
               </ion-button>
             </form>
@@ -54,17 +90,21 @@
         </ion-card>
       </ion-col>
       <!-- Image Column -->
-      <ion-col size-md="6" size-lg="7" style="padding: 0;" class="ion-hide-md-down">
-        <ion-img src="assets/bg/mountain-4.jpg" alt="{{'common.mountain_background__alt' | translate}}"
-          style="height: 100%; width: 100%; object-fit: cover;">
+      <ion-col
+        size-md="6"
+        size-lg="7"
+        style="padding: 0"
+        class="ion-hide-md-down"
+      >
+        <ion-img
+          src="assets/bg/signup.jpg"
+          alt="{{'common.signup_background__alt' | translate}}"
+          style="height: 100%; width: 100%; object-fit: cover"
+        >
         </ion-img>
       </ion-col>
     </ion-row>
   </ion-grid>
-
-
-
-
 
   <!--
 

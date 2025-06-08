@@ -1,7 +1,14 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+  Optional,
+} from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
+  IonRouterOutlet,
   ModalController,
   NavParams,
   ToastController,
@@ -35,6 +42,7 @@ import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
+import { UiService } from "src/app/services/ui.service";
 
 @Component({
   selector: "app-training-detail",
@@ -60,10 +68,13 @@ export class TrainingDetailPage implements OnInit {
   teamAdminList$: Observable<Team[]>;
   clubList$: Observable<Club[]>;
 
+  children: Profile[] = [];
+
   constructor(
     private readonly modalCtrl: ModalController,
     public navParams: NavParams,
     private platform: Platform,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly userProfileService: UserProfileService,
     private readonly fbService: FirebaseService,
     private readonly trainingService: TrainingService,
@@ -72,6 +83,7 @@ export class TrainingDetailPage implements OnInit {
     private readonly authService: AuthService,
     private translate: TranslateService,
     private readonly exerciseService: ExerciseService,
+    private readonly uiService: UiService,
   ) {}
 
   ngOnInit() {
@@ -91,7 +103,7 @@ export class TrainingDetailPage implements OnInit {
   ngOnDestroy() {}
 
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
-    return teamAdminList && teamAdminList.some((team) => team.id === teamId);
+    return this.fbService.isTeamAdmin(teamAdminList, teamId);
   }
   enableMyClubPro(clubList) {
     return (
@@ -107,6 +119,15 @@ export class TrainingDetailPage implements OnInit {
         this.user = user;
         if (!user) throw new Error("User not found");
       }),
+      switchMap((user) => {
+        return this.userProfileService.getChildren(user.uid).pipe(
+          tap((children) => {
+            this.children = children;
+            console.log("children", this.children);
+          }),
+        );
+      }),
+
       switchMap(() =>
         this.trainingService.getTeamTrainingRef(teamId, trainingId),
       ),
@@ -190,20 +211,46 @@ export class TrainingDetailPage implements OnInit {
                               a.firstName.localeCompare(b.firstName),
                             ); // Ensuring 'status: null' is explicitly set
 
-                          const userAttendee = attendeeDetails.find(
-                            (att) => att.id === this.user.uid,
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null;
+                          const relevantChildren = teamMembers
+                            .filter((att) =>
+                              this.children.some(
+                                (child) => child.id === att.id,
+                              ),
+                            )
+                            .map((att) => {
+                              const child = this.children.find(
+                                (child) => child.id === att.id,
+                              );
+                              return child
+                                ? {
+                                    firstName: child.firstName,
+                                    lastName: child.lastName,
+                                  }
+                                : {};
+                            });
+
                           return {
                             ...training,
                             team, // Add team details here
+                            teamId: teamId,
                             attendees: attendeeDetails,
                             attendeeListTrue,
                             attendeeListFalse,
                             unrespondedMembers,
-                            status,
+                            children: relevantChildren,
+                            status: attendeeDetails
+                              .filter((att) =>
+                                [
+                                  this.user.uid,
+                                  ...this.children.map((child) => child.id),
+                                ].includes(att.id),
+                              )
+                              .map((att) => ({
+                                id: att.id,
+                                status: att.status,
+                                firstName: att.firstName,
+                                lastName: att.lastName,
+                              })),
                           };
                         }),
                         catchError((err) => {
@@ -211,13 +258,15 @@ export class TrainingDetailPage implements OnInit {
                           return of({
                             ...training,
                             team, // Add team details here
+                            teamId: teamId,
+                            children: [],
                             attendees: [],
                             attendeeListTrue: [],
                             attendeeListFalse: [],
                             unrespondedMembers: teamMembersWithDetails
                               .filter((member) => member !== null)
                               .map((member) => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
-                            status: null,
+                            status: [], // Empty array for status in case of error
                           });
                         }),
                       );
@@ -229,11 +278,13 @@ export class TrainingDetailPage implements OnInit {
                 return of({
                   ...training,
                   team, // Add team details here
+                  teamId: teamId,
+                  children: [],
                   attendees: [],
                   attendeeListTrue: [],
                   attendeeListFalse: [],
                   unrespondedMembers: [],
-                  status: null,
+                  status: [], // Empty array for status in case of error
                 });
               }),
             );
@@ -248,6 +299,7 @@ export class TrainingDetailPage implements OnInit {
   }
 
   async toggleAll(status: boolean, training: Training) {
+    // Alle unrespondedMembers werden vom Admin für spezifisches Training angemeldet
     const alert = await this.alertCtrl.create({
       message: "Sollen alle angemeldet werden?",
       header: "Alle anmelden",
@@ -286,29 +338,111 @@ export class TrainingDetailPage implements OnInit {
   }
 
   async toastActionError(error) {
-    const toast = await this.toastController.create({
-      message: error.message,
-      duration: 1500,
-      position: "top",
-      color: "danger",
-    });
-
-    await toast.present();
+    await this.presentErrorToast(error);
   }
 
-  async toggle(status: boolean, training: any) {
+  /*async toggle(status: boolean, training: any) {
+    // Hole die Team-Mitglieder
+    const teamMembers = await lastValueFrom(
+      this.fbService.getTeamMemberRefs(training.teamId).pipe(take(1)),
+    );
+    // Hole die Kinder des aktuellen Benutzers
+    const children = await lastValueFrom(
+      this.userProfileService.getChildren(this.user.uid).pipe(take(1)),
+    );
+    // Sammle alle möglichen Team-Mitglieder (aktueller Benutzer + Kinder)
+    const possibleMembers = [
+      this.user,
+      ...children.map((child) => ({ uid: child.id })),
+    ];
+
+    // Filtere die tatsächlichen Team-Mitglieder
+    const teamMemberIds = teamMembers.map((member) => member.id);
+    const validMembers = possibleMembers.filter((member) =>
+      teamMemberIds.includes(member.uid),
+    );
+
+    if (validMembers.length === 0) {
+      const toast = await this.toastController.create({
+        message: await lastValueFrom(
+          this.translate.get("common.error__no_team_member"),
+        ),
+        color: "danger",
+        duration: 1500,
+        position: "top",
+      });
+      toast.present();
+      return;
+    }
+
+    let selectedUserId: string;
+
+    if (validMembers.length === 1) {
+      // Wenn nur ein Mitglied gefunden wurde, verwende dieses
+      selectedUserId = validMembers[0].uid;
+      await this.processToggle(selectedUserId, status, training);
+    } else {
+      // Wenn mehrere Mitglieder gefunden wurden, zeige einen Auswahlalert
+      const alert = await this.alertCtrl.create({
+        header: await lastValueFrom(this.translate.get("common.select_member")),
+        inputs: await Promise.all(
+          validMembers.map(async (member) => {
+            const profile =
+              member.uid === this.user.uid
+                ? { firstName: "Ich", lastName: "" } // Für den aktuellen Benutzer
+                : await lastValueFrom(
+                    this.userProfileService
+                      .getUserProfileById(member.uid)
+                      .pipe(take(1)),
+                  );
+
+            return {
+              type: "radio",
+              label: `${profile.firstName} ${profile.lastName}`,
+              value: member.uid,
+            };
+          }),
+        ),
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("common.cancel")),
+            role: "cancel",
+          },
+          {
+            text: await lastValueFrom(this.translate.get("common.ok")),
+            role: "confirm",
+          },
+        ],
+      });
+      await alert.present();
+
+      const { data, role } = await alert.onDidDismiss();
+      if (role === 'confirm' && data) {
+        await this.processToggle(data, status, training);
+      }
+    }
+  } */
+
+  async toggleItem(
+    item: IonItemSliding,
+    status: boolean,
+    training: any,
+    memberId: string,
+  ) {
+    console.log("toggleItem", item, status, training, memberId);
+    await item.close();
+    await this.processToggle(memberId, status, training);
+  }
+
+  async processToggle(userId: string, status: boolean, training: any) {
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`,
+      `Set Status ${status} for user ${userId} and team ${training.teamId} and training ${training.id}`,
     );
     const newStartDate = training.date.toDate();
     newStartDate.setHours(Number(training.timeFrom.substring(0, 2)));
-    // console.log(newStartDate);
 
-    // Get team threshold via training.teamId
-    console.log("Grenzwert ");
     const trainingThreshold = training.team.trainingThreshold || 0;
-    console.log(trainingThreshold);
-    // Verpätete Abmeldung?
+
     if (
       newStartDate.getTime() - new Date().getTime() <
         1000 * 60 * 60 * trainingThreshold &&
@@ -318,49 +452,59 @@ export class TrainingDetailPage implements OnInit {
       console.log("too late");
       await this.tooLateToggle();
     } else {
-      // OK
-      await this.trainingService.setTeamTrainingAttendeeStatus(
+      await this.trainingService.setTeamTrainingAttendeeStatusAdmin(
         status,
         training.teamId,
         training.id,
+        userId,
       );
       this.presentToast();
     }
   }
-  async toggleItem(
-    slidingItem: IonItemSliding,
-    status: boolean,
-    training: Training,
-    memberId: string,
-  ) {
-    slidingItem.closeOpened();
-
-    console.log(
-      `Set Status ${status} for user ${memberId} and team ${training.teamId} and training ${training.id}`,
-    );
-    await this.trainingService.setTeamTrainingAttendeeStatusAdmin(
-      status,
-      training.teamId,
-      training.id,
-      memberId,
-    );
-    this.presentToast();
-  }
 
   async presentToast() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.success__saved")),
-      color: "success",
-      duration: 1500,
-      position: "top",
-    });
-    toast.present();
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.success__saved")),
+    );
   }
+
+  async presentErrorToast(error) {
+    await this.uiService.showErrorToast(error.message);
+  }
+
+  private async showDeleteTrainingConfirmationAlert() {
+    await this.uiService.showConfirmDialog({
+      header: "Training löschen",
+      message: "Möchten Sie dieses Training wirklich löschen?",
+      confirmText: "Ja",
+      cancelText: "Nein",
+    });
+  }
+
+  private async showDeleteTrainingSuccessAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Erfolg",
+      message: "Das Training wurde erfolgreich gelöscht.",
+    });
+  }
+
+  private async showDeleteTrainingErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Fehler",
+      message:
+        "Beim Löschen des Trainings ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    });
+  }
+
   async openMember(member: Profile) {
     console.log("openMember");
+
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: MemberPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -375,6 +519,9 @@ export class TrainingDetailPage implements OnInit {
     }
   }
   async openTrainingExerciseModal() {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: TrainingExercisesPage,

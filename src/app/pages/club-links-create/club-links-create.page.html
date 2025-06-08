@@ -1,0 +1,97 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="secondary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+    <ion-title>{{"link.create_link" | translate}}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button strong="true" (click)="createLink()"
+        >{{"common.create" | translate}}</ion-button
+      >
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{"link.create_link" | translate}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-input
+        [label]="'common.title' | translate"
+        label-placement="stacked"
+        [(ngModel)]="link.title"
+        value="{{link.title}}"
+      >
+      </ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-textarea
+        [label]="'common.description' | translate"
+        label-placement="stacked"
+        [(ngModel)]="link.description"
+        value="{{link.description}}"
+        [autoGrow]="true"
+      >
+      </ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-select
+        [label]="'link.type' | translate"
+        label-placement="stacked"
+        [(ngModel)]="link.type"
+        [cancelText]="'common.cancel' | translate"
+        [okText]="'common.ok' | translate"
+      >
+        <ion-select-option value="web"
+          >{{"link.type__web" | translate}}</ion-select-option
+        >
+        <ion-select-option value="image"
+          >{{"link.type__image" | translate}}</ion-select-option
+        >
+        <ion-select-option value="pdf"
+          >{{"link.type__pdf" | translate}}</ion-select-option
+        >
+      </ion-select>
+    </ion-item>
+
+    <ion-item *ngIf="link.type === 'web'">
+      <ion-input
+        [label]="'link.url' | translate"
+        label-placement="stacked"
+        [(ngModel)]="link.url"
+        value="{{link.url}}"
+        type="url"
+      >
+      </ion-input>
+    </ion-item>
+
+    <ion-item *ngIf="link.type === 'image' || link.type === 'pdf'">
+      <ion-input
+        type="file"
+        [accept]="link.type === 'image' ? 'image/*' : '.pdf'"
+        (change)="onFileSelected($event)"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item *ngIf="link.type === 'image'">
+      <img
+        [src]="previewUrl"
+        alt="Vorschau"
+        style="max-width: 100%; max-height: 200px; object-fit: contain"
+      />
+    </ion-item>
+
+    <ion-item>
+      <ion-checkbox [(ngModel)]="link.showOnCard" labelPlacement="end"
+        >{{"link.show__on__card" | translate}}</ion-checkbox
+      >
+    </ion-item>
+  </ion-list>
+</ion-content>

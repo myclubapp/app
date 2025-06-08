@@ -4,13 +4,65 @@
 
 ## 📱 Übersicht
 
-myclub App ist die moderne Lösung für Unihockey-, Handball-, Volleyball-, Basketball-, Sport- und Turnvereine in der Schweiz. Basierend auf Echtzeit-Daten von swissunihockey, swiss volley und dem swiss handball Verband sowie weiteren Verbändengenerieren wir echten Mehrwert für unsere Nutzer, damit sie sich auf das Wichtigste konzentrieren können - ihren Erfolg!
+myclub ist die moderne Lösung für Vereinsarbeit, die wieder Freude macht. Mit myclub wird aus Pflicht wieder Passion. Digital. Einfach. Gemeinsam.
+
+Wir bieten eine zentrale Plattform für modernes Vereinsmanagement, die alle Vereinsprozesse in einer einzigen App vereint. Mit myclub organisierst du Trainings, Spiele, Events und vieles mehr – flexibel, intuitiv und jederzeit verfügbar. Wenige Klicks. Volle Kontrolle. Maximaler Überblick.
+
+### 🎯 Hauptfunktionen
+
+- Mitgliederverwaltung
+- Unlimitierte Teams
+- Unlimitierte Trainings
+- Unlimitierte Veranstaltungen
+- Mehrsprachigkeit
+- WordPress Integration
+- Push-Benachrichtigungen
+- Open Source
+
+### 💰 Preisstruktur
+
+#### Basis-Abos
+
+- **myclub | micro**: CHF 0.00/Monat (für Vereine bis 20 Mitglieder)
+- **myclub | small**: CHF 6.90/Monat (für Vereine ab 20-79 Mitglieder)
+- **myclub | medium**: CHF 12.90/Monat (für Vereine ab 80-199 Mitglieder)
+- **myclub | large**: CHF 24.90/Monat (für Vereine ab 200 Mitglieder)
+
+#### Zusatzmodule
+
+- **🏆 Meisterschafts-Modul**: CHF 5.90/Monat
+
+  - API-Zugriff Verbandsdaten
+  - Verbandnews Integration
+  - Maps Integration
+  - Ergebnisse & Tabellen
+
+- **🤝 Helfer-Modul**: CHF 4.90/Monat
+
+  - Helfer-Events erstellen
+  - Schichtplanung
+  - Helfer-Punktesystem
+  - Helferpunkte Reporting
+
+- **🚀 myclub PRO**: CHF 7.90/Monat
+  - J+S Integration
+  - Mitglieder-Beitragsverwaltung
+  - Newsletter & Reporting
+  - Trainingsplanung
 
 ### 🎯 Prinzipien
 
-- Mobile First
-- Web-fokussiert (PWA als primäre Plattform)
-- Native Apps für iOS und Android in zweiter Phase
+Unsere Strategie basiert auf fünf Hauptprinzipien:
+
+1. **Für Vorstände**: Administrative Entlastung und Überblick
+2. **Für Trainer**: Einfache Planung und Teilnehmerverwaltung
+3. **Für Spieler**: Immer informiert durch Push-Benachrichtigungen
+4. **Für Eltern**: Transparente Kommunikation und einfache Helfer-Koordination
+5. **Für Vereine**: Nachhaltige Strukturen für die digitale Zukunft
+
+Unsere Mission ist es, den administrativen Ballast von den Schultern der 375'000 Ehrenamtlichen in Schweizer Sportvereinen zu nehmen. Damit bleibt mehr Zeit für das, was wirklich zählt: Den Sport.
+
+Unsere Vision ist es, in einer Zeit, in der 40% der Vereine Schwierigkeiten haben, Freiwillige zu finden, digitale Lösungen zu schaffen, die Vereinsarbeit wieder attraktiv machen - für alle Generationen.
 
 ## 🚀 Installation & Setup
 
@@ -71,7 +123,7 @@ npx husky init
 # Pre-commit Hook in .husky/pre_commit konfigurieren
 npx pretty-quick --staged
 
-# This tells your system: “Hey, this file is a script that can be executed.”
+# This tells your system: "Hey, this file is a script that can be executed."
 chmod +x .husky/pre-commit
 
 # make some changes
@@ -135,19 +187,26 @@ Premium-Version mit:
 
 ### Bestehende Premium Implementierungen
 
+#### 🤝 Beispiele für nationale Sportverbände:
+
+- [swiss unihockey](unihockey.web.app)
+- [Swiss Volley](swissvolley.web.app)
+- [Handball Schweiz](handballschweiz.web.app)
+- [Schweizerischer Turnverband](turnverein.web.app)
+
 #### 🏑 Unihockey
 
 - Kadetten Unihockey Schaffhausen ([kadetten-unihockey.web.app](https://kadetten-unihockey.web.app))
-- UHC Winterthur United ([uhc-win-u.web.app](https://uhc-win-u.web.app)) (White Label im Aufbau)
-- STV Spreitenbach ([stv-spreitenbach.web.app](https://stv-spreitenbach.web.app)) (White Label im Aufbau)
+- Beispiel: UHC Winterthur United ([uhc-win-u.web.app](https://uhc-win-u.web.app))
+- Beispiel: STV Spreitenbach ([stv-spreitenbach.web.app](https://stv-spreitenbach.web.app))
 
 #### 🏐 Volleyball
 
-- VBC Schaffhausen ([vbc-schaffhausen.web.app](https://vbc-schaffhausen.web.app)) (White Label im Aufbau)
+- Beispiel: VBC Schaffhausen ([vbc-schaffhausen.web.app](https://vbc-schaffhausen.web.app))
 
 #### 🤾 Handball
 
-- Kadetten Handball Schaffhausen ([kadetten-handball.web.app](https://kadetten-handball.web.app)) (White Label im Aufbau)
+- Beispiel: Kadetten Handball Schaffhausen ([kadetten-handball.web.app](https://kadetten-handball.web.app))
 
 #### 🏋️ Turnverein
 
@@ -156,16 +215,6 @@ Premium-Version mit:
 #### 🏀 Basketball
 
 - Keine Custom Implementierungen
-
-#### 🤝 Verbände
-
-- swissunihockey (White Label im Aufbau)
-- swissvolley (White Label im Aufbau)
-- swisshandball (White Label im Aufbau)
-
-### Weitere Custom Apps
-
-- Unihockey: [unihockey.web.app](https://unihockey.web.app)
 
 ## 📚 Dokumentation
 

@@ -14,7 +14,7 @@
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="userProfile$ | async as userProfile">
+  <ng-container *ngIf="userProfile$ | async as userProfile; else loading">
     <ion-list lines="full" [inset]="true">
       <ion-item lines="none" class="ion-text-center profile-item">
         <div class="profile-image-container">
@@ -92,9 +92,9 @@
           [label]="'profile.language' | translate"
           [(ngModel)]="userProfile.language"
           (ionChange)="profileChange($event, 'language')"
-          [placeholder]="'profile.select__language' | translate"
+          [placeholder]="'profile.please_select' | translate"
+          [okText]="'common.ok' | translate"
           [cancelText]="'common.cancel' | translate"
-          [okText]="'common.save' | translate"
         >
           <ion-select-option value="de"
             >{{"common.language__german" | translate}}</ion-select-option
@@ -109,6 +109,73 @@
             >{{"common.language__english" | translate}}</ion-select-option
           >
         </ion-select>
+      </ion-item>
+
+      <!-- Geschlecht -->
+      <ion-item>
+        <ion-select
+          [label]="'profile.gender' | translate"
+          [(ngModel)]="userProfile.gender"
+          (ionChange)="profileChange($event, 'gender')"
+          [placeholder]="'profile.please_select' | translate"
+          [okText]="'common.ok' | translate"
+          [cancelText]="'common.cancel' | translate"
+        >
+          <ion-select-option value="m"
+            >{{'profile.gender.male' | translate}}</ion-select-option
+          >
+          <ion-select-option value="w"
+            >{{'profile.gender.female' | translate}}</ion-select-option
+          >
+          <ion-select-option value="d"
+            >{{'profile.gender.diverse' | translate}}</ion-select-option
+          >
+        </ion-select>
+      </ion-item>
+
+      <!-- Nationalität -->
+      <ion-item>
+        <ion-select
+          [label]="'profile.nationality' | translate"
+          [(ngModel)]="userProfile.nationality"
+          (ionChange)="profileChange($event, 'nationality')"
+          [placeholder]="'profile.please_select' | translate"
+          [okText]="'common.ok' | translate"
+          [cancelText]="'common.cancel' | translate"
+        >
+          <ion-select-option value="CH"
+            >{{ 'common.countries.CH' | translate }}</ion-select-option
+          >
+          <ion-select-option value="DE"
+            >{{ 'common.countries.DE' | translate }}</ion-select-option
+          >
+          <ion-select-option value="IT"
+            >{{ 'common.countries.IT' | translate }}</ion-select-option
+          >
+          <ion-select-option value="FR"
+            >{{ 'common.countries.FR' | translate }}</ion-select-option
+          >
+          <ion-select-option value="AT"
+            >{{ 'common.countries.AT' | translate }}</ion-select-option
+          >
+          <ion-select-option value="LI"
+            >{{ 'common.countries.LI' | translate }}</ion-select-option
+          >
+          <ion-select-option value="other"
+            >{{ 'common.countries.other' | translate }}</ion-select-option
+          >
+        </ion-select>
+      </ion-item>
+
+      <!-- AHV Nummer -->
+      <ion-item>
+        <ion-input
+          [label]="'profile.ahv_number' | translate"
+          [(ngModel)]="userProfile.ahvNumber"
+          (ionChange)="profileChange($event, 'ahvNumber')"
+          placeholder="756.XXXX.XXXX.XX"
+        >
+        </ion-input>
       </ion-item>
     </ion-list>
     <ion-list lines="full" [inset]="true">
@@ -166,12 +233,46 @@
       <ion-item id="present-alert-address" detail="true">
         <ion-input
           labelPlacement="stacked"
-          [label]='"profile.address" | translate'
+          [label]="'profile.address' | translate"
           attr.aria-label='{{"profile.address" | translate}}'
-          value="{{userProfile.streetAndNumber}} {{userProfile.postalcode}} {{userProfile.city}}"
+          value="{{userProfile.street}} {{userProfile.houseNumber}} {{userProfile.postalcode}} {{userProfile.city}}"
         >
         </ion-input>
       </ion-item>
+      <!-- Land -->
+      <ion-item>
+        <ion-select
+          [label]="'profile.country' | translate"
+          [(ngModel)]="userProfile.country"
+          (ionChange)="profileChange($event, 'country')"
+          [placeholder]="'profile.please_select' | translate"
+          [okText]="'common.ok' | translate"
+          [cancelText]="'common.cancel' | translate"
+        >
+          <ion-select-option value="CH"
+            >{{ 'common.countries.CH' | translate }}</ion-select-option
+          >
+          <ion-select-option value="DE"
+            >{{ 'common.countries.DE' | translate }}</ion-select-option
+          >
+          <ion-select-option value="IT"
+            >{{ 'common.countries.IT' | translate }}</ion-select-option
+          >
+          <ion-select-option value="FR"
+            >{{ 'common.countries.FR' | translate }}</ion-select-option
+          >
+          <ion-select-option value="AT"
+            >{{ 'common.countries.AT' | translate }}</ion-select-option
+          >
+          <ion-select-option value="LI"
+            >{{ 'common.countries.LI' | translate }}</ion-select-option
+          >
+          <ion-select-option value="other"
+            >{{ 'common.countries.other' | translate }}</ion-select-option
+          >
+        </ion-select>
+      </ion-item>
+
       <ion-alert
         trigger="present-alert-address"
         [header]='"profile.change_address_header" | translate'
@@ -516,12 +617,12 @@
         >
           <ion-avatar slot="start">
             <img
-              *ngIf="!parent.profilePicture"
+              *ngIf="!parent?.profilePicture"
               alt="Silhouette of a person's head"
               src="https://ionicframework.com/docs/img/demos/avatar.svg"
             />
             <img
-              *ngIf="parent.profilePicture"
+              *ngIf="parent?.profilePicture"
               src="{{parent?.profilePicture}}"
             />
           </ion-avatar>
@@ -529,6 +630,17 @@
             <h2>{{parent?.firstName}} {{parent?.lastName}}</h2>
             <p>{{parent?.email}}</p>
           </ion-label>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-icon
+            color="medium"
+            name="information-circle-outline"
+            slot="start"
+          ></ion-icon>
+          <ion-note
+            >{{"profile.parents_notification_info" | translate}}</ion-note
+          >
         </ion-item>
       </ion-list>
     </ng-container>
@@ -543,30 +655,47 @@
         >
       </ion-list-header>
       <ng-container *ngIf="children$ | async as children">
-        <ion-item
-          *ngFor="let child of children"
-          detail="true"
-          (click)="openMember(child)"
-        >
-          <ion-avatar slot="start">
-            <img
-              *ngIf="!child.profilePicture"
-              alt="Silhouette of a person's head"
-              src="https://ionicframework.com/docs/img/demos/avatar.svg"
-            />
-            <img *ngIf="child.profilePicture" src="{{child?.profilePicture}}" />
-          </ion-avatar>
-          <ion-label>
-            <h2>{{child?.firstName}} {{child?.lastName}}</h2>
-            <p>{{child?.email}}</p>
-          </ion-label>
-        </ion-item>
+        <ion-item-sliding *ngFor="let child of children">
+          <ion-item detail="true" (click)="openMember(child)">
+            <ion-avatar slot="start">
+              <img
+                *ngIf="!child.profilePicture"
+                alt="Silhouette of a person's head"
+                src="https://ionicframework.com/docs/img/demos/avatar.svg"
+              />
+              <img
+                *ngIf="child.profilePicture"
+                src="{{child?.profilePicture}}"
+              />
+            </ion-avatar>
+            <ion-label>
+              <h2>{{child?.firstName}} {{child?.lastName}}</h2>
+              <p>{{child?.email}}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="deleteChild(child)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
         <ion-item *ngIf="children.length === 0">
           <ion-label> {{"profile.no_children" | translate}}</ion-label>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-icon
+            color="medium"
+            name="information-circle-outline"
+            slot="start"
+          ></ion-icon>
+          <ion-note
+            >{{"profile.children_notification_info" | translate}}</ion-note
+          >
         </ion-item>
       </ng-container>
     </ion-list>
 
+    <!-- Kinder Requests-->
     <ng-container *ngIf="kidsRequests$ | async as kidsRequests">
       <ion-list *ngIf="kidsRequests.length > 0" lines="full" [inset]="true">
         <ion-list-header>
@@ -605,6 +734,12 @@
         {{'profile.delete__profile' | translate}}
       </ion-button>
     </div>
+
+    <ion-text class="ion-text-center" color="medium">
+      <ion-note>
+        <p>Profile ID: {{userProfile.id}}</p>
+      </ion-note>
+    </ion-text>
   </ng-container>
 
   <!-- 
@@ -652,8 +787,149 @@
 -->
 </ion-content>
 <ng-template #loading>
-  <!-- Bubbles -->
-  <ion-spinner name="bubbles"></ion-spinner>
+  <ion-list lines="full" [inset]="true">
+    <!-- Profilbild Skeleton -->
+    <ion-item lines="none" class="ion-text-center profile-item">
+      <div class="profile-image-container">
+        <ion-avatar class="profile-avatar">
+          <ion-skeleton-text
+            animated
+            style="width: 100%; height: 100%; border-radius: 50%"
+          ></ion-skeleton-text>
+        </ion-avatar>
+      </div>
+    </ion-item>
+
+    <!-- Allgemeine Informationen -->
+    <ion-list-header>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+      <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+      <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+      <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+    </ion-item>
+
+    <!-- Kontaktinformationen -->
+    <ion-list-header>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+      <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+      <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+      <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+    </ion-item>
+
+    <!-- Benachrichtigungen -->
+    <ion-list-header>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-icon slot="start">
+        <ion-skeleton-text
+          animated
+          style="width: 24px; height: 24px"
+        ></ion-skeleton-text>
+      </ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+      <ion-skeleton-text animated style="width: 40px"></ion-skeleton-text>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon slot="start">
+        <ion-skeleton-text
+          animated
+          style="width: 24px; height: 24px"
+        ></ion-skeleton-text>
+      </ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+      <ion-skeleton-text animated style="width: 40px"></ion-skeleton-text>
+    </ion-item>
+
+    <!-- Kinder -->
+    <ion-list-header>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-avatar slot="start">
+        <ion-skeleton-text
+          animated
+          style="width: 100%; height: 100%; border-radius: 50%"
+        ></ion-skeleton-text>
+      </ion-avatar>
+      <ion-label>
+        <h2>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </h2>
+        <p>
+          <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+        </p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item>
+      <ion-avatar slot="start">
+        <ion-skeleton-text
+          animated
+          style="width: 100%; height: 100%; border-radius: 50%"
+        ></ion-skeleton-text>
+      </ion-avatar>
+      <ion-label>
+        <h2>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </h2>
+        <p>
+          <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+        </p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 </ng-template>
 
 <ng-template #loadingClub>

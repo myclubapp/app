@@ -13,9 +13,15 @@ export interface Profile {
   phonenumber: number;
   dateOfBirth: Timestamp;
   streetAndNumber: string;
+  street?: string;
+  houseNumber?: string;
   postalcode: number;
   city: string;
   licenseNumber: string;
+  gender?: string; // m, w, männlich, weiblich
+  ahvNumber?: string;
+  nationality?: string; // z.B. CH, DE, IT
+  country?: string; // z.B. CH, DE, IT
   settingsPush: boolean;
   settingsPushNews: boolean;
   settingsPushNewsVerband: boolean;

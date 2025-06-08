@@ -35,6 +35,7 @@ export interface Veranstaltung {
   closedEvent: boolean;
   cancelled?: boolean;
   cancelledReason?: string;
+  lastReminderSent?: Timestamp;
 }
 export interface HelferEvent extends Veranstaltung {
   schichten?: [Schicht];

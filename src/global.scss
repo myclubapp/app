@@ -28,27 +28,32 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 .myclubStatus {
-    margin-top: 10px !important;
-    margin-bottom: 10px !important;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
 }
 
 ion-spinner {
-    left: 50%;
-    right: 50%;
-    top: 30%;
+  left: 50%;
+  right: 50%;
+  top: 30%;
 }
 
 // Alert iOS Popup
 @media (prefers-color-scheme: dark) {
-    .ios input {
-        --ion-text-color: #FFFFFF;
-        --ion-text-color-rgb: 255, 255, 255;
-        color: var(--ion-text-color);
-    }
+  .ios input {
+    --ion-text-color: #ffffff;
+    --ion-text-color-rgb: 255, 255, 255;
+    color: var(--ion-text-color);
+  }
 
-    .md input {
-        --ion-text-color: #FFFFFF;
-        --ion-text-color-rgb: 255, 255, 255;
-        color: var(--ion-text-color);
-    }
+  .md input {
+    --ion-text-color: #ffffff;
+    --ion-text-color-rgb: 255, 255, 255;
+    color: var(--ion-text-color);
+  }
+}
+
+.confirm-button-disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }

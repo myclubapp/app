@@ -285,37 +285,44 @@
         <ng-container
           *ngIf="event.hasOwnProperty('status'); else loadingStatus"
         >
-          <ion-fab-button
-            (click)="toggle(true, event)"
-            size="small"
-            color="warning"
-            slot="start"
-            *ngIf="event.status === null"
-          >
-            <ion-icon name="help-circle"> </ion-icon>
-          </ion-fab-button>
+          <ng-container *ngFor="let status of event.status">
+            <ion-fab-button
+              (click)="processToggle(status.id, true, event)"
+              size="small"
+              color="warning"
+              slot="start"
+              *ngIf="status.status === null"
+            >
+              <ion-icon name="help-circle"> </ion-icon>
+            </ion-fab-button>
 
-          <ion-fab-button
-            (click)="toggle(true, event)"
-            size="small"
-            color="danger"
-            slot="start"
-            *ngIf="event.status === false"
-          >
-            <ion-icon name="close-circle"> </ion-icon>
-          </ion-fab-button>
+            <ion-fab-button
+              (click)="processToggle(status.id, true, event)"
+              size="small"
+              color="danger"
+              slot="start"
+              *ngIf="status.status === false"
+            >
+              <ion-icon name="close-circle"> </ion-icon>
+            </ion-fab-button>
 
-          <ion-fab-button
-            (click)="toggle(false, event)"
-            size="small"
-            color="success"
-            slot="start"
-            *ngIf="event.status === true"
-          >
-            <ion-icon name="checkmark-circle"> </ion-icon>
-          </ion-fab-button>
+            <ion-fab-button
+              (click)="processToggle(status.id, false, event)"
+              size="small"
+              color="success"
+              slot="start"
+              *ngIf="status.status === true"
+            >
+              <ion-icon name="checkmark-circle"> </ion-icon>
+            </ion-fab-button>
 
-          <ion-label>{{"common.my__status" | translate}}</ion-label>
+            <ion-label *ngIf="status.id === user.uid"
+              >{{"common.my__status" | translate}}</ion-label
+            >
+            <ion-label *ngIf="status.id !== user.uid"
+              >{{status.firstName}} {{status.lastName}}
+            </ion-label>
+          </ng-container>
         </ng-container>
       </ion-item>
     </ion-list>
@@ -462,6 +469,12 @@
         </ion-accordion>
       </ion-accordion-group>
     </ion-list>
+
+    <ion-text class="ion-text-center" color="medium">
+      <ion-note>
+        <p>Event ID: {{event.id}}</p>
+      </ion-note>
+    </ion-text>
   </ion-content>
 </ng-container>
 

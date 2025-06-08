@@ -4,8 +4,11 @@ on:
     branches:
       - master
 jobs:
-  build_default:
-    name: Build & Deploy Default Unihockey App
+# -------------------------------------------------------------
+# myclub App
+# -------------------------------------------------------------
+  build_myclub:
+    name: Build & Deploy Default myclub App
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -16,16 +19,139 @@ jobs:
           node-version: 20
       - name: Install Dependencies
         run: npm i --force
-      - name: Build (Default Unihockey)
+      - name: Build myclub App
+        run: npm run build:prod
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@v12.8.0
+        with:
+          args: deploy --only hosting:app-myclub
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+# -------------------------------------------------------------          
+# Default App swiss unihockey
+# -------------------------------------------------------------          
+  build_unihockey:
+    needs: build_myclub
+    name: Build & Deploy Unihockey App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 20
+      - name: Install Dependencies
+        run: npm i --force
+      - name: Build Unihockey App
         run: npm run build:prod
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@v12.8.0
         with:
           args: deploy --only hosting:app-unihockey
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}  
+# -------------------------------------------------------------          
+# Default App Swiss Volley   
+# -------------------------------------------------------------          
+  build_volleyball:
+    needs: build_myclub
+    name: Build & Deploy Volleyball App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 20
+      - name: Install Dependencies
+        run: npm i --force
+      - name: Build Volleyball App
+        run: npm run build:prod
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@v12.8.0
+        with:
+          args: deploy --only hosting:app-volleyball
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}  
+# -------------------------------------------------------------          
+# Default App Handball Schweiz
+# -------------------------------------------------------------          
+  build_handball:
+    needs: build_myclub
+    name: Build & Deploy Handball App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 20
+      - name: Install Dependencies
+        run: npm i --force
+      - name: Build Handball App
+        run: npm run build:prod
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@v12.8.0
+        with:
+          args: deploy --only hosting:app-handball
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}  
+# -------------------------------------------------------------          
+# Default App Schweizerischer Turnverband
+# -------------------------------------------------------------          
+  build_turnverein:
+    needs: build_myclub
+    name: Build & Deploy Turnverein App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 20
+      - name: Install Dependencies
+        run: npm i --force
+      - name: Build Turnverein App
+        run: npm run build:prod
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@v12.8.0
+        with:
+          args: deploy --only hosting:app-turnverein
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}   
+# -------------------------------------------------------------          
+# Default App Fussball Verband
+# -------------------------------------------------------------          
+  build_fussball:
+    needs: build_myclub
+    name: Build & Deploy Fussball App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Config Node Version because of npm login issues.
+        uses: actions/setup-node@master
+        with:
+          node-version: 20
+      - name: Install Dependencies
+        run: npm i --force
+      - name: Build Fussball App
+        run: npm run build:prod
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@v12.8.0
+        with:
+          args: deploy --only hosting:app-fussball
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}                      
+# -------------------------------------------------------------          
+# Custom App Kadetten Unihockey
+# -------------------------------------------------------------          
   build_kadetten:
-    needs: build_default
+    needs: build_myclub
     name: Build & Deploy Kadetten Unihockey App
     runs-on: ubuntu-latest
     steps:
@@ -45,8 +171,11 @@ jobs:
           args: deploy --only hosting:app-kadetten-unihockey
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+# -------------------------------------------------------------
+# Custom App UHC Winterthur United
+# -------------------------------------------------------------
   build_uhc_winu:
-    needs: [build_default]
+    needs: [build_myclub]
     name: Build & Deploy UHC Winterthur United App
     runs-on: ubuntu-latest
     steps:
@@ -66,8 +195,11 @@ jobs:
           args: deploy --only hosting:app-uhc-win-u
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+# -------------------------------------------------------------
+# Custom App STV Spreitenbach
+# -------------------------------------------------------------
   build_stv_spreitenbach:
-    needs: [build_default]
+    needs: [build_myclub]
     name: Build & Deploy STV Spreitenbach App
     runs-on: ubuntu-latest
     steps:
@@ -87,8 +219,11 @@ jobs:
           args: deploy --only hosting:app-stv-spreitenbach
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+# -------------------------------------------------------------
+# Custom App VBC Schaffhausen
+# -------------------------------------------------------------
   build_vbc_schaffhausen:
-    needs: [build_default]
+    needs: [build_myclub]
     name: Build & Deploy VBC Schaffhausen App
     runs-on: ubuntu-latest
     steps:
@@ -108,8 +243,11 @@ jobs:
           args: deploy --only hosting:app-vbc-schaffhausen
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+# -------------------------------------------------------------
+# Custom App Kadetten Handball
+# -------------------------------------------------------------
   build_kadetten_handball:
-    needs: [build_default]
+    needs: [build_myclub]
     name: Build & Deploy Kadetten Handball App
     runs-on: ubuntu-latest
     steps:

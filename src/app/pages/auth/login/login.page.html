@@ -1,58 +1,101 @@
 <ion-content>
-
-  <ion-grid class="ion-no-padding" style="height: 100vh;">
-    <ion-row style="height: 100%;">
+  <ion-grid class="ion-no-padding" style="height: 100vh">
+    <ion-row style="height: 100%">
       <!-- Login Form Column -->
-      <ion-col size-md="6" size-lg="5" style="display: flex; align-items: center; justify-content: center;">
-        <ion-card class="ion-no-margin" style="max-width: 500px; width: 100%;">
+      <ion-col
+        size-md="6"
+        size-lg="5"
+        style="display: flex; align-items: center; justify-content: center"
+      >
+        <ion-card class="ion-no-margin" style="max-width: 500px; width: 100%">
           <ion-card-content>
-            <ion-img src="assets/logo_trans.png" alt="Logo" style="max-height: 100px; max-width: 100px;"></ion-img>
+            <ion-img
+              src="assets/logo_trans.png"
+              alt="Logo"
+              style="max-height: 100px; max-width: 100px"
+            ></ion-img>
             <ion-card-title>Melde Dich mit deinem Konto an</ion-card-title>
             <ion-text>
               <p>
-                Oder <ion-router-link routerLink="/signup" class="ion-text-primary">erstelle einen neuen
-                  Account</ion-router-link>
+                Oder
+                <ion-router-link routerLink="/signup" class="ion-text-primary"
+                  >erstelle einen neuen Account</ion-router-link
+                >
               </p>
             </ion-text>
             <!-- Form Content Here -->
-            <form [formGroup]="authForm" (keyup.enter)="submitCredentials(authForm)">
+            <form
+              [formGroup]="authForm"
+              (keyup.enter)="submitCredentials(authForm)"
+            >
               <ion-list [inset]="true">
-
                 <ion-item lines="full">
-                  <ion-input label="E-Mail Adresse" labelPlacement="floating" formControlName="email" type="email"
-                    required placeholder="Gib deine E-Mail Adresse ein"></ion-input>
+                  <ion-input
+                    label="E-Mail Adresse"
+                    labelPlacement="floating"
+                    formControlName="email"
+                    type="email"
+                    required
+                    placeholder="Gib deine E-Mail Adresse ein"
+                  ></ion-input>
                 </ion-item>
 
                 <ion-item lines="full">
-                  <ion-input label="Passwort" labelPlacement="floating" formControlName="password" type="password"
-                    required placeholder="Gib dein Passwort ein">
-                    <!--
-                      NOT YET WORKING
-                      <ion-input-password-toggle slot="end"></ion-input-password-toggle>-->
+                  <ion-input
+                    label="Passwort"
+                    labelPlacement="floating"
+                    formControlName="password"
+                    type="password"
+                    required
+                    placeholder="Gib dein Passwort ein"
+                    (ionFocus)="isPasswordFocused = true"
+                    (ionBlur)="isPasswordFocused = false"
+                  >
+                    <ion-input-password-toggle
+                      slot="end"
+                      *ngIf="isPasswordFocused"
+                    ></ion-input-password-toggle>
                   </ion-input>
                 </ion-item>
               </ion-list>
 
-              <ion-router-link routerLink="/reset-password" slot="end" class="ion-text-primary">
+              <ion-router-link
+                routerLink="/reset-password"
+                slot="end"
+                class="ion-text-primary"
+              >
                 Passwort vergessen?
               </ion-router-link>
 
-              <ion-button (click)="submitCredentials(authForm)" expand="block" type="submit"
-                class="ion-margin-top">Anmelden</ion-button>
+              <ion-button
+                (click)="submitCredentials(authForm)"
+                expand="block"
+                type="submit"
+                class="ion-margin-top"
+                >Anmelden</ion-button
+              >
             </form>
-
           </ion-card-content>
         </ion-card>
       </ion-col>
       <!-- Image Column -->
-      <ion-col size-md="6" size-lg="7" style="padding: 0;" class="ion-hide-md-down">
+      <ion-col
+        size-md="6"
+        size-lg="7"
+        style="padding: 0"
+        class="ion-hide-md-down"
+      >
         <div
-          style="height: 100%; background-image: url('assets/bg/login.jpg'); background-size: cover; background-position: center;">
-        </div>
+          style="
+            height: 100%;
+            background-image: url(&quot;assets/bg/login.jpg&quot;);
+            background-size: cover;
+            background-position: center;
+          "
+        ></div>
       </ion-col>
     </ion-row>
   </ion-grid>
-
 
   <!--
 

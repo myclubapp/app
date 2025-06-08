@@ -1,7 +1,14 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { AlertController, AlertInput, ModalController, NavParams, ToastController } from "@ionic/angular";
+import {
+  AlertController,
+  AlertInput,
+  ModalController,
+  NavParams,
+  ToastController,
+  IonRouterOutlet,
+} from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
-import { Clipboard } from '@capacitor/clipboard';
+import { Clipboard } from "@capacitor/clipboard";
 import {
   Observable,
   Subscription,
@@ -23,12 +30,15 @@ import { Profile } from "src/app/models/user";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { Club } from "src/app/models/club";
+import { UiService } from "src/app/services/ui.service";
+import { RouterOutlet } from "@angular/router";
+import { Optional } from "@angular/core";
 
 @Component({
-    selector: "app-member",
-    templateUrl: "./member.page.html",
-    styleUrls: ["./member.page.scss"],
-    standalone: false
+  selector: "app-member",
+  templateUrl: "./member.page.html",
+  styleUrls: ["./member.page.scss"],
+  standalone: false,
 })
 export class MemberPage implements OnInit {
   @Input("data") userProfile: Profile;
@@ -40,8 +50,11 @@ export class MemberPage implements OnInit {
 
   isParent: boolean;
 
+  $requestTeam: Observable<Team>;
+
   teamAdminList$: Observable<Team[]>;
   clubAdminList$: Observable<Club[]>;
+
   isAdmin$: Observable<boolean>;
 
   alertTeamSelection = [];
@@ -53,16 +66,23 @@ export class MemberPage implements OnInit {
   constructor(
     private readonly modalCtrl: ModalController,
     private readonly alertCtrl: AlertController,
-    private readonly toastCtrl: ToastController,
     private readonly profileService: UserProfileService,
     private readonly fbService: FirebaseService,
     private navParams: NavParams,
     private translate: TranslateService,
-  ) { }
+    private readonly uiService: UiService,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
+    private readonly toastCtrl: ToastController,
+  ) {}
 
   ngOnInit() {
     this.isRequest = this.navParams.get("isRequest");
     this.isParent = this.navParams.get("data").isParent || false;
+    const requestTeamId = this.navParams.get("data")?.requestTeamId;
+    this.$requestTeam = requestTeamId
+      ? this.fbService.getTeamRef(requestTeamId)
+      : of(null);
+
     this.clubId = this.navParams.get("clubId");
     this.teamId = this.navParams.get("teamId");
     this.userProfile = this.navParams.get("data");
@@ -72,17 +92,39 @@ export class MemberPage implements OnInit {
     this.userProfile$ = this.getUserProfile(this.userProfile.id);
 
     this.children$ = this.profileService.getChildren(this.userProfile.id).pipe(
-      take(1),
+      switchMap((children) => {
+        if (!children.length) return of([]);
+        return combineLatest(
+          children.map((child) =>
+            this.profileService.getUserProfileById(child.id),
+          ),
+        );
+      }),
       tap((children) => {
         console.log("children: " + children);
-      })
+      }),
+      catchError((error) => {
+        console.error("Error fetching children:", error);
+        return of([]);
+      }),
     );
 
     this.parents$ = this.profileService.getParents(this.userProfile.id).pipe(
-      take(1),
+      switchMap((parents) => {
+        if (!parents.length) return of([]);
+        return combineLatest(
+          parents.map((parent) =>
+            this.profileService.getUserProfileById(parent.id),
+          ),
+        );
+      }),
       tap((parents) => {
-        console.log("parents: " + parents);
-      })
+        console.log("parents with details: ", parents);
+      }),
+      catchError((error) => {
+        console.error("Error fetching parents:", error);
+        return of([]);
+      }),
     );
 
     this.setupAlerts();
@@ -90,29 +132,26 @@ export class MemberPage implements OnInit {
     this.clubAdminList$ = this.fbService.getClubAdminList();
     this.teamAdminList$ = this.fbService.getTeamAdminList();
 
-    this.isAdmin$ = combineLatest([this.teamAdminList$, this.clubAdminList$]).pipe(
+    this.isAdmin$ = combineLatest([
+      this.teamAdminList$,
+      this.clubAdminList$,
+    ]).pipe(
       map(([teamAdminList, clubAdminList]) => {
-        return this.isTeamAdmin(teamAdminList, this.teamId) || this.isClubAdmin(clubAdminList, this.clubId);
-      })
+        return (
+          this.fbService.isTeamAdmin(teamAdminList, this.teamId) ||
+          this.fbService.isClubAdmin(clubAdminList, this.clubId)
+        );
+      }),
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy() {}
 
-  }
-
-  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some(club => club.id === clubId);
-  }
-
-  isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
-    return teamAdminList && teamAdminList.some(team => team.id === teamId);
-  }
   async copy(value) {
     await Clipboard.write({
-      string: value
+      string: value,
     });
-    this.toastActionClipboard();
+    await this.uiService.showClipboardSuccessToast();
   }
 
   getUserProfile(id) {
@@ -126,7 +165,6 @@ export class MemberPage implements OnInit {
         role: "destructive",
         handler: () => {
           console.log("Cancel operation");
-          this.toastActionCanceled();
           this.close();
         },
       },
@@ -139,15 +177,15 @@ export class MemberPage implements OnInit {
 
   async handleAddMember() {
     try {
-      await this.fbService.approveUserClubRequest(this.clubId, this.userProfile.id, this.isParent);
-      const message = await lastValueFrom(this.translate.get("club.success__user_added"));
-      const toast = await this.toastCtrl.create({
-        message,
-        color: "success",
-        duration: 1500,
-        position: "top",
-      });
-      await toast.present();
+      await this.fbService.approveUserClubRequest(
+        this.clubId,
+        this.userProfile.id,
+        this.isParent,
+      );
+      const message = await lastValueFrom(
+        this.translate.get("club.success__user_added"),
+      );
+      await this.uiService.showSuccessToast(message);
       if (this.isParent) {
         this.close();
         return;
@@ -155,8 +193,8 @@ export class MemberPage implements OnInit {
       this.getTeamAndClubTeamsAsAdmin();
       this.close();
     } catch (error) {
-      console.error('Failed to add member:', error);
-      // handle errors, perhaps show an error toast
+      console.error("Failed to add member:", error);
+      await this.uiService.showErrorToast("Failed to add member");
     }
   }
 
@@ -165,16 +203,25 @@ export class MemberPage implements OnInit {
     const clubTeams$ = this.getUserClubTeamList();
 
     try {
-      const [teamAdmins, clubTeams] = await lastValueFrom(combineLatest([teamAdmins$, clubTeams$]).pipe(take(1)));
+      const { teamAdmins, clubTeams } = await lastValueFrom(
+        combineLatest({
+          teamAdmins: teamAdmins$,
+          clubTeams: clubTeams$,
+        }).pipe(take(1)),
+      );
       console.log(teamAdmins, clubTeams);
 
-      const teams = [...teamAdmins, ...clubTeams].filter(
-        (team, index, self) => index === self.findIndex(t => t.id === team.id)
+      const teams = [
+        ...(teamAdmins?.filter((team) => team !== undefined) || []),
+        ...(clubTeams?.filter((team) => team !== undefined) || []),
+      ].filter(
+        (team, index, self) =>
+          index === self.findIndex((t) => t.id === team.id),
       );
 
       await this.prepareAlertForTeams(teams);
     } catch (error) {
-      console.error('Error combining team data:', error);
+      console.error("Error combining team data:", error);
     }
   }
 
@@ -202,46 +249,51 @@ export class MemberPage implements OnInit {
     // Get all Teams, where user is Team Admin, but only for given club
     return this.fbService.getTeamAdminListByClubId(this.clubId).pipe(
       take(1),
-      catchError(error => {
+      catchError((error) => {
         console.error("Failed to fetch direct admin teams", error);
         return of([]);
-      })
+      }),
     );
   }
 
   getUserClubTeamList() {
-
     return this.fbService.getClubAdminListByClubId(this.clubId).pipe(
       take(1),
-      switchMap(clubs => clubs.length ? this.fetchTeamsForClubs(clubs) : of([])),
-      catchError(error => {
+      switchMap((clubs) =>
+        clubs.length ? this.fetchTeamsForClubs(clubs) : of([]),
+      ),
+      catchError((error) => {
         console.error("Failed to fetch clubs or club teams", error);
         return of([]);
-      })
+      }),
     );
   }
 
   fetchTeamsForClubs(clubs) {
     return combineLatest(
-      clubs.map(club => this.fbService.getClubTeamList(club.id))
+      clubs.map((club) => this.fbService.getClubTeamList(club.id)),
     ).pipe(map((teamsList: any) => teamsList.flat()));
   }
 
   async prepareAlertForTeams(teams) {
-    console.log("prepareAlertForTeams teams: " + teams)
+    console.log("prepareAlertForTeams teams: " + teams);
     if (!teams.length) {
       console.log("No teams found for alert preparation.");
       return;
     }
 
     const alert = await this.alertCtrl.create({
-      header: await lastValueFrom(this.translate.get("club.select_team_header")),
-      subHeader: await lastValueFrom(this.translate.get("club.select_team_subheader")),
-      inputs: teams.map(team => ({
+      header: await lastValueFrom(
+        this.translate.get("club.select_team_header"),
+      ),
+      subHeader: await lastValueFrom(
+        this.translate.get("club.select_team_subheader"),
+      ),
+      inputs: teams.map((team) => ({
         label: team.name,
-        type: 'checkbox',
+        type: "checkbox",
         value: team.id,
-        checked: false
+        checked: false,
       })),
       buttons: this.getAlertButtons(teams),
     });
@@ -255,16 +307,14 @@ export class MemberPage implements OnInit {
         role: "destructive",
         handler: () => {
           console.log("Alert canceled");
-          this.toastActionCanceled();
-        }
+        },
       },
       {
         text: this.translate.instant("common.add"),
         handler: (data) => {
           //console.log(data)
           this.addTeams(data);
-          this.toastActionSaved();
-        }
+        },
       },
     ];
   }
@@ -295,9 +345,12 @@ export class MemberPage implements OnInit {
   }
 
   async openMember(member: Profile) {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: MemberPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -311,59 +364,12 @@ export class MemberPage implements OnInit {
 
     if (role === "confirm") {
     }
-
-
   }
-
-
 
   async deleteClubRequest(user) {
     console.log(user);
     await this.fbService.deleteUserClubRequest(this.clubId, user.id);
-    await this.toastActionRequestDeleted();
+    await this.uiService.showRequestDeletedToast();
     this.close();
   }
-
-  async toastActionSaved() {
-    const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("common.success__saved")),
-      duration: 1500,
-      position: "top",
-      color: "success",
-    });
-
-    await toast.present();
-  }
-
-  async toastActionClipboard() {
-    const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("common.success__copy")),
-      duration: 1500,
-      position: "top",
-      color: "success",
-    });
-
-    await toast.present();
-  }
-
-  async toastActionCanceled() {
-    const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("common.action__canceled")),
-      duration: 1500,
-      position: "top",
-      color: "danger",
-    });
-    await toast.present();
-  }
-
-  async toastActionRequestDeleted() {
-    const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("club.action__request_deleted")),
-      duration: 1500,
-      position: "top",
-      color: "danger",
-    });
-    await toast.present();
-  }
-
 }

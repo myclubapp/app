@@ -1,4 +1,4 @@
-<ng-container *ngIf="club$ | async as club">
+<ng-container *ngIf="club$ | async as club; else loading">
   <ion-header [translucent]="true">
     <ion-toolbar>
       <!--<ion-buttons slot="secondary">
@@ -109,8 +109,21 @@
         <ion-note slot="end">{{club['clubTeams'].length}}</ion-note>
       </ion-item>
 
-      <ng-container *ngIf="club.hasFeatureHelferEvent">
-        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+      <ion-item detail="true" (click)="openLinksList()">
+        <ion-icon name="link-outline" slot="start"></ion-icon>
+        <ion-label> {{"club.links" | translate}} </ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-list [inset]="true">
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ng-container *ngIf="isClubAdmin(clubAdminList, this.club.id)">
+          <ion-item detail="true" (click)="openSubscription()">
+            <ion-icon name="card-outline" slot="start"></ion-icon>
+            <ion-label> {{"common.subscription" | translate}} </ion-label>
+            <ion-badge slot="end">{{club.subscriptionType}}</ion-badge>
+          </ion-item>
+
           <ion-item
             *ngIf="isClubAdmin(clubAdminList, this.club.id)"
             detail="true"
@@ -120,20 +133,6 @@
             <ion-label> Helferpunkte </ion-label>
           </ion-item>
         </ng-container>
-      </ng-container>
-    </ion-list>
-
-    <ion-list [inset]="true">
-      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-item
-          *ngIf="isClubAdmin(clubAdminList, this.club.id)"
-          detail="true"
-          (click)="openSubscription()"
-        >
-          <ion-icon name="card-outline" slot="start"></ion-icon>
-          <ion-label> {{"common.subscription" | translate}} </ion-label>
-          <ion-badge slot="end">{{club.subscriptionType}}</ion-badge>
-        </ion-item>
       </ng-container>
     </ion-list>
 
@@ -221,14 +220,6 @@
       <ion-item>
         <ion-icon name="time" slot="start" color="medium"></ion-icon>
         <ion-note> {{club.updated | date:'dd.MM.YYYY HH:mm'}} Uhr</ion-note>
-      </ion-item>
-      <ion-item *ngIf="club.externalId">
-        <ion-icon
-          name="help-circle-outline"
-          slot="start"
-          color="medium"
-        ></ion-icon>
-        <ion-note>Support ID: {{club.externalId}} </ion-note>
       </ion-item>
 
       <!--<ion-item >
@@ -343,8 +334,117 @@
   </ion-list>
 </ng-container>
 -->
+
+    <ion-text class="ion-text-center" color="medium">
+      <ion-note>
+        <p>Club ID: {{club.id}}</p>
+      </ion-note>
+    </ion-text>
   </ion-content>
 </ng-container>
 <ng-template #noRequests>
   <!-- You can put any placeholder or message here if needed when there are no requests -->
+</ng-template>
+
+<ng-template #loading>
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-avatar class="club-logo">
+        <ion-skeleton-text
+          animated
+          style="width: 100%; height: 100%; border-radius: 50%"
+        ></ion-skeleton-text>
+      </ion-avatar>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-list lines="full" [inset]="true">
+    <ion-list-header>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+      </ion-label>
+      <ion-note slot="end">
+        <ion-skeleton-text animated style="width: 30px"></ion-skeleton-text>
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-icon name="people-circle-outline" slot="start"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+      <ion-note slot="end">
+        <ion-skeleton-text animated style="width: 30px"></ion-skeleton-text>
+      </ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-icon name="people-outline" slot="start"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 45%"></ion-skeleton-text>
+      </ion-label>
+      <ion-note slot="end">
+        <ion-skeleton-text animated style="width: 30px"></ion-skeleton-text>
+      </ion-note>
+    </ion-item>
+  </ion-list>
+
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-icon name="card-outline" slot="start"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+      </ion-label>
+      <ion-badge slot="end">
+        <ion-skeleton-text animated style="width: 40px"></ion-skeleton-text>
+      </ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <ion-list lines="full" [inset]="true">
+    <ion-list-header>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 35%"></ion-skeleton-text>
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-icon name="mail-outline" slot="start"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon name="globe-outline" slot="start"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-list lines="full" [inset]="true">
+    <ion-list-header>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-icon name="heart-circle-outline" slot="start"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon name="time" slot="start"></ion-icon>
+      <ion-note>
+        <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+      </ion-note>
+    </ion-item>
+  </ion-list>
 </ng-template>

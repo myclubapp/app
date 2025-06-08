@@ -87,13 +87,13 @@
         lines="none"
       >
         <ion-item (click)="openTrainingExerciseModal()" detail="true">
-          <ion-label>Übungen</ion-label>
+          <ion-label>{{"training.exercises" | translate}}</ion-label>
           <ng-container *ngIf="exerciseList$ | async as exerciseList">
             <ion-badge *ngIf="exerciseList.length > 0" slot="end">
               {{exerciseList.length}}
             </ion-badge>
             <ion-note *ngIf="exerciseList.length == 0">
-              Keine Übungen vorhanden
+              {{"training.no_exercises" | translate}}
             </ion-note>
           </ng-container>
         </ion-item>
@@ -108,37 +108,44 @@
         <ng-container
           *ngIf="training.hasOwnProperty('status'); else loadingStatus"
         >
-          <ion-fab-button
-            (click)="toggle(true, training)"
-            size="small"
-            color="warning"
-            slot="start"
-            *ngIf="training.status === null"
-          >
-            <ion-icon name="help-circle"> </ion-icon>
-          </ion-fab-button>
+          <ng-container *ngFor="let status of training.status">
+            <ion-fab-button
+              (click)="processToggle(status.id, true, training)"
+              size="small"
+              color="warning"
+              slot="start"
+              *ngIf="status.status === null"
+            >
+              <ion-icon name="help-circle"> </ion-icon>
+            </ion-fab-button>
 
-          <ion-fab-button
-            (click)="toggle(true, training)"
-            size="small"
-            color="danger"
-            slot="start"
-            *ngIf="training.status === false"
-          >
-            <ion-icon name="close-circle"> </ion-icon>
-          </ion-fab-button>
+            <ion-fab-button
+              (click)="processToggle(status.id, true, training)"
+              size="small"
+              color="danger"
+              slot="start"
+              *ngIf="status.status === false"
+            >
+              <ion-icon name="close-circle"> </ion-icon>
+            </ion-fab-button>
 
-          <ion-fab-button
-            (click)="toggle(false, training)"
-            size="small"
-            color="success"
-            slot="start"
-            *ngIf="training.status === true"
-          >
-            <ion-icon name="checkmark-circle"> </ion-icon>
-          </ion-fab-button>
+            <ion-fab-button
+              (click)="processToggle(status.id, false, training)"
+              size="small"
+              color="success"
+              slot="start"
+              *ngIf="status.status === true"
+            >
+              <ion-icon name="checkmark-circle"> </ion-icon>
+            </ion-fab-button>
 
-          <ion-label>{{"common.my__status" | translate}}</ion-label>
+            <ion-label *ngIf="status.id === user.uid"
+              >{{"common.my__status" | translate}}</ion-label
+            >
+            <ion-label *ngIf="status.id !== user.uid"
+              >{{status.firstName}} {{status.lastName}}
+            </ion-label>
+          </ng-container>
         </ng-container>
       </ion-item>
       <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
@@ -464,6 +471,12 @@
         </ion-item>
       </ion-list>-->
     </ng-container>
+
+    <ion-text class="ion-text-center" color="medium">
+      <ion-note>
+        <p>Training ID: {{training.id}}</p>
+      </ion-note>
+    </ion-text>
   </ion-content>
 </ng-container>
 

@@ -3,19 +3,17 @@ import { ModalController, NavParams, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import { Timestamp } from "firebase/firestore";
-import {
-  Observable,
-} from "rxjs";
+import { Observable } from "rxjs";
 import { Club } from "src/app/models/club";
 import { Veranstaltung } from "src/app/models/event";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
 
 @Component({
-    selector: "app-event-add",
-    templateUrl: "./event-add.page.html",
-    styleUrls: ["./event-add.page.scss"],
-    standalone: false
+  selector: "app-event-add",
+  templateUrl: "./event-add.page.html",
+  styleUrls: ["./event-add.page.scss"],
+  standalone: false,
 })
 export class EventAddPage implements OnInit {
   @Input("data") eventCopy: Veranstaltung;
@@ -32,7 +30,7 @@ export class EventAddPage implements OnInit {
     private fbService: FirebaseService,
     private readonly toastController: ToastController,
     public navParams: NavParams,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) {
     this.event = {
       id: "",
@@ -55,7 +53,7 @@ export class EventAddPage implements OnInit {
       teamName: "",
       liga: "",*/
 
-      link_poll: "", 
+      link_poll: "",
       link_web: "",
 
       clubId: "",
@@ -65,7 +63,7 @@ export class EventAddPage implements OnInit {
       attendees: [],
       countAttendees: 0,
       countNeeded: 0,
-      closedEvent: false
+      closedEvent: false,
     };
   }
 
@@ -89,7 +87,7 @@ export class EventAddPage implements OnInit {
     return this.modalCtrl.dismiss(null, "close");
   }
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+    return this.fbService.isClubAdmin(clubAdminList, clubId);
   }
   async createEvent() {
     //Set Hours/Minutes of endDate to TimeFrom of training
@@ -115,7 +113,7 @@ export class EventAddPage implements OnInit {
     calculatedTimeFrom.setDate(new Date(this.event.startDate).getDate());
     calculatedTimeFrom.setMonth(new Date(this.event.startDate).getMonth());
     calculatedTimeFrom.setFullYear(
-      new Date(this.event.startDate).getFullYear()
+      new Date(this.event.startDate).getFullYear(),
     );
     calculatedTimeFrom.setSeconds(0);
     calculatedTimeFrom.setMilliseconds(0);
@@ -133,10 +131,12 @@ export class EventAddPage implements OnInit {
 
     delete this.event.attendees;
 
-    const event = await this.eventService.setCreateClubEvent(this.event).catch(e => {
-      console.log(e.message);
-      this.toastActionError(e);
-    })
+    const event = await this.eventService
+      .setCreateClubEvent(this.event)
+      .catch((e) => {
+        console.log(e.message);
+        this.toastActionError(e);
+      });
     if (event) {
       console.log(event.id);
       return this.modalCtrl.dismiss({}, "confirm");

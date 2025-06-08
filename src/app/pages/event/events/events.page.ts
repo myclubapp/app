@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { MyClubAppWidget } from "myclub-widget-plugin";
 
 import {
   IonItemSliding,
@@ -36,6 +35,8 @@ import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
 import { ActivatedRoute, Router } from "@angular/router";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { Profile } from "src/app/models/user";
+import { UiService } from "src/app/services/ui.service";
+import { Optional } from "@angular/core";
 
 @Component({
   selector: "app-events",
@@ -60,7 +61,7 @@ export class EventsPage implements OnInit {
 
   constructor(
     public toastController: ToastController,
-    private readonly routerOutlet: IonRouterOutlet,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly alertCtrl: AlertController,
     private readonly modalCtrl: ModalController,
     private readonly authService: AuthService,
@@ -71,6 +72,7 @@ export class EventsPage implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private userProfileService: UserProfileService,
+    private uiService: UiService,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -118,7 +120,7 @@ export class EventsPage implements OnInit {
   }
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some((club) => club.id === clubId);
+    return this.fbService.isClubAdmin(clubAdminList, clubId);
   }
 
   handleNavigationData() {
@@ -166,6 +168,7 @@ export class EventsPage implements OnInit {
       take(1),
       tap((user) => {
         this.user = user;
+        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         if (!user) return of([]);
@@ -220,12 +223,12 @@ export class EventsPage implements OnInit {
                       .getClubEventAttendeesRef(club.id, event.id)
                       .pipe(
                         map((attendees) => {
-                          const attendeeIds = [
+                          const allIds = [
                             this.user.uid,
-                            ...this.children.map((child) => child.id),
+                            ...(this.children?.map((child) => child.id) || []),
                           ];
                           const userAttendee = attendees.find((att) =>
-                            attendeeIds.includes(att.id),
+                            allIds.includes(att.id),
                           );
                           const status = userAttendee
                             ? userAttendee.status
@@ -405,32 +408,95 @@ export class EventsPage implements OnInit {
   }
 
   async toggle(status: boolean, event: Veranstaltung | any) {
-    console.log(
-      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`,
+    // Hole die Club-Mitglieder
+    const clubMembers = await lastValueFrom(
+      this.fbService.getClubMemberRefs(event.clubId).pipe(take(1)),
     );
+    // Hole die Kinder des aktuellen Benutzers
+    const children = await lastValueFrom(
+      this.userProfileService.getChildren(this.user.uid).pipe(take(1)),
+    );
+    // Sammle alle möglichen Mitglieder (aktueller Benutzer + Kinder)
+    const possibleMembers = [
+      this.user,
+      ...children.map((child) => ({ uid: child.id })),
+    ];
+    // Filtere die tatsächlichen Club-Mitglieder
+    const clubMemberIds = clubMembers.map((member) => member.id);
+    const validMembers = possibleMembers.filter((member) =>
+      clubMemberIds.includes(member.uid),
+    );
+    if (validMembers.length === 0) {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("common.error__no_club_member")),
+      );
+      return;
+    }
+    if (validMembers.length === 1) {
+      // Nur ein Kind oder nur Elternteil: direkt zusagen
+      await this.processToggle(validMembers[0].uid, status, event);
+    } else {
+      // Mehrere Kinder/Eltern: Auswahl anzeigen
+      const alert = await this.alertCtrl.create({
+        header: await lastValueFrom(this.translate.get("common.select_member")),
+        inputs: await Promise.all(
+          validMembers.map(async (member) => {
+            const profile =
+              member.uid === this.user.uid
+                ? { firstName: "Ich", lastName: "" }
+                : await lastValueFrom(
+                    this.userProfileService
+                      .getUserProfileById(member.uid)
+                      .pipe(take(1)),
+                  );
+            return {
+              type: "radio" as const,
+              label: `${profile.firstName} ${profile.lastName}`,
+              value: member.uid,
+            };
+          }),
+        ),
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("common.cancel")),
+            role: "cancel",
+          },
+          {
+            text: await lastValueFrom(this.translate.get("common.ok")),
+            role: "confirm",
+            handler: (selectedId) => {
+              if (selectedId) {
+                this.processToggle(selectedId, status, event);
+              }
+            },
+          },
+        ],
+      });
+      await alert.present();
+    }
+  }
+
+  private async processToggle(
+    userId: string,
+    status: boolean,
+    event: Veranstaltung | any,
+  ) {
     const newStartDate = event.date.toDate();
     newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
-    // console.log(newStartDate);
-
-    // Get team threshold via training.teamId
-    console.log("Grenzwert ");
     const eventThreshold = event.club.eventThreshold || 0;
-    console.log(eventThreshold);
-    // Verpätete Abmeldung?
     if (
       newStartDate.getTime() - new Date().getTime() <
         1000 * 60 * 60 * eventThreshold &&
       status == false &&
       eventThreshold
     ) {
-      console.log("too late");
       await this.tooLateToggle();
     } else {
-      // OK
-      await this.eventService.setClubEventAttendeeStatus(
+      await this.eventService.setClubEventAttendeeStatusAdmin(
         status,
         event.clubId,
         event.id,
+        userId,
       );
       this.presentToast();
     }
@@ -476,22 +542,20 @@ export class EventsPage implements OnInit {
   }
 
   async presentToast() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.changes__saved")),
-      color: "primary",
-      duration: 1500,
-      position: "top",
-    });
-    toast.present();
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.changes__saved")),
+    );
   }
 
   async copyEvent(slidingItem: IonItemSliding, event: Veranstaltung) {
     slidingItem.closeOpened();
 
-    // const presentingElement = await this.modalCtrl.getTop();
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: EventAddPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -506,13 +570,13 @@ export class EventsPage implements OnInit {
     }
   }
 
-  async createHelferEvent(slidingItem: IonItemSliding, event: Veranstaltung) {
-    slidingItem.closeOpened();
+  async createHelferEvent(event: Veranstaltung) {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
 
-    // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: HelferAddPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -541,14 +605,9 @@ export class EventsPage implements OnInit {
     toast.present();
   }
 
-  async cancelEvent(slidingItem: IonItemSliding, event: any) {
-    slidingItem.closeOpened();
-
-    const alert = await this.alertCtrl.create({
+  async cancelEvent(event: any) {
+    const result = await this.uiService.showFormDialog({
       header: await lastValueFrom(this.translate.get("events.cancel_event")),
-      message: await lastValueFrom(
-        this.translate.get("events.cancel_event_confirm"),
-      ),
       inputs: [
         {
           name: "reason",
@@ -561,81 +620,46 @@ export class EventsPage implements OnInit {
           },
         },
       ],
-      buttons: [
-        {
-          text: await lastValueFrom(this.translate.get("common.cancel")),
-          role: "cancel",
-        },
-        {
-          text: await lastValueFrom(this.translate.get("common.confirm")),
-          handler: async (data) => {
-            if (!data.reason) {
-              const errorToast = await this.toastController.create({
-                message: await lastValueFrom(
-                  this.translate.get("events.cancel_reason_required"),
-                ),
-                duration: 2000,
-                position: "bottom",
-                color: "danger",
-              });
-              errorToast.present();
-              return false;
-            }
-
-            try {
-              await this.eventService.changeClubEvent(
-                {
-                  cancelled: true,
-                  cancelledReason: data.reason,
-                },
-                event.clubId,
-                event.id,
-              );
-              const toast = await this.toastController.create({
-                message: await lastValueFrom(
-                  this.translate.get("events.event_cancelled"),
-                ),
-                duration: 2000,
-                position: "bottom",
-              });
-              toast.present();
-              return true;
-            } catch (error) {
-              console.error("Error cancelling event:", error);
-              const toast = await this.toastController.create({
-                message: await lastValueFrom(
-                  this.translate.get("common.error"),
-                ),
-                duration: 2000,
-                position: "bottom",
-                color: "danger",
-              });
-              toast.present();
-              return false;
-            }
-          },
-        },
-      ],
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
     });
 
-    await alert.present();
+    if (result) {
+      if (!result.reason) {
+        await this.uiService.showErrorToast(
+          await lastValueFrom(
+            this.translate.get("events.cancel_reason_required"),
+          ),
+        );
+        return;
+      }
+
+      try {
+        await this.eventService.changeClubEvent(
+          {
+            cancelled: true,
+            cancelledReason: result.reason,
+          },
+          event.clubId,
+          event.id,
+        );
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(this.translate.get("events.event_cancelled")),
+        );
+      } catch (error) {
+        console.error("Error cancelling event:", error);
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
+    }
   }
 
   async tooLateToggle() {
-    const alert = await this.alertCtrl.create({
+    await this.uiService.showInfoDialog({
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
-      buttons: [
-        {
-          role: "",
-          text: "OK",
-          handler: (data) => {
-            console.log(data);
-          },
-        },
-      ],
     });
-    alert.present();
   }
   async openFilter(ev: Event) {
     /*
@@ -710,10 +734,12 @@ export class EventsPage implements OnInit {
   }
 
   async openEventCreateModal() {
-    // const presentingElement = await this.modalCtrl.getTop();
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: EventAddPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -731,9 +757,12 @@ export class EventsPage implements OnInit {
   async openEventDetailModal(event: Veranstaltung, isFuture: boolean) {
     console.log("Open Modal");
     console.log(JSON.stringify(event));
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: EventDetailPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -747,5 +776,91 @@ export class EventsPage implements OnInit {
 
     if (role === "confirm") {
     }
+  }
+
+  async sendReminder(event: any) {
+    // Hole alle Club-Mitglieder
+    const clubMembers = await lastValueFrom(
+      this.fbService.getClubMemberRefs(event.clubId).pipe(take(1)),
+    );
+
+    // Hole alle Teilnehmer des Events
+    const attendees = await lastValueFrom(
+      this.eventService
+        .getClubEventAttendeesRef(event.clubId, event.id)
+        .pipe(take(1)),
+    );
+
+    // Filtere Mitglieder, die noch nicht geantwortet haben
+    const pendingMembers = clubMembers.filter(
+      (member) => !attendees.some((attendee) => attendee.id === member.id),
+    );
+
+    if (pendingMembers.length === 0) {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("events.all_members_responded")),
+      );
+      return;
+    }
+
+    const result = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(this.translate.get("events.send_reminder")),
+      message: await lastValueFrom(
+        this.translate.get("events.send_reminder_confirm", {
+          count: pendingMembers.length,
+        }),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    if (result) {
+      try {
+        await this.eventService.sendReminder(event.clubId, event.id);
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(this.translate.get("events.reminder_sent")),
+        );
+      } catch (error) {
+        console.error("Error sending reminder:", error);
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
+    }
+  }
+
+  async openEventActions(slidingItem: IonItemSliding, event: any) {
+    slidingItem.closeOpened();
+    const actionSheet = await this.uiService.showActionSheet({
+      header: await lastValueFrom(this.translate.get("events.actions")),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("events.create_helfer")),
+          icon: "help-buoy-outline",
+          handler: () => {
+            this.createHelferEvent(event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("events.cancel_event")),
+          icon: "alert-circle-outline",
+          handler: () => {
+            this.cancelEvent(event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("events.send_reminder")),
+          icon: "notifications-outline",
+          handler: () => {
+            this.sendReminder(event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          // icon: "close",
+          role: "destructive",
+        },
+      ],
+    });
   }
 }
