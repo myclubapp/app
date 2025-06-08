@@ -240,7 +240,6 @@ export class ClubLinksPage implements OnInit {
     }
 
     if (
-      !this.newLink.id &&
       (this.newLink.type === "image" || this.newLink.type === "pdf") &&
       !this.selectedFile
     ) {
