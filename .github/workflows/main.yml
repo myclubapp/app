@@ -223,7 +223,7 @@ jobs:
 # Custom App VBC Schaffhausen
 # -------------------------------------------------------------
   build_vbc_schaffhausen:
-    needs: build_unihockey
+    needs: build_volleyball
     name: Build & Deploy VBC Schaffhausen App
     runs-on: ubuntu-latest
     steps:
@@ -247,7 +247,7 @@ jobs:
 # Custom App Kadetten Handball
 # -------------------------------------------------------------
   build_kadetten_handball:
-    needs: build_unihockey
+    needs: build_handball
     name: Build & Deploy Kadetten Handball App
     runs-on: ubuntu-latest
     steps:
