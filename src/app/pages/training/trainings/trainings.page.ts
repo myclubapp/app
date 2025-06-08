@@ -623,7 +623,7 @@ export class TrainingsPage implements OnInit {
       });
     }*/
 
-    modal.present();
+    await modal.present();
 
     const { data, role } = await modal.onWillDismiss();
 

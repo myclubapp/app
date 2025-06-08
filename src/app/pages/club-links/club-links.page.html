@@ -81,7 +81,7 @@
         horizontal="end"
         slot="fixed"
       >
-        <ion-fab-button (click)="isAddingLink = true">
+        <ion-fab-button (click)="openAddLinkModal()">
           <ion-icon name="add"></ion-icon>
         </ion-fab-button>
       </ion-fab>
@@ -90,128 +90,6 @@
 </ng-container>
 
 <ng-template #loading>
-  <ion-list [inset]="true">
-    <ion-item-group>
-      <ion-item-divider color="light">
-        <ion-label
-          ><ion-skeleton-text animated style="width: 20%"></ion-skeleton-text
-        ></ion-label>
-      </ion-item-divider>
-
-      <!-- Link 1 -->
-      <ion-item>
-        <ion-icon slot="start">
-          <ion-skeleton-text animated></ion-skeleton-text>
-        </ion-icon>
-        <ion-label>
-          <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
-        </ion-label>
-      </ion-item>
-
-      <!-- Link 2 -->
-      <ion-item>
-        <ion-icon slot="start">
-          <ion-skeleton-text animated></ion-skeleton-text>
-        </ion-icon>
-        <ion-label>
-          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
-        </ion-label>
-      </ion-item>
-    </ion-item-group>
-  </ion-list>
+  <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>
+  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
 </ng-template>
-
-<ion-modal [isOpen]="isAddingLink">
-  <ng-template>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>{{"club.add_link" | translate}}</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="isAddingLink = false"
-            >{{"common.cancel" | translate}}</ion-button
-          >
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content class="ion-padding">
-      <ion-list>
-        <ion-item>
-          <ion-label position="stacked"
-            >{{"club.link_title" | translate}}</ion-label
-          >
-          <ion-input [(ngModel)]="newLink.title" type="text"></ion-input>
-        </ion-item>
-
-        <ion-item>
-          <ion-label position="stacked"
-            >{{"club.link_description" | translate}}</ion-label
-          >
-          <ion-textarea
-            [(ngModel)]="newLink.description"
-            rows="3"
-          ></ion-textarea>
-        </ion-item>
-
-        <ion-item>
-          <ion-label position="stacked"
-            >{{"club.link_type" | translate}}</ion-label
-          >
-          <ion-select [(ngModel)]="newLink.type">
-            <ion-select-option value="web"
-              >{{"club.link_type_web" | translate}}</ion-select-option
-            >
-            <ion-select-option value="image"
-              >{{"club.link_type_image" | translate}}</ion-select-option
-            >
-            <ion-select-option value="pdf"
-              >{{"club.link_type_pdf" | translate}}</ion-select-option
-            >
-          </ion-select>
-        </ion-item>
-
-        <ion-item *ngIf="newLink.type === 'web'">
-          <ion-label position="stacked"
-            >{{"club.link_url" | translate}}</ion-label
-          >
-          <ion-input [(ngModel)]="newLink.url" type="url"></ion-input>
-        </ion-item>
-
-        <ion-item *ngIf="newLink.type === 'image' || newLink.type === 'pdf'">
-          <ion-label position="stacked"
-            >{{"club.link_file" | translate}}</ion-label
-          >
-          <ion-input type="file" (change)="onFileSelected($event)"></ion-input>
-        </ion-item>
-
-        <ion-item
-          *ngIf="newLink.type === 'image' && newLink.url && !selectedFile"
-        >
-          <ion-label position="stacked"
-            >{{"club.current_image" | translate}}</ion-label
-          >
-          <img
-            [src]="newLink.url"
-            alt="Current image"
-            style="max-width: 200px; max-height: 200px; object-fit: contain"
-          />
-        </ion-item>
-
-        <ion-item>
-          <ion-label>{{"club.show_on_card" | translate}}</ion-label>
-          <ion-checkbox [(ngModel)]="newLink.showOnCard"></ion-checkbox>
-        </ion-item>
-      </ion-list>
-
-      <ion-button
-        expand="block"
-        (click)="addLink()"
-        [disabled]="!isValidLink()"
-      >
-        {{"common.save" | translate}}
-      </ion-button>
-    </ion-content>
-  </ng-template>
-</ion-modal>

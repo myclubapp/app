@@ -79,6 +79,7 @@ import { GamePreviewPage } from "./pages/championship/game-preview/game-preview.
 import { NotificationPage } from "./pages/news/notification/notification.page";
 import { ClubParentsListPage } from "./pages/club-parents-list/club-parents-list.page";
 import { ClubLinksPage } from "./pages/club-links/club-links.page";
+import { ClubLinksCreatePage } from "./pages/club-links-create/club-links-create.page";
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
@@ -142,8 +143,9 @@ const getConfig = () => {
     ClubMemberListPage,
     ClubAdminListPage,
     ClubTeamListPage,
-    ClubLinksPage,
     ClubParentsListPage,
+    ClubLinksPage,
+    ClubLinksCreatePage,
     ClubRequestListPage,
     ClubSubscriptionPage,
     TeamPage,

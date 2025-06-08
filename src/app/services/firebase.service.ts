@@ -15,6 +15,8 @@ import {
   query,
   where,
   writeBatch,
+  DocumentReference,
+  getDocs,
 } from "@angular/fire/firestore";
 import {
   Observable,
@@ -37,7 +39,12 @@ import { AuthService } from "src/app/services/auth.service";
 import { Profile } from "../models/user";
 import { collectionGroup } from "firebase/firestore";
 import { UserProfileService } from "./firebase/user-profile.service";
-import { ref, uploadBytes, getDownloadURL } from "@angular/fire/storage";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "@angular/fire/storage";
 import { ClubLink } from "../models/club-link";
 import { Storage } from "@angular/fire/storage";
 
@@ -1069,33 +1076,45 @@ export class FirebaseService {
     ) as Observable<ClubLink[]>;
   }
 
-  async addClubLink(
-    clubId: string,
-    link: Omit<ClubLink, "id" | "createdAt" | "updatedAt">,
-  ): Promise<void> {
+  async addClubLink(clubId: string, link: any): Promise<DocumentReference> {
     const linksRef = collection(this.firestore, `club/${clubId}/links`);
+
+    // Hole alle existierenden Links
+    const linksSnapshot = await getDocs(linksRef);
+    const currentOrder = linksSnapshot.size; // Die Größe der Collection gibt uns die Anzahl der Links
+
     const newLink = {
+      order: currentOrder || 0,
       ...link,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     };
-    await addDoc(linksRef, newLink);
+    return addDoc(linksRef, newLink);
   }
 
   async updateClubLink(
     clubId: string,
     linkId: string,
-    link: Partial<ClubLink>,
+    link: any,
   ): Promise<void> {
     const linkRef = doc(this.firestore, `club/${clubId}/links/${linkId}`);
-    await updateDoc(linkRef, {
-      ...link,
-      updatedAt: new Date(),
-    });
+    await updateDoc(
+      linkRef,
+      {
+        ...link,
+      },
+      {
+        merge: true,
+      },
+    );
   }
 
   async deleteClubLink(clubId: string, linkId: string): Promise<void> {
     const linkRef = doc(this.firestore, `club/${clubId}/links/${linkId}`);
+    try {
+      const storageRef = ref(this.storage, `club/${clubId}/links/${linkId}`);
+      await deleteObject(storageRef);
+    } catch (error) {
+      console.error("Fehler beim Löschen des Links:", error);
+    }
     return deleteDoc(linkRef);
   }
 
@@ -1110,13 +1129,17 @@ export class FirebaseService {
       batch.update(linkRef, { order: link.order, updatedAt: new Date() });
     });
 
-    await batch.commit();
+    return batch.commit();
   }
 
-  async uploadClubLinkFile(clubId: string, file: File): Promise<string> {
-    const filePath = `club/${clubId}/links/${Date.now()}_${file.name}`;
+  async uploadClubLinkFile(
+    clubId: string,
+    linkId: string,
+    file: File,
+  ): Promise<string> {
+    const filePath = `club/${clubId}/links/${linkId}`;
     const storageRef = ref(this.storage, filePath);
     await uploadBytes(storageRef, file);
-    return await getDownloadURL(storageRef);
+    return getDownloadURL(storageRef);
   }
 }
