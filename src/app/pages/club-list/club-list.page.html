@@ -31,13 +31,13 @@
               (click)="openModal(club)"
             />
             <ion-card-header (click)="openModal(club)">
-              <ion-card-subtitle>
-                <ion-badge> {{club.type}} </ion-badge></ion-card-subtitle
-              >
               <ion-card-title> {{club.name}} </ion-card-title>
+              <ion-card-subtitle> </ion-card-subtitle>
             </ion-card-header>
 
             <ion-card-content class="ion-no-padding">
+              <ion-badge class="ion-margin"> {{club.type}} </ion-badge>
+
               <ion-list *ngIf="club.links?.length > 0" lines="none">
                 <ion-item
                   *ngFor="let link of club.links"
