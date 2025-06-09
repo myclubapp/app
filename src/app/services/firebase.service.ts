@@ -787,7 +787,7 @@ export class FirebaseService {
   async approveParentClubRequest(clubId: string, userId: string): Promise<any> {
     await setDoc(
       doc(this.firestore, `/club/${clubId}/requests/${userId}`),
-      {},
+      { isParent: true },
       {
         merge: true,
       },

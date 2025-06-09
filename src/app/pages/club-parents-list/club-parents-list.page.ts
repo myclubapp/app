@@ -333,20 +333,20 @@ export class ClubParentsListPage implements OnInit {
   async addClubMemberToParent() {
     try {
       console.log("Fetching members for club ID:", this.club.id);
-      const members = await lastValueFrom(
+      const clubMembers = await lastValueFrom(
         this.fbService.getClubMemberRefs(this.club.id).pipe(
           first(), // Takes the first emitted value then completes
         ),
       );
-      console.log("Members fetched:", members.length);
+      console.log("Members fetched:", clubMembers.length);
 
-      if (!members.length) {
+      if (!clubMembers.length) {
         console.log("No Club members found.");
         return;
       }
 
-      const profiles = await Promise.all(
-        members.map((member) =>
+      const clubMemberProfiles = await Promise.all(
+        clubMembers.map((member) =>
           lastValueFrom(
             this.userProfileService.getUserProfileById(member.id).pipe(
               first(),
@@ -364,17 +364,16 @@ export class ClubParentsListPage implements OnInit {
         ),
       );
 
-      const filteredProfiles = profiles.filter(
+      const filteredClubMemberProfiles = clubMemberProfiles.filter(
         (profile) => profile !== undefined,
       );
-      console.log(filteredProfiles);
-      const newTeamMembers = this.filterNewTeamMembers(
-        filteredProfiles,
+      console.log(filteredClubMemberProfiles);
+      const newMembers = this.filterClubMembers(
+        filteredClubMemberProfiles,
         await lastValueFrom(this.clubParents$.pipe(take(1))),
       );
-      console.log(newTeamMembers);
-      const memberSelectOptions =
-        this.prepareMemberSelectOptions(newTeamMembers);
+      console.log(newMembers);
+      const memberSelectOptions = this.prepareMemberSelectOptions(newMembers);
       console.log(memberSelectOptions);
       if (memberSelectOptions.length > 0) {
         await this.showAddMemberAlert(memberSelectOptions);
@@ -386,10 +385,12 @@ export class ClubParentsListPage implements OnInit {
     }
   }
 
-  filterNewTeamMembers(profiles, teamMembers) {
-    return profiles.filter(
-      (member) =>
-        !teamMembers.some((teamMember) => teamMember.id === member.id),
+  filterClubMembers(clubMemberProfiles, clubParents) {
+    return clubMemberProfiles.filter(
+      (clubMemberProfile) =>
+        !clubParents.some(
+          (clubParent) => clubParent.id === clubMemberProfile.id,
+        ),
     );
   }
 
@@ -428,7 +429,7 @@ export class ClubParentsListPage implements OnInit {
           handler: (selectedMembers) => {
             selectedMembers.forEach((memberId) => {
               console.log(memberId);
-              this.approveClubRequest(this.club.id, memberId);
+              this.approveClubParentRequest(this.club.id, memberId);
             });
           },
         },
@@ -437,7 +438,7 @@ export class ClubParentsListPage implements OnInit {
     await alert.present();
   }
 
-  async approveClubRequest(clubId, memberId) {
+  async approveClubParentRequest(clubId, memberId) {
     await this.fbService
       .approveParentClubRequest(clubId, memberId)
       .then(() => {
