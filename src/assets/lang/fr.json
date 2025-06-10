@@ -135,6 +135,7 @@
     "loading": "Connexion en cours...",
     "signin_create__account": "créer un nouveau compte",
     "register": "S'inscrire",
+    "error": "Erreur",
     "error__no_acount_found": "Aucun compte trouvé avec cette adresse e-mail",
     "error__invalid_username_password": "La combinaison nom d'utilisateur/mot de passe est incorrecte.",
     "error__invalid_login_credentials": "La combinaison nom d'utilisateur/mot de passe est incorrecte.",
