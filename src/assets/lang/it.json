@@ -90,6 +90,7 @@
     "profile": "Profilo",
     "loading": "Caricamento",
     "training": "Allenamento",
+    "probe": "Prova",
     "events": "Eventi",
     "edit": "Modifica",
     "all": "Tutti",
@@ -270,9 +271,11 @@
   },
   "info": {
     "information": "Informazioni",
+    "legal": "Legale",
+    "about": "Informazioni sull'app",
     "terms__and_conditions": "Termini e condizioni",
     "privacy__policy": "Informativa sulla privacy",
-    "info_description": "liitu consulting gmbh, Sciaffusa, Svizzera",
+    "info_description": "Questa app è stata sviluppata con ❤️ da liitu consulting gmbh",
     "app__version": "Versione dell'app"
   },
   "news": {
@@ -483,10 +486,10 @@
     "create_training_confirm": "Vuoi creare questo allenamento?"
   },
   "side_bar": {
+    "info__and__help": "Info & Aiuto",
     "administration": "Amministrazione",
-    "info__and__help": "Informazioni e aiuto",
-    "my__club": "Il mio club",
-    "my__team": "La mia squadra",
+    "my__club": "Il Mio Club",
+    "my__team": "La Mia Squadra",
     "version": "Versione"
   },
   "club-parents-list": {

@@ -92,6 +92,7 @@
     "profile": "Profile",
     "loading": "Loading",
     "training": "Training",
+    "probe": "Practice",
     "events": "Events",
     "edit": "Edit",
     "all": "All",
@@ -274,10 +275,12 @@
   },
   "info": {
     "information": "Information",
-    "terms__and_conditions": "Terms and conditions",
-    "privacy__policy": "Privacy policy",
-    "info_description": "liitu consulting gmbh, schaffhausen, switzerland",
-    "app__version": "App version"
+    "legal": "Legal",
+    "about": "About the App",
+    "terms__and_conditions": "Terms and Conditions",
+    "privacy__policy": "Privacy Policy",
+    "info_description": "This app was developed with ❤️ by liitu consulting gmbh",
+    "app__version": "App Version"
   },
   "news": {
     "filter__news": "Filter news",
@@ -505,10 +508,10 @@
     "no_exercises": "No exercises available"
   },
   "side_bar": {
+    "info__and__help": "Info & Help",
     "administration": "Administration",
-    "info__and__help": "Info & help",
-    "my__club": "My club",
-    "my__team": "My team",
+    "my__club": "My Club",
+    "my__team": "My Team",
     "version": "Version"
   },
   "club-parents-list": {

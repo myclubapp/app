@@ -92,6 +92,7 @@
     "profile": "Profil",
     "loading": "Chargement",
     "training": "Entraînement",
+    "probe": "Répétition",
     "events": "Événements",
     "edit": "Modifier",
     "all": "Tous",
@@ -271,10 +272,12 @@
     "helper_points_label": "Points bénévoles"
   },
   "info": {
-    "information": "Information",
-    "terms__and_conditions": "Termes et conditions",
+    "information": "Informations",
+    "legal": "Mentions légales",
+    "about": "À propos de l'application",
+    "terms__and_conditions": "Conditions d'utilisation",
     "privacy__policy": "Politique de confidentialité",
-    "info_description": "liitu consulting gmbh, Schaffhouse, Suisse",
+    "info_description": "Cette application a été développée avec ❤️ par liitu consulting gmbh",
     "app__version": "Version de l'application"
   },
   "news": {
@@ -454,10 +457,10 @@
     "no_exercises": "Aucun exercice disponible"
   },
   "side_bar": {
+    "info__and__help": "Info & Aide",
     "administration": "Administration",
-    "info__and__help": "Infos et aide",
-    "my__club": "Mon club",
-    "my__team": "Mon équipe",
+    "my__club": "Mon Club",
+    "my__team": "Mon Équipe",
     "version": "Version"
   },
   "club-parents-list": {

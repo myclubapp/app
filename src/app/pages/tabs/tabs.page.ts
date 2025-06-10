@@ -1,25 +1,31 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { MenuController, IonTabs, NavController, AnimationController } from "@ionic/angular";
+import {
+  MenuController,
+  IonTabs,
+  NavController,
+  AnimationController,
+} from "@ionic/angular";
 import { Observable } from "rxjs";
 import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { getAnalytics, logEvent } from "firebase/analytics";
 
 @Component({
-    selector: "app-tabs",
-    templateUrl: "./tabs.page.html",
-    styleUrls: ["./tabs.page.scss"],
-    standalone: false
+  selector: "app-tabs",
+  templateUrl: "./tabs.page.html",
+  styleUrls: ["./tabs.page.scss"],
+  standalone: false,
 })
 export class TabsPage implements OnInit {
-  @ViewChild('tabs', { static: true }) tabs!: IonTabs;
+  @ViewChild("tabs", { static: true }) tabs!: IonTabs;
   clubList$: Observable<Club[]>;
   previousTab: string;
 
-  constructor(public menuCtrl: MenuController,
+  constructor(
+    public menuCtrl: MenuController,
     private readonly fbService: FirebaseService,
     private navCtrl: NavController,
-    private animationCtrl: AnimationController
+    private animationCtrl: AnimationController,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -28,21 +34,21 @@ export class TabsPage implements OnInit {
     this.clubList$ = this.fbService.getClubList();
 
     this.menuCtrl.enable(true, "menu");
-
   }
 
   animation() {
-    const DURATION = 500; 
-    const animation = this.animationCtrl.create()
-    .addElement(document.querySelector('ion-router-outlet'))
-    .duration(DURATION)
-    // .easing('cubic-bezier(0.36, 0.66, 0.04, 1)') // Smooth and spring-like effect
-    //.fromTo('transform', 'scale(0.9) translateX(100%)', 'scale(1) translateX(0%)') // Slide in with a slight zoom
-    //.easing('cubic-bezier(0.68, -0.55, 0.27, 1.55)')
-    .easing('ease-in-out')
-    .fromTo('opacity', '0', '1') // Fade in
+    const DURATION = 500;
+    const animation = this.animationCtrl
+      .create()
+      .addElement(document.querySelector("ion-router-outlet"))
+      .duration(DURATION)
+      // .easing('cubic-bezier(0.36, 0.66, 0.04, 1)') // Smooth and spring-like effect
+      //.fromTo('transform', 'scale(0.9) translateX(100%)', 'scale(1) translateX(0%)') // Slide in with a slight zoom
+      //.easing('cubic-bezier(0.68, -0.55, 0.27, 1.55)')
+      .easing("ease-in-out")
+      .fromTo("opacity", "0", "1"); // Fade in
     // .fromTo('box-shadow', '0px 0px 10px rgba(0, 0, 0, 0)', '0px 5px 20px rgba(0, 0, 0, 0.3)');
-    
+
     animation.play();
     // Navigate to the account tab after the animation
     // this.router.navigate(['/tabs/account']);
@@ -50,15 +56,35 @@ export class TabsPage implements OnInit {
   }
 
   enableHelferEvents(clubList) {
-    return clubList && clubList.some(club => club.hasFeatureHelferEvent == true);
+    return (
+      clubList && clubList.some((club) => club.hasFeatureHelferEvent == true)
+    );
   }
   enableChampionship(clubList) {
-    return clubList && clubList.some(club => club.hasFeatureChampionship == true);
+    return (
+      clubList && clubList.some((club) => club.hasFeatureChampionship == true)
+    );
   }
+
+  getTrainingTranslation(clubList: Club[], defaultTranslation: string): string {
+    if (!clubList) return defaultTranslation;
+
+    const hasTrainingSport = clubList.some((club) =>
+      [
+        "swissunihockey",
+        "swisshandball",
+        "swissvolley",
+        "swissturnverband",
+      ].includes(club.type.toLowerCase()),
+    );
+
+    return hasTrainingSport ? defaultTranslation : "common.probe";
+  }
+
   async onTabsWillChange(event) {
     console.log("event", event);
     const analytics = getAnalytics();
-    logEvent(analytics, 'tabs_will_change_' + event.tab);
-    this.animation()
+    logEvent(analytics, "tabs_will_change_" + event.tab);
+    this.animation();
   }
 }

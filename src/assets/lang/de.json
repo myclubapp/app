@@ -99,6 +99,7 @@
     "profile": "Profil",
     "loading": "Wird geladen",
     "training": "Training",
+    "probe": "Probe",
     "events": "Events",
     "edit": "bearbeiten",
     "all": "Alle",
@@ -280,9 +281,11 @@
   },
   "info": {
     "information": "Informationen",
-    "terms__and_conditions": "Geschäftsbedingungen",
-    "privacy__policy": "Datenschutzrichtlinie",
-    "info_description": "liitu consulting gmbh, schaffhausen, schweiz",
+    "legal": "Rechtliches",
+    "about": "Über die App",
+    "terms__and_conditions": "Nutzungsbedingungen",
+    "privacy__policy": "Datenschutzerklärung",
+    "info_description": "Diese App wurde mit ❤️ von liitu consulting gmbh entwickelt",
     "app__version": "App Version"
   },
   "news": {
@@ -520,8 +523,8 @@
     "create_training_confirm": "Soll das Training erstellt werden?"
   },
   "side_bar": {
+    "info__and__help": "Info & Hilfe",
     "administration": "Administration",
-    "info__and__help": "Infos & Hilfe",
     "my__club": "Mein Club",
     "my__team": "Mein Team",
     "version": "Version"
