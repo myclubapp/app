@@ -323,7 +323,9 @@
       "handball": "Handball",
       "gymnastics": "Gymnastics"
     },
-    "linked_clubs": "Linked Clubs"
+    "linked_clubs": "Linked Clubs",
+    "error__clubRequest": "Error with club request",
+    "error__clubRequest_desc": "An error occurred while sending your request. Please try again later or contact support."
   },
   "onboarding-team": {
     "onboarding__team": "Onboarding team"

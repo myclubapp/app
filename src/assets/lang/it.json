@@ -317,7 +317,9 @@
       "handball": "Pallamano",
       "gymnastics": "Ginnastica"
     },
-    "linked_clubs": "Club collegati"
+    "linked_clubs": "Club collegati",
+    "error__clubRequest": "Errore nella richiesta al club",
+    "error__clubRequest_desc": "Si è verificato un errore durante l'invio della tua richiesta. Riprova più tardi o contatta il supporto."
   },
   "onboarding-team": {
     "onboarding__team": "Team di onboarding"

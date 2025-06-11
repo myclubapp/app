@@ -329,7 +329,9 @@
       "handball": "Handball",
       "gymnastics": "Turnverein"
     },
-    "linked_clubs": "Verknüpfte Clubs"
+    "linked_clubs": "Verknüpfte Clubs",
+    "error__clubRequest": "Fehler bei der Club-Anfrage",
+    "error__clubRequest_desc": "Beim Senden deiner Anfrage ist ein Fehler aufgetreten. Bitte versuche es später erneut oder kontaktiere den Support."
   },
   "onboarding-team": {
     "onboarding__team": "Onboarding-Team"
