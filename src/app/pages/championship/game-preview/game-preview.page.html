@@ -24,6 +24,7 @@
     ></game-preview>
 
     <ion-button
+      *ngIf="isShareable"
       expand="block"
       (click)="openShare(game.id)"
       class="ion-margin-top"

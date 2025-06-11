@@ -36,6 +36,8 @@ export class GamePreviewPage implements OnInit {
   @Input("data") game: Game;
   game$: Observable<Game>;
 
+  isShareable = false;
+
   // Social Share
   shareSocialShareOptions: any;
   showSocialShare = false;
@@ -55,6 +57,7 @@ export class GamePreviewPage implements OnInit {
   ngOnInit() {
     this.game = this.navParams.get("data");
     this.game$ = of(this.game);
+    Share.canShare().then((result) => (this.isShareable = result.value));
   }
 
   // Hilfsfunktion: Wandelt alle externen <image>-Elemente im SVG in Data-URLs um

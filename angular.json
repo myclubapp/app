@@ -67,6 +67,11 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/default",
                   "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -168,6 +173,11 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/app-unihockey",
                   "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -216,6 +226,11 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/app-volleyball",
                   "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -264,6 +279,11 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/app-handball",
                   "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -312,6 +332,11 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/app-fussball",
                   "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -360,6 +385,11 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/app-basketball",
                   "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -408,6 +438,11 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/app-turnverein",
                   "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
                 }
               ],
               "fileReplacements": [
