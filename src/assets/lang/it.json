@@ -27,6 +27,7 @@
     "link__poll": "Sondaggio",
     "link__placeholder": "https: //",
     "confirm_delete_checkbox": "Confermo che voglio davvero eliminare questa voce",
+    "confirm_delete_checkbox_required": "Si prega di confermare l'eliminazione selezionando la casella",
     "or": "O",
     "email__address": "Indirizzo email",
     "password": "Password",

@@ -131,7 +131,8 @@
       "AT": "Österreich",
       "LI": "Liechtenstein",
       "other": "Andere"
-    }
+    },
+    "confirm_delete_checkbox_required": "Bitte bestätigen Sie die Löschung durch Aktivieren der Checkbox"
   },
   "login": {
     "login__title": "Melden Dich mit deinem Konto an",

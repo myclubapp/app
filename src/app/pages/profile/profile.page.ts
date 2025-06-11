@@ -450,8 +450,6 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
       } catch (error) {
         await this.presentErrorDeleteProfile();
       }
-    } else {
-      await this.presentCancelToast();
     }
   }
 

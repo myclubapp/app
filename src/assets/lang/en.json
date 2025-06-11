@@ -27,6 +27,7 @@
     "link__poll": "Survey",
     "link__placeholder": "https: //",
     "confirm_delete_checkbox": "I confirm that I really want to delete this entry",
+    "confirm_delete_checkbox_required": "Please confirm the deletion by checking the checkbox",
     "or": "Or",
     "email__address": "Email address",
     "password": "Password",

@@ -129,7 +129,8 @@
       "LI": "Liechtenstein",
       "other": "Autre"
     },
-    "title": "Titre"
+    "title": "Titre",
+    "confirm_delete_checkbox_required": "Veuillez confirmer la suppression en cochant la case"
   },
   "login": {
     "login__title": "Connectez-vous avec votre compte",
