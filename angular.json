@@ -115,6 +115,11 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/default",
                   "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
                 }
               ],
               "fileReplacements": [
