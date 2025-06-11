@@ -3,7 +3,9 @@
     <ion-toolbar>
       <ion-title>{{"common.details" | translate}}</ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -13,5 +15,21 @@
         <ion-title size="large">{{"common.details" | translate}}</ion-title>
       </ion-toolbar>
     </ion-header>
-    <game-preview club="{{game.clubRef.id}}" game="{{game.id}}"></game-preview>
-  </ion-content>  
+    <game-preview
+      club="{{game.clubRef.id}}"
+      game="{{game.id}}"
+      theme="myclub"
+      width="400"
+      height="auto"
+    ></game-preview>
+
+    <ion-button
+      expand="block"
+      (click)="openShare(game.id)"
+      class="ion-margin-top"
+    >
+      <ion-icon name="share-outline" slot="start"></ion-icon>
+      {{"common.share" | translate}}
+    </ion-button>
+  </ion-content>
+</ng-container>

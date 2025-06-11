@@ -14,6 +14,9 @@ PODS:
     - Capacitor
   - CapacitorDialog (7.0.1):
     - Capacitor
+  - CapacitorFilesystem (7.1.1):
+    - Capacitor
+    - IONFilesystemLib (~> 1.0)
   - CapacitorGeolocation (7.1.2):
     - Capacitor
     - IONGeolocationLib (~> 1.0)
@@ -107,6 +110,7 @@ PODS:
   - GoogleUtilities/UserDefaults (7.13.3):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
+  - IONFilesystemLib (1.0.0)
   - IONGeolocationLib (1.0.0)
   - MyclubWidgetPlugin (1.0.5):
     - Capacitor
@@ -126,6 +130,7 @@ DEPENDENCIES:
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorDevice (from `../../node_modules/@capacitor/device`)"
   - "CapacitorDialog (from `../../node_modules/@capacitor/dialog`)"
+  - "CapacitorFilesystem (from `../../node_modules/@capacitor/filesystem`)"
   - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
   - "CapacitorGoogleMaps (from `../../node_modules/@capacitor/google-maps`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
@@ -154,6 +159,7 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleMaps
     - GoogleUtilities
+    - IONFilesystemLib
     - IONGeolocationLib
     - nanopb
     - PromisesObjC
@@ -175,6 +181,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/device"
   CapacitorDialog:
     :path: "../../node_modules/@capacitor/dialog"
+  CapacitorFilesystem:
+    :path: "../../node_modules/@capacitor/filesystem"
   CapacitorGeolocation:
     :path: "../../node_modules/@capacitor/geolocation"
   CapacitorGoogleMaps:
@@ -209,6 +217,7 @@ SPEC CHECKSUMS:
   CapacitorCordova: 2685f5c43675793b5f06dfd66b3b26268f003b97
   CapacitorDevice: fe3f190e1d718f4607bdc6b73993433d1c84f409
   CapacitorDialog: 9b934329026b2b0ffa56939bb06df3c67541a2ab
+  CapacitorFilesystem: 3acaa1d2b909a9dd904581a86f21782886e6bb38
   CapacitorGeolocation: 8c86a3afea574c84447c17905da96f2356ad913e
   CapacitorGoogleMaps: a91ce2f4026faa2bb0a1f45c287deff4aeade82a
   CapacitorHaptics: 70e47470fa1a6bd6338cd102552e3846b7f9a1b3
@@ -230,11 +239,12 @@ SPEC CHECKSUMS:
   GoogleDataTransport: cd9db2180fcecd8da1b561aea31e3e56cf834aa7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
+  IONFilesystemLib: ceacae793975039530458eabab0c495c70515a0d
   IONGeolocationLib: 81f33f88d025846946de2cf63b0c7628e7c6bc9d
   MyclubWidgetPlugin: 8564007d0afd54bc914bfd8ef20da6954a2c961a
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
 
-PODFILE CHECKSUM: a9084d06c1039f57374ac151e37ed2d56c4c5681
+PODFILE CHECKSUM: 4e20fa9b06535b96f2acbcea5277a65db721a2d6
 
 COCOAPODS: 1.16.2

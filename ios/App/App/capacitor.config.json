@@ -33,6 +33,7 @@
 		"ClipboardPlugin",
 		"DevicePlugin",
 		"DialogPlugin",
+		"FilesystemPlugin",
 		"GeolocationPlugin",
 		"CapacitorGoogleMapsPlugin",
 		"HapticsPlugin",

@@ -184,6 +184,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorCordova/Cordova.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorDevice/CapacitorDevice.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorDialog/CapacitorDialog.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorFilesystem/CapacitorFilesystem.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorGeolocation/CapacitorGeolocation.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorHaptics/CapacitorHaptics.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorKeyboard/CapacitorKeyboard.framework"
@@ -204,6 +205,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/MyclubWidgetPlugin/MyclubWidgetPlugin.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/PromisesObjC/FBLPromises.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework"
+  install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/IONFilesystemLib/IONFilesystemLib.framework"
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/IONGeolocationLib/IONGeolocationLib.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
@@ -215,6 +217,7 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorCordova/Cordova.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorDevice/CapacitorDevice.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorDialog/CapacitorDialog.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/CapacitorFilesystem/CapacitorFilesystem.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorGeolocation/CapacitorGeolocation.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorHaptics/CapacitorHaptics.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/CapacitorKeyboard/CapacitorKeyboard.framework"
@@ -235,6 +238,7 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/MyclubWidgetPlugin/MyclubWidgetPlugin.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/PromisesObjC/FBLPromises.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework"
+  install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/IONFilesystemLib/IONFilesystemLib.framework"
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/IONGeolocationLib/IONGeolocationLib.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then
