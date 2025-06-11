@@ -294,15 +294,23 @@ export class EventDetailPage implements OnInit {
     const newStartDate = event.date.toDate();
     newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
 
-    // console.log("Grenzwert ");
-    const eventThreshold = event.club.eventThreshold || 0;
-    // console.log(eventThreshold);
+    const club = await lastValueFrom(
+      this.fbService.getClubRef(event.clubId).pipe(take(1)),
+    );
+    const eventThreshold = club.eventThreshold || 0;
+
+    // Überprüfe, ob der Benutzer ein Team-Administrator ist
+    const clubAdminList = await lastValueFrom(
+      this.clubAdminList$.pipe(take(1)),
+    );
+    const isAdmin = this.isClubAdmin(clubAdminList, event.clubId);
 
     if (
       newStartDate.getTime() - new Date().getTime() <
         1000 * 60 * 60 * eventThreshold &&
       status == false &&
-      eventThreshold
+      eventThreshold &&
+      !isAdmin
     ) {
       console.log("too late");
       await this.tooLateToggle();

@@ -284,7 +284,7 @@ export class OnboardingClubPage implements OnInit {
             club.id,
             this.user.uid,
             false,
-            teamData?.values,
+            teamData?.values || "",
           );
           await this.presentRequestToast();
           await this.presentActivatetSentAlert(club.name);

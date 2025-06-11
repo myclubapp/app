@@ -441,13 +441,26 @@ export class TrainingDetailPage implements OnInit {
     const newStartDate = training.date.toDate();
     newStartDate.setHours(Number(training.timeFrom.substring(0, 2)));
 
-    const trainingThreshold = training.team.trainingThreshold || 0;
+    const team = await lastValueFrom(
+      this.fbService.getTeamRef(training.teamId).pipe(take(1)),
+    );
+
+    const trainingThreshold = team.trainingThreshold || 0;
+
+    // Überprüfe, ob der Benutzer ein Team-Administrator ist
+    const teamAdminList = await lastValueFrom(
+      this.teamAdminList$.pipe(take(1)),
+    );
+    const isAdmin = this.isTeamAdmin(teamAdminList, training.teamId);
+
+    // console.log("newStartDate", newStartDate);
 
     if (
       newStartDate.getTime() - new Date().getTime() <
         1000 * 60 * 60 * trainingThreshold &&
       status == false &&
-      trainingThreshold
+      trainingThreshold &&
+      !isAdmin
     ) {
       console.log("too late");
       await this.tooLateToggle();

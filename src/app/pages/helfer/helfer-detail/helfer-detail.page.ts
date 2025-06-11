@@ -67,7 +67,6 @@ export class HelferDetailPage implements OnInit {
     private readonly toastController: ToastController,
     private readonly alertCtrl: AlertController,
     private readonly authService: AuthService,
-    private cdr: ChangeDetectorRef,
     private translate: TranslateService,
     private uiService: UiService,
   ) {}
@@ -78,7 +77,7 @@ export class HelferDetailPage implements OnInit {
     this.event$ = this.getHelferEvent(this.event.clubId, this.event.id);
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
-    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    // this.teamAdminList$ = this.fbService.getTeamAdminList();
 
     this.schichten$ = this.getHelferEventSchichtenWithAttendees(
       this.event.clubId,
@@ -368,6 +367,7 @@ export class HelferDetailPage implements OnInit {
     });
   }
 
+  // Add checck for too late?
   async toggleSchichtItem(
     slidingItem: IonItemSliding,
     status: boolean,
@@ -377,14 +377,42 @@ export class HelferDetailPage implements OnInit {
   ) {
     slidingItem.closeOpened();
     console.log("toggleSchichtItem", status, event, schicht, memberId);
-    await this.eventService.setClubHelferEventSchichtAttendeeStatusAdmin(
-      status,
-      event.clubId,
-      event.id,
-      schicht.id,
-      memberId,
+
+    const newStartDate = event.date.toDate();
+    newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
+
+    const club = await lastValueFrom(
+      this.fbService.getClubRef(event.clubId).pipe(take(1)),
     );
-    this.presentToast();
+    const helferThreshold = club.helferThreshold || 0;
+
+    // Überprüfe, ob der Benutzer ein Team-Administrator ist
+    const clubAdminList = await lastValueFrom(
+      this.clubAdminList$.pipe(take(1)),
+    );
+    const isAdmin = this.isClubAdmin(clubAdminList, event.clubId);
+
+    // console.log("newStartDate", newStartDate);
+
+    if (
+      newStartDate.getTime() - new Date().getTime() <
+        1000 * 60 * 60 * helferThreshold &&
+      status == false &&
+      helferThreshold &&
+      !isAdmin
+    ) {
+      console.log("too late");
+      await this.tooLateToggle();
+    } else {
+      await this.eventService.setClubHelferEventSchichtAttendeeStatusAdmin(
+        status,
+        event.clubId,
+        event.id,
+        schicht.id,
+        memberId,
+      );
+      this.presentToast();
+    }
   }
 
   async toggleSchicht(
@@ -764,20 +792,19 @@ export class HelferDetailPage implements OnInit {
       })),
     });
 
-    if (data && data.length > 0) {
+    console.log(data);
+    if (data && data.values.length > 0) {
       try {
         // Füge ausgewählte Mitglieder zur Schicht hinzu
-        const promises = data.map((memberId) =>
-          this.eventService.setClubHelferEventSchichtAttendeeStatusAdmin(
+        for (const memberId of data.values) {
+          await this.eventService.setClubHelferEventSchichtAttendeeStatusAdmin(
             true,
             this.event.clubId,
             this.event.id,
             schicht.id,
             memberId,
-          ),
-        );
-
-        await Promise.all(promises);
+          );
+        }
         this.presentToast();
       } catch (error) {
         console.error("Error adding members to schicht:", error);

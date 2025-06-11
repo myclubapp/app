@@ -387,13 +387,26 @@ export class ChampionshipDetailPage implements OnInit {
     const newStartDate = game.dateTime.toDate();
     newStartDate.setHours(Number(game.time.substring(0, 2)));
 
-    const championshipThreshold = game.team.championshipThreshold || 0;
+    const team = await lastValueFrom(
+      this.fbService.getTeamRef(game.teamId).pipe(take(1)),
+    );
+
+    const championshipThreshold = team.championshipThreshold || 0;
+
+    // Überprüfe, ob der Benutzer ein Team-Administrator ist
+    const teamAdminList = await lastValueFrom(
+      this.teamAdminList$.pipe(take(1)),
+    );
+    const isAdmin = this.isTeamAdmin(teamAdminList, game.teamId);
+
+    // console.log("newStartDate", newStartDate);
 
     if (
       newStartDate.getTime() - new Date().getTime() <
         1000 * 60 * 60 * championshipThreshold &&
       status == false &&
-      championshipThreshold
+      championshipThreshold &&
+      !isAdmin
     ) {
       console.log("too late");
       await this.tooLateToggle();
