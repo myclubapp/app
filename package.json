@@ -85,7 +85,7 @@
     "cordova-plugin-ionic": "5.5.3",
     "firebase": "11.8.1",
     "husky-init": "^8.0.0",
-    "myclub-game-preview": "0.0.13",
+    "myclub-game-preview": "0.0.14",
     "myclub-widget-plugin": "^1.0.5",
     "rxjs": "^7.4.0",
     "save-svg-as-png": "^1.4.17",
