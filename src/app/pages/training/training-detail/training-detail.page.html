@@ -146,6 +146,18 @@
               >{{status.firstName}} {{status.lastName}}
             </ion-label>
           </ng-container>
+          <!-- NEU: Falls keine Status-Einträge vorhanden sind, Teilnahme ermöglichen -->
+          <ng-container *ngIf="training.status.length === 0">
+            <ion-fab-button
+              (click)="processToggle(user.uid, true, training)"
+              size="small"
+              color="warning"
+              slot="start"
+            >
+              <ion-icon name="help-circle"> </ion-icon>
+            </ion-fab-button>
+            <ion-label>{{'common.my__status' | translate}}</ion-label>
+          </ng-container>
         </ng-container>
       </ion-item>
       <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
