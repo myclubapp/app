@@ -164,6 +164,18 @@
                     ></ion-icon>
                   </ng-container>
                 </ng-container>
+                <!-- NEU: Falls keine Status-Einträge vorhanden sind, Teilnahme ermöglichen -->
+                <ng-container
+                  *ngIf="schicht.status.length === 0 && isFuture && !schicht.confirmed"
+                >
+                  <ion-icon
+                    slot="icon-only"
+                    color="warning"
+                    slot="start"
+                    name="help-circle"
+                    (click)="toggleSchicht(item, true, event, schicht)"
+                  ></ion-icon>
+                </ng-container>
 
                 <ion-label>
                   <h2>{{schicht.name}}</h2>

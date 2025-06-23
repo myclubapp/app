@@ -74,6 +74,7 @@ export class HelferDetailPage implements OnInit {
   async ngOnInit() {
     this.event = this.navParams.get("data");
     this.isFuture = this.navParams.get("isFuture");
+
     this.event$ = this.getHelferEvent(this.event.clubId, this.event.id);
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
@@ -131,6 +132,7 @@ export class HelferDetailPage implements OnInit {
         );
       }),
       switchMap(() => this.eventService.getClubHelferEventRef(clubId, eventId)),
+
       catchError((err) => {
         console.error("Error in getHelferEventWithAttendees:", err);
         return of(null);
@@ -237,6 +239,7 @@ export class HelferDetailPage implements OnInit {
                                 })),
                             };
                           }),
+
                           catchError((err) => {
                             console.error(
                               "Error fetching attendees for schicht:",
@@ -792,7 +795,7 @@ export class HelferDetailPage implements OnInit {
       })),
     });
 
-    console.log(data);
+    //console.log(data);
     if (data && data.values.length > 0) {
       try {
         // Füge ausgewählte Mitglieder zur Schicht hinzu
