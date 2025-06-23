@@ -677,7 +677,7 @@ export class HelferDetailPage implements OnInit {
       await this.eventService.addNewHelferEventSchicht(
         this.event.clubId,
         this.event.id,
-        data,
+        data.values,
       );
       await this.presentToast();
     }
@@ -733,7 +733,7 @@ export class HelferDetailPage implements OnInit {
       await this.eventService.addNewHelferEventSchicht(
         this.event.clubId,
         this.event.id,
-        data,
+        data.values,
       );
       await this.presentToast();
     }

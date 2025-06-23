@@ -130,7 +130,39 @@
       "other": "Autre"
     },
     "title": "Titre",
-    "confirm_delete_checkbox_required": "Veuillez confirmer la suppression en cochant la case"
+    "confirm_delete_checkbox_required": "Veuillez confirmer la suppression en cochant la case",
+    "club_type": {
+      "sports": "Club sportif",
+      "culture": "Club culturel",
+      "other": "Autre club",
+      "label": "Type de club"
+    },
+    "sport_type": {
+      "label": "Type de sport",
+      "volleyball": "Volley-ball",
+      "unihockey": "Unihockey",
+      "turnverein": "Club de gymnastique",
+      "handball": "Handball",
+      "other": "Autre sport",
+      "other_placeholder": "Veuillez préciser le sport"
+    },
+    "club_questionnaire": {
+      "intro": "Parlez-nous de votre club.",
+      "teams": "Nombre d'équipes, de groupes ou de sections",
+      "members": "Nombre de membres"
+    },
+    "error": {
+      "club_name_required": "Veuillez saisir un nom pour le club.",
+      "club_type_other_required": "Veuillez indiquer le type de club.",
+      "sport_type_required": "Veuillez sélectionner un type de sport.",
+      "sport_type_other_required": "Veuillez préciser le sport.",
+      "teams_required": "Veuillez indiquer le nombre d'équipes/groupes.",
+      "members_required": "Veuillez indiquer le nombre de membres.",
+      "club_form_invalid": "Veuillez remplir correctement tous les champs obligatoires.",
+      "club_creation_failed": "Le club n'a pas pu être créé. Veuillez réessayer plus tard."
+    },
+    "step": "Étape",
+    "step_with_number": "Étape {{num}}"
   },
   "login": {
     "login__title": "Connectez-vous avec votre compte",
@@ -322,7 +354,9 @@
     },
     "linked_clubs": "Clubs liés",
     "error__clubRequest": "Erreur lors de la demande au club",
-    "error__clubRequest_desc": "Une erreur s'est produite lors de l'envoi de votre demande. Veuillez réessayer plus tard ou contacter le support."
+    "error__clubRequest_desc": "Une erreur s'est produite lors de l'envoi de votre demande. Veuillez réessayer plus tard ou contacter le support.",
+    "confirm_new_club_title": "Club non trouvé ? Créer un nouveau club",
+    "confirm_new_club_message": "Êtes-vous sûr de vouloir créer un nouveau club ? myclub prend déjà en charge plus de 3100 clubs."
   },
   "onboarding-team": {
     "onboarding__team": "Équipe d'intégration"

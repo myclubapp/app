@@ -130,7 +130,39 @@
       "LI": "Liechtenstein",
       "other": "Other"
     },
-    "title": "Title"
+    "title": "Title",
+    "club_type": {
+      "sports": "Sports club",
+      "culture": "Cultural club",
+      "other": "Other club",
+      "label": "Type of club"
+    },
+    "sport_type": {
+      "label": "Sport type",
+      "volleyball": "Volleyball",
+      "unihockey": "Floorball",
+      "turnverein": "Gymnastics club",
+      "handball": "Handball",
+      "other": "Other sport",
+      "other_placeholder": "Please specify the sport"
+    },
+    "club_questionnaire": {
+      "intro": "Tell us more about your club.",
+      "teams": "Number of teams, groups or squads",
+      "members": "Number of members"
+    },
+    "error": {
+      "club_name_required": "Please enter a name for the club.",
+      "club_type_other_required": "Please specify the type of club.",
+      "sport_type_required": "Please select a sport type.",
+      "sport_type_other_required": "Please specify the sport.",
+      "teams_required": "Please enter the number of teams/groups.",
+      "members_required": "Please enter the number of members.",
+      "club_form_invalid": "Please fill in all required fields correctly.",
+      "club_creation_failed": "The club could not be created. Please try again later."
+    },
+    "step": "Step",
+    "step_with_number": "Step {{num}}"
   },
   "login": {
     "login__title": "Sign in with your account",
@@ -326,7 +358,9 @@
     },
     "linked_clubs": "Linked Clubs",
     "error__clubRequest": "Error with club request",
-    "error__clubRequest_desc": "An error occurred while sending your request. Please try again later or contact support."
+    "error__clubRequest_desc": "An error occurred while sending your request. Please try again later or contact support.",
+    "confirm_new_club_title": "Club not found? Create a new club",
+    "confirm_new_club_message": "Are you sure you want to create a new club? myclub already supports over 3100 clubs."
   },
   "onboarding-team": {
     "onboarding__team": "Onboarding team"

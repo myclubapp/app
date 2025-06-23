@@ -116,7 +116,7 @@
     "open": "Öffnen",
     "load": "Laden",
     "app_update_available": "App Update verfügbar",
-    "app_update_message": "Eine neue Version {version} ist verfügbar. Neue Version laden?",
+    "app_update_message": "Eine neue Version {{version}} ist verfügbar. Neue Version laden?",
     "offline": "Du bist offline",
     "online": "Du bist online",
     "error__push_notification_not_available": "Push-Benachrichtigung nicht verfügbar",
@@ -132,7 +132,35 @@
       "LI": "Liechtenstein",
       "other": "Andere"
     },
-    "confirm_delete_checkbox_required": "Bitte bestätigen Sie die Löschung durch Aktivieren der Checkbox"
+    "confirm_delete_checkbox_required": "Bitte bestätigen Sie die Löschung durch Aktivieren der Checkbox",
+    "club_type": {
+      "sports": "Sportverein",
+      "culture": "Kulturverein",
+      "other": "Anderer Verein",
+      "label": "Art des Vereins",
+      "other_placeholder": "Bitte beschreibe die Vereinsart"
+    },
+    "sport_type": {
+      "label": "Sportart",
+      "volleyball": "Volleyball",
+      "unihockey": "Unihockey",
+      "turnverein": "Turnverein",
+      "handball": "Handball",
+      "other": "Andere Sportart",
+      "other_placeholder": "Bitte gib die Sportart an"
+    },
+    "error": {
+      "club_name_required": "Bitte gib einen Namen für den Club ein.",
+      "club_type_other_required": "Bitte gib die Vereinsart an.",
+      "sport_type_required": "Bitte wähle eine Sportart aus.",
+      "sport_type_other_required": "Bitte gib die Sportart an.",
+      "teams_required": "Bitte gib die Anzahl Teams/Gruppen an.",
+      "members_required": "Bitte gib die Anzahl Mitglieder an.",
+      "club_form_invalid": "Bitte fülle alle Pflichtfelder korrekt aus.",
+      "club_creation_failed": "Der Club konnte nicht erstellt werden. Bitte versuche es später erneut."
+    },
+    "step": "Schritt",
+    "step_with_number": "Schritt {{num}}"
   },
   "login": {
     "login__title": "Melden Dich mit deinem Konto an",
@@ -205,7 +233,25 @@
     "link_type_pdf": "PDF",
     "link_url": "URL",
     "link_file": "Datei",
-    "show_on_card": "Auf Karte anzeigen"
+    "show_on_card": "Auf Karte anzeigen",
+    "club_type": {
+      "sports": "Sportverein",
+      "culture": "Kulturverein",
+      "other": "Anderer Verein",
+      "label": "Art des Vereins"
+    },
+    "club_questionnaire": {
+      "intro": "Erzähl uns mehr über deinen Verein.",
+      "teams": "Anzahl Mannschaften, Gruppen oder Teams",
+      "members": "Anzahl Mitglieder"
+    },
+    "error": {
+      "club_name_required": "Bitte gib einen Namen für den Club ein.",
+      "club_type_other_required": "Bitte gib die Vereinsart an.",
+      "teams_required": "Bitte gib die Anzahl Teams/Gruppen an.",
+      "members_required": "Bitte gib die Anzahl Mitglieder an.",
+      "club_creation_failed": "Der Club konnte nicht erstellt werden. Bitte versuche es später erneut."
+    }
   },
   "club-list": {
     "my__clubs": "Meine Clubs"
@@ -332,7 +378,35 @@
     },
     "linked_clubs": "Verknüpfte Clubs",
     "error__clubRequest": "Fehler bei der Club-Anfrage",
-    "error__clubRequest_desc": "Beim Senden deiner Anfrage ist ein Fehler aufgetreten. Bitte versuche es später erneut oder kontaktiere den Support."
+    "error__clubRequest_desc": "Beim Senden deiner Anfrage ist ein Fehler aufgetreten. Bitte versuche es später erneut oder kontaktiere den Support.",
+    "create_new_club": "Neuen Club erstellen",
+    "club_name": "Name des Clubs",
+    "club_type": {
+      "sports": "Sportverein",
+      "culture": "Kulturverein",
+      "other": "Anderer Verein",
+      "label": "Art des Vereins",
+      "other_placeholder": "Bitte beschreibe die Vereinsart"
+    },
+    "error": {
+      "club_name_required": "Bitte geben Sie einen Namen für den Club ein",
+      "club_creation_failed": "Der Club konnte nicht erstellt werden. Bitte versuchen Sie es später erneut."
+    },
+    "success": {
+      "club_created": "Der Club wurde erfolgreich erstellt und wird nach Prüfung aktiviert"
+    },
+    "club_questionnaire": {
+      "intro": "Erzähl uns mehr über deinen Verein.",
+      "teams": "Anzahl Mannschaften, Gruppen oder Teams",
+      "members": "Anzahl Mitglieder"
+    },
+    "sport_type": {
+      "label": "Sportart",
+      "other": "Andere Sportart",
+      "other_placeholder": "Bitte gib die Sportart an"
+    },
+    "confirm_new_club_title": "Club nicht gefunden? Erstelle einen neuen Club",
+    "confirm_new_club_message": "Bist du sicher, dass du einen neuen Club anlegen möchtest? myclub unterstützt bereits über 3100 Vereine."
   },
   "onboarding-team": {
     "onboarding__team": "Onboarding-Team"
@@ -589,5 +663,17 @@
     "show__on__card": "Auf Karte anzeigen",
     "create_link_confirm": "Möchten Sie diesen Link wirklich erstellen?",
     "update_link_confirm": "Möchten Sie diesen Link wirklich aktualisieren?"
+  },
+  "welcome": {
+    "title": "Willkommen bei MyClub",
+    "description": "Die moderne Plattform für Sportvereine",
+    "club_management": "Vereinsverwaltung",
+    "club_management_desc": "Verwalte deinen Verein einfach und effizient",
+    "team_management": "Teammanagement",
+    "team_management_desc": "Organisiere deine Teams und Spieler",
+    "communication": "Kommunikation",
+    "communication_desc": "Bleibe mit deinem Verein in Verbindung",
+    "start_onboarding": "Onboarding starten",
+    "skip": "Überspringen"
   }
 }

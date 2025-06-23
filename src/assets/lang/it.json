@@ -128,7 +128,39 @@
       "LI": "Liechtenstein",
       "other": "Altro"
     },
-    "title": "Titolo"
+    "title": "Titolo",
+    "club_type": {
+      "sports": "Club sportivo",
+      "culture": "Club culturale",
+      "other": "Altro club",
+      "label": "Tipo di club"
+    },
+    "sport_type": {
+      "label": "Tipo di sport",
+      "volleyball": "Pallavolo",
+      "unihockey": "Unihockey",
+      "turnverein": "Club di ginnastica",
+      "handball": "Pallamano",
+      "other": "Altro sport",
+      "other_placeholder": "Si prega di specificare lo sport"
+    },
+    "club_questionnaire": {
+      "intro": "Raccontaci di più sul tuo club.",
+      "teams": "Numero di squadre, gruppi o team",
+      "members": "Numero di membri"
+    },
+    "error": {
+      "club_name_required": "Inserisci un nome per il club.",
+      "club_type_other_required": "Si prega di specificare il tipo di club.",
+      "sport_type_required": "Seleziona un tipo di sport.",
+      "sport_type_other_required": "Si prega di specificare lo sport.",
+      "teams_required": "Inserisci il numero di squadre/gruppi.",
+      "members_required": "Inserisci il numero di membri.",
+      "club_form_invalid": "Si prega di compilare correttamente tutti i campi obbligatori.",
+      "club_creation_failed": "Il club non può essere creato. Riprova più tardi."
+    },
+    "step": "Passo",
+    "step_with_number": "Passo {{num}}"
   },
   "login": {
     "login__title": "Accedi con il tuo account",
@@ -320,7 +352,9 @@
     },
     "linked_clubs": "Club collegati",
     "error__clubRequest": "Errore nella richiesta al club",
-    "error__clubRequest_desc": "Si è verificato un errore durante l'invio della tua richiesta. Riprova più tardi o contatta il supporto."
+    "error__clubRequest_desc": "Si è verificato un errore durante l'invio della tua richiesta. Riprova più tardi o contatta il supporto.",
+    "confirm_new_club_title": "Club non trovato? Crea un nuovo club",
+    "confirm_new_club_message": "Sei sicuro di voler creare un nuovo club? myclub supporta già oltre 3100 club."
   },
   "onboarding-team": {
     "onboarding__team": "Team di onboarding"
