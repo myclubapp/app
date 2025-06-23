@@ -199,7 +199,8 @@ export class EventService {
         "<",
         Timestamp.fromDate(new Date(Date.now())), // sofort anzeigen
       ),
-      limit(20),
+      orderBy("date", "desc"),
+      limit(30),
     ); // heute - 1 Tag
 
     return collectionData(q, {
