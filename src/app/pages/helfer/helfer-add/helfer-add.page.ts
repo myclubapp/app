@@ -378,7 +378,7 @@ export class HelferAddPage implements OnInit {
     if (data) {
       this.event.schichten.push({
         id: this.event.schichten.length + 1,
-        ...data,
+        ...data.values,
         count: 0,
       });
     }

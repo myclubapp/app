@@ -147,9 +147,9 @@ export class FirebaseService {
         );
       }),
       map((clubsWithDetails) =>
-        clubsWithDetails
-          .filter((club): club is Club => club !== null && club !== undefined)
-          .sort((a, b) => a.name.localeCompare(b.name)),
+        clubsWithDetails.filter(
+          (club): club is Club => club !== null && club !== undefined,
+        ),
       ),
       catchError((err) => {
         console.error("Error in getClubList:", err);
@@ -177,9 +177,9 @@ export class FirebaseService {
         );
       }),
       map((clubsWithDetails) =>
-        clubsWithDetails
-          .filter((club): club is Club => club !== null && club !== undefined)
-          .sort((a, b) => b.name.localeCompare(a.name)),
+        clubsWithDetails.filter(
+          (club): club is Club => club !== null && club !== undefined,
+        ),
       ),
       shareReplay(1),
       catchError((err) => {
@@ -208,12 +208,9 @@ export class FirebaseService {
         );
       }),
       map((clubsWithDetails) =>
-        clubsWithDetails
-          .filter(
-            (club): club is Club =>
-              club !== null && club !== undefined && club.id === clubId,
-          )
-          .sort((a, b) => a.name.localeCompare(b.name)),
+        clubsWithDetails.filter(
+          (club): club is Club => club && club.id === clubId,
+        ),
       ),
       shareReplay(1),
       catchError((err) => {
