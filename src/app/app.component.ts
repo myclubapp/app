@@ -36,6 +36,13 @@ import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscriptio
 import { lastValueFrom } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 
+// Add this to your app.component.ts to register Swiper globally
+// src/app/app.component.ts
+import { register } from "swiper/element/bundle";
+
+// Register Swiper custom elements
+register();
+
 @Component({
   selector: "app-root",
   templateUrl: "app.component.html",

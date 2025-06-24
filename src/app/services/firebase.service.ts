@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable } from "@angular/core";
 import {
   Firestore,
   addDoc,
@@ -10,7 +10,6 @@ import {
   setDoc,
   Timestamp,
   updateDoc,
-  limit,
   orderBy,
   query,
   where,
@@ -29,8 +28,6 @@ import {
   take,
   tap,
   shareReplay,
-  last,
-  takeLast,
 } from "rxjs";
 import { Club } from "../models/club";
 import { Team } from "../models/team";
@@ -150,9 +147,9 @@ export class FirebaseService {
         );
       }),
       map((clubsWithDetails) =>
-        clubsWithDetails.filter(
-          (club): club is Club => club !== null && club !== undefined,
-        ),
+        clubsWithDetails
+          .filter((club): club is Club => club !== null && club !== undefined)
+          .sort((a, b) => a.name.localeCompare(b.name)),
       ),
       catchError((err) => {
         console.error("Error in getClubList:", err);
@@ -180,9 +177,9 @@ export class FirebaseService {
         );
       }),
       map((clubsWithDetails) =>
-        clubsWithDetails.filter(
-          (club): club is Club => club !== null && club !== undefined,
-        ),
+        clubsWithDetails
+          .filter((club): club is Club => club !== null && club !== undefined)
+          .sort((a, b) => b.name.localeCompare(a.name)),
       ),
       shareReplay(1),
       catchError((err) => {
@@ -211,9 +208,12 @@ export class FirebaseService {
         );
       }),
       map((clubsWithDetails) =>
-        clubsWithDetails.filter(
-          (club): club is Club => club && club.id === clubId,
-        ),
+        clubsWithDetails
+          .filter(
+            (club): club is Club =>
+              club !== null && club !== undefined && club.id === clubId,
+          )
+          .sort((a, b) => a.name.localeCompare(b.name)),
       ),
       shareReplay(1),
       catchError((err) => {
@@ -844,6 +844,25 @@ export class FirebaseService {
       },
       {
         merge: true,
+      },
+    );
+  }
+
+  async setNewClubRequest(
+    userId: string,
+    name: string,
+    type: string,
+    sportType: string,
+    data: any,
+  ) {
+    return addDoc(
+      collection(this.firestore, `userProfile/${userId}/clubRequests`),
+      {
+        clubId: "newClub",
+        name: name,
+        type: type,
+        sportType: sportType,
+        ...data,
       },
     );
   }

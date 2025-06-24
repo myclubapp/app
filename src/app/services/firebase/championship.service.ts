@@ -79,7 +79,7 @@ export class ChampionshipService {
         "<",
         Timestamp.fromDate(new Date(Date.now())), // sofort in "vergangen" anzeigen
       ),
-      limit(20),
+      limit(30),
       orderBy("dateTime", "desc"),
     ); // heute - 1 Tag
     return collectionData(q, { idField: "id" }).pipe(

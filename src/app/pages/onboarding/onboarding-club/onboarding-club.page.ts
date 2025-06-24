@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnInit, Optional } from "@angular/core";
 import { Browser } from "@capacitor/browser";
 import {
   AlertController,
+  IonRouterOutlet,
   MenuController,
   ModalController,
   ToastController,
@@ -29,6 +30,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { UiService } from "src/app/services/ui.service";
+import { CreateNewClubPage } from "../create-new-club/create-new-club.page";
 
 @Component({
   selector: "app-onboarding-club",
@@ -64,6 +66,7 @@ export class OnboardingClubPage implements OnInit {
     private readonly profileService: UserProfileService,
     public readonly menuCtrl: MenuController,
     private readonly uiService: UiService,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
   ) {
     this.menuCtrl.enable(false, "menu");
   }
@@ -251,6 +254,7 @@ export class OnboardingClubPage implements OnInit {
         }
       }
     } else {
+      // CLub not active.
       const alert = await this.alertController.create({
         header: await lastValueFrom(
           this.translate.get("onboarding.activate_club"),
@@ -461,5 +465,83 @@ export class OnboardingClubPage implements OnInit {
       message:
         "Ihre Anfrage wurde abgelehnt. Bitte kontaktieren Sie den Club-Administrator für weitere Informationen.",
     });
+  }
+
+  async createNewClub() {
+    // Bestätigungsabfrage vor dem Erstellen eines neuen Clubs
+    const confirmAlert = await this.alertController.create({
+      header: await lastValueFrom(
+        this.translate.get("onboarding.confirm_new_club_title"),
+      ),
+      message: await lastValueFrom(
+        this.translate.get("onboarding.confirm_new_club_message"),
+      ),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "cancel",
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.confirm")),
+          role: "confirm",
+        },
+      ],
+    });
+
+    await confirmAlert.present();
+    const confirmResult = await confirmAlert.onWillDismiss();
+
+    if (confirmResult.role !== "confirm") {
+      return;
+    }
+
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
+    const modal = await this.modalCtrl.create({
+      component: CreateNewClubPage,
+      presentingElement,
+      canDismiss: true,
+      showBackdrop: true,
+      cssClass: "auto-height",
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm" && data) {
+      try {
+        // Hier fügen wir später die Logik zum Erstellen des Clubs hinzu
+        console.log("Neuer Club:", {
+          name: data.name,
+          type: data.type,
+          createdBy: this.user.uid,
+          active: false,
+          createdAt: new Date(),
+        });
+
+        await this.fbService.setNewClubRequest(
+          this.user.uid,
+          data.name,
+          data.type,
+          data.sportType,
+          data,
+        );
+
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(
+            this.translate.get("onboarding.success.club_created"),
+          ),
+        );
+      } catch (error) {
+        console.error("Fehler beim Erstellen des Clubs:", error);
+        await this.uiService.showErrorToast(
+          await lastValueFrom(
+            this.translate.get("onboarding.error.club_creation_failed"),
+          ),
+        );
+      }
+    }
   }
 }

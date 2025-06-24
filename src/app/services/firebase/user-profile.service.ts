@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable } from "@angular/core";
 
 import { User, updateProfile } from "@angular/fire/auth";
 import {
@@ -13,11 +13,6 @@ import {
   setDoc,
   DocumentData,
   addDoc,
-  enableIndexedDbPersistence,
-  getDoc,
-  getDocs,
-  query,
-  where,
 } from "@angular/fire/firestore";
 import {
   Storage,
@@ -32,7 +27,7 @@ import { Photo } from "@capacitor/camera";
 
 import { AuthService } from "../auth.service";
 import { DeviceId, DeviceInfo } from "@capacitor/device";
-import { shareReplay, take } from "rxjs/operators";
+import { shareReplay } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -241,23 +236,4 @@ export class UserProfileService {
     );
     return deleteDoc(childRef);
   }
-
-  /*
-  async changeLanguage(state: string) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { language: state });
-  }
-
-  async changeFavTeam(state: string) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { favTeam: state });
-  }
-
-  async changeFavClub(state: string) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { favClub: state });
-  }*/
 }

@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { first } from "rxjs/operators";
 // import { AngularFireAuth } from '@angular/fire/compat/auth';
@@ -15,7 +15,6 @@ import {
   signInWithEmailAndPassword,
   updateEmail,
   signOut,
-  updateProfile,
   UserCredential,
   deleteUser,
   User,

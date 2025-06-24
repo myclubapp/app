@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable } from "@angular/core";
 
 import {
   Firestore,
@@ -11,7 +11,7 @@ import {
   doc,
   limit,
 } from "@angular/fire/firestore";
-import { Observable, Observer, shareReplay } from "rxjs";
+import { Observable, shareReplay } from "rxjs";
 import { News } from "src/app/models/news";
 
 @Injectable({
@@ -48,7 +48,7 @@ export class NewsService {
       orderBy("date", "desc"),
       where("type", "==", type),
       where("date", ">=", this.fourtyDaysAgo.toISOString()),
-      limit(20),
+      limit(30),
     ); // heute - 20 Tage
     return collectionData(q, { idField: "id" }).pipe(
       shareReplay(1),
@@ -62,7 +62,7 @@ export class NewsService {
       newssRefList,
       orderBy("date", "desc"),
       where("date", ">=", this.sixtyDaysAgo.toISOString()),
-      limit(20),
+      limit(30),
     ); // heute - 20 Tage
     return collectionData(q, { idField: "id" }).pipe(
       shareReplay(1),
@@ -75,41 +75,11 @@ export class NewsService {
     const q = query(
       newssRefList,
       orderBy("date", "desc"),
-      where("date", ">=", this.twentyDaysAgo.toISOString()),
-      limit(20),
+      where("date", ">=", this.sixtyDaysAgo.toISOString()),
+      limit(30),
     ); // heute - 20 Tage
     return collectionData(q, { idField: "id" }).pipe(
       shareReplay(1),
     ) as unknown as Observable<News[]>;
   }
-
-  getGameReports(teamId: string): Observable<News[]> {
-    // console.log(`Read Team Events List Ref ${teamId}`)
-    const newssRefList = collection(this.firestore, `teams/${teamId}/reports`);
-    const q = query(
-      newssRefList,
-      orderBy("date", "desc"),
-      where("date", ">=", this.twentyDaysAgo.toISOString()),
-      limit(20),
-    ); // heute - 20 Tage
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
-      News[]
-    >;
-  }
-  /*
-  private getDocData<T>(path: string, idField = "id"): Observable<T> {
-    const reference = doc(this.firestore, path);
-    return docData(reference, { idField }) as Observable<T>;
-  }
-
-  private getCollectionData<T>(
-    path: string,
-    queryConstraints: QueryConstraint[] = [],
-    idField = "id"
-  ): Observable<T[]> {
-    const reference = collection(this.firestore, path);
-    const q = query(reference, ...queryConstraints);
-    return collectionData(q, { idField }) as Observable<T[]>;
-  }
-  */
 }

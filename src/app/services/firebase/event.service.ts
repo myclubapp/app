@@ -1,4 +1,4 @@
-import { inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 
 import { limit, orderBy, Timestamp } from "firebase/firestore";
 import {
@@ -15,10 +15,10 @@ import {
   where,
   getDoc,
 } from "@angular/fire/firestore";
-import { Observable, lastValueFrom } from "rxjs";
+import { Observable } from "rxjs";
 import { HelferEvent, Veranstaltung } from "src/app/models/event";
 import { AuthService } from "../auth.service";
-import { shareReplay, take } from "rxjs/operators";
+import { shareReplay } from "rxjs/operators";
 import { FirebaseService } from "../firebase.service";
 
 @Injectable({
@@ -28,7 +28,6 @@ export class EventService {
   constructor(
     private firestore: Firestore,
     private readonly authService: AuthService,
-    private readonly fbService: FirebaseService,
   ) {}
 
   /* CLUB EventS */
@@ -72,7 +71,8 @@ export class EventService {
         "<",
         Timestamp.fromDate(new Date(Date.now())), // sofort als vergangen auflisten
       ),
-      limit(20),
+      limit(30),
+      orderBy("date", "desc"),
     ); // heute - 1 Tag = gestern
 
     return collectionData(q, {
@@ -444,7 +444,7 @@ export class EventService {
         "<",
         Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 7))
       ),
-      limit(20)
+      limit(30)
     ); // heute - 7 Tage
     return collectionData(q, { idField: "id" }) as unknown as Observable<
     Veranstaltung[]

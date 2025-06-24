@@ -14,11 +14,7 @@ import {
 } from "rxjs";
 import { User } from "@angular/fire/auth";
 import { ClubPage } from "../club/club.page";
-import {
-  IonRouterOutlet,
-  ModalController,
-  ToastController,
-} from "@ionic/angular";
+import { IonRouterOutlet, ModalController } from "@ionic/angular";
 import { Router } from "@angular/router";
 import { Optional } from "@angular/core";
 import { OnboardingClubPage } from "../onboarding/onboarding-club/onboarding-club.page";
@@ -41,7 +37,6 @@ export class ClubListPage implements OnInit {
     private readonly router: Router,
     @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
-    private readonly toastCtrl: ToastController,
   ) {}
 
   ngOnInit() {
@@ -58,6 +53,9 @@ export class ClubListPage implements OnInit {
           ),
         ),
       ),
+      tap((clubs) => {
+        console.log(clubs);
+      }),
       catchError((error) => {
         console.error("Error loading clubs with links:", error);
         return of([]);

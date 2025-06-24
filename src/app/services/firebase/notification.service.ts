@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { User } from "@angular/fire/auth";
 import {
   Firestore,
@@ -47,7 +47,7 @@ export class NotificationService {
     const queryRef = query(
       notificationsRef,
       where("opened", "==", true),
-      limit(10),
+      limit(20),
       orderBy("date", "desc"),
     );
 

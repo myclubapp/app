@@ -1,0 +1,88 @@
+<!-- src/app/pages/welcome/welcome.page.html -->
+<ion-content [fullscreen]="true" class="welcome-content">
+  <div class="welcome-container">
+    <!-- Skip Button -->
+    <ion-button
+      fill="clear"
+      class="skip-button"
+      (click)="skip()"
+      *ngIf="currentSlide < welcomeSlides.length - 1"
+    >
+      {{"common.skip" | translate}}
+    </ion-button>
+
+    <!-- Slides Container -->
+    <div class="slides-container">
+      <div
+        *ngFor="let slide of welcomeSlides; let i = index"
+        class="slide"
+        [class.active]="i === currentSlide"
+        [style.background]="'linear-gradient(135deg, ' + slide.backgroundColor + ', ' + slide.backgroundColor + '99)'"
+      >
+        <div class="slide-content">
+          <ng-lottie
+            height="220"
+            width="220"
+            [options]="lottieOptions[i]"
+            [styles]="{ margin: '0 auto 16px auto' }"
+            (animationCreated)="animationCreated($event)"
+          >
+          </ng-lottie>
+
+          <div class="text-content">
+            <h1 class="slide-title">{{ slide.title }}</h1>
+            <h2 class="slide-subtitle">{{ slide.subtitle }}</h2>
+            <p class="slide-description">{{ slide.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-navigation">
+      <!-- Slide Indicators -->
+      <div class="slide-indicators">
+        <div
+          *ngFor="let slide of welcomeSlides; let i = index"
+          class="indicator"
+          [class.active]="i === currentSlide"
+          (click)="goToSlide(i)"
+        ></div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="navigation-buttons">
+        <!-- Previous Button -->
+        <ion-button
+          fill="clear"
+          class="nav-button prev-button"
+          (click)="previousSlide()"
+          [disabled]="currentSlide === 0"
+        >
+          <ion-icon name="chevron-back"></ion-icon>
+        </ion-button>
+
+        <!-- Platzhalter für Abstand -->
+        <div style="flex: 1"></div>
+
+        <!-- Next/Get Started Button -->
+        <ion-button
+          class="nav-button next-button"
+          [class.get-started]="currentSlide === welcomeSlides.length - 1"
+          (click)="currentSlide === welcomeSlides.length - 1 ? getStarted() : nextSlide()"
+        >
+          <span *ngIf="currentSlide < welcomeSlides.length - 1">Weiter</span>
+          <span *ngIf="currentSlide === welcomeSlides.length - 1"
+            >Loslegen</span
+          >
+          <ion-icon
+            *ngIf="currentSlide < welcomeSlides.length - 1"
+            name="chevron-forward"
+            slot="end"
+          >
+          </ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </div>
+</ion-content>

@@ -1,4 +1,4 @@
-import { Injectable, inject } from "@angular/core";
+import { Injectable } from "@angular/core";
 import {
   limit,
   Timestamp,
@@ -15,7 +15,7 @@ import {
 } from "@angular/fire/firestore";
 
 // import firebase from 'firebase/compat/app';
-import { Observable, shareReplay, Subscription } from "rxjs";
+import { Observable, shareReplay } from "rxjs";
 
 import { AuthService } from "src/app/services/auth.service";
 import { Training } from "src/app/models/training";
@@ -26,13 +26,10 @@ import { deleteDoc, orderBy } from "firebase/firestore";
   providedIn: "root",
 })
 export class TrainingService {
-  private subscription: Subscription;
-
   teamList: any[] = [];
   constructor(
     private firestore: Firestore,
     private readonly authService: AuthService,
-    private readonly fbService: FirebaseService,
   ) {}
 
   async setCreateTraining(training: Training) {
@@ -92,7 +89,7 @@ export class TrainingService {
         Timestamp.fromDate(new Date(Date.now())), // sofort als "vergangen" anzeigen
       ),
       orderBy("date", "desc"),
-      limit(20),
+      limit(30),
     );
     return collectionData(q, { idField: "id" }).pipe(
       shareReplay(1),
@@ -118,17 +115,6 @@ export class TrainingService {
       shareReplay(1),
     ) as unknown as Observable<Training[]>;
   }
-
-  /* CLUB TrainingS
-  getClubTrainingsRef(clubId: string): Observable<Training> {
-    const trainingsRefList = collection(
-      this.firestore,
-      `club/${clubId}/trainings`
-    );
-    return collectionData(trainingsRefList, {
-      idField: "id",
-    }) as unknown as Observable<Training>;
-  } */
 
   /* TEAM TrainingS ATTENDEES */
   getTeamTrainingsAttendeesRef(

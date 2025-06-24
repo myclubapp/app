@@ -33,6 +33,7 @@
               <p>{{ 'onboarding.join_club_description' | translate }}</p>
               <!--<p>Suche deinen Club über das Suchfeld und stelle anschliessend eine Beitrittsanfrage an deinen Verein. Die Verantworlichen Personen werden anschliessend prüfen ob du berechtigt bist, diesem Verein beizutreten und fügen dich einem Team hinzu. Du wirst per E-Mail Benachrichtigt, wenn dein Antrag angenommen wurde.</p>-->
             </ion-text>
+
             <ion-searchbar
               class="ion-no-padding"
               (ionInput)="handleChange($event)"
@@ -41,6 +42,7 @@
               placeholder='{{"common.searchfield" | translate}}'
               [placeholder]='"onboarding.search_by_club__pholder" |  translate'
             ></ion-searchbar>
+
             <ion-list [inset]="true" class="ion-no-margin">
               <ion-list-header *ngIf="clubListSU.length > 0">
                 {{ 'onboarding.sports.unihockey' | translate }}
@@ -142,4 +144,9 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="createNewClub()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

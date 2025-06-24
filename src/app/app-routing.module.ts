@@ -129,6 +129,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: "welcome",
+    loadChildren: () =>
+      import("./pages/onboarding/welcome/welcome.module").then(
+        (m) => m.WelcomePageModule,
+      ),
+  },
+  {
     path: "info",
     loadChildren: () =>
       import("./pages/info/info.module").then((m) => m.InfoPageModule),

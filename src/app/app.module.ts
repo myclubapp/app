@@ -81,6 +81,14 @@ import { ClubParentsListPage } from "./pages/club-parents-list/club-parents-list
 import { ClubLinksPage } from "./pages/club-links/club-links.page";
 import { ClubLinksCreatePage } from "./pages/club-links-create/club-links-create.page";
 import { ClubLinksEditPage } from "./pages/club-links-edit/club-links-edit.page";
+import {
+  LottieComponent,
+  LottieDirective,
+  provideLottieOptions,
+} from "ngx-lottie";
+import { CreateNewClubPage } from "./pages/onboarding/create-new-club/create-new-club.page";
+
+import player from "lottie-web";
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
@@ -142,6 +150,7 @@ const getConfig = () => {
     EventAddPage,
     EventDetailPage,
     ClubPage,
+    CreateNewClubPage,
     ClubMemberListPage,
     ClubAdminListPage,
     ClubTeamListPage,
@@ -182,6 +191,7 @@ const getConfig = () => {
         { provide: MissingTranslationHandler, useClass: TranslateHandler },
       ],
     }),
+    LottieComponent,
   ],
   providers: [
     provideFirebaseApp(() => initializeApp(environment.firebase)),
@@ -210,6 +220,9 @@ const getConfig = () => {
       multi: true,
     },
     provideHttpClient(withInterceptorsFromDi()),
+    provideLottieOptions({
+      player: () => player,
+    }),
   ],
 })
 export class AppModule {}
