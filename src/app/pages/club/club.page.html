@@ -125,7 +125,7 @@
           </ion-item>
 
           <ion-item
-            *ngIf="isClubAdmin(clubAdminList, this.club.id)"
+            *ngIf="hasFeatureHelferEvent(clubAdminList, this.club.id)"
             detail="true"
             (click)="openHelferPunkteClub()"
           >

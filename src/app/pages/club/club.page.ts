@@ -90,6 +90,15 @@ export class ClubPage implements OnInit {
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
     return this.fbService.isClubAdmin(clubAdminList, clubId);
   }
+
+  hasFeatureHelferEvent(clubList, clubId) {
+    return (
+      clubList &&
+      clubList.some(
+        (club) => club.hasFeatureHelferEvent == true && club.id == clubId,
+      )
+    );
+  }
   async openUrl(url: string) {
     Browser.open({
       url: url,
