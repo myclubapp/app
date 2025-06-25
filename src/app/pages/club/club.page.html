@@ -25,25 +25,31 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-list [inset]="true">
-      <ion-item lines="none" class="ion-text-center club-item">
-        <div class="club-image-container">
-          <ion-avatar class="club-avatar">
-            <img alt="{{club.name}}" [src]="club.logo" *ngIf="club.logo" />
-          </ion-avatar>
-          <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-            <ion-button
-              class="club-camera-button"
-              *ngIf="isClubAdmin(clubAdminList, club.id)"
+    <div class="club-header-container">
+      <div class="club-logo-wrapper">
+        <ion-avatar class="club-avatar">
+          <img alt="{{club.name}}" [src]="club.logo" *ngIf="club.logo" />
+        </ion-avatar>
+        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+          <ion-fab
+            vertical="bottom"
+            horizontal="center"
+            slot="fixed"
+            *ngIf="isClubAdmin(clubAdminList, club.id)"
+          >
+            <ion-fab-button
+              color="primary"
+              class="club-camera-fab"
               (click)="changeClubLogo(club)"
             >
-              <ion-icon slot="icon-only" name="camera"></ion-icon>
-            </ion-button>
-          </ng-container>
-        </div>
-        <ion-label>{{club.name}}</ion-label>
-      </ion-item>
-      <!--   <ion-item>
+              <ion-icon name="camera"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+        </ng-container>
+      </div>
+      <ion-text class="club-name"> {{club.name}} </ion-text>
+    </div>
+    <!--   <ion-item>
         <ion-label>type</ion-label>
         <ion-badge slot="end">{{club.type}}</ion-badge>
       </ion-item>
@@ -54,12 +60,11 @@
         <ion-label> {{club.wordpress}} </ion-label>
       </ion-item>-->
 
-      <!--
+    <!--
   <ion-item>
     {{"club.trainaing__presence" | translate}}: 
   </ion-item>
 -->
-    </ion-list>
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
@@ -192,43 +197,79 @@
       <ion-list-header>
         <ion-label> {{ "common.details" | translate}} </ion-label>
       </ion-list-header>
-      <ion-item>
-        <ion-icon slot="start" name="mail-outline"></ion-icon>
-        <ion-input
-          (ionChange)="changeClubAttribute($event, 'email')"
-          labelPlacement="stacked"
-          [label]="'profile.email' | translate"
-          type="email"
-          attr.aria-label='{{"common.email" | translate}}'
-          [(ngModel)]="club.email"
-        ></ion-input>
-      </ion-item>
-      <ion-item *ngIf="club.wordpress">
-        <ion-icon name="logo-wordpress" slot="start"></ion-icon>
-        <ion-input
-          (ionChange)="changeClubAttribute($event, 'wordpress')"
-          labelPlacement="stacked"
-          [label]="'WordPress'"
-          type="url"
-          [(ngModel)]="club.wordpress"
-        ></ion-input>
-        <ion-button (click)="openUrl(club.wordpress)" fill="clear">
-          <ion-icon slot="icon-only" name="open-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
-      <ion-item *ngIf="club.website">
-        <ion-icon name="globe-outline" slot="start"></ion-icon>
-        <ion-input
-          (ionChange)="changeClubAttribute($event, 'website')"
-          labelPlacement="stacked"
-          [label]="'Website'"
-          type="url"
-          [(ngModel)]="club.website"
-        ></ion-input>
-        <ion-button (click)="openUrl(club.website)" fill="clear">
-          <ion-icon slot="icon-only" name="open-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-item
+          *ngIf="club.email && isClubAdmin(clubAdminList, club.id); else emailLabel"
+        >
+          <ion-icon slot="start" name="mail-outline"></ion-icon>
+          <ion-input
+            (ionChange)="changeClubAttribute($event, 'email')"
+            labelPlacement="stacked"
+            [label]="'profile.email' | translate"
+            type="email"
+            attr.aria-label='{{"common.email" | translate}}'
+            [(ngModel)]="club.email"
+          ></ion-input>
+        </ion-item>
+        <ng-template #emailLabel>
+          <ion-item *ngIf="club.email">
+            <ion-icon slot="start" name="mail-outline"></ion-icon>
+            <ion-label>{{club.email}}</ion-label>
+          </ion-item>
+        </ng-template>
+      </ng-container>
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-item
+          *ngIf="club.wordpress && isClubAdmin(clubAdminList, club.id); else wordpressLabel"
+        >
+          <ion-icon name="logo-wordpress" slot="start"></ion-icon>
+          <ion-input
+            (ionChange)="changeClubAttribute($event, 'wordpress')"
+            labelPlacement="stacked"
+            [label]="'WordPress'"
+            type="url"
+            [(ngModel)]="club.wordpress"
+          ></ion-input>
+          <ion-button (click)="openUrl(club.wordpress)" fill="clear">
+            <ion-icon slot="icon-only" name="open-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+        <ng-template #wordpressLabel>
+          <ion-item *ngIf="club.wordpress">
+            <ion-icon name="logo-wordpress" slot="start"></ion-icon>
+            <ion-label>{{club.wordpress}}</ion-label>
+            <ion-button (click)="openUrl(club.wordpress)" fill="clear">
+              <ion-icon slot="icon-only" name="open-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ng-template>
+      </ng-container>
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-item
+          *ngIf="club.website && isClubAdmin(clubAdminList, club.id); else websiteLabel"
+        >
+          <ion-icon name="globe-outline" slot="start"></ion-icon>
+          <ion-input
+            (ionChange)="changeClubAttribute($event, 'website')"
+            labelPlacement="stacked"
+            [label]="'Website'"
+            type="url"
+            [(ngModel)]="club.website"
+          ></ion-input>
+          <ion-button (click)="openUrl(club.website)" fill="clear">
+            <ion-icon slot="icon-only" name="open-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+        <ng-template #websiteLabel>
+          <ion-item *ngIf="club.website">
+            <ion-icon name="globe-outline" slot="start"></ion-icon>
+            <ion-label>{{club.website}}</ion-label>
+            <ion-button (click)="openUrl(club.website)" fill="clear">
+              <ion-icon slot="icon-only" name="open-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ng-template>
+      </ng-container>
     </ion-list>
 
     <ion-list lines="full" [inset]="true">
@@ -335,6 +376,7 @@
   </ion-item>
 </ion-list>
 -->
+
     <!--
 
 

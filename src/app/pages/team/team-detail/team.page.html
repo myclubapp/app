@@ -9,7 +9,7 @@
       >
     </ion-buttons>-->
     <ion-toolbar>
-      <ion-title>{{team?.name}}</ion-title>
+      <ion-title>{{"team.details" | translate}}</ion-title>
       <ion-buttons slot="primary">
         <ion-button (click)="close()"
           >{{"common.close" | translate}}</ion-button
@@ -21,32 +21,37 @@
   <ion-content [fullscreen]="true">
     <ion-header collapse="condense">
       <ion-toolbar>
-        <ion-title size="large">{{team.name}}</ion-title>
+        <ion-title size="large">{{"team.details" | translate}}</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <!-- Team-Logo -->
-    <ion-list [inset]="true">
-      <ion-item lines="none" class="ion-text-center team-item">
-        <div class="team-image-container">
-          <ion-avatar class="team-avatar">
-            <img alt="{{team.name}}" [src]="team.logo" *ngIf="team.logo" />
-          </ion-avatar>
-          <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-            <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-              <ion-button
-                class="team-camera-button"
-                *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
+    <div class="team-header-container">
+      <div class="team-logo-wrapper">
+        <ion-avatar class="team-avatar">
+          <img alt="{{team.name}}" [src]="team.logo" *ngIf="team.logo" />
+        </ion-avatar>
+        <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+          <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+            <ion-fab
+              vertical="bottom"
+              horizontal="center"
+              slot="fixed"
+              *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
+            >
+              <ion-fab-button
+                color="primary"
+                class="team-camera-fab"
                 (click)="changeTeamLogo(team)"
               >
-                <ion-icon slot="icon-only" name="camera"></ion-icon>
-              </ion-button>
-            </ng-container>
+                <ion-icon name="camera"></ion-icon>
+              </ion-fab-button>
+            </ion-fab>
           </ng-container>
-        </div>
-        <ion-label>{{team.name}}</ion-label>
-      </ion-item>
-    </ion-list>
+        </ng-container>
+      </div>
+      <ion-text class="team-name"> {{team.name}} </ion-text>
+    </div>
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>

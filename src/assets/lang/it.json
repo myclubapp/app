@@ -477,7 +477,8 @@
       "add": "Aggiungi",
       "cancel": "Annulla",
       "no_members": "Nessun membro disponibile trovato"
-    }
+    },
+    "details": "Dettagli della squadra"
   },
   "team-list": {
     "my__teams": "Le mie squadre"

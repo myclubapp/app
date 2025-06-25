@@ -57,3 +57,44 @@ ion-avatar img {
     font-size: 20px;
   }
 }
+
+.club-header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  margin: 0 0 16px 0;
+  position: relative;
+}
+
+.club-logo-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 160px;
+  height: 160px;
+}
+
+.club-avatar {
+  width: 140px;
+  height: 140px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #fff;
+}
+
+.club-camera-fab {
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.club-name {
+  margin-top: 32px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  word-break: break-word;
+}

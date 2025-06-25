@@ -549,7 +549,8 @@
       "add": "Hinzufügen",
       "cancel": "Abbrechen",
       "no_members": "Keine verfügbaren Mitglieder gefunden"
-    }
+    },
+    "details": "Team Details"
   },
   "team-list": {
     "my__teams": "Meine Teams",

@@ -464,7 +464,8 @@
       "cancel": "Annuler",
       "add": "Ajouter",
       "no_members": "Il n'y a pas d'autres membres disponibles qui pourraient être ajoutés à l'équipe."
-    }
+    },
+    "details": "Détails de l'équipe"
   },
   "team-list": {
     "my__teams": "Mes équipes"

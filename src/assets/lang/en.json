@@ -499,7 +499,8 @@
       "add": "Add",
       "cancel": "Cancel",
       "no_members": "No available members found"
-    }
+    },
+    "details": "Team Details"
   },
   "team-list": {
     "my__teams": "My teams"
