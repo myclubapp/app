@@ -44,6 +44,7 @@ import {
 } from "@angular/fire/storage";
 import { ClubLink } from "../models/club-link";
 import { Storage } from "@angular/fire/storage";
+import { Photo } from "@capacitor/camera";
 
 @Injectable({
   providedIn: "root",
@@ -1160,5 +1161,58 @@ export class FirebaseService {
     const storageRef = ref(this.storage, filePath);
     await uploadBytes(storageRef, file);
     return getDownloadURL(storageRef);
+  }
+
+  /**
+   * Setzt das Team-Logo (upload + update Firestore)
+   */
+  async setTeamLogo(teamId: string, photo: Photo) {
+    // Bild im Storage ablegen
+    const storageRef = ref(
+      this.storage,
+      `teams/${teamId}/logo.${photo.format}`,
+    );
+    await uploadBytes(storageRef, this.base64ToUint8Array(photo.base64String), {
+      contentType: `image/${photo.format}`,
+    });
+    const url = await getDownloadURL(storageRef);
+    // Firestore-Dokument aktualisieren
+    const teamRef = doc(this.firestore, `teams/${teamId}`);
+    await updateDoc(teamRef, { logo: url });
+    return url;
+  }
+
+  /**
+   * Setzt das Club-Logo (upload + update Firestore)
+   */
+  async setClubLogo(clubId: string, photo: Photo) {
+    // Bild im Storage ablegen
+    const storageRef = ref(this.storage, `club/${clubId}/logo.${photo.format}`);
+    await uploadBytes(storageRef, this.base64ToUint8Array(photo.base64String), {
+      contentType: `image/${photo.format}`,
+    });
+    const url = await getDownloadURL(storageRef);
+    // Firestore-Dokument aktualisieren
+    const clubRef = doc(this.firestore, `club/${clubId}`);
+    await updateDoc(clubRef, { logo: url });
+    return url;
+  }
+
+  /**
+   * Hilfsfunktion: base64 zu Uint8Array
+   */
+  private base64ToUint8Array(base64: string): Uint8Array {
+    const binaryString = window.atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+  }
+
+  async setClubAttribute(clubId: string, fieldname: string, value: any) {
+    const clubRef = doc(this.firestore, `/club/${clubId}`);
+    return updateDoc(clubRef, { [fieldname]: value });
   }
 }

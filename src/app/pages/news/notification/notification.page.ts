@@ -1,35 +1,34 @@
-import { Component, OnInit } from '@angular/core';
-import { user } from '@angular/fire/auth';
-import { PushNotifications } from '@capacitor/push-notifications';
-import { ModalController, Platform } from '@ionic/angular';
+import { Component, OnInit } from "@angular/core";
+import { user } from "@angular/fire/auth";
+import { PushNotifications } from "@capacitor/push-notifications";
+import { ModalController, Platform } from "@ionic/angular";
 import { Router } from "@angular/router";
 // import { Badge } from '@capawesome/capacitor-badge';
-import { map, Observable, Subscription, switchMap, take, tap } from 'rxjs';
-import { AuthService } from 'src/app/services/auth.service';
-import { NotificationService } from 'src/app/services/firebase/notification.service';
-import { Timestamp } from 'firebase/firestore';
-
+import { map, Observable, Subscription, switchMap, take, tap } from "rxjs";
+import { AuthService } from "src/app/services/auth.service";
+import { NotificationService } from "src/app/services/firebase/notification.service";
+import { Timestamp } from "firebase/firestore";
 
 @Component({
-    selector: 'app-notification',
-    templateUrl: './notification.page.html',
-    styleUrls: ['./notification.page.scss'],
-    standalone: false
+  selector: "app-notification",
+  templateUrl: "./notification.page.html",
+  styleUrls: ["./notification.page.scss"],
+  standalone: false,
 })
 export class NotificationPage implements OnInit {
   notifications$: Observable<any[]>;
   notificationsRead$: Observable<any[]>;
   skeleton = new Array(12);
-  subscription: Subscription
-  subscriptionToggle: Subscription
+  subscription: Subscription;
+  subscriptionToggle: Subscription;
 
   constructor(
     private readonly authService: AuthService,
     private readonly modalCtrl: ModalController,
     private readonly router: Router,
     private readonly notificationService: NotificationService,
-    private readonly platform: Platform
-  ) { }
+    private readonly platform: Platform,
+  ) {}
 
   ngOnInit() {
     this.notifications$ = this.getNotifications();
@@ -40,7 +39,6 @@ export class NotificationPage implements OnInit {
     });*/
 
     this.notificationsRead$ = this.getReadNotifications();
-
   }
   ngOnDestroy() {
     if (this.subscription) {
@@ -60,11 +58,14 @@ export class NotificationPage implements OnInit {
           }
         });
       });
-      if (this.platform.is('capacitor')) {
+      if (this.platform.is("capacitor")) {
         await PushNotifications.removeAllDeliveredNotifications();
       }
     } catch (error) {
-      console.error('Fehler beim Markieren aller Benachrichtigungen als gelesen:', error);
+      console.error(
+        "Fehler beim Markieren aller Benachrichtigungen als gelesen:",
+        error,
+      );
     }
   }
 
@@ -79,18 +80,25 @@ export class NotificationPage implements OnInit {
           map((notifications) => {
             try {
               if (notifications == null || notifications.length === 0) {
-                if (this.platform.is('capacitor')) {
+                if (this.platform.is("capacitor")) {
                   PushNotifications.removeAllDeliveredNotifications();
                 }
               }
-              return notifications.sort((a, b) => Timestamp.fromMillis(b.date).toMillis() - Timestamp.fromMillis(a.date).toMillis());
+              return notifications.sort(
+                (a, b) =>
+                  Timestamp.fromMillis(b.date).toMillis() -
+                  Timestamp.fromMillis(a.date).toMillis(),
+              );
             } catch (error) {
-              console.error('Fehler beim Verarbeiten der Benachrichtigungen:', error);
+              console.error(
+                "Fehler beim Verarbeiten der Benachrichtigungen:",
+                error,
+              );
               return [];
             }
           }),
         );
-      })
+      }),
     );
   }
   getReadNotifications(): Observable<any[]> {
@@ -101,48 +109,66 @@ export class NotificationPage implements OnInit {
       }),
       switchMap((user) => {
         return this.notificationService.getReadNotifications(user).pipe(
+          tap((notifications) => {
+            console.log("Notifications", notifications);
+          }),
           map((notifications) => {
-            return notifications.sort((a, b) => Timestamp.fromMillis(b.date).toMillis() - Timestamp.fromMillis(a.date).toMillis());
+            return notifications.sort(
+              (a, b) =>
+                Timestamp.fromMillis(b.date).toMillis() -
+                Timestamp.fromMillis(a.date).toMillis(),
+            );
           }),
           tap((notifications) => {
             // console.log('Sorted Notifications', notifications);
-          })
+          }),
         );
-      })
-    )
+      }),
+    );
   }
   toggle(notification) {
     try {
       this.notificationService.toggleNotification(notification);
 
-      this.subscriptionToggle = this.notifications$.pipe(take(1), tap(notifications => {
-        try {
-          if (notifications == null || notifications.length === 0) {
-            if (this.platform.is('capacitor')) {
-              PushNotifications.removeAllDeliveredNotifications();
+      this.subscriptionToggle = this.notifications$
+        .pipe(
+          take(1),
+          tap((notifications) => {
+            try {
+              if (notifications == null || notifications.length === 0) {
+                if (this.platform.is("capacitor")) {
+                  PushNotifications.removeAllDeliveredNotifications();
+                }
+              }
+            } catch (error) {
+              console.error(
+                "Fehler beim Entfernen der Benachrichtigungen:",
+                error,
+              );
             }
-          }
-        } catch (error) {
-          console.error('Fehler beim Entfernen der Benachrichtigungen:', error);
-        }
-      })).subscribe((notifications) => {
-        try {
-          if (notifications.length === 0) {
-            if (this.platform.is('capacitor')) {
-              PushNotifications.removeAllDeliveredNotifications();
+          }),
+        )
+        .subscribe((notifications) => {
+          try {
+            if (notifications.length === 0) {
+              if (this.platform.is("capacitor")) {
+                PushNotifications.removeAllDeliveredNotifications();
+              }
             }
+          } catch (error) {
+            console.error(
+              "Fehler beim Entfernen der Benachrichtigungen:",
+              error,
+            );
           }
-        } catch (error) {
-          console.error('Fehler beim Entfernen der Benachrichtigungen:', error);
-        }
-      });
+        });
     } catch (error) {
-      console.error('Fehler beim Umschalten der Benachrichtigung:', error);
+      console.error("Fehler beim Umschalten der Benachrichtigung:", error);
     }
   }
 
   async openNotification(notification) {
-    console.log('Notification', notification);
+    console.log("Notification", notification);
     // console.log("TYPE:  " + notification.data.type);
 
     if (
@@ -151,26 +177,26 @@ export class NotificationPage implements OnInit {
       notification.data.type === "helferEvent"
     ) {
       await this.close();
-      await this.router.navigateByUrl("/t/helfer", {
-        state: notification.data,
-      }).catch(e => {
-        console.log(e);
-      });
-
-
+      await this.router
+        .navigateByUrl("/t/helfer", {
+          state: notification.data,
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     } else if (
       notification.data &&
       notification.data.type &&
       notification.data.type === "clubEvent"
     ) {
       await this.close();
-      await this.router.navigateByUrl("/t/events", {
-        state: notification.data,
-      }).catch(e => {
-        console.log(e);
-      });
-
-
+      await this.router
+        .navigateByUrl("/t/events", {
+          state: notification.data,
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     } else if (
       notification.data &&
       notification.data.type &&
@@ -178,12 +204,10 @@ export class NotificationPage implements OnInit {
     ) {
       await this.close();
 
-   
-
       this.router.navigate([{ outlets: { primary: null } }]).then(() => {
-        this.router.navigate(['/club-list']);
+        this.router.navigate(["/club-list"]);
       });
-      
+
       /*
 
       await this.router.navigateByUrl("/club-list", {
@@ -192,7 +216,6 @@ export class NotificationPage implements OnInit {
         console.log(e);
       });
 */
-
     } else if (
       notification.data &&
       notification.data.type &&
@@ -201,34 +224,34 @@ export class NotificationPage implements OnInit {
       // await this.confirm({data: notification.data});
       await this.close();
 
-      this.router.navigateByUrl("/club-list", {
-        state: notification.data,
-      }).catch(e => {
-        console.log(e);
-      });
-
+      this.router
+        .navigateByUrl("/club-list", {
+          state: notification.data,
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     } else if (
       notification.data &&
-      notification.data.type && (
-        notification.data.type === "news" || notification.data.type === "clubNews")
+      notification.data.type &&
+      (notification.data.type === "news" ||
+        notification.data.type === "clubNews")
     ) {
-
       await this.confirm({ data: notification.data });
-
     } else if (
       notification.data &&
       notification.data.type &&
       notification.data.type === "training"
     ) {
       await this.close();
-      await this.router.navigateByUrl("/t/training", {
-        state: notification.data,
-      }).catch(e => {
-        console.log(e);
-      });
-
+      await this.router
+        .navigateByUrl("/t/training", {
+          state: notification.data,
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     } else {
-
     }
     if (!notification.opened) {
       this.toggle(notification);
@@ -236,10 +259,10 @@ export class NotificationPage implements OnInit {
     }
   }
   async close() {
-    return await this.modalCtrl.dismiss(null, 'close');
+    return await this.modalCtrl.dismiss(null, "close");
   }
 
   async confirm(data: any) {
-    return await this.modalCtrl.dismiss(data.data, 'confirm');
+    return await this.modalCtrl.dismiss(data.data, "confirm");
   }
 }

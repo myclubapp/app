@@ -26,10 +26,21 @@
     </ion-header>
 
     <ion-list [inset]="true">
-      <ion-item>
-        <ion-avatar class="club-logo">
-          <img alt="{{club.name}}" src="{{club.logo}}" />
-        </ion-avatar>
+      <ion-item lines="none" class="ion-text-center club-item">
+        <div class="club-image-container">
+          <ion-avatar class="club-avatar">
+            <img alt="{{club.name}}" [src]="club.logo" *ngIf="club.logo" />
+          </ion-avatar>
+          <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+            <ion-button
+              class="club-camera-button"
+              *ngIf="isClubAdmin(clubAdminList, club.id)"
+              (click)="changeClubLogo(club)"
+            >
+              <ion-icon slot="icon-only" name="camera"></ion-icon>
+            </ion-button>
+          </ng-container>
+        </div>
         <ion-label>{{club.name}}</ion-label>
       </ion-item>
       <!--   <ion-item>
@@ -182,27 +193,38 @@
         <ion-label> {{ "common.details" | translate}} </ion-label>
       </ion-list-header>
       <ion-item>
-        <ion-icon slot="start" name="mail-outline"> </ion-icon>
+        <ion-icon slot="start" name="mail-outline"></ion-icon>
         <ion-input
-          (ionChange)="changeEmail($event)"
+          (ionChange)="changeClubAttribute($event, 'email')"
           labelPlacement="stacked"
-          [label]='"profile.email" | translate'
+          [label]="'profile.email' | translate"
           type="email"
           attr.aria-label='{{"common.email" | translate}}'
-          [value]="club.email"
-        >
-        </ion-input>
+          [(ngModel)]="club.email"
+        ></ion-input>
       </ion-item>
       <ion-item *ngIf="club.wordpress">
         <ion-icon name="logo-wordpress" slot="start"></ion-icon>
-        <ion-label class="ion-text-wrap"> {{club?.wordpress}} </ion-label>
+        <ion-input
+          (ionChange)="changeClubAttribute($event, 'wordpress')"
+          labelPlacement="stacked"
+          [label]="'WordPress'"
+          type="url"
+          [(ngModel)]="club.wordpress"
+        ></ion-input>
         <ion-button (click)="openUrl(club.wordpress)" fill="clear">
           <ion-icon slot="icon-only" name="open-outline"></ion-icon>
         </ion-button>
       </ion-item>
       <ion-item *ngIf="club.website">
         <ion-icon name="globe-outline" slot="start"></ion-icon>
-        <ion-label class="ion-text-wrap"> {{club?.website}} </ion-label>
+        <ion-input
+          (ionChange)="changeClubAttribute($event, 'website')"
+          labelPlacement="stacked"
+          [label]="'Website'"
+          type="url"
+          [(ngModel)]="club.website"
+        ></ion-input>
         <ion-button (click)="openUrl(club.website)" fill="clear">
           <ion-icon slot="icon-only" name="open-outline"></ion-icon>
         </ion-button>

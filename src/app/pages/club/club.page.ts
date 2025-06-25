@@ -36,6 +36,12 @@ import { ClubSubscriptionPage } from "../club-subscription/club-subscription.pag
 import { ClubParentsListPage } from "../club-parents-list/club-parents-list.page";
 import { Optional } from "@angular/core";
 import { ClubLinksPage } from "../club-links/club-links.page";
+import {
+  Camera,
+  CameraResultType,
+  CameraSource,
+  Photo,
+} from "@capacitor/camera";
 
 @Component({
   selector: "app-club",
@@ -447,5 +453,35 @@ export class ClubPage implements OnInit {
 
   async confirm() {
     return await this.modalCtrl.dismiss(this.club, "confirm");
+  }
+
+  async changeClubLogo(club: Club) {
+    try {
+      const photo: Photo = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true,
+        resultType: CameraResultType.Base64,
+        source: CameraSource.Prompt,
+        width: 400,
+        height: 400,
+      });
+      await this.fbService.setClubLogo(club.id, photo);
+      // Club-Observable neu laden
+      this.club$ = this.getClub(club.id);
+      await this.toastActionSaved();
+    } catch (error) {
+      await this.toastActionError(error);
+    }
+  }
+
+  async changeClubAttribute(event, fieldname) {
+    const value = event.detail.value;
+    try {
+      await this.fbService.setClubAttribute(this.club.id, fieldname, value);
+      await this.toastActionSaved();
+      this.club$ = this.getClub(this.club.id);
+    } catch (error) {
+      await this.toastActionError(error);
+    }
   }
 }

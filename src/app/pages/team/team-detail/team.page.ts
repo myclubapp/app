@@ -37,6 +37,12 @@ import { TrainingsPage } from "../../training/trainings/trainings.page";
 import { UiService } from "src/app/services/ui.service";
 import { Optional } from "@angular/core";
 import { JugendundsportService } from "src/app/services/jugendundsport.service";
+import {
+  Camera,
+  CameraResultType,
+  CameraSource,
+  Photo,
+} from "@capacitor/camera";
 
 @Component({
   selector: "app-team",
@@ -731,5 +737,24 @@ export class TeamPage implements OnInit {
 
   async presentErrorToast(error) {
     await this.uiService.showErrorToast(error.message);
+  }
+
+  async changeTeamLogo(team: Team) {
+    try {
+      const photo: Photo = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true,
+        resultType: CameraResultType.Base64,
+        source: CameraSource.Prompt,
+        width: 400,
+        height: 400,
+      });
+      await this.fbService.setTeamLogo(team.id, photo);
+      // Team-Observable neu laden
+      // this.team$ = this.getTeam(team.id);
+      await this.presentToast();
+    } catch (error) {
+      await this.presentErrorToast(error);
+    }
   }
 }

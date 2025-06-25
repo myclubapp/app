@@ -1,14 +1,14 @@
 <ng-container *ngIf="team$ | async as team; else header">
   <ion-header [translucent]="true">
+    <!--<ion-buttons slot="secondary">
+      <ion-button *ngIf="!allowEdit" (click)="edit()"
+        >{{"common.edit" | translate}}</ion-button
+      >
+      <ion-button *ngIf="allowEdit" (click)="edit()"
+        >{{"common.done" | translate}}</ion-button
+      >
+    </ion-buttons>-->
     <ion-toolbar>
-      <!--<ion-buttons slot="secondary">
-        <ion-button *ngIf="!allowEdit" (click)="edit()"
-          >{{"common.edit" | translate}}</ion-button
-        >
-        <ion-button *ngIf="allowEdit" (click)="edit()"
-          >{{"common.done" | translate}}</ion-button
-        >
-      </ion-buttons>-->
       <ion-title>{{team?.name}}</ion-title>
       <ion-buttons slot="primary">
         <ion-button (click)="close()"
@@ -24,6 +24,29 @@
         <ion-title size="large">{{team.name}}</ion-title>
       </ion-toolbar>
     </ion-header>
+
+    <!-- Team-Logo -->
+    <ion-list [inset]="true">
+      <ion-item lines="none" class="ion-text-center team-item">
+        <div class="team-image-container">
+          <ion-avatar class="team-avatar">
+            <img alt="{{team.name}}" [src]="team.logo" *ngIf="team.logo" />
+          </ion-avatar>
+          <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+            <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+              <ion-button
+                class="team-camera-button"
+                *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
+                (click)="changeTeamLogo(team)"
+              >
+                <ion-icon slot="icon-only" name="camera"></ion-icon>
+              </ion-button>
+            </ng-container>
+          </ng-container>
+        </div>
+        <ion-label>{{team.name}}</ion-label>
+      </ion-item>
+    </ion-list>
 
     <ion-list lines="full" [inset]="true">
       <ion-list-header>
