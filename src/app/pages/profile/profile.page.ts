@@ -32,6 +32,7 @@ import {
   Camera,
   CameraDirection,
   CameraResultType,
+  CameraSource,
   Photo,
   PermissionStatus,
 } from "@capacitor/camera";
@@ -373,7 +374,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
 
   async takePicture() {
     try {
-      const result: PermissionStatus = await Camera.checkPermissions();
+      /* const result: PermissionStatus = await Camera.checkPermissions();
       if (result.camera !== "granted") {
         const requestResult = await Camera.requestPermissions();
         if (requestResult.camera !== "granted") {
@@ -382,7 +383,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         }
         console.log("Camera permission granted");
         return;
-      }
+      } */
 
       const loading = await this.loadingController.create({
         message: await lastValueFrom(
@@ -401,6 +402,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
         height: 400,
         width: 400,
         direction: CameraDirection.Front,
+        source: CameraSource.Prompt,
       });
 
       loading.present();

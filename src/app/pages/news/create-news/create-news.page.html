@@ -1,0 +1,78 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">{{'common.close' | translate}}</ion-button>
+    </ion-buttons>
+    <ion-title>{{'news.create_news' | translate}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button strong="true" (click)="createNews()"
+        >{{'common.create' | translate}}</ion-button
+      >
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{'news.create_news' | translate}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <form (ngSubmit)="createNews()">
+    <ion-list [inset]="true">
+      <ion-list-header>
+        <ion-label>News Beirag</ion-label>
+      </ion-list-header>
+      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+        <ion-item *ngIf="clubAdminList.length > 1">
+          <ion-select
+            [label]="'common.club' | translate"
+            label-placement="stacked"
+            [(ngModel)]="news.clubId"
+            name="clubId"
+            required
+          >
+            <ion-select-option
+              *ngFor="let club of clubAdminList"
+              [value]="club.id"
+              >{{club.name}}</ion-select-option
+            >
+          </ion-select>
+        </ion-item>
+        <ion-item *ngIf="clubAdminList.length === 1">
+          <ion-label>{{clubAdminList[0].name}}</ion-label>
+        </ion-item>
+      </ng-container>
+      <ion-item>
+        <ion-input
+          [label]="'common.title' | translate"
+          label-placement="stacked"
+          [(ngModel)]="news.title"
+          name="title"
+          required
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-textarea
+          [label]="'common.leadText' | translate"
+          label-placement="stacked"
+          [(ngModel)]="news.leadText"
+          name="leadText"
+          required
+          auto-grow="true"
+        ></ion-textarea>
+      </ion-item>
+      <ion-item>
+        <ion-textarea
+          [label]="'common.text' | translate"
+          label-placement="stacked"
+          [(ngModel)]="news.text"
+          name="text"
+          required
+          auto-grow="true"
+        ></ion-textarea>
+      </ion-item>
+    </ion-list>
+  </form>
+</ion-content>

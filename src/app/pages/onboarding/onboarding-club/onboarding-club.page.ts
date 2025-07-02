@@ -185,8 +185,11 @@ export class OnboardingClubPage implements OnInit {
       await alertTeam.present();
 
       const teamResult = await alertTeam.onWillDismiss();
+      console.log("teamResult", teamResult);
+      console.log("teamResultRole", teamResult.role);
+      console.log("teamResultData", teamResult.data);
 
-      if (teamResult.role === "destructive" || "cancel") {
+      if (teamResult.role === "destructive") {
         await this.presentCancelToast();
         return;
       }

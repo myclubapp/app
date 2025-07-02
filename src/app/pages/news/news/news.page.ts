@@ -50,6 +50,7 @@ import { NotificationPage } from "../notification/notification.page";
 import { NotificationService } from "src/app/services/firebase/notification.service";
 import { Profile } from "src/app/models/user";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { CreateNewsPage } from "../create-news/create-news.page";
 
 @Component({
   selector: "app-news",
@@ -80,6 +81,8 @@ export class NewsPage implements OnInit {
   notifications$: Observable<any[]>;
 
   newsList$: Observable<News[]>;
+
+  clubAdminList$: Observable<Club[]>;
 
   constructor(
     private readonly notificationService: NotificationService,
@@ -144,6 +147,7 @@ export class NewsPage implements OnInit {
   ngOnInit() {
     this.newsList$ = this.getNews();
     this.notifications$ = this.getNotifications();
+    this.clubAdminList$ = this.fbService.getClubAdminList();
 
     /*this.route.snapshot.data['news'].subscribe((news) => {
       console.log(news)
@@ -256,6 +260,9 @@ export class NewsPage implements OnInit {
 
                 return combineLatest([newsByClub$, newsByType$]).pipe(
                   map(([clubNews, typeNews]) => ({ clubNews, typeNews })),
+                  tap((newsArrays) => {
+                    console.log("News Arrays:", newsArrays);
+                  }),
                 );
               }),
             ),
@@ -301,6 +308,11 @@ export class NewsPage implements OnInit {
       }),
     );
   }
+
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return this.fbService.isClubAdmin(clubAdminList, clubId);
+  }
+
   async openNotification() {
     const modal = await this.modalCtrl.create({
       component: NotificationPage,
@@ -405,5 +417,19 @@ export class NewsPage implements OnInit {
       this.showSocialShare = true;
       resolve(true);
     });
+  }
+
+  async openAddNews() {
+    const modal = await this.modalCtrl.create({
+      component: CreateNewsPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+    });
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss();
+    if (role === "confirm") {
+      // Optional: News-Liste neu laden
+    }
   }
 }

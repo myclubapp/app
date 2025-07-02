@@ -162,7 +162,11 @@
       "club_creation_failed": "Le club n'a pas pu être créé. Veuillez réessayer plus tard."
     },
     "step": "Étape",
-    "step_with_number": "Étape {{num}}"
+    "step_with_number": "Étape {{num}}",
+    "leadText": "Texte d'accroche",
+    "text": "Texte",
+    "date": "Date",
+    "url": "URL"
   },
   "login": {
     "login__title": "Connectez-vous avec votre compte",
@@ -315,7 +319,9 @@
   },
   "news": {
     "filter__news": "Filtrer les actualités",
-    "filter__by_club_team": "Filtrer par club ou équipes."
+    "filter__by_club_team": "Filtrer par club ou équipes.",
+    "create_news": "Créer une actualité",
+    "news_entry": "Article d'actualité"
   },
   "news-detail": {},
   "not-found": {

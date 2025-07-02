@@ -1,0 +1,46 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Abrechnungen</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{'common.close' | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Abrechnungen</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list *ngIf="periodGroups$ | async as periodGroups" [inset]="true">
+    <ion-item-group *ngFor="let group of periodGroups">
+      <ion-item-divider color="light">
+        <ion-label>{{ group.year }}</ion-label>
+      </ion-item-divider>
+      <ion-item-sliding *ngFor="let period of group.periods">
+        <ion-item (click)="openInvoice(period)" detail="true">
+          <ion-label>{{period.name}}</ion-label>
+          <ion-note slot="end"
+            >{{period.createdAt.toDate() | date:'yyyy'}}</ion-note
+          >
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="primary" (click)="editPeriod(period)">
+            <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger" (click)="deletePeriod(period)">
+            <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-item-group>
+  </ion-list>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addPeriod()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

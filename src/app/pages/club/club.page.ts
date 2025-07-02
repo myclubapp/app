@@ -42,6 +42,7 @@ import {
   CameraSource,
   Photo,
 } from "@capacitor/camera";
+import { ClubBillingPeriodPage } from "../club-billing-period/club-billing-period.page";
 
 @Component({
   selector: "app-club",
@@ -105,6 +106,15 @@ export class ClubPage implements OnInit {
       )
     );
   }
+  hasFeatureMyClubPro(clubList, clubId) {
+    return (
+      clubList &&
+      clubList.some(
+        (club) => club.hasFeatureMyClubPro == true && club.id == clubId,
+      )
+    );
+  }
+
   async openUrl(url: string) {
     Browser.open({
       url: url,
@@ -237,6 +247,28 @@ export class ClubPage implements OnInit {
 
     const modal = await this.modalCtrl.create({
       component: ClubRequestListPage,
+      presentingElement,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        club: this.club,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+  async openClubBilling() {
+    console.log("open Club Invoice List");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
+    const modal = await this.modalCtrl.create({
+      component: ClubBillingPeriodPage,
       presentingElement,
       canDismiss: true,
       showBackdrop: true,

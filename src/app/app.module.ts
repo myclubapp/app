@@ -81,12 +81,16 @@ import { ClubParentsListPage } from "./pages/club-parents-list/club-parents-list
 import { ClubLinksPage } from "./pages/club-links/club-links.page";
 import { ClubLinksCreatePage } from "./pages/club-links-create/club-links-create.page";
 import { ClubLinksEditPage } from "./pages/club-links-edit/club-links-edit.page";
+import { ClubInvoicePage } from "./pages/club-invoice/club-invoice.page";
+import { ClubInvoiceDetailPage } from "./pages/club-invoice-detail/club-invoice-detail.page";
+import { ClubBillingPeriodPage } from "./pages/club-billing-period/club-billing-period.page";
+import { CreateNewClubPage } from "./pages/onboarding/create-new-club/create-new-club.page";
+import { CreateNewsPage } from "./pages/news/create-news/create-news.page";
 import {
   LottieComponent,
   LottieDirective,
   provideLottieOptions,
 } from "ngx-lottie";
-import { CreateNewClubPage } from "./pages/onboarding/create-new-club/create-new-club.page";
 
 import player from "lottie-web";
 
@@ -136,6 +140,7 @@ const getConfig = () => {
   declarations: [
     AppComponent,
     NewsDetailPage,
+    CreateNewsPage,
     NotificationPage,
     MemberPage,
     HelferPunktePage,
@@ -156,6 +161,9 @@ const getConfig = () => {
     ClubTeamListPage,
     ClubParentsListPage,
     ClubLinksPage,
+    ClubInvoicePage,
+    ClubInvoiceDetailPage,
+    ClubBillingPeriodPage,
     ClubLinksCreatePage,
     ClubLinksEditPage,
     ClubRequestListPage,

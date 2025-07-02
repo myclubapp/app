@@ -172,12 +172,13 @@
     ></fa-icon>
   </web-social-share>
 
-  <!-- fab placed to the bottom end 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="openAddNews()">
-      <ion-icon name="add-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>-->
+  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="openAddNews()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ng-container>
 </ion-content>
 
 <ng-template #loading>

@@ -10,6 +10,8 @@ import {
   docData,
   doc,
   limit,
+  setDoc,
+  addDoc,
 } from "@angular/fire/firestore";
 import { Observable, shareReplay } from "rxjs";
 import { News } from "src/app/models/news";
@@ -81,5 +83,13 @@ export class NewsService {
     return collectionData(q, { idField: "id" }).pipe(
       shareReplay(1),
     ) as unknown as Observable<News[]>;
+  }
+
+  async createClubNews(clubId: string, news: any): Promise<void> {
+    const newsCollection = collection(this.firestore, `club/${clubId}/news`);
+    await addDoc(newsCollection, {
+      ...news,
+      date: new Date(),
+    });
   }
 }

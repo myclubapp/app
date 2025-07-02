@@ -1,0 +1,80 @@
+<ng-container *ngIf="invoice$ | async as invoice">
+  <ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-title>{{ invoice?.firstName }} {{ invoice?.lastName }}</ion-title>
+      <ion-buttons slot="primary">
+        <ion-button (click)="close()"
+          >{{'common.close' | translate}}</ion-button
+        >
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large"
+          >{{ invoice?.firstName }} {{ invoice?.lastName }}</ion-title
+        >
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-list [inset]="true">
+      <ion-list-header>
+        <ion-label>Rechnungsdetails</ion-label>
+      </ion-list-header>
+      <ion-item>
+        <ion-label>Vorname</ion-label>
+        <ion-text>{{ invoice.firstName }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Nachname</ion-label>
+        <ion-text>{{ invoice.lastName }}</ion-text>
+      </ion-item>
+      <ion-item *ngIf="invoice.email">
+        <ion-label>Email</ion-label>
+        <ion-text>{{ invoice.email }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Betrag</ion-label>
+        <ion-text>{{ invoice.amount }} {{ invoice.currency }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Status</ion-label>
+        <ion-badge>{{ invoice.status }}</ion-badge>
+      </ion-item>
+      <ion-item *ngIf="invoice.purpose">
+        <ion-label>Zweck</ion-label>
+        <ion-text>{{ invoice.purpose }}</ion-text>
+      </ion-item>
+      <ion-item *ngIf="invoice.qrData">
+        <ion-label>QR-Daten</ion-label>
+        <ion-text>{{ invoice.qrData }}</ion-text>
+      </ion-item>
+
+      <!-- Weitere Felder nach Bedarf -->
+    </ion-list>
+
+    <div class="ion-padding">
+      <ion-button
+        expand="block"
+        color="primary"
+        (click)="sendInvoice()"
+        *ngIf="invoice?.status === 'draft'"
+      >
+        <ion-icon name="send-outline" slot="start"></ion-icon>
+        Rechnung senden
+      </ion-button>
+
+      <ion-button
+        expand="block"
+        fill="outline"
+        color="danger"
+        (click)="deleteInvoice()"
+      >
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        Rechnung löschen
+      </ion-button>
+    </div>
+  </ion-content>
+</ng-container>

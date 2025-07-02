@@ -1,0 +1,104 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{period.name}}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{'common.close' | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{period.name}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-segment [(ngModel)]="segment">
+    <ion-segment-button value="members"> Mitglieder </ion-segment-button>
+    <ion-segment-button value="invoices"> Rechnungen </ion-segment-button>
+  </ion-segment>
+
+  <!-- Team-Filter Dropdown -->
+  <ion-item>
+    <ion-label>Team</ion-label>
+    <ion-select [(ngModel)]="selectedTeamId" interface="popover">
+      <ion-select-option value="all">Alle</ion-select-option>
+      <ion-select-option *ngFor="let team of teams" [value]="team.id"
+        >{{team.name}}</ion-select-option
+      >
+    </ion-select>
+  </ion-item>
+
+  <!-- Mitglieder-Sicht -->
+  <ng-container *ngIf="segment === 'members'">
+    <ion-searchbar
+      [debounce]="1000"
+      (ionChange)="handleSearch($event)"
+      animated="true"
+      search-icon="search-circle"
+      [value]="searchTerm.value"
+      placeholder="Mitglied suchen"
+    ></ion-searchbar>
+
+    <ion-list
+      [inset]="true"
+      *ngIf="filteredClubMembers$ | async as clubMemberList"
+    >
+      <ion-list-header>
+        <ion-lablel> Mitglieder </ion-lablel>
+        <ion-button (click)="selectAll()"> alle </ion-button>
+        <ion-button (click)="deselectAll()"> keine </ion-button>
+      </ion-list-header>
+      <ion-item-group>
+        <ng-container *ngFor="let groupBy of groupArray">
+          <ion-item-divider color="light">
+            <ion-label> {{groupBy}} </ion-label>
+          </ion-item-divider>
+          <ng-container *ngFor="let member of clubMemberList">
+            <ion-item *ngIf="member.groupBy == groupBy">
+              <ion-checkbox
+                slot="start"
+                labelPlacement="end"
+                [checked]="isMemberSelected(member)"
+                (ionChange)="toggleMemberSelection(member, $event.detail.checked)"
+                >{{member.firstName}} {{member.lastName}}
+              </ion-checkbox>
+            </ion-item>
+          </ng-container>
+        </ng-container>
+      </ion-item-group>
+    </ion-list>
+    <ion-item *ngIf="(filteredClubMembers$ | async)?.length === 0">
+      <ion-label color="medium">Noch keine Mitglieder vorhanden.</ion-label>
+    </ion-item>
+  </ng-container>
+
+  <!-- Rechnungen-Sicht -->
+  <ng-container *ngIf="segment === 'invoices'">
+    <ion-list *ngIf="invoices$ | async as invoices" [inset]="true">
+      <ion-list-header>
+        <ion-label>Rechnungen</ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="let invoice of invoices">
+        <ion-label (click)="openInvoiceDetail(invoice)">
+          {{invoice.firstName}} {{invoice.lastName}}<br />
+          <small>{{invoice.amount}} {{invoice.currency}}</small>
+        </ion-label>
+        <ion-badge slot="end"> {{invoice.status}} </ion-badge>
+      </ion-item>
+      <ion-item *ngIf="invoices.length === 0">
+        <ion-label color="medium">Noch keine Rechnungen vorhanden.</ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+</ion-content>
+
+<ion-footer *ngIf="segment === 'members' && selectedMembers.length > 0">
+  <ion-toolbar>
+    <ion-title>Footer</ion-title>
+    <ion-button (click)="generateInvoicesForSelected()">
+      Rechnungen generieren
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

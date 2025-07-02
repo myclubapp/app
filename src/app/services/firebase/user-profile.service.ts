@@ -133,7 +133,7 @@ export class UserProfileService {
     const user = this.authService.auth.currentUser;
     const storageRef = ref(
       this.storage,
-      `userProfile/${user.uid}/profilePicture/picture.${photo.format}`,
+      `userProfile/${user.uid}/profilePicture.${photo.format}`,
     );
     await uploadString(storageRef, photo.base64String, "base64", {});
     const url = await getDownloadURL(storageRef);

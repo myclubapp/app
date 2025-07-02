@@ -162,7 +162,11 @@
       "club_creation_failed": "The club could not be created. Please try again later."
     },
     "step": "Step",
-    "step_with_number": "Step {{num}}"
+    "step_with_number": "Step {{num}}",
+    "leadText": "Lead text",
+    "text": "Text",
+    "date": "Date",
+    "url": "URL"
   },
   "login": {
     "login__title": "Sign in with your account",
@@ -317,7 +321,9 @@
   },
   "news": {
     "filter__news": "Filter news",
-    "filter__by_club_team": "Filter by club or team."
+    "filter__by_club_team": "Filter by club or team.",
+    "create_news": "Create news",
+    "news_entry": "News entry"
   },
   "news-detail": {},
   "not-found": {
