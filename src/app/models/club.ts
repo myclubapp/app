@@ -1,6 +1,16 @@
 import { Timestamp } from "firebase/firestore";
 import { ClubLink } from "./club-link";
 
+export interface Creditor {
+  account: string;
+  name: string;
+  address: string;
+  buildingNumber: string;
+  zip: string;
+  city: string;
+  country: string;
+}
+
 export interface Club {
   id: string;
   name: string;
@@ -20,7 +30,10 @@ export interface Club {
   helferReportingDateTo: string;
   helferPunkte: number;
   links: ClubLink[];
+  creditor?: Creditor;
+  surcharges?: { name: string; amount: number; currency: string }[];
 }
+
 export interface SwissUnihockeyClub extends Club {}
 
 export interface SwissVolleyClub extends Club {}

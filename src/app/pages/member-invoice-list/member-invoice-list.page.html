@@ -1,0 +1,39 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Rechnungen</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{'common.close' | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Rechnungen</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list [inset]="true">
+    <ion-item-group *ngFor="let year of years">
+      <ion-item-divider color="light">
+        <ion-label> {{ year }} </ion-label>
+      </ion-item-divider>
+      <ng-container *ngIf="invoices$ | async as invoices">
+        <ion-item
+          *ngFor="let invoice of invoices"
+          type="button"
+          detail="true"
+          (click)="openInvoiceDetail(invoice)"
+        >
+          <ion-label>
+            <h2>{{invoice.purpose}}</h2>
+            <h2>{{invoice.amount}} {{invoice.currency}}</h2>
+          </ion-label>
+
+          <ion-badge slot="end"> {{invoice.status}} </ion-badge>
+        </ion-item>
+      </ng-container>
+    </ion-item-group>
+  </ion-list>
+</ion-content>

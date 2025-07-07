@@ -53,9 +53,6 @@ export class ClubListPage implements OnInit {
           ),
         ),
       ),
-      tap((clubs) => {
-        console.log(clubs);
-      }),
       catchError((error) => {
         console.error("Error loading clubs with links:", error);
         return of([]);

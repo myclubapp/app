@@ -411,7 +411,7 @@ export class FirebaseService {
         );
       }),
       map((teamsWithDetails) => {
-        console.log("teamsWithDetails", teamsWithDetails);
+        // console.log("teamsWithDetails", teamsWithDetails);
         const filteredTeams = teamsWithDetails.filter(
           (team): team is Team => team !== null && team !== undefined,
         );
@@ -1093,7 +1093,8 @@ export class FirebaseService {
         where("showOnCard", "==", true),
         orderBy("order"),
       ),
-    ) as Observable<ClubLink[]>;
+      { idField: "id" },
+    ).pipe(shareReplay(1)) as Observable<ClubLink[]>;
   }
 
   async addClubLink(clubId: string, link: any): Promise<DocumentReference> {
@@ -1214,5 +1215,23 @@ export class FirebaseService {
   async setClubAttribute(clubId: string, fieldname: string, value: any) {
     const clubRef = doc(this.firestore, `/club/${clubId}`);
     return updateDoc(clubRef, { [fieldname]: value });
+  }
+
+  async setClubCreditor(clubId: string, creditor: any) {
+    const clubRef = doc(this.firestore, `club/${clubId}`);
+    await updateDoc(clubRef, { creditor });
+  }
+
+  async setClubSurcharges(
+    clubId: string,
+    surcharges: { name: string; amount: number; currency: string }[],
+  ) {
+    const clubRef = doc(this.firestore, `club/${clubId}`);
+    return updateDoc(clubRef, { surcharges });
+  }
+
+  // Teams eines Clubs anhand der clubId laden (für Club-Abrechnungsseite)
+  getTeamsByClubId(clubId: string) {
+    return this.getClubTeamList(clubId);
   }
 }

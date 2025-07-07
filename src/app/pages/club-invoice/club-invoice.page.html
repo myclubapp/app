@@ -16,19 +16,16 @@
 
   <ion-segment [(ngModel)]="segment">
     <ion-segment-button value="members"> Mitglieder </ion-segment-button>
-    <ion-segment-button value="invoices"> Rechnungen </ion-segment-button>
+
+    <ion-segment-button value="invoices">
+      Rechnungen
+      <ng-container *ngIf="invoices$ | async as invoices">
+        {{invoices.length}}
+      </ng-container>
+    </ion-segment-button>
   </ion-segment>
 
   <!-- Team-Filter Dropdown -->
-  <ion-item>
-    <ion-label>Team</ion-label>
-    <ion-select [(ngModel)]="selectedTeamId" interface="popover">
-      <ion-select-option value="all">Alle</ion-select-option>
-      <ion-select-option *ngFor="let team of teams" [value]="team.id"
-        >{{team.name}}</ion-select-option
-      >
-    </ion-select>
-  </ion-item>
 
   <!-- Mitglieder-Sicht -->
   <ng-container *ngIf="segment === 'members'">
@@ -45,6 +42,15 @@
       [inset]="true"
       *ngIf="filteredClubMembers$ | async as clubMemberList"
     >
+      <ion-item>
+        <ion-label>Team</ion-label>
+        <ion-select [(ngModel)]="selectedTeamId" interface="popover">
+          <ion-select-option value="all">Alle</ion-select-option>
+          <ion-select-option *ngFor="let team of teams" [value]="team.id"
+            >{{team.name}}</ion-select-option
+          >
+        </ion-select>
+      </ion-item>
       <ion-list-header>
         <ion-lablel> Mitglieder </ion-lablel>
         <ion-button (click)="selectAll()"> alle </ion-button>
@@ -61,9 +67,28 @@
                 slot="start"
                 labelPlacement="end"
                 [checked]="isMemberSelected(member)"
+                [disabled]="isMemberInvoiced(member)"
                 (ionChange)="toggleMemberSelection(member, $event.detail.checked)"
-                >{{member.firstName}} {{member.lastName}}
+              >
+                {{member.firstName}} {{member.lastName}}
               </ion-checkbox>
+              <!-- Team-Beiträge als Badges anzeigen -->
+              <ng-container
+                *ngFor="let team of getBeitragTeamsForMember(member)"
+              >
+                <ion-badge slot="end"
+                  >{{team.jahresbeitragWert}}
+                  {{team.jahresbeitragWaehrung}}</ion-badge
+                >
+              </ng-container>
+              <!-- Warnung, falls kein Beitrag hinterlegt ist -->
+              <ion-badge
+                slot="end"
+                color="warning"
+                *ngIf="getBeitragTeamsForMember(member).length === 0 && hasTeamWithoutBeitrag(member)"
+              >
+                Kein Beitrag im Team hinterlegt!
+              </ion-badge>
             </ion-item>
           </ng-container>
         </ng-container>
@@ -76,6 +101,19 @@
 
   <!-- Rechnungen-Sicht -->
   <ng-container *ngIf="segment === 'invoices'">
+    <ion-list [inset]="true" lines="none">
+      <ion-list-header>
+        <ion-label>Datei Upload</ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <input type="file" accept=".xml" (change)="onCamtupload($event)" />
+      </ion-item>
+    </ion-list>
+    <ion-note color="medium" class="ion-margin-horizontal">
+      Die Datei muss im CAMT.053 Format sein.
+    </ion-note>
+
     <ion-list *ngIf="invoices$ | async as invoices" [inset]="true">
       <ion-list-header>
         <ion-label>Rechnungen</ion-label>
@@ -96,9 +134,20 @@
 
 <ion-footer *ngIf="segment === 'members' && selectedMembers.length > 0">
   <ion-toolbar>
-    <ion-title>Footer</ion-title>
-    <ion-button (click)="generateInvoicesForSelected()">
-      Rechnungen generieren
+    <ion-button fill="clear" (click)="generateInvoicesForSelected()">
+      Rechnungen generieren ({{ selectedMembers.length }})
     </ion-button>
   </ion-toolbar>
 </ion-footer>
+
+<ng-container *ngIf="segment === 'invoices' && invoices$ | async as invoices">
+  <ion-footer
+    *ngIf="invoices.length > 0 && filterForDraftInvoices(invoices) > 0"
+  >
+    <ion-toolbar>
+      <ion-button fill="clear" (click)="sendInvoicesForSelected()">
+        {{filterForDraftInvoices(invoices)}} Rechnunge(n) versenden
+      </ion-button>
+    </ion-toolbar>
+  </ion-footer>
+</ng-container>

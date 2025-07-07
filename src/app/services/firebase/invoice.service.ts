@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
-import { limit, orderBy, Timestamp } from "firebase/firestore";
+import { collectionGroup, limit, orderBy, Timestamp } from "firebase/firestore";
 import {
   Firestore,
   addDoc,
@@ -28,7 +28,17 @@ export class InvoiceService {
 
   // Neue Abrechnungsperiode anlegen
   createPeriod(clubId: string, period: any): Promise<any> {
+    const date = new Date();
     period.createdBy = this.authService.auth.currentUser.uid;
+    period.createdAt = Timestamp.now();
+    period.referenceId =
+      date.toISOString().replaceAll("-", "").replaceAll(":", "").split("T")[0] +
+      date
+        .toISOString()
+        .replaceAll("-", "")
+        .replaceAll(":", "")
+        .split("T")[1]
+        .split(".")[0];
     return addDoc(
       collection(this.firestore, `club/${clubId}/invoicePeriods`),
       period,
@@ -47,18 +57,6 @@ export class InvoiceService {
   }
 
   // Einzelne Rechnung für ein Mitglied anlegen
-  createInvoiceForMember(
-    clubId: string,
-    periodId: string,
-    invoice: any,
-  ): Promise<any> {
-    return getDoc(
-      doc(
-        this.firestore,
-        `club/${clubId}/invoicePeriods/${periodId}/invoices/${invoice.id}`,
-      ),
-    );
-  }
 
   // Alle Rechnungen einer Periode abrufen
   getInvoicesForPeriod(clubId: string, periodId: string): Observable<any[]> {
@@ -69,6 +67,16 @@ export class InvoiceService {
           `club/${clubId}/invoicePeriods/${periodId}/invoices`,
         ),
         // orderBy("createdAt", "desc")
+      ),
+      { idField: "id" },
+    ) as Observable<any[]>;
+  }
+
+  getInvoicesForMember(memberId: string): Observable<any[]> {
+    return collectionData(
+      query(
+        collectionGroup(this.firestore, "invoices"),
+        where("memberId", "==", memberId),
       ),
       { idField: "id" },
     ) as Observable<any[]>;
@@ -87,6 +95,21 @@ export class InvoiceService {
         `club/${clubId}/invoicePeriods/${periodId}/invoices/${invoiceId}`,
       ),
       { status },
+    );
+  }
+
+  updateInvoice(
+    clubId: string,
+    periodId: string,
+    invoiceId: string,
+    data: any,
+  ): Promise<void> {
+    return updateDoc(
+      doc(
+        this.firestore,
+        `club/${clubId}/invoicePeriods/${periodId}/invoices/${invoiceId}`,
+      ),
+      data,
     );
   }
 
@@ -118,13 +141,17 @@ export class InvoiceService {
       member,
       invoiceData,
     );
-    return await setDoc(
+    return setDoc(
       doc(
         this.firestore,
         `club/${clubId}/invoicePeriods/${periodId}/invoices/${member.id}`,
       ),
       {
+        createdAt: Timestamp.now(),
+        createdBy: this.authService.auth.currentUser?.uid,
         memberId: member.id,
+        clubId: clubId,
+        periodId: periodId,
         firstName: member.firstName,
         lastName: member.lastName,
         email: member.email,
@@ -140,14 +167,16 @@ export class InvoiceService {
     data: Partial<any>,
   ): Promise<void> {
     return updateDoc(
-      doc(this.firestore, `club/${clubId}/anys/${periodId}`),
+      doc(this.firestore, `club/${clubId}/invoicePeriods/${periodId}`),
       data,
     );
   }
 
   // Periode löschen
   deletePeriod(clubId: string, periodId: string): Promise<void> {
-    return deleteDoc(doc(this.firestore, `club/${clubId}/anys/${periodId}`));
+    return deleteDoc(
+      doc(this.firestore, `club/${clubId}/invoicePeriods/${periodId}`),
+    );
   }
 
   // Einzelne Rechnung löschen

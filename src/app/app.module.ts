@@ -86,6 +86,7 @@ import { ClubInvoiceDetailPage } from "./pages/club-invoice-detail/club-invoice-
 import { ClubBillingPeriodPage } from "./pages/club-billing-period/club-billing-period.page";
 import { CreateNewClubPage } from "./pages/onboarding/create-new-club/create-new-club.page";
 import { CreateNewsPage } from "./pages/news/create-news/create-news.page";
+import { MemberInvoiceListPage } from "./pages/member-invoice-list/member-invoice-list.page";
 import {
   LottieComponent,
   LottieDirective,
@@ -143,6 +144,7 @@ const getConfig = () => {
     CreateNewsPage,
     NotificationPage,
     MemberPage,
+    MemberInvoiceListPage,
     HelferPunktePage,
     HelferPunkteClubPage,
     HelferDetailPage,

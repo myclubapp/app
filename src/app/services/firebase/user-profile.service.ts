@@ -70,7 +70,9 @@ export class UserProfileService {
       this.firestore,
       `userProfile/${userId}/children`,
     );
-    return collectionData(childrenRef, { idField: "id" }) as Observable<any[]>;
+    return collectionData(childrenRef, { idField: "id" }).pipe(
+      shareReplay(1),
+    ) as Observable<any[]>;
   }
 
   getParents(userId: string) {

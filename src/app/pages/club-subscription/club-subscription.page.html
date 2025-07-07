@@ -16,7 +16,7 @@
   <ng-container *ngIf="club$ | async as club">
     <ion-list [inset]="true" lines="none">
       <ion-list-header> Abonnement kaufen </ion-list-header>
-      <ion-item detail (click)="openUrl('https://my-club.app/pricing')">
+      <ion-item detail (click)="openUrl('https://www.my-club.app/#preise')">
         <ion-label class="ion-text-wrap">
           Transparente Preise basierend auf deiner Vereinsgrösse. Keine
           Feature-Unterschiede, keine versteckten Kosten - für kleine Vereine
@@ -185,7 +185,7 @@
       <ion-list-header>
         Zusatzmodule (für alle Abos verfügbar)
       </ion-list-header>
-      <ion-item detail (click)="openUrl('https://my-club.app/pricing')">
+      <ion-item detail (click)="openUrl('https://www.my-club.app/#preise')">
         <ion-label class="ion-text-wrap">
           Du bezahlst nichts, was du nicht brauchst. Mit unseren Zusatzmodulen
           kannst du myclub deinen persönlichen Bedürfnissen anpassen.
@@ -313,7 +313,7 @@
         <ion-list-header>
           Abonnement kaufen
         </ion-list-header>
-        <ion-item detail (click)="openUrl('https://my-club.app/pricing')">
+        <ion-item detail (click)="openUrl('https://www.my-club.app/#preise')">
          
           <ion-label class="ion-text-wrap">
             Finde dein passendes Abonnement für deinen Verein {{club.name}}

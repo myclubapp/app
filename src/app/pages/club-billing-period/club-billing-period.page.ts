@@ -14,6 +14,7 @@ import { ClubInvoicePage } from "../club-invoice/club-invoice.page";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { map } from "rxjs/operators";
+import { UiService } from "src/app/services/ui.service";
 
 @Component({
   selector: "app-club-billing-period",
@@ -25,6 +26,18 @@ export class ClubBillingPeriodPage implements OnInit {
   @Input() club: Club;
   periodGroups$: Observable<{ year: string; periods: any[] }[]>;
   // clubAdminList$: Observable<any[]>;
+  creditor = {
+    account: "",
+    name: "",
+    address: "",
+    buildingNumber: "",
+    zip: "",
+    city: "",
+    country: "",
+  };
+  teams$: Observable<any[]>;
+  // Zuschläge/Abzüge
+  surcharges: { name: string; amount: number; currency: string }[] = [];
 
   constructor(
     private invoiceService: InvoiceService,
@@ -35,11 +48,20 @@ export class ClubBillingPeriodPage implements OnInit {
     private authService: AuthService,
     private fbService: FirebaseService,
     @Optional() private readonly routerOutlet: IonRouterOutlet,
+    private uiService: UiService,
   ) {}
 
   ngOnInit() {
     this.loadPeriods();
-    // this.clubAdminList$ = this.fbService.getClubAdminList();
+    if (this.club && this.club.creditor) {
+      this.creditor = { ...this.club.creditor };
+    }
+    // Teams laden
+    this.teams$ = this.fbService.getTeamsByClubId(this.club.id);
+    // Zuschläge/Abzüge laden
+    if (this.club && Array.isArray(this.club.surcharges)) {
+      this.surcharges = [...this.club.surcharges];
+    }
   }
 
   loadPeriods() {
@@ -78,14 +100,11 @@ export class ClubBillingPeriodPage implements OnInit {
           handler: async (data) => {
             if (data.name && data.name.trim()) {
               const period: any = {
-                id: Date.now().toString(),
                 name: data.name,
-                createdAt: Timestamp.now(),
-                createdBy: "",
               };
               await this.invoiceService.createPeriod(this.club.id, period);
               this.loadPeriods();
-              this.showToast("Abrechnungsperiode angelegt");
+              this.uiService.showSuccessToast("Abrechnungsperiode angelegt");
             }
           },
         },
@@ -116,16 +135,6 @@ export class ClubBillingPeriodPage implements OnInit {
     return await this.modalCtrl.dismiss(null, "close");
   }
 
-  async showToast(msg: string) {
-    const toast = await this.toastCtrl.create({
-      message: msg,
-      duration: 1500,
-      position: "top",
-      color: "success",
-    });
-    toast.present();
-  }
-
   isClubAdmin(clubAdminList: any[]): boolean {
     const currentUserId = this.authService.auth.currentUser.uid;
     return clubAdminList.some((admin) => admin.id === currentUserId);
@@ -152,7 +161,7 @@ export class ClubBillingPeriodPage implements OnInit {
                 name: data.name,
               });
               this.loadPeriods();
-              this.showToast("Periode aktualisiert");
+              this.uiService.showSuccessToast("Periode aktualisiert");
             }
           },
         },
@@ -173,11 +182,155 @@ export class ClubBillingPeriodPage implements OnInit {
           handler: async () => {
             await this.invoiceService.deletePeriod(this.club.id, period.id);
             this.loadPeriods();
-            this.showToast("Periode gelöscht");
+            this.uiService.showSuccessToast("Periode gelöscht");
           },
         },
       ],
     });
     await alert.present();
+  }
+
+  async saveCreditor() {
+    await this.fbService.setClubCreditor(this.club.id, this.creditor);
+    this.uiService.showSuccessToast("Bankverbindung gespeichert");
+  }
+
+  async changeJahresbeitrag(team: any) {
+    const alert = await this.alertCtrl.create({
+      header: "Jahresbeitrag ändern",
+      inputs: [
+        {
+          name: "wert",
+          type: "number",
+          placeholder: "Wert",
+          value: team.jahresbeitragWert,
+        },
+        {
+          name: "waehrung",
+          type: "text",
+          placeholder: "Währung (z.B. CHF)",
+          value: team.jahresbeitragWaehrung,
+        },
+      ],
+      buttons: [
+        {
+          text: "Abbrechen",
+          role: "cancel",
+        },
+        {
+          text: "Speichern",
+          handler: async (data) => {
+            try {
+              await this.fbService.setTeamThreshold(
+                team.id,
+                "jahresbeitragWert",
+                Number(data.wert),
+              );
+              await this.fbService.setTeamThreshold(
+                team.id,
+                "jahresbeitragWaehrung",
+                data.waehrung,
+              );
+              this.uiService.showSuccessToast("Jahresbeitrag gespeichert");
+              // Optional: Teams neu laden
+              this.teams$ = this.fbService.getTeamsByClubId(this.club.id);
+            } catch (error) {
+              this.uiService.showErrorToast(error.message);
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  async addSurcharge() {
+    const alert = await this.alertCtrl.create({
+      header: "Zuschlag/Abzug hinzufügen",
+      inputs: [
+        {
+          name: "name",
+          type: "text",
+          placeholder: "Bezeichnung (z.B. Trainingsgast, Familienrabatt)",
+        },
+        {
+          name: "amount",
+          type: "number",
+          placeholder: "Betrag (z.B. -30 für Abzug, 50 für Zuschlag)",
+        },
+        {
+          name: "currency",
+          type: "text",
+          placeholder: "Währung (z.B. CHF)",
+          value: "CHF",
+        },
+      ],
+      buttons: [
+        { text: "Abbrechen", role: "cancel" },
+        {
+          text: "Hinzufügen",
+          handler: async (data) => {
+            if (data.name && data.amount) {
+              this.surcharges.push({
+                name: data.name,
+                amount: Number(data.amount),
+                currency: data.currency,
+              });
+              await this.saveSurcharges();
+            }
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  async editSurcharge(index: number) {
+    const surcharge = this.surcharges[index];
+    const alert = await this.alertCtrl.create({
+      header: "Zuschlag/Abzug bearbeiten",
+      inputs: [
+        {
+          name: "name",
+          type: "text",
+          value: surcharge.name,
+          placeholder: "Bezeichnung",
+        },
+        {
+          name: "amount",
+          type: "number",
+          value: surcharge.amount,
+          placeholder: "Betrag (z.B. -30 für Abzug, 50 für Zuschlag)",
+        },
+      ],
+      buttons: [
+        { text: "Abbrechen", role: "cancel" },
+        {
+          text: "Speichern",
+          handler: async (data) => {
+            if (data.name && data.amount) {
+              this.surcharges[index] = {
+                name: data.name,
+                amount: Number(data.amount),
+                currency: surcharge.currency,
+              };
+              await this.saveSurcharges();
+            }
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  async deleteSurcharge(index: number) {
+    this.surcharges.splice(index, 1);
+    await this.saveSurcharges();
+  }
+
+  async saveSurcharges() {
+    await this.fbService.setClubSurcharges(this.club.id, this.surcharges);
+    this.uiService.showSuccessToast("Zuschläge/Abzüge gespeichert");
   }
 }

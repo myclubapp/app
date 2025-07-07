@@ -53,6 +53,7 @@ import { Club } from "src/app/models/club";
 import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
 import { Timestamp } from "firebase/firestore";
 import { MemberPage } from "../member/member.page";
+import { MemberInvoiceListPage } from "../member-invoice-list/member-invoice-list.page";
 
 @Component({
   selector: "app-profile",
@@ -81,8 +82,6 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   public alertInputsAddress = [];
   public alertButtonsDelete = [];
 
-  private readonly VAPID_PUBLIC_KEY =
-    "BFSCppXa1OPCktrYhZN3GfX5gKI00al-eNykBwk3rmHRwjfrGeo3JXaTPP_0EGQ01Ik_Ubc2dzvvFQmOc3GvXsY";
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
   localDateString: string;
@@ -323,10 +322,23 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     });
     modal.present();
 
-    const { data, role } = await modal.onWillDismiss();
+    const { role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
     }
+  }
+
+  async openMemberInvoiceList() {
+    const modal = await this.modalCtrl.create({
+      component: MemberInvoiceListPage,
+      presentingElement: this.routerOutlet.nativeEl,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        user: this.user,
+      },
+    });
+    modal.present();
   }
 
   getUserProfile(): Observable<any> {
@@ -469,7 +481,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     });
     modal.present();
 
-    const { data, role } = await modal.onWillDismiss();
+    const { role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
     }
@@ -777,95 +789,6 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
 
   async presentErrorToast(error) {
     await this.uiService.showErrorToast(error.message);
-  }
-
-  private async showEmailChangeConfirmationAlert() {
-    await this.uiService.showConfirmDialog({
-      header: await lastValueFrom(
-        this.translate.get("profile.change_email.header"),
-      ),
-      message: await lastValueFrom(
-        this.translate.get("profile.change_email.message"),
-      ),
-      confirmText: await lastValueFrom(this.translate.get("common.yes")),
-      cancelText: await lastValueFrom(this.translate.get("common.no")),
-    });
-  }
-
-  private async showEmailChangeSuccessAlert() {
-    await this.uiService.showInfoDialog({
-      header: await lastValueFrom(this.translate.get("common.success")),
-      message: await lastValueFrom(
-        this.translate.get("profile.change_email.success"),
-      ),
-    });
-  }
-
-  private async showEmailChangeErrorAlert() {
-    await this.uiService.showInfoDialog({
-      header: await lastValueFrom(this.translate.get("common.error")),
-      message: await lastValueFrom(
-        this.translate.get("profile.change_email.error"),
-      ),
-    });
-  }
-
-  private async showAddressChangeConfirmationAlert() {
-    await this.uiService.showConfirmDialog({
-      header: await lastValueFrom(
-        this.translate.get("profile.change_address.header"),
-      ),
-      message: await lastValueFrom(
-        this.translate.get("profile.change_address.message"),
-      ),
-      confirmText: await lastValueFrom(this.translate.get("common.yes")),
-      cancelText: await lastValueFrom(this.translate.get("common.no")),
-    });
-  }
-
-  private async showAddressChangeSuccessAlert() {
-    await this.uiService.showInfoDialog({
-      header: await lastValueFrom(this.translate.get("common.success")),
-      message: await lastValueFrom(
-        this.translate.get("profile.change_address.success"),
-      ),
-    });
-  }
-
-  private async showAddressChangeErrorAlert() {
-    await this.uiService.showInfoDialog({
-      header: await lastValueFrom(this.translate.get("common.error")),
-      message: await lastValueFrom(
-        this.translate.get("profile.change_address.error"),
-      ),
-    });
-  }
-
-  private async showProfileDeleteConfirmationAlert() {
-    await this.uiService.showConfirmDialog({
-      header: await lastValueFrom(this.translate.get("profile.delete.header")),
-      message: await lastValueFrom(
-        this.translate.get("profile.delete.message"),
-      ),
-      confirmText: await lastValueFrom(this.translate.get("common.yes")),
-      cancelText: await lastValueFrom(this.translate.get("common.no")),
-    });
-  }
-
-  private async showProfileDeleteSuccessAlert() {
-    await this.uiService.showInfoDialog({
-      header: await lastValueFrom(this.translate.get("common.success")),
-      message: await lastValueFrom(
-        this.translate.get("profile.delete.success"),
-      ),
-    });
-  }
-
-  private async showProfileDeleteErrorAlert() {
-    await this.uiService.showInfoDialog({
-      header: await lastValueFrom(this.translate.get("common.error")),
-      message: await lastValueFrom(this.translate.get("profile.delete.error")),
-    });
   }
 
   async deleteChild(child: Profile) {
