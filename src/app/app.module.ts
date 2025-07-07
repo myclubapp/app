@@ -24,13 +24,7 @@ import {
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 import { provideFirebaseApp, getApp, initializeApp } from "@angular/fire/app";
-import {
-  getFirestore,
-  provideFirestore,
-  initializeFirestore,
-  persistentLocalCache,
-  persistentMultipleTabManager,
-} from "@angular/fire/firestore";
+import { getFirestore, provideFirestore } from "@angular/fire/firestore";
 import { provideAuth, getAuth, initializeAuth } from "@angular/fire/auth";
 import { indexedDBLocalPersistence } from "firebase/auth";
 import { provideStorage, getStorage } from "@angular/fire/storage";
@@ -87,11 +81,9 @@ import { ClubBillingPeriodPage } from "./pages/club-billing-period/club-billing-
 import { CreateNewClubPage } from "./pages/onboarding/create-new-club/create-new-club.page";
 import { CreateNewsPage } from "./pages/news/create-news/create-news.page";
 import { MemberInvoiceListPage } from "./pages/member-invoice-list/member-invoice-list.page";
-import {
-  LottieComponent,
-  LottieDirective,
-  provideLottieOptions,
-} from "ngx-lottie";
+import { QrInvoiceModalPage } from "./pages/qr-invoice-modal/qr-invoice-modal.page";
+
+import { LottieComponent, provideLottieOptions } from "ngx-lottie";
 
 import player from "lottie-web";
 
@@ -175,6 +167,7 @@ const getConfig = () => {
     TeamAdminListPage,
     TeamExercisesPage,
     TeamCreatePage,
+    QrInvoiceModalPage,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

@@ -1,8 +1,9 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, Optional } from "@angular/core";
 import {
   ModalController,
   ToastController,
   AlertController,
+  IonRouterOutlet,
 } from "@ionic/angular";
 import { InvoiceService } from "src/app/services/firebase/invoice.service";
 import { Timestamp } from "@angular/fire/firestore";
@@ -21,6 +22,7 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { SwissQRBill } from "swissqrbill/svg";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
+import { QrInvoiceModalPage } from "../qr-invoice-modal/qr-invoice-modal.page";
 
 @Component({
   selector: "app-club-invoice-detail",
@@ -32,6 +34,7 @@ export class ClubInvoiceDetailPage {
   @Input() clubId: string;
   @Input() periodId: string;
   @Input() invoiceId: string;
+  @Input() fromProfile: boolean = false;
 
   invoice$: Observable<any>;
 
@@ -47,6 +50,7 @@ export class ClubInvoiceDetailPage {
     private userProfileService: UserProfileService,
     private alertCtrl: AlertController,
     private readonly fbService: FirebaseService,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
   ) {}
 
   ngOnInit() {
@@ -91,19 +95,20 @@ export class ClubInvoiceDetailPage {
     );
   }
 
-  showQRInvoice() {
-    const win = window.open("", "_blank");
-    if (win) {
-      win.document.write(`
-        <html>
-          <head><title>QR-Rechnung</title></head>
-          <body style="margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:#fff;">
-            ${this.qrSVGString}
-          </body>
-        </html>
-      `);
-      win.document.close();
-    }
+  async showQRInvoice() {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
+    const modal = await this.modalCtrl.create({
+      component: QrInvoiceModalPage,
+      presentingElement,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        svg: this.qrSVG,
+      },
+    });
+    await modal.present();
   }
 
   generateQRCode() {

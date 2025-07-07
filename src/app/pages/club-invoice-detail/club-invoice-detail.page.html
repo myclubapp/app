@@ -96,7 +96,9 @@
     >
       <ion-list-header>
         <ion-label>Positionen</ion-label>
-        <ion-button (click)="addPosition(invoice)">hinzufügen</ion-button>
+        <ion-button *ngIf="!fromProfile" (click)="addPosition(invoice)"
+          >hinzufügen</ion-button
+        >
       </ion-list-header>
       <ion-item-sliding *ngFor="let pos of invoice.positions; let i = index">
         <ion-item>
@@ -151,7 +153,7 @@
       </ion-item>
     </ion-list>
 
-    <div class="ion-padding">
+    <div class="ion-padding" *ngIf="!fromProfile">
       <ion-button
         expand="block"
         color="primary"

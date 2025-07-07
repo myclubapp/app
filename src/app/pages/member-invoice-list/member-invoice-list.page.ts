@@ -54,6 +54,7 @@ export class MemberInvoiceListPage implements OnInit {
         clubId: invoice.clubId,
         periodId: invoice.periodId,
         invoiceId: invoice.id,
+        fromProfile: true,
       },
     });
     await modal.present();

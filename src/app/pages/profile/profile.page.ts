@@ -98,8 +98,8 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     private readonly alertController: AlertController,
     private translate: TranslateService,
     private readonly modalCtrl: ModalController,
-    @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly uiService: UiService,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -209,6 +209,12 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   enableHelferEvents(clubList) {
     return (
       clubList && clubList.some((club) => club.hasFeatureHelferEvent == true)
+    );
+  }
+
+  enableMyClubPro(clubList) {
+    return (
+      clubList && clubList.some((club) => club.hasFeatureMyClubPro == true)
     );
   }
   async setupAlerts(profile: Profile) {
