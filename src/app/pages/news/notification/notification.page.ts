@@ -1,13 +1,14 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, Optional } from "@angular/core";
 import { user } from "@angular/fire/auth";
 import { PushNotifications } from "@capacitor/push-notifications";
-import { ModalController, Platform } from "@ionic/angular";
+import { IonRouterOutlet, ModalController, Platform } from "@ionic/angular";
 import { Router } from "@angular/router";
 // import { Badge } from '@capawesome/capacitor-badge';
 import { map, Observable, Subscription, switchMap, take, tap } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { NotificationService } from "src/app/services/firebase/notification.service";
 import { Timestamp } from "firebase/firestore";
+import { ClubInvoiceDetailPage } from "../../club-invoice-detail/club-invoice-detail.page";
 
 @Component({
   selector: "app-notification",
@@ -28,6 +29,7 @@ export class NotificationPage implements OnInit {
     private readonly router: Router,
     private readonly notificationService: NotificationService,
     private readonly platform: Platform,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
   ) {}
 
   ngOnInit() {
@@ -251,7 +253,30 @@ export class NotificationPage implements OnInit {
         .catch((e) => {
           console.log(e);
         });
+    } else if (
+      notification.data &&
+      notification.data.type &&
+      notification.data.type === "invoice"
+    ) {
+      await this.confirm({ data: notification.data });
+
+      const topModal = await this.modalCtrl.getTop();
+      const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
+      const modal = await this.modalCtrl.create({
+        component: ClubInvoiceDetailPage,
+        presentingElement,
+        canDismiss: true,
+        showBackdrop: true,
+        componentProps: {
+          clubId: notification.data.clubId,
+          periodId: notification.data.periodId,
+          invoiceId: notification.data.id,
+        },
+      });
+      await modal.present();
     } else {
+      // TODO: handle other types of notifications
     }
     if (!notification.opened) {
       this.toggle(notification);

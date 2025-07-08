@@ -46,6 +46,9 @@ export class OnboardingClubPage implements OnInit {
   clubListSU: Club[];
   clubListSH: Club[];
   clubListST: Club[];
+  clubListSports: Club[];
+  clubListCulture: Club[];
+  clubListOther: Club[];
   clubListSub: Subscription;
   user: User;
   userProfile$: Observable<Profile>;
@@ -77,6 +80,9 @@ export class OnboardingClubPage implements OnInit {
     this.clubListSV = [];
     this.clubListSH = [];
     this.clubListST = [];
+    this.clubListSports = [];
+    this.clubListCulture = [];
+    this.clubListOther = [];
 
     // Setup search subscription
     this.searchSubject
@@ -389,6 +395,9 @@ export class OnboardingClubPage implements OnInit {
           this.clubListSV = data.filter((el) => el.type === "swissvolley");
           this.clubListSH = data.filter((el) => el.type === "swisshandball");
           this.clubListST = data.filter((el) => el.type === "swissturnverband");
+          this.clubListSports = data.filter((el) => el.type === "sports");
+          this.clubListCulture = data.filter((el) => el.type === "culture");
+          this.clubListOther = data.filter((el) => el.type === "other");
         },
         error: (error) => {
           console.error("Fehler beim Verarbeiten der Suchergebnisse:", error);
@@ -402,6 +411,9 @@ export class OnboardingClubPage implements OnInit {
     this.clubListSV = [];
     this.clubListSH = [];
     this.clubListST = [];
+    this.clubListSports = [];
+    this.clubListCulture = [];
+    this.clubListOther = [];
   }
 
   async close() {

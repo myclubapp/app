@@ -104,6 +104,54 @@
                 <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
               </ion-item>
 
+              <!-- Sports -->
+              <ion-list-header *ngIf="clubListSports.length > 0">
+                Sportvereine
+              </ion-list-header>
+              <ion-item
+                lines="full"
+                *ngFor="let club of clubListSports"
+                (click)="joinClub(club)"
+                button
+              >
+                <ion-avatar slot="start">
+                  <img alt="{{club.name}}" src="{{club.logo}}" />
+                </ion-avatar>
+                <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
+              </ion-item>
+
+              <!-- Culture -->
+              <ion-list-header *ngIf="clubListCulture.length > 0">
+                Kulturvereine
+              </ion-list-header>
+              <ion-item
+                lines="full"
+                *ngFor="let club of clubListCulture"
+                (click)="joinClub(club)"
+                button
+              >
+                <ion-avatar slot="start">
+                  <img alt="{{club.name}}" src="{{club.logo}}" />
+                </ion-avatar>
+                <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
+              </ion-item>
+
+              <!-- Other -->
+              <ion-list-header *ngIf="clubListOther.length > 0">
+                Andere Vereine
+              </ion-list-header>
+              <ion-item
+                lines="full"
+                *ngFor="let club of clubListOther"
+                (click)="joinClub(club)"
+                button
+              >
+                <ion-avatar slot="start">
+                  <img alt="{{club.name}}" src="{{club.logo}}" />
+                </ion-avatar>
+                <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
+              </ion-item>
+
               <ng-container
                 *ngIf="clubListByContactEmail$ | async as clubListByContactEmail"
               >
