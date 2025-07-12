@@ -218,20 +218,21 @@ export class OnboardingClubPage implements OnInit {
             checked: false,
           },
         ],
-        message:
-          (await lastValueFrom(
-            this.translate.get("onboarding.do_you_want_to_join__club"),
-          )) + ` ${club.name}`,
+        message: await lastValueFrom(
+          this.translate.get("onboarding.do_you_want_to_join__club"),
+        ),
         header: await lastValueFrom(
-          this.translate.get("onboarding.join__club"),
+          this.translate.get("onboarding.join__club_title"),
         ),
         buttons: [
           {
-            text: await lastValueFrom(this.translate.get("common.no")),
+            text: await lastValueFrom(this.translate.get("common.cancel")),
             role: "destructive",
           },
           {
-            text: await lastValueFrom(this.translate.get("common.yes")),
+            text: await lastValueFrom(
+              this.translate.get("onboarding.join__club"),
+            ),
             role: "confirm",
           },
         ],

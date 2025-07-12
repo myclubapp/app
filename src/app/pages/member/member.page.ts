@@ -49,8 +49,8 @@ export class MemberPage implements OnInit {
   skeleton = new Array(12);
 
   isParent: boolean;
-
-  $requestTeam: Observable<Team>;
+  requestTeamId: string;
+  requestTeam$: Observable<Team>;
 
   teamAdminList$: Observable<Team[]>;
   clubAdminList$: Observable<Club[]>;
@@ -78,9 +78,9 @@ export class MemberPage implements OnInit {
   ngOnInit() {
     this.isRequest = this.navParams.get("isRequest");
     this.isParent = this.navParams.get("data").isParent || false;
-    const requestTeamId = this.navParams.get("data")?.requestTeamId;
-    this.$requestTeam = requestTeamId
-      ? this.fbService.getTeamRef(requestTeamId)
+    this.requestTeamId = this.navParams.get("data")?.requestTeamId;
+    this.requestTeam$ = this.requestTeamId
+      ? this.fbService.getTeamRef(this.requestTeamId)
       : of(null);
 
     this.clubId = this.navParams.get("clubId");
@@ -201,15 +201,19 @@ export class MemberPage implements OnInit {
   async getTeamAndClubTeamsAsAdmin() {
     const teamAdmins$ = this.getUserTeamAdminList();
     const clubTeams$ = this.getUserClubTeamList();
+    const requestTeam$ = this.requestTeamId
+      ? this.fbService.getTeamRef(this.requestTeamId)
+      : of(null);
 
     try {
-      const { teamAdmins, clubTeams } = await lastValueFrom(
+      const { teamAdmins, clubTeams, requestTeam } = await lastValueFrom(
         combineLatest({
           teamAdmins: teamAdmins$,
           clubTeams: clubTeams$,
+          requestTeam: requestTeam$,
         }).pipe(take(1)),
       );
-      console.log(teamAdmins, clubTeams);
+      console.log(teamAdmins, clubTeams, requestTeam);
 
       const teams = [
         ...(teamAdmins?.filter((team) => team !== undefined) || []),
@@ -219,7 +223,7 @@ export class MemberPage implements OnInit {
           index === self.findIndex((t) => t.id === team.id),
       );
 
-      await this.prepareAlertForTeams(teams);
+      await this.prepareAlertForTeams(teams, requestTeam);
     } catch (error) {
       console.error("Error combining team data:", error);
     }
@@ -275,7 +279,7 @@ export class MemberPage implements OnInit {
     ).pipe(map((teamsList: any) => teamsList.flat()));
   }
 
-  async prepareAlertForTeams(teams) {
+  async prepareAlertForTeams(teams, requestTeam) {
     console.log("prepareAlertForTeams teams: " + teams);
     if (!teams.length) {
       console.log("No teams found for alert preparation.");
@@ -293,7 +297,7 @@ export class MemberPage implements OnInit {
         label: team.name,
         type: "checkbox",
         value: team.id,
-        checked: false,
+        checked: requestTeam && team.id === requestTeam.id,
       })),
       buttons: this.getAlertButtons(teams),
     });

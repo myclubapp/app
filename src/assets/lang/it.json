@@ -328,7 +328,7 @@
   "onboarding": {
     "join__club": "Unisciti al club",
     "search_by_club__pholder": "Cerca per club",
-    "do_you_want_to_join__club": "Vuoi unirti al club?",
+    "do_you_want_to_join__club": "Se non sei un membro del club ma desideri gestire un figlio che lo è come genitore, seleziona 'Registrati come genitore'.",
     "success__request_sent": "Richiesta inviata con successo",
     "warning__action_canceled": "Azione annullata",
     "success__application_sent": "Candidatura inviata con successo",

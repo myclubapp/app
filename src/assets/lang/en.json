@@ -332,7 +332,7 @@
   "onboarding": {
     "join__club": "Join club",
     "search_by_club__pholder": "Search by club",
-    "do_you_want_to_join__club": "Do you want to join the club?",
+    "do_you_want_to_join__club": "If you are not a club member but want to manage a child who is a member as a parent, please select 'Register as parent'.",
     "success__request_sent": "Request sent successfully",
     "warning__action_canceled": "Action was canceled",
     "success__application_sent": "Application sent successfully",

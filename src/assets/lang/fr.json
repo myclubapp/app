@@ -330,7 +330,7 @@
   "onboarding": {
     "join__club": "Rejoindre un club",
     "search_by_club__pholder": "Rechercher par club",
-    "do_you_want_to_join__club": "Voulez-vous rejoindre le club ?",
+    "do_you_want_to_join__club": "Si vous n'êtes pas membre du club mais souhaitez gérer un enfant qui l'est en tant que parent, veuillez choisir 'S'inscrire en tant que parent'.",
     "success__request_sent": "Demande envoyée avec succès",
     "warning__action_canceled": "Action a été annulée",
     "success__application_sent": "Candidature envoyée avec succès",

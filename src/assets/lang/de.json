@@ -352,7 +352,8 @@
   "onboarding": {
     "join__club": "Club beitreten",
     "search_by_club__pholder": "Nach Club suchen",
-    "do_you_want_to_join__club": "Möchtest du dem Verein beitreten?",
+    "join__club_title": "Möchtest du dem Verein als Mitglied beitreten?",
+    "do_you_want_to_join__club": "Wenn du kein Vereinsmitglied bist, aber als Elternteil ein Kind verwalten möchtest, das Mitglied ist, wähle bitte „Als Elternteil registrieren“.",
     "success__request_sent": "Anfrage erfolgreich gesendet",
     "warning__action_canceled": "Aktion wurde abgebrochen",
     "success__application_sent": "Anfrage erfolgreich gesendet",
