@@ -18,11 +18,14 @@ const config: CapacitorConfig = {
       presentationOptions: ["badge", "sound", "alert"],
     },
     GoogleMaps: {
-      androidKey: "AIzaSyAM5x9P0syj9qtxUmFs98nW0B967xo52Fw"
+      androidKey: "AIzaSyAM5x9P0syj9qtxUmFs98nW0B967xo52Fw",
     },
     Geolocation: {
-      enableHighAccuracy: true
-    }
+      enableHighAccuracy: true,
+    },
+    EdgeToEdge: {
+      backgroundColor: "#ffffff",
+    },
   },
   // Add this:
   ios: {

@@ -21,6 +21,9 @@
 		},
 		"Geolocation": {
 			"enableHighAccuracy": true
+		},
+		"EdgeToEdge": {
+			"backgroundColor": "#ffffff"
 		}
 	},
 	"ios": {

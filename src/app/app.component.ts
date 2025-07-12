@@ -1,9 +1,5 @@
 import { AfterViewInit, Component, NgZone, OnInit } from "@angular/core";
 import { SwUpdate, VersionEvent } from "@angular/service-worker";
-import { Capacitor } from "@capacitor/core";
-import { StatusBar, Style } from "@capacitor/status-bar";
-import { Platform } from "@ionic/angular";
-import { SafeArea } from "capacitor-plugin-safe-area";
 
 import {
   AlertController,
@@ -17,14 +13,15 @@ import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
 import { Router } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { Observable, Subscription, of, switchMap, take, tap } from "rxjs";
+import { Observable, of, switchMap, take, tap } from "rxjs";
 import { User, onAuthStateChanged } from "@angular/fire/auth";
 import { UserProfileService } from "./services/firebase/user-profile.service";
 import { Device, DeviceId, DeviceInfo, LanguageTag } from "@capacitor/device";
-import { Network, ConnectionStatus } from "@capacitor/network";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "./models/club";
 import { UiService } from "./services/ui.service";
+import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
+import { StatusBar, Style } from "@capacitor/status-bar";
 
 import {
   ActionPerformed,
@@ -34,11 +31,11 @@ import {
 } from "@capacitor/push-notifications";
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
 import { lastValueFrom } from "rxjs";
-import { HttpClient } from "@angular/common/http";
 
 // Add this to your app.component.ts to register Swiper globally
 // src/app/app.component.ts
 import { register } from "swiper/element/bundle";
+import { Capacitor } from "@capacitor/core";
 
 // Register Swiper custom elements
 register();
@@ -64,7 +61,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   userHasClub: boolean = false;
 
   constructor(
-    private platform: Platform,
     private readonly swUpdate: SwUpdate,
     private readonly modalCtrl: ModalController,
     private readonly alertController: AlertController,
@@ -76,9 +72,10 @@ export class AppComponent implements OnInit, AfterViewInit {
     private translate: TranslateService,
     private uiService: UiService,
     private ngZone: NgZone,
-    private http: HttpClient,
   ) {
     this.initializeApp();
+    //for menu layout enable/disable, club liste wird oben schon einmal gelesen, aber als Promise.
+    this.clubList$ = this.fbService.getClubList().pipe(take(1));
 
     onAuthStateChanged(this.authService.auth, async (user) => {
       if (user) {
@@ -163,7 +160,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         // SEt DEVICE INFOS
         this.deviceInfo = await Device.getInfo();
         this.deviceId = await Device.getId();
-        console.log(this.deviceInfo);
+        // console.log(this.deviceInfo);
         // Register Native Push
         if (
           this.deviceInfo.platform == "android" ||
@@ -200,8 +197,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    console.log("CSS DEBUG: AppComponent View initialized");
-    this.setStatusBarAndSafeArea();
+    // console.log("CSS DEBUG: AppComponent View initialized");
+    // this.setStatusBarAndSafeArea();
 
     // iOS only
     window.addEventListener("statusTap", () => {
@@ -217,7 +214,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.registerBackButton();
     });
 
-    Network.addListener(
+    /*Network.addListener(
       "networkStatusChange",
       async (status: ConnectionStatus) => {
         if (!status.connected) {
@@ -226,183 +223,35 @@ export class AppComponent implements OnInit, AfterViewInit {
           );
         } else {
           console.log("Network is connected");
-          /* await this.uiService.showSuccessToast(
+           await this.uiService.showSuccessToast(
             await lastValueFrom(this.translate.get("common.online")),
-          );*/
+          );
         }
       },
-    );
+    );*/
   }
 
   ngOnDestroy() {
-    Network.removeAllListeners();
+    // Network.removeAllListeners();
 
     App.removeAllListeners();
   }
 
   initializeApp(): void {
-    //for menu layout enable/disable
-    this.clubList$ = this.fbService.getClubList().pipe(take(1));
-
     // this.setStatusBarAndSafeArea();
     this.showSplashScreen();
+    this.setStatusBar();
     this.setDefaultLanguage();
+
+    App.addListener("resume", () => {
+      this.applySystemTheme();
+    });
+
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
       if (event.type === "VERSION_READY") {
         this.presentAlertUpdateVersion();
       }
     });
-  }
-
-  private async setStatusBarAndSafeArea() {
-    setTimeout(async () => {
-      const { statusBarHeight } = await SafeArea.getStatusBarHeight();
-      console.log("DEBUG CSS:  statusbarHeight", statusBarHeight);
-
-      try {
-        const marginTop = getComputedStyle(
-          document.querySelector(".android ion-app"),
-        ).getPropertyValue("margin-top");
-        const numericValue = parseInt(marginTop.replace("px", ""));
-        console.log("DEBUG CSS:  marginTop", numericValue);
-      } catch (error) {
-        console.log("DEBUG CSS:  marginTop from app.component.scss", error);
-      }
-
-      const safeAreaTop = Number(
-        getComputedStyle(document.documentElement)
-          .getPropertyValue("--ion-safe-area-top")
-          .replace("px", ""),
-      );
-      const safeAreaBottom = Number(
-        getComputedStyle(document.documentElement)
-          .getPropertyValue("--ion-safe-area-bottom")
-          .replace("px", ""),
-      );
-      console.log(
-        "DEBUG CSS:  safeAreaTop --ion-safe-area-top / bottom Value: ",
-        safeAreaTop,
-        safeAreaBottom,
-      );
-
-      const { insets } = await SafeArea.getSafeAreaInsets();
-      console.log(
-        "DEBUG CSS: insets via SafeArea Plugin: ",
-        JSON.stringify(insets),
-      );
-
-      //Top
-      if (
-        Capacitor.isNativePlatform() &&
-        Capacitor.getPlatform() == "android"
-      ) {
-        if (safeAreaTop != insets.top || insets.top > 0) {
-          document.documentElement.style.setProperty(
-            "--ion-safe-area-top",
-            `${insets.top}px`,
-          );
-          console.log(
-            "DEBUG CSS: Update --ion-safe-area-top Value: ",
-            insets.top,
-          );
-        } else {
-          console.log(
-            "DEBUG CSS: No Update --ion-safe-area-top Value: ",
-            insets.top,
-          );
-        }
-
-        //Bottom
-        if (safeAreaBottom != insets.bottom || insets.bottom > 0) {
-          document.documentElement.style.setProperty(
-            "--ion-safe-area-bottom",
-            `${insets.bottom}px`,
-          );
-          console.log(
-            "DEBUG CSS: Update --ion-safe-area-bottom Value: ",
-            insets.bottom,
-          );
-        } else {
-          console.log(
-            "DEBUG CSS: No Update --ion-safe-area-bottom Value: ",
-            insets.bottom,
-          );
-        }
-      }
-
-      const safeAreaTopAfter = getComputedStyle(
-        document.documentElement,
-      ).getPropertyValue("--ion-safe-area-top");
-      console.log(
-        "DEBUG CSS: safeAreaTopAfter --ion-safe-area-top Value: ",
-        safeAreaTopAfter,
-      );
-      const safeAreaBottomAfter = getComputedStyle(
-        document.documentElement,
-      ).getPropertyValue("--ion-safe-area-bottom");
-      console.log(
-        "DEBUG CSS: safeAreaBottomAfter --ion-safe-area-bottom Value: ",
-        safeAreaBottomAfter,
-      );
-
-      if (Capacitor.isPluginAvailable("StatusBar")) {
-        console.log("StatusBar is available");
-
-        console.log("StatusBar set overlay to false");
-        await StatusBar.setOverlaysWebView({
-          overlay: false,
-        });
-
-        // Set initial theme
-        const prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)",
-        ).matches;
-        if (prefersDark) {
-          // Dark Mode
-          await StatusBar.setStyle({ style: Style.Dark });
-          document.documentElement.style.colorScheme = "dark";
-          const darkColor = getComputedStyle(document.body)
-            .getPropertyValue("--ion-color-primary")
-            .trim();
-          await StatusBar.setBackgroundColor({ color: darkColor });
-          console.log("DEBUG CSS: darkColor", darkColor);
-        } else {
-          // Light Mode
-          await StatusBar.setStyle({ style: Style.Light });
-          document.documentElement.style.colorScheme = "light";
-          const lightColor = getComputedStyle(document.body)
-            .getPropertyValue("--ion-color-primary")
-            .trim();
-          await StatusBar.setBackgroundColor({ color: lightColor });
-          console.log("DEBUG CSS: lightColor", lightColor);
-        }
-
-        // Listen for system theme changes
-        window
-          .matchMedia("(prefers-color-scheme: dark)")
-          .addEventListener("change", async (e) => {
-            const newColorScheme = e.matches ? "dark" : "light";
-            console.log("System theme changed to:", newColorScheme);
-            if (newColorScheme == "dark") {
-              await StatusBar.setStyle({ style: Style.Dark });
-              document.documentElement.style.colorScheme = "dark";
-              const darkColor = getComputedStyle(document.body)
-                .getPropertyValue("--ion-color-primary")
-                .trim();
-              await StatusBar.setBackgroundColor({ color: darkColor });
-            } else {
-              await StatusBar.setStyle({ style: Style.Light });
-              document.documentElement.style.colorScheme = "light";
-              const lightColor = getComputedStyle(document.body)
-                .getPropertyValue("--ion-color-primary")
-                .trim();
-              await StatusBar.setBackgroundColor({ color: lightColor });
-            }
-          });
-      } else {
-        console.log("Status Bar not supported");
-      }
-    }, 100);
   }
 
   private registerBackButton() {
@@ -553,6 +402,100 @@ export class AppComponent implements OnInit, AfterViewInit {
       showDuration: 1500,
       autoHide: true,
     });
+  }
+
+  applySystemTheme() {
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
+    if (prefersDark) {
+      console.log("DEBUG CSS: applySystemTheme: Dark Mode");
+      if (Capacitor.isPluginAvailable("StatusBar")) {
+        StatusBar.setStyle({ style: Style.Dark });
+      }
+      document.documentElement.style.colorScheme = "dark";
+      const darkColor = getComputedStyle(document.body)
+        .getPropertyValue("--ion-color-primary")
+        .trim();
+      console.log("DEBUG CSS: darkColor", darkColor);
+      if (Capacitor.isPluginAvailable("StatusBar")) {
+        StatusBar.setBackgroundColor({ color: darkColor });
+      }
+      if (Capacitor.isPluginAvailable("EdgeToEdge")) {
+        EdgeToEdge.setBackgroundColor({ color: darkColor });
+      }
+    } else {
+      console.log("DEBUG CSS: applySystemTheme: Light Mode");
+      if (Capacitor.isPluginAvailable("StatusBar")) {
+        StatusBar.setStyle({ style: Style.Light });
+      }
+      document.documentElement.style.colorScheme = "light";
+      const lightColor = getComputedStyle(document.body)
+        .getPropertyValue("--ion-color-primary")
+        .trim();
+      console.log("DEBUG CSS: lightColor", lightColor);
+      if (Capacitor.isPluginAvailable("StatusBar")) {
+        StatusBar.setBackgroundColor({ color: lightColor });
+      }
+      if (Capacitor.isPluginAvailable("EdgeToEdge")) {
+        EdgeToEdge.setBackgroundColor({ color: lightColor });
+      }
+    }
+  }
+
+  async setStatusBar() {
+    if (Capacitor.isPluginAvailable("StatusBar")) {
+      console.log("StatusBar is available");
+
+      console.log("StatusBar set overlay to false");
+      await StatusBar.setOverlaysWebView({
+        overlay: false,
+      });
+
+      this.applySystemTheme();
+
+      // Listen for system theme changes
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", async (e) => {
+          console.log("DEBUG CSS: Theme-Change-Event gefeuert!", e);
+          const newColorScheme = e.matches ? "dark" : "light";
+          console.log("DEBUG CSS: System theme changed to:", newColorScheme);
+          if (newColorScheme == "dark") {
+            if (Capacitor.isPluginAvailable("StatusBar")) {
+              await StatusBar.setStyle({ style: Style.Dark });
+            }
+            document.documentElement.style.colorScheme = "dark";
+            const darkColor = getComputedStyle(document.body)
+              .getPropertyValue("--ion-color-primary")
+              .trim();
+            console.log("DEBUG CSS: darkColor", darkColor);
+            if (Capacitor.isPluginAvailable("StatusBar")) {
+              await StatusBar.setBackgroundColor({ color: darkColor });
+            }
+            if (Capacitor.isPluginAvailable("EdgeToEdge")) {
+              await EdgeToEdge.setBackgroundColor({ color: darkColor });
+            }
+          } else {
+            if (Capacitor.isPluginAvailable("StatusBar")) {
+              await StatusBar.setStyle({ style: Style.Light });
+            }
+            document.documentElement.style.colorScheme = "light";
+            const lightColor = getComputedStyle(document.body)
+              .getPropertyValue("--ion-color-primary")
+              .trim();
+            console.log("DEBUG CSS: lightColor", lightColor);
+            if (Capacitor.isPluginAvailable("StatusBar")) {
+              await StatusBar.setBackgroundColor({ color: lightColor });
+            }
+            if (Capacitor.isPluginAvailable("EdgeToEdge")) {
+              await EdgeToEdge.setBackgroundColor({ color: lightColor });
+            }
+          }
+        });
+    } else {
+      console.log("Status Bar not supported");
+    }
   }
 
   async presentAlertNoClub() {
@@ -795,8 +738,6 @@ export class AppComponent implements OnInit, AfterViewInit {
               this.translate.get("error__push_notification_not_available"),
             ),
           ]);
-
-          const toast = await this.uiService.showErrorToast(translations[0]);
         }
       } else {
         console.warn("Push-Benachrichtigungen wurden nicht erlaubt");
@@ -808,8 +749,6 @@ export class AppComponent implements OnInit, AfterViewInit {
           this.translate.get("error_device_not_support_push_notifications"),
         ),
       ]);
-
-      const toast = await this.uiService.showErrorToast(translations[0]);
     }
 
     try {

@@ -25,6 +25,7 @@ dependencies {
     implementation project(':capacitor-share')
     implementation project(':capacitor-splash-screen')
     implementation project(':capacitor-status-bar')
+    implementation project(':capawesome-capacitor-android-edge-to-edge-support')
     implementation project(':capacitor-plugin-safe-area')
     implementation project(':myclub-widget-plugin')
 

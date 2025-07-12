@@ -1,6 +1,6 @@
 <ion-content>
   <ion-grid class="ion-no-padding" style="height: 100vh">
-    <ion-row style="height: 100%">
+    <ion-row style="min-height: 100vh">
       <!-- Logout Message Column -->
       <ion-col
         size-md="6"
@@ -15,12 +15,12 @@
               style="max-height: 100px; max-width: 100px"
             ></ion-img>
             <ion-card-title
-              >{{"logout.logout__success"|translate}}</ion-card-title
+              >{{'logout.logout__success'|translate}}</ion-card-title
             >
             <ion-text>
               <p>
                 <ion-router-link routerLink="/login" class="ion-text-primary">
-                  {{"logout.back_to__login"|translate}}
+                  {{'logout.back_to__login'|translate}}
                 </ion-router-link>
               </p>
             </ion-text>
@@ -34,55 +34,15 @@
         style="padding: 0"
         class="ion-hide-md-down"
       >
-        <ion-img
-          src="assets/bg/logout.jpg"
-          alt="{{'logout.logout_background__alt'|translate}}"
-          style="height: 100%; width: 100%; object-fit: cover"
-        >
-        </ion-img>
+        <div
+          style="
+            height: 100%;
+            background-image: url(&quot;assets/bg/logout.jpg&quot;);
+            background-size: cover;
+            background-position: center;
+          "
+        ></div>
       </ion-col>
     </ion-row>
   </ion-grid>
-
-  <!--
-  <div class="min-h-screen bg-white flex">
-    <div
-      class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24"
-    >
-      <div class="mx-auto w-full max-w-sm lg:w-96">
-        <div>
-          <picture>
-            <source
-              srcset="assets/logo_trans.png"
-              media="(prefers-color-scheme: dark)"
-            />
-            <source
-              srcset="assets/logo_trans.png"
-              media="(prefers-color-scheme: light)"
-            />
-            <img class="h-12 w-auto" src="assets/logo_trans.png" alt="Logo" />
-          </picture>
-
-          <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-            {{"logout.logout__success"|translate}}
-          </h2>
-          <p class="mt-2 text-sm text-gray-600">
-            <span
-              routerLink="/login"
-              class="font-medium text-myclublight hover:text-myclubdark"
-            >
-              {{"logout.back_to__login"| translate}}
-            </span>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="hidden lg:block relative w-0 flex-1">
-      <img
-        class="absolute inset-0 h-full w-full object-cover"
-        src="assets/bg/mountain-3.jpg"
-        [alt]='"backgroud_image__alt"|translate'
-      />
-    </div>
-  </div>-->
 </ion-content>
