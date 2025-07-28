@@ -448,7 +448,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.9$;
+				MARKETING_VERSION = 2.0.9;
 				PRODUCT_BUNDLE_IDENTIFIER = app.myclub.default;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
