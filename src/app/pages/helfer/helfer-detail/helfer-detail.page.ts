@@ -395,6 +395,18 @@ export class HelferDetailPage implements OnInit {
     );
     const isAdmin = this.isClubAdmin(clubAdminList, event.clubId);
 
+    // Prüfe, ob schon genügend Helferinnen eingetragen sind (aber Admins dürfen überbuchen)
+    if (
+      schicht.attendeeListTrue &&
+      schicht.attendeeListTrue.length >= schicht.countNeeded &&
+      status === true &&
+      !isAdmin
+    ) {
+      console.log("too many");
+      await this.tooMany();
+      return;
+    }
+
     // console.log("newStartDate", newStartDate);
 
     if (
