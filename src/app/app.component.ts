@@ -201,12 +201,14 @@ export class AppComponent implements OnInit, AfterViewInit {
     // this.setStatusBarAndSafeArea();
 
     // iOS only
-    window.addEventListener("statusTap", () => {
-      const content = document.querySelector("ion-content");
-      if (content) {
-        content.scrollToTop(500);
-      }
-    });
+    if (Capacitor.getPlatform() === "ios") {
+      window.addEventListener("statusTap", () => {
+        const content = document.querySelector("ion-content");
+        if (content) {
+          content.scrollToTop(500);
+        }
+      });
+    }
   }
 
   ngOnInit(): void {

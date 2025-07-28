@@ -311,6 +311,7 @@ export class EventService {
     schichtId: string,
     memberId: string,
   ) {
+    console.log(clubId, eventId, schichtId, memberId, status);
     // const user = this.authService.auth.currentUser;
     const statusRef = doc(
       this.firestore,
