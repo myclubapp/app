@@ -619,7 +619,7 @@ export class HelferDetailPage implements OnInit {
         this.event.clubId,
         this.event.id,
         schicht.id,
-        data,
+        data.values,
       );
       await this.presentToast();
     }
