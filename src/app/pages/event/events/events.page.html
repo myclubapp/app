@@ -175,34 +175,45 @@
       </ion-item>
       <ion-item-sliding #item *ngFor="let event of eventsListPast">
         <ion-item type="button" detail="true">
-          <ion-icon
-            *ngIf="event.cancelled"
-            slot="icon-only"
-            color="danger"
-            slot="start"
-            name="alert-circle"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="!event.cancelled && event.status === null"
-            slot="icon-only"
-            color="warning"
-            slot="start"
-            name="help-circle"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="!event.cancelled && event.status === false"
-            slot="icon-only"
-            color="danger"
-            slot="start"
-            name="close-circle"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="!event.cancelled && event.status === true"
-            slot="icon-only"
-            color="success"
-            slot="start"
-            name="checkmark-circle"
-          ></ion-icon>
+          <ng-container *ngIf="!event.closedEvent && !event.cancelled">
+            <ion-icon
+              *ngIf="event.status === null"
+              slot="icon-only"
+              color="warning"
+              slot="start"
+              name="help-circle"
+            ></ion-icon>
+            <ion-icon
+              *ngIf="event.status === false"
+              slot="icon-only"
+              color="danger"
+              slot="start"
+              name="close-circle"
+            ></ion-icon>
+            <ion-icon
+              *ngIf="event.status === true"
+              slot="icon-only"
+              color="success"
+              slot="start"
+              name="checkmark-circle"
+            ></ion-icon>
+          </ng-container>
+          <ng-container *ngIf="event.closedEvent">
+            <ion-icon
+              slot="icon-only"
+              color="primary"
+              slot="start"
+              name="information-circle"
+            ></ion-icon>
+          </ng-container>
+          <ng-container *ngIf="event.cancelled">
+            <ion-icon
+              slot="icon-only"
+              color="danger"
+              slot="start"
+              name="alert-circle"
+            ></ion-icon>
+          </ng-container>
           <ion-label (click)="openEventDetailModal(event, false)">
             <h2>{{event.name}}</h2>
             <h3>

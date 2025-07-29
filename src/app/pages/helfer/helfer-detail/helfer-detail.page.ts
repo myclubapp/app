@@ -436,6 +436,17 @@ export class HelferDetailPage implements OnInit {
     event,
     schicht,
   ) {
+    // Prüfe, ob schon genügend Helferinnen eingetragen sind (aber Admins dürfen überbuchen)
+    if (
+      schicht.attendeeListTrue &&
+      schicht.attendeeListTrue.length >= schicht.countNeeded &&
+      status === true
+    ) {
+      console.log("too many");
+      await this.tooMany();
+      return;
+    }
+
     // Hole die Club-Mitglieder
     const clubMembers = await lastValueFrom(
       this.fbService.getClubMemberRefs(event.clubId).pipe(take(1)),
