@@ -99,7 +99,7 @@ export class EventService {
       this.firestore,
       `club/${clubId}/events/${eventId}/attendees/${user.uid}`,
     );
-    return await setDoc(statusRef, { status });
+    return await setDoc(statusRef, { status, changedAt: Timestamp.now() });
   }
 
   async setClubEventAttendeeStatusAdmin(
@@ -112,7 +112,7 @@ export class EventService {
       this.firestore,
       `club/${clubId}/events/${eventId}/attendees/${memberId}`,
     );
-    return await setDoc(statusRef, { status });
+    return await setDoc(statusRef, { status, changedAt: Timestamp.now() });
   }
 
   async setCreateClubEvent(event: Veranstaltung) {
@@ -297,7 +297,7 @@ export class EventService {
     );
     return setDoc(
       statusRef,
-      { status },
+      { status, changedAt: Timestamp.now() },
       {
         merge: true,
       },
@@ -319,7 +319,10 @@ export class EventService {
     );
     return setDoc(
       statusRef,
-      { status },
+      {
+        status,
+        changedAt: Timestamp.now(),
+      },
       {
         merge: true,
       },
@@ -344,6 +347,7 @@ export class EventService {
       {
         confirmed: true,
         date: new Date(),
+        changedAt: Timestamp.now(),
         confirmedBy: userRef,
         points: points,
       },
@@ -361,7 +365,7 @@ export class EventService {
       this.firestore,
       `club/${clubId}/helferEvents/${eventId}/attendees/${user.uid}`,
     );
-    return setDoc(statusRef, { status });
+    return setDoc(statusRef, { status, changedAt: Timestamp.now() });
   }
 
   async setClubHelferEventAttendeeStatusAdmin(
@@ -374,7 +378,7 @@ export class EventService {
       this.firestore,
       `club/${clubId}/helferEvents/${eventId}/attendees/${memberId}`,
     );
-    return await setDoc(statusRef, { status });
+    return await setDoc(statusRef, { status, changedAt: Timestamp.now() });
   }
 
   async setCreateHelferEvent(event: HelferEvent) {

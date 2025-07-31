@@ -514,7 +514,8 @@
     "children": "Kinder",
     "add": "hinzufügen",
     "no_children": "Keine Kinder hinzugefügt",
-    "parent_info": "Als Elternteil werden Sie über alle wichtigen Ereignisse Ihrer Kinder informiert."
+    "parent_info": "Als Elternteil werden Sie über alle wichtigen Ereignisse Ihrer Kinder informiert.",
+    "license_number": "Lizenznummer"
   },
   "tabs": {},
   "team": {

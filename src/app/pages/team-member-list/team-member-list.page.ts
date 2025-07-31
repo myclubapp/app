@@ -485,7 +485,19 @@ export class TeamMemberListPage implements OnInit {
     if (role === "confirm") {
     }
   }
-
+  getMemberImage(member: any): string {
+    if (
+      member.gameCenterProfile &&
+      member.gameCenterProfile !==
+        "https://swissunihockeysa.blob.core.windows.net/memberpictures/defaultplayeravatar.png"
+    ) {
+      return member.gameCenterProfile;
+    } else if (member.profilePicture) {
+      return member.profilePicture;
+    } else {
+      return "https://ionicframework.com/docs/img/demos/avatar.svg";
+    }
+  }
   async toastActionSaved() {
     const toast = await this.toastCtrl.create({
       message: await lastValueFrom(this.translate.get("common.success__saved")),

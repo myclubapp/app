@@ -229,9 +229,13 @@
                           name="checkmark-circle-outline"
                         ></ion-icon>
 
-                        <ion-label (click)="openMember(member)"
-                          >{{member.firstName}} {{member.lastName}}</ion-label
-                        >
+                        <ion-label (click)="openMember(member)">
+                          <h2>{{member.firstName}} {{member.lastName}}</h2>
+                          <p>
+                            {{member?.changedAt?.toDate() | date:'dd.MM.yyyy
+                            HH:mm'}}
+                          </p>
+                        </ion-label>
                       </ion-item>
                       <ng-container
                         *ngIf="clubAdminList$ | async as clubAdminList"

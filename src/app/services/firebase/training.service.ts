@@ -142,7 +142,7 @@ export class TrainingService {
       this.firestore,
       `teams/${teamId}/trainings/${trainingId}/attendees/${user.uid}`,
     );
-    return await setDoc(statusRef, { status });
+    return await setDoc(statusRef, { status, changedAt: Timestamp.now() });
   }
 
   async setTeamTrainingAttendeeStatusAdmin(
@@ -155,7 +155,7 @@ export class TrainingService {
       this.firestore,
       `teams/${teamId}/trainings/${trainingId}/attendees/${memberId}`,
     );
-    return await setDoc(statusRef, { status });
+    return await setDoc(statusRef, { status, changedAt: Timestamp.now() });
   }
 
   deleteTeamTraining(teamId: string, trainingId: string) {

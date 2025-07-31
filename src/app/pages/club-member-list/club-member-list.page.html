@@ -2,14 +2,23 @@
   <ion-header [translucent]="true">
     <ion-toolbar>
       <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-buttons *ngIf="isClubAdmin(clubAdminList, club.id)" slot="secondary">
-          <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
-          <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
+        <ion-buttons
+          *ngIf="isClubAdmin(clubAdminList, club.id)"
+          slot="secondary"
+        >
+          <ion-button *ngIf="!allowEdit" (click)="edit()"
+            >{{"common.edit" | translate}}</ion-button
+          >
+          <ion-button *ngIf="allowEdit" (click)="edit()"
+            >{{"common.done" | translate}}</ion-button
+          >
         </ion-buttons>
       </ng-container>
       <ion-title>{{"common.members" | translate}}</ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -21,22 +30,41 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
-      [value]="searchTerm.value" placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
+    <ion-searchbar
+      [debounce]="1000"
+      (ionChange)="handleSearch($event)"
+      animated="true"
+      search-icon="search-circle"
+      [value]="searchTerm.value"
+      placeholder='{{"common.searchfield" | translate}}'
+    ></ion-searchbar>
 
     <div class="ion-padding">
       <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-button *ngIf="isClubAdmin(clubAdminList, club.id)" shape="round" size="small" (click)="addRole()">
+        <ion-button
+          *ngIf="isClubAdmin(clubAdminList, club.id)"
+          shape="round"
+          size="small"
+          (click)="addRole()"
+        >
           {{"common.add" | translate}}
           <ion-icon slot="start" name="add-circle-outline"></ion-icon>
         </ion-button>
       </ng-container>
-      <ion-button (click)="setFilter(role)" shape="round" size="small" *ngFor="let role of club['roles']">
+      <ion-button
+        (click)="setFilter(role)"
+        shape="round"
+        size="small"
+        *ngFor="let role of club['roles']"
+      >
         {{role}}
       </ion-button>
     </div>
 
-    <ion-list [inset]="true" *ngIf="filteredClubMembers$ | async as clubMemberList else loading">
+    <ion-list
+      [inset]="true"
+      *ngIf="filteredClubMembers$ | async as clubMemberList else loading"
+    >
       <ion-item-group>
         <ng-container *ngFor="let groupBy of groupArray">
           <ion-item-divider color="light">
@@ -44,34 +72,54 @@
           </ion-item-divider>
 
           <ng-container *ngFor="let member of clubMemberList">
-
             <ion-item-sliding #item *ngIf="member.groupBy == groupBy">
-
               <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                <ion-item-options *ngIf="isClubAdmin(clubAdminList, club.id)" side="end">
-                  <ion-item-option color="primary" (click)="changeRoleOfMember(item, member)">
-                    <ion-icon slot="icon-only" name="pricetags-outline"></ion-icon>
+                <ion-item-options
+                  *ngIf="isClubAdmin(clubAdminList, club.id)"
+                  side="end"
+                >
+                  <ion-item-option
+                    color="primary"
+                    (click)="changeRoleOfMember(item, member)"
+                  >
+                    <ion-icon
+                      slot="icon-only"
+                      name="pricetags-outline"
+                    ></ion-icon>
                   </ion-item-option>
                 </ion-item-options>
               </ng-container>
               <ion-item detail="true">
-                <ion-icon *ngIf="allowEdit==true" slot="icon-only" color="danger" slot="start" name="trash"
-                  (click)="deleteClubMember(member)"></ion-icon>
+                <ion-icon
+                  *ngIf="allowEdit==true"
+                  slot="icon-only"
+                  color="danger"
+                  slot="start"
+                  name="trash"
+                  (click)="deleteClubMember(member)"
+                ></ion-icon>
                 <ion-avatar (click)="openMember(member)" slot="start">
-                  <img *ngIf="!member.profilePicture" alt="Silhouette of a person's head"
-                    src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-                  <img *ngIf="member.profilePicture" src="{{member?.profilePicture}}" />
+                  <img
+                    *ngIf="!member.profilePicture"
+                    alt="Silhouette of a person's head"
+                    src="https://ionicframework.com/docs/img/demos/avatar.svg"
+                  />
+                  <img
+                    *ngIf="member.profilePicture"
+                    src="{{member?.profilePicture}}"
+                    alt="Profile Picture"
+                  />
                 </ion-avatar>
-                <ion-label class="ion-text-wrap" (click)="openMember(member)">{{member.firstName}}
-                  {{member.lastName}}</ion-label>
-                <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                  <ion-label (click)="openMember(member)" *ngIf="isClubAdmin(clubAdminList, club.id)">
-                    {{member.dateOfBirth?.toDate() | date:'dd.MM.YYYY '}}
-                  </ion-label>
-                </ng-container>
-
-                <ion-label (click)="openMember(member)" *ngIf="member.roles.length > 0" slot="end">
-                  <ion-badge *ngFor="let role of member.roles">{{role}}</ion-badge>
+                <ion-label class="ion-text-wrap" (click)="openMember(member)">
+                  <h2>{{member.firstName}} {{member.lastName}}</h2>
+                  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+                    <h3 *ngIf="isClubAdmin(clubAdminList, club.id)">
+                      {{member.dateOfBirth?.toDate() | date:'dd.MM.YYYY '}}
+                    </h3>
+                  </ng-container>
+                  <ion-badge *ngFor="let role of member.roles"
+                    >{{role}}
+                  </ion-badge>
                 </ion-label>
               </ion-item>
             </ion-item-sliding>
@@ -82,13 +130,13 @@
   </ion-content>
 </ng-container>
 
-
-
 <ng-template #loading>
   <ion-list [inset]="true">
     <ion-item-group>
       <ion-item-divider color="light">
-        <ion-label><ion-skeleton-text animated style="width: 20%"></ion-skeleton-text></ion-label>
+        <ion-label
+          ><ion-skeleton-text animated style="width: 20%"></ion-skeleton-text
+        ></ion-label>
       </ion-item-divider>
 
       <!-- Mitglied 1 -->
@@ -100,7 +148,10 @@
           <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
         </ion-label>
         <ion-label slot="end">
-          <ion-skeleton-text animated style="width: 80%; height: 20px;"></ion-skeleton-text>
+          <ion-skeleton-text
+            animated
+            style="width: 80%; height: 20px"
+          ></ion-skeleton-text>
         </ion-label>
       </ion-item>
 
@@ -113,7 +164,10 @@
           <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
         </ion-label>
         <ion-label slot="end">
-          <ion-skeleton-text animated style="width: 60%; height: 20px;"></ion-skeleton-text>
+          <ion-skeleton-text
+            animated
+            style="width: 60%; height: 20px"
+          ></ion-skeleton-text>
         </ion-label>
       </ion-item>
 
@@ -126,12 +180,17 @@
           <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
         </ion-label>
         <ion-label slot="end">
-          <ion-skeleton-text animated style="width: 70%; height: 20px;"></ion-skeleton-text>
+          <ion-skeleton-text
+            animated
+            style="width: 70%; height: 20px"
+          ></ion-skeleton-text>
         </ion-label>
       </ion-item>
 
       <ion-item-divider color="light">
-        <ion-label><ion-skeleton-text animated style="width: 15%"></ion-skeleton-text></ion-label>
+        <ion-label
+          ><ion-skeleton-text animated style="width: 15%"></ion-skeleton-text
+        ></ion-label>
       </ion-item-divider>
 
       <!-- Mitglied 4 -->
@@ -143,7 +202,10 @@
           <ion-skeleton-text animated style="width: 65%"></ion-skeleton-text>
         </ion-label>
         <ion-label slot="end">
-          <ion-skeleton-text animated style="width: 40%; height: 20px;"></ion-skeleton-text>
+          <ion-skeleton-text
+            animated
+            style="width: 40%; height: 20px"
+          ></ion-skeleton-text>
         </ion-label>
       </ion-item>
 
@@ -156,10 +218,12 @@
           <ion-skeleton-text animated style="width: 55%"></ion-skeleton-text>
         </ion-label>
         <ion-label slot="end">
-          <ion-skeleton-text animated style="width: 75%; height: 20px;"></ion-skeleton-text>
+          <ion-skeleton-text
+            animated
+            style="width: 75%; height: 20px"
+          ></ion-skeleton-text>
         </ion-label>
       </ion-item>
     </ion-item-group>
   </ion-list>
-
 </ng-template>

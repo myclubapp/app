@@ -203,12 +203,15 @@
                   >
                   </ion-icon>
 
-                  <ion-label (click)="openMember(member)"
-                    >{{member.firstName}} {{member.lastName}}</ion-label
-                  >
-                  <ion-badge *ngFor="let role of member.roles" slot="end"
-                    >{{role}}</ion-badge
-                  >
+                  <ion-label (click)="openMember(member)">
+                    <h2>{{member.firstName}} {{member.lastName}}</h2>
+                    <p>
+                      {{member?.changedAt?.toDate() | date:'dd.MM.yyyy HH:mm'}}
+                    </p>
+                    <ion-badge *ngFor="let role of member.roles"
+                      >{{role}}</ion-badge
+                    >
+                  </ion-label>
                 </ion-item>
                 <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
                   <ion-item-options
@@ -258,12 +261,15 @@
                   <ion-icon color="danger" slot="start" name="close-circle">
                   </ion-icon>
 
-                  <ion-label (click)="openMember(member)"
-                    >{{member.firstName}} {{member.lastName}}</ion-label
-                  >
-                  <ion-badge *ngFor="let role of member.roles" slot="end"
-                    >{{role}}</ion-badge
-                  >
+                  <ion-label (click)="openMember(member)">
+                    <h2>{{member.firstName}} {{member.lastName}}</h2>
+                    <p>
+                      {{member?.changedAt?.toDate() | date:'dd.MM.yyyy HH:mm'}}
+                    </p>
+                    <ion-badge *ngFor="let role of member.roles"
+                      >{{role}}</ion-badge
+                    >
+                  </ion-label>
                 </ion-item>
                 <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
                   <ion-item-options
@@ -313,12 +319,13 @@
                   <ion-icon color="warning" slot="start" name="help-circle">
                   </ion-icon>
 
-                  <ion-label (click)="openMember(member)"
-                    >{{member.firstName}} {{member.lastName}}</ion-label
-                  >
-                  <ion-badge *ngFor="let role of member.roles" slot="end"
-                    >{{role}}</ion-badge
-                  >
+                  <ion-label (click)="openMember(member)">
+                    <h2>{{member.firstName}} {{member.lastName}}</h2>
+
+                    <ion-badge *ngFor="let role of member.roles"
+                      >{{role}}</ion-badge
+                    >
+                  </ion-label>
                 </ion-item>
                 <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
                   <ion-item-options

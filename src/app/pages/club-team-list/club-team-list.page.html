@@ -25,7 +25,16 @@
           *ngFor="let team of teamList$ | async"
         >
           <ion-card (click)="openModal(team)">
-            <img src="{{team?.logo}}" />
+            <img
+              *ngIf="team?.portrait"
+              src="{{team?.portrait}}"
+              alt="{{team.name}}"
+            />
+            <img
+              *ngIf="!team?.portrait"
+              src="{{team?.logo}}"
+              alt="{{team.name}}"
+            />
             <ion-card-header>
               <ion-card-title> {{team?.name}} </ion-card-title>
               <ion-card-subtitle> {{team?.liga}} </ion-card-subtitle>

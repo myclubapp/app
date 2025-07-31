@@ -1,7 +1,7 @@
 {
   "name": "myclub",
-  "version": "2.0.11",
-  "buildNumber": "193",
+  "version": "2.0.12",
+  "buildNumber": "194",
   "author": "liitu consulting gmbh",
   "homepage": "https://my-club.app/",
   "scripts": {
@@ -95,6 +95,7 @@
     "swiper": "^11.2.8",
     "swissqrbill": "^4.2.0",
     "web-social-share": "9.1.0",
+    "xlsx": "^0.18.5",
     "zone.js": "0.15.1"
   },
   "devDependencies": {

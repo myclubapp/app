@@ -152,7 +152,7 @@ export class ChampionshipService {
       this.firestore,
       `teams/${teamId}/games/${gameId}/attendees/${memberId}`,
     );
-    return setDoc(statusRef, { status });
+    return setDoc(statusRef, { status, changedAt: Timestamp.now() });
   }
 
   deleteTeamGame(teamId: string, gameId: string) {

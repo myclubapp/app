@@ -98,6 +98,7 @@ export class JugendundsportService {
   }
 
   async exportTrainingData(team: Team, startDate: Date, endDate: Date) {
+    // console.log("exportTrainingData", team, startDate, endDate);
     try {
       // Trainingsdaten abrufen
       const trainings = await lastValueFrom(
@@ -166,6 +167,7 @@ export class JugendundsportService {
   }
 
   async exportChampionshipData(team: Team, startDate: Date, endDate: Date) {
+    // console.log("exportChampionshipData", team, startDate, endDate);
     try {
       // Meisterschaftsspiele abrufen
       const games = await lastValueFrom(

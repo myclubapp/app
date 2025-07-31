@@ -163,6 +163,7 @@ export class TrainingDetailPage implements OnInit {
                         lastName: "Unknown",
                         roles: member.roles || [],
                         status: null,
+                        changedAt: null,
                       });
                     }),
                   ),
@@ -185,7 +186,11 @@ export class TrainingDetailPage implements OnInit {
                                 (member) => member && member.id === attendee.id,
                               );
                               return detail
-                                ? { ...detail, status: attendee.status }
+                                ? {
+                                    ...detail,
+                                    status: attendee.status,
+                                    changedAt: attendee.changedAt,
+                                  }
                                 : null;
                             })
                             .filter((item) => item !== null);
@@ -250,6 +255,7 @@ export class TrainingDetailPage implements OnInit {
                                 status: att.status,
                                 firstName: att.firstName,
                                 lastName: att.lastName,
+                                changedAt: att.changedAt,
                               })),
                           };
                         }),

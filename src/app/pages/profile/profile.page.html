@@ -170,10 +170,25 @@
       <!-- AHV Nummer -->
       <ion-item>
         <ion-input
+          labelPlacement="stacked"
           [label]="'profile.ahv_number' | translate"
           [(ngModel)]="userProfile.ahvNumber"
+          attr.aria-label='{{"profile.ahv_number" | translate}}'
           (ionChange)="profileChange($event, 'ahvNumber')"
           placeholder="756.XXXX.XXXX.XX"
+        >
+        </ion-input>
+      </ion-item>
+
+      <!-- Lizenznummer -->
+      <ion-item>
+        <ion-input
+          labelPlacement="stacked"
+          [label]='"profile.license_number" | translate'
+          attr.aria-label='{{"profile.license_number" | translate}}'
+          [(ngModel)]="userProfile.licenseNumber"
+          (ionChange)="profileChange($event, 'licenseNumber')"
+          placeholder="1234567890"
         >
         </ion-input>
       </ion-item>

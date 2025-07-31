@@ -29,7 +29,12 @@
     <div class="team-header-container">
       <div class="team-logo-wrapper">
         <ion-avatar class="team-avatar">
-          <img alt="{{team.name}}" [src]="team.logo" *ngIf="team.logo" />
+          <img
+            alt="{{team.name}}"
+            [src]="team.portrait"
+            *ngIf="team.portrait"
+          />
+          <img alt="{{team.name}}" [src]="team.logo" *ngIf="!team.portrait" />
         </ion-avatar>
         <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
           <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
@@ -37,7 +42,7 @@
               vertical="bottom"
               horizontal="center"
               slot="fixed"
-              *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
+              *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId) && !team.portrait"
             >
               <ion-fab-button
                 color="primary"
@@ -261,8 +266,10 @@
         <ion-label> {{team.liga}} </ion-label>
       </ion-item>
       <ion-item *ngIf="team.portrait">
-        <ion-icon name="information-outline" slot="start"></ion-icon>
-        <ion-label> {{team.portrait}} </ion-label>
+        <ion-icon name="camera-outline" slot="start"></ion-icon>
+        <ion-thumbnail>
+          <img alt="{{team.name}}" [src]="team.portrait" />
+        </ion-thumbnail>
       </ion-item>
       <ion-item *ngIf="team.info">
         <ion-icon name="information-circle-outline" slot="start"></ion-icon>
@@ -275,6 +282,15 @@
         <ion-button (click)="openUrl(team.website)" fill="clear">
           <ion-icon slot="icon-only" name="open-outline"></ion-icon>
         </ion-button>
+      </ion-item>
+
+      <ion-item
+        *ngIf="team.type==='swissunihockey'"
+        detail="true"
+        (click)="openGameCenterExport()"
+      >
+        <ion-icon name="download-outline" slot="start"></ion-icon>
+        <ion-label> Game Center Export </ion-label>
       </ion-item>
 
       <!--<ion-item >

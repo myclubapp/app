@@ -43,6 +43,7 @@ import {
   CameraSource,
   Photo,
 } from "@capacitor/camera";
+import * as XLSX from "xlsx";
 
 @Component({
   selector: "app-team",
@@ -651,8 +652,9 @@ export class TeamPage implements OnInit {
       await loading.present();
 
       try {
-        const startDate = new Date(result.startDate);
-        const endDate = new Date(result.endDate);
+        // console.log("result", result);
+        const startDate = new Date(result.values.startDate);
+        const endDate = new Date(result.values.endDate);
 
         switch (exportType) {
           case "training":
@@ -719,6 +721,106 @@ export class TeamPage implements OnInit {
     } finally {
       await loading.dismiss();
     }
+  }
+
+  async openGameCenterExport() {
+    const loading = await this.loadingCtrl.create({
+      message: "Export wird vorbereitet...",
+      spinner: "circular",
+    });
+    await loading.present();
+
+    // Teamdaten laden
+    const team = await lastValueFrom(this.team$.pipe(take(1)));
+    if (!team || !team.teamMembers || team.teamMembers.length === 0) {
+      await loading.dismiss();
+      await this.uiService.showInfoDialog({
+        header: "Export",
+        message: "Keine Teammitglieder vorhanden.",
+      });
+      return;
+    }
+
+    // Spaltenüberschriften wie im Screenshot
+
+    const headers = [
+      "Team Role", // 0
+      "License nr",
+      "Gender",
+      "First name",
+      "Last name",
+      "Phone",
+      "E-mail",
+      "Shirt number",
+
+      "Guardian 1 First name", // 8
+      "Guardian 1 Last name",
+      "Guardian 1 phone",
+      "Guardian 1 e-mail",
+
+      "Guardian 2 First name",
+      "Guardian 2 Last name",
+      "Guardian 2 phone",
+      "Guardian 2 e-mail",
+      "image.png",
+      "",
+    ];
+
+    // XLSX-Daten aufbereiten (Array of Arrays)
+    const xlsxData = team.teamMembers.map((member) => {
+      const genderText =
+        member.gender === "m"
+          ? "Male"
+          : member.gender === "f"
+            ? "Female"
+            : "Male";
+      return [
+        member.teamRole || "Player",
+        member.licenseNumber || "",
+        genderText,
+        member.firstName || "",
+        member.lastName || "",
+        member.phonenumber || "",
+        member.email || "",
+        member.shirtNumber || "",
+
+        member.guardian1FirstName || "",
+        member.guardian1LastName || "",
+        member.guardian1Phone || "",
+        member.guardian1Email || "",
+
+        member.guardian2FirstName || "",
+        member.guardian2LastName || "",
+        member.guardian2Phone || "",
+        member.guardian2Email || "",
+        "", // image.png
+        "",
+      ];
+    });
+
+    // XLSX-Logik (SheetJS)
+    // @ts-ignore
+
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([headers, ...xlsxData]);
+    const ws2: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet([[], ...[]]);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Blad1");
+    XLSX.utils.book_append_sheet(wb, ws2, "Blad2");
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `team_gamecenter_export_${team.name || "team"}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    await loading.dismiss();
+    await this.uiService.showSuccessToast("Excel-Export erfolgreich erstellt.");
   }
 
   async close() {

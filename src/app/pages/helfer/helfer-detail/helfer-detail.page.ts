@@ -197,6 +197,7 @@ export class HelferDetailPage implements OnInit {
                                       ...detail,
                                       status: attendee.status,
                                       confirmed: attendee.confirmed,
+                                      changedAt: attendee.changedAt,
                                     }
                                   : null;
                               })
@@ -236,7 +237,13 @@ export class HelferDetailPage implements OnInit {
                                   confirmed: att.confirmed,
                                   firstName: att.firstName,
                                   lastName: att.lastName,
-                                })),
+                                  changedAt: att.changedAt,
+                                }))
+                                .sort(
+                                  (b, a) =>
+                                    a.changedAt.toDate().getTime() -
+                                    b.changedAt.toDate().getTime(),
+                                ),
                             };
                           }),
 

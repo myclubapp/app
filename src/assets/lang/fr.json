@@ -443,7 +443,8 @@
     "change_address_city": "Ville",
     "add": "ajouter",
     "no_children": "Aucun enfant ajouté",
-    "parent_info": "En tant que parent, vous serez informé de tous les événements importants concernant vos enfants."
+    "parent_info": "En tant que parent, vous serez informé de tous les événements importants concernant vos enfants.",
+    "license_number": "Numéro de licence"
   },
   "tabs": {},
   "team": {
