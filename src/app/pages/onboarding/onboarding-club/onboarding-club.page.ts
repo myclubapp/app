@@ -240,6 +240,7 @@ export class OnboardingClubPage implements OnInit {
 
       await alert.present();
       const result = await alert.onWillDismiss();
+      console.log("result", result);
 
       if (result.role === "destructive") {
         await this.presentCancelToast();
@@ -248,11 +249,14 @@ export class OnboardingClubPage implements OnInit {
 
       if (result.role === "confirm") {
         try {
+          console.log("result.data", result.data);
+          console.log("result.data.values", result.data.isParent);
+          console.log("teamData?.values", teamData?.values);
           await this.fbService.setClubRequest(
             club.id,
             this.user.uid,
-            result.data?.parent || false,
-            teamData?.values || "",
+            result?.data?.values.includes("parent") || false,
+            teamData?.values || "", // kann leer sein.. bspw. bei eltern
           );
           await this.presentRequestToast();
           await this.presentRequestSentAlert(club.name);
@@ -260,6 +264,7 @@ export class OnboardingClubPage implements OnInit {
           console.log(err.message);
           if (err.message === "Missing or insufficient permissions.") {
             await this.presentErrorAlert();
+            console.log("Maybe this member has already an open club request");
           }
         }
       }

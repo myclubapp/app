@@ -35,7 +35,7 @@
     "link__web": "Webseite / Weitere Informationen",
     "link__poll": "Umfrage",
     "link__placeholder": "https://",
-    "confirm_delete_checkbox": "Ich bestätige, dass ich dieses Element wirklich löschen möchte",
+    "confirm_delete_checkbox": "Ich bestätige, dass ich mein Profil wirklich löschen möchte",
     "or": "oder",
     "email__address": "E-Mail Adresse",
     "password": "Passwort",
@@ -385,7 +385,7 @@
     },
     "linked_clubs": "Verknüpfte Clubs",
     "error__clubRequest": "Fehler bei der Club-Anfrage",
-    "error__clubRequest_desc": "Beim Senden deiner Anfrage ist ein Fehler aufgetreten. Bitte versuche es später erneut oder kontaktiere den Support.",
+    "error__clubRequest_desc": "Beim Senden deiner Anfrage ist ein Fehler aufgetreten. Bitte versuche es später erneut oder kontaktiere den Support. Möglicherweise hast du bereits eine Anfrage an diesen Club gesendeet.",
     "create_new_club": "Neuen Club erstellen",
     "club_name": "Name des Clubs",
     "club_type": {
