@@ -42,6 +42,7 @@ import { Club } from "src/app/models/club";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { Profile } from "src/app/models/user";
 import { UiService } from "src/app/services/ui.service";
+import { SwissUnihockeyService } from "src/app/services/swiss-unihockey.service";
 
 @Component({
   selector: "app-championship",
@@ -61,6 +62,7 @@ export class ChampionshipPage implements OnInit {
   gameList$!: Observable<Game[]>;
   gameListPast$!: Observable<Game[]>;
   teamRankings$!: Observable<any[]>;
+  teamsWithRankings$!: Observable<any[]>;
 
   /*gameListBackup$: Observable<Game[]>;
   gameListPastBackup$: Observable<Game[]>;
@@ -97,6 +99,7 @@ export class ChampionshipPage implements OnInit {
     private translate: TranslateService,
     private userProfileService: UserProfileService,
     private uiService: UiService,
+    private swissUnihockeyService: SwissUnihockeyService,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
@@ -104,7 +107,22 @@ export class ChampionshipPage implements OnInit {
   ngOnInit() {
     this.gameList$ = this.getTeamGamesUpcoming();
     this.gameListPast$ = this.getTeamGamesPast();
-    this.teamRankings$ = this.getTeamsWithRankingsForYear("2025");
+
+    // Get dynamic season from Swiss Unihockey API
+    this.swissUnihockeyService.getCurrentSeason().subscribe((season) => {
+      this.teamRankings$ = this.getTeamsWithRankingsForYear(season.toString());
+      // Create filtered observable for teams with actual ranking data
+      this.teamsWithRankings$ = this.teamRankings$.pipe(
+        map((teams) =>
+          teams.filter(
+            (entry) =>
+              entry.rankings &&
+              entry.rankings.length > 0 &&
+              entry.details?.title,
+          ),
+        ),
+      );
+    });
 
     this.teamAdminList$ = this.fbService.getTeamAdminList();
     this.clubAdminList$ = this.fbService.getClubAdminList();

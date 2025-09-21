@@ -294,10 +294,14 @@
 
   <!-- RANKING -->
   <ng-container *ngIf="mode=='ranking'">
-    <ng-container *ngIf="teamRankings$ | async as teamRankings">
-      <ion-list [inset]="true">
-        <ion-accordion-group [multiple]="true" [value]="teamRankings[0].teamId">
-          <div *ngFor="let entry of teamRankings">
+    <ng-container *ngIf="teamsWithRankings$ | async as teamsWithRankings">
+      <!-- Show accordion group only if there are teams with ranking data -->
+      <ion-list *ngIf="teamsWithRankings.length > 0" [inset]="true">
+        <ion-accordion-group
+          [multiple]="true"
+          [value]="teamsWithRankings[0]?.teamId"
+        >
+          <div *ngFor="let entry of teamsWithRankings">
             <ion-accordion value="{{entry.teamId}}">
               <ion-item slot="header" color="light">
                 <ion-label class="ion-text-wrap"
@@ -354,6 +358,13 @@
             </ion-accordion>
           </div>
         </ion-accordion-group>
+      </ion-list>
+
+      <!-- Show message if no teams have ranking data -->
+      <ion-list *ngIf="teamsWithRankings.length === 0">
+        <ion-item>
+          <ion-note>Keine Tabellendaten verfügbar</ion-note>
+        </ion-item>
       </ion-list>
     </ng-container>
     <div class="ion-padding">
