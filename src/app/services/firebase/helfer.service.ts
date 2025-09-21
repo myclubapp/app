@@ -148,7 +148,7 @@ export class HelferService {
   async getHelferPunkte(clubId: string): Promise<any[]> {
     const helferPunkteRef = collection(
       this.firestore,
-      `clubs/${clubId}/helferPunkte`,
+      `club/${clubId}/helferPunkte`,
     );
     const snapshot = await getDocs(helferPunkteRef);
     return snapshot.docs.map((doc) => ({

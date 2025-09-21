@@ -281,11 +281,10 @@
       <ion-list-header>
         {{"common.attendances__absences" | translate}}
       </ion-list-header>
-      <ion-item class="myclubStatus">
-        <ng-container
-          *ngIf="event.hasOwnProperty('status'); else loadingStatus"
-        >
-          <ng-container *ngFor="let status of event.status">
+      <ng-container *ngIf="event.hasOwnProperty('status'); else loadingStatus">
+        <!-- Ein Eintrag pro Person: zuerst ich, dann Kinder -->
+        <ng-container *ngIf="event.status.length > 0; else noStatus">
+          <ion-item class="myclubStatus" *ngFor="let status of event.status">
             <ion-fab-button
               (click)="processToggle(status.id, true, event)"
               size="small"
@@ -316,27 +315,29 @@
               <ion-icon name="checkmark-circle"> </ion-icon>
             </ion-fab-button>
 
-            <ion-label *ngIf="status.id === user.uid"
-              >{{"common.my__status" | translate}}</ion-label
-            >
-            <ion-label *ngIf="status.id !== user.uid"
-              >{{status.firstName}} {{status.lastName}}
+            <ion-label *ngIf="status.id === user.uid">
+              {{"common.my__status" | translate}}
             </ion-label>
-          </ng-container>
-          <!-- NEU: Falls keine Status-Einträge vorhanden sind, Teilnahme ermöglichen -->
-          <ng-container *ngIf="event.status.length === 0">
-            <ion-fab-button
-              (click)="processToggle(user.uid, true, event)"
-              size="small"
-              color="warning"
-              slot="start"
-            >
-              <ion-icon name="help-circle"> </ion-icon>
-            </ion-fab-button>
-            <ion-label>{{'common.my__status' | translate}}</ion-label>
-          </ng-container>
+            <ion-label *ngIf="status.id !== user.uid">
+              {{status.firstName}} {{status.lastName}}
+            </ion-label>
+          </ion-item>
         </ng-container>
-      </ion-item>
+      </ng-container>
+
+      <ng-template #noStatus>
+        <ion-item class="myclubStatus">
+          <ion-fab-button
+            (click)="processToggle(user.uid, true, event)"
+            size="small"
+            color="warning"
+            slot="start"
+          >
+            <ion-icon name="help-circle"> </ion-icon>
+          </ion-fab-button>
+          <ion-label>{{'common.my__status' | translate}}</ion-label>
+        </ion-item>
+      </ng-template>
     </ion-list>
 
     <ion-list [inset]="true" *ngIf="!allowEdit && !event.closedEvent">

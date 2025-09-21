@@ -5,10 +5,11 @@ import {
   Injector,
 } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
+import { CommonModule } from "@angular/common";
 import { RouteReuseStrategy } from "@angular/router";
 
 import { IonicModule, IonicRouteStrategy, isPlatform } from "@ionic/angular";
-import { FormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { take } from "rxjs";
 
 import { AppComponent } from "./app.component";
@@ -82,10 +83,6 @@ import { CreateNewClubPage } from "./pages/onboarding/create-new-club/create-new
 import { CreateNewsPage } from "./pages/news/create-news/create-news.page";
 import { MemberInvoiceListPage } from "./pages/member-invoice-list/member-invoice-list.page";
 import { QrInvoiceModalPage } from "./pages/qr-invoice-modal/qr-invoice-modal.page";
-
-import { LottieComponent, provideLottieOptions } from "ngx-lottie";
-
-import player from "lottie-web";
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
@@ -173,10 +170,12 @@ const getConfig = () => {
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     BrowserModule,
+    CommonModule,
     FontAwesomeModule,
     IonicModule.forRoot(getConfig()),
     AppRoutingModule,
     FormsModule,
+    ReactiveFormsModule,
     ServiceWorkerModule.register("ngsw-worker.js", {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the app is stable
@@ -194,7 +193,6 @@ const getConfig = () => {
         { provide: MissingTranslationHandler, useClass: TranslateHandler },
       ],
     }),
-    LottieComponent,
   ],
   providers: [
     provideFirebaseApp(() => initializeApp(environment.firebase)),
@@ -223,9 +221,6 @@ const getConfig = () => {
       multi: true,
     },
     provideHttpClient(withInterceptorsFromDi()),
-    provideLottieOptions({
-      player: () => player,
-    }),
   ],
 })
 export class AppModule {}

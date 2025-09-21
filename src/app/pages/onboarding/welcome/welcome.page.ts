@@ -1,8 +1,6 @@
 import { Component } from "@angular/core";
 import { Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
-import { AnimationOptions } from "ngx-lottie";
-import { AnimationItem } from "lottie-web";
 
 interface WelcomeSlide {
   title: string;
@@ -44,33 +42,10 @@ export class WelcomePage {
     },
   ];
 
-  lottieOptions: AnimationOptions[] = [
-    {
-      path: "https://assets10.lottiefiles.com/packages/lf20_5ngs2ksb.json",
-      loop: true,
-      autoplay: true,
-    },
-    {
-      path: "/assets/lottie/lottie.json",
-      loop: true,
-      autoplay: true,
-    },
-    {
-      path: "/assets/lottie/myclub.json",
-      loop: true,
-      autoplay: true,
-    },
-    null,
-  ];
-
   constructor(
     private router: Router,
     private translate: TranslateService,
   ) {}
-
-  animationCreated(animationItem: AnimationItem | any): void {
-    console.log("animationItem", animationItem);
-  }
 
   nextSlide() {
     if (this.currentSlide < this.welcomeSlides.length - 1) {

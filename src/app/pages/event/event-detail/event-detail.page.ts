@@ -159,6 +159,40 @@ export class EventDetailPage implements OnInit {
                               a.firstName.localeCompare(b.firstName),
                             );
 
+                          // Status-Liste: zuerst ich, dann Kinder alphabetisch
+                          const myId = this.user.uid;
+                          const childIds = this.children.map(
+                            (child) => child.id,
+                          );
+
+                          const myStatus = attendeeDetails.find(
+                            (att) => att.id === myId,
+                          );
+                          const childrenStatuses = attendeeDetails
+                            .filter((att) => childIds.includes(att.id))
+                            .sort((a, b) =>
+                              a.firstName.localeCompare(b.firstName),
+                            );
+
+                          const orderedStatuses = [
+                            ...(myStatus
+                              ? [
+                                  {
+                                    id: myStatus.id,
+                                    status: myStatus.status,
+                                    firstName: myStatus.firstName,
+                                    lastName: myStatus.lastName,
+                                  },
+                                ]
+                              : []),
+                            ...childrenStatuses.map((att) => ({
+                              id: att.id,
+                              status: att.status,
+                              firstName: att.firstName,
+                              lastName: att.lastName,
+                            })),
+                          ];
+
                           return {
                             ...event,
                             club,
@@ -166,19 +200,7 @@ export class EventDetailPage implements OnInit {
                             attendeeListTrue,
                             attendeeListFalse,
                             unrespondedMembers,
-                            status: attendeeDetails
-                              .filter((att) =>
-                                [
-                                  this.user.uid,
-                                  ...this.children.map((child) => child.id),
-                                ].includes(att.id),
-                              )
-                              .map((att) => ({
-                                id: att.id,
-                                status: att.status,
-                                firstName: att.firstName,
-                                lastName: att.lastName,
-                              })),
+                            status: orderedStatuses,
                           };
                         }),
                         catchError((err) => {

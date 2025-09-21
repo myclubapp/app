@@ -9,6 +9,11 @@
     "confirmation": "Confirmation",
     "confirm": "Confirm",
     "success__saved": "Successfully saved",
+    "all_read": "[NEEDS TRANSLATION] Alle gelesen",
+    "notifications": "[NEEDS TRANSLATION] Benachrichtigungen",
+    "notifications_open": "[NEEDS TRANSLATION] Ungelesene Benachrichtigungen",
+    "notifications_read": "[NEEDS TRANSLATION] Gelesene Benachrichtigungen",
+    "teams": "[NEEDS TRANSLATION] Teams",
     "month": "Month",
     "year": "Year",
     "paid": "Paid",
@@ -22,6 +27,8 @@
     "success__event_deleted": "Event successfully deleted",
     "success__helfer_deleted": "Helper event successfully deleted",
     "success__training_deleted": "Training successfully deleted",
+    "success__exercise_deleted": "[NEEDS TRANSLATION] Übung erfolgreich entfernt",
+    "success__exercise_added": "[NEEDS TRANSLATION] Übung erfolgreich hinzugefügt",
     "alle_anmelden": "Register all",
     "link__web": "Website / More information",
     "link__poll": "Survey",
@@ -87,6 +94,7 @@
     "helper_points": "Helper points",
     "my_helper_points": "My helper points",
     "news": "News",
+    "newsVerband": "[NEEDS TRANSLATION] News Verband",
     "yes": "Yes",
     "no": "No",
     "logout": "Logout",
@@ -166,7 +174,10 @@
     "leadText": "Lead text",
     "text": "Text",
     "date": "Date",
-    "url": "URL"
+    "url": "URL",
+    "share": "[NEEDS TRANSLATION] Teilen",
+    "skip": "[NEEDS TRANSLATION] Überspringen",
+    "error__no_club_member": "[NEEDS TRANSLATION] Kein Vereinsmitglied"
   },
   "login": {
     "login__title": "Sign in with your account",
@@ -181,7 +192,9 @@
     "error_user_not_found": "No user found with this email address",
     "error_wrong_password": "Wrong password",
     "error_invalid_email": "Invalid email address",
-    "error_user_disabled": "This user has been disabled"
+    "error_user_disabled": "This user has been disabled",
+    "mistake": "[NEEDS TRANSLATION] Fehler",
+    "register": "[NEEDS TRANSLATION] Registrieren"
   },
   "logout": {
     "logout__success": "Logout was successful!",
@@ -214,6 +227,9 @@
     "upcomming__games": "Upcoming games"
   },
   "championship-detail": {},
+  "club-member-list": {
+    "delete_member__confirm": "[NEEDS TRANSLATION] Möchtest du das Mitglied wirklich aus dem Club entfernen?"
+  },
   "club": {
     "request_approve_header": "Club request",
     "request_approve_subheader": "Add member to club?",
@@ -332,6 +348,7 @@
   "onboarding": {
     "join__club": "Join club",
     "search_by_club__pholder": "Search by club",
+    "join__club_title": "[NEEDS TRANSLATION] Möchtest du dem Verein als Mitglied beitreten?",
     "do_you_want_to_join__club": "If you are not a club member but want to manage a child who is a member as a parent, please select 'Register as parent'.",
     "success__request_sent": "Request sent successfully",
     "warning__action_canceled": "Action was canceled",
@@ -366,7 +383,9 @@
     "error__clubRequest": "Error with club request",
     "error__clubRequest_desc": "An error occurred while sending your request. Please try again later or contact support.",
     "confirm_new_club_title": "Club not found? Create a new club",
-    "confirm_new_club_message": "Are you sure you want to create a new club? myclub already supports over 3100 clubs."
+    "confirm_new_club_message": "Are you sure you want to create a new club? myclub already supports over 3100 clubs.",
+    "create_new_club": "[NEEDS TRANSLATION] Neuen Club erstellen",
+    "club_name": "[NEEDS TRANSLATION] Name des Clubs"
   },
   "onboarding-team": {
     "onboarding__team": "Onboarding team"
@@ -464,7 +483,17 @@
     "change_address_postalcode": "Postal code",
     "change_address_city": "City",
     "add": "add",
-    "parent_info": "As a parent, you will be informed about all important events concerning your children."
+    "parent_info": "As a parent, you will be informed about all important events concerning your children.",
+    "profile_picture": "[NEEDS TRANSLATION] Profilbild",
+    "push__message__aktivate": "[NEEDS TRANSLATION] Push-Nachrichten aktivieren",
+    "birthdate": "[NEEDS TRANSLATION] Geburtsdatum",
+    "phonenumber": "[NEEDS TRANSLATION] Telefonnummer",
+    "address": "[NEEDS TRANSLATION] Adresse",
+    "contact__information": "[NEEDS TRANSLATION] Kontaktinformationen",
+    "license__number": "[NEEDS TRANSLATION] Lizenznummer",
+    "diverses": "[NEEDS TRANSLATION] Diverses",
+    "sport": "[NEEDS TRANSLATION] Sport",
+    "license_number": "[NEEDS TRANSLATION] Lizenznummer"
   },
   "tabs": {},
   "team": {
@@ -509,7 +538,8 @@
     "details": "Team Details"
   },
   "team-list": {
-    "my__teams": "My teams"
+    "my__teams": "My teams",
+    "leave_team__confirm": "[NEEDS TRANSLATION] Möchtest du das Team wirklich verlassen?"
   },
   "training-create": {
     "new__training": "New training",
@@ -594,6 +624,9 @@
     "add_admin": "Add administrator",
     "no_admins": "No administrators available"
   },
+  "team-member-list": {
+    "delete_member__confirm": "[NEEDS TRANSLATION] Möchtest du das Mitglied wirklich aus dem Team entfernen?"
+  },
   "member": {
     "member_details": "Member details",
     "contact_info": "Contact information",
@@ -613,6 +646,19 @@
     "type__pdf": "PDF",
     "url": "URL",
     "show__on__card": "Show on card",
-    "create_link_confirm": "Do you really want to create this link?"
+    "create_link_confirm": "Do you really want to create this link?",
+    "update_link_confirm": "[NEEDS TRANSLATION] Möchten Sie diesen Link wirklich aktualisieren?"
+  },
+  "welcome": {
+    "title": "[NEEDS TRANSLATION] Willkommen bei MyClub",
+    "description": "[NEEDS TRANSLATION] Die moderne Plattform für Sportvereine",
+    "club_management": "[NEEDS TRANSLATION] Vereinsverwaltung",
+    "club_management_desc": "[NEEDS TRANSLATION] Verwalte deinen Verein einfach und effizient",
+    "team_management": "[NEEDS TRANSLATION] Teammanagement",
+    "team_management_desc": "[NEEDS TRANSLATION] Organisiere deine Teams und Spieler",
+    "communication": "[NEEDS TRANSLATION] Kommunikation",
+    "communication_desc": "[NEEDS TRANSLATION] Bleibe mit deinem Verein in Verbindung",
+    "start_onboarding": "[NEEDS TRANSLATION] Onboarding starten",
+    "skip": "[NEEDS TRANSLATION] Überspringen"
   }
 }

@@ -405,7 +405,7 @@ export class EventService {
   }
 
   async sendReminder(clubId: string, eventId: string) {
-    const eventRef = doc(this.firestore, `clubs/${clubId}/events/${eventId}`);
+    const eventRef = doc(this.firestore, `club/${clubId}/events/${eventId}`);
     const eventDoc = await getDoc(eventRef);
 
     if (!eventDoc.exists()) {

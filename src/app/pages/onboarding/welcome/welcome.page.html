@@ -20,14 +20,9 @@
         [style.background]="'linear-gradient(135deg, ' + slide.backgroundColor + ', ' + slide.backgroundColor + '99)'"
       >
         <div class="slide-content">
-          <ng-lottie
-            height="220"
-            width="220"
-            [options]="lottieOptions[i]"
-            [styles]="{ margin: '0 auto 16px auto' }"
-            (animationCreated)="animationCreated($event)"
-          >
-          </ng-lottie>
+          <div class="animation-placeholder">
+            <ion-icon name="trophy" size="large"></ion-icon>
+          </div>
 
           <div class="text-content">
             <h1 class="slide-title">{{ slide.title }}</h1>

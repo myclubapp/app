@@ -9,6 +9,11 @@
     "confirmation": "Conferma",
     "confirm": "Conferma",
     "success__saved": "Salvato con successo",
+    "all_read": "[NEEDS TRANSLATION] Alle gelesen",
+    "notifications": "[NEEDS TRANSLATION] Benachrichtigungen",
+    "notifications_open": "[NEEDS TRANSLATION] Ungelesene Benachrichtigungen",
+    "notifications_read": "[NEEDS TRANSLATION] Gelesene Benachrichtigungen",
+    "teams": "[NEEDS TRANSLATION] Teams",
     "month": "Mese",
     "year": "Anno",
     "paid": "Pagato",
@@ -22,6 +27,8 @@
     "success__event_deleted": "Evento eliminato con successo",
     "success__helfer_deleted": "Evento di aiuto eliminato con successo",
     "success__training_deleted": "Allenamento eliminato con successo",
+    "success__exercise_deleted": "[NEEDS TRANSLATION] Übung erfolgreich entfernt",
+    "success__exercise_added": "[NEEDS TRANSLATION] Übung erfolgreich hinzugefügt",
     "alle_anmelden": "Registra tutti",
     "link__web": "Sito web / Ulteriori informazioni",
     "link__poll": "Sondaggio",
@@ -85,6 +92,7 @@
     "helper_points": "Punti di aiuto",
     "my_helper_points": "I miei punti di aiuto",
     "news": "Notizie",
+    "newsVerband": "[NEEDS TRANSLATION] News Verband",
     "yes": "Sì",
     "no": "No",
     "logout": "Esci",
@@ -164,7 +172,10 @@
     "leadText": "Testo introduttivo",
     "text": "Testo",
     "date": "Data",
-    "url": "URL"
+    "url": "URL",
+    "share": "[NEEDS TRANSLATION] Teilen",
+    "skip": "[NEEDS TRANSLATION] Überspringen",
+    "error__no_club_member": "[NEEDS TRANSLATION] Kein Vereinsmitglied"
   },
   "login": {
     "login__title": "Accedi con il tuo account",
@@ -182,7 +193,8 @@
     "error_invalid_email": "Indirizzo email non valido",
     "error_user_disabled": "Questo utente è stato disabilitato",
     "mistake": "Errore",
-    "error": "Errore"
+    "error": "Errore",
+    "register": "[NEEDS TRANSLATION] Registrieren"
   },
   "logout": {
     "logout__success": "Logout eseguito con successo!",
@@ -215,6 +227,9 @@
     "upcomming__games": "Prossime partite"
   },
   "championship-detail": {},
+  "club-member-list": {
+    "delete_member__confirm": "[NEEDS TRANSLATION] Möchtest du das Mitglied wirklich aus dem Club entfernen?"
+  },
   "club": {
     "want_to_add__user__to_club_string": "Vuoi aggiungere {userName} al tuo club?",
     "success__user_added": "utente aggiunto con successo al club",
@@ -268,7 +283,8 @@
   },
   "helfer": {
     "upcomming__helper_event": "Prossimi eventi di volontariato",
-    "past__helper_events": "Eventi di volontariato passati"
+    "past__helper_events": "Eventi di volontariato passati",
+    "schichten": "[NEEDS TRANSLATION] Helferschichten"
   },
   "helfer-add": {
     "new__helper_event": "Nuovo evento di volontariato"
@@ -328,6 +344,7 @@
   "onboarding": {
     "join__club": "Unisciti al club",
     "search_by_club__pholder": "Cerca per club",
+    "join__club_title": "[NEEDS TRANSLATION] Möchtest du dem Verein als Mitglied beitreten?",
     "do_you_want_to_join__club": "Se non sei un membro del club ma desideri gestire un figlio che lo è come genitore, seleziona 'Registrati come genitore'.",
     "success__request_sent": "Richiesta inviata con successo",
     "warning__action_canceled": "Azione annullata",
@@ -360,7 +377,9 @@
     "error__clubRequest": "Errore nella richiesta al club",
     "error__clubRequest_desc": "Si è verificato un errore durante l'invio della tua richiesta. Riprova più tardi o contatta il supporto.",
     "confirm_new_club_title": "Club non trovato? Crea un nuovo club",
-    "confirm_new_club_message": "Sei sicuro di voler creare un nuovo club? myclub supporta già oltre 3100 club."
+    "confirm_new_club_message": "Sei sicuro di voler creare un nuovo club? myclub supporta già oltre 3100 club.",
+    "create_new_club": "[NEEDS TRANSLATION] Neuen Club erstellen",
+    "club_name": "[NEEDS TRANSLATION] Name des Clubs"
   },
   "onboarding-team": {
     "onboarding__team": "Team di onboarding"
@@ -441,7 +460,17 @@
     "children": "Bambini",
     "add": "aggiungi",
     "no_children": "Nessun bambino aggiunto",
-    "parent_info": "Come genitore, sarai informato su tutti gli eventi importanti riguardanti i tuoi figli."
+    "parent_info": "Come genitore, sarai informato su tutti gli eventi importanti riguardanti i tuoi figli.",
+    "profile_picture": "[NEEDS TRANSLATION] Profilbild",
+    "push__message__aktivate": "[NEEDS TRANSLATION] Push-Nachrichten aktivieren",
+    "birthdate": "[NEEDS TRANSLATION] Geburtsdatum",
+    "phonenumber": "[NEEDS TRANSLATION] Telefonnummer",
+    "address": "[NEEDS TRANSLATION] Adresse",
+    "contact__information": "[NEEDS TRANSLATION] Kontaktinformationen",
+    "license__number": "[NEEDS TRANSLATION] Lizenznummer",
+    "diverses": "[NEEDS TRANSLATION] Diverses",
+    "sport": "[NEEDS TRANSLATION] Sport",
+    "license_number": "[NEEDS TRANSLATION] Lizenznummer"
   },
   "tabs": {},
   "team": {
@@ -487,7 +516,8 @@
     "details": "Dettagli della squadra"
   },
   "team-list": {
-    "my__teams": "Le mie squadre"
+    "my__teams": "Le mie squadre",
+    "leave_team__confirm": "[NEEDS TRANSLATION] Möchtest du das Team wirklich verlassen?"
   },
   "training-create": {
     "new__training": "Nuovo allenamento",
@@ -572,6 +602,9 @@
     "add_admin": "Aggiungi amministratore",
     "no_admins": "Nessun amministratore disponibile"
   },
+  "team-member-list": {
+    "delete_member__confirm": "[NEEDS TRANSLATION] Möchtest du das Mitglied wirklich aus dem Team entfernen?"
+  },
   "member": {
     "member_details": "Dettagli membro",
     "contact_info": "Informazioni di contatto",
@@ -591,6 +624,19 @@
     "type__pdf": "PDF",
     "url": "URL",
     "show__on__card": "Mostra sulla scheda",
-    "create_link_confirm": "Vuoi davvero creare questo link?"
+    "create_link_confirm": "Vuoi davvero creare questo link?",
+    "update_link_confirm": "[NEEDS TRANSLATION] Möchten Sie diesen Link wirklich aktualisieren?"
+  },
+  "welcome": {
+    "title": "[NEEDS TRANSLATION] Willkommen bei MyClub",
+    "description": "[NEEDS TRANSLATION] Die moderne Plattform für Sportvereine",
+    "club_management": "[NEEDS TRANSLATION] Vereinsverwaltung",
+    "club_management_desc": "[NEEDS TRANSLATION] Verwalte deinen Verein einfach und effizient",
+    "team_management": "[NEEDS TRANSLATION] Teammanagement",
+    "team_management_desc": "[NEEDS TRANSLATION] Organisiere deine Teams und Spieler",
+    "communication": "[NEEDS TRANSLATION] Kommunikation",
+    "communication_desc": "[NEEDS TRANSLATION] Bleibe mit deinem Verein in Verbindung",
+    "start_onboarding": "[NEEDS TRANSLATION] Onboarding starten",
+    "skip": "[NEEDS TRANSLATION] Überspringen"
   }
 }

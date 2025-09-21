@@ -223,13 +223,16 @@ export class EventsPage implements OnInit {
                       .getClubEventAttendeesRef(club.id, event.id)
                       .pipe(
                         map((attendees) => {
+                          console.log("attendees", attendees);
                           const allIds = [
                             this.user.uid,
                             ...(this.children?.map((child) => child.id) || []),
                           ];
+                          console.log("all ids", allIds);
                           const userAttendee = attendees.find((att) =>
                             allIds.includes(att.id),
                           );
+                          console.log(userAttendee);
                           const status = userAttendee
                             ? userAttendee.status
                             : null;
@@ -450,7 +453,7 @@ export class EventsPage implements OnInit {
                       .pipe(take(1)),
                   );
             return {
-              type: "radio" as const,
+              type: "checkbox" as const,
               label: `${profile.firstName} ${profile.lastName}`,
               value: member.uid,
             };
@@ -465,8 +468,11 @@ export class EventsPage implements OnInit {
             text: await lastValueFrom(this.translate.get("common.ok")),
             role: "confirm",
             handler: (selectedId) => {
+              console.log(selectedId);
               if (selectedId) {
-                this.processToggle(selectedId, status, event);
+                for (const id of selectedId) {
+                  this.processToggle(id, status, event);
+                }
               }
             },
           },

@@ -104,7 +104,7 @@ export class ChampionshipPage implements OnInit {
   ngOnInit() {
     this.gameList$ = this.getTeamGamesUpcoming();
     this.gameListPast$ = this.getTeamGamesPast();
-    this.teamRankings$ = this.getTeamsWithRankingsForYear("2024");
+    this.teamRankings$ = this.getTeamsWithRankingsForYear("2025");
 
     this.teamAdminList$ = this.fbService.getTeamAdminList();
     this.clubAdminList$ = this.fbService.getClubAdminList();
