@@ -15,6 +15,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { map } from "rxjs/operators";
 import { UiService } from "src/app/services/ui.service";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
 @Component({
   selector: "app-club-billing-period",
@@ -26,15 +27,7 @@ export class ClubBillingPeriodPage implements OnInit {
   @Input() club: Club;
   periodGroups$: Observable<{ year: string; periods: any[] }[]>;
   // clubAdminList$: Observable<any[]>;
-  creditor = {
-    account: "",
-    name: "",
-    address: "",
-    buildingNumber: "",
-    zip: "",
-    city: "",
-    country: "",
-  };
+  creditorForm: FormGroup;
   teams$: Observable<any[]>;
   // Zuschläge/Abzüge
   surcharges: { name: string; amount: number; currency: string }[] = [];
@@ -49,12 +42,23 @@ export class ClubBillingPeriodPage implements OnInit {
     private fbService: FirebaseService,
     @Optional() private readonly routerOutlet: IonRouterOutlet,
     private uiService: UiService,
-  ) {}
+    private formBuilder: FormBuilder,
+  ) {
+    this.creditorForm = this.formBuilder.group({
+      account: ['', Validators.required],
+      name: ['', Validators.required],
+      address: ['', Validators.required],
+      buildingNumber: [''],
+      zip: ['', Validators.required],
+      city: ['', Validators.required],
+      country: ['', Validators.required]
+    });
+  }
 
   ngOnInit() {
     this.loadPeriods();
     if (this.club && this.club.creditor) {
-      this.creditor = { ...this.club.creditor };
+      this.creditorForm.patchValue(this.club.creditor);
     }
     // Teams laden
     this.teams$ = this.fbService.getTeamsByClubId(this.club.id);
@@ -191,8 +195,12 @@ export class ClubBillingPeriodPage implements OnInit {
   }
 
   async saveCreditor() {
-    await this.fbService.setClubCreditor(this.club.id, this.creditor);
-    this.uiService.showSuccessToast("Bankverbindung gespeichert");
+    if (this.creditorForm.valid) {
+      await this.fbService.setClubCreditor(this.club.id, this.creditorForm.value);
+      this.uiService.showSuccessToast("Bankverbindung gespeichert");
+    } else {
+      this.uiService.showErrorToast("Bitte füllen Sie alle Pflichtfelder aus");
+    }
   }
 
   async changeJahresbeitrag(team: any) {

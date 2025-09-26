@@ -21,36 +21,38 @@
           <ion-label>Bankverbindung (QR-Rechnung)</ion-label>
         </ion-item>
         <div slot="content">
-          <ion-list [inset]="true">
-            <ion-item>
-              <ion-label position="stacked">QR-IBAN</ion-label>
-              <ion-input [(ngModel)]="creditor.account"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Name</ion-label>
-              <ion-input [(ngModel)]="creditor.name"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Adresse</ion-label>
-              <ion-input [(ngModel)]="creditor.address"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Hausnummer</ion-label>
-              <ion-input [(ngModel)]="creditor.buildingNumber"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">PLZ</ion-label>
-              <ion-input [(ngModel)]="creditor.zip"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Ort</ion-label>
-              <ion-input [(ngModel)]="creditor.city"></ion-input>
-            </ion-item>
-            <ion-item>
-              <ion-label position="stacked">Land</ion-label>
-              <ion-input [(ngModel)]="creditor.country"></ion-input>
-            </ion-item>
-          </ion-list>
+          <form [formGroup]="creditorForm">
+            <ion-list [inset]="true">
+              <ion-item>
+                <ion-label position="stacked">QR-IBAN</ion-label>
+                <ion-input formControlName="account"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Name</ion-label>
+                <ion-input formControlName="name"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Adresse</ion-label>
+                <ion-input formControlName="address"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Hausnummer</ion-label>
+                <ion-input formControlName="buildingNumber"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">PLZ</ion-label>
+                <ion-input formControlName="zip"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Ort</ion-label>
+                <ion-input formControlName="city"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">Land</ion-label>
+                <ion-input formControlName="country"></ion-input>
+              </ion-item>
+            </ion-list>
+          </form>
           <ion-button expand="block" (click)="saveCreditor()"
             >Speichern</ion-button
           >
