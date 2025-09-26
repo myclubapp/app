@@ -335,7 +335,12 @@ export class TrainingsPage implements OnInit {
         ]).pipe(
           map(([teamMembersMap, teamsTrainings]) => {
             const flattenedTrainings = teamsTrainings.flat();
-            return flattenedTrainings.map((item) => {
+            // Remove duplicate trainings by ID
+            const uniqueTrainings = flattenedTrainings.filter(
+              (training, index, self) =>
+                index === self.findIndex((t) => t.training.id === training.training.id),
+            );
+            return uniqueTrainings.map((item) => {
               const teamMembers = teamMembersMap[item.teamId] || [];
               const validAttendees = item.attendees.filter(
                 (att) =>
@@ -533,7 +538,12 @@ export class TrainingsPage implements OnInit {
         ]).pipe(
           map(([teamMembersMap, teamsTrainings]) => {
             const flattenedTrainings = teamsTrainings.flat();
-            return flattenedTrainings.map((item) => {
+            // Remove duplicate trainings by ID
+            const uniqueTrainings = flattenedTrainings.filter(
+              (training, index, self) =>
+                index === self.findIndex((t) => t.training.id === training.training.id),
+            );
+            return uniqueTrainings.map((item) => {
               const teamMembers = teamMembersMap[item.teamId] || [];
               const validAttendees = item.attendees.filter(
                 (att) =>
