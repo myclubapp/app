@@ -28,7 +28,6 @@ def capacitor_pods
   pod 'CapacitorSplashScreen', :path => '../../node_modules/@capacitor/splash-screen'
   pod 'CapacitorStatusBar', :path => '../../node_modules/@capacitor/status-bar'
   pod 'CapacitorPluginSafeArea', :path => '../../node_modules/capacitor-plugin-safe-area'
-  pod 'MyclubWidgetPlugin', :path => '../../node_modules/myclub-widget-plugin'
   pod 'CordovaPlugins', :path => '../capacitor-cordova-ios-plugins'
 end
 

@@ -1,13 +1,13 @@
 {
   "name": "CapacitorGoogleMaps",
-  "version": "7.0.2",
+  "version": "7.1.1",
   "summary": "Google maps on Capacitor",
   "license": "MIT",
   "homepage": "https://capacitorjs.com",
   "authors": "Ionic <hi@ionicframework.com>",
   "source": {
     "git": "https://github.com/ionic-team/capacitor-plugins.git",
-    "tag": "@capacitor/google-maps@7.0.2"
+    "tag": "@capacitor/google-maps@7.1.1"
   },
   "source_files": [
     "ios/Plugin/**/*.{swift,h,m,c,cc,mm,cpp}",

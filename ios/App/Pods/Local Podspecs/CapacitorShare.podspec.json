@@ -1,13 +1,13 @@
 {
   "name": "CapacitorShare",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "summary": "The Share API provides methods for sharing content in any sharing-enabled apps the user may have installed.",
   "license": "MIT",
   "homepage": "https://capacitorjs.com",
   "authors": "Ionic <hi@ionicframework.com>",
   "source": {
     "git": "https://github.com/ionic-team/capacitor-plugins.git",
-    "tag": "@capacitor/share@7.0.1"
+    "tag": "@capacitor/share@7.0.2"
   },
   "source_files": [
     "ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}",
