@@ -63,7 +63,10 @@
 
       <ion-item *ngIf="isRequest && requestTeam$ | async as requestTeam">
         <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-        <ion-label>Angefragt für {{requestTeam.name}}</ion-label>
+        <ion-label
+          >{{'common.requested_for' | translate}}
+          {{requestTeam.name}}</ion-label
+        >
       </ion-item>
 
       <ng-container *ngIf="isAdmin$ | async">

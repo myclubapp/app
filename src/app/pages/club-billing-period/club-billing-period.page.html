@@ -62,7 +62,7 @@
     <ion-accordion-group>
       <ion-accordion value="teams">
         <ion-item slot="header">
-          <ion-label>Mitgliederbeiträge der Teams</ion-label>
+          <ion-label>{{'common.team_member_fees' | translate}}</ion-label>
         </ion-item>
         <div slot="content">
           <ion-list *ngIf="teams$ | async as teams">
@@ -85,7 +85,7 @@
     <ion-accordion-group>
       <ion-accordion value="surcharges">
         <ion-item slot="header">
-          <ion-label>Zuschläge / Abzüge</ion-label>
+          <ion-label>{{'common.surcharges_deductions' | translate}}</ion-label>
         </ion-item>
         <div slot="content">
           <ion-list *ngIf="surcharges.length > 0; else noSurcharges">
@@ -110,12 +110,13 @@
           <ng-template #noSurcharges>
             <ion-item>
               <ion-label color="medium"
-                >Noch keine Zuschläge oder Abzüge erfasst.</ion-label
+                >{{'club-billing-period.no_surcharges_recorded' |
+                translate}}</ion-label
               >
             </ion-item>
           </ng-template>
           <ion-button expand="block" (click)="addSurcharge()"
-            >Hinzufügen</ion-button
+            >{{'common.add_button' | translate}}</ion-button
           >
         </div>
       </ion-accordion>

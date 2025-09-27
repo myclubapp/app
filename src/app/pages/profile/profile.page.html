@@ -335,7 +335,7 @@
           (click)="openMemberInvoiceList()"
         >
           <ion-icon name="document-text-outline" slot="start"></ion-icon>
-          <ion-label> Meine Rechnungen </ion-label>
+          <ion-label>{{'member.my_invoices' | translate}}</ion-label>
         </ion-item>
       </ion-list>
     </ng-container>
@@ -378,7 +378,7 @@
       </ion-list-header>
       <!--
      <ion-item>
-       <ion-label position="stacked"> Meine Geräte Id </ion-label>
+       <ion-label position="stacked">{{'common.my_device_id' | translate}}</ion-label>
        <ion-input readonly value="{{deviceId.uuid}}"></ion-input>
       </ion-item>
     -->
@@ -776,7 +776,7 @@
     <ion-list>
       <ion-list-header>
         <ion-label>
-          Meine Clubs
+          {{'member.my_clubs' | translate}}
         </ion-label>
         <ion-button>
           <ion-icon slot="icon-only" name="add"></ion-icon>
@@ -797,7 +797,7 @@
     <ion-list>
       <ion-list-header>
         <ion-label>
-          Meine Teams
+          {{'member.my_teams' | translate}}
         </ion-label>
         <ion-button >
           <ion-icon slot="icon-only" name="add"></ion-icon>

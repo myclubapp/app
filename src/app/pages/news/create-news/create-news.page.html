@@ -22,7 +22,7 @@
   <form (ngSubmit)="createNews()">
     <ion-list [inset]="true">
       <ion-list-header>
-        <ion-label>News Beirag</ion-label>
+        <ion-label>{{'news.news_article' | translate}}</ion-label>
       </ion-list-header>
       <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
         <ion-item *ngIf="clubAdminList.length > 1">
@@ -31,6 +31,7 @@
             label-placement="stacked"
             [(ngModel)]="news.clubId"
             name="clubId"
+            [cancelText]="'common.cancel' | translate"
             required
           >
             <ion-select-option

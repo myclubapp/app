@@ -9,12 +9,14 @@
     "confirmation": "Confirmation",
     "confirm": "Confirmer",
     "success__saved": "Enregistré avec succès",
-    "all_read": "[NEEDS TRANSLATION] Alle gelesen",
-    "notifications": "[NEEDS TRANSLATION] Benachrichtigungen",
-    "notifications_open": "[NEEDS TRANSLATION] Ungelesene Benachrichtigungen",
-    "notifications_read": "[NEEDS TRANSLATION] Gelesene Benachrichtigungen",
-    "teams": "[NEEDS TRANSLATION] Teams",
+    "all_read": "Tout lu",
+    "notifications": "Notifications",
+    "notifications_open": "Notifications non lues",
+    "notifications_read": "Notifications lues",
+    "teams": "Équipes",
+    "success__copy": "Copié avec succès",
     "month": "Mois",
+    "action__canceled": "Action annulée",
     "year": "Année",
     "paid": "Payé",
     "created": "Acheté le",
@@ -27,8 +29,8 @@
     "success__event_deleted": "Événement supprimé avec succès",
     "success__helfer_deleted": "Événement d'aide supprimé avec succès",
     "success__training_deleted": "Entraînement supprimé avec succès",
-    "success__exercise_deleted": "[NEEDS TRANSLATION] Übung erfolgreich entfernt",
-    "success__exercise_added": "[NEEDS TRANSLATION] Übung erfolgreich hinzugefügt",
+    "success__exercise_deleted": "Exercice supprimé avec succès",
+    "success__exercise_added": "Exercice ajouté avec succès",
     "alle_anmelden": "Inscrire tous",
     "link__web": "Site web / Plus d'informations",
     "link__poll": "Sondage",
@@ -43,7 +45,16 @@
     "forget__password": "Mot de passe oublié ?",
     "email_sent": "E-mail envoyé",
     "email_not_yet_verified": "L'adresse e-mail n'a pas encore été vérifiée",
-    "error": "Erreur",
+    "error": {
+      "club_name_required": "Veuillez saisir un nom pour le club.",
+      "club_type_other_required": "Veuillez indiquer le type de club.",
+      "sport_type_required": "Veuillez sélectionner un type de sport.",
+      "sport_type_other_required": "Veuillez préciser le sport.",
+      "teams_required": "Veuillez indiquer le nombre d'équipes/groupes.",
+      "members_required": "Veuillez indiquer le nombre de membres.",
+      "club_form_invalid": "Veuillez remplir correctement tous les champs obligatoires.",
+      "club_creation_failed": "Le club n'a pas pu être créé. Veuillez réessayer plus tard."
+    },
     "error__invalid_form": "Le formulaire est encore incorrect",
     "please__wait": "Veuillez patienter",
     "first__name": "Prénom",
@@ -63,8 +74,6 @@
     "present": "Présent",
     "absent": "Absent",
     "noreply": "Pas de réponse",
-    "close": "Fermer",
-    "success__saved": "Modifications enregistrées avec succès",
     "no_of__members": "Nombre de membres",
     "average__age": "Âge moyen",
     "requests": "Demandes",
@@ -78,7 +87,6 @@
     "addMember": "Ajouter un membre",
     "add": "Ajouter",
     "club": "Club",
-    "description": "Description",
     "location": "Nom/Salle/Désignation",
     "street__house_number": "Rue et numéro",
     "postal__code": "Code postal",
@@ -93,7 +101,7 @@
     "helper_points": "Points d'aide",
     "my_helper_points": "Mes points d'aide",
     "news": "Actualités",
-    "newsVerband": "[NEEDS TRANSLATION] News Verband",
+    "newsVerband": "Actualités de l'association",
     "yes": "Oui",
     "no": "Non",
     "logout": "Déconnexion",
@@ -110,7 +118,6 @@
     "language__french": "Français",
     "language__italian": "Italien",
     "language__english": "Anglais",
-    "confirmation": "Confirmation",
     "parents": "Parents",
     "children": "Enfants",
     "select_member": "Sélectionner un membre",
@@ -123,9 +130,6 @@
     "online": "Vous êtes en ligne",
     "error__push_notification_not_available": "Notification push non disponible",
     "error_device_not_support_push_notifications": "Votre appareil/navigateur ne prend pas en charge les notifications push",
-    "success__copy": "Copié avec succès",
-    "action__canceled": "Action annulée",
-    "success__saved": "Enregistré avec succès",
     "reset_password_background__alt": "Image d'arrière-plan pour la page de réinitialisation du mot de passe",
     "signup_background__alt": "Image d'arrière-plan pour la page d'inscription",
     "countries": {
@@ -137,13 +141,13 @@
       "LI": "Liechtenstein",
       "other": "Autre"
     },
-    "title": "Titre",
     "confirm_delete_checkbox_required": "Veuillez confirmer la suppression en cochant la case",
     "club_type": {
       "sports": "Club sportif",
       "culture": "Club culturel",
       "other": "Autre club",
-      "label": "Type de club"
+      "label": "Type de club",
+      "other_placeholder": "Veuillez décrire le type de club"
     },
     "sport_type": {
       "label": "Type de sport",
@@ -154,36 +158,16 @@
       "other": "Autre sport",
       "other_placeholder": "Veuillez préciser le sport"
     },
-    "club_questionnaire": {
-      "intro": "Parlez-nous de votre club.",
-      "teams": "Nombre d'équipes, de groupes ou de sections",
-      "members": "Nombre de membres"
-    },
-    "error": {
-      "club_name_required": "Veuillez saisir un nom pour le club.",
-      "club_type_other_required": "Veuillez indiquer le type de club.",
-      "sport_type_required": "Veuillez sélectionner un type de sport.",
-      "sport_type_other_required": "Veuillez préciser le sport.",
-      "teams_required": "Veuillez indiquer le nombre d'équipes/groupes.",
-      "members_required": "Veuillez indiquer le nombre de membres.",
-      "club_form_invalid": "Veuillez remplir correctement tous les champs obligatoires.",
-      "club_creation_failed": "Le club n'a pas pu être créé. Veuillez réessayer plus tard."
-    },
     "step": "Étape",
     "step_with_number": "Étape {{num}}",
     "leadText": "Texte d'accroche",
     "text": "Texte",
     "date": "Date",
-    "url": "URL",
-    "share": "[NEEDS TRANSLATION] Teilen",
-    "skip": "[NEEDS TRANSLATION] Überspringen",
-    "error__no_club_member": "[NEEDS TRANSLATION] Kein Vereinsmitglied"
+    "url": "URL"
   },
   "login": {
     "login__title": "Connectez-vous avec votre compte",
     "loading": "Connexion en cours...",
-    "signin_create__account": "créer un nouveau compte",
-    "register": "S'inscrire",
     "error": "Erreur",
     "error__no_acount_found": "Aucun compte trouvé avec cette adresse e-mail",
     "error__invalid_username_password": "La combinaison nom d'utilisateur/mot de passe est incorrecte.",
@@ -195,8 +179,10 @@
     "error_wrong_password": "Mot de passe incorrect",
     "error_invalid_email": "Adresse e-mail invalide",
     "error_user_disabled": "Cet utilisateur a été désactivé",
-    "mistake": "Erreur",
-    "register": "[NEEDS TRANSLATION] Registrieren"
+    "login__button": "Se connecter",
+    "create_new_account": "créer un nouveau compte",
+    "email_placeholder": "Entrez votre adresse e-mail",
+    "password_placeholder": "Entrez votre mot de passe"
   },
   "logout": {
     "logout__success": "Déconnexion réussie !",
@@ -228,20 +214,20 @@
     "points": "Points",
     "upcomming__games": "Jeux à venir"
   },
-  "championship-detail": {},
-  "club-member-list": {
-    "delete_member__confirm": "[NEEDS TRANSLATION] Möchtest du das Mitglied wirklich aus dem Club entfernen?"
-  },
   "club": {
+    "details": "Détails du Club",
+    "request_approve_header": "Demande de club",
+    "request_approve_subheader": "Ajouter le membre au club ?",
+    "request_add_user_to_club": "Voulez-vous accepter la demande du membre et l'ajouter au club ?",
     "want_to_add__user__to_club_string": "Voulez-vous ajouter {userName} à votre club ?",
     "success__user_added": "l'utilisateur a été ajouté avec succès au club",
-    "select__team": "Sélectionner l'équipe",
+    "select_team_header": "Sélectionner une équipe",
+    "select_team_subheader": "Ajouter le membre à une équipe ?",
     "want_to_add__user__to_team_string": "Voulez-vous ajouter {userName} à une équipe ?",
     "add": "ajouter",
     "success__added_user_to_team_string": "{userName} a été ajouté avec succès à {length} équipe(s)",
-    "action__canceled": "Action annulée",
+    "action__request_deleted": "La demande a été rejetée",
     "trainaing__presence": "Présence à l'entraînement",
-    "details": "Détails du Club",
     "links": "Liens",
     "add_link": "Ajouter un lien",
     "link_title": "Titre du lien",
@@ -252,16 +238,36 @@
     "link_type_pdf": "PDF",
     "link_url": "URL",
     "link_file": "Fichier",
-    "show_on_card": "Afficher sur la carte"
+    "show_on_card": "Afficher sur la carte",
+    "club_type": {
+      "sports": "Club sportif",
+      "culture": "Club culturel",
+      "other": "Autre club",
+      "label": "Type de club"
+    },
+    "club_questionnaire": {
+      "intro": "Parlez-nous de votre club.",
+      "teams": "Nombre d'équipes, groupes ou teams",
+      "members": "Nombre de membres"
+    },
+    "error": {
+      "club_name_required": "Veuillez saisir un nom pour le club.",
+      "club_type_other_required": "Veuillez indiquer le type de club.",
+      "teams_required": "Veuillez indiquer le nombre d'équipes/groupes.",
+      "members_required": "Veuillez indiquer le nombre de membres.",
+      "club_creation_failed": "Le club n'a pas pu être créé. Veuillez réessayer plus tard."
+    }
   },
   "club-list": {
     "my__clubs": "Mes clubs"
+  },
+  "club-member-list": {
+    "delete_member__confirm": "Voulez-vous vraiment supprimer le membre du club ?"
   },
   "event-add": {
     "new__event": "Nouvel événement",
     "is__closed__event": "Événement fermé"
   },
-  "event-detail": {},
   "events": {
     "event": "Événements",
     "upcomming__events": "Événements à venir",
@@ -286,7 +292,7 @@
   "helfer": {
     "upcomming__helper_event": "Événements de bénévoles à venir",
     "past__helper_events": "Événements de bénévoles passés",
-    "schichten": "[NEEDS TRANSLATION] Helferschichten"
+    "schichten": "Créneaux de bénévolat"
   },
   "helfer-add": {
     "new__helper_event": "Nouvel événement de bénévole"
@@ -339,19 +345,20 @@
     "create_news": "Créer une actualité",
     "news_entry": "Article d'actualité"
   },
-  "news-detail": {},
   "not-found": {
     "not_found": "Non trouvé"
   },
   "onboarding": {
     "join__club": "Rejoindre un club",
     "search_by_club__pholder": "Rechercher par club",
-    "join__club_title": "[NEEDS TRANSLATION] Möchtest du dem Verein als Mitglied beitreten?",
+    "join__club_title": "Voulez-vous rejoindre le club en tant que membre ?",
     "do_you_want_to_join__club": "Si vous n'êtes pas membre du club mais souhaitez gérer un enfant qui l'est en tant que parent, veuillez choisir 'S'inscrire en tant que parent'.",
     "success__request_sent": "Demande envoyée avec succès",
     "warning__action_canceled": "Action a été annulée",
     "success__application_sent": "Candidature envoyée avec succès",
     "success__application_sent_desc": "Votre candidature a été envoyée avec succès au club. Dès que votre candidature aura été approuvée, nous vous informerons de nouveau.",
+    "success__activate_pplication_sent": "Demande d'activation envoyée avec succès",
+    "success__activate_application_sent_desc": "Votre demande sera examinée par nos soins. Dès que votre demande aura été approuvée, nous vous informerons à nouveau par e-mail.",
     "no_club_found": "Aucun club trouvé",
     "no_club_found_message": "Pour utiliser myclub, vous devez d'abord rejoindre un club. Voulez-vous rejoindre un club ?",
     "open_club_requests": "Demandes de club ouvertes",
@@ -378,10 +385,39 @@
     "linked_clubs": "Clubs liés",
     "error__clubRequest": "Erreur lors de la demande au club",
     "error__clubRequest_desc": "Une erreur s'est produite lors de l'envoi de votre demande. Veuillez réessayer plus tard ou contacter le support.",
+    "create_new_club": "Créer un nouveau club",
+    "club_name": "Nom du club",
+    "club_type": {
+      "sports": "Club sportif",
+      "culture": "Club culturel",
+      "other": "Autre club",
+      "label": "Type de club",
+      "other_placeholder": "Veuillez décrire le type de club"
+    },
+    "error": {
+      "club_name_required": "Veuillez saisir un nom pour le club",
+      "club_creation_failed": "Le club n'a pas pu être créé. Veuillez réessayer plus tard."
+    },
+    "success": {
+      "club_created": "Le club a été créé avec succès et sera activé après vérification"
+    },
+    "club_questionnaire": {
+      "intro": "Parlez-nous de votre club.",
+      "teams": "Nombre d'équipes, groupes ou teams",
+      "members": "Nombre de membres"
+    },
+    "sport_type": {
+      "label": "Type de sport",
+      "other": "Autre sport",
+      "other_placeholder": "Veuillez préciser le sport"
+    },
     "confirm_new_club_title": "Club non trouvé ? Créer un nouveau club",
     "confirm_new_club_message": "Êtes-vous sûr de vouloir créer un nouveau club ? myclub prend déjà en charge plus de 3100 clubs.",
-    "create_new_club": "[NEEDS TRANSLATION] Neuen Club erstellen",
-    "club_name": "[NEEDS TRANSLATION] Name des Clubs"
+    "email_verification_title": "Vérifier l'adresse e-mail",
+    "email_verification_message": "Pour terminer la configuration de votre profil, vous devez d'abord vérifier votre adresse e-mail.",
+    "email_verification_instruction": "Veuillez vérifier votre boîte de réception (vérifiez aussi votre dossier SPAM) et cliquez sur le lien \"Vérifier l'e-mail\".",
+    "resend_email": "Renvoyer l'e-mail",
+    "continue": "Continuer"
   },
   "onboarding-team": {
     "onboarding__team": "Équipe d'intégration"
@@ -389,6 +425,22 @@
   "profile": {
     "email": "Email",
     "generally": "En général",
+    "birthdate": "Date de naissance",
+    "phonenumber": "Numéro de téléphone",
+    "address": "Adresse",
+    "contact__information": "Informations de contact",
+    "license__number": "Numéro de licence",
+    "diverses": "Divers",
+    "sport": "Sport",
+    "change_email_header": "Modifier l'adresse e-mail",
+    "change_email_message": "Modifiez ici votre adresse e-mail de profil.",
+    "change_email_old_label": "Adresse e-mail actuelle",
+    "change_email_new_label": "Nouvelle adresse e-mail",
+    "change_address_header": "Modifier l'adresse de domicile",
+    "change_address_message": "Modifiez ici votre adresse de domicile.",
+    "change_address_street": "Rue",
+    "change_address_postalcode": "Code postal",
+    "change_address_city": "Ville",
     "open__club_inquiry": "Demandes de club ouvertes",
     "open__team_request": "Demandes d'équipe ouvertes",
     "notifications": "Notifications",
@@ -397,6 +449,8 @@
     "email__messages": "messages e-mail",
     "push__notifications": "Notifications push",
     "push__notifications_devices": "Appareils push enregistrés",
+    "push__message__activate": "Messages push",
+    "push__message__deactivate": "Les messages push peuvent être désactivés à tout moment",
     "current__device": "appareil actuel",
     "push__registeration": "Inscription push",
     "delete__profile": "Zone de danger : Supprimer le profil",
@@ -415,25 +469,24 @@
     "language": "Langue",
     "select__language": "Choisir la langue",
     "kidsRequests": "Demandes d'enfants",
-    "kids.verified": "Vérifié",
-    "kids.pending": "En attente",
+    "kids": {
+      "verified": "Vérifié",
+      "pending": "En attente",
+      "add_header": "Ajouter un enfant",
+      "add_message": "Veuillez saisir l'adresse e-mail de l'enfant que vous souhaitez ajouter.",
+      "email_placeholder": "Adresse e-mail de l'enfant",
+      "max_reached_header": "Nombre maximum d'enfants atteint",
+      "max_reached_message": "Vous pouvez ajouter un maximum de 3 enfants."
+    },
     "kidsrequestadd": "Ajouter",
-    "kids.add_header": "Ajouter un enfant",
-    "kids.add_message": "Veuillez saisir l'adresse e-mail de l'enfant que vous souhaitez ajouter.",
-    "kids.email_placeholder": "Adresse e-mail de l'enfant",
-    "kids.max_reached_header": "Nombre maximum d'enfants atteint",
-    "kids.max_reached_message": "Vous pouvez ajouter un maximum de 3 enfants.",
     "gender": "Genre",
-    "gender.male": "Masculin",
-    "gender.female": "Féminin",
-    "gender.diverse": "Divers (pas pour J+S)",
     "nationality": "Nationalité",
     "country": "Pays",
     "ahv_number": "Numéro AVS",
     "please_select": "Veuillez sélectionner",
-    "children": "Enfants",
     "confirm_delete_request": "Voulez-vous vraiment supprimer cette demande ?",
     "no_children": "Aucun enfant ajouté",
+    "parents": "Parents",
     "parents_notification_info": "Les parents sont également informés des événements de leur enfant.",
     "children_notification_info": "En tant que parent, vous serez informé de tous les événements importants concernant vos enfants.",
     "confirm_delete_child": "Voulez-vous vraiment supprimer cet enfant de votre profil ?",
@@ -458,23 +511,11 @@
     },
     "change_address_streetandnumber": "Rue",
     "change_address_housenumber": "Numéro de maison",
-    "change_address_postalcode": "Code postal",
-    "change_address_city": "Ville",
+    "children": "Enfants",
     "add": "ajouter",
-    "no_children": "Aucun enfant ajouté",
     "parent_info": "En tant que parent, vous serez informé de tous les événements importants concernant vos enfants.",
-    "license_number": "Numéro de licence",
-    "profile_picture": "[NEEDS TRANSLATION] Profilbild",
-    "push__message__aktivate": "[NEEDS TRANSLATION] Push-Nachrichten aktivieren",
-    "birthdate": "[NEEDS TRANSLATION] Geburtsdatum",
-    "phonenumber": "[NEEDS TRANSLATION] Telefonnummer",
-    "address": "[NEEDS TRANSLATION] Adresse",
-    "contact__information": "[NEEDS TRANSLATION] Kontaktinformationen",
-    "license__number": "[NEEDS TRANSLATION] Lizenznummer",
-    "diverses": "[NEEDS TRANSLATION] Diverses",
-    "sport": "[NEEDS TRANSLATION] Sport"
+    "license_number": "Numéro de licence"
   },
-  "tabs": {},
   "team": {
     "delete_button": "Supprimer l'équipe",
     "delete": {
@@ -488,23 +529,41 @@
     "delete_team__confirm": "Voulez-vous vraiment supprimer cette équipe ?",
     "training_exercises": "Entraînement & Exercices (bientôt disponible)",
     "exercises": "Exercices",
+    "export": {
+      "header": "Exporter",
+      "success": "Export réussi",
+      "error": "Erreur lors de l'export",
+      "no_trainings": "Aucun entraînement trouvé dans la période sélectionnée",
+      "no_games": "Aucun match trouvé dans la période sélectionnée",
+      "no_members": "Aucun membre d'équipe trouvé",
+      "date_range": {
+        "header": "Sélectionner la période",
+        "start": "De",
+        "end": "À",
+        "export": "Exporter",
+        "cancel": "Annuler"
+      }
+    },
     "add_admin": {
       "header": "Ajouter un administrateur",
-      "cancel": "Annuler",
       "add": "Ajouter",
+      "cancel": "Annuler",
       "no_members": "Il n'y a pas d'autres membres disponibles qui pourraient être ajoutés comme administrateurs."
     },
     "add_member": {
       "header": "Ajouter un membre",
-      "cancel": "Annuler",
       "add": "Ajouter",
+      "cancel": "Annuler",
       "no_members": "Il n'y a pas d'autres membres disponibles qui pourraient être ajoutés à l'équipe."
     },
     "details": "Détails de l'équipe"
   },
   "team-list": {
     "my__teams": "Mes équipes",
-    "leave_team__confirm": "[NEEDS TRANSLATION] Möchtest du das Team wirklich verlassen?"
+    "leave_team__confirm": "Voulez-vous vraiment quitter cette équipe ?"
+  },
+  "team-member-list": {
+    "delete_member__confirm": "Voulez-vous vraiment supprimer ce membre de l'équipe ?"
   },
   "training-create": {
     "new__training": "Nouvel entraînement",
@@ -518,17 +577,33 @@
     "first__training": "Premier entraînement",
     "last__training": "Dernier entraînement"
   },
-  "traning-detail": {},
   "training": {
     "upcomming__training": "Entraînements à venir",
     "no_training__found": "aucun entraînement trouvé",
     "past__training": "Entraînements passés",
     "news__filter": "Filtrer les actualités",
     "news__filer__desc": "Filtrer par club ou équipe.",
+    "cancel_training": "Annuler l'entraînement",
+    "cancel_training_confirm": "Voulez-vous vraiment annuler cet entraînement ?",
+    "training_cancelled": "L'entraînement a été annulé avec succès",
+    "cancel_reason_placeholder": "Entrez la raison de l'annulation",
+    "cancel_reason_required": "Veuillez indiquer une raison pour l'annulation",
     "cancelled": "Entraînement annulé",
     "cancelled_reason": "Raison de l'annulation",
     "exercises": "Exercices",
-    "no_exercises": "Aucun exercice disponible"
+    "no_exercises": "Aucun exercice disponible",
+    "send_reminder": "Envoyer un rappel",
+    "send_reminder_confirm": "Voulez-vous envoyer un rappel à {{count}} membres qui n'ont pas encore répondu ?",
+    "reminder_sent": "Le rappel a été envoyé avec succès",
+    "no_pending_responses": "Aucune réponse en attente",
+    "all_members_responded": "Tous les membres ont déjà répondu",
+    "actions": "Actions d'entraînement",
+    "copy": "Copier l'entraînement",
+    "delete": "Supprimer l'entraînement",
+    "delete_training": "Supprimer l'entraînement",
+    "delete_training_confirm": "Voulez-vous vraiment supprimer cet entraînement ?",
+    "deleted_reason": "L'entraînement a été supprimé",
+    "create_training_confirm": "L'entraînement doit-il être créé ?"
   },
   "side_bar": {
     "info__and__help": "Info & Aide",
@@ -573,9 +648,6 @@
     "add_admin": "Ajouter un administrateur",
     "no_admins": "Aucun administrateur disponible"
   },
-  "team-member-list": {
-    "delete_member__confirm": "[NEEDS TRANSLATION] Möchtest du das Mitglied wirklich aus dem Team entfernen?"
-  },
   "member": {
     "member_details": "Détails du membre",
     "contact_info": "Informations de contact",
@@ -596,18 +668,18 @@
     "url": "URL",
     "show__on__card": "Afficher sur la carte",
     "create_link_confirm": "Voulez-vous vraiment créer ce lien ?",
-    "update_link_confirm": "[NEEDS TRANSLATION] Möchten Sie diesen Link wirklich aktualisieren?"
+    "update_link_confirm": "Voulez-vous vraiment mettre à jour ce lien ?"
   },
   "welcome": {
-    "title": "[NEEDS TRANSLATION] Willkommen bei MyClub",
-    "description": "[NEEDS TRANSLATION] Die moderne Plattform für Sportvereine",
-    "club_management": "[NEEDS TRANSLATION] Vereinsverwaltung",
-    "club_management_desc": "[NEEDS TRANSLATION] Verwalte deinen Verein einfach und effizient",
-    "team_management": "[NEEDS TRANSLATION] Teammanagement",
-    "team_management_desc": "[NEEDS TRANSLATION] Organisiere deine Teams und Spieler",
-    "communication": "[NEEDS TRANSLATION] Kommunikation",
-    "communication_desc": "[NEEDS TRANSLATION] Bleibe mit deinem Verein in Verbindung",
-    "start_onboarding": "[NEEDS TRANSLATION] Onboarding starten",
-    "skip": "[NEEDS TRANSLATION] Überspringen"
+    "title": "Bienvenue chez MyClub",
+    "description": "La plateforme moderne pour les clubs sportifs",
+    "club_management": "Gestion de club",
+    "club_management_desc": "Gérez votre club facilement et efficacement",
+    "team_management": "Gestion d'équipe",
+    "team_management_desc": "Organisez vos équipes et joueurs",
+    "communication": "Communication",
+    "communication_desc": "Restez connecté avec votre club",
+    "start_onboarding": "Commencer l'intégration",
+    "skip": "Ignorer"
   }
 }

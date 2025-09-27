@@ -26,6 +26,7 @@
           label-placement="stacked"
           [(ngModel)]="event.clubId"
           value="{{event.clubId}}"
+          [cancelText]="'common.cancel' | translate"
         >
           <ion-select-option
             *ngFor="let club of clubAdminList"

@@ -9,9 +9,10 @@
       </ng-container>-->
       <ion-title>{{ club.name }}</ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
       </ion-buttons>
-
     </ion-toolbar>
   </ion-header>
 
@@ -22,12 +23,22 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
-      [value]="searchTerm.value" placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
+    <ion-searchbar
+      [debounce]="1000"
+      (ionChange)="handleSearch($event)"
+      animated="true"
+      search-icon="search-circle"
+      [value]="searchTerm.value"
+      placeholder='{{"common.searchfield" | translate}}'
+    ></ion-searchbar>
 
     <div class="ion-padding">
-     
-      <ion-button (click)="setFilter(role)" shape="round" size="small" *ngFor="let role of club['roles']">
+      <ion-button
+        (click)="setFilter(role)"
+        shape="round"
+        size="small"
+        *ngFor="let role of club['roles']"
+      >
         {{role}}
       </ion-button>
     </div>
@@ -35,7 +46,6 @@
     <ion-list inset="true">
       <ion-list-header>
         <ion-label>Auswertung</ion-label>
-
       </ion-list-header>
       <ion-item>
         <ion-icon name="calendar" slot="start"></ion-icon>
@@ -44,9 +54,15 @@
 
         <ion-modal [keepContentsMounted]="true">
           <ng-template>
-            <ion-datetime id="dateFrom" presentation="date" [firstDayOfWeek]="1" [value]="club.helferReportingDateFrom"
-              [min]="minDate" [max]="maxDate"
-              (ionChange)="changeDate($event, 'helferReportingDateFrom')"></ion-datetime>
+            <ion-datetime
+              id="dateFrom"
+              presentation="date"
+              [firstDayOfWeek]="1"
+              [value]="club.helferReportingDateFrom"
+              [min]="minDate"
+              [max]="maxDate"
+              (ionChange)="changeDate($event, 'helferReportingDateFrom')"
+            ></ion-datetime>
           </ng-template>
         </ion-modal>
       </ion-item>
@@ -58,8 +74,15 @@
 
         <ion-modal [keepContentsMounted]="true">
           <ng-template>
-            <ion-datetime id="dateTo" presentation="date" [firstDayOfWeek]="1" [value]="club.helferReportingDateTo"
-              [min]="minDate" [max]="maxDate" (ionChange)="changeDate($event, 'helferReportingDateTo')"></ion-datetime>
+            <ion-datetime
+              id="dateTo"
+              presentation="date"
+              [firstDayOfWeek]="1"
+              [value]="club.helferReportingDateTo"
+              [min]="minDate"
+              [max]="maxDate"
+              (ionChange)="changeDate($event, 'helferReportingDateTo')"
+            ></ion-datetime>
           </ng-template>
         </ion-modal>
       </ion-item>
@@ -70,7 +93,7 @@
         -->
 
       <!--   <ion-item>
-        <ion-select  value="0" label="Min. Punkte"  aria-label="Min Punkte"  justify="space-between"   (ionChange)="onHelferPunkteMinChange($event)" placeholder="Min Punkte">
+        <ion-select  value="0" label="Min. Punkte"  aria-label="Min Punkte"  justify="space-between"   (ionChange)="onHelferPunkteMinChange($event)" placeholder="Min Punkte" [cancelText]="'common.cancel' | translate">
           <ion-select-option value="0">0 Punkte</ion-select-option>
           <ion-select-option value="1">1 Punkt</ion-select-option>
           <ion-select-option value="2">2 Punkte</ion-select-option>
@@ -88,7 +111,7 @@
       </ion-item>
 
       <ion-item>
-        <ion-select value="99" label="Max. Punkte"  aria-label="Max Punkte"  justify="space-between"   (ionChange)="onHelferPunkteMaxChange($event)" placeholder="Max Punkte">
+        <ion-select value="99" label="Max. Punkte"  aria-label="Max Punkte"  justify="space-between"   (ionChange)="onHelferPunkteMaxChange($event)" placeholder="Max Punkte" [cancelText]="'common.cancel' | translate">
           <ion-select-option value="0">0 Punkte</ion-select-option>
           <ion-select-option value="1">1 Punkt</ion-select-option>
           <ion-select-option value="2">2 Punkte</ion-select-option>
@@ -124,14 +147,17 @@
       </ion-item>-->
     </ion-list>
 
-
     <ng-container *ngIf="filteredClubMembers$ | async as members else loading">
       <ion-list inset="true">
         <ion-list-header>
           <ion-label>Mitglieder ({{members?.length}})</ion-label>
           <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-            <ion-button *ngIf="isClubAdmin(clubAdminList, clubId)" shape="round" size="small"
-              (click)="downloadClubPoints()">
+            <ion-button
+              *ngIf="isClubAdmin(clubAdminList, clubId)"
+              shape="round"
+              size="small"
+              (click)="downloadClubPoints()"
+            >
               <ion-label>Download</ion-label>
             </ion-button>
           </ng-container>
@@ -145,12 +171,22 @@
             </ion-item-divider>
 
             <ng-container *ngFor="let member of members">
-              <ion-item *ngIf="member.groupBy == groupBy" detail="true" button="true"
-                (click)="openHelferPunktDetailModal(member)">
+              <ion-item
+                *ngIf="member.groupBy == groupBy"
+                detail="true"
+                button="true"
+                (click)="openHelferPunktDetailModal(member)"
+              >
                 <ion-avatar slot="start">
-                  <img *ngIf="!member.profile.profilePicture" alt="Silhouette of a person's head"
-                    src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-                  <img *ngIf="member.profile.profilePicture" src="{{member?.profile.profilePicture}}" />
+                  <img
+                    *ngIf="!member.profile.profilePicture"
+                    alt="Silhouette of a person's head"
+                    src="https://ionicframework.com/docs/img/demos/avatar.svg"
+                  />
+                  <img
+                    *ngIf="member.profile.profilePicture"
+                    src="{{member?.profile.profilePicture}}"
+                  />
                 </ion-avatar>
                 <ion-label>
                   {{member.profile.firstName}} {{member.profile.lastName}}
@@ -159,10 +195,11 @@
                   </ion-badge>
                 </ion-label>
                 <ion-note slot="end">
-
                   <ion-badge
-                    [color]="member.totalPoints >= member.helferPunkte ? 'success' : (member.totalPoints >= 0.5 * member.helferPunkte ? 'warning' : 'danger')">
-                    {{member.helferPunkte || 0}} / {{member.totalPoints || 0}} / {{member.totalPointsPlanned}}
+                    [color]="member.totalPoints >= member.helferPunkte ? 'success' : (member.totalPoints >= 0.5 * member.helferPunkte ? 'warning' : 'danger')"
+                  >
+                    {{member.helferPunkte || 0}} / {{member.totalPoints || 0}} /
+                    {{member.totalPointsPlanned}}
                   </ion-badge>
                 </ion-note>
               </ion-item>
@@ -173,21 +210,27 @@
     </ng-container>
 
     <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-      <ion-fab *ngIf="isClubAdmin(clubAdminList, clubId)" vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab
+        *ngIf="isClubAdmin(clubAdminList, clubId)"
+        vertical="bottom"
+        horizontal="end"
+        slot="fixed"
+      >
         <ion-fab-button (click)="openHelferPunktCreateModal()">
           <ion-icon name="add-outline"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ng-container>
   </ion-content>
-
 </ng-container>
 
 <ng-template #loading>
   <ion-list [inset]="true">
     <ion-item-group>
       <ion-item-divider color="light">
-        <ion-label><ion-skeleton-text animated style="width: 20%"></ion-skeleton-text></ion-label>
+        <ion-label
+          ><ion-skeleton-text animated style="width: 20%"></ion-skeleton-text
+        ></ion-label>
       </ion-item-divider>
 
       <!-- Mitglied 1 -->
@@ -199,7 +242,10 @@
           <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
         </ion-label>
         <ion-label slot="end">
-          <ion-skeleton-text animated style="width: 80%; height: 20px;"></ion-skeleton-text>
+          <ion-skeleton-text
+            animated
+            style="width: 80%; height: 20px"
+          ></ion-skeleton-text>
         </ion-label>
       </ion-item>
 
@@ -212,7 +258,10 @@
           <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
         </ion-label>
         <ion-label slot="end">
-          <ion-skeleton-text animated style="width: 60%; height: 20px;"></ion-skeleton-text>
+          <ion-skeleton-text
+            animated
+            style="width: 60%; height: 20px"
+          ></ion-skeleton-text>
         </ion-label>
       </ion-item>
 
@@ -225,12 +274,17 @@
           <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
         </ion-label>
         <ion-label slot="end">
-          <ion-skeleton-text animated style="width: 70%; height: 20px;"></ion-skeleton-text>
+          <ion-skeleton-text
+            animated
+            style="width: 70%; height: 20px"
+          ></ion-skeleton-text>
         </ion-label>
       </ion-item>
 
       <ion-item-divider color="light">
-        <ion-label><ion-skeleton-text animated style="width: 15%"></ion-skeleton-text></ion-label>
+        <ion-label
+          ><ion-skeleton-text animated style="width: 15%"></ion-skeleton-text
+        ></ion-label>
       </ion-item-divider>
 
       <!-- Mitglied 4 -->
@@ -242,7 +296,10 @@
           <ion-skeleton-text animated style="width: 65%"></ion-skeleton-text>
         </ion-label>
         <ion-label slot="end">
-          <ion-skeleton-text animated style="width: 40%; height: 20px;"></ion-skeleton-text>
+          <ion-skeleton-text
+            animated
+            style="width: 40%; height: 20px"
+          ></ion-skeleton-text>
         </ion-label>
       </ion-item>
 
@@ -255,10 +312,12 @@
           <ion-skeleton-text animated style="width: 55%"></ion-skeleton-text>
         </ion-label>
         <ion-label slot="end">
-          <ion-skeleton-text animated style="width: 75%; height: 20px;"></ion-skeleton-text>
+          <ion-skeleton-text
+            animated
+            style="width: 75%; height: 20px"
+          ></ion-skeleton-text>
         </ion-label>
       </ion-item>
     </ion-item-group>
   </ion-list>
-
 </ng-template>

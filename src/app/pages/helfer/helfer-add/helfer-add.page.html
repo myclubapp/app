@@ -29,6 +29,7 @@
           [(ngModel)]="event.clubId"
           (ionChange)="setClubId($event.detail.value)"
           value="{{event.clubId}}"
+          [cancelText]="'common.cancel' | translate"
         >
           <ion-select-option *ngFor="let club of clubList" value="{{club.id}}"
             >{{club.name}}</ion-select-option
@@ -43,6 +44,7 @@
           label="Vorlage Club Spiele"
           label-placement="stacked"
           (ionChange)="setClubGameAsTemplate($event.detail.value)"
+          [cancelText]="'common.cancel' | translate"
         >
           <ion-select-option
             *ngFor="let clubGame of clubGamesList"
@@ -222,7 +224,9 @@
   <ion-list lines="full" [inset]="true">
     <ion-list-header>
       <ion-label> {{"helfer.schichten" | translate}} </ion-label>
-      <ion-button (click)="addSchicht()">hinzufügen</ion-button>
+      <ion-button (click)="addSchicht()"
+        >{{'common.add_button' | translate}}</ion-button
+      >
     </ion-list-header>
     <ng-container *ngIf="event.schichten.length > 0; else schichtenTemplate">
       <ion-item *ngFor="let schicht of event.schichten">

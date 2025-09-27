@@ -164,7 +164,7 @@
       <ng-container *ngIf="isClubAdmin(clubAdminList, club.id)">
         <ion-list lines="full" [inset]="true">
           <ion-list-header>
-            <ion-label> Grenzwerte für Abmeldungen </ion-label>
+            <ion-label>{{'common.billing_limits' | translate}}</ion-label>
           </ion-list-header>
           <ion-item>
             <ion-icon name="calendar-outline" slot="start"></ion-icon>
@@ -195,8 +195,8 @@
           style="display: block"
           class="ion-margin-horizontal ion-padding-horizontal ion-text-wrap"
         >
-          Anzahl Stunden vor Beginn des Spiels, Trainings oder
-          Veranstaltung</ion-note
+          {{'common.hours_before_start' | translate}} {{'common.events' |
+          translate}}</ion-note
         >
       </ng-container>
     </ng-container>
@@ -347,7 +347,7 @@
       <ion-list-header>
         <ion-label> {{"common.admins" | translate}} </ion-label>
         <ion-button strong="true" (click)="addAdministrator()"
-          >hinzufügen</ion-button
+          >{{'common.add_button' | translate}}</ion-button
         >
       </ion-list-header>
       <ion-item *ngFor="let admin of club['clubAdmins']" detail="true">
@@ -365,7 +365,7 @@
     <!--
 
   <ion-list *ngIf="requestList.length > 0">
-    <ion-list-header> Anfragen </ion-list-header>
+    <ion-list-header>{{'common.requests' | translate}}</ion-list-header>
     <ion-item *ngFor="let member of requestList">
       <ion-avatar slot="start">
         <img src="{{member?.profilePicture}}" />
@@ -390,7 +390,7 @@
 
 <ng-container *ngIf="requestList$ | async as requests; else noRequests">
   <ion-list [inset]="true" *ngIf="requests.length > 0">
-    <ion-list-header> Anfragen </ion-list-header>
+    <ion-list-header>{{'common.requests' | translate}}</ion-list-header>
     <ion-item *ngFor="let request of requests">
       <ion-avatar slot="start">
         <img [src]="request?.profilePicture" />

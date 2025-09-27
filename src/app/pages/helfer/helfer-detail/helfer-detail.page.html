@@ -429,7 +429,9 @@
       >
         <ion-list-header>
           <ion-label> {{"helfer.schichten" | translate}} </ion-label>
-          <ion-button (click)="addSchicht()">hinzufügen</ion-button>
+          <ion-button (click)="addSchicht()"
+            >{{'helfer-detail.add_shift_button' | translate}}</ion-button
+          >
         </ion-list-header>
         <ng-container *ngIf="schichten.length > 0; else schichtenTemplate">
           <ion-item *ngFor="let schicht of schichten">

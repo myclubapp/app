@@ -14,12 +14,14 @@
               alt="Logo"
               style="max-height: 100px; max-width: 100px"
             ></ion-img>
-            <ion-card-title>Melde Dich mit deinem Konto an</ion-card-title>
+            <ion-card-title
+              >{{'login.login__title' | translate}}</ion-card-title
+            >
             <ion-text>
               <p>
-                Oder
+                {{'common.or' | translate}}
                 <ion-router-link routerLink="/signup" class="ion-text-primary"
-                  >erstelle einen neuen Account</ion-router-link
+                  >{{'login.create_new_account' | translate}}</ion-router-link
                 >
               </p>
             </ion-text>
@@ -31,23 +33,23 @@
               <ion-list [inset]="true">
                 <ion-item lines="full">
                   <ion-input
-                    label="E-Mail Adresse"
+                    [label]="'common.email__address' | translate"
                     labelPlacement="floating"
                     formControlName="email"
                     type="email"
                     required
-                    placeholder="Gib deine E-Mail Adresse ein"
+                    [placeholder]="'login.email_placeholder' | translate"
                   ></ion-input>
                 </ion-item>
 
                 <ion-item lines="full">
                   <ion-input
-                    label="Passwort"
+                    [label]="'common.password' | translate"
                     labelPlacement="floating"
                     formControlName="password"
                     type="password"
                     required
-                    placeholder="Gib dein Passwort ein"
+                    [placeholder]="'login.password_placeholder' | translate"
                     (ionFocus)="isPasswordFocused = true"
                     (ionBlur)="isPasswordFocused = false"
                   >
@@ -64,7 +66,7 @@
                 slot="end"
                 class="ion-text-primary"
               >
-                Passwort vergessen?
+                {{'common.forget__password' | translate}}
               </ion-router-link>
 
               <ion-button
@@ -72,7 +74,7 @@
                 expand="block"
                 type="submit"
                 class="ion-margin-top"
-                >Anmelden</ion-button
+                >{{'login.login__button' | translate}}</ion-button
               >
             </form>
           </ion-card-content>

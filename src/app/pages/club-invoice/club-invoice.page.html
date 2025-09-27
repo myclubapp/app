@@ -44,7 +44,11 @@
     >
       <ion-item>
         <ion-label>Team</ion-label>
-        <ion-select [(ngModel)]="selectedTeamId" interface="popover">
+        <ion-select
+          [(ngModel)]="selectedTeamId"
+          interface="popover"
+          [cancelText]="'common.cancel' | translate"
+        >
           <ion-select-option value="all">Alle</ion-select-option>
           <ion-select-option *ngFor="let team of teams" [value]="team.id"
             >{{team.name}}</ion-select-option
