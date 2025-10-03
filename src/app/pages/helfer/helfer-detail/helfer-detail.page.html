@@ -1,631 +1,558 @@
-<ng-container *ngIf="event$ | async as event; else loading">
-  <ion-header [translucent]="true">
+@if (event$ | async; as event) {
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    @if (clubAdminList$ | async; as clubAdminList) { @if
+    (isClubAdmin(clubAdminList, event.clubId)) {
+    <ion-buttons slot="secondary">
+      @if (!allowEdit) {
+      <ion-button (click)="edit()">{{"common.edit" | translate}}</ion-button>
+      } @if (allowEdit) {
+      <ion-button (click)="edit()">{{"common.done" | translate}}</ion-button>
+      }
+    </ion-buttons>
+    } }
+    <ion-title>{{"common.details" | translate}} </ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-header collapse="condense">
     <ion-toolbar>
-      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-buttons
-          *ngIf="isClubAdmin(clubAdminList, event.clubId)"
-          slot="secondary"
-        >
-          <ion-button *ngIf="!allowEdit" (click)="edit()"
-            >{{"common.edit" | translate}}</ion-button
-          >
-          <ion-button *ngIf="allowEdit" (click)="edit()"
-            >{{"common.done" | translate}}</ion-button
-          >
-        </ion-buttons>
-      </ng-container>
-      <ion-title>{{"common.details" | translate}} </ion-title>
-      <ion-buttons slot="primary">
-        <ion-button (click)="close()"
-          >{{"common.close" | translate}}</ion-button
-        >
-      </ion-buttons>
+      <ion-title size="large">{{"common.details" | translate}}</ion-title>
     </ion-toolbar>
   </ion-header>
-
-  <ion-content>
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-title size="large">{{"common.details" | translate}}</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-list [inset]="true" *ngIf="!allowEdit">
+  @if (!allowEdit) {
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-icon slot="start" name="home-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{event.name}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="calendar-outline"></ion-icon>
+      <ion-label>
+        <h2>
+          {{event.date.toDate() | date:'dd.MM.yyyy'}} {{event.timeFrom |
+          date:'HH:mm'}} Uhr - {{event.timeTo | date:'HH:mm'}} Uhr
+        </h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="location-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{event.location}}</h2>
+        <h2>{{event.streetAndNumber}}</h2>
+        <h2>{{event.postalCode}} {{event.city}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{event.description}}</h2>
+      </ion-label>
+    </ion-item>
+    @if (event.link_web) {
+    <ion-item>
+      <ion-icon slot="start" name="link-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{event.link_web}}</h2>
+      </ion-label>
+      <ion-button slot="end" (click)="openUrl(event.link_web)" fill="clear">
+        <ion-icon slot="icon-only" name="open-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+    } @if (event.link_poll) {
+    <ion-item>
+      <ion-icon slot="start" name="help-circle-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{event.link_poll}}</h2>
+      </ion-label>
+      <ion-button slot="end" (click)="openUrl(event.link_poll)" fill="clear">
+        <ion-icon slot="icon-only" name="open-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+    }
+  </ion-list>
+  } @if (!allowEdit) { @if (schichten$ | async; as schichten) {
+  <!-- Helfereinsätze MIT Schichten -->
+  @if (schichten.length > 0) {
+  <ion-list lines="full" [inset]="true">
+    <ion-list-header>
+      <ion-label> {{"helfer.schichten" | translate}} </ion-label>
+      <!-- BESTàTIGEN, FALLS CLUBADMIN -->
+      @if (clubAdminList$ | async; as clubAdminList) { @if
+      (isClubAdmin(clubAdminList, event.clubId)) {
+      <ion-button (click)="confirmSchichten()"> bestätigen </ion-button>
+      } }
+    </ion-list-header>
+    @for (schicht of schichten; track schicht) {
+    <ion-item-sliding #item>
       <ion-item>
-        <ion-icon slot="start" name="home-outline"></ion-icon>
-        <ion-label class="ion-text-wrap">
-          <h2>{{event.name}}</h2>
-        </ion-label>
-      </ion-item>
-
-      <ion-item>
-        <ion-icon slot="start" name="calendar-outline"></ion-icon>
+        @for (status of schicht.status; track status) { @if (!schicht.confirmed
+        && isFuture) { @if (status.status === null) {
+        <ion-icon
+          slot="icon-only"
+          color="warning"
+          slot="start"
+          name="help-circle"
+          (click)="toggleSchicht(item, true, event, schicht)"
+        ></ion-icon>
+        } @if (status.status === true) {
+        <ion-icon
+          slot="icon-only"
+          color="success"
+          slot="start"
+          name="checkmark-circle"
+          (click)="toggleSchicht(item, false, event, schicht)"
+        ></ion-icon>
+        } @if (status.status === false) {
+        <ion-icon
+          slot="icon-only"
+          color="danger"
+          slot="start"
+          name="close-circle"
+          (click)="toggleSchicht(item, true, event, schicht)"
+        ></ion-icon>
+        } @if (status.id === user.uid && schicht.status.length > 1) {
+        <ion-label>{{"common.my__status" | translate}}</ion-label>
+        } @if (status.id !== user.uid) {
+        <ion-label>{{status.firstName}} {{status.lastName}} </ion-label>
+        } } @if (!isFuture || schicht.confirmed) { @if (status.status === null)
+        {
+        <ion-icon
+          slot="icon-only"
+          color="warning"
+          slot="start"
+          name="help-circle"
+        ></ion-icon>
+        } @if (status.status === true) {
+        <ion-icon
+          slot="icon-only"
+          color="success"
+          slot="start"
+          name="checkmark-circle"
+        ></ion-icon>
+        } @if (status.status === false) {
+        <ion-icon
+          slot="icon-only"
+          color="danger"
+          slot="start"
+          name="close-circle"
+        ></ion-icon>
+        } } }
+        <!-- NEU: Falls keine Status-Einträge vorhanden sind, Teilnahme ermöglichen -->
+        @if (schicht.status.length === 0 && isFuture && !schicht.confirmed) {
+        <ion-icon
+          slot="icon-only"
+          color="warning"
+          slot="start"
+          name="help-circle"
+          (click)="toggleSchicht(item, true, event, schicht)"
+        ></ion-icon>
+        }
         <ion-label>
-          <h2>
-            {{event.date.toDate() | date:'dd.MM.YYYY '}} {{event.timeFrom |
-            date:'HH:mm'}} Uhr - {{event.timeTo | date:'HH:mm'}} Uhr
-          </h2>
+          <h2>{{schicht.name}}</h2>
+          <h3>Zeit: {{schicht.timeFrom}} Uhr - {{schicht.timeTo}} Uhr</h3>
+          <h3>{{'common.helper_points'| translate}}: {{schicht.points}}</h3>
         </ion-label>
+        <ion-badge
+          >{{schicht.attendeeListTrue.length}} / {{schicht.countNeeded}}
+        </ion-badge>
       </ion-item>
-
-      <ion-item>
-        <ion-icon slot="start" name="location-outline"></ion-icon>
-        <ion-label class="ion-text-wrap">
-          <h2>{{event.location}}</h2>
-          <h2>{{event.streetAndNumber}}</h2>
-          <h2>{{event.postalCode}} {{event.city}}</h2>
-        </ion-label>
-      </ion-item>
-
-      <ion-item>
-        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-        <ion-label class="ion-text-wrap">
-          <h2>{{event.description}}</h2>
-        </ion-label>
-      </ion-item>
-
-      <ion-item *ngIf="event.link_web">
-        <ion-icon slot="start" name="link-outline"></ion-icon>
-        <ion-label class="ion-text-wrap">
-          <h2>{{event.link_web}}</h2>
-        </ion-label>
-        <ion-button slot="end" (click)="openUrl(event.link_web)" fill="clear">
-          <ion-icon slot="icon-only" name="open-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
-
-      <ion-item *ngIf="event.link_poll">
-        <ion-icon slot="start" name="help-circle-outline"></ion-icon>
-        <ion-label class="ion-text-wrap">
-          <h2>{{event.link_poll}}</h2>
-        </ion-label>
-        <ion-button slot="end" (click)="openUrl(event.link_poll)" fill="clear">
-          <ion-icon slot="icon-only" name="open-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
-    </ion-list>
-
-    <ng-container *ngIf="!allowEdit">
-      <ng-container *ngIf="schichten$ | async as schichten">
-        <!-- Helfereinsätze MIT Schichten -->
-        <ion-list lines="full" [inset]="true" *ngIf="schichten.length > 0">
-          <ion-list-header>
-            <ion-label> {{"helfer.schichten" | translate}} </ion-label>
-            <!-- BESTàTIGEN, FALLS CLUBADMIN -->
-            <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-              <ion-button
-                (click)="confirmSchichten()"
-                *ngIf="isClubAdmin(clubAdminList, event.clubId)"
-              >
-                bestätigen
-              </ion-button>
-            </ng-container>
-          </ion-list-header>
-          <ng-container *ngFor="let schicht of schichten">
+      @if (clubAdminList$ | async; as clubAdminList) { @if
+      (isClubAdmin(clubAdminList, event.clubId)) {
+      <ion-item-options side="end">
+        <ion-item-option
+          color="primary"
+          (click)="addMembersToSchicht(item, schicht)"
+        >
+          <ion-icon slot="icon-only" name="person-add"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+      } }
+    </ion-item-sliding>
+    @if (schicht['attendeeListTrue'].length > 0) {
+    <ion-accordion-group expand="inset">
+      <ion-accordion value="yes">
+        <ion-item slot="header" color="light">
+          <ion-label
+            >{{"helfer-detail.helfer_innen_for" | translate}}
+            {{schicht.name}}</ion-label
+          >
+        </ion-item>
+        <div slot="content">
+          <ion-list>
+            @for (member of schicht['attendeeListTrue']; track member) {
             <ion-item-sliding #item>
-              <ion-item>
-                <ng-container *ngFor="let status of schicht.status">
-                  <ng-container *ngIf="!schicht.confirmed && isFuture">
-                    <ion-icon
-                      *ngIf="status.status === null"
-                      slot="icon-only"
-                      color="warning"
-                      slot="start"
-                      name="help-circle"
-                      (click)="toggleSchicht(item, true, event, schicht)"
-                    ></ion-icon>
-                    <ion-icon
-                      *ngIf="status.status === true"
-                      slot="icon-only"
-                      color="success"
-                      slot="start"
-                      name="checkmark-circle"
-                      (click)="toggleSchicht(item, false, event, schicht)"
-                    ></ion-icon>
-
-                    <ion-icon
-                      *ngIf="status.status === false"
-                      slot="icon-only"
-                      color="danger"
-                      slot="start"
-                      name="close-circle"
-                      (click)="toggleSchicht(item, true, event, schicht)"
-                    ></ion-icon>
-
-                    <ion-label
-                      *ngIf="status.id === user.uid && schicht.status.length > 1"
-                      >{{"common.my__status" | translate}}</ion-label
-                    >
-                    <ion-label *ngIf="status.id !== user.uid"
-                      >{{status.firstName}} {{status.lastName}}
-                    </ion-label>
-                  </ng-container>
-                  <ng-container *ngIf="!isFuture || schicht.confirmed">
-                    <ion-icon
-                      *ngIf="status.status === null"
-                      slot="icon-only"
-                      color="warning"
-                      slot="start"
-                      name="help-circle"
-                    ></ion-icon>
-                    <ion-icon
-                      *ngIf="status.status === true"
-                      slot="icon-only"
-                      color="success"
-                      slot="start"
-                      name="checkmark-circle"
-                    ></ion-icon>
-                    <ion-icon
-                      *ngIf="status.status === false"
-                      slot="icon-only"
-                      color="danger"
-                      slot="start"
-                      name="close-circle"
-                    ></ion-icon>
-                  </ng-container>
-                </ng-container>
-                <!-- NEU: Falls keine Status-Einträge vorhanden sind, Teilnahme ermöglichen -->
-                <ng-container
-                  *ngIf="schicht.status.length === 0 && isFuture && !schicht.confirmed"
-                >
-                  <ion-icon
-                    slot="icon-only"
-                    color="warning"
-                    slot="start"
-                    name="help-circle"
-                    (click)="toggleSchicht(item, true, event, schicht)"
-                  ></ion-icon>
-                </ng-container>
-
-                <ion-label>
-                  <h2>{{schicht.name}}</h2>
-                  <h3>
-                    Zeit: {{schicht.timeFrom}} Uhr - {{schicht.timeTo}} Uhr
-                  </h3>
-                  <h3>
-                    {{'common.helper_points'| translate}}: {{schicht.points}}
-                  </h3>
+              <ion-item detail="true">
+                @if (member.confirmed) {
+                <ion-icon
+                  color="primary"
+                  slot="start"
+                  name="checkmark-circle-outline"
+                ></ion-icon>
+                }
+                <ion-label (click)="openMember(member)">
+                  <h2>{{member.firstName}} {{member.lastName}}</h2>
+                  <p>
+                    {{member?.changedAt?.toDate() | date:'dd.MM.yyyy HH:mm'}}
+                  </p>
                 </ion-label>
-                <ion-badge
-                  >{{schicht.attendeeListTrue.length}} / {{schicht.countNeeded}}
-                </ion-badge>
               </ion-item>
-              <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                <ion-item-options
-                  side="end"
-                  *ngIf="isClubAdmin(clubAdminList, event.clubId)"
+              @if (clubAdminList$ | async; as clubAdminList) { @if
+              (isClubAdmin(clubAdminList, event.clubId)) {
+              <ion-item-options side="end">
+                @if (member.status === false || member.status === null) {
+                <ion-item-option
+                  color="success"
+                  (click)="toggleSchichtItem(item, true, event, schicht, member.id)"
                 >
-                  <ion-item-option
-                    color="primary"
-                    (click)="addMembersToSchicht(item, schicht)"
-                  >
-                    <ion-icon slot="icon-only" name="person-add"></ion-icon>
-                  </ion-item-option>
-                </ion-item-options>
-              </ng-container>
+                  <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                </ion-item-option>
+                } @if (member.status === true || member.status === null) {
+                <ion-item-option
+                  color="danger"
+                  (click)="toggleSchichtItem(item, false, event, schicht, member.id)"
+                >
+                  <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                </ion-item-option>
+                }
+              </ion-item-options>
+              } }
             </ion-item-sliding>
-            <ion-accordion-group
-              expand="inset"
-              *ngIf="schicht['attendeeListTrue'].length > 0"
-            >
-              <ion-accordion value="yes">
-                <ion-item slot="header" color="light">
-                  <ion-label
-                    >{{"helfer-detail.helfer_innen_for" | translate}}
-                    {{schicht.name}}</ion-label
-                  >
-                </ion-item>
-                <div slot="content">
-                  <ion-list>
-                    <ion-item-sliding
-                      #item
-                      *ngFor="let member of schicht['attendeeListTrue']"
-                    >
-                      <ion-item detail="true">
-                        <ion-icon
-                          *ngIf="member.confirmed"
-                          color="primary"
-                          slot="start"
-                          name="checkmark-circle-outline"
-                        ></ion-icon>
-
-                        <ion-label (click)="openMember(member)">
-                          <h2>{{member.firstName}} {{member.lastName}}</h2>
-                          <p>
-                            {{member?.changedAt?.toDate() | date:'dd.MM.yyyy
-                            HH:mm'}}
-                          </p>
-                        </ion-label>
-                      </ion-item>
-                      <ng-container
-                        *ngIf="clubAdminList$ | async as clubAdminList"
-                      >
-                        <ion-item-options
-                          *ngIf="isClubAdmin(clubAdminList, event.clubId)"
-                          side="end"
-                        >
-                          <ion-item-option
-                            color="success"
-                            *ngIf="member.status === false || member.status === null"
-                            (click)="toggleSchichtItem(item, true, event, schicht, member.id)"
-                          >
-                            <ion-icon
-                              slot="icon-only"
-                              name="checkmark-circle"
-                            ></ion-icon>
-                          </ion-item-option>
-                          <ion-item-option
-                            color="danger"
-                            *ngIf="member.status === true || member.status === null"
-                            (click)="toggleSchichtItem(item, false, event, schicht, member.id)"
-                          >
-                            <ion-icon
-                              slot="icon-only"
-                              name="close-circle"
-                            ></ion-icon>
-                          </ion-item-option>
-                        </ion-item-options>
-                      </ng-container>
-                    </ion-item-sliding>
-                  </ion-list>
-                </div>
-              </ion-accordion>
-            </ion-accordion-group>
-          </ng-container>
-        </ion-list>
-      </ng-container>
-    </ng-container>
-
-    <!-- CHANGE MODE-->
-    <ng-container *ngIf="allowEdit">
-      <ion-list [inset]="true">
-        <ion-item>
-          <ion-input
-            [label]='"common.name" | translate'
-            label-placement="stacked"
-            (ionChange)="updateEvent($event, 'name')"
-            [value]="event.name"
-          >
-          </ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-textarea
-            [autoGrow]="true"
-            (ionChange)="updateEvent($event, 'description')"
-            [label]='"common.description" | translate'
-            label-placement="stacked"
-            [value]="event.description"
-          >
-          </ion-textarea>
-        </ion-item>
-      </ion-list>
-
-      <ion-list [inset]="true">
-        <ion-item>
-          <ion-input
-            (ionChange)="updateEvent($event, 'location')"
-            [label]='"common.location" | translate'
-            label-placement="stacked"
-            [value]="event.location"
-          >
-          </ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-input
-            (ionChange)="updateEvent($event, 'streetAndNumber')"
-            [label]='"common.street__house_number" | translate'
-            label-placement="stacked"
-            [value]="event.streetAndNumber"
-          >
-          </ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-input
-            (ionChange)="updateEvent($event, 'postalCode')"
-            [label]="'common.postal__code' | translate"
-            label-placement="stacked"
-            [value]="event.postalCode"
-          >
-          </ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-input
-            (ionChange)="updateEvent($event, 'city')"
-            [label]='"common.locality" | translate'
-            label-placement="stacked"
-            [value]="event.city"
-          >
-          </ion-input>
-        </ion-item>
-      </ion-list>
-
-      <ion-list [inset]="true">
-        <ion-item>
-          <ion-input
-            (ionChange)="updateEvent($event, 'link_web')"
-            [label]="'common.link__web' | translate"
-            label-placement="stacked"
-            type="url"
-            [value]="event.link_web"
-            [placeholder]="'common.link__placeholder' | translate"
-          >
-          </ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-input
-            (ionChange)="updateEvent($event, 'link_poll')"
-            [label]="'common.link__poll' | translate"
-            label-placement="stacked"
-            type="url"
-            [value]="event.link_poll"
-            [placeholder]="'common.link__placeholder' | translate"
-          >
-          </ion-input>
-        </ion-item>
-      </ion-list>
-
-      <!--<ion-list [inset]="true">
-        <ion-item id="timeFromItem">
-          <ion-label position="">
-            {{"common.start__event" | translate}}:
-          </ion-label>
-          <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
-
-          <ion-modal [keepContentsMounted]="true">
-            <ng-template>
-              <ion-datetime presentation="time" id="timeFrom" (ionChange)="changeTimeFrom($event)"
-                (ionChange)="updateEvent($event, 'timeFrom')" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
-                [value]="event.timeFrom"></ion-datetime>
-            </ng-template>
-          </ion-modal>
-        </ion-item>
-
-        <ion-item id="timeToItem">
-          <ion-label position=""> {{"common.end__event" | translate}}: </ion-label>
-          <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
-
-          <ion-modal [keepContentsMounted]="true">
-            <ng-template>
-              <ion-datetime (ionChange)="updateEvent($event, 'timeTo')" presentation="time" id="timeTo"
-                minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" [value]="event.timeTo"></ion-datetime>
-            </ng-template>
-          </ion-modal>
-        </ion-item>
-
-        <ion-item id="startDateItem">
-          <ion-label position="default">
-            {{"common.start__date" | translate}}:
-          </ion-label>
-          <ion-datetime-button slot="end" datetime="startDate"></ion-datetime-button>
-
-          <ion-modal [keepContentsMounted]="true">
-            <ng-template>
-              <ion-datetime (ionChange)="updateEvent($event, 'startDate')" [firstDayOfWeek]="1"
-                (ionChange)="changeStartDate($event)" presentation="date" id="startDate"
-                [value]="event.startDate"></ion-datetime>
-            </ng-template>
-          </ion-modal>
-        </ion-item>
-
-        <ion-item id="endDateItem">
-          <ion-label position="default">
-            {{"common.end__date" | translate}}:
-          </ion-label>
-          <ion-datetime-button slot="end" datetime="endDate"></ion-datetime-button>
-
-          <ion-modal [keepContentsMounted]="true">
-            <ng-template>
-              <ion-datetime (ionChange)="updateEvent($event, 'endDate')" [firstDayOfWeek]="1" presentation="date"
-                id="endDate" [value]="event.endDate"></ion-datetime>
-            </ng-template>
-          </ion-modal>
-        </ion-item>
-      </ion-list>-->
-
-      <ion-list
-        lines="full"
-        [inset]="true"
-        *ngIf="schichten$ | async as schichten"
+            }
+          </ion-list>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+    } }
+  </ion-list>
+  } } }
+  <!-- CHANGE MODE-->
+  @if (allowEdit) {
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-input
+        [label]='"common.name" | translate'
+        label-placement="stacked"
+        (ionChange)="updateEvent($event, 'name')"
+        [value]="event.name"
       >
-        <ion-list-header>
-          <ion-label> {{"helfer.schichten" | translate}} </ion-label>
-          <ion-button (click)="addSchicht()"
-            >{{'helfer-detail.add_shift_button' | translate}}</ion-button
-          >
-        </ion-list-header>
-        <ng-container *ngIf="schichten.length > 0; else schichtenTemplate">
-          <ion-item *ngFor="let schicht of schichten">
-            <ion-icon
-              color="danger"
-              (click)="deleteSchicht(schicht)"
-              slot="start"
-              name="trash"
-              size="medium"
-            ></ion-icon>
-            <ion-icon
-              color="primary"
-              (click)="copySchicht(schicht)"
-              slot="start"
-              name="copy"
-              size="medium"
-            ></ion-icon>
-
-            <ion-label (click)="editSchicht(schicht)">
-              <h3>{{schicht.name}}</h3>
-              <h2>{{schicht.timeFrom}} Uhr - {{schicht.timeTo}} Uhr</h2>
-            </ion-label>
-            <ion-badge slot="end">{{schicht.countNeeded}}</ion-badge>
-          </ion-item>
-        </ng-container>
-      </ion-list>
-    </ng-container>
-    <!-- Support ID-->
-
-    <ion-text class="ion-text-center" color="medium">
-      <ion-note>
-        <p>Helfer Event ID: {{event.id}}</p>
-      </ion-note>
-    </ion-text>
-  </ion-content>
-</ng-container>
-
-<ng-template #schichtenTemplate>
-  <ion-item>
-    <ion-label>
-      <h3><ion-skeleton-text style="width: 60%"></ion-skeleton-text></h3>
-      <h2>
-        <ion-skeleton-text style="width: 30%"></ion-skeleton-text>
-        <ion-skeleton-text style="width: 40%"></ion-skeleton-text>
-      </h2>
-    </ion-label>
-  </ion-item>
-</ng-template>
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-textarea
+        [autoGrow]="true"
+        (ionChange)="updateEvent($event, 'description')"
+        [label]='"common.description" | translate'
+        label-placement="stacked"
+        [value]="event.description"
+      >
+      </ion-textarea>
+    </ion-item>
+  </ion-list>
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-input
+        (ionChange)="updateEvent($event, 'location')"
+        [label]='"common.location" | translate'
+        label-placement="stacked"
+        [value]="event.location"
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        (ionChange)="updateEvent($event, 'streetAndNumber')"
+        [label]='"common.street__house_number" | translate'
+        label-placement="stacked"
+        [value]="event.streetAndNumber"
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        (ionChange)="updateEvent($event, 'postalCode')"
+        [label]="'common.postal__code' | translate"
+        label-placement="stacked"
+        [value]="event.postalCode"
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        (ionChange)="updateEvent($event, 'city')"
+        [label]='"common.locality" | translate'
+        label-placement="stacked"
+        [value]="event.city"
+      >
+      </ion-input>
+    </ion-item>
+  </ion-list>
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-input
+        (ionChange)="updateEvent($event, 'link_web')"
+        [label]="'common.link__web' | translate"
+        label-placement="stacked"
+        type="url"
+        [value]="event.link_web"
+        [placeholder]="'common.link__placeholder' | translate"
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        (ionChange)="updateEvent($event, 'link_poll')"
+        [label]="'common.link__poll' | translate"
+        label-placement="stacked"
+        type="url"
+        [value]="event.link_poll"
+        [placeholder]="'common.link__placeholder' | translate"
+      >
+      </ion-input>
+    </ion-item>
+  </ion-list>
+  <!--<ion-list [inset]="true">
+                <ion-item id="timeFromItem">
+                  <ion-label position="">
+                    {{"common.start__event" | translate}}:
+                  </ion-label>
+                  <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime presentation="time" id="timeFrom" (ionChange)="changeTimeFrom($event)"
+                        (ionChange)="updateEvent($event, 'timeFrom')" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+                      [value]="event.timeFrom"></ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+                <ion-item id="timeToItem">
+                  <ion-label position=""> {{"common.end__event" | translate}}: </ion-label>
+                  <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime (ionChange)="updateEvent($event, 'timeTo')" presentation="time" id="timeTo"
+                      minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" [value]="event.timeTo"></ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+                <ion-item id="startDateItem">
+                  <ion-label position="default">
+                    {{"common.start__date" | translate}}:
+                  </ion-label>
+                  <ion-datetime-button slot="end" datetime="startDate"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime (ionChange)="updateEvent($event, 'startDate')" [firstDayOfWeek]="1"
+                        (ionChange)="changeStartDate($event)" presentation="date" id="startDate"
+                      [value]="event.startDate"></ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+                <ion-item id="endDateItem">
+                  <ion-label position="default">
+                    {{"common.end__date" | translate}}:
+                  </ion-label>
+                  <ion-datetime-button slot="end" datetime="endDate"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime (ionChange)="updateEvent($event, 'endDate')" [firstDayOfWeek]="1" presentation="date"
+                      id="endDate" [value]="event.endDate"></ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+              </ion-list>-->
+  @if (schichten$ | async; as schichten) {
+  <ion-list lines="full" [inset]="true">
+    <ion-list-header>
+      <ion-label> {{"helfer.schichten" | translate}} </ion-label>
+      <ion-button (click)="addSchicht()"
+        >{{'helfer-detail.add_shift_button' | translate}}</ion-button
+      >
+    </ion-list-header>
+    @if (schichten.length > 0) { @for (schicht of schichten; track schicht) {
+    <ion-item>
+      <ion-icon
+        color="danger"
+        (click)="deleteSchicht(schicht)"
+        slot="start"
+        name="trash"
+        size="medium"
+      ></ion-icon>
+      <ion-icon
+        color="primary"
+        (click)="copySchicht(schicht)"
+        slot="start"
+        name="copy"
+        size="medium"
+      ></ion-icon>
+      <ion-label (click)="editSchicht(schicht)">
+        <h3>{{schicht.name}}</h3>
+        <h2>{{schicht.timeFrom}} Uhr - {{schicht.timeTo}} Uhr</h2>
+      </ion-label>
+      <ion-badge slot="end">{{schicht.countNeeded}}</ion-badge>
+    </ion-item>
+    } } @else {
+    <ion-item>
+      <ion-label>
+        <h3><ion-skeleton-text style="width: 60%"></ion-skeleton-text></h3>
+        <h2>
+          <ion-skeleton-text style="width: 30%"></ion-skeleton-text>
+          <ion-skeleton-text style="width: 40%"></ion-skeleton-text>
+        </h2>
+      </ion-label>
+    </ion-item>
+    }
+  </ion-list>
+  } }
+  <!-- Support ID-->
+  <ion-text class="ion-text-center" color="medium">
+    <ion-note>
+      <p>Helfer Event ID: {{event.id}}</p>
+    </ion-note>
+  </ion-text>
+</ion-content>
+} @else {
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="secondary">
+      <ion-button>
+        <ion-skeleton-text
+          animated
+          style="width: 80px; height: 20px"
+        ></ion-skeleton-text>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-skeleton-text animated style="width: 100px"></ion-skeleton-text>
+    </ion-title>
+    <ion-buttons slot="primary">
+      <ion-button>
+        <ion-skeleton-text
+          animated
+          style="width: 80px; height: 20px"
+        ></ion-skeleton-text>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">
+        <ion-skeleton-text animated style="width: 120px"></ion-skeleton-text>
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <!-- Event Details List -->
+  <ion-list [inset]="true">
+    <!-- Name -->
+    <ion-item>
+      <ion-icon slot="start" name="home-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Date/Time -->
+    <ion-item>
+      <ion-icon slot="start" name="calendar-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Location -->
+    <ion-item>
+      <ion-icon slot="start" name="location-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Description -->
+    <ion-item>
+      <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <!-- Helper Shifts Section -->
+  <ion-list [inset]="true">
+    <ion-list-header>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 120px"></ion-skeleton-text>
+      </ion-label>
+      <ion-button>
+        <ion-skeleton-text
+          animated
+          style="width: 80px; height: 20px"
+        ></ion-skeleton-text>
+      </ion-button>
+    </ion-list-header>
+    <!-- Shift Items -->
+    <ion-item>
+      <ion-icon slot="start" name="time-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+      <ion-badge slot="end">
+        <ion-skeleton-text animated style="width: 30px"></ion-skeleton-text>
+      </ion-badge>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="time-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+      </ion-label>
+      <ion-badge slot="end">
+        <ion-skeleton-text animated style="width: 30px"></ion-skeleton-text>
+      </ion-badge>
+    </ion-item>
+    <!-- Helper List Accordion -->
+    <ion-accordion-group>
+      <ion-accordion value="helpers">
+        <ion-item slot="header">
+          <ion-label>
+            <ion-skeleton-text
+              animated
+              style="width: 150px"
+            ></ion-skeleton-text>
+          </ion-label>
+        </ion-item>
+        <div slot="content">
+          <ion-list>
+            <ion-item>
+              <ion-icon slot="start" name="person-outline"></ion-icon>
+              <ion-label>
+                <ion-skeleton-text
+                  animated
+                  style="width: 70%"
+                ></ion-skeleton-text>
+              </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-icon slot="start" name="person-outline"></ion-icon>
+              <ion-label>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%"
+                ></ion-skeleton-text>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </ion-list>
+</ion-content>
+}
 
 <!-- Replace your current loading template with this structure -->
-<ng-template #loading>
-  <ion-header [translucent]="true">
-    <ion-toolbar>
-      <ion-buttons slot="secondary">
-        <ion-button>
-          <ion-skeleton-text
-            animated
-            style="width: 80px; height: 20px"
-          ></ion-skeleton-text>
-        </ion-button>
-      </ion-buttons>
-      <ion-title>
-        <ion-skeleton-text animated style="width: 100px"></ion-skeleton-text>
-      </ion-title>
-      <ion-buttons slot="primary">
-        <ion-button>
-          <ion-skeleton-text
-            animated
-            style="width: 80px; height: 20px"
-          ></ion-skeleton-text>
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-content>
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-title size="large">
-          <ion-skeleton-text animated style="width: 120px"></ion-skeleton-text>
-        </ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <!-- Event Details List -->
-    <ion-list [inset]="true">
-      <!-- Name -->
-      <ion-item>
-        <ion-icon slot="start" name="home-outline"></ion-icon>
-        <ion-label>
-          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-        </ion-label>
-      </ion-item>
-
-      <!-- Date/Time -->
-      <ion-item>
-        <ion-icon slot="start" name="calendar-outline"></ion-icon>
-        <ion-label>
-          <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-        </ion-label>
-      </ion-item>
-
-      <!-- Location -->
-      <ion-item>
-        <ion-icon slot="start" name="location-outline"></ion-icon>
-        <ion-label>
-          <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
-        </ion-label>
-      </ion-item>
-
-      <!-- Description -->
-      <ion-item>
-        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-        <ion-label>
-          <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-
-    <!-- Helper Shifts Section -->
-    <ion-list [inset]="true">
-      <ion-list-header>
-        <ion-label>
-          <ion-skeleton-text animated style="width: 120px"></ion-skeleton-text>
-        </ion-label>
-        <ion-button>
-          <ion-skeleton-text
-            animated
-            style="width: 80px; height: 20px"
-          ></ion-skeleton-text>
-        </ion-button>
-      </ion-list-header>
-
-      <!-- Shift Items -->
-      <ion-item>
-        <ion-icon slot="start" name="time-outline"></ion-icon>
-        <ion-label>
-          <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-        </ion-label>
-        <ion-badge slot="end">
-          <ion-skeleton-text animated style="width: 30px"></ion-skeleton-text>
-        </ion-badge>
-      </ion-item>
-
-      <ion-item>
-        <ion-icon slot="start" name="time-outline"></ion-icon>
-        <ion-label>
-          <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
-          <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
-        </ion-label>
-        <ion-badge slot="end">
-          <ion-skeleton-text animated style="width: 30px"></ion-skeleton-text>
-        </ion-badge>
-      </ion-item>
-
-      <!-- Helper List Accordion -->
-      <ion-accordion-group>
-        <ion-accordion value="helpers">
-          <ion-item slot="header">
-            <ion-label>
-              <ion-skeleton-text
-                animated
-                style="width: 150px"
-              ></ion-skeleton-text>
-            </ion-label>
-          </ion-item>
-          <div slot="content">
-            <ion-list>
-              <ion-item>
-                <ion-icon slot="start" name="person-outline"></ion-icon>
-                <ion-label>
-                  <ion-skeleton-text
-                    animated
-                    style="width: 70%"
-                  ></ion-skeleton-text>
-                </ion-label>
-              </ion-item>
-              <ion-item>
-                <ion-icon slot="start" name="person-outline"></ion-icon>
-                <ion-label>
-                  <ion-skeleton-text
-                    animated
-                    style="width: 60%"
-                  ></ion-skeleton-text>
-                </ion-label>
-              </ion-item>
-            </ion-list>
-          </div>
-        </ion-accordion>
-      </ion-accordion-group>
-    </ion-list>
-  </ion-content>
-</ng-template>

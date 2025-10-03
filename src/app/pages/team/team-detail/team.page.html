@@ -1,456 +1,370 @@
-<ng-container *ngIf="team$ | async as team; else header">
-  <ion-header [translucent]="true">
-    <!--<ion-buttons slot="secondary">
-      <ion-button *ngIf="!allowEdit" (click)="edit()"
-        >{{"common.edit" | translate}}</ion-button
+@if (team$ | async; as team) {
+<ion-header [translucent]="true">
+  <!--<ion-buttons slot="secondary">
+    <ion-button *ngIf="!allowEdit" (click)="edit()"
+      >{{"common.edit" | translate}}</ion-button
       >
       <ion-button *ngIf="allowEdit" (click)="edit()"
         >{{"common.done" | translate}}</ion-button
-      >
-    </ion-buttons>-->
-    <ion-toolbar>
-      <ion-title>{{"team.details" | translate}}</ion-title>
-      <ion-buttons slot="primary">
-        <ion-button (click)="close()"
-          >{{"common.close" | translate}}</ion-button
         >
-      </ion-buttons>
+      </ion-buttons>-->
+  <ion-toolbar>
+    <ion-title>{{"team.details" | translate}}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{"team.details" | translate}}</ion-title>
     </ion-toolbar>
   </ion-header>
-
-  <ion-content [fullscreen]="true">
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-title size="large">{{"team.details" | translate}}</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <!-- Team-Logo -->
-    <div class="team-header-container">
-      <div class="team-logo-wrapper">
-        <ion-avatar class="team-avatar">
-          <img
-            alt="{{team.name}}"
-            [src]="team.portrait"
-            *ngIf="team.portrait"
-          />
-          <img alt="{{team.name}}" [src]="team.logo" *ngIf="!team.portrait" />
-        </ion-avatar>
-        <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-          <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-            <ion-fab
-              vertical="bottom"
-              horizontal="center"
-              slot="fixed"
-              *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId) && !team.portrait"
-            >
-              <ion-fab-button
-                color="primary"
-                class="team-camera-fab"
-                (click)="changeTeamLogo(team)"
-              >
-                <ion-icon name="camera"></ion-icon>
-              </ion-fab-button>
-            </ion-fab>
-          </ng-container>
-        </ng-container>
-      </div>
-      <ion-text class="team-name"> {{team.name}} </ion-text>
+  <!-- Team-Logo -->
+  <div class="team-header-container">
+    <div class="team-logo-wrapper">
+      <ion-avatar class="team-avatar">
+        @if (team.portrait) {
+        <img alt="{{team.name}}" [src]="team.portrait" />
+        } @if (!team.portrait) {
+        <img alt="{{team.name}}" [src]="team.logo" />
+        }
+      </ion-avatar>
+      @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ |
+      async; as clubAdminList) { @if (isTeamAdmin(teamAdminList, team.id) ||
+      isClubAdmin(clubAdminList, team.clubId) && !team.portrait) {
+      <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+        <ion-fab-button
+          color="primary"
+          class="team-camera-fab"
+          (click)="changeTeamLogo(team)"
+        >
+          <ion-icon name="camera"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+      } } }
     </div>
-
-    <ion-list lines="full" [inset]="true">
-      <ion-list-header>
-        <ion-label> {{ "common.manage_members" | translate}} </ion-label>
-      </ion-list-header>
-
-      <ion-item>
-        <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
-        <ion-label> {{"common.average__age" | translate}} </ion-label>
-        <ion-note slot="end"> {{team.averageAge}}</ion-note>
-      </ion-item>
-
-      <ion-item detail="true" (click)="openMemberList()">
-        <ion-icon name="people-circle-outline" slot="start"></ion-icon>
-        <ion-label> Mitglieder </ion-label>
-        <ion-note slot="end">{{team['teamMembers'].length}}</ion-note>
-      </ion-item>
-
-      <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-          <ion-item
-            *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
-            detail="true"
-            (click)="openAdminList()"
-          >
-            <ion-icon name="shield-half-outline" slot="start"></ion-icon>
-            <ion-label> Administratoren </ion-label>
-            <ion-note slot="end">{{team['teamAdmins'].length}}</ion-note>
-          </ion-item>
-
-          <ion-item
-            *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
-            detail="true"
-            (click)="openTeamTrainings()"
-          >
-            <ion-icon name="barbell-outline" slot="start"></ion-icon>
-            <ion-label> Trainings </ion-label>
-            <ion-note slot="end"></ion-note>
-          </ion-item>
-        </ng-container>
-      </ng-container>
-
-      <ng-container *ngIf="clubList$ | async as clubList">
-        <ion-item
-          *ngIf="enableChampionship(clubList) && team.type !='Club'"
-          detail="true"
-          (click)="openTeamGames()"
-        >
-          <ion-icon name="trophy-outline" slot="start"></ion-icon>
-          <ion-label> Meisterschaftspiele </ion-label>
-          <ion-note slot="end"></ion-note>
-        </ion-item>
-      </ng-container>
-    </ion-list>
-
-    <!-- Grenzwerte für Abmeldungen -->
-    <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-list
-          *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
-          lines="full"
-          [inset]="true"
-        >
-          <ion-list-header>
-            <ion-label> Grenzwerte für Abmeldungen </ion-label>
-          </ion-list-header>
-          <ion-item>
-            <ion-icon name="barbell-outline" slot="start"></ion-icon>
-            <ion-input
-              labelPlacement="fixed"
-              label="Training"
-              type="number"
-              [value]="team.trainingThreshold"
-              (ionInput)="onInput($event, 'trainingThreshold')"
-            ></ion-input>
-          </ion-item>
-          <ng-container *ngIf="clubList$ | async as clubList">
-            <ion-item *ngIf="enableChampionship(clubList)">
-              <ion-icon name="trophy-outline" slot="start"></ion-icon>
-              <ion-input
-                labelPlacement="fixed"
-                label="Meisterschaft"
-                type="number"
-                [value]="team.championshipThreshold"
-                (ionInput)="onInput($event, 'championshipThreshold')"
-              ></ion-input>
-            </ion-item>
-          </ng-container>
-        </ion-list>
-        <ion-note
-          *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
-          color="medium"
-          style="display: block"
-          class="ion-margin-horizontal ion-padding-horizontal ion-text-wrap"
-        >
-          Anzahl Stunden vor Beginn des Spiels, Trainings oder
-          Veranstaltung</ion-note
-        >
-      </ng-container>
-    </ng-container>
-
-    <!-- Jugend+Sport Export -->
-    <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ng-container
-          *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
-        >
-          <ng-container *ngIf="clubList$ | async as clubList">
-            <ion-list
-              *ngIf="enableMyClubPro(clubList)"
-              [inset]="true"
-              lines="none"
-            >
-              <ion-list-header>
-                <ion-label> Jugend+Sport Export</ion-label>
-              </ion-list-header>
-              <ion-item detail="true" (click)="openDateRangeDialog('training')">
-                <ion-icon name="download-outline" slot="start"></ion-icon>
-                <ion-label>Aktivitäten J+S-Kurse (Trainings)</ion-label>
-              </ion-item>
-              <ion-item
-                detail="true"
-                (click)="openDateRangeDialog('championship')"
-              >
-                <ion-icon name="download-outline" slot="start"></ion-icon>
-                <ion-label>Aktivitäten J+S-Kurse (Wettkämpfe)</ion-label>
-              </ion-item>
-              <ion-item
-                detail="true"
-                (click)="openDateRangeDialog('attendance')"
-              >
-                <ion-icon name="download-outline" slot="start"></ion-icon>
-                <ion-label>Anwesenheitskontrolle (AWK)</ion-label>
-              </ion-item>
-              <ion-item detail="true" (click)="exportPersonData()">
-                <ion-icon name="download-outline" slot="start"></ion-icon>
-                <ion-label>Personen</ion-label>
-              </ion-item>
-            </ion-list>
-          </ng-container>
-        </ng-container>
-      </ng-container>
-    </ng-container>
-
-    <!-- Abrechnung-->
-    <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ng-container
-          *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
-        >
-          <ng-container *ngIf="clubList$ | async as clubList">
-            <ion-list
-              *ngIf="enableMyClubPro(clubList)"
-              [inset]="true"
-              lines="none"
-            >
-              <ion-list-header>
-                <ion-label> Jahresbeitrag</ion-label>
-                <ion-button (click)="changeJahresbeitrag(team)"
-                  >{{"common.edit" | translate}}</ion-button
-                >
-              </ion-list-header>
-              <ion-item>
-                <ion-icon name="cash-outline" slot="start"></ion-icon>
-                <ion-label
-                  >{{team.jahresbeitragWaehrung}} {{team.jahresbeitragWert}}
-                </ion-label>
-              </ion-item>
-            </ion-list>
-          </ng-container>
-        </ng-container>
-      </ng-container>
-    </ng-container>
-
-    <!-- Training & Übungen -->
-    <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ng-container
-          *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
-        >
-          <ng-container *ngIf="clubList$ | async as clubList">
-            <ion-list
-              *ngIf="enableMyClubPro(clubList)"
-              [inset]="true"
-              lines="none"
-            >
-              <ion-list-header>
-                <ion-label>{{"team.training_exercises" | translate}}</ion-label>
-              </ion-list-header>
-              <ion-item (click)="openTeamTrainingExercise()" detail="true">
-                <ion-icon name="barbell-outline" slot="start"></ion-icon>
-                <ion-label>{{"team.exercises" | translate}}</ion-label>
-              </ion-item>
-            </ion-list>
-          </ng-container>
-        </ng-container>
-      </ng-container>
-    </ng-container>
-
-    <ion-list lines="full" [inset]="true">
-      <ion-list-header>
-        <ion-label> {{ "common.details" | translate}} </ion-label>
-      </ion-list-header>
-
-      <ion-item *ngIf="team.liga">
-        <ion-icon name="trophy" slot="start"></ion-icon>
-        <ion-label> {{team.liga}} </ion-label>
-      </ion-item>
-      <ion-item *ngIf="team.portrait">
-        <ion-icon name="camera-outline" slot="start"></ion-icon>
-        <ion-thumbnail>
-          <img alt="{{team.name}}" [src]="team.portrait" />
-        </ion-thumbnail>
-      </ion-item>
-      <ion-item *ngIf="team.info">
-        <ion-icon name="information-circle-outline" slot="start"></ion-icon>
-        <ion-label> {{team.info}} </ion-label>
-      </ion-item>
-
-      <ion-item *ngIf="team.website">
-        <ion-icon name="globe-outline" slot="start"></ion-icon>
-        <ion-label class="ion-text-wrap"> {{team.website}} </ion-label>
-        <ion-button (click)="openUrl(team.website)" fill="clear">
-          <ion-icon slot="icon-only" name="open-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
-
-      <ion-item
-        *ngIf="team.type==='swissunihockey'"
-        detail="true"
-        (click)="openGameCenterExport()"
+    <ion-text class="team-name"> {{team.name}} </ion-text>
+  </div>
+  <ion-list lines="full" [inset]="true">
+    <ion-list-header>
+      <ion-label> {{ "common.manage_members" | translate}} </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
+      <ion-label> {{"common.average__age" | translate}} </ion-label>
+      <ion-note slot="end"> {{team.averageAge}}</ion-note>
+    </ion-item>
+    <ion-item detail="true" (click)="openMemberList()">
+      <ion-icon name="people-circle-outline" slot="start"></ion-icon>
+      <ion-label> Mitglieder </ion-label>
+      <ion-note slot="end">{{team['teamMembers'].length}}</ion-note>
+    </ion-item>
+    @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ |
+    async; as clubAdminList) { @if (isTeamAdmin(teamAdminList, team.id) ||
+    isClubAdmin(clubAdminList, team.clubId)) {
+    <ion-item detail="true" (click)="openAdminList()">
+      <ion-icon name="shield-half-outline" slot="start"></ion-icon>
+      <ion-label> Administratoren </ion-label>
+      <ion-note slot="end">{{team['teamAdmins'].length}}</ion-note>
+    </ion-item>
+    } @if (isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList,
+    team.clubId)) {
+    <ion-item detail="true" (click)="openTeamTrainings()">
+      <ion-icon name="barbell-outline" slot="start"></ion-icon>
+      <ion-label> Trainings </ion-label>
+      <ion-note slot="end"></ion-note>
+    </ion-item>
+    } } } @if (clubList$ | async; as clubList) { @if
+    (enableChampionship(clubList) && team.type !='Club') {
+    <ion-item detail="true" (click)="openTeamGames()">
+      <ion-icon name="trophy-outline" slot="start"></ion-icon>
+      <ion-label> Meisterschaftspiele </ion-label>
+      <ion-note slot="end"></ion-note>
+    </ion-item>
+    } }
+  </ion-list>
+  <!-- Grenzwerte für Abmeldungen -->
+  @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ | async;
+  as clubAdminList) { @if (isTeamAdmin(teamAdminList, team.id) ||
+  isClubAdmin(clubAdminList, team.clubId)) {
+  <ion-list lines="full" [inset]="true">
+    <ion-list-header>
+      <ion-label> Grenzwerte für Abmeldungen </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-icon name="barbell-outline" slot="start"></ion-icon>
+      <ion-input
+        labelPlacement="fixed"
+        label="Training"
+        type="number"
+        [value]="team.trainingThreshold"
+        (ionInput)="onInput($event, 'trainingThreshold')"
+      ></ion-input>
+    </ion-item>
+    @if (clubList$ | async; as clubList) { @if (enableChampionship(clubList)) {
+    <ion-item>
+      <ion-icon name="trophy-outline" slot="start"></ion-icon>
+      <ion-input
+        labelPlacement="fixed"
+        label="Meisterschaft"
+        type="number"
+        [value]="team.championshipThreshold"
+        (ionInput)="onInput($event, 'championshipThreshold')"
+      ></ion-input>
+    </ion-item>
+    } }
+  </ion-list>
+  } @if (isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList,
+  team.clubId)) {
+  <ion-note
+    color="medium"
+    style="display: block"
+    class="ion-margin-horizontal ion-padding-horizontal ion-text-wrap"
+  >
+    Anzahl Stunden vor Beginn des Spiels, Trainings oder Veranstaltung</ion-note
+  >
+  } } }
+  <!-- Jugend+Sport Export -->
+  @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ | async;
+  as clubAdminList) { @if (isTeamAdmin(teamAdminList, team.id) ||
+  isClubAdmin(clubAdminList, team.clubId)) { @if (clubList$ | async; as
+  clubList) { @if (enableMyClubPro(clubList)) {
+  <ion-list [inset]="true" lines="none">
+    <ion-list-header>
+      <ion-label> Jugend+Sport Export</ion-label>
+    </ion-list-header>
+    <ion-item detail="true" (click)="openDateRangeDialog('training')">
+      <ion-icon name="download-outline" slot="start"></ion-icon>
+      <ion-label>Aktivitäten J+S-Kurse (Trainings)</ion-label>
+    </ion-item>
+    <ion-item detail="true" (click)="openDateRangeDialog('championship')">
+      <ion-icon name="download-outline" slot="start"></ion-icon>
+      <ion-label>Aktivitäten J+S-Kurse (Wettkämpfe)</ion-label>
+    </ion-item>
+    <ion-item detail="true" (click)="openDateRangeDialog('attendance')">
+      <ion-icon name="download-outline" slot="start"></ion-icon>
+      <ion-label>Anwesenheitskontrolle (AWK)</ion-label>
+    </ion-item>
+    <ion-item detail="true" (click)="exportPersonData()">
+      <ion-icon name="download-outline" slot="start"></ion-icon>
+      <ion-label>Personen</ion-label>
+    </ion-item>
+  </ion-list>
+  } } } } }
+  <!-- Abrechnung-->
+  @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ | async;
+  as clubAdminList) { @if (isTeamAdmin(teamAdminList, team.id) ||
+  isClubAdmin(clubAdminList, team.clubId)) { @if (clubList$ | async; as
+  clubList) { @if (enableMyClubPro(clubList)) {
+  <ion-list [inset]="true" lines="none">
+    <ion-list-header>
+      <ion-label> Jahresbeitrag</ion-label>
+      <ion-button (click)="changeJahresbeitrag(team)"
+        >{{"common.edit" | translate}}</ion-button
       >
-        <ion-icon name="download-outline" slot="start"></ion-icon>
-        <ion-label> Game Center Export </ion-label>
-      </ion-item>
-
-      <!--<ion-item >
-        <ion-icon name="key" slot="start"></ion-icon>
-        <ion-label> {{team.apiKey}} </ion-label>
-      </ion-item>-->
-    </ion-list>
-
-    <ion-list lines="full" [inset]="true">
-      <ion-list-header>
-        <ion-label> {{ "common.support" | translate}} </ion-label>
-      </ion-list-header>
-
-      <ion-item>
-        <ion-icon name="heart-circle-outline" slot="start"></ion-icon>
-        <ion-label> {{team.type}} </ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-icon name="time" slot="start" color="medium"></ion-icon>
-        <ion-note> {{team.updated | date:'dd.MM.YYYY HH:mm'}} Uhr</ion-note>
-      </ion-item>
-
-      <!--<ion-item >
-        <ion-icon name="key" slot="start"></ion-icon>
-        <ion-label> {{club.apiKey}} </ion-label>
-      </ion-item>-->
-    </ion-list>
-
-    <div class="ion-padding">
-      <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-          <ion-button
-            *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
-            fill="outline"
-            expand="block"
-            color="danger"
-            (click)="deleteTeam()"
-          >
-            <ion-icon slot="start" name="trash"></ion-icon>
-            {{ "team.delete_button" | translate}}
-          </ion-button>
+    </ion-list-header>
+    <ion-item>
+      <ion-icon name="cash-outline" slot="start"></ion-icon>
+      <ion-label
+        >{{team.jahresbeitragWaehrung}} {{team.jahresbeitragWert}}
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  } } } } }
+  <!-- Training & Übungen -->
+  @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ | async;
+  as clubAdminList) { @if (isTeamAdmin(teamAdminList, team.id) ||
+  isClubAdmin(clubAdminList, team.clubId)) { @if (clubList$ | async; as
+  clubList) { @if (enableMyClubPro(clubList)) {
+  <ion-list [inset]="true" lines="none">
+    <ion-list-header>
+      <ion-label>{{"team.training_exercises" | translate}}</ion-label>
+    </ion-list-header>
+    <ion-item (click)="openTeamTrainingExercise()" detail="true">
+      <ion-icon name="barbell-outline" slot="start"></ion-icon>
+      <ion-label>{{"team.exercises" | translate}}</ion-label>
+    </ion-item>
+  </ion-list>
+  } } } } }
+  <ion-list lines="full" [inset]="true">
+    <ion-list-header>
+      <ion-label> {{ "common.details" | translate}} </ion-label>
+    </ion-list-header>
+    @if (team.liga) {
+    <ion-item>
+      <ion-icon name="trophy" slot="start"></ion-icon>
+      <ion-label> {{team.liga}} </ion-label>
+    </ion-item>
+    } @if (team.portrait) {
+    <ion-item>
+      <ion-icon name="camera-outline" slot="start"></ion-icon>
+      <ion-thumbnail>
+        <img alt="{{team.name}}" [src]="team.portrait" />
+      </ion-thumbnail>
+    </ion-item>
+    } @if (team.info) {
+    <ion-item>
+      <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+      <ion-label> {{team.info}} </ion-label>
+    </ion-item>
+    } @if (team.website) {
+    <ion-item>
+      <ion-icon name="globe-outline" slot="start"></ion-icon>
+      <ion-label class="ion-text-wrap"> {{team.website}} </ion-label>
+      <ion-button (click)="openUrl(team.website)" fill="clear">
+        <ion-icon slot="icon-only" name="open-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+    } @if (team.type==='swissunihockey') {
+    <ion-item detail="true" (click)="openGameCenterExport()">
+      <ion-icon name="download-outline" slot="start"></ion-icon>
+      <ion-label> Game Center Export </ion-label>
+    </ion-item>
+    }
+    <!--<ion-item >
+              <ion-icon name="key" slot="start"></ion-icon>
+              <ion-label> {{team.apiKey}} </ion-label>
+            </ion-item>-->
+  </ion-list>
+  <ion-list lines="full" [inset]="true">
+    <ion-list-header>
+      <ion-label> {{ "common.support" | translate}} </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-icon name="heart-circle-outline" slot="start"></ion-icon>
+      <ion-label> {{team.type}} </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon name="time" slot="start" color="medium"></ion-icon>
+      <ion-note> {{team.updated | date:'dd.MM.yyyy HH:mm'}} Uhr</ion-note>
+    </ion-item>
+    <!--<ion-item >
+            <ion-icon name="key" slot="start"></ion-icon>
+            <ion-label> {{club.apiKey}} </ion-label>
+          </ion-item>-->
+  </ion-list>
+  <div class="ion-padding">
+    @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ |
+    async; as clubAdminList) { @if (isTeamAdmin(teamAdminList, team.id) ||
+    isClubAdmin(clubAdminList, team.clubId)) {
+    <ion-button
+      fill="outline"
+      expand="block"
+      color="danger"
+      (click)="deleteTeam()"
+    >
+      <ion-icon slot="start" name="trash"></ion-icon>
+      {{ "team.delete_button" | translate}}
+    </ion-button>
+    } } }
+  </div>
+  <ion-text class="ion-text-center" color="medium">
+    <ion-note>
+      <p>Team ID: {{team.id}}</p>
+    </ion-note>
+  </ion-text>
+  <!-- <ion-list [inset]="true" *ngIf="team['teamRequests'].length > 0">
+        <ion-list-header>
+          <ion-label> {{"common.requests" | translate}} </ion-label>
+        </ion-list-header>
+        <ion-item *ngFor="let request of team['teamRequests']" detail="true">
+          <ion-avatar slot="start">
+            <img src="{{request?.profilePicture}}" />
+          </ion-avatar>
+          <ion-label (click)="openMember(request)"
+            >{{request.firstName}} {{request.lastName}}</ion-label
+            >
+            <ion-label> {{request?.email}} </ion-label>
+          </ion-item>
+        </ion-list>-->
+  <!--
+        <ng-container *ngIf="requestList$ | async as requests; else noRequests">
+          <ion-list [inset]="true" *ngIf="requests.length > 0">
+            <ion-list-header> Anfragen </ion-list-header>
+            <ion-item *ngFor="let request of requests">
+              <ion-avatar slot="start">
+                <img [src]="request?.profilePicture" />
+              </ion-avatar>
+              <ion-label> {{request?.firstName}} {{request?.lastName}} </ion-label>
+              <ion-button color="danger" (click)="deleteTeamRequest(request)" slot="end">
+                <ion-icon icon-only name="trash"></ion-icon>
+              </ion-button>
+              <ion-button color="success" (click)="approveTeamRequest(request)" slot="end">
+                <ion-icon icon-only name="checkmark-outline"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </ion-list>
         </ng-container>
-      </ng-container>
-    </div>
-
-    <ion-text class="ion-text-center" color="medium">
-      <ion-note>
-        <p>Team ID: {{team.id}}</p>
-      </ion-note>
-    </ion-text>
-
-    <!-- <ion-list [inset]="true" *ngIf="team['teamRequests'].length > 0">
-      <ion-list-header>
-        <ion-label> {{"common.requests" | translate}} </ion-label>
-      </ion-list-header>
-      <ion-item *ngFor="let request of team['teamRequests']" detail="true">
-        <ion-avatar slot="start">
-          <img src="{{request?.profilePicture}}" />
-        </ion-avatar>
-        <ion-label (click)="openMember(request)"
-          >{{request.firstName}} {{request.lastName}}</ion-label
-        >
-        <ion-label> {{request?.email}} </ion-label>
-      </ion-item>
-    </ion-list>-->
-
-    <!--
-  <ng-container *ngIf="requestList$ | async as requests; else noRequests">
-    <ion-list [inset]="true" *ngIf="requests.length > 0">
-      <ion-list-header> Anfragen </ion-list-header>
-      <ion-item *ngFor="let request of requests">
-        <ion-avatar slot="start">
-          <img [src]="request?.profilePicture" />
-        </ion-avatar>
-        <ion-label> {{request?.firstName}} {{request?.lastName}} </ion-label>
-        <ion-button color="danger" (click)="deleteTeamRequest(request)" slot="end">
-          <ion-icon icon-only name="trash"></ion-icon>
-        </ion-button>
-        <ion-button color="success" (click)="approveTeamRequest(request)" slot="end">
-          <ion-icon icon-only name="checkmark-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
-    </ion-list>
-  </ng-container>
-
-  <ion-list [inset]="true">
-    <ion-list-header> Mitglieder </ion-list-header>
-    <ion-item *ngFor="let member of memberList$ | async">
-      
-      <ion-icon
-      *ngIf="allowEdit === true"
-      slot="icon-only"
-      color="danger"
-      slot="start"
-      (click)="removeMember(member)"
-      name="person-remove-outline"
-    ></ion-icon>
-      
-      <ion-avatar slot="start">
-        <img src="{{member?.profilePicture}}" />
-      </ion-avatar>
-      <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
-    </ion-item>
-  </ion-list>
-
-  <ion-list [inset]="true">
-    <ion-list-header> Administratoren </ion-list-header>
-    <ion-item *ngFor="let admin of adminList$ | async">
-      <ion-icon
-      *ngIf="allowEdit === true"
-      slot="icon-only"
-      color="danger"
-      slot="start"
-      name="person-remove"
-    ></ion-icon>
-      <ion-avatar slot="start">
-        <img src="{{admin?.profilePicture}}" />
-      </ion-avatar>
-      <ion-label> {{admin?.firstName}} {{admin?.lastName}} </ion-label>
-    </ion-item>
-  </ion-list>
-  -->
-    <!-- fab placed to the bottom end 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="addTeamMember()">
-      <ion-icon name="add-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>-->
-  </ion-content>
-</ng-container>
-<ng-template #noRequests>
-  <!-- You can put any placeholder or message here if needed when there are no requests -->
-</ng-template>
-<ng-template #header>
-  <ion-header [translucent]="true">
+        <ion-list [inset]="true">
+          <ion-list-header> Mitglieder </ion-list-header>
+          <ion-item *ngFor="let member of memberList$ | async">
+            <ion-icon
+              *ngIf="allowEdit === true"
+              slot="icon-only"
+              color="danger"
+              slot="start"
+              (click)="removeMember(member)"
+              name="person-remove-outline"
+            ></ion-icon>
+            <ion-avatar slot="start">
+              <img src="{{member?.profilePicture}}" />
+            </ion-avatar>
+            <ion-label> {{member?.firstName}} {{member?.lastName}} </ion-label>
+          </ion-item>
+        </ion-list>
+        <ion-list [inset]="true">
+          <ion-list-header> Administratoren </ion-list-header>
+          <ion-item *ngFor="let admin of adminList$ | async">
+            <ion-icon
+              *ngIf="allowEdit === true"
+              slot="icon-only"
+              color="danger"
+              slot="start"
+              name="person-remove"
+            ></ion-icon>
+            <ion-avatar slot="start">
+              <img src="{{admin?.profilePicture}}" />
+            </ion-avatar>
+            <ion-label> {{admin?.firstName}} {{admin?.lastName}} </ion-label>
+          </ion-item>
+        </ion-list>
+        -->
+  <!-- fab placed to the bottom end
+        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="addTeamMember()">
+            <ion-icon name="add-outline"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>-->
+</ion-content>
+} @else {
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title
+      ><ion-skeleton-text
+        [animated]="true"
+        style="width: 60%"
+      ></ion-skeleton-text
+    ></ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title
+      <ion-title size="large"
         ><ion-skeleton-text
           [animated]="true"
           style="width: 60%"
         ></ion-skeleton-text
       ></ion-title>
-      <ion-buttons slot="primary">
-        <ion-button (click)="close()"
-          >{{"common.close" | translate}}</ion-button
-        >
-      </ion-buttons>
     </ion-toolbar>
   </ion-header>
-
-  <ion-content [fullscreen]="true">
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-title size="large"
-          ><ion-skeleton-text
-            [animated]="true"
-            style="width: 60%"
-          ></ion-skeleton-text
-        ></ion-title>
-      </ion-toolbar>
-    </ion-header>
-  </ion-content>
+</ion-content>
+}
+<ng-template #noRequests>
+  <!-- You can put any placeholder or message here if needed when there are no requests -->
 </ng-template>

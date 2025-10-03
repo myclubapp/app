@@ -1,95 +1,80 @@
-<ng-container *ngIf="club$ | async as club">
-  <ion-header [translucent]="true">
+@if (club$ | async; as club) {
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    @if (clubAdminList$ | async; as clubAdminList) { @if
+    (isClubAdmin(clubAdminList, club.id)) {
+    <ion-buttons slot="secondary">
+      @if (!allowEdit) {
+      <ion-button (click)="edit()">{{"common.edit" | translate}}</ion-button>
+      } @if (allowEdit) {
+      <ion-button (click)="edit()">{{"common.done" | translate}}</ion-button>
+      }
+    </ion-buttons>
+    } }
+    <ion-title>{{"club.links" | translate}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
     <ion-toolbar>
-      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-buttons
-          *ngIf="isClubAdmin(clubAdminList, club.id)"
-          slot="secondary"
-        >
-          <ion-button *ngIf="!allowEdit" (click)="edit()"
-            >{{"common.edit" | translate}}</ion-button
-          >
-          <ion-button *ngIf="allowEdit" (click)="edit()"
-            >{{"common.done" | translate}}</ion-button
-          >
-        </ion-buttons>
-      </ng-container>
-      <ion-title>{{"club.links" | translate}}</ion-title>
-      <ion-buttons slot="end">
-        <ion-button (click)="close()"
-          >{{"common.close" | translate}}</ion-button
-        >
-      </ion-buttons>
+      <ion-title size="large">{{"club.links" | translate}}</ion-title>
     </ion-toolbar>
   </ion-header>
-
-  <ion-content [fullscreen]="true">
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-title size="large">{{"club.links" | translate}}</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-list [inset]="true" *ngIf="links$ | async as links else loading">
-      <ion-reorder-group
-        [disabled]="!allowEdit"
-        (ionItemReorder)="handleReorder($any($event))"
-      >
-        <ion-item-sliding #item *ngFor="let link of links">
-          <ion-item detail="true" (click)="openLink(link.url)">
-            <ion-reorder slot="start" *ngIf="allowEdit"></ion-reorder>
-            <ng-container *ngIf="link.type === 'image'; else defaultIcon">
-              <ion-avatar slot="start" style="width: 32px; height: 32px">
-                <img
-                  [src]="link.url"
-                  alt="{{link.title}}"
-                  style="width: 100%; height: 100%; object-fit: cover"
-                />
-              </ion-avatar>
-            </ng-container>
-            <ng-template #defaultIcon>
-              <ion-icon [name]="getLinkIcon(link.type)" slot="start"></ion-icon>
-            </ng-template>
-            <ion-label class="ion-text-wrap">
-              <h2>{{link.title}}</h2>
-              <p>{{link?.description.slice(0, 50)}}...</p>
-            </ion-label>
-          </ion-item>
-          <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-            <ng-container *ngIf="isClubAdmin(clubAdminList, club.id)">
-              <ion-item-options side="end">
-                <ion-item-option color="primary" (click)="editLink(item, link)">
-                  <ion-icon slot="icon-only" name="create-outline"></ion-icon>
-                </ion-item-option>
-                <ion-item-option
-                  color="danger"
-                  (click)="deleteLink(item, link.id)"
-                >
-                  <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-                </ion-item-option>
-              </ion-item-options>
-            </ng-container>
-          </ng-container>
-        </ion-item-sliding>
-      </ion-reorder-group>
-    </ion-list>
-
-    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-      <ion-fab
-        *ngIf="isClubAdmin(clubAdminList, club.id)"
-        vertical="bottom"
-        horizontal="end"
-        slot="fixed"
-      >
-        <ion-fab-button (click)="openAddLinkModal()">
-          <ion-icon name="add"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
-    </ng-container>
-  </ion-content>
-</ng-container>
-
-<ng-template #loading>
+  @if (links$ | async; as links) {
+  <ion-list [inset]="true">
+    <ion-reorder-group
+      [disabled]="!allowEdit"
+      (ionItemReorder)="handleReorder($any($event))"
+    >
+      @for (link of links; track link) {
+      <ion-item-sliding #item>
+        <ion-item detail="true" (click)="openLink(link.url)">
+          @if (allowEdit) {
+          <ion-reorder slot="start"></ion-reorder>
+          } @if (link.type === 'image') {
+          <ion-avatar slot="start" style="width: 32px; height: 32px">
+            <img
+              [src]="link.url"
+              alt="{{link.title}}"
+              style="width: 100%; height: 100%; object-fit: cover"
+            />
+          </ion-avatar>
+          } @else {
+          <ion-icon [name]="getLinkIcon(link.type)" slot="start"></ion-icon>
+          }
+          <ion-label class="ion-text-wrap">
+            <h2>{{link.title}}</h2>
+            <p>{{link?.description.slice(0, 50)}}...</p>
+          </ion-label>
+        </ion-item>
+        @if (clubAdminList$ | async; as clubAdminList) { @if
+        (isClubAdmin(clubAdminList, club.id)) {
+        <ion-item-options side="end">
+          <ion-item-option color="primary" (click)="editLink(item, link)">
+            <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger" (click)="deleteLink(item, link.id)">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+        } }
+      </ion-item-sliding>
+      }
+    </ion-reorder-group>
+  </ion-list>
+  } @else {
   <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>
   <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-</ng-template>
+  } @if (clubAdminList$ | async; as clubAdminList) { @if
+  (isClubAdmin(clubAdminList, club.id)) {
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openAddLinkModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  } }
+</ion-content>
+}

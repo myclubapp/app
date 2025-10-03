@@ -19,29 +19,28 @@
   </ion-header>
 
   <ion-list [inset]="true">
-    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-      <ion-item *ngIf="clubAdminList.length > 1">
-        <ion-select
-          [label]='"common.club" | translate'
-          label-placement="stacked"
-          [(ngModel)]="event.clubId"
-          value="{{event.clubId}}"
-          [cancelText]="'common.cancel' | translate"
-        >
-          <ion-select-option
-            *ngFor="let club of clubAdminList"
-            value="{{club.id}}"
-            >{{club.name}}</ion-select-option
-          >
-        </ion-select>
-      </ion-item>
-    </ng-container>
+    @if (clubAdminList$ | async; as clubAdminList) { @if (clubAdminList.length >
+    1) {
+    <ion-item>
+      <ion-select
+        [label]='"common.club" | translate'
+        label-placement="stacked"
+        [(ngModel)]="event.clubId"
+        value="{{event.clubId}}"
+        [cancelText]="'common.cancel' | translate"
+      >
+        @for (club of clubAdminList; track club) {
+        <ion-select-option value="{{club.id}}">{{club.name}}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+    } }
 
     <!--<ion-item *ngIf="clubList.length==0">
-      <ion-select cancel-text="Abbrechen" ok-text="Auswählen" label="Club" label-placement="stacked" [(ngModel)]="event.clubId" value="{{event.clubId}}" >
-        <ion-select-option disabled="true" *ngFor="let club of clubList" value="{{club.id}}">{{club.name}}</ion-select-option>
-      </ion-select>
-    </ion-item>-->
+        <ion-select cancel-text="Abbrechen" ok-text="Auswählen" label="Club" label-placement="stacked" [(ngModel)]="event.clubId" value="{{event.clubId}}" >
+          <ion-select-option disabled="true" *ngFor="let club of clubList" value="{{club.id}}">{{club.name}}</ion-select-option>
+        </ion-select>
+      </ion-item>-->
 
     <ion-item>
       <ion-input

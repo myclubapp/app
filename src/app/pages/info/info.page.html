@@ -84,7 +84,8 @@
     </ion-card>
 
     <!-- Update Button -->
-    <div class="update-section" *ngIf="swUpdate.isEnabled">
+    @if (swUpdate.isEnabled) {
+    <div class="update-section">
       <ion-button
         expand="block"
         color="primary"
@@ -95,6 +96,7 @@
         Prüfe auf Updates
       </ion-button>
     </div>
+    }
   </div>
 </ion-content>
 

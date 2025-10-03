@@ -1,27 +1,33 @@
 <ion-item detail="true">
-  <ion-icon
-    *ngIf="allowEdit"
-    slot="icon-only"
-    color="danger"
-    slot="start"
-    name="trash"
-    (click)="onRemove()"
-  ></ion-icon>
+  @if (allowEdit) {
+    <ion-icon
+      slot="icon-only"
+      color="danger"
+      slot="start"
+      name="trash"
+      (click)="onRemove()"
+    ></ion-icon>
+  }
   <ion-avatar (click)="onOpen()" slot="start">
-    <img
-      *ngIf="!profile?.profilePicture"
-      alt="Silhouette of a person's head"
-      src="https://ionicframework.com/docs/img/demos/avatar.svg"
-    />
-    <img *ngIf="profile?.profilePicture" [src]="profile.profilePicture" />
+    @if (!profile?.profilePicture) {
+      <img
+        alt="Silhouette of a person's head"
+        src="https://ionicframework.com/docs/img/demos/avatar.svg"
+      />
+    }
+    @if (profile?.profilePicture) {
+      <img [src]="profile.profilePicture" />
+    }
   </ion-avatar>
   <ion-label class="ion-text-wrap" (click)="onOpen()">
     <h2>{{ profile?.firstName }} {{ profile?.lastName }}</h2>
-    <ng-container *ngIf="showDateOfBirth">
-      <h3>{{ profile?.dateOfBirth?.toDate() | date: "dd.MM.YYYY " }}</h3>
-    </ng-container>
-    <ng-container *ngIf="showRoles && profile?.roles?.length > 0">
-      <ion-badge *ngFor="let role of profile.roles">{{ role }}</ion-badge>
-    </ng-container>
+    @if (showDateOfBirth) {
+      <h3>{{ profile?.dateOfBirth?.toDate() | date: "dd.MM.yyyy" }}</h3>
+    }
+    @if (showRoles && profile?.roles?.length > 0) {
+      @for (role of profile.roles; track role) {
+        <ion-badge>{{ role }}</ion-badge>
+      }
+    }
   </ion-label>
 </ion-item>

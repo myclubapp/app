@@ -1,120 +1,126 @@
-<ng-container *ngIf="team$ | async as team; else loading">
-  <ion-header [translucent]="true">
+@if (team$ | async; as team) {
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ |
+    async; as clubAdminList) { @if (isTeamAdmin(teamAdminList, team.id) ||
+    isClubAdmin(clubAdminList, team.clubId)) {
+    <ion-buttons slot="secondary">
+      @if (!allowEdit) {
+      <ion-button (click)="edit()">{{"common.edit" | translate}}</ion-button>
+      } @if (allowEdit) {
+      <ion-button (click)="edit()">{{"common.done" | translate}}</ion-button>
+      }
+    </ion-buttons>
+    } } }
+    <ion-title>{{"common.admins" | translate}}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
     <ion-toolbar>
-      <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-          <ion-buttons slot="secondary"
-            *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)">
-            <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
-            <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
-          </ion-buttons>
-        </ng-container>
-      </ng-container>
-      <ion-title>{{"common.admins" | translate}}</ion-title>
-      <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
-      </ion-buttons>
+      <ion-title size="large">{{"common.admins" | translate}}</ion-title>
     </ion-toolbar>
   </ion-header>
-
-  <ion-content [fullscreen]="true">
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-title size="large">{{"common.admins" | translate}}</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
-    placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
-
-  <ion-list [inset]="true" *ngIf="filteredTeamAdmins$ | async as teamAdminList">
+  <ion-searchbar
+    [debounce]="1000"
+    (ionChange)="handleSearch($event)"
+    animated="true"
+    search-icon="search-circle"
+    placeholder='{{"common.searchfield" | translate}}'
+  ></ion-searchbar>
+  @if (filteredTeamAdmins$ | async; as teamAdminList) {
+  <ion-list [inset]="true">
     <ion-item-group>
-      <ng-container *ngFor="let groupBy of groupArray">
-        <ion-item-divider color="light">
-          <ion-label> {{groupBy}} </ion-label>
-        </ion-item-divider>
-        <ng-container *ngFor="let member of teamAdminList">
-
-          <ion-item-sliding *ngIf="member.groupBy == groupBy">
-            <ion-item detail="true">
-              <ion-icon *ngIf="allowEdit==true" slot="icon-only" color="danger" slot="start" name="trash"
-                (click)="deleteTeamAdmin(member)"></ion-icon>
-              <ion-avatar slot="start">
-                <img *ngIf="!member.profilePicture" alt="Silhouette of a person's head"
-                  src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-                <img *ngIf="member.profilePicture" src="{{member?.profilePicture}}" />
-              </ion-avatar>
-              <ion-label class="ion-text-wrap" (click)="openMember(member)">
-                {{member.firstName}} {{member.lastName}}
-              </ion-label>
-            </ion-item>
-          </ion-item-sliding>
-        </ng-container>
-      </ng-container>
+      @for (groupBy of groupArray; track groupBy) {
+      <ion-item-divider color="light">
+        <ion-label> {{groupBy}} </ion-label>
+      </ion-item-divider>
+      @for (member of teamAdminList; track member) { @if (member.groupBy ==
+      groupBy) {
+      <ion-item-sliding>
+        <ion-item detail="true">
+          @if (allowEdit==true) {
+          <ion-icon
+            slot="icon-only"
+            color="danger"
+            slot="start"
+            name="trash"
+            (click)="deleteTeamAdmin(member)"
+          ></ion-icon>
+          }
+          <ion-avatar slot="start">
+            @if (!member.profilePicture) {
+            <img
+              alt="Silhouette of a person's head"
+              src="https://ionicframework.com/docs/img/demos/avatar.svg"
+            />
+            } @if (member.profilePicture) {
+            <img src="{{member?.profilePicture}}" />
+            }
+          </ion-avatar>
+          <ion-label class="ion-text-wrap" (click)="openMember(member)">
+            {{member.firstName}} {{member.lastName}}
+          </ion-label>
+        </ion-item>
+      </ion-item-sliding>
+      } } }
     </ion-item-group>
   </ion-list>
-
-  <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-    <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-      <ion-fab *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
-        vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button (click)="addAdministratorToTeam()">
-          <ion-icon name="add-outline"></ion-icon>
-        </ion-fab-button>
-      </ion-fab>
-    </ng-container>
-  </ng-container>
+  } @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ |
+  async; as clubAdminList) { @if (isTeamAdmin(teamAdminList, team.id) ||
+  isClubAdmin(clubAdminList, team.clubId)) {
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addAdministratorToTeam()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  } } }
 </ion-content>
-</ng-container>
-
-
-
-<ng-template #loading>
-  <ion-header [translucent]="true">
+} @else {
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{"common.admins" | translate}}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
     <ion-toolbar>
-
-      <ion-title>{{"common.admins" | translate}}</ion-title>
-      <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
-      </ion-buttons>
+      <ion-title size="large">{{"common.admins" | translate}}</ion-title>
     </ion-toolbar>
   </ion-header>
-
-  <ion-content [fullscreen]="true">
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-title size="large">{{"common.admins" | translate}}</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
-      placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
-
-    <ion-list [inset]="true">
-      <!-- <ion-list-header>
-        <ion-label> {{"common.members" | translate}} </ion-label>
-      </ion-list-header>-->
-      <ion-item-group>
-        <ng-container *ngFor="let groupBy of groupArray">
-          <ion-item-divider color="light">
-            <ion-label> {{groupBy}} </ion-label>
-          </ion-item-divider>
-
-
-        </ng-container>
-      </ion-item-group>
-    </ion-list>
-    <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-fab *ngIf="isTeamAdmin(teamAdminList, team.id) || isClubAdmin(clubAdminList, team.clubId)"
-          vertical="bottom" horizontal="end" slot="fixed">
-          <ion-fab-button (click)="addAdministratorToTeam()">
-            <ion-icon name="add-outline"></ion-icon>
-          </ion-fab-button>
-        </ion-fab>
-      </ng-container>
-    </ng-container>
-  </ion-content>
-
-
-</ng-template>
+  <ion-searchbar
+    [debounce]="1000"
+    (ionChange)="handleSearch($event)"
+    animated="true"
+    search-icon="search-circle"
+    placeholder='{{"common.searchfield" | translate}}'
+  ></ion-searchbar>
+  <ion-list [inset]="true">
+    <!-- <ion-list-header>
+      <ion-label> {{"common.members" | translate}} </ion-label>
+    </ion-list-header>-->
+    <ion-item-group>
+      @for (groupBy of groupArray; track groupBy) {
+      <ion-item-divider color="light">
+        <ion-label> {{groupBy}} </ion-label>
+      </ion-item-divider>
+      }
+    </ion-item-group>
+  </ion-list>
+  @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ | async;
+  as clubAdminList) { @if (isTeamAdmin(teamAdminList, team.id) ||
+  isClubAdmin(clubAdminList, team.clubId)) {
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addAdministratorToTeam()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  } } }
+</ion-content>
+}

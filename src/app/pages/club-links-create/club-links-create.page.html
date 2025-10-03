@@ -61,7 +61,8 @@
       </ion-select>
     </ion-item>
 
-    <ion-item *ngIf="link.type === 'web'">
+    @if (link.type === 'web') {
+    <ion-item>
       <ion-input
         [label]="'link.url' | translate"
         label-placement="stacked"
@@ -71,22 +72,23 @@
       >
       </ion-input>
     </ion-item>
-
-    <ion-item *ngIf="link.type === 'image' || link.type === 'pdf'">
+    } @if (link.type === 'image' || link.type === 'pdf') {
+    <ion-item>
       <ion-input
         type="file"
         [accept]="link.type === 'image' ? 'image/*' : '.pdf'"
         (change)="onFileSelected($event)"
       ></ion-input>
     </ion-item>
-
-    <ion-item *ngIf="link.type === 'image'">
+    } @if (link.type === 'image') {
+    <ion-item>
       <img
         [src]="previewUrl"
         alt="Vorschau"
         style="max-width: 100%; max-height: 200px; object-fit: contain"
       />
     </ion-item>
+    }
 
     <ion-item>
       <ion-checkbox [(ngModel)]="link.showOnCard" labelPlacement="end"

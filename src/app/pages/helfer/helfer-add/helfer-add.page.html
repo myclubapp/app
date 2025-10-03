@@ -21,8 +21,10 @@
   </ion-header>
 
   <ion-list [inset]="true">
-    <div *ngIf="clubAdminList$ | async as clubList">
-      <ion-item *ngIf="clubList.length > 1">
+    @if (clubAdminList$ | async; as clubList) {
+    <div>
+      @if (clubList.length > 1) {
+      <ion-item>
         <ion-select
           [label]='"common.club" | translate'
           label-placement="stacked"
@@ -31,29 +33,35 @@
           value="{{event.clubId}}"
           [cancelText]="'common.cancel' | translate"
         >
-          <ion-select-option *ngFor="let club of clubList" value="{{club.id}}"
+          @for (club of clubList; track club) {
+          <ion-select-option value="{{club.id}}"
             >{{club.name}}</ion-select-option
           >
+          }
         </ion-select>
       </ion-item>
+      }
     </div>
-
-    <div *ngIf="clubGamesList$ | async as clubGamesList">
-      <ion-item *ngIf="clubGamesList.length > 1">
+    } @if (clubGamesList$ | async; as clubGamesList) {
+    <div>
+      @if (clubGamesList.length > 1) {
+      <ion-item>
         <ion-select
           label="Vorlage Club Spiele"
           label-placement="stacked"
           (ionChange)="setClubGameAsTemplate($event.detail.value)"
           [cancelText]="'common.cancel' | translate"
         >
-          <ion-select-option
-            *ngFor="let clubGame of clubGamesList"
-            [value]="clubGame"
+          @for (clubGame of clubGamesList; track clubGame) {
+          <ion-select-option [value]="clubGame"
             >{{clubGame.date}} - {{clubGame.name}}</ion-select-option
           >
+          }
         </ion-select>
       </ion-item>
+      }
     </div>
+    }
 
     <ion-item>
       <ion-input
@@ -228,44 +236,42 @@
         >{{'common.add_button' | translate}}</ion-button
       >
     </ion-list-header>
-    <ng-container *ngIf="event.schichten.length > 0; else schichtenTemplate">
-      <ion-item *ngFor="let schicht of event.schichten">
-        <ion-icon
-          color="danger"
-          (click)="deleteSchicht(schicht)"
-          slot="start"
-          name="trash"
-          size="medium"
-        ></ion-icon>
-        <ion-icon
-          color="primary"
-          (click)="copySchicht(schicht)"
-          slot="start"
-          name="copy"
-          size="medium"
-        ></ion-icon>
-
-        <ion-label (click)="editSchicht(schicht)">
-          <h3>{{schicht.name}}</h3>
-          <h2>{{schicht.timeFrom}} {{schicht.timeTo}}</h2>
-        </ion-label>
-        <ion-badge slot="end">{{schicht.countNeeded}}</ion-badge>
-      </ion-item>
-    </ng-container>
+    @if (event.schichten.length > 0) { @for (schicht of event.schichten; track
+    schicht) {
+    <ion-item>
+      <ion-icon
+        color="danger"
+        (click)="deleteSchicht(schicht)"
+        slot="start"
+        name="trash"
+        size="medium"
+      ></ion-icon>
+      <ion-icon
+        color="primary"
+        (click)="copySchicht(schicht)"
+        slot="start"
+        name="copy"
+        size="medium"
+      ></ion-icon>
+      <ion-label (click)="editSchicht(schicht)">
+        <h3>{{schicht.name}}</h3>
+        <h2>{{schicht.timeFrom}} {{schicht.timeTo}}</h2>
+      </ion-label>
+      <ion-badge slot="end">{{schicht.countNeeded}}</ion-badge>
+    </ion-item>
+    } } @else {
+    <ion-item>
+      <ion-label>
+        <h3><ion-skeleton-text style="width: 60%"></ion-skeleton-text></h3>
+        <h2>
+          <ion-skeleton-text style="width: 30%"></ion-skeleton-text>
+          <ion-skeleton-text style="width: 40%"></ion-skeleton-text>
+        </h2>
+      </ion-label>
+    </ion-item>
+    }
   </ion-list>
 </ion-content>
-
-<ng-template #schichtenTemplate>
-  <ion-item>
-    <ion-label>
-      <h3><ion-skeleton-text style="width: 60%"></ion-skeleton-text></h3>
-      <h2>
-        <ion-skeleton-text style="width: 30%"></ion-skeleton-text>
-        <ion-skeleton-text style="width: 40%"></ion-skeleton-text>
-      </h2>
-    </ion-label>
-  </ion-item>
-</ng-template>
 
 <ng-template #loading>
   <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>

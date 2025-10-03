@@ -154,12 +154,12 @@ export class TrainingsPage implements OnInit {
     this.activatedRouteSub = this.activatedRoute.url.subscribe((data) => {
       if (
         this.router &&
-        this.router.getCurrentNavigation() &&
-        this.router.getCurrentNavigation().extras &&
-        this.router.getCurrentNavigation().extras.state &&
-        this.router.getCurrentNavigation().extras.state["type"] === "training"
+        this.router.currentNavigation() &&
+        this.router.currentNavigation().extras &&
+        this.router.currentNavigation().extras.state &&
+        this.router.currentNavigation().extras.state["type"] === "training"
       ) {
-        const pushData = this.router.getCurrentNavigation().extras.state;
+        const pushData = this.router.currentNavigation().extras.state;
         console.log("PUSHDATA " + pushData);
         let training: Training = {
           id: pushData["id"],
@@ -339,7 +339,8 @@ export class TrainingsPage implements OnInit {
             // Remove duplicate trainings by ID
             const uniqueTrainings = flattenedTrainings.filter(
               (training, index, self) =>
-                index === self.findIndex((t) => t.training.id === training.training.id),
+                index ===
+                self.findIndex((t) => t.training.id === training.training.id),
             );
 
             return uniqueTrainings.map((item) => {
@@ -544,7 +545,8 @@ export class TrainingsPage implements OnInit {
             // Remove duplicate trainings by ID
             const uniqueTrainings = flattenedTrainings.filter(
               (training, index, self) =>
-                index === self.findIndex((t) => t.training.id === training.training.id),
+                index ===
+                self.findIndex((t) => t.training.id === training.training.id),
             );
 
             return uniqueTrainings.map((item) => {

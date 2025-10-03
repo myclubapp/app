@@ -21,8 +21,10 @@
   </ion-header>
 
   <ion-list [inset]="true">
-    <div *ngIf="teamAdminList$ | async as teamList">
-      <ion-item *ngIf="teamList.length >= 1">
+    @if (teamAdminList$ | async; as teamList) {
+    <div>
+      @if (teamList.length >= 1) {
+      <ion-item>
         <ion-select
           [label]="'training-create.team' | translate"
           label-placement="stacked"
@@ -31,19 +33,23 @@
           [(ngModel)]="training.teamId"
           value="{{training.teamId}}"
         >
-          <ion-select-option *ngFor="let team of teamList" value="{{team.id}}"
+          @for (team of teamList; track team) {
+          <ion-select-option value="{{team.id}}"
             >{{team.name}}</ion-select-option
           >
+          }
         </ion-select>
       </ion-item>
+      }
     </div>
+    }
 
     <!-- <ion-item>
-      <ion-select [label]="'training-create.team' | translate" label-placement="stacked" [(ngModel)]="training.teamId"
-        value="{{training.teamId}}">
-        <ion-select-option *ngFor="let team of teamList" value="{{team.id}}">{{team.name}}</ion-select-option>
-      </ion-select>
-    </ion-item>-->
+          <ion-select [label]="'training-create.team' | translate" label-placement="stacked" [(ngModel)]="training.teamId"
+            value="{{training.teamId}}">
+            <ion-select-option *ngFor="let team of teamList" value="{{team.id}}">{{team.name}}</ion-select-option>
+          </ion-select>
+        </ion-item>-->
 
     <ion-item>
       <ion-input

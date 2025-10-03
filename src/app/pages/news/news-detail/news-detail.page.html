@@ -1,4 +1,4 @@
-<ng-container *ngIf="news$ | async as news">
+@if (news$ | async; as news) {
 <!--<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title></ion-title>
@@ -14,16 +14,14 @@
         <ion-icon name="close" size="small"></ion-icon>
       </ion-fab-button>
     </ion-fab>
-    <ion-img [src]="news.image" [alt]="news.title"/>
+    <ion-img [src]="news.image" [alt]="news.title" />
     <ion-card-header>
       <ion-card-subtitle
-        >{{news.date | date:'dd.MM.YYYY HH:mm'}}</ion-card-subtitle
+        >{{news.date | date:'dd.MM.yyyy HH:mm'}}</ion-card-subtitle
       >
       <ion-card-title>{{news.title}}</ion-card-title>
     </ion-card-header>
-
-    <ion-card-content [innerHTML]="news.text"> 
-      </ion-card-content>
+    <ion-card-content [innerHTML]="news.text"> </ion-card-content>
     <ion-row>
       <ion-col size="8">
         <ion-chip>
@@ -39,7 +37,7 @@
     </ion-row>
   </ion-card>
 </ion-content>
-</ng-container>
+}
 <ng-template #loading>
   <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>
   <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>

@@ -5,10 +5,10 @@
     </ion-buttons>
     <ion-title>{{"common.helper" | translate}}</ion-title>
     <!--  <ion-buttons slot="end">
-      <ion-button (click)="openFilter($event)">
-        <ion-icon slot="icon-only" name="filter"></ion-icon>
-      </ion-button>
-    </ion-buttons>-->
+    <ion-button (click)="openFilter($event)">
+      <ion-icon slot="icon-only" name="filter"></ion-icon>
+    </ion-button>
+  </ion-buttons>-->
   </ion-toolbar>
 </ion-header>
 
@@ -19,241 +19,125 @@
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="helferList$ | async as eventsList; else loading">
-    <ion-list *ngIf="eventsList.length > 0" lines="full">
-      <ion-list-header>
-        <ion-label>{{"helfer.upcomming__helper_event" | translate}}</ion-label>
-      </ion-list-header>
-
-      <ion-item>
-        <ion-label slot="start">
-          <p>{{"common.status" | translate}}</p>
-        </ion-label>
-        <ion-label slot="end">
-          <p>{{"common.participant" | translate}}</p>
-        </ion-label>
-      </ion-item>
-
-      <ion-item-sliding #item *ngFor="let event of eventsList">
-        <ion-item
-          (click)="openEventDetailModal(event, true)"
-          type="button"
-          detail="true"
-        >
-          <ion-icon
-            color="primary"
-            slot="icon-only"
-            slot="start"
-            name="list-outline"
-          ></ion-icon>
-          <!--<ion-icon
-            *ngIf="event.status === null"
-            slot="icon-only"
-            color="warning"
-            slot="start"
-            name="help-circle"
-            (click)="toggle(true, event)"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="event.status === false"
-            slot="icon-only"
-            color="danger"
-            slot="start"
-            name="close-circle"
-            (click)="toggle( true, event)"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="event.status === true"
-            slot="icon-only"
-            color="success"
-            slot="start"
-            name="checkmark-circle"
-            (click)="toggle(false, event)"
-          ></ion-icon>-->
-          <ion-label>
-            <h2>{{event.name}}</h2>
-            <h3>
-              <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
-              {{event.date.toDate() | date:'dd.MM.YYYY '}} {{event.timeFrom |
-              date:'HH:mm'}} Uhr - {{event.timeTo | date:'HH:mm'}} Uhr
-            </h3>
-            <h3>
-              <ion-icon slot="icon-only" name="location-outline"></ion-icon>
-              {{event.location}} {{event.streetAndNumber}} {{event.city}}
-            </h3>
-          </ion-label>
-          <ng-container *ngIf="event.schichten.length>0">
-            <ion-badge
-              *ngIf="event.countAttendees >= event.countNeeded"
-              slot="end"
-              color="primary"
-              >{{event.countAttendees}} / {{event.countNeeded}}</ion-badge
-            >
-            <ion-badge
-              *ngIf="event.countAttendees < event.countNeeded && event.countAttendees !== 0"
-              slot="end"
+  @if (helferList$ | async; as eventsList) { @if (eventsList.length > 0) {
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>{{"helfer.upcomming__helper_event" | translate}}</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label slot="start">
+        <p>{{"common.status" | translate}}</p>
+      </ion-label>
+      <ion-label slot="end">
+        <p>{{"common.participant" | translate}}</p>
+      </ion-label>
+    </ion-item>
+    @for (event of eventsList; track event) {
+    <ion-item-sliding #item>
+      <ion-item
+        (click)="openEventDetailModal(event, true)"
+        type="button"
+        detail="true"
+      >
+        <ion-icon
+          color="primary"
+          slot="icon-only"
+          slot="start"
+          name="list-outline"
+        ></ion-icon>
+        <!--<ion-icon
+              *ngIf="event.status === null"
+              slot="icon-only"
               color="warning"
-              >{{event.countAttendees}} / {{event.countNeeded}}</ion-badge
-            >
-            <ion-badge
-              *ngIf="event.countAttendees < event.countNeeded && event.countAttendees === 0"
-              slot="end"
+              slot="start"
+              name="help-circle"
+              (click)="toggle(true, event)"
+            ></ion-icon>
+            <ion-icon
+              *ngIf="event.status === false"
+              slot="icon-only"
               color="danger"
-              >{{event.countAttendees}} / {{event.countNeeded}}</ion-badge
-            >
-          </ng-container>
-        </ion-item>
-
-        <!--<ion-item-options side="start">
-          <ion-item-option
-            color="success"
-            *ngIf="event.status === false || event.status === null"
-            (click)="toggleItem(item, true, event)"
-          >
-            <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-          </ion-item-option>
-          <ion-item-option
-            color="danger"
-            *ngIf="event.status === true || event.status === null"
-            (click)="toggleItem(item, false, event)"
-          >
-            <ion-icon slot="icon-only" name="close-circle"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>-->
-
-        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-          <ion-item-options
-            side="end"
-            *ngIf="isClubAdmin(clubAdminList, event.clubId)"
-          >
-            <ion-item-option color="danger" (click)="deleteEvent(item, event)">
-              <ion-icon slot="icon-only" name="trash"></ion-icon>
-            </ion-item-option>
-            <ion-item-option color="medium" (click)="copyEvent(item, event)">
-              <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
-            </ion-item-option>
-          </ion-item-options>
-        </ng-container>
-      </ion-item-sliding>
-    </ion-list>
-
-    <ion-list *ngIf="eventsList.length==0">
-      <ion-list-header>
-        <ion-label>{{"helfer.upcomming__helper_event" | translate}}</ion-label>
-      </ion-list-header>
-      <ion-item>
-        <ion-note> {{"common.no_event__found" | translate}} </ion-note>
-      </ion-item>
-    </ion-list>
-  </ng-container>
-
-  <ng-container *ngIf="helferListPast$ | async as eventsListPast; else loading">
-    <ion-list *ngIf="eventsListPast.length > 0" lines="full">
-      <ion-list-header>
-        <ion-label>{{"helfer.past__helper_events" | translate}}</ion-label>
-      </ion-list-header>
-      <ion-item>
-        <ion-label slot="start">
-          <p>{{"common.status" | translate}}</p>
-        </ion-label>
-        <ion-label slot="end">
-          <p>{{"common.participant" | translate}}</p>
-        </ion-label>
-      </ion-item>
-      <ion-item-sliding #item *ngFor="let event of eventsListPast">
-        <ion-item
-          (click)="openEventDetailModal(event, false)"
-          type="button"
-          detail="true"
-        >
-          <ion-icon
-            color="primary"
-            slot="icon-only"
-            slot="start"
-            name="list-outline"
-          ></ion-icon>
-          <!--<ion-icon
-            *ngIf="event.status === null"
-            slot="icon-only"
-            color="warning"
-            slot="start"
-            name="help-circle"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="event.status === false"
-            slot="icon-only"
-            color="danger"
-            slot="start"
-            name="close-circle"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="event.status === true"
-            slot="icon-only"
-            color="success"
-            slot="start"
-            name="checkmark-circle"
-          ></ion-icon>-->
-          <ion-label>
-            <h2>{{event.name}}</h2>
-            <h3>
-              <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
-              {{event.date.toDate() | date:'dd.MM.YYYY '}} {{event.timeFrom |
-              date:'HH:mm'}} Uhr - {{event.timeTo | date:'HH:mm'}} Uhr
-            </h3>
-            <h3>
-              <ion-icon slot="icon-only" name="location-outline"></ion-icon>
-              {{event.location}} {{event.streetAndNumber}} {{event.city}}
-            </h3>
-          </ion-label>
-          <ion-note slot="end">
-            <ion-badge color="primary"
-              >{{event.countAttendees}} / {{event.countNeeded}}</ion-badge
-            >
-          </ion-note>
-        </ion-item>
-        <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-          <ion-item-options
-            side="end"
-            *ngIf="isClubAdmin(clubAdminList, event.clubId)"
-          >
-            <ion-item-option color="medium" (click)="copyEvent(item, event)">
-              <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
-            </ion-item-option>
-
-            <ion-item-option color="danger" (click)="deleteEvent(item, event)">
-              <ion-icon slot="icon-only" name="trash"></ion-icon>
-            </ion-item-option>
-          </ion-item-options>
-        </ng-container>
-      </ion-item-sliding>
-    </ion-list>
-    <ion-list *ngIf="eventsListPast.length==0">
-      <ion-list-header>
-        <ion-label>{{"helfer.past__helper_events" | translate}}</ion-label>
-      </ion-list-header>
-      <ion-item>
+              slot="start"
+              name="close-circle"
+              (click)="toggle( true, event)"
+            ></ion-icon>
+            <ion-icon
+              *ngIf="event.status === true"
+              slot="icon-only"
+              color="success"
+              slot="start"
+              name="checkmark-circle"
+              (click)="toggle(false, event)"
+            ></ion-icon>-->
         <ion-label>
-          <ion-note> {{"common.no_event__found" | translate}} </ion-note>
+          <h2>{{event.name}}</h2>
+          <h3>
+            <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+            {{event.date.toDate() | date:'dd.MM.yyyy'}} {{event.timeFrom |
+            date:'HH:mm'}} Uhr - {{event.timeTo | date:'HH:mm'}} Uhr
+          </h3>
+          <h3>
+            <ion-icon slot="icon-only" name="location-outline"></ion-icon>
+            {{event.location}} {{event.streetAndNumber}} {{event.city}}
+          </h3>
         </ion-label>
+        @if (event.schichten.length>0) { @if (event.countAttendees >=
+        event.countNeeded) {
+        <ion-badge slot="end" color="primary"
+          >{{event.countAttendees}} / {{event.countNeeded}}</ion-badge
+        >
+        } @if (event.countAttendees < event.countNeeded && event.countAttendees
+        !== 0) {
+        <ion-badge slot="end" color="warning"
+          >{{event.countAttendees}} / {{event.countNeeded}}</ion-badge
+        >
+        } @if (event.countAttendees < event.countNeeded && event.countAttendees
+        === 0) {
+        <ion-badge slot="end" color="danger"
+          >{{event.countAttendees}} / {{event.countNeeded}}</ion-badge
+        >
+        } }
       </ion-item>
-    </ion-list>
-  </ng-container>
-
-  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-    <ion-fab
-      *ngIf="clubAdminList.length > 0"
-      vertical="bottom"
-      horizontal="end"
-      slot="fixed"
-    >
-      <ion-fab-button (click)="openEventCreateModal()">
-        <ion-icon name="add-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-  </ng-container>
-</ion-content>
-
-<ng-template #loading>
+      <!--<ion-item-options side="start">
+                <ion-item-option
+                  color="success"
+                  *ngIf="event.status === false || event.status === null"
+                  (click)="toggleItem(item, true, event)"
+                  >
+                  <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                </ion-item-option>
+                <ion-item-option
+                  color="danger"
+                  *ngIf="event.status === true || event.status === null"
+                  (click)="toggleItem(item, false, event)"
+                  >
+                  <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                </ion-item-option>
+              </ion-item-options>-->
+      @if (clubAdminList$ | async; as clubAdminList) { @if
+      (isClubAdmin(clubAdminList, event.clubId)) {
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="deleteEvent(item, event)">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="medium" (click)="copyEvent(item, event)">
+          <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+      } }
+    </ion-item-sliding>
+    }
+  </ion-list>
+  } @if (eventsList.length==0) {
+  <ion-list>
+    <ion-list-header>
+      <ion-label>{{"helfer.upcomming__helper_event" | translate}}</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-note> {{"common.no_event__found" | translate}} </ion-note>
+    </ion-item>
+  </ion-list>
+  } } @else {
   <ion-list lines="full">
     <ion-list-header>
       <ion-label>
@@ -268,7 +152,8 @@
         <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
       </ion-label>
     </ion-item>
-    <ion-item *ngFor="let item of skeleton">
+    @for (item of skeleton; track item) {
+    <ion-item>
       <ion-icon slot="start">
         <ion-skeleton-text
           animated
@@ -292,5 +177,147 @@
         <ion-skeleton-text animated style="width: 40px"></ion-skeleton-text>
       </ion-badge>
     </ion-item>
+    }
   </ion-list>
-</ng-template>
+  } @if (helferListPast$ | async; as eventsListPast) { @if
+  (eventsListPast.length > 0) {
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>{{"helfer.past__helper_events" | translate}}</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label slot="start">
+        <p>{{"common.status" | translate}}</p>
+      </ion-label>
+      <ion-label slot="end">
+        <p>{{"common.participant" | translate}}</p>
+      </ion-label>
+    </ion-item>
+    @for (event of eventsListPast; track event) {
+    <ion-item-sliding #item>
+      <ion-item
+        (click)="openEventDetailModal(event, false)"
+        type="button"
+        detail="true"
+      >
+        <ion-icon
+          color="primary"
+          slot="icon-only"
+          slot="start"
+          name="list-outline"
+        ></ion-icon>
+        <!--<ion-icon
+                *ngIf="event.status === null"
+                slot="icon-only"
+                color="warning"
+                slot="start"
+                name="help-circle"
+              ></ion-icon>
+              <ion-icon
+                *ngIf="event.status === false"
+                slot="icon-only"
+                color="danger"
+                slot="start"
+                name="close-circle"
+              ></ion-icon>
+              <ion-icon
+                *ngIf="event.status === true"
+                slot="icon-only"
+                color="success"
+                slot="start"
+                name="checkmark-circle"
+              ></ion-icon>-->
+        <ion-label>
+          <h2>{{event.name}}</h2>
+          <h3>
+            <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+            {{event.date.toDate() | date:'dd.MM.yyyy'}} {{event.timeFrom |
+            date:'HH:mm'}} Uhr - {{event.timeTo | date:'HH:mm'}} Uhr
+          </h3>
+          <h3>
+            <ion-icon slot="icon-only" name="location-outline"></ion-icon>
+            {{event.location}} {{event.streetAndNumber}} {{event.city}}
+          </h3>
+        </ion-label>
+        <ion-note slot="end">
+          <ion-badge color="primary"
+            >{{event.countAttendees}} / {{event.countNeeded}}</ion-badge
+          >
+        </ion-note>
+      </ion-item>
+      @if (clubAdminList$ | async; as clubAdminList) { @if
+      (isClubAdmin(clubAdminList, event.clubId)) {
+      <ion-item-options side="end">
+        <ion-item-option color="medium" (click)="copyEvent(item, event)">
+          <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger" (click)="deleteEvent(item, event)">
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+      } }
+    </ion-item-sliding>
+    }
+  </ion-list>
+  } @if (eventsListPast.length==0) {
+  <ion-list>
+    <ion-list-header>
+      <ion-label>{{"helfer.past__helper_events" | translate}}</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label>
+        <ion-note> {{"common.no_event__found" | translate}} </ion-note>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  } } @else {
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label slot="start">
+        <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+      </ion-label>
+      <ion-label slot="end">
+        <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    @for (item of skeleton; track item) {
+    <ion-item>
+      <ion-icon slot="start">
+        <ion-skeleton-text
+          animated
+          style="width: 24px; height: 24px; border-radius: 50%"
+        ></ion-skeleton-text>
+      </ion-icon>
+      <ion-label>
+        <h2>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </h2>
+        <h3>
+          <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+          <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+        </h3>
+        <h3>
+          <ion-icon slot="icon-only" name="location-outline"></ion-icon>
+          <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+        </h3>
+      </ion-label>
+      <ion-badge slot="end">
+        <ion-skeleton-text animated style="width: 40px"></ion-skeleton-text>
+      </ion-badge>
+    </ion-item>
+    }
+  </ion-list>
+  } @if (clubAdminList$ | async; as clubAdminList) { @if (clubAdminList.length >
+  0) {
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openEventCreateModal()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  } }
+</ion-content>

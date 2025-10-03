@@ -1,24 +1,15 @@
 import { Component, OnInit, Optional } from "@angular/core";
 import {
   IonRouterOutlet,
-  LoadingController,
   ModalController,
   MenuController,
-  ToastController,
   AnimationController,
   AlertController,
 } from "@ionic/angular";
 import { Router } from "@angular/router";
 // import { ActivatedRoute } from '@angular/router';
 import { News } from "src/app/models/news";
-import {
-  DomSanitizer,
-  SafeHtml,
-  SafeUrl,
-  SafeStyle,
-} from "@angular/platform-browser";
 import { Share } from "@capacitor/share";
-import { Device } from "@capacitor/device";
 
 import {
   faTwitter,
@@ -30,7 +21,7 @@ import { faEnvelope, faCopy } from "@fortawesome/free-solid-svg-icons";
 
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { User, user } from "@angular/fire/auth";
+import { User } from "@angular/fire/auth";
 import { NewsDetailPage } from "../news-detail/news-detail.page";
 import { NewsService } from "src/app/services/firebase/news.service";
 import {
@@ -44,7 +35,6 @@ import {
   tap,
 } from "rxjs";
 import { Club } from "src/app/models/club";
-import { Team } from "src/app/models/team";
 import { TranslateService } from "@ngx-translate/core";
 import { NotificationPage } from "../notification/notification.page";
 import { NotificationService } from "src/app/services/firebase/notification.service";
@@ -153,7 +143,7 @@ export class NewsPage implements OnInit {
       console.log(news)
     });*/
 
-    const navigation = this.router.getCurrentNavigation();
+    const navigation = this.router.currentNavigation();
     if (navigation) {
       const state = navigation.extras.state;
       if (state) {

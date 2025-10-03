@@ -60,14 +60,14 @@ export class ClubListPage implements OnInit {
     );
 
     if (
-      this.router.getCurrentNavigation() &&
-      this.router.getCurrentNavigation().extras &&
-      this.router.getCurrentNavigation().extras.state &&
-      this.router.getCurrentNavigation().extras.state["type"] ===
+      this.router.currentNavigation() &&
+      this.router.currentNavigation().extras &&
+      this.router.currentNavigation().extras.state &&
+      this.router.currentNavigation().extras.state["type"] ===
         "clubRequestAdmin"
     ) {
       this.subscription = this.fbService
-        .getClubRef(this.router.getCurrentNavigation().extras.state["clubId"])
+        .getClubRef(this.router.currentNavigation().extras.state["clubId"])
         .pipe(
           take(1),
           tap((club) => {

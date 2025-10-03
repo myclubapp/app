@@ -125,7 +125,7 @@ export class EventsPage implements OnInit {
 
   handleNavigationData() {
     this.activatedRouteSub = this.activatedRoute.url.subscribe(() => {
-      const navigation = this.router.getCurrentNavigation();
+      const navigation = this.router.currentNavigation();
       if (
         navigation &&
         navigation.extras.state &&

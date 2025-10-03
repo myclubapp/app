@@ -17,13 +17,8 @@
   <ion-list>
     <ion-grid>
       <ion-row>
-        <ion-col
-          size-lg="4"
-          size-md="6"
-          size-sm="6"
-          size="12"
-          *ngFor="let club of clubList$ | async"
-        >
+        @for (club of clubList$ | async; track club) {
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
           <ion-card>
             <img
               class="club-logo"
@@ -34,31 +29,26 @@
               <ion-card-title> {{club.name}} </ion-card-title>
               <ion-card-subtitle> </ion-card-subtitle>
             </ion-card-header>
-
             <ion-card-content class="ion-no-padding">
               <ion-badge class="ion-margin"> {{club.type}} </ion-badge>
-
-              <ion-list *ngIf="club.links?.length > 0" lines="none">
-                <ion-item
-                  *ngFor="let link of club.links"
-                  lines="none"
-                  (click)="openLink(link.url)"
-                >
-                  <ng-container *ngIf="link.type === 'image'; else defaultIcon">
-                    <ion-avatar slot="start" style="width: 32px; height: 32px">
-                      <img
-                        [src]="link.url"
-                        alt="{{link.title}}"
-                        style="width: 100%; height: 100%; object-fit: cover"
-                      />
-                    </ion-avatar>
-                  </ng-container>
-                  <ng-template #defaultIcon>
-                    <ion-icon
-                      [name]="getLinkIcon(link.type)"
-                      slot="start"
-                    ></ion-icon>
-                  </ng-template>
+              @if (club.links?.length > 0) {
+              <ion-list lines="none">
+                @for (link of club.links; track link) {
+                <ion-item lines="none" (click)="openLink(link.url)">
+                  @if (link.type === 'image') {
+                  <ion-avatar slot="start" style="width: 32px; height: 32px">
+                    <img
+                      [src]="link.url"
+                      alt="{{link.title}}"
+                      style="width: 100%; height: 100%; object-fit: cover"
+                    />
+                  </ion-avatar>
+                  } @else {
+                  <ion-icon
+                    [name]="getLinkIcon(link.type)"
+                    slot="start"
+                  ></ion-icon>
+                  }
                   <ion-label class="ion-text-wrap">
                     <h3>{{link.title}}</h3>
                     <p>{{link.description.slice(0, 50)}}...</p>
@@ -67,10 +57,13 @@
                     <ion-icon slot="icon-only" name="open-outline"></ion-icon>
                   </ion-button>
                 </ion-item>
+                }
               </ion-list>
+              }
             </ion-card-content>
           </ion-card>
         </ion-col>
+        }
       </ion-row>
     </ion-grid>
   </ion-list>
@@ -87,13 +80,8 @@
   <ion-list>
     <ion-grid>
       <ion-row>
-        <ion-col
-          size-lg="4"
-          size-md="6"
-          size-sm="6"
-          size="12"
-          *ngFor="let item of skeleton"
-        >
+        @for (item of skeleton; track item) {
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
           <ion-card>
             <ion-card-header>
               <ion-card-subtitle>
@@ -109,7 +97,6 @@
                 ></ion-skeleton-text>
               </ion-card-title>
             </ion-card-header>
-
             <ion-card-content>
               <ion-skeleton-text
                 animated
@@ -134,6 +121,7 @@
             </ion-card-content>
           </ion-card>
         </ion-col>
+        }
       </ion-row>
     </ion-grid>
   </ion-list>
