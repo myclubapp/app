@@ -2,14 +2,23 @@
   <ion-header [translucent]="true">
     <ion-toolbar>
       <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-buttons *ngIf="isClubAdmin(clubAdminList, club.id)" slot="secondary">
-          <ion-button *ngIf="!allowEdit" (click)="edit()">{{"common.edit" | translate}}</ion-button>
-          <ion-button *ngIf="allowEdit" (click)="edit()">{{"common.done" | translate}}</ion-button>
+        <ion-buttons
+          *ngIf="isClubAdmin(clubAdminList, club.id)"
+          slot="secondary"
+        >
+          <ion-button *ngIf="!allowEdit" (click)="edit()"
+            >{{"common.edit" | translate}}</ion-button
+          >
+          <ion-button *ngIf="allowEdit" (click)="edit()"
+            >{{"common.done" | translate}}</ion-button
+          >
         </ion-buttons>
       </ng-container>
       <ion-title>{{"common.parents" | translate}}</ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -21,8 +30,14 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
-      [value]="searchTerm.value" placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
+    <ion-searchbar
+      [debounce]="1000"
+      (ionChange)="handleSearch($event)"
+      animated="true"
+      search-icon="search-circle"
+      [value]="searchTerm.value"
+      placeholder='{{"common.searchfield" | translate}}'
+    ></ion-searchbar>
 
     <div class="ion-padding">
       <!--<ng-container *ngIf="clubAdminList$ | async as clubAdminList">
@@ -31,12 +46,20 @@
           <ion-icon slot="start" name="add-circle-outline"></ion-icon>
         </ion-button>
       </ng-container>-->
-      <ion-button (click)="setFilter(role)" shape="round" size="small" *ngFor="let role of club['roles']">
+      <ion-button
+        (click)="setFilter(role)"
+        shape="round"
+        size="small"
+        *ngFor="let role of club['roles']"
+      >
         {{role}}
       </ion-button>
     </div>
 
-    <ion-list [inset]="true" *ngIf="filteredClubParents$ | async as clubParentsList">
+    <ion-list
+      [inset]="true"
+      *ngIf="filteredClubParents$ | async as clubParentsList"
+    >
       <ion-item-group>
         <ng-container *ngFor="let groupBy of groupArray">
           <ion-item-divider color="light">
@@ -44,36 +67,15 @@
           </ion-item-divider>
 
           <ng-container *ngFor="let parent of clubParentsList">
-
             <ion-item-sliding #item *ngIf="parent.groupBy == groupBy">
-
-              <!-- <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                <ion-item-options *ngIf="isClubAdmin(clubAdminList, club.id)" side="end">
-                  <ion-item-option color="primary" (click)="changeRoleOfParent(item, parent)">
-                    <ion-icon slot="icon-only" name="pricetags-outline"></ion-icon>
-                  </ion-item-option>
-                </ion-item-options>
-              </ng-container> -->
-              <ion-item detail="true">
-                <ion-icon *ngIf="allowEdit==true" slot="icon-only" color="danger" slot="start" name="trash"
-                  (click)="deleteClubParent(parent)"></ion-icon>
-                <ion-avatar (click)="openParent(parent)" slot="start">
-                  <img *ngIf="!parent.profilePicture" alt="Silhouette of a person's head"
-                    src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-                  <img *ngIf="parent.profilePicture" src="{{parent?.profilePicture}}" />
-                </ion-avatar>
-                <ion-label class="ion-text-wrap" (click)="openParent(parent)">{{parent.firstName}}
-                  {{parent.lastName}}</ion-label>
-                <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                  <ion-label (click)="openParent(parent)" *ngIf="isClubAdmin(clubAdminList, club.id)">
-                    {{parent.dateOfBirth?.toDate() | date:'dd.MM.YYYY '}}
-                  </ion-label>
-                </ng-container>
-
-                <ion-label (click)="openParent(parent)" *ngIf="parent.roles.length > 0" slot="end">
-                  <ion-badge *ngFor="let role of parent.roles">{{role}}</ion-badge>
-                </ion-label>
-              </ion-item>
+              <app-user-list-item
+                [profile]="parent"
+                [allowEdit]="allowEdit"
+                [showDateOfBirth]="(clubAdminList$ | async) && isClubAdmin((clubAdminList$ | async), club.id)"
+                [showRoles]="true"
+                (open)="openParent(parent)"
+                (remove)="deleteClubParent(parent)"
+              ></app-user-list-item>
             </ion-item-sliding>
           </ng-container>
         </ng-container>
@@ -81,26 +83,28 @@
     </ion-list>
 
     <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-      <ion-fab *ngIf="isClubAdmin(clubAdminList, club.id)" vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab
+        *ngIf="isClubAdmin(clubAdminList, club.id)"
+        vertical="bottom"
+        horizontal="end"
+        slot="fixed"
+      >
         <ion-fab-button (click)="addClubMemberToParent()">
           <ion-icon name="add-outline"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ng-container>
-
-
   </ion-content>
 </ng-container>
-
-
 
 <ng-template #loading>
   <ion-header [translucent]="true">
     <ion-toolbar>
-
       <ion-title>{{"common.parents" | translate}}</ion-title>
       <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
@@ -112,23 +116,22 @@
       </ion-toolbar>
     </ion-header>
 
-    <ion-searchbar [debounce]="1000" (ionChange)="handleSearch($event)" animated="true" search-icon="search-circle"
-      placeholder='{{"common.searchfield" | translate}}'></ion-searchbar>
+    <ion-searchbar
+      [debounce]="1000"
+      (ionChange)="handleSearch($event)"
+      animated="true"
+      search-icon="search-circle"
+      placeholder='{{"common.searchfield" | translate}}'
+    ></ion-searchbar>
 
     <ion-list [inset]="true">
-
       <ion-item-group>
         <ng-container *ngFor="let groupBy of groupArray">
           <ion-item-divider color="light">
             <ion-label> {{groupBy}} </ion-label>
           </ion-item-divider>
-
-
         </ng-container>
       </ion-item-group>
     </ion-list>
-
   </ion-content>
-
-
 </ng-template>

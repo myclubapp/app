@@ -116,6 +116,7 @@
         >
           <ion-icon name="people-circle-outline" slot="start"></ion-icon>
           <ion-label> {{"common.parents" | translate}} </ion-label>
+          <ion-note slot="end">{{club['clubParents']?.length || 0}}</ion-note>
         </ion-item>
       </ng-container>
 

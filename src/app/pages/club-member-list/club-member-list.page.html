@@ -89,39 +89,14 @@
                   </ion-item-option>
                 </ion-item-options>
               </ng-container>
-              <ion-item detail="true">
-                <ion-icon
-                  *ngIf="allowEdit==true"
-                  slot="icon-only"
-                  color="danger"
-                  slot="start"
-                  name="trash"
-                  (click)="deleteClubMember(member)"
-                ></ion-icon>
-                <ion-avatar (click)="openMember(member)" slot="start">
-                  <img
-                    *ngIf="!member.profilePicture"
-                    alt="Silhouette of a person's head"
-                    src="https://ionicframework.com/docs/img/demos/avatar.svg"
-                  />
-                  <img
-                    *ngIf="member.profilePicture"
-                    src="{{member?.profilePicture}}"
-                    alt="Profile Picture"
-                  />
-                </ion-avatar>
-                <ion-label class="ion-text-wrap" (click)="openMember(member)">
-                  <h2>{{member.firstName}} {{member.lastName}}</h2>
-                  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-                    <h3 *ngIf="isClubAdmin(clubAdminList, club.id)">
-                      {{member.dateOfBirth?.toDate() | date:'dd.MM.YYYY '}}
-                    </h3>
-                  </ng-container>
-                  <ion-badge *ngFor="let role of member.roles"
-                    >{{role}}
-                  </ion-badge>
-                </ion-label>
-              </ion-item>
+              <app-user-list-item
+                [profile]="member"
+                [allowEdit]="allowEdit"
+                [showDateOfBirth]="(clubAdminList$ | async) && isClubAdmin((clubAdminList$ | async), club.id)"
+                [showRoles]="true"
+                (open)="openMember(member)"
+                (remove)="deleteClubMember(member)"
+              ></app-user-list-item>
             </ion-item-sliding>
           </ng-container>
         </ng-container>

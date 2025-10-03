@@ -83,6 +83,7 @@ import { CreateNewClubPage } from "./pages/onboarding/create-new-club/create-new
 import { CreateNewsPage } from "./pages/news/create-news/create-news.page";
 import { MemberInvoiceListPage } from "./pages/member-invoice-list/member-invoice-list.page";
 import { QrInvoiceModalPage } from "./pages/qr-invoice-modal/qr-invoice-modal.page";
+import { UserListItemComponent } from "./components/user-list-item/user-list-item.component";
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
@@ -165,6 +166,7 @@ const getConfig = () => {
     TeamExercisesPage,
     TeamCreatePage,
     QrInvoiceModalPage,
+    UserListItemComponent,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
