@@ -1,4 +1,9 @@
-import { Injectable } from "@angular/core";
+import {
+  Injectable,
+  inject,
+  Injector,
+  runInInjectionContext,
+} from "@angular/core";
 import {
   Firestore,
   addDoc,
@@ -8,7 +13,6 @@ import {
   docData,
   deleteDoc,
   setDoc,
-  Timestamp,
   updateDoc,
   orderBy,
   query,
@@ -16,6 +20,8 @@ import {
   writeBatch,
   DocumentReference,
   getDocs,
+  collectionGroup,
+  Timestamp,
 } from "@angular/fire/firestore";
 import {
   Observable,
@@ -34,7 +40,6 @@ import { Team } from "../models/team";
 import { User } from "@angular/fire/auth";
 import { AuthService } from "src/app/services/auth.service";
 import { Profile } from "../models/user";
-import { collectionGroup } from "firebase/firestore";
 import { UserProfileService } from "./firebase/user-profile.service";
 import {
   ref,
@@ -51,6 +56,7 @@ import { Photo } from "@capacitor/camera";
 })
 export class FirebaseService {
   user: User;
+  private injector = inject(Injector);
 
   constructor(
     private readonly firestore: Firestore,
@@ -61,43 +67,51 @@ export class FirebaseService {
 
   getProduct(productId: string) {
     const productRef = doc(this.firestore, `stripeProducts/${productId}`);
-    return docData(productRef, { idField: "id" }) as unknown as Observable<any>;
+    return runInInjectionContext(this.injector, () =>
+      docData(productRef, { idField: "id" }),
+    ) as unknown as Observable<any>;
   }
 
   getProducts() {
-    const productListRef = collection(this.firestore, `stripeProducts`);
-    const q = query(
-      productListRef,
-      where("active", "==", true),
-      where("stripe_metadata_type", "==", "base"),
-    );
-    return collectionData(q, {
-      idField: "id",
+    return runInInjectionContext(this.injector, () => {
+      const productListRef = collection(this.firestore, `stripeProducts`);
+      const q = query(
+        productListRef,
+        where("active", "==", true),
+        where("stripe_metadata_type", "==", "base"),
+      );
+      return collectionData(q, {
+        idField: "id",
+      });
     }) as Observable<any[]>;
   }
 
   getModules() {
-    const productListRef = collection(this.firestore, `stripeProducts`);
-    const q = query(
-      productListRef,
-      where("active", "==", true),
-      where("stripe_metadata_type", "==", "module"),
-    );
-    return collectionData(q, {
-      idField: "id",
+    return runInInjectionContext(this.injector, () => {
+      const productListRef = collection(this.firestore, `stripeProducts`);
+      const q = query(
+        productListRef,
+        where("active", "==", true),
+        where("stripe_metadata_type", "==", "module"),
+      );
+      return collectionData(q, {
+        idField: "id",
+      });
     }) as Observable<any[]>;
   }
 
   getPrices(productId: string) {
-    const productPricesListRef = collection(
-      this.firestore,
-      `stripeProducts/${productId}/prices`,
-    );
+    return runInInjectionContext(this.injector, () => {
+      const productPricesListRef = collection(
+        this.firestore,
+        `stripeProducts/${productId}/prices`,
+      );
 
-    const q = query(productPricesListRef, where("active", "==", true));
+      const q = query(productPricesListRef, where("active", "==", true));
 
-    return collectionData(q, {
-      idField: "id",
+      return collectionData(q, {
+        idField: "id",
+      });
     }) as Observable<any[]>;
   }
 
@@ -435,9 +449,11 @@ export class FirebaseService {
       this.firestore,
       `club/${clubId}/members`,
     );
-    return collectionData(clubMemberRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<Profile[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(clubMemberRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<Profile[]>;
   }
 
   getClubParentsRefs(clubId: string): Observable<Profile[]> {
@@ -445,9 +461,11 @@ export class FirebaseService {
       this.firestore,
       `club/${clubId}/parents`,
     );
-    return collectionData(clubParentRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<Profile[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(clubParentRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<Profile[]>;
   }
 
   getClubMemberRef(clubId: string, userId: string): Observable<Profile> {
@@ -455,9 +473,11 @@ export class FirebaseService {
       this.firestore,
       `club/${clubId}/members/${userId}`,
     );
-    return docData(clubMemberRef, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as unknown as Observable<Profile>;
+    return runInInjectionContext(this.injector, () =>
+      docData(clubMemberRef, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as unknown as Observable<Profile>;
   }
 
   getClubAdminRefs(clubId: string): Observable<Profile[]> {
@@ -465,9 +485,11 @@ export class FirebaseService {
       this.firestore,
       `club/${clubId}/admins`,
     );
-    return collectionData(clubMemberRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<Profile[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(clubMemberRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<Profile[]>;
   }
 
   getClubRequestRefs(clubId: string): Observable<Profile[]> {
@@ -475,9 +497,11 @@ export class FirebaseService {
       this.firestore,
       `club/${clubId}/requests`,
     );
-    return collectionData(clubRequestRefList, {
-      idField: "id",
-    }) as Observable<Profile[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(clubRequestRefList, {
+        idField: "id",
+      }),
+    ) as Observable<Profile[]>;
   }
 
   getTeamRequestRefs(teamId: string): Observable<Profile[]> {
@@ -485,15 +509,17 @@ export class FirebaseService {
       this.firestore,
       `teams/${teamId}/requests`,
     );
-    return collectionData(teamRequestRefList, {
-      idField: "id",
-    }) as Observable<Profile[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(teamRequestRefList, {
+        idField: "id",
+      }),
+    ) as Observable<Profile[]>;
   }
 
   getTeamRef(teamId) {
     const teamRef = doc(this.firestore, `/teams/${teamId}`);
-    return docData(teamRef, { idField: "id" }).pipe(
-      shareReplay(10),
+    return runInInjectionContext(this.injector, () =>
+      docData(teamRef, { idField: "id" }).pipe(shareReplay(10)),
     ) as Observable<Team>;
   }
 
@@ -502,9 +528,11 @@ export class FirebaseService {
       this.firestore,
       `userProfile/${user.uid}/teams`,
     );
-    return collectionData(teamRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<Team[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(teamRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<Team[]>;
   }
 
   getUserTeamAdminRefs(user: User): Observable<Team[]> {
@@ -512,9 +540,11 @@ export class FirebaseService {
       this.firestore,
       `userProfile/${user.uid}/teamAdmin`,
     );
-    return collectionData(teamRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<Team[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(teamRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<Team[]>;
   }
 
   getUserClubAdminRefs(user: User): Observable<Club[]> {
@@ -522,9 +552,11 @@ export class FirebaseService {
       this.firestore,
       `userProfile/${user.uid}/clubAdmin`,
     );
-    return collectionData(clubRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<Club[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(clubRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<Club[]>;
   }
 
   getUserClubRequestRefs(user: User): Observable<any> {
@@ -532,9 +564,11 @@ export class FirebaseService {
       this.firestore,
       `userProfile/${user.uid}/clubRequests`,
     );
-    return collectionData(requestRefList, {
-      idField: "id",
-    }) as unknown as Observable<any>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(requestRefList, {
+        idField: "id",
+      }),
+    ) as unknown as Observable<any>;
   }
 
   getUserClubRequestRef(userId: string, requestId: string): Observable<any> {
@@ -542,7 +576,9 @@ export class FirebaseService {
       this.firestore,
       `/userProfile/${userId}/clubRequests/${requestId}`,
     );
-    return docData(requestRef, { idField: "id" }) as Observable<any>;
+    return runInInjectionContext(this.injector, () =>
+      docData(requestRef, { idField: "id" }),
+    ) as Observable<any>;
   }
 
   getUserTeamRequestRefs(user: User): Observable<any> {
@@ -550,9 +586,11 @@ export class FirebaseService {
       this.firestore,
       `userProfile/${user.uid}/teamRequests`,
     );
-    return collectionData(requestRefList, {
-      idField: "id",
-    }) as unknown as Observable<any>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(requestRefList, {
+        idField: "id",
+      }),
+    ) as unknown as Observable<any>;
   }
 
   getUserTeamRequestRef(userId: string, requestId: string): Observable<any> {
@@ -560,14 +598,18 @@ export class FirebaseService {
       this.firestore,
       `/userProfile/${userId}/teamRequests/${requestId}`,
     );
-    return docData(requestRef, { idField: "id" }) as Observable<any>;
+    return runInInjectionContext(this.injector, () =>
+      docData(requestRef, { idField: "id" }),
+    ) as Observable<any>;
   }
 
   getClubTeamRefs(clubId: string): Observable<Team[]> {
     const teamRefList = collection(this.firestore, `club/${clubId}/teams`);
-    return collectionData(teamRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<Team[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(teamRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<Team[]>;
   }
 
   getTeamMemberRefs(teamId: string): Observable<Profile[]> {
@@ -575,9 +617,11 @@ export class FirebaseService {
       this.firestore,
       `teams/${teamId}/members`,
     );
-    return collectionData(teamMemberRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<Profile[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(teamMemberRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<Profile[]>;
   }
 
   getTeamAdminRefs(teamId: string): Observable<Profile[]> {
@@ -585,9 +629,11 @@ export class FirebaseService {
       this.firestore,
       `teams/${teamId}/admins`,
     );
-    return collectionData(teamMemberRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<Profile[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(teamMemberRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<Profile[]>;
   }
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
@@ -600,8 +646,8 @@ export class FirebaseService {
 
   getClubRef(clubId: string) {
     const clubRef = doc(this.firestore, `club/${clubId}`);
-    return docData(clubRef, { idField: "id" }).pipe(
-      shareReplay(1),
+    return runInInjectionContext(this.injector, () =>
+      docData(clubRef, { idField: "id" }).pipe(shareReplay(1)),
     ) as unknown as Observable<Club>;
   }
 
@@ -610,16 +656,20 @@ export class FirebaseService {
       this.firestore,
       `userProfile/${user.uid}/clubs`,
     );
-    return collectionData(clubRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<Club[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(clubRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<Club[]>;
   }
 
   getClubTeamsRef(clubId: string): Observable<Team[]> {
     const clubTeamRefList = collection(this.firestore, `club/${clubId}/teams`);
-    return collectionData(clubTeamRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<Team[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(clubTeamRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<Team[]>;
   }
 
   addClubTeam(team, clubId) {
@@ -908,9 +958,11 @@ export class FirebaseService {
       this.firestore,
       `club/${clubId}/checkout_sessions`,
     );
-    return collectionData(clubCheckoutSessionListRef, {
-      idField: "id",
-    }) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(clubCheckoutSessionListRef, {
+        idField: "id",
+      }),
+    ) as Observable<any[]>;
   }
 
   getClubSubscriptionList(clubId: string) {
@@ -918,9 +970,11 @@ export class FirebaseService {
       this.firestore,
       `club/${clubId}/subscriptions`,
     );
-    return collectionData(clubSubscriptionistRef, {
-      idField: "id",
-    }) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(clubSubscriptionistRef, {
+        idField: "id",
+      }),
+    ) as Observable<any[]>;
   }
 
   getClubSubscriptionInvoiceList(clubId: string, subscriptionId: string) {
@@ -928,9 +982,11 @@ export class FirebaseService {
       this.firestore,
       `club/${clubId}/subscriptions/${subscriptionId}/invoices`,
     );
-    return collectionData(clubSubscriptionInvoiceistRef, {
-      idField: "id",
-    }) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(clubSubscriptionInvoiceistRef, {
+        idField: "id",
+      }),
+    ) as Observable<any[]>;
   }
 
   getClubPaymentList(clubId: string) {
@@ -938,37 +994,41 @@ export class FirebaseService {
       this.firestore,
       `club/${clubId}/payments`,
     );
-    return collectionData(clubPaymentsListRef, {
-      idField: "id",
-    }) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(clubPaymentsListRef, {
+        idField: "id",
+      }),
+    ) as Observable<any[]>;
   }
 
   searchClubListRef(searchString: string): Observable<Club[]> {
     console.log("DEBUG: Suche nach:", searchString);
     const clubRefList = collection(this.firestore, "club");
 
-    return collectionData(clubRefList, { idField: "id" }).pipe(
-      tap((clubs) => {
-        // console.log("DEBUG: Alle Clubs aus Firebase:", clubs);
-        console.log("DEBUG: Anzahl gefundener Clubs:", clubs.length);
-        console.log("DEBUG: Clubs:", clubs);
-      }),
-      shareReplay(1),
-      map((clubs) => {
-        const filteredClubs = clubs.filter(
-          (club) =>
-            club["name"] &&
-            club["name"].toLowerCase().includes(searchString.toLowerCase()),
-        );
-        console.log("DEBUG: Gefilterte Clubs:", filteredClubs);
-        return filteredClubs;
-      }),
-      // take(1),
-      //takeLast(1),
-      catchError((error) => {
-        console.error("Fehler beim Laden der Clubs:", error);
-        return of([]);
-      }),
+    return runInInjectionContext(this.injector, () =>
+      collectionData(clubRefList, { idField: "id" }).pipe(
+        tap((clubs) => {
+          // console.log("DEBUG: Alle Clubs aus Firebase:", clubs);
+          console.log("DEBUG: Anzahl gefundener Clubs:", clubs.length);
+          console.log("DEBUG: Clubs:", clubs);
+        }),
+        shareReplay(1),
+        map((clubs) => {
+          const filteredClubs = clubs.filter(
+            (club) =>
+              club["name"] &&
+              club["name"].toLowerCase().includes(searchString.toLowerCase()),
+          );
+          console.log("DEBUG: Gefilterte Clubs:", filteredClubs);
+          return filteredClubs;
+        }),
+        // take(1),
+        //takeLast(1),
+        catchError((error) => {
+          console.error("Fehler beim Laden der Clubs:", error);
+          return of([]);
+        }),
+      ),
     ) as Observable<Club[]>;
   }
 
@@ -977,52 +1037,56 @@ export class FirebaseService {
       take(1),
       switchMap((user) => {
         if (!user) return of([]);
-        const q = query(
-          collectionGroup(this.firestore, "contacts"),
-          where("email", "==", user.email),
-        );
-        return collectionData(q, { idField: "id" }).pipe(
-          tap((contacts) => {
-            console.log("DEBUG: Gefundene Kontakte:", contacts);
-          }),
-          mergeMap((contacts) => {
-            if (contacts.length === 0) return of([]);
-            return combineLatest(
-              contacts.map((contact) => {
-                const clubId = contact["clubId"];
-                if (!clubId) {
-                  console.warn("Kontakt ohne clubId gefunden:", contact);
-                  return of(null);
-                }
-                return this.getClubRef(clubId).pipe(
-                  catchError((error) => {
-                    console.error(
-                      `Fehler beim Laden des Clubs ${clubId}:`,
-                      error,
-                    );
+        return runInInjectionContext(this.injector, () => {
+          const q = query(
+            collectionGroup(this.firestore, "contacts"),
+            where("email", "==", user.email),
+          );
+          return collectionData(q, { idField: "id" }).pipe(
+            tap((contacts) => {
+              console.log("DEBUG: Gefundene Kontakte:", contacts);
+            }),
+            mergeMap((contacts) => {
+              if (contacts.length === 0) return of([]);
+              return combineLatest(
+                contacts.map((contact) => {
+                  const clubId = contact["clubId"];
+                  if (!clubId) {
+                    console.warn("Kontakt ohne clubId gefunden:", contact);
                     return of(null);
-                  }),
-                );
-              }),
-            );
-          }),
-          map((clubs) => clubs.filter((club): club is Club => club !== null)),
-          tap((clubs) => {
-            console.log("DEBUG: Gefundene Clubs:", clubs);
-          }),
-          catchError((error) => {
-            console.error("Fehler beim Laden der Clubs:", error);
-            return of([]);
-          }),
-        );
+                  }
+                  return this.getClubRef(clubId).pipe(
+                    catchError((error) => {
+                      console.error(
+                        `Fehler beim Laden des Clubs ${clubId}:`,
+                        error,
+                      );
+                      return of(null);
+                    }),
+                  );
+                }),
+              );
+            }),
+            map((clubs) => clubs.filter((club): club is Club => club !== null)),
+            tap((clubs) => {
+              console.log("DEBUG: Gefundene Clubs:", clubs);
+            }),
+            catchError((error) => {
+              console.error("Fehler beim Laden der Clubs:", error);
+              return of([]);
+            }),
+          );
+        });
       }),
     );
   }
 
   getActiveClubList(): Observable<Club[]> {
-    const clubRefList = collection(this.firestore, `club/`);
-    const q = query(clubRefList, where("active", "==", true));
-    return collectionData(q, { idField: "id" }) as Observable<Club[]>;
+    return runInInjectionContext(this.injector, () => {
+      const clubRefList = collection(this.firestore, `club/`);
+      const q = query(clubRefList, where("active", "==", true));
+      return collectionData(q, { idField: "id" });
+    }) as Observable<Club[]>;
   }
 
   checkoutSubscription(clubId, price, product) {
@@ -1059,42 +1123,50 @@ export class FirebaseService {
       this.firestore,
       `club/${clubId}/checkout_sessions/${checkout_session_id}`,
     );
-    return docData(checkoutSessionRef, {
-      idField: "id",
-    }) as unknown as Observable<any>;
+    return runInInjectionContext(this.injector, () =>
+      docData(checkoutSessionRef, {
+        idField: "id",
+      }),
+    ) as unknown as Observable<any>;
   }
 
   getTeamTrainings(teamId: string): Observable<any[]> {
-    const trainingsRef = collection(
-      this.firestore,
-      "teams",
-      teamId,
-      "trainings",
-    );
-    const q = query(trainingsRef, orderBy("date", "desc"));
-    return collectionData(q) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () => {
+      const trainingsRef = collection(
+        this.firestore,
+        "teams",
+        teamId,
+        "trainings",
+      );
+      const q = query(trainingsRef, orderBy("date", "desc"));
+      return collectionData(q);
+    }) as Observable<any[]>;
   }
 
   // Club Links
   getClubLinks(clubId: string): Observable<ClubLink[]> {
-    return collectionData(
-      query(
-        collection(this.firestore, `club/${clubId}/links`),
-        orderBy("order"),
-      ),
-      { idField: "id" },
-    ) as Observable<ClubLink[]>;
+    return runInInjectionContext(this.injector, () => {
+      return collectionData(
+        query(
+          collection(this.firestore, `club/${clubId}/links`),
+          orderBy("order"),
+        ),
+        { idField: "id" },
+      );
+    }) as Observable<ClubLink[]>;
   }
 
   getClubLinksShowOnCard(clubId: string): Observable<ClubLink[]> {
-    return collectionData(
-      query(
-        collection(this.firestore, `club/${clubId}/links`),
-        where("showOnCard", "==", true),
-        orderBy("order"),
-      ),
-      { idField: "id" },
-    ).pipe(shareReplay(1)) as Observable<ClubLink[]>;
+    return runInInjectionContext(this.injector, () => {
+      return collectionData(
+        query(
+          collection(this.firestore, `club/${clubId}/links`),
+          where("showOnCard", "==", true),
+          orderBy("order"),
+        ),
+        { idField: "id" },
+      ).pipe(shareReplay(1));
+    }) as Observable<ClubLink[]>;
   }
 
   async addClubLink(clubId: string, link: any): Promise<DocumentReference> {

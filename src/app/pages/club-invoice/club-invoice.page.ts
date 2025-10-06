@@ -27,7 +27,8 @@ import {
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { ClubInvoiceDetailPage } from "../club-invoice-detail/club-invoice-detail.page";
-import { doc, Timestamp, updateDoc } from "@angular/fire/firestore";
+import { doc, updateDoc } from "@angular/fire/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 
 import { UiService } from "src/app/services/ui.service";
 

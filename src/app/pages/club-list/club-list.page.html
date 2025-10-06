@@ -17,7 +17,7 @@
   <ion-list>
     <ion-grid>
       <ion-row>
-        @for (club of clubList$ | async; track club) {
+        @for (club of clubList$ | async; track club.id) {
         <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
           <ion-card>
             <img
@@ -33,7 +33,7 @@
               <ion-badge class="ion-margin"> {{club.type}} </ion-badge>
               @if (club.links?.length > 0) {
               <ion-list lines="none">
-                @for (link of club.links; track link) {
+                @for (link of club.links; track link.id) {
                 <ion-item lines="none" (click)="openLink(link.url)">
                   @if (link.type === 'image') {
                   <ion-avatar slot="start" style="width: 32px; height: 32px">
@@ -80,7 +80,7 @@
   <ion-list>
     <ion-grid>
       <ion-row>
-        @for (item of skeleton; track item) {
+        @for (item of skeleton; track $index) {
         <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
           <ion-card>
             <ion-card-header>

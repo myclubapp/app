@@ -104,7 +104,7 @@
         <p>{{"common.participant" | translate}}</p>
       </ion-label>
     </ion-item>
-    @for (training of trainingList; track training) {
+    @for (training of trainingList; track training.id) {
     <ion-item-sliding #item>
       <ion-item type="button" detail="true">
         @if (training.status === null && !training.cancelled) {
@@ -162,7 +162,7 @@
           </h3>
           }
           <h3>
-            @for (child of training.children; track child) {
+            @for (child of training.children; track child.id) {
             <ion-badge color="light"
               >{{child.firstName}} {{child.lastName}}
             </ion-badge>
@@ -251,7 +251,7 @@
         <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
       </ion-label>
     </ion-item>
-    @for (item of skeleton; track item) {
+    @for (item of skeleton; track $index) {
     <ion-item>
       <ion-icon slot="start">
         <ion-skeleton-text
@@ -299,7 +299,7 @@
         <p>{{"common.participant" | translate}}</p>
       </ion-label>
     </ion-item>
-    @for (training of trainingListPast; track training) {
+    @for (training of trainingListPast; track training.id) {
     <ion-item-sliding #item>
       <ion-item type="button" detail="true">
         @if (training.cancelled) {
@@ -348,7 +348,7 @@
             {{training.liga}} {{training.teamName}}
           </h3>
           <h3>
-            @for (child of training.children; track child) {
+            @for (child of training.children; track child.id) {
             <ion-badge color="light"
               >{{child.firstName}} {{child.lastName}}
             </ion-badge>
@@ -404,7 +404,7 @@
         <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
       </ion-label>
     </ion-item>
-    @for (item of skeleton; track item) {
+    @for (item of skeleton; track $index) {
     <ion-item>
       <ion-icon slot="start">
         <ion-skeleton-text

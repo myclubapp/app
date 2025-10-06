@@ -32,7 +32,7 @@ import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { NavigationExtras, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { ChampionshipDetailPage } from "../championship-detail/championship-detail.page";
@@ -51,10 +51,8 @@ import { SwissUnihockeyService } from "src/app/services/swiss-unihockey.service"
   standalone: false,
 })
 export class ChampionshipPage implements OnInit {
-  @Input("team")
-  team!: Team;
-  @Input("isModal")
-  isModal!: boolean;
+  @Input() team!: Team;
+  @Input() isModal!: boolean;
   skeleton = new Array(12);
   user$!: Observable<User>;
   user!: User;
@@ -251,7 +249,7 @@ export class ChampionshipPage implements OnInit {
           this.userProfileService.getChildren(user.uid).pipe(
             tap((children) => {
               this.children = children;
-              console.log("children", this.children);
+              // console.log("children", this.children);
             }),
             switchMap((children: Profile[]) =>
               children.length > 0
@@ -428,7 +426,7 @@ export class ChampionshipPage implements OnInit {
           this.userProfileService.getChildren(user.uid).pipe(
             tap((children) => {
               this.children = children;
-              console.log("children", this.children);
+              // console.log("children", this.children);
             }),
             switchMap((children: Profile[]) =>
               children.length > 0

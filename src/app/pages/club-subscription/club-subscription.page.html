@@ -57,7 +57,7 @@
           } @if (product.stripe_metadata_subscription==club.subscriptionType) {
           <ion-label class="ion-text-wrap">{{product.description}}</ion-label>
           <ion-list>
-            @for (price of product.prices; track price) {
+            @for (price of product.prices; track price.id) {
             <ion-item>
               @if (price.stripe_metadata_payment=='month') {
               <ion-label>Preis / {{"common.month" | translate}} </ion-label>
@@ -76,7 +76,7 @@
           /></ion-note>
           <ion-label class="ion-text-wrap">{{product.description}}</ion-label>
           <ion-list>
-            @for (price of product.prices; track price) {
+            @for (price of product.prices; track price.id) {
             <ion-item>
               @if (price.stripe_metadata_payment=='month') {
               <ion-label>Preis / {{"common.month" | translate}} </ion-label>
@@ -119,7 +119,7 @@
           } @if (product.stripe_metadata_subscription==club.subscriptionType) {
           <ion-label class="ion-text-wrap">{{product.description}}</ion-label>
           <ion-list>
-            @for (price of product.prices; track price) {
+            @for (price of product.prices; track price.id) {
             <ion-item>
               @if (price.stripe_metadata_payment=='month') {
               <ion-label>Preis / {{"common.month" | translate}} </ion-label>
@@ -135,7 +135,7 @@
           } @if (product.stripe_metadata_subscription!=club.subscriptionType) {
           <ion-label class="ion-text-wrap">{{product.description}}</ion-label>
           <ion-list>
-            @for (price of product.prices; track price) {
+            @for (price of product.prices; track price.id) {
             <ion-item detail (click)="checkout(price, product)">
               @if (price.stripe_metadata_payment=='month') {
               <ion-label>Preis / {{"common.month" | translate}} </ion-label>
@@ -229,7 +229,7 @@
           )) {
           <ion-label class="ion-text-wrap">{{module.description}}</ion-label>
           <ion-list>
-            @for (price of module.prices; track price) {
+            @for (price of module.prices; track price.id) {
             <ion-item detail (click)="checkoutAddon(price, module)">
               @if (price.stripe_metadata_payment=='month') {
               <ion-label>Preis / {{"common.month" | translate}} </ion-label>
@@ -322,7 +322,8 @@
   <ion-list [inset]="true">
     <ion-list-header> Bestellverlauf </ion-list-header>
     <ng-container>
-      @for (subscription of club['activeSubscriptions']; track subscription) {
+      @for (subscription of club['activeSubscriptions']; track subscription.id)
+      {
       <ion-item detail (click)="openUrl(subscription.invoices[0].invoice_pdf)">
         <ion-label>
           <h2>{{subscription.product.name}}</h2>
@@ -357,7 +358,8 @@
       }
     </ng-container>
     <ng-container>
-      @for (subscription of club['inactiveSubscriptions']; track subscription) {
+      @for (subscription of club['inactiveSubscriptions']; track
+      subscription.id) {
       <ion-item detail (click)="openUrl(subscription.invoices[0].invoice_pdf)">
         <ion-label>
           <h2>{{subscription.product.name}}</h2>

@@ -41,6 +41,9 @@ import { NotificationService } from "src/app/services/firebase/notification.serv
 import { Profile } from "src/app/models/user";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { CreateNewsPage } from "../create-news/create-news.page";
+import { ChampionshipService } from "src/app/services/firebase/championship.service";
+import { Game } from "src/app/models/game";
+import { ChampionshipDetailPage } from "src/app/pages/championship/championship-detail/championship-detail.page";
 
 @Component({
   selector: "app-news",
@@ -74,6 +77,8 @@ export class NewsPage implements OnInit {
 
   clubAdminList$: Observable<Club[]>;
 
+  clubGames$: Observable<Game[]>;
+
   constructor(
     private readonly notificationService: NotificationService,
     private readonly newsService: NewsService,
@@ -87,6 +92,7 @@ export class NewsPage implements OnInit {
     public animationCtrl: AnimationController,
     private translate: TranslateService,
     private userProfileService: UserProfileService,
+    private readonly championshipService: ChampionshipService,
     // private route: ActivatedRoute,
     private router: Router,
   ) {
@@ -138,6 +144,7 @@ export class NewsPage implements OnInit {
     this.newsList$ = this.getNews();
     this.notifications$ = this.getNotifications();
     this.clubAdminList$ = this.fbService.getClubAdminList();
+    this.clubGames$ = this.getClubGames();
 
     /*this.route.snapshot.data['news'].subscribe((news) => {
       console.log(news)
@@ -147,9 +154,9 @@ export class NewsPage implements OnInit {
     if (navigation) {
       const state = navigation.extras.state;
       if (state) {
-        console.log(state); // 'someValue'
+        // console.log(state); // 'someValue'
       } else {
-        console.log("No state provided");
+        // console.log("No state provided");
       }
     }
   }
@@ -185,7 +192,7 @@ export class NewsPage implements OnInit {
                 : of([]),
             ),
             map((childrenClubs) => childrenClubs.flat()),
-            tap((clubs) => console.log("Children Clubs:", clubs)),
+            // tap((clubs) => console.log("Children Clubs:", clubs)),
             catchError((error) => {
               console.error("Error fetching children clubs:", error);
               return of([]);
@@ -250,9 +257,6 @@ export class NewsPage implements OnInit {
 
                 return combineLatest([newsByClub$, newsByType$]).pipe(
                   map(([clubNews, typeNews]) => ({ clubNews, typeNews })),
-                  tap((newsArrays) => {
-                    console.log("News Arrays:", newsArrays);
-                  }),
                 );
               }),
             ),
@@ -420,6 +424,149 @@ export class NewsPage implements OnInit {
     const { data, role } = await modal.onWillDismiss();
     if (role === "confirm") {
       // Optional: News-Liste neu laden
+    }
+  }
+
+  getClubGames(): Observable<Game[]> {
+    return this.authService.getUser$().pipe(
+      take(1),
+      tap((user) => {
+        if (!user) throw new Error("User not found");
+        this.user = user;
+      }),
+      switchMap((user) => {
+        if (!user) return of([]);
+        // Get user's clubs and children's clubs
+        return combineLatest([
+          this.fbService.getUserClubRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            switchMap((children: Profile[]) =>
+              children.length > 0
+                ? combineLatest(
+                    children.map((child) => {
+                      const childUser = { uid: child.id } as User;
+                      return this.fbService.getUserClubRefs(childUser);
+                    }),
+                  )
+                : of([]),
+            ),
+            map((childrenClubs) => childrenClubs.flat()),
+            catchError((error) => {
+              console.error("Error fetching children clubs:", error);
+              return of([]);
+            }),
+          ),
+        ]).pipe(
+          map(([userClubs, childrenClubs]) => {
+            const allClubs = [...userClubs, ...childrenClubs];
+            return allClubs.filter(
+              (club, index, self) =>
+                index === self.findIndex((c) => c.id === club.id),
+            );
+          }),
+        );
+      }),
+      switchMap((clubs) => {
+        if (!clubs.length) {
+          return of([]);
+        }
+
+        // Fetch games and teams from all clubs
+        return combineLatest(
+          clubs.map((club) =>
+            combineLatest([
+              this.championshipService.getClubGamesRef(club.id).pipe(
+                catchError((error) => {
+                  console.error(
+                    `Error fetching games for club ID ${club.id}:`,
+                    error,
+                  );
+                  return of([]);
+                }),
+              ),
+              this.fbService.getClubTeamsRef(club.id).pipe(
+                catchError((error) => {
+                  console.error(
+                    `Error fetching teams for club ID ${club.id}:`,
+                    error,
+                  );
+                  return of([]);
+                }),
+              ),
+            ]).pipe(
+              map(([games, teams]) => {
+                // Match teamId for each game
+                return games.map((game) => {
+                  const homeTeam = teams.find(
+                    (team) => team.id === game.teamHomeId,
+                  );
+                  const awayTeam = teams.find(
+                    (team) => team.id === game.teamAwayId,
+                  );
+
+                  // Use homeTeam if it's a club team, otherwise awayTeam
+                  const matchedTeam = homeTeam || awayTeam;
+
+                  return {
+                    ...game,
+                    teamId: matchedTeam ? matchedTeam.id : game.teamId,
+                  };
+                });
+              }),
+            ),
+          ),
+        );
+      }),
+      map((gamesArrays) => {
+        // Flatten and merge all games
+        const allGames = gamesArrays.flat();
+
+        // Sort by dateTime
+        const sortedGames = allGames.sort(
+          (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis(),
+        );
+
+        // Filter: only games from today and tomorrow
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 6);
+        tomorrow.setHours(23, 59, 59, 999);
+
+        return sortedGames.filter((game) => {
+          const gameDate = game.dateTime.toDate();
+          return gameDate <= tomorrow;
+        });
+      }),
+      catchError((error) => {
+        console.error("Error fetching club games:", error);
+        return of([]);
+      }),
+    );
+  }
+
+  async openGameDetails(game: Game) {
+    // Determine if game is in the future
+    const isFuture = game.dateTime.toDate() > new Date();
+
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+    console.log(game);
+    const modal = await this.modalCtrl.create({
+      component: ChampionshipDetailPage,
+      presentingElement,
+      canDismiss: true,
+      cssClass: "transparent-modal",
+      showBackdrop: true,
+      componentProps: {
+        data: game,
+        isFuture: isFuture,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
     }
   }
 }

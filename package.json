@@ -46,7 +46,7 @@
   "dependencies": {
     "@angular/common": "^20.3.3",
     "@angular/core": "20.3.3",
-    "@angular/fire": "19.1.0",
+    "@angular/fire": "^20.0.1",
     "@angular/forms": "^20.3.3",
     "@angular/platform-browser": "^20.3.3",
     "@angular/platform-browser-dynamic": "^20.3.3",
@@ -84,7 +84,7 @@
     "@ngx-translate/http-loader": "^16.0.1",
     "capacitor-plugin-safe-area": "^4.0.0",
     "cordova-plugin-ionic": "5.5.3",
-    "firebase": "11.8.1",
+    "firebase": "^12.3.0",
     "husky-init": "^8.0.0",
     "lottie-web": "^5.13.0",
     "myclub-game-preview": "0.0.14",
@@ -133,11 +133,12 @@
     "defaultOptIn": false
   },
   "browserslist": [
-    "Chrome >=89",
-    "ChromeAndroid >=89",
-    "Firefox >=75",
-    "Edge >=89",
-    "Safari >=15",
-    "iOS >=15"
+    "Chrome >=107",
+    "ChromeAndroid >=107",
+    "Firefox >=104",
+    "FirefoxAndroid >=104",
+    "Edge >=107",
+    "Safari >=16",
+    "iOS >=16"
   ]
 }

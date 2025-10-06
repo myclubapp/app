@@ -92,7 +92,7 @@
     @if (!training?.cancelled) {
     <ion-item class="myclubStatus">
       @if (training.hasOwnProperty('status')) { @for (status of training.status;
-      track status) { @if (status.status === null) {
+      track status.id) { @if (status.status === null) {
       <ion-fab-button
         (click)="processToggle(status.id, true, training)"
         size="small"
@@ -168,7 +168,7 @@
         </ion-item>
         <div slot="content">
           <ion-list>
-            @for (member of training['attendeeListTrue']; track member) {
+            @for (member of training['attendeeListTrue']; track member.id) {
             <ion-item-sliding #item>
               <ion-item detail="true">
                 <ion-icon color="success" slot="start" name="checkmark-circle">
@@ -218,7 +218,7 @@
         </ion-item>
         <div slot="content">
           <ion-list>
-            @for (member of training['attendeeListFalse']; track member) {
+            @for (member of training['attendeeListFalse']; track member.id) {
             <ion-item-sliding #item>
               <ion-item detail="true">
                 <ion-icon color="danger" slot="start" name="close-circle">
@@ -268,7 +268,7 @@
         </ion-item>
         <div slot="content">
           <ion-list>
-            @for (member of training['unrespondedMembers']; track member) {
+            @for (member of training['unrespondedMembers']; track member.id) {
             <ion-item-sliding #item>
               <ion-item detail="true">
                 <ion-icon color="warning" slot="start" name="help-circle">

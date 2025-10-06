@@ -11,6 +11,7 @@ export class UserListItemComponent {
   @Input() allowEdit: boolean = false;
   @Input() showDateOfBirth: boolean = false;
   @Input() showRoles: boolean = true;
+  @Input() childrenCount: number = 0;
 
   @Output() open = new EventEmitter<void>();
   @Output() remove = new EventEmitter<void>();

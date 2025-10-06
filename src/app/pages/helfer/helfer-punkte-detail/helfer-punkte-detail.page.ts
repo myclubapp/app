@@ -3,7 +3,6 @@ import {
   AlertController,
   IonItemSliding,
   ModalController,
-  NavParams,
   ToastController,
 } from "@ionic/angular";
 import {
@@ -23,7 +22,7 @@ import { Club } from "src/app/models/club";
 import { HelferDetailPage } from "../helfer-detail/helfer-detail.page";
 import { HelferService } from "src/app/services/firebase/helfer.service";
 import { TranslateService } from "@ngx-translate/core";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 
@@ -34,8 +33,10 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
   styleUrls: ["./helfer-punkte-detail.page.scss"],
 })
 export class HelferPunkteDetailPage implements OnInit {
-  @Input("data") helferData: any;
-  @Input("clubId") clubId: string;
+  @Input() data!: any;
+  @Input() clubId!: string;
+
+  helferData: any;
   clubAdminList$: Observable<Club[]>;
   helferPunkteList$: Observable<any[]>;
   groupArray: number[] = [];
@@ -50,12 +51,12 @@ export class HelferPunkteDetailPage implements OnInit {
     private modalCtrl: ModalController,
     private readonly fbService: FirebaseService,
     private readonly userProfileService: UserProfileService,
-    private readonly navParams: NavParams,
   ) {}
 
   ngOnInit() {
-    this.helferData = this.navParams.get("data");
-    this.clubId = this.navParams.get("clubId");
+    // NavParams migration: now using @Input properties directly
+    this.helferData = this.data;
+
     console.log("helferData", this.helferData);
     console.log("clubId", this.clubId);
     this.helferPunkteList$ = this.getHeferEinsatz(

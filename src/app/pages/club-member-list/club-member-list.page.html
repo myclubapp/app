@@ -47,11 +47,11 @@
   @if (filteredClubMembers$ | async; as clubMemberList) {
   <ion-list [inset]="true">
     <ion-item-group>
-      @for (groupBy of groupArray; track groupBy) {
+      @for (groupBy of groupArray; track $index) {
       <ion-item-divider color="light">
         <ion-label> {{groupBy}} </ion-label>
       </ion-item-divider>
-      @for (member of clubMemberList; track member) { @if (member.groupBy ==
+      @for (member of clubMemberList; track member.id) { @if (member.groupBy ==
       groupBy) {
       <ion-item-sliding #item>
         @if (clubAdminList$ | async; as clubAdminList) { @if

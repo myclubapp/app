@@ -1,6 +1,10 @@
-import { Injectable } from "@angular/core";
+import {
+  Injectable,
+  inject,
+  Injector,
+  runInInjectionContext,
+} from "@angular/core";
 import { Observable, of } from "rxjs";
-import { collectionGroup, limit, orderBy, Timestamp } from "firebase/firestore";
 import {
   Firestore,
   addDoc,
@@ -14,6 +18,10 @@ import {
   query,
   where,
   getDoc,
+  collectionGroup,
+  limit,
+  orderBy,
+  Timestamp,
 } from "@angular/fire/firestore";
 import { AuthService } from "../auth.service";
 
@@ -21,6 +29,8 @@ import { AuthService } from "../auth.service";
   providedIn: "root",
 })
 export class InvoiceService {
+  private injector = inject(Injector);
+
   constructor(
     private firestore: Firestore,
     private readonly authService: AuthService,
@@ -47,12 +57,14 @@ export class InvoiceService {
 
   // Alle Perioden eines Clubs abrufen
   getPeriods(clubId: string): Observable<any[]> {
-    return collectionData(
-      query(
-        collection(this.firestore, `club/${clubId}/invoicePeriods`),
-        // orderBy("createdAt", "desc")
+    return runInInjectionContext(this.injector, () =>
+      collectionData(
+        query(
+          collection(this.firestore, `club/${clubId}/invoicePeriods`),
+          // orderBy("createdAt", "desc")
+        ),
+        { idField: "id" },
       ),
-      { idField: "id" },
     ) as Observable<any[]>;
   }
 
@@ -60,25 +72,29 @@ export class InvoiceService {
 
   // Alle Rechnungen einer Periode abrufen
   getInvoicesForPeriod(clubId: string, periodId: string): Observable<any[]> {
-    return collectionData(
-      query(
-        collection(
-          this.firestore,
-          `club/${clubId}/invoicePeriods/${periodId}/invoices`,
+    return runInInjectionContext(this.injector, () =>
+      collectionData(
+        query(
+          collection(
+            this.firestore,
+            `club/${clubId}/invoicePeriods/${periodId}/invoices`,
+          ),
+          // orderBy("createdAt", "desc")
         ),
-        // orderBy("createdAt", "desc")
+        { idField: "id" },
       ),
-      { idField: "id" },
     ) as Observable<any[]>;
   }
 
   getInvoicesForMember(memberId: string): Observable<any[]> {
-    return collectionData(
-      query(
-        collectionGroup(this.firestore, "invoices"),
-        where("memberId", "==", memberId),
+    return runInInjectionContext(this.injector, () =>
+      collectionData(
+        query(
+          collectionGroup(this.firestore, "invoices"),
+          where("memberId", "==", memberId),
+        ),
+        { idField: "id" },
       ),
-      { idField: "id" },
     ) as Observable<any[]>;
   }
 
@@ -118,12 +134,14 @@ export class InvoiceService {
     periodId: string,
     invoiceId: string,
   ): Observable<any> {
-    return docData(
-      doc(
-        this.firestore,
-        `club/${clubId}/invoicePeriods/${periodId}/invoices/${invoiceId}`,
+    return runInInjectionContext(this.injector, () =>
+      docData(
+        doc(
+          this.firestore,
+          `club/${clubId}/invoicePeriods/${periodId}/invoices/${invoiceId}`,
+        ),
+        { idField: "id" },
       ),
-      { idField: "id" },
     ) as Observable<any>;
   }
 

@@ -34,7 +34,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
 import { TrainingCreatePage } from "../training-create/training-create.page";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { TrainingDetailPage } from "../training-detail/training-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Team } from "src/app/models/team";
@@ -52,8 +52,8 @@ import { UiService } from "src/app/services/ui.service";
   standalone: false,
 })
 export class TrainingsPage implements OnInit {
-  @Input("team") team: Team;
-  @Input("isModal") isModal: boolean;
+  @Input() team!: Team;
+  @Input() isModal!: boolean;
   skeleton = new Array(12);
 
   user: User;
@@ -189,7 +189,7 @@ export class TrainingsPage implements OnInit {
         };
         this.openTrainingDetailModal(training, true);
       } else {
-        console.log("no data");
+        // console.log("no data");
       }
     });
   }
@@ -209,7 +209,7 @@ export class TrainingsPage implements OnInit {
           this.userProfileService.getChildren(user.uid).pipe(
             tap((children) => {
               this.children = children;
-              console.log("children", this.children);
+              // console.log("children", this.children);
             }),
             switchMap((children: Profile[]) =>
               children.length > 0
@@ -424,7 +424,7 @@ export class TrainingsPage implements OnInit {
                 : of([]),
             ),
             map((childrenTeams) => childrenTeams.flat()),
-            tap((teams) => console.log("Children Teams:", teams)),
+            // tap((teams) => console.log("Children Teams:", teams)),
             catchError((error) => {
               console.error("Error fetching children teams:", error);
               return of([]);

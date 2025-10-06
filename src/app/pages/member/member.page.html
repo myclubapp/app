@@ -90,7 +90,7 @@
     <ion-list-header>
       <ion-label> {{ "common.children" | translate}} </ion-label>
     </ion-list-header>
-    } @for (child of childrenList; track child) {
+    } @for (child of childrenList; track child.id) {
     <ion-item (click)="openMember(child)" detail="true">
       <ion-avatar (click)="openMember(child)" slot="start">
         @if (!child.profilePicture) {
@@ -115,7 +115,7 @@
     <ion-list-header>
       <ion-label> {{ "common.parents" | translate}} </ion-label>
     </ion-list-header>
-    } @for (parent of parentsList; track parent) {
+    } @for (parent of parentsList; track parent.id) {
     <ion-item (click)="openMember(parent)" detail="true">
       <ion-avatar (click)="openMember(parent)" slot="start">
         @if (!parent.profilePicture) {
@@ -160,7 +160,7 @@
   <ion-list>
     <ion-grid>
       <ion-row>
-        @for (item of skeleton; track item) {
+        @for (item of skeleton; track $index) {
         <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
           <ion-card>
             <ion-card-header>

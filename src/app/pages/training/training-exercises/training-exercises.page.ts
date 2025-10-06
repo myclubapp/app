@@ -4,7 +4,6 @@ import {
   IonItemSliding,
   ItemReorderEventDetail,
   ModalController,
-  NavParams,
   ToastController,
 } from "@ionic/angular";
 import { Observable, lastValueFrom, map, take } from "rxjs";
@@ -22,7 +21,7 @@ import { FirebaseService } from "src/app/services/firebase.service";
   standalone: false,
 })
 export class TrainingExercisesPage implements OnInit {
-  @Input("training") training: Training;
+  @Input() training!: Training;
 
   exerciseListTemplate$: Observable<any[]>;
   exerciseListTemplateBackup$: Observable<any[]>;
@@ -37,7 +36,6 @@ export class TrainingExercisesPage implements OnInit {
   teamAdminList$: Observable<Team[]>;
 
   constructor(
-    public navParams: NavParams,
     private exerciseService: ExerciseService,
     private modalCtrl: ModalController,
     private readonly fbService: FirebaseService,
@@ -51,7 +49,7 @@ export class TrainingExercisesPage implements OnInit {
   }
 
   ngOnInit() {
-    this.training = this.navParams.get("training");
+    // NavParams migration: now using @Input property directly
     this.teamTrainingExerciseList$ =
       this.exerciseService.getTeamTrainingExerciseRefs(
         this.training.teamId,

@@ -4,7 +4,6 @@ import {
   IonItemSliding,
   ModalController,
   // NavController,
-  NavParams,
   Platform,
 } from "@ionic/angular";
 import { Game } from "src/app/models/game";
@@ -38,8 +37,10 @@ import { UiService } from "src/app/services/ui.service";
   standalone: false,
 })
 export class ChampionshipDetailPage implements OnInit {
-  @Input("data") game: Game;
-  @Input("isFuture") isFuture: boolean;
+  @Input() data!: Game;
+  @Input() isFuture!: boolean;
+
+  game: Game;
 
   @ViewChild("map")
   mapRef: ElementRef<HTMLElement>;
@@ -59,7 +60,6 @@ export class ChampionshipDetailPage implements OnInit {
   constructor(
     private readonly modalCtrl: ModalController,
     public platform: Platform,
-    private navParams: NavParams,
     private readonly userProfileService: UserProfileService,
     private readonly alertCtrl: AlertController,
     private readonly championshipService: ChampionshipService,
@@ -73,8 +73,14 @@ export class ChampionshipDetailPage implements OnInit {
   }
 
   async ngOnInit() {
-    this.game = this.navParams.get("data");
-    this.isFuture = this.navParams.get("isFuture");
+    // NavParams migration: now using @Input properties directly
+    this.game = this.data;
+
+    if (!this.game) {
+      console.error("Game data not provided");
+      return;
+    }
+
     this.game$ = this.getGame(this.game.teamId, this.game.id);
     this.user$ = this.authService.getUser$();
     this.teamAdminList$ = this.fbService.getTeamAdminList();
@@ -142,13 +148,13 @@ export class ChampionshipDetailPage implements OnInit {
 
   ionViewDidEnter() {
     this.game$.pipe(take(1)).subscribe((game) => {
-      console.log(">> game", game);
+      // console.log(">> game", game);
       if (!this.newMap && game) {
-        console.log("setMap");
+        // console.log("setMap");
 
         if (!this.newMap) this.setMap();
       } else {
-        console.log("MAP ERROR?");
+        // console.log("MAP ERROR?");
       }
     });
   }
@@ -170,7 +176,7 @@ export class ChampionshipDetailPage implements OnInit {
         return this.userProfileService.getChildren(user.uid).pipe(
           tap((children) => {
             this.children = children;
-            console.log("children", this.children);
+            // console.log("children", this.children);
           }),
         );
       }),
@@ -464,7 +470,7 @@ export class ChampionshipDetailPage implements OnInit {
     if (this.mapRef == undefined || this.mapRef == null) {
       return;
     }
-    console.log("setMap");
+    // console.log("setMap");
     this.newMap = await GoogleMap.create({
       id: "my-map-" + this.game.id, // Unique identifier for this map instance
       element: this.mapRef.nativeElement, // mapRef, // reference to the capacitor-google-map element

@@ -67,7 +67,7 @@
         <div slot="content">
           @if (teams$ | async; as teams) {
           <ion-list>
-            @for (team of teams; track team) {
+            @for (team of teams; track team.id) {
             <ion-item (click)="changeJahresbeitrag(team)" detail="true">
               <ion-label> {{ team.name }} </ion-label>
               <ion-text slot="end">

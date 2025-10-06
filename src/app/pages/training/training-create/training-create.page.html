@@ -33,7 +33,7 @@
           [(ngModel)]="training.teamId"
           value="{{training.teamId}}"
         >
-          @for (team of teamList; track team) {
+          @for (team of teamList; track team.id) {
           <ion-select-option value="{{team.id}}"
             >{{team.name}}</ion-select-option
           >

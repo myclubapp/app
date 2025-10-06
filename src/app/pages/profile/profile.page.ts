@@ -51,7 +51,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
 import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { MemberPage } from "../member/member.page";
 import { MemberInvoiceListPage } from "../member-invoice-list/member-invoice-list.page";
 

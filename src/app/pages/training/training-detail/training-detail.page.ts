@@ -10,7 +10,6 @@ import {
   IonItemSliding,
   IonRouterOutlet,
   ModalController,
-  NavParams,
   ToastController,
 } from "@ionic/angular";
 import { Platform } from "@ionic/angular";
@@ -51,8 +50,10 @@ import { UiService } from "src/app/services/ui.service";
   standalone: false,
 })
 export class TrainingDetailPage implements OnInit {
-  @Input("data") training: Training;
-  @Input("isFuture") isFuture: boolean;
+  @Input() data!: Training;
+  @Input() isFuture!: boolean;
+
+  training: Training;
 
   private backButtonSub: Subscription;
 
@@ -72,7 +73,6 @@ export class TrainingDetailPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public navParams: NavParams,
     private platform: Platform,
     @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly userProfileService: UserProfileService,
@@ -87,7 +87,14 @@ export class TrainingDetailPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.training = this.navParams.get("data");
+    // NavParams migration: now using @Input property directly
+    this.training = this.data;
+
+    if (!this.training) {
+      console.error("Training data not provided");
+      return;
+    }
+
     this.training$ = this.getTraining(this.training.teamId, this.training.id);
     this.exerciseList$ = this.exerciseService.getTeamTrainingExerciseRefs(
       this.training.teamId,
@@ -123,7 +130,7 @@ export class TrainingDetailPage implements OnInit {
         return this.userProfileService.getChildren(user.uid).pipe(
           tap((children) => {
             this.children = children;
-            console.log("children", this.children);
+            // console.log("children", this.children);
           }),
         );
       }),

@@ -242,20 +242,15 @@
     "open_accordion": "Open Accordion"
   },
   "login": {
-    "login__title": "Melden Dich mit deinem Konto an",
+    "login_title": "Melden Dich mit deinem Konto an",
     "loading": "Anmeldung läuft...",
     "error": "Fehler",
-    "error__no_acount_found": "Kein Account mit dieser E-Mail-Adresse gefunden",
-    "error__invalid_username_password": "Die Kombination aus Benutzername und Passwort ist falsch.",
-    "error__invalid_login_credentials": "Die Kombination aus Benutzername und Passwort ist falsch.",
-    "error__invalid_credentials": "Die Kombination aus Benutzername und Passwort ist ungültig.",
-    "error__network_connection": "Es gibt ein Problem mit der Netzwerkverbindung",
-    "error_message": "Ein Fehler ist aufgetreten",
     "error_user_not_found": "Kein Benutzer mit dieser E-Mail-Adresse gefunden",
     "error_wrong_password": "Falsches Passwort",
     "error_invalid_email": "Ungültige E-Mail-Adresse",
     "error_user_disabled": "Dieser Benutzer wurde deaktiviert",
-    "login__button": "Anmelden",
+    "error_user_credential": "Ungültiges Login",
+    "login_button": "Anmelden",
     "create_new_account": "erstelle einen neuen Account",
     "email_placeholder": "Gib deine E-Mail Adresse ein",
     "password_placeholder": "Gib dein Passwort ein"
@@ -429,7 +424,8 @@
     "create_news": "News erstellen",
     "news_entry": "News Beitrag",
     "news_article": "News Beitrag",
-    "no_open_notifications": "Keine offenen Benachrichtigungen gefunden"
+    "no_open_notifications": "Keine offenen Benachrichtigungen gefunden",
+    "upcomingGames": "Kommende Spiele"
   },
   "news-detail": {},
   "not-found": {

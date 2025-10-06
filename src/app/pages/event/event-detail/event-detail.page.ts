@@ -3,7 +3,6 @@ import {
   AlertController,
   IonItemSliding,
   ModalController,
-  NavParams,
   ToastController,
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
@@ -36,8 +35,10 @@ import { Club } from "src/app/models/club";
   standalone: false,
 })
 export class EventDetailPage implements OnInit {
-  @Input("data") event: Veranstaltung;
-  @Input("isFuture") isFuture: boolean;
+  @Input() data!: Veranstaltung;
+  @Input() isFuture!: boolean;
+
+  event: Veranstaltung;
 
   event$: Observable<any>;
 
@@ -56,7 +57,7 @@ export class EventDetailPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public navParams: NavParams,
+
     private readonly userProfileService: UserProfileService,
     private readonly eventService: EventService,
     private readonly alertCtrl: AlertController,
@@ -67,7 +68,14 @@ export class EventDetailPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.event = this.navParams.get("data");
+    // NavParams migration: now using @Input properties directly
+    this.event = this.data;
+
+    if (!this.event) {
+      console.error("Event data not provided");
+      return;
+    }
+
     this.event$ = this.getEvent(this.event.clubId, this.event.id);
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
@@ -85,7 +93,7 @@ export class EventDetailPage implements OnInit {
         return this.userProfileService.getChildren(user.uid).pipe(
           tap((children) => {
             this.children = children;
-            console.log("children", this.children);
+            // console.log("children", this.children);
           }),
         );
       }),

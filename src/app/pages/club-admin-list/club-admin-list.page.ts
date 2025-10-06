@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   ModalController,
-  NavParams,
   ToastController,
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
@@ -48,7 +47,7 @@ export class ClubAdminListPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public navParams: NavParams,
+
     private readonly alertCtrl: AlertController,
     private readonly toastCtrl: ToastController,
     private readonly userProfileService: UserProfileService,
@@ -58,7 +57,7 @@ export class ClubAdminListPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.club = this.navParams.get("club");
+    // NavParams migration: now using @Input property directly
     if (this.club.roles && this.club.roles.lenght > 0) {
     } else {
       this.club.roles = [];

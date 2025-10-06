@@ -19,7 +19,7 @@
       <ion-card-subtitle
         >{{news.date | date:'dd.MM.yyyy HH:mm'}}</ion-card-subtitle
       >
-      <ion-card-title>{{news.title}}</ion-card-title>
+      <ion-card-title [innerHTML]="news.title"></ion-card-title>
     </ion-card-header>
     <ion-card-content [innerHTML]="news.text"> </ion-card-content>
     <ion-row>

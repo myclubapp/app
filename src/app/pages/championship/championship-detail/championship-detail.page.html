@@ -181,7 +181,7 @@
         <div slot="content">
           <!-- class="ion-padding"-->
           <ion-list>
-            @for (member of game['attendeeListTrue']; track member) {
+            @for (member of game['attendeeListTrue']; track member.id) {
             <ion-item-sliding #item>
               <ion-item detail="true">
                 <ion-icon color="success" slot="start" name="checkmark-circle">
@@ -236,7 +236,7 @@
         <div slot="content">
           <!-- class="ion-padding"-->
           <ion-list>
-            @for (member of game['attendeeListFalse']; track member) {
+            @for (member of game['attendeeListFalse']; track member.id) {
             <ion-item-sliding #item>
               <ion-item detail="true">
                 <ion-icon color="danger" slot="start" name="close-circle">
@@ -295,7 +295,7 @@
         <div slot="content">
           <!-- class="ion-padding"-->
           <ion-list>
-            @for (member of game['unrespondedMembers']; track member) {
+            @for (member of game['unrespondedMembers']; track member.id) {
             <ion-item-sliding #item>
               <ion-item detail="true">
                 <ion-icon color="warning" slot="start" name="help-circle">

@@ -30,4 +30,9 @@
       }
     }
   </ion-label>
+  @if (childrenCount > 0) {
+    <ion-note slot="end" color="medium">
+      {{ childrenCount }} {{ childrenCount === 1 ? "Kind" : "Kinder" }}
+    </ion-note>
+  }
 </ion-item>

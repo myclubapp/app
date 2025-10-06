@@ -29,7 +29,7 @@
       [disabled]="!allowEdit"
       (ionItemReorder)="handleReorder($any($event))"
     >
-      @for (link of links; track link) {
+      @for (link of links; track link.id) {
       <ion-item-sliding #item>
         <ion-item detail="true" (click)="openLink(link.url)">
           @if (allowEdit) {

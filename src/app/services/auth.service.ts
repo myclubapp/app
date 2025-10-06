@@ -5,8 +5,7 @@ import { first } from "rxjs/operators";
 
 import {
   Auth,
-  getAuth,
-  authState,
+  user,
   verifyBeforeUpdateEmail,
   // connectAuthEmulator,
   createUserWithEmailAndPassword,
@@ -33,6 +32,7 @@ import { Firestore, doc, setDoc } from "@angular/fire/firestore";
 })
 export class AuthService {
   user$: Observable<User | null>;
+
   constructor(
     // private readonly firestore: Firestore,
     private readonly firestore: Firestore,
@@ -41,9 +41,9 @@ export class AuthService {
 
     private readonly router: Router,
   ) {
-    // or use this version...
-    this.user$ = authState(this.auth);
-    this.auth = getAuth();
+    // Use the user() Observable from @angular/fire/auth which is injection-context aware
+    this.user$ = user(this.auth);
+    // this.auth = getAuth(); // Removed: This was causing "Firebase API called outside injection context"
     // connectAuthEmulator(this.auth, 'http://localhost:8100')
   }
 

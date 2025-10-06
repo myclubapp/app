@@ -2,11 +2,10 @@ import { Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   ModalController,
-  NavParams,
   ToastController,
 } from "@ionic/angular";
 import { User } from "firebase/auth";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import {
   Observable,
   Subscription,
@@ -38,7 +37,9 @@ import { TranslateService } from "@ngx-translate/core";
   standalone: false,
 })
 export class TrainingCreatePage implements OnInit {
-  @Input("data") trainingCopy: Training;
+  @Input() data!: Training;
+
+  trainingCopy: Training;
   training: Training;
   user$: Observable<User>;
 
@@ -51,7 +52,7 @@ export class TrainingCreatePage implements OnInit {
     private readonly authService: AuthService,
     private readonly toastController: ToastController,
     private fbService: FirebaseService,
-    public navParams: NavParams,
+
     private uiService: UiService,
     private translate: TranslateService,
   ) {
@@ -103,9 +104,11 @@ export class TrainingCreatePage implements OnInit {
   }
 
   ngOnInit() {
-    this.trainingCopy = this.navParams.get("data");
+    // NavParams migration: now using @Input property directly
+    this.trainingCopy = this.data;
+
     console.log(this.trainingCopy);
-    if (this.trainingCopy.id) {
+    if (this.trainingCopy && this.trainingCopy.id) {
       this.training = this.trainingCopy;
 
       const now = new Date();

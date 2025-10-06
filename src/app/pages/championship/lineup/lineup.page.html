@@ -16,12 +16,12 @@
       </ion-buttons>
     </ion-toolbar>
   </ion-header>
-  @for (block of blocks; track block) {
+  @for (block of blocks; track $index) {
   <ion-list lines="full" [inset]="true">
     <ion-list-header>
       <ion-item> {{"common.present" | translate}} </ion-item>
     </ion-list-header>
-    @for (member of block['members']; track member) {
+    @for (member of block['members']; track member.id) {
     <ion-item detail="true">
       <ion-icon
         color="primary"
@@ -40,7 +40,7 @@
     <ion-list-header>
       <ion-item> {{"common.present" | translate}} </ion-item>
     </ion-list-header>
-    @for (member of game['attendeeListTrue']; track member) {
+    @for (member of game['attendeeListTrue']; track member.id) {
     <ion-item detail="true">
       <ion-icon
         color="primary"
@@ -62,7 +62,7 @@
   <ion-list>
     <ion-grid>
       <ion-row>
-        @for (item of skeleton; track item) {
+        @for (item of skeleton; track $index) {
         <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
           <ion-card>
             <ion-card-header>

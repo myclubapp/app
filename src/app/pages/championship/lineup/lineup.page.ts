@@ -1,9 +1,5 @@
 import { Component, OnInit, Input } from "@angular/core";
-import {
-  ItemReorderEventDetail,
-  ModalController,
-  NavParams,
-} from "@ionic/angular";
+import { ItemReorderEventDetail, ModalController } from "@ionic/angular";
 import { User } from "firebase/auth";
 import {
   Observable,
@@ -23,13 +19,15 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { MemberPage } from "../../member/member.page";
 
 @Component({
-    selector: "app-lineup",
-    templateUrl: "./lineup.page.html",
-    styleUrls: ["./lineup.page.scss"],
-    standalone: false
+  selector: "app-lineup",
+  templateUrl: "./lineup.page.html",
+  styleUrls: ["./lineup.page.scss"],
+  standalone: false,
 })
 export class LineupPage implements OnInit {
-  @Input("data") game: Game;
+  @Input() data!: Game;
+
+  game: Game;
 
   userProfile: Profile;
 
@@ -48,12 +46,18 @@ export class LineupPage implements OnInit {
     private modalCtrl: ModalController,
     private readonly userProfileService: UserProfileService,
     private readonly authService: AuthService,
-    private navParams: NavParams,
-    private readonly championshipService: ChampionshipService
+    private readonly championshipService: ChampionshipService,
   ) {}
 
   async ngOnInit() {
-    this.game = this.navParams.get("data");
+    // NavParams migration: now using @Input property directly
+    this.game = this.data;
+
+    if (!this.game) {
+      console.error("Game data not provided");
+      return;
+    }
+
     this.game.teamId = this.game.teamRef.id;
     //     console.log(this.game)
     this.game$ = of(this.game);
@@ -95,24 +99,24 @@ export class LineupPage implements OnInit {
                       ...attendee,
                       firstName: "Unknown",
                       lastName: "Unknown",
-                    })
-                  )
-                )
+                    }),
+                  ),
+                ),
               );
               return forkJoin(attendeeProfiles$).pipe(
                 map((attendeesWithDetails) => ({
                   ...game,
                   attendees: attendeesWithDetails,
                   attendeeListTrue: attendeesWithDetails.filter(
-                    (e) => e.status == true
+                    (e) => e.status == true,
                   ),
                   attendeeListFalse: attendeesWithDetails.filter(
-                    (e) => e.status == false
+                    (e) => e.status == false,
                   ),
                   status: attendeesWithDetails.find(
-                    (att) => att.id == this.user.uid
+                    (att) => att.id == this.user.uid,
                   )?.status,
-                }))
+                })),
               );
             }),
             catchError(() =>
@@ -120,14 +124,14 @@ export class LineupPage implements OnInit {
                 ...game,
                 attendees: [],
                 status: null,
-              })
-            )
+              }),
+            ),
           );
       }),
       catchError((err) => {
         console.error("Error in getTrainingWithAttendees:", err);
         return of(null);
-      })
+      }),
     );
   }
   addMember(member: Profile) {

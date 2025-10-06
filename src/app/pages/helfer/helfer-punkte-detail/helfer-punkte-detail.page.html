@@ -47,12 +47,12 @@
     <ion-list-header>
       <ion-label> Geplante Einsätze </ion-label>
     </ion-list-header>
-    @for (helferPunkt of helferData.helfereventsPlanned; track helferPunkt) {
+    @for (helferPunkt of helferData.helfereventsPlanned; track $index) {
     <ion-item>
       <ion-label>
         <h2>{{helferPunkt?.name}}</h2>
         <h3>{{helferPunkt?.date.toDate() | date:'dd.MM.yyyy'}}</h3>
-        @for (schicht of helferPunkt?.schichten; track schicht) {
+        @for (schicht of helferPunkt?.schichten; track schicht.id) {
         <h3>
           {{schicht?.name}} {{schicht?.timeFrom}} - {{schicht?.timeTo}} /
           mögliche Punkte: {{schicht?.points}}
@@ -68,11 +68,11 @@
       <ion-label> Bestätigte Einsätze </ion-label>
     </ion-list-header>
     <ion-item-group>
-      @for (groupBy of groupArray; track groupBy) {
+      @for (groupBy of groupArray; track $index) {
       <ion-item-divider color="light">
         <ion-label> {{groupBy}} </ion-label>
       </ion-item-divider>
-      @for (helferPunkt of helferPunkteList; track helferPunkt) { @if
+      @for (helferPunkt of helferPunkteList; track $index) { @if
       (helferPunkt.eventDate.toDate().getFullYear()==groupBy) {
       <ion-item-sliding #item>
         <ion-item

@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   ModalController,
-  NavParams,
   ToastController,
   IonRouterOutlet,
 } from "@ionic/angular";
@@ -29,7 +28,7 @@ import { ClubMemberListPage } from "../club-member-list/club-member-list.page";
 import { ClubAdminListPage } from "../club-admin-list/club-admin-list.page";
 import { ClubTeamListPage } from "../club-team-list/club-team-list.page";
 import { ClubRequestListPage } from "../club-request-list/club-request-list.page";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { HelferPunkteClubPage } from "../helfer/helfer-punkte-club/helfer-punkte-club.page";
 import { Club } from "src/app/models/club";
 import { ClubSubscriptionPage } from "../club-subscription/club-subscription.page";
@@ -51,7 +50,9 @@ import { ClubBillingPeriodPage } from "../club-billing-period/club-billing-perio
   standalone: false,
 })
 export class ClubPage implements OnInit {
-  @Input("data") club: any;
+  @Input() data!: any;
+
+  club: any;
 
   club$: Observable<any>;
 
@@ -66,7 +67,7 @@ export class ClubPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public navParams: NavParams,
+
     private readonly alertCtrl: AlertController,
     private readonly toastCtrl: ToastController,
     private readonly userProfileService: UserProfileService,
@@ -78,7 +79,8 @@ export class ClubPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.club = this.navParams.get("data");
+    // NavParams migration: now using @Input property directly
+    this.club = this.data;
 
     this.club$ = this.getClub(this.club.id);
 

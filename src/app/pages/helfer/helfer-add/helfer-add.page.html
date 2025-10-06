@@ -33,7 +33,7 @@
           value="{{event.clubId}}"
           [cancelText]="'common.cancel' | translate"
         >
-          @for (club of clubList; track club) {
+          @for (club of clubList; track club.id) {
           <ion-select-option value="{{club.id}}"
             >{{club.name}}</ion-select-option
           >

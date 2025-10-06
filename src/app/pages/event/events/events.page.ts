@@ -27,7 +27,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
 import { EventAddPage } from "../event-add/event-add.page";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { EventDetailPage } from "../event-detail/event-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
@@ -158,7 +158,7 @@ export class EventsPage implements OnInit {
         };
         this.openEventDetailModal(clubEvent, true);
       } else {
-        console.log("no data");
+        // console.log("no data");
       }
     });
   }
@@ -191,7 +191,7 @@ export class EventsPage implements OnInit {
                 : of([]),
             ),
             map((childrenClubs) => childrenClubs.flat()),
-            tap((clubs) => console.log("Children Clubs:", clubs)),
+            // tap((clubs) => console.log("Children Clubs:", clubs)),
             catchError((error) => {
               console.error("Error fetching children clubs:", error);
               return of([]);
@@ -312,7 +312,7 @@ export class EventsPage implements OnInit {
                 : of([]),
             ),
             map((childrenClubs) => childrenClubs.flat()),
-            tap((clubs) => console.log("Children Clubs:", clubs)),
+            // tap((clubs) => console.log("Children Clubs:", clubs)),
             catchError((error) => {
               console.error("Error fetching children clubs:", error);
               return of([]);

@@ -50,7 +50,7 @@
               <ion-list-header>
                 {{ 'onboarding.sports.unihockey' | translate }}
               </ion-list-header>
-              } @for (club of clubListSU; track club) {
+              } @for (club of clubListSU; track club.id) {
               <ion-item lines="full" (click)="joinClub(club)" button>
                 <ion-avatar slot="start">
                   <img alt="{{club.name}}" src="{{club.logo}}" />
@@ -61,7 +61,7 @@
               <ion-list-header>
                 {{ 'onboarding.sports.volleyball' | translate }}
               </ion-list-header>
-              } @for (club of clubListSV; track club) {
+              } @for (club of clubListSV; track club.id) {
               <ion-item lines="full" (click)="joinClub(club)" button>
                 <ion-avatar slot="start">
                   <img alt="{{club.name}}" src="{{club.logo}}" />
@@ -72,7 +72,7 @@
               <ion-list-header>
                 {{ 'onboarding.sports.handball' | translate }}
               </ion-list-header>
-              } @for (club of clubListSH; track club) {
+              } @for (club of clubListSH; track club.id) {
               <ion-item lines="full" (click)="joinClub(club)" button>
                 <ion-avatar slot="start">
                   <img alt="{{club.name}}" src="{{club.logo}}" />
@@ -83,7 +83,7 @@
               <ion-list-header>
                 {{ 'onboarding.sports.gymnastics' | translate }}
               </ion-list-header>
-              } @for (club of clubListST; track club) {
+              } @for (club of clubListST; track club.id) {
               <ion-item lines="full" (click)="joinClub(club)" button>
                 <ion-avatar slot="start">
                   <img alt="{{club.name}}" src="{{club.logo}}" />
@@ -95,7 +95,7 @@
               <!-- Sports -->
               @if (clubListSports.length > 0) {
               <ion-list-header> Sportvereine </ion-list-header>
-              } @for (club of clubListSports; track club) {
+              } @for (club of clubListSports; track club.id) {
               <ion-item lines="full" (click)="joinClub(club)" button>
                 <ion-avatar slot="start">
                   <img alt="{{club.name}}" src="{{club.logo}}" />
@@ -107,7 +107,7 @@
               <!-- Culture -->
               @if (clubListCulture.length > 0) {
               <ion-list-header> Kulturvereine </ion-list-header>
-              } @for (club of clubListCulture; track club) {
+              } @for (club of clubListCulture; track club.id) {
               <ion-item lines="full" (click)="joinClub(club)" button>
                 <ion-avatar slot="start">
                   <img alt="{{club.name}}" src="{{club.logo}}" />
@@ -119,7 +119,7 @@
               <!-- Other -->
               @if (clubListOther.length > 0) {
               <ion-list-header> Andere Vereine </ion-list-header>
-              } @for (club of clubListOther; track club) {
+              } @for (club of clubListOther; track club.id) {
               <ion-item lines="full" (click)="joinClub(club)" button>
                 <ion-avatar slot="start">
                   <img alt="{{club.name}}" src="{{club.logo}}" />
@@ -131,7 +131,7 @@
               <ion-list-header>
                 {{ 'onboarding.linked_clubs' | translate }}
               </ion-list-header>
-              } @for (club of clubListByContactEmail; track club) {
+              } @for (club of clubListByContactEmail; track club.id) {
               <ion-item (click)="joinClub(club)" lines="full" button>
                 <ion-avatar slot="start">
                   <img alt="{{club.name}}" src="{{club.logo}}" />

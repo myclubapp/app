@@ -85,7 +85,7 @@
   <ion-list>
     <ion-grid>
       <ion-row>
-        @for (item of skeleton; track item) {
+        @for (item of skeleton; track $index) {
         <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
           <ion-card>
             <ion-card-header>

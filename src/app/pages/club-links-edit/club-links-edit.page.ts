@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { ModalController, NavParams, ToastController } from "@ionic/angular";
+import { ModalController, ToastController } from "@ionic/angular";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { ClubLink } from "src/app/models/club-link";
 import { TranslateService } from "@ngx-translate/core";
@@ -21,14 +21,12 @@ export class ClubLinksEditPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    private readonly navParams: NavParams,
     private readonly fbService: FirebaseService,
     private readonly toastCtrl: ToastController,
     private readonly translate: TranslateService,
     private readonly uiService: UiService,
   ) {
-    this.linkCopy = this.navParams.get("linkData");
-    this.clubId = this.navParams.get("clubId");
+    // NavParams migration: now using @Input properties directly
   }
 
   ngOnInit() {

@@ -3,7 +3,6 @@ import {
   AlertController,
   MenuController,
   ModalController,
-  NavParams,
   ToastController,
 } from "@ionic/angular";
 // import { Camera, CameraResultType } from '@capacitor/camera';
@@ -60,7 +59,6 @@ export class OnboardingPage implements OnInit {
 
   // inviteList: Array<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>>
   constructor(
-    public navParams: NavParams,
     private readonly fbService: FirebaseService,
     public menuCtrl: MenuController,
     private readonly modalCtrl: ModalController,
@@ -77,10 +75,10 @@ export class OnboardingPage implements OnInit {
   }
 
   async ngOnInit() {
+    // NavParams migration: now using @Input property directly
     this.clubListSU = [];
     this.clubListSV = [];
     this.clubListSH = [];
-    this.user = this.navParams.get("data");
 
     this.menuCtrl.enable(false, "menu");
 

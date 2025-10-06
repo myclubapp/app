@@ -44,7 +44,7 @@
         [cancelText]="'common.cancel' | translate"
       >
         <ion-select-option value="all">Alle</ion-select-option>
-        @for (team of teams; track team) {
+        @for (team of teams; track team.id) {
         <ion-select-option [value]="team.id">{{team.name}}</ion-select-option>
         }
       </ion-select>
@@ -55,11 +55,11 @@
       <ion-button (click)="deselectAll()"> keine </ion-button>
     </ion-list-header>
     <ion-item-group>
-      @for (groupBy of groupArray; track groupBy) {
+      @for (groupBy of groupArray; track $index) {
       <ion-item-divider color="light">
         <ion-label> {{groupBy}} </ion-label>
       </ion-item-divider>
-      @for (member of clubMemberList; track member) { @if (member.groupBy ==
+      @for (member of clubMemberList; track member.id) { @if (member.groupBy ==
       groupBy) {
       <ion-item>
         <ion-checkbox
@@ -72,7 +72,7 @@
           {{member.firstName}} {{member.lastName}}
         </ion-checkbox>
         <!-- Team-Beiträge als Badges anzeigen -->
-        @for (team of getBeitragTeamsForMember(member); track team) {
+        @for (team of getBeitragTeamsForMember(member); track team.id) {
         <ion-badge slot="end"
           >{{team.jahresbeitragWert}} {{team.jahresbeitragWaehrung}}</ion-badge
         >
@@ -112,7 +112,7 @@
     <ion-list-header>
       <ion-label>Rechnungen</ion-label>
     </ion-list-header>
-    @for (invoice of invoices; track invoice) {
+    @for (invoice of invoices; track invoice.id) {
     <ion-item>
       <ion-label (click)="openInvoiceDetail(invoice)">
         {{invoice.firstName}} {{invoice.lastName}}<br />

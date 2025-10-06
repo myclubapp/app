@@ -5,7 +5,6 @@ import {
   AlertController,
   IonRouterOutlet,
 } from "@ionic/angular";
-import { NavParams } from "@ionic/angular/common";
 import { Observable, lastValueFrom } from "rxjs";
 import { Team } from "src/app/models/team";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -39,12 +38,12 @@ export class ClubTeamListPage implements OnInit {
     private readonly toastController: ToastController,
     private readonly modalCtrl: ModalController,
     private readonly toastCtrl: ToastController,
-    private readonly navParams: NavParams,
+
     private readonly alertCtrl: AlertController,
     private readonly uiService: UiService,
     @Optional() private readonly routerOutlet: IonRouterOutlet,
   ) {
-    this.clubId = this.navParams.get("clubId");
+    // NavParams migration: now using @Input property directly
     this.teamList$ = this.fbService.getClubTeamList(this.clubId);
 
     this.club$ = this.fbService.getClubRef(this.clubId);

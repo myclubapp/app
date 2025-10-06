@@ -19,7 +19,7 @@
     <ion-list-header>
       <ion-label>Team Favoriten</ion-label>
     </ion-list-header>
-    @for (exercise of teamExerciseList; track exercise) {
+    @for (exercise of teamExerciseList; track exercise.id) {
     <ion-item-sliding #item>
       <ion-item-options side="start">
         @if (training.id) {
@@ -59,7 +59,7 @@
   <ion-list>
     <ion-grid>
       <ion-row>
-        @for (item of skeleton; track item) {
+        @for (item of skeleton; track $index) {
         <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
           <ion-card>
             <ion-card-header>
@@ -117,7 +117,7 @@
       placeholder="Passspiel"
       show-clear-button="focus"
     ></ion-searchbar>
-    @for (exercise of exerciseListTemplate; track exercise) {
+    @for (exercise of exerciseListTemplate; track exercise.id) {
     <ion-item-sliding #item>
       <ion-item-options side="start">
         @if (training.id) {
@@ -157,7 +157,7 @@
   <ion-list>
     <ion-grid>
       <ion-row>
-        @for (item of skeleton; track item) {
+        @for (item of skeleton; track $index) {
         <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
           <ion-card>
             <ion-card-header>

@@ -34,7 +34,7 @@
         <p>{{"common.participant" | translate}}</p>
       </ion-label>
     </ion-item>
-    @for (event of eventsList; track event) {
+    @for (event of eventsList; track event.id) {
     <ion-item-sliding #item>
       <ion-item type="button" detail="true">
         @if (!event.closedEvent && !event.cancelled) { @if (event.status ===
@@ -170,7 +170,7 @@
         <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
       </ion-label>
     </ion-item>
-    @for (item of skeleton; track item) {
+    @for (item of skeleton; track $index) {
     <ion-item>
       <ion-icon slot="start">
         <ion-skeleton-text
@@ -211,7 +211,7 @@
         <p>{{"common.participant" | translate}}</p>
       </ion-label>
     </ion-item>
-    @for (event of eventsListPast; track event) {
+    @for (event of eventsListPast; track event.id) {
     <ion-item-sliding #item>
       <ion-item type="button" detail="true">
         @if (!event.closedEvent && !event.cancelled) { @if (event.status ===
@@ -324,7 +324,7 @@
         <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
       </ion-label>
     </ion-item>
-    @for (item of skeleton; track item) {
+    @for (item of skeleton; track $index) {
     <ion-item>
       <ion-icon slot="start">
         <ion-skeleton-text

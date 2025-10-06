@@ -1,4 +1,9 @@
-import { Injectable } from "@angular/core";
+import {
+  Injectable,
+  inject,
+  Injector,
+  runInInjectionContext,
+} from "@angular/core";
 
 import { User, updateProfile } from "@angular/fire/auth";
 import {
@@ -35,6 +40,7 @@ import { shareReplay } from "rxjs/operators";
 export class UserProfileService {
   private profileCache: Map<string, Observable<Profile>> = new Map();
   private readonly CACHE_DURATION = 10 * 60 * 1000; // 10 Minuten
+  private injector = inject(Injector);
 
   constructor(
     private firestore: Firestore,
@@ -61,17 +67,19 @@ export class UserProfileService {
       this.firestore,
       `userProfile/${userId}/kidsRequests`,
     );
-    return collectionData(userKidsRef, { idField: "id" }) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(userKidsRef, { idField: "id" }),
+    ) as Observable<any[]>;
   }
 
   getChildren(userId: string) {
-    console.log("getChildren: " + userId);
+    // console.log("getChildren: " + userId);
     const childrenRef = collection(
       this.firestore,
       `userProfile/${userId}/children`,
     );
-    return collectionData(childrenRef, { idField: "id" }).pipe(
-      shareReplay(1),
+    return runInInjectionContext(this.injector, () =>
+      collectionData(childrenRef, { idField: "id" }).pipe(shareReplay(1)),
     ) as Observable<any[]>;
   }
 
@@ -80,7 +88,9 @@ export class UserProfileService {
       this.firestore,
       `userProfile/${userId}/parents`,
     );
-    return collectionData(parentsRef, { idField: "id" }) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(parentsRef, { idField: "id" }),
+    ) as Observable<any[]>;
   }
 
   async addParent(userId: string, parentId: string) {
@@ -115,8 +125,8 @@ export class UserProfileService {
 
   getUserProfile(user: User): Observable<Profile> {
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return docData(userProfileRef, { idField: "id" }).pipe(
-      shareReplay(40),
+    return runInInjectionContext(this.injector, () =>
+      docData(userProfileRef, { idField: "id" }).pipe(shareReplay(40)),
     ) as Observable<Profile>;
   }
 
@@ -126,8 +136,10 @@ export class UserProfileService {
       `userProfile/${userId}`,
     );
 
-    return docData(userProfileRef, { idField: "id" }).pipe(
-      shareReplay({ bufferSize: 50, refCount: true }),
+    return runInInjectionContext(this.injector, () =>
+      docData(userProfileRef, { idField: "id" }).pipe(
+        shareReplay({ bufferSize: 50, refCount: true }),
+      ),
     ) as Observable<Profile>;
   }
 
@@ -162,9 +174,11 @@ export class UserProfileService {
       this.firestore,
       `userProfile/${user.uid}/push`,
     );
-    return collectionData(pushDeviceListRef, {
-      idField: "id",
-    });
+    return runInInjectionContext(this.injector, () =>
+      collectionData(pushDeviceListRef, {
+        idField: "id",
+      }),
+    );
   }
 
   async addPushSubscriber(

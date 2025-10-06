@@ -589,7 +589,7 @@
     <ion-list-header>
       <ion-label>{{'profile.parents' | translate}}</ion-label>
     </ion-list-header>
-    } @for (parent of parents; track parent) {
+    } @for (parent of parents; track parent.id) {
     <ion-item detail="true" (click)="openMember(parent)">
       <ion-avatar slot="start">
         @if (!parent?.profilePicture) {
@@ -626,8 +626,8 @@
       >
       }
     </ion-list-header>
-    @if (children$ | async; as children) { @for (child of children; track child)
-    {
+    @if (children$ | async; as children) { @for (child of children; track
+    child.id) {
     <ion-item-sliding>
       <ion-item detail="true" (click)="openMember(child)">
         <ion-avatar slot="start">

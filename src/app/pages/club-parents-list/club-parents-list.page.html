@@ -47,11 +47,11 @@
   @if (filteredClubParents$ | async; as clubParentsList) {
   <ion-list [inset]="true">
     <ion-item-group>
-      @for (groupBy of groupArray; track groupBy) {
+      @for (groupBy of groupArray; track $index) {
       <ion-item-divider color="light">
         <ion-label> {{groupBy}} </ion-label>
       </ion-item-divider>
-      @for (parent of clubParentsList; track parent) { @if (parent.groupBy ==
+      @for (parent of clubParentsList; track parent.id) { @if (parent.groupBy ==
       groupBy) {
       <ion-item-sliding #item>
         <app-user-list-item
@@ -59,6 +59,7 @@
           [allowEdit]="allowEdit"
           [showDateOfBirth]="(clubAdminList$ | async) && isClubAdmin((clubAdminList$ | async), club.id)"
           [showRoles]="true"
+          [childrenCount]="parent.childrenCount"
           (open)="openParent(parent)"
           (remove)="deleteClubParent(parent)"
         ></app-user-list-item>
@@ -106,7 +107,7 @@
 
     <ion-list [inset]="true">
       <ion-item-group>
-        @for (groupBy of groupArray; track groupBy) {
+        @for (groupBy of groupArray; track $index) {
         <ion-item-divider color="light">
           <ion-label> {{groupBy}} </ion-label>
         </ion-item-divider>

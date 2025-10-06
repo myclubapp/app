@@ -19,11 +19,11 @@
   </ion-header>
   <ion-list [inset]="true">
     <ion-item-group>
-      @for (groupBy of groupArray; track groupBy) {
+      @for (groupBy of groupArray; track $index) {
       <ion-item-divider color="light">
         <ion-label> {{groupBy}} </ion-label>
       </ion-item-divider>
-      @for (helferPunkt of helferPunkteList; track helferPunkt) { @if
+      @for (helferPunkt of helferPunkteList; track $index) { @if
       (helferPunkt.eventDate.toDate().getFullYear()==groupBy) {
       <ion-item
         type="button"

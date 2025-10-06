@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { ModalController, NavParams } from "@ionic/angular";
+import { ModalController } from "@ionic/angular";
 import {
   take,
   tap,
@@ -33,7 +33,9 @@ import { faEnvelope, faCopy } from "@fortawesome/free-solid-svg-icons";
   standalone: false,
 })
 export class GamePreviewPage implements OnInit {
-  @Input("data") game: Game;
+  @Input() data!: Game;
+
+  game: Game;
   game$: Observable<Game>;
 
   isShareable = false;
@@ -49,13 +51,12 @@ export class GamePreviewPage implements OnInit {
   faEnvelope: any = faEnvelope;
   faCopy: any = faCopy;
 
-  constructor(
-    private navParams: NavParams,
-    private readonly modalCtrl: ModalController,
-  ) {}
+  constructor(private readonly modalCtrl: ModalController) {}
 
   ngOnInit() {
-    this.game = this.navParams.get("data");
+    // NavParams migration: now using @Input property directly
+    this.game = this.data;
+
     this.game$ = of(this.game);
     Share.canShare().then((result) => (this.isShareable = result.value));
   }

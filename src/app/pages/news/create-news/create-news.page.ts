@@ -7,7 +7,7 @@ import { NewsService } from "src/app/services/firebase/news.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { Profile } from "src/app/models/user";
 import { News } from "src/app/models/news";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { Router } from "@angular/router";
 import { ModalController } from "@ionic/angular";
 

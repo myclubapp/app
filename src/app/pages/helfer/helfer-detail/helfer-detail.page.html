@@ -88,11 +88,11 @@
       <ion-button (click)="confirmSchichten()"> bestätigen </ion-button>
       } }
     </ion-list-header>
-    @for (schicht of schichten; track schicht) {
+    @for (schicht of schichten; track schicht.id) {
     <ion-item-sliding #item>
       <ion-item>
-        @for (status of schicht.status; track status) { @if (!schicht.confirmed
-        && isFuture) { @if (status.status === null) {
+        @for (status of schicht.status; track status.id) { @if
+        (!schicht.confirmed && isFuture) { @if (status.status === null) {
         <ion-icon
           slot="icon-only"
           color="warning"
@@ -185,7 +185,7 @@
         </ion-item>
         <div slot="content">
           <ion-list>
-            @for (member of schicht['attendeeListTrue']; track member) {
+            @for (member of schicht['attendeeListTrue']; track member.id) {
             <ion-item-sliding #item>
               <ion-item detail="true">
                 @if (member.confirmed) {
@@ -374,7 +374,7 @@
         >{{'helfer-detail.add_shift_button' | translate}}</ion-button
       >
     </ion-list-header>
-    @if (schichten.length > 0) { @for (schicht of schichten; track schicht) {
+    @if (schichten.length > 0) { @for (schicht of schichten; track schicht.id) {
     <ion-item>
       <ion-icon
         color="danger"

@@ -3,7 +3,6 @@ import {
   AlertController,
   AlertInput,
   ModalController,
-  NavParams,
   ToastController,
   IonRouterOutlet,
 } from "@ionic/angular";
@@ -41,10 +40,12 @@ import { Optional } from "@angular/core";
   standalone: false,
 })
 export class MemberPage implements OnInit {
-  @Input("data") userProfile: Profile;
-  @Input("isRequest") isRequest: boolean;
-  @Input("clubId") clubId: string;
-  @Input("teamId") teamId: string;
+  @Input() data!: Profile;
+  @Input() isRequest!: boolean;
+  @Input() clubId!: string;
+  @Input() teamId!: string;
+
+  userProfile: Profile;
   userProfile$: Observable<Profile>;
   skeleton = new Array(12);
 
@@ -68,7 +69,6 @@ export class MemberPage implements OnInit {
     private readonly alertCtrl: AlertController,
     private readonly profileService: UserProfileService,
     private readonly fbService: FirebaseService,
-    private navParams: NavParams,
     private translate: TranslateService,
     private readonly uiService: UiService,
     @Optional() private readonly routerOutlet: IonRouterOutlet,
@@ -76,17 +76,16 @@ export class MemberPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.isRequest = this.navParams.get("isRequest");
-    this.isParent = this.navParams.get("data").isParent || false;
-    this.requestTeamId = this.navParams.get("data")?.requestTeamId;
+    // NavParams migration: now using @Input properties directly
+    this.userProfile = this.data;
+
+    this.isParent = this.userProfile?.isParent || false;
+    this.requestTeamId = this.userProfile?.requestTeamId;
     this.requestTeam$ = this.requestTeamId
       ? this.fbService.getTeamRef(this.requestTeamId)
       : of(null);
 
-    this.clubId = this.navParams.get("clubId");
-    this.teamId = this.navParams.get("teamId");
-    this.userProfile = this.navParams.get("data");
-    console.log("isParent: " + this.userProfile.isParent);
+    console.log("isParent: " + this.userProfile?.isParent);
 
     // this.userProfile$ = of(this.userProfile);
     this.userProfile$ = this.getUserProfile(this.userProfile.id);
