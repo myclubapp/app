@@ -33,7 +33,7 @@ import { ClubLinksEditPage } from "../club-links-edit/club-links-edit.page";
   standalone: false,
 })
 export class ClubLinksPage implements OnInit {
-  @Input("clubId") clubId: any;
+  @Input() clubId!: any;
   club$: Observable<Club>;
   links$: Observable<ClubLink[]>;
   clubAdminList$: Observable<any[]>;

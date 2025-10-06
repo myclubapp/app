@@ -33,7 +33,7 @@ import { Browser } from "@capacitor/browser";
   standalone: false,
 })
 export class ClubSubscriptionPage implements OnInit {
-  @Input("clubId") clubId: any;
+  @Input() clubId!: any;
   club$: Observable<any>;
 
   clubMemberCount$: Observable<number>;

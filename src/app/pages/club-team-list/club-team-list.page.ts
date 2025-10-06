@@ -22,7 +22,7 @@ import { Optional } from "@angular/core";
   standalone: false,
 })
 export class ClubTeamListPage implements OnInit {
-  @Input("clubId") clubId: any;
+  @Input() clubId!: any;
 
   teamList$: Observable<Team[]>;
   club$: Observable<any>;
@@ -42,14 +42,13 @@ export class ClubTeamListPage implements OnInit {
     private readonly alertCtrl: AlertController,
     private readonly uiService: UiService,
     @Optional() private readonly routerOutlet: IonRouterOutlet,
-  ) {
-    // NavParams migration: now using @Input property directly
-    this.teamList$ = this.fbService.getClubTeamList(this.clubId);
-
-    this.club$ = this.fbService.getClubRef(this.clubId);
-  }
+  ) {}
 
   ngOnInit() {
+    // NavParams migration: now using @Input property directly
+    this.teamList$ = this.fbService.getClubTeamList(this.clubId);
+    this.club$ = this.fbService.getClubRef(this.clubId);
+
     this.setupAlerts();
     this.clubAdminList$ = this.fbService.getClubAdminList();
     this.isAdmin$ = this.clubAdminList$.pipe(

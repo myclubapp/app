@@ -35,7 +35,7 @@ import { UiService } from "src/app/services/ui.service";
   standalone: false,
 })
 export class ClubParentsListPage implements OnInit {
-  @Input("club") club: any;
+  @Input() club!: any;
   club$: Observable<any>;
 
   allowEdit: boolean = false;

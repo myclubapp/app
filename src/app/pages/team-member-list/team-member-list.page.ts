@@ -39,7 +39,7 @@ import { Club } from "src/app/models/club";
   standalone: false,
 })
 export class TeamMemberListPage implements OnInit {
-  @Input("team") team: any;
+  @Input() team!: any;
   team$: Observable<any>;
 
   allowEdit: boolean = false;

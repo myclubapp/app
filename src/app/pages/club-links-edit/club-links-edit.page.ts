@@ -13,8 +13,10 @@ import { UiService } from "src/app/services/ui.service";
   standalone: false,
 })
 export class ClubLinksEditPage implements OnInit {
-  @Input("linkData") linkCopy: ClubLink;
-  @Input("clubId") clubId: string;
+  @Input() linkData!: ClubLink;
+  @Input() clubId!: string;
+
+  linkCopy: ClubLink;
   link: any;
   selectedFile: File | null = null;
   previewUrl: string | null = null;
@@ -30,6 +32,8 @@ export class ClubLinksEditPage implements OnInit {
   }
 
   ngOnInit() {
+    this.linkCopy = this.linkData;
+
     if (this.linkCopy) {
       this.link = { ...this.linkCopy };
       if (this.link.type === "image" && this.link.url) {

@@ -38,7 +38,7 @@ import { Firestore } from "@angular/fire/firestore";
   standalone: false,
 })
 export class HelferPunkteClubPage implements OnInit {
-  @Input("clubId") clubId: string;
+  @Input() clubId!: string;
   clubAdminList$: Observable<Club[]>;
   allowEdit: boolean = false;
 
@@ -300,6 +300,7 @@ export class HelferPunkteClubPage implements OnInit {
 
                     if (!profile) {
                       return {
+                        id: member.id,
                         profile: {
                           ...member,
                           firstName: "Unknown",
@@ -325,6 +326,7 @@ export class HelferPunkteClubPage implements OnInit {
                     );
 
                     return {
+                      id: profile.id,
                       profile,
                       groupBy: profile.firstName
                         ? profile.firstName.charAt(0).toUpperCase()

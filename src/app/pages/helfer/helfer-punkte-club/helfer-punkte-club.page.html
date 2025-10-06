@@ -162,7 +162,7 @@
         </ion-avatar>
         <ion-label>
           {{member.profile.firstName}} {{member.profile.lastName}} @for (role of
-          member.roles; track role) {
+          member.roles; track $index) {
           <ion-badge color="primary"> {{role}} </ion-badge>
           }
         </ion-label>

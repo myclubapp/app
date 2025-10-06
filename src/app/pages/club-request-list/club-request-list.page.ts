@@ -30,7 +30,7 @@ import { MemberPage } from "../member/member.page";
   standalone: false,
 })
 export class ClubRequestListPage implements OnInit {
-  @Input("club") club: any;
+  @Input() club!: any;
   club$: Observable<any>;
 
   allowEdit: boolean = false;

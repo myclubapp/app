@@ -32,7 +32,7 @@ import { Club } from "src/app/models/club";
   standalone: false,
 })
 export class ClubAdminListPage implements OnInit {
-  @Input("club") club: any;
+  @Input() club!: any;
   club$: Observable<any>;
 
   allowEdit: boolean = false;
