@@ -12,6 +12,7 @@ import {
   catchError,
   combineLatest,
   debounceTime,
+  first,
   lastValueFrom,
   map,
   of,
@@ -337,6 +338,7 @@ export class ClubMemberListPage implements OnInit {
       componentProps: {
         data: member,
         clubId: this.club.id,
+        teamId: null,
       },
     });
     modal.present();
@@ -394,6 +396,127 @@ export class ClubMemberListPage implements OnInit {
 
   async close() {
     return await this.modalCtrl.dismiss(null, "close");
+  }
+
+  async addParentToClub() {
+    if (!this.club || !this.club.id) {
+      console.error("No valid club or club reference found.");
+      return;
+    }
+
+    try {
+      console.log("Fetching parents for club ID:", this.club.id);
+      const parents = await lastValueFrom(
+        this.fbService.getClubParentsRefs(this.club.id).pipe(
+          first(), // Takes the first emitted value then completes
+        ),
+      );
+      console.log("Parents fetched:", (parents as any[]).length);
+
+      if (!(parents as any[]).length) {
+        console.log("No club parents found.");
+        return;
+      }
+
+      const parentProfiles = await Promise.all(
+        (parents as any[]).map((parent) =>
+          lastValueFrom(
+            this.userProfileService.getUserProfileById(parent.id).pipe(
+              first(),
+              catchError((err) => {
+                console.error(`Error fetching profile for ${parent.id}:`, err);
+                return of({
+                  ...parent,
+                  firstName: "Unknown",
+                  lastName: "Unknown",
+                });
+              }),
+            ),
+          ),
+        ),
+      );
+
+      const filteredParentProfiles = parentProfiles.filter(
+        (profile) => profile !== undefined,
+      );
+      // console.log(filteredParentProfiles);
+      const newMembers = this.filterNewClubMembers(
+        filteredParentProfiles,
+        await lastValueFrom(this.clubMembers$.pipe(take(1))),
+      );
+      // console.log(newMembers);
+      const memberSelectOptions = this.prepareMemberSelectOptions(newMembers);
+      // console.log(memberSelectOptions);
+      if (memberSelectOptions.length > 0) {
+        await this.showAddMemberAlert(memberSelectOptions);
+      } else {
+        console.log("No new members available to add.");
+      }
+    } catch (err) {
+      console.error("Error in addMemberToClub:", err);
+    }
+  }
+
+  filterNewClubMembers(parentProfiles, clubMembers) {
+    return parentProfiles.filter(
+      (parentProfile) =>
+        !clubMembers.some((clubMember) => clubMember.id === parentProfile.id),
+    );
+  }
+
+  prepareMemberSelectOptions(filteredMembers) {
+    // Sort members alphabetically by firstName, then by lastName
+    const sortedMembers = filteredMembers.sort((a, b) => {
+      const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+      const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
+
+    // Map sorted members to checkbox options
+    return sortedMembers.map((member) => ({
+      type: "checkbox",
+      name: member.id,
+      label: `${member.firstName} ${member.lastName}`,
+      value: member.id,
+      checked: false,
+    }));
+  }
+
+  async showAddMemberAlert(memberSelect) {
+    const alert = await this.alertCtrl.create({
+      header: await lastValueFrom(this.translate.get("common.addFromParents")),
+      inputs: memberSelect,
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "cancel",
+          handler: () => {
+            (console.log("Cancel clicked"), this.toastActionCanceled());
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.add")),
+          handler: (selectedMembers) => {
+            selectedMembers.forEach((memberId) => {
+              console.log(memberId);
+              this.approveClubMemberRequest(this.club.id, memberId);
+            });
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  async approveClubMemberRequest(clubId, memberId) {
+    await this.fbService
+      .approveParentToMemberRequest(clubId, memberId)
+      .then(() => {
+        this.toastActionSaved();
+      })
+      .catch((err) => {
+        this.toastActionError(err);
+      });
   }
 
   async confirm() {

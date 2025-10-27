@@ -58,12 +58,26 @@ export class FirebaseService {
   user: User;
   private injector = inject(Injector);
 
+  /**
+   * Clears all cached data - should be called on logout
+   */
+  clearCache(): void {
+    // Note: FirebaseService doesn't maintain explicit cache
+    // but we can reset the user reference
+    this.user = null;
+  }
+
   constructor(
     private readonly firestore: Firestore,
     private readonly storage: Storage,
     private readonly authService: AuthService,
     private readonly userProfileService: UserProfileService,
-  ) {}
+  ) {
+    // Listen to logout events to clear cache
+    this.authService.logout$.subscribe(() => {
+      this.clearCache();
+    });
+  }
 
   getProduct(productId: string) {
     const productRef = doc(this.firestore, `stripeProducts/${productId}`);
@@ -519,7 +533,7 @@ export class FirebaseService {
   getTeamRef(teamId) {
     const teamRef = doc(this.firestore, `/teams/${teamId}`);
     return runInInjectionContext(this.injector, () =>
-      docData(teamRef, { idField: "id" }).pipe(shareReplay(10)),
+      docData(teamRef, { idField: "id" }).pipe(shareReplay(1)),
     ) as Observable<Team>;
   }
 
@@ -848,6 +862,36 @@ export class FirebaseService {
       {
         approveDateTime: Timestamp.now(),
         isParent: true,
+        approve: true,
+      },
+      {
+        merge: true,
+      },
+    );
+  }
+
+  async approveParentToMemberRequest(
+    clubId: string,
+    userId: string,
+  ): Promise<any> {
+    // First, add the user to club requests
+    await setDoc(
+      doc(this.firestore, `/club/${clubId}/requests/${userId}`),
+      {},
+      {
+        merge: true,
+      },
+    );
+
+    // Not sure if this should be done manually.
+    // Then, remove them from parents if they exist there
+    // await deleteDoc(doc(this.firestore, `/club/${clubId}/parents/${userId}`));
+
+    return setDoc(
+      doc(this.firestore, `/club/${clubId}/requests/${userId}`),
+      {
+        approveDateTime: Timestamp.now(),
+        isParent: false,
         approve: true,
       },
       {

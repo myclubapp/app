@@ -10,11 +10,8 @@ import { TranslateService } from "@ngx-translate/core";
 import { Clipboard } from "@capacitor/clipboard";
 import {
   Observable,
-  Subscription,
   catchError,
   combineLatest,
-  finalize,
-  first,
   forkJoin,
   lastValueFrom,
   map,
@@ -42,8 +39,8 @@ import { Optional } from "@angular/core";
 export class MemberPage implements OnInit {
   @Input() data!: Profile;
   @Input() isRequest!: boolean;
-  @Input() clubId!: string;
-  @Input() teamId!: string;
+  @Input() clubId?: string;
+  @Input() teamId?: string;
 
   userProfile: Profile;
   userProfile$: Observable<Profile>;
@@ -55,8 +52,6 @@ export class MemberPage implements OnInit {
 
   teamAdminList$: Observable<Team[]>;
   clubAdminList$: Observable<Club[]>;
-
-  isAdmin$: Observable<boolean>;
 
   alertTeamSelection = [];
 
@@ -78,6 +73,8 @@ export class MemberPage implements OnInit {
   ngOnInit() {
     // NavParams migration: now using @Input properties directly
     this.userProfile = this.data;
+    console.log(">> clubId: " + this.clubId);
+    console.log(">> teamId: " + this.teamId);
 
     this.isParent = this.userProfile?.isParent || false;
     this.requestTeamId = this.userProfile?.requestTeamId;
@@ -130,21 +127,17 @@ export class MemberPage implements OnInit {
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
     this.teamAdminList$ = this.fbService.getTeamAdminList();
-
-    this.isAdmin$ = combineLatest([
-      this.teamAdminList$,
-      this.clubAdminList$,
-    ]).pipe(
-      map(([teamAdminList, clubAdminList]) => {
-        return (
-          this.fbService.isTeamAdmin(teamAdminList, this.teamId) ||
-          this.fbService.isClubAdmin(clubAdminList, this.clubId)
-        );
-      }),
-    );
   }
 
   ngOnDestroy() {}
+
+  isClubAdmin(clubAdminList: any[], clubId?: string): boolean {
+    return clubId ? this.fbService.isClubAdmin(clubAdminList, clubId) : false;
+  }
+
+  isTeamAdmin(teamAdminList: any[], teamId?: string): boolean {
+    return teamId ? this.fbService.isTeamAdmin(teamAdminList, teamId) : false;
+  }
 
   async copy(value) {
     await Clipboard.write({
@@ -176,6 +169,9 @@ export class MemberPage implements OnInit {
 
   async handleAddMember() {
     try {
+      if (!this.clubId) {
+        throw new Error("Club ID is required");
+      }
       await this.fbService.approveUserClubRequest(
         this.clubId,
         this.userProfile.id,
@@ -250,6 +246,7 @@ export class MemberPage implements OnInit {
 
   getUserTeamAdminList() {
     // Get all Teams, where user is Team Admin, but only for given club
+    if (!this.clubId) return of([]);
     return this.fbService.getTeamAdminListByClubId(this.clubId).pipe(
       take(1),
       catchError((error) => {
@@ -260,6 +257,7 @@ export class MemberPage implements OnInit {
   }
 
   getUserClubTeamList() {
+    if (!this.clubId) return of([]);
     return this.fbService.getClubAdminListByClubId(this.clubId).pipe(
       take(1),
       switchMap((clubs) =>
@@ -359,6 +357,7 @@ export class MemberPage implements OnInit {
       componentProps: {
         data: member,
         clubId: this.clubId,
+        teamId: this.teamId,
       },
     });
     modal.present();
@@ -371,8 +370,10 @@ export class MemberPage implements OnInit {
 
   async deleteClubRequest(user) {
     console.log(user);
-    await this.fbService.deleteUserClubRequest(this.clubId, user.id);
-    await this.uiService.showRequestDeletedToast();
-    this.close();
+    if (this.clubId) {
+      await this.fbService.deleteUserClubRequest(this.clubId, user.id);
+      await this.uiService.showRequestDeletedToast();
+      this.close();
+    }
   }
 }

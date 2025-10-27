@@ -30,6 +30,7 @@ export interface Training {
   liga: string;
 
   // Business Logic Fields
+  isMember: boolean;
   status: boolean;
   countAttendees: number;
   attendees: any;

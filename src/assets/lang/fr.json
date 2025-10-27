@@ -6,6 +6,7 @@
     "description": "Description",
     "cancel": "Annuler",
     "ok": "OK",
+    "apply": "Appliquer",
     "confirmation": "Confirmation",
     "confirm": "Confirmer",
     "success__saved": "Enregistré avec succès",
@@ -85,6 +86,7 @@
     "admins": "Administrateurs",
     "addAdministrator": "Ajouter un administrateur",
     "addMember": "Ajouter un membre",
+    "addFromParents": "Ajouter des parents",
     "add": "Ajouter",
     "club": "Club",
     "location": "Nom/Salle/Désignation",
@@ -164,6 +166,10 @@
     "text": "Texte",
     "date": "Date",
     "url": "URL"
+  },
+  "auth": {
+    "session_expired": "Session expirée",
+    "session_expired_message": "Votre session a expiré. Veuillez vous reconnecter."
   },
   "login": {
     "login_title": "Connectez-vous avec votre compte",
@@ -339,7 +345,9 @@
     "filter__by_club_team": "Filtrer par club ou équipes.",
     "create_news": "Créer une actualité",
     "news_entry": "Article d'actualité",
-    "upcomingGames": "Prochains matchs"
+    "upcomingGames": "Prochains matchs",
+    "upcomingGamesEnabled": "Prochains matchs activés",
+    "upcomingGamesDisabled": "Prochains matchs désactivés"
   },
   "not-found": {
     "not_found": "Non trouvé"
@@ -423,10 +431,15 @@
     "generally": "En général",
     "birthdate": "Date de naissance",
     "phonenumber": "Numéro de téléphone",
+    "hide_phone_number": "Masquer le numéro de téléphone",
+    "hide_email": "Masquer l'adresse e-mail",
+    "hide_info_note": "Ces informations restent visibles pour les administrateurs d'équipe et de club pour des raisons organisationnelles et ne sont masquées que pour les autres membres de l'équipe.",
     "address": "Adresse",
     "contact__information": "Informations de contact",
     "license__number": "Numéro de licence",
     "diverses": "Divers",
+    "show_game_preview": "Afficher l'aperçu des jeux",
+    "game_preview_info_note": "Les jeux du club des 10 prochains jours sont affichés.",
     "sport": "Sport",
     "change_email_header": "Modifier l'adresse e-mail",
     "change_email_message": "Modifiez ici votre adresse e-mail de profil.",

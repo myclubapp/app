@@ -70,7 +70,6 @@ import { TeamCreatePage } from "./pages/team/team-create/team-create.page";
 import { HelferPunkteClubPage } from "./pages/helfer/helfer-punkte-club/helfer-punkte-club.page";
 import { HelferPunkteDetailPage } from "./pages/helfer/helfer-punkte-detail/helfer-punkte-detail.page";
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
-import { GamePreviewPage } from "./pages/championship/game-preview/game-preview.page";
 import { NotificationPage } from "./pages/news/notification/notification.page";
 import { ClubParentsListPage } from "./pages/club-parents-list/club-parents-list.page";
 import { ClubLinksPage } from "./pages/club-links/club-links.page";
@@ -143,7 +142,6 @@ const getConfig = () => {
     TrainingExercisesPage,
     TrainingDetailPage,
     TrainingCreatePage,
-    GamePreviewPage,
     EventAddPage,
     EventDetailPage,
     ClubPage,

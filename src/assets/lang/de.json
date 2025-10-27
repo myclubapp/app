@@ -6,6 +6,7 @@
     "description": "Beschreibung",
     "cancel": "Abbrechen",
     "ok": "OK",
+    "apply": "Übernehmen",
     "confirmation": "Bestätigung",
     "confirm": "Bestätigen",
     "success__saved": "Erfolgreich gespeichert",
@@ -100,6 +101,7 @@
     "admins": "Administratoren",
     "addAdministrator": "Administrator hinzufügen",
     "addMember": "Mitglied hinzufügen",
+    "addFromParents": "Eltern hinzufügen",
     "add": "hinzufügen",
     "club": "Club",
     "location": "Name/Halle/Bezeichnung",
@@ -240,6 +242,10 @@
     "helper_list_accordion": "Helper List Accordion",
     "login_form_column": "Login Form Column",
     "open_accordion": "Open Accordion"
+  },
+  "auth": {
+    "session_expired": "Sitzung abgelaufen",
+    "session_expired_message": "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an."
   },
   "login": {
     "login_title": "Melden Dich mit deinem Konto an",
@@ -425,7 +431,9 @@
     "news_entry": "News Beitrag",
     "news_article": "News Beitrag",
     "no_open_notifications": "Keine offenen Benachrichtigungen gefunden",
-    "upcomingGames": "Kommende Spiele"
+    "upcomingGames": "Kommende Spiele",
+    "upcomingGamesEnabled": "Kommende Spiele aktiviert",
+    "upcomingGamesDisabled": "Kommende Spiele deaktiviert"
   },
   "news-detail": {},
   "not-found": {
@@ -523,10 +531,15 @@
     "generally": "Allgemein",
     "birthdate": "Geburtsdatum",
     "phonenumber": "Telefonnummer",
+    "hide_phone_number": "Telefonnummer verstecken",
+    "hide_email": "E-Mail-Adresse verstecken",
+    "hide_info_note": "Diese Informationen bleiben für Team- und Club-Admins aus organisatorischen Gründen sichtbar und werden nur für andere Teammitglieder ausgeblendet.",
     "address": "Adresse",
     "contact__information": "Kontaktinformationen",
     "license__number": "Lizenznummer",
     "diverses": "Diverses",
+    "show_game_preview": "Spiele-Vorschau anzeigen",
+    "game_preview_info_note": "Die Spiele des Vereins der nächsten 10 Tage werden angezeigt.",
     "sport": "Sport",
     "change_email_header": "E-Mail Adresse ändern",
     "change_email_message": "Ändere hier deine Profil E-Mail Adresse.",

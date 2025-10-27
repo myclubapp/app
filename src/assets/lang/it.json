@@ -6,6 +6,7 @@
     "description": "Descrizione",
     "cancel": "Annulla",
     "ok": "OK",
+    "apply": "Applica",
     "confirmation": "Conferma",
     "confirm": "Conferma",
     "success__saved": "Salvato con successo",
@@ -85,6 +86,7 @@
     "admins": "Amministratori",
     "addAdministrator": "Aggiungi amministratore",
     "addMember": "Aggiungi membro",
+    "addFromParents": "Aggiungi genitori",
     "add": "Aggiungi",
     "club": "Club",
     "location": "Nome/Sala/Designazione",
@@ -164,6 +166,10 @@
     "text": "Testo",
     "date": "Data",
     "url": "URL"
+  },
+  "auth": {
+    "session_expired": "Sessione scaduta",
+    "session_expired_message": "La tua sessione è scaduta. Per favore, accedi di nuovo."
   },
   "login": {
     "login_title": "Accedi con il tuo account",
@@ -339,7 +345,9 @@
     "filter__by_club_team": "Filtra per club o squadre.",
     "create_news": "Crea notizia",
     "news_entry": "Voce notizia",
-    "upcomingGames": "Prossime partite"
+    "upcomingGames": "Prossime partite",
+    "upcomingGamesEnabled": "Prossime partite attivate",
+    "upcomingGamesDisabled": "Prossime partite disattivate"
   },
   "not-found": {
     "not_found": "Non trovato"
@@ -423,10 +431,15 @@
     "generally": "In generale",
     "birthdate": "Data di nascita",
     "phonenumber": "Numero di telefono",
+    "hide_phone_number": "Nascondi numero di telefono",
+    "hide_email": "Nascondi indirizzo email",
+    "hide_info_note": "Queste informazioni rimangono visibili per gli amministratori di squadra e club per motivi organizzativi e sono nascoste solo per gli altri membri della squadra.",
     "address": "Indirizzo",
     "contact__information": "Informazioni di contatto",
     "license__number": "Numero di licenza",
     "diverses": "Varie",
+    "show_game_preview": "Mostra anteprima giochi",
+    "game_preview_info_note": "Vengono mostrati i giochi del club dei prossimi 10 giorni.",
     "sport": "Sport",
     "change_email_header": "Modifica indirizzo email",
     "change_email_message": "Modifica qui il tuo indirizzo email del profilo.",

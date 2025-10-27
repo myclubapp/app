@@ -26,6 +26,7 @@ import {
   lastValueFrom,
   map,
   of,
+  shareReplay,
   switchMap,
   take,
   tap,
@@ -101,8 +102,10 @@ export class TrainingDetailPage implements OnInit {
       this.training.id,
     );
 
-    this.clubList$ = this.fbService.getClubList();
-    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    this.clubList$ = this.fbService.getClubList().pipe(shareReplay(1));
+    this.teamAdminList$ = this.fbService
+      .getTeamAdminList()
+      .pipe(shareReplay(1));
   }
 
   ionViewDidEnter() {}
@@ -535,6 +538,8 @@ export class TrainingDetailPage implements OnInit {
       showBackdrop: true,
       componentProps: {
         data: member,
+        clubId: this.training.teamId,
+        teamId: this.training.teamId,
       },
     });
     modal.present();

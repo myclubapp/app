@@ -11,6 +11,7 @@ import {
   catchError,
   of,
   combineLatest,
+  shareReplay,
 } from "rxjs";
 import { User } from "@angular/fire/auth";
 import { ClubPage } from "../club/club.page";
@@ -41,6 +42,7 @@ export class ClubListPage implements OnInit {
 
   ngOnInit() {
     this.clubList$ = this.fbService.getClubList().pipe(
+      shareReplay(1),
       switchMap((clubs) =>
         combineLatest(
           clubs.map((club) =>

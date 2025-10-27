@@ -94,6 +94,7 @@ export class TrainingCreatePage implements OnInit {
       liga: "",
 
       status: true,
+      isMember: true,
       attendees: [],
       exercises: [],
       countAttendees: 0,

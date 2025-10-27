@@ -37,46 +37,14 @@
     @for (event of eventsList; track event.id) {
     <ion-item-sliding #item>
       <ion-item type="button" detail="true">
-        @if (!event.closedEvent && !event.cancelled) { @if (event.status ===
-        null) {
-        <ion-icon
-          slot="icon-only"
-          color="warning"
+        <app-status-icon
           slot="start"
-          name="help-circle"
-          (click)="toggle(true, event)"
-        ></ion-icon>
-        } @if (event.status === false) {
-        <ion-icon
-          slot="icon-only"
-          color="danger"
-          slot="start"
-          name="close-circle"
-          (click)="toggle( true, event)"
-        ></ion-icon>
-        } @if (event.status === true) {
-        <ion-icon
-          slot="icon-only"
-          color="success"
-          slot="start"
-          name="checkmark-circle"
-          (click)="toggle(false, event)"
-        ></ion-icon>
-        } } @if (event.closedEvent) {
-        <ion-icon
-          slot="icon-only"
-          color="primary"
-          slot="start"
-          name="information-circle"
-        ></ion-icon>
-        } @if (event.cancelled) {
-        <ion-icon
-          slot="icon-only"
-          color="danger"
-          slot="start"
-          name="alert-circle"
-        ></ion-icon>
-        }
+          [status]="event.status"
+          [cancelled]="event.cancelled"
+          [closedEvent]="event.closedEvent"
+          (iconClick)="toggle($event, event)"
+          [isMember]="event.isMember"
+        ></app-status-icon>
         <ion-label (click)="openEventDetailModal(event, true)">
           <h2>{{event.name}}</h2>
           <h3>
@@ -108,7 +76,8 @@
         >
         }
       </ion-item>
-      @if (!event.closedEvent) {
+
+      @if (!event.closedEvent && event.isMember) {
       <ion-item-options side="start">
         @if (event.status === false || event.status === null) {
         <ion-item-option
@@ -144,7 +113,39 @@
       </ion-item-options>
       } }
     </ion-item-sliding>
-    }
+    @for (child of event.children; track child.id) {
+    <ion-item-sliding #childItem>
+      <ion-item>
+        <app-status-icon
+          slot="start"
+          [status]="child?.status"
+          [cancelled]="event.cancelled"
+          [closedEvent]="event.closedEvent"
+          (iconClick)="toggleChildren(!child?.status, event, child.id)"
+        ></app-status-icon>
+        <ion-label>{{child.firstName}} {{child.lastName}}</ion-label>
+      </ion-item>
+      @if (!event.closedEvent) {
+      <ion-item-options side="start">
+        @if (child.status === false || child.status === null) {
+        <ion-item-option
+          color="success"
+          (click)="toggleChildrenItem(childItem, true, event, child.id)"
+        >
+          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+        </ion-item-option>
+        } @if (child.status === true || child.status === null) {
+        <ion-item-option
+          color="danger"
+          (click)="toggleChildrenItem(childItem, false, event, child.id)"
+        >
+          <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+        </ion-item-option>
+        }
+      </ion-item-options>
+      }
+    </ion-item-sliding>
+    } }
   </ion-list>
   } @if (eventsList.length==0) {
   <ion-list>
@@ -214,43 +215,14 @@
     @for (event of eventsListPast; track event.id) {
     <ion-item-sliding #item>
       <ion-item type="button" detail="true">
-        @if (!event.closedEvent && !event.cancelled) { @if (event.status ===
-        null) {
-        <ion-icon
-          slot="icon-only"
-          color="warning"
+        <app-status-icon
           slot="start"
-          name="help-circle"
-        ></ion-icon>
-        } @if (event.status === false) {
-        <ion-icon
-          slot="icon-only"
-          color="danger"
-          slot="start"
-          name="close-circle"
-        ></ion-icon>
-        } @if (event.status === true) {
-        <ion-icon
-          slot="icon-only"
-          color="success"
-          slot="start"
-          name="checkmark-circle"
-        ></ion-icon>
-        } } @if (event.closedEvent) {
-        <ion-icon
-          slot="icon-only"
-          color="primary"
-          slot="start"
-          name="information-circle"
-        ></ion-icon>
-        } @if (event.cancelled) {
-        <ion-icon
-          slot="icon-only"
-          color="danger"
-          slot="start"
-          name="alert-circle"
-        ></ion-icon>
-        }
+          [status]="event.status"
+          [cancelled]="event.cancelled"
+          [closedEvent]="event.closedEvent"
+          [clickable]="false"
+          [isMember]="event.isMember"
+        ></app-status-icon>
         <ion-label (click)="openEventDetailModal(event, false)">
           <h2>{{event.name}}</h2>
           <h3>
@@ -298,7 +270,18 @@
       </ion-item-options>
       } }
     </ion-item-sliding>
-    }
+    @for (child of event.children; track child.id) {
+    <ion-item>
+      <app-status-icon
+        slot="start"
+        [status]="child?.status"
+        [cancelled]="event.cancelled"
+        [closedEvent]="event.closedEvent"
+        [clickable]="false"
+      ></app-status-icon>
+      <ion-label>{{child.firstName}} {{child.lastName}}</ion-label>
+    </ion-item>
+    } }
   </ion-list>
   } @if (eventsListPast.length==0) {
   <ion-list>

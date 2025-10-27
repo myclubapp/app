@@ -493,6 +493,7 @@ export class ClubParentsListPage implements OnInit {
       componentProps: {
         data: parent,
         clubId: this.club.id,
+        teamId: null,
       },
     });
     modal.present();

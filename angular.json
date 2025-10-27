@@ -17,6 +17,7 @@
             "index": "src/index.html",
             "polyfills": ["src/polyfills.ts", "@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
+            "externalDependencies": ["myclub-game-preview"],
             "assets": [
               {
                 "glob": "**/*",

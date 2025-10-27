@@ -310,6 +310,8 @@ export class ClubAdminListPage implements OnInit {
       showBackdrop: true,
       componentProps: {
         data: member,
+        clubId: this.club.id,
+        teamId: null,
       },
     });
     modal.present();

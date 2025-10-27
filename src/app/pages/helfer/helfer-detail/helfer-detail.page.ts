@@ -549,6 +549,8 @@ export class HelferDetailPage implements OnInit {
       showBackdrop: true,
       componentProps: {
         data: member,
+        clubId: this.event.clubId,
+        teamId: null,
       },
     });
     modal.present();

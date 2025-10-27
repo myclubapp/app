@@ -1,15 +1,17 @@
-import { Component, OnInit, Optional } from "@angular/core";
+import { Component, OnInit, Optional, ChangeDetectorRef } from "@angular/core";
 import {
   IonRouterOutlet,
   ModalController,
   MenuController,
   AnimationController,
   AlertController,
+  ToastController,
 } from "@ionic/angular";
 import { Router } from "@angular/router";
 // import { ActivatedRoute } from '@angular/router';
 import { News } from "src/app/models/news";
 import { Share } from "@capacitor/share";
+import { Preferences } from "@capacitor/preferences";
 
 import {
   faTwitter,
@@ -30,6 +32,7 @@ import {
   combineLatest,
   map,
   of,
+  shareReplay,
   switchMap,
   take,
   tap,
@@ -44,6 +47,7 @@ import { CreateNewsPage } from "../create-news/create-news.page";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { Game } from "src/app/models/game";
 import { ChampionshipDetailPage } from "src/app/pages/championship/championship-detail/championship-detail.page";
+import { BehaviorSubject, Subject } from "rxjs";
 
 @Component({
   selector: "app-news",
@@ -74,10 +78,19 @@ export class NewsPage implements OnInit {
   notifications$: Observable<any[]>;
 
   newsList$: Observable<News[]>;
+  filteredNewsList$: Observable<(News & { source?: "verein" | "verband" })[]>;
 
   clubAdminList$: Observable<Club[]>;
+  clubList$: Observable<Club[]>;
 
   clubGames$: Observable<Game[]>;
+  showGamePreview: boolean = false;
+  hasChampionshipModule: boolean = false;
+
+  currentSegment: "all" | "verein" | "verband" = "all";
+  private segmentFilter$ = new BehaviorSubject<"all" | "verein" | "verband">(
+    "all",
+  );
 
   constructor(
     private readonly notificationService: NotificationService,
@@ -88,6 +101,7 @@ export class NewsPage implements OnInit {
     @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
     private readonly alertCtrl: AlertController,
+    private readonly toastCtrl: ToastController,
     private readonly menuCtrl: MenuController,
     public animationCtrl: AnimationController,
     private translate: TranslateService,
@@ -95,6 +109,7 @@ export class NewsPage implements OnInit {
     private readonly championshipService: ChampionshipService,
     // private route: ActivatedRoute,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {
     this.menuCtrl.enable(true, "menu");
 
@@ -140,11 +155,38 @@ export class NewsPage implements OnInit {
     }*/
   }
 
-  ngOnInit() {
-    this.newsList$ = this.getNews();
-    this.notifications$ = this.getNotifications();
-    this.clubAdminList$ = this.fbService.getClubAdminList();
-    this.clubGames$ = this.getClubGames();
+  async ngOnInit() {
+    // Lade gespeicherte Filter-Einstellung
+    await this.loadSavedFilter();
+
+    // Lade Game-Preview Einstellung aus dem User-Profil
+    await this.loadGamePreviewSetting();
+
+    this.newsList$ = this.getNews().pipe(shareReplay(1));
+    this.filteredNewsList$ = combineLatest([
+      this.newsList$ as Observable<
+        (News & { source?: "verein" | "verband" })[]
+      >,
+      this.segmentFilter$,
+    ]).pipe(
+      map(([list, filter]) => {
+        if (filter === "all") return list;
+        return list.filter((n) => n.source === filter);
+      }),
+    );
+    this.notifications$ = this.getNotifications().pipe(shareReplay(1));
+    this.clubAdminList$ = this.fbService
+      .getClubAdminList()
+      .pipe(shareReplay(1));
+    this.clubList$ = this.fbService.getClubList().pipe(shareReplay(1));
+    this.clubGames$ = this.getClubGames().pipe(shareReplay(1));
+
+    // Prüfe ob der Benutzer in einem Club mit aktiviertem Meisterschaftsmodul ist
+    this.clubList$.pipe(take(1)).subscribe((clubList) => {
+      const hasChampionship = this.enableChampionship(clubList);
+      console.log("Championship module check result:", hasChampionship);
+      this.hasChampionshipModule = hasChampionship;
+    });
 
     /*this.route.snapshot.data['news'].subscribe((news) => {
       console.log(news)
@@ -162,6 +204,58 @@ export class NewsPage implements OnInit {
   }
 
   ngOnDestroy(): void {}
+
+  /**
+   * Lädt die gespeicherte Filter-Einstellung aus dem lokalen Storage
+   */
+  async loadSavedFilter(): Promise<void> {
+    try {
+      const { value } = await Preferences.get({ key: "newsFilter" });
+      if (value) {
+        const savedFilter = value as "all" | "verein" | "verband";
+        this.currentSegment = savedFilter;
+        this.segmentFilter$.next(savedFilter);
+        this.filterValue = savedFilter === "all" ? "" : savedFilter;
+      }
+    } catch (error) {
+      console.error("Fehler beim Laden der Filter-Einstellung:", error);
+    }
+  }
+
+  /**
+   * Speichert die aktuelle Filter-Einstellung im lokalen Storage
+   */
+  async saveFilter(filter: "all" | "verein" | "verband"): Promise<void> {
+    try {
+      await Preferences.set({
+        key: "newsFilter",
+        value: filter,
+      });
+    } catch (error) {
+      console.error("Fehler beim Speichern der Filter-Einstellung:", error);
+    }
+  }
+
+  /**
+   * Lädt die Game-Preview Einstellung aus dem User-Profil
+   */
+  async loadGamePreviewSetting(): Promise<void> {
+    try {
+      const user = await this.authService.getUser$().pipe(take(1)).toPromise();
+      if (user) {
+        const userProfile = await this.userProfileService
+          .getUserProfileById(user.uid)
+          .pipe(take(1))
+          .toPromise();
+        if (userProfile) {
+          this.showGamePreview = userProfile.showGamePreview || false;
+        }
+      }
+    } catch (error) {
+      console.error("Fehler beim Laden der Game-Preview Einstellung:", error);
+      this.showGamePreview = false;
+    }
+  }
 
   getNews() {
     return this.authService.getUser$().pipe(
@@ -185,7 +279,6 @@ export class NewsPage implements OnInit {
                     children.map((child) => {
                       // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
                       return this.fbService.getUserClubRefs(childUser);
                     }),
                   )
@@ -234,6 +327,12 @@ export class NewsPage implements OnInit {
                 const newsByClub$ = this.newsService
                   .getClubNewsRef(club.id)
                   .pipe(
+                    map((arr) =>
+                      arr.map((n) => ({
+                        ...n,
+                        source: "verein" as const,
+                      })),
+                    ),
                     catchError((error) => {
                       console.error(
                         `Error fetching news for club ID ${club.id}:`,
@@ -246,6 +345,12 @@ export class NewsPage implements OnInit {
                 const newsByType$ = this.newsService
                   .getNewsRef(clubDetail.type)
                   .pipe(
+                    map((arr) =>
+                      arr.map((n) => ({
+                        ...n,
+                        source: "verband" as const,
+                      })),
+                    ),
                     catchError((error) => {
                       console.error(
                         `Error fetching news for type ${clubDetail.type}:`,
@@ -264,7 +369,7 @@ export class NewsPage implements OnInit {
         );
       }),
       map((newsArrays) => {
-        const allNews = [];
+        const allNews: (News & { source?: "verein" | "verband" })[] = [];
 
         // Aggregate and flatten the news items
         newsArrays.forEach(({ clubNews, typeNews }) => {
@@ -529,7 +634,7 @@ export class NewsPage implements OnInit {
         // Filter: only games from today and tomorrow
         const now = new Date();
         const tomorrow = new Date(now);
-        tomorrow.setDate(tomorrow.getDate() + 6);
+        tomorrow.setDate(tomorrow.getDate() + 10);
         tomorrow.setHours(23, 59, 59, 999);
 
         return sortedGames.filter((game) => {
@@ -542,6 +647,72 @@ export class NewsPage implements OnInit {
         return of([]);
       }),
     );
+  }
+
+  async openFilter() {
+    const alert = await this.alertCtrl.create({
+      header: "News filtern",
+      inputs: [
+        {
+          name: "all",
+          type: "radio",
+          label: "Alle",
+          value: "all",
+          checked: this.currentSegment === "all",
+        },
+        {
+          name: "verband",
+          type: "radio",
+          label: "Verband",
+          value: "verband",
+          checked: this.currentSegment === "verband",
+        },
+        {
+          name: "verein",
+          type: "radio",
+          label: "Verein",
+          value: "verein",
+          checked: this.currentSegment === "verein",
+        },
+      ],
+      buttons: [
+        {
+          text: this.translate.instant("common.cancel") || "Abbrechen",
+          role: "cancel",
+        },
+        {
+          text: this.translate.instant("common.apply") || "Übernehmen",
+          role: "confirm",
+        },
+      ],
+    });
+    await alert.present();
+
+    const { data, role } = await alert.onWillDismiss();
+    if (role === "confirm") {
+      const selected = (data as any)?.values ?? (data as any);
+      const value = (selected as "all" | "verein" | "verband") || "all";
+      this.currentSegment = value;
+      this.segmentFilter$.next(value);
+      this.filterValue = value === "all" ? "" : value;
+
+      // Speichere die Filter-Einstellung
+      await this.saveFilter(value);
+    }
+  }
+
+  async onSegmentChanged(event: CustomEvent<{ value?: string | number }>) {
+    const raw = event.detail?.value;
+    const value =
+      ((typeof raw === "number" ? String(raw) : raw) as
+        | "all"
+        | "verein"
+        | "verband") || "all";
+    this.currentSegment = value;
+    this.segmentFilter$.next(value);
+
+    // Speichere die Filter-Einstellung
+    await this.saveFilter(value);
   }
 
   async openGameDetails(game: Game) {
@@ -568,5 +739,14 @@ export class NewsPage implements OnInit {
 
     if (role === "confirm") {
     }
+  }
+
+  /**
+   * Prüft ob mindestens ein Club das Championship-Feature aktiviert hat
+   */
+  enableChampionship(clubList: Club[]): boolean {
+    return (
+      clubList && clubList.some((club) => club.hasFeatureChampionship == true)
+    );
   }
 }

@@ -31,6 +31,9 @@ export interface Profile {
   settingsPushHelfer: boolean;
   settingsEmail: boolean;
   settingsEmailReporting: boolean;
+  showGamePreview: boolean;
+  hideEmail: boolean;
+  hidePhoneNumber: boolean;
   language: string;
   favTeam: string;
   favClub: string;

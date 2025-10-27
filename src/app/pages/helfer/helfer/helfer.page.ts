@@ -17,6 +17,7 @@ import {
   map,
   mergeMap,
   of,
+  shareReplay,
   switchMap,
   take,
   tap,
@@ -75,8 +76,8 @@ export class HelferPage implements OnInit {
   }
 
   ngOnInit() {
-    this.helferList$ = this.getHelferEvent();
-    this.helferListPast$ = this.getHelferEventPast();
+    this.helferList$ = this.getHelferEvent().pipe(shareReplay(1));
+    this.helferListPast$ = this.getHelferEventPast().pipe(shareReplay(1));
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
@@ -154,7 +155,6 @@ export class HelferPage implements OnInit {
                     children.map((child) => {
                       // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
                       return this.fbService.getUserClubRefs(childUser);
                     }),
                   )
@@ -298,7 +298,6 @@ export class HelferPage implements OnInit {
                     children.map((child) => {
                       // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
                       return this.fbService.getUserClubRefs(childUser);
                     }),
                   )

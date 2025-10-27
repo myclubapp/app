@@ -167,6 +167,7 @@ export class ClubRequestListPage implements OnInit {
         data: member,
         isRequest: true,
         clubId: this.club.id,
+        teamId: null,
       },
     });
     modal.present();

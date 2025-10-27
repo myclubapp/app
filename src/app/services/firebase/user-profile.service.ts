@@ -26,7 +26,7 @@ import {
   getDownloadURL,
 } from "@angular/fire/storage";
 
-import { Observable } from "rxjs";
+import { Observable, takeUntil } from "rxjs";
 import { Profile } from "../../models/user";
 import { Photo } from "@capacitor/camera";
 
@@ -42,12 +42,23 @@ export class UserProfileService {
   private readonly CACHE_DURATION = 10 * 60 * 1000; // 10 Minuten
   private injector = inject(Injector);
 
+  /**
+   * Clears all cached data - should be called on logout
+   */
+  clearCache(): void {
+    this.profileCache.clear();
+  }
+
   constructor(
     private firestore: Firestore,
     private readonly storage: Storage,
     private readonly authService: AuthService,
   ) {
     // Aktiviere Offline Persistenz
+    // Listen to logout events to clear cache
+    this.authService.logout$.subscribe(() => {
+      this.clearCache();
+    });
   }
 
   addKidRequest(userId: string, email: string) {
@@ -126,7 +137,7 @@ export class UserProfileService {
   getUserProfile(user: User): Observable<Profile> {
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return runInInjectionContext(this.injector, () =>
-      docData(userProfileRef, { idField: "id" }).pipe(shareReplay(40)),
+      docData(userProfileRef, { idField: "id" }).pipe(shareReplay(1)),
     ) as Observable<Profile>;
   }
 
@@ -138,7 +149,7 @@ export class UserProfileService {
 
     return runInInjectionContext(this.injector, () =>
       docData(userProfileRef, { idField: "id" }).pipe(
-        shareReplay({ bufferSize: 50, refCount: true }),
+        shareReplay({ bufferSize: 1, refCount: true }),
       ),
     ) as Observable<Profile>;
   }
@@ -237,6 +248,24 @@ export class UserProfileService {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { settingsEmailReporting: state });
+  }
+
+  async changeShowGamePreview(state: boolean) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { showGamePreview: state });
+  }
+
+  async changeHideEmail(state: boolean) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { hideEmail: state });
+  }
+
+  async changeHidePhoneNumber(state: boolean) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { hidePhoneNumber: state });
   }
 
   changeProfileAttribute(value: any, fieldname) {

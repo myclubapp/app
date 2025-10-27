@@ -46,6 +46,7 @@ export interface Game {
   countAttendees: number;
   attendees: any;
   children: any;
+  isMember?: boolean;
 
   gameStatus: any;
 }

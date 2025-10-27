@@ -5,7 +5,7 @@ import {
   NavController,
   AnimationController,
 } from "@ionic/angular";
-import { Observable } from "rxjs";
+import { Observable, shareReplay } from "rxjs";
 import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { Analytics, logEvent } from "@angular/fire/analytics";
@@ -32,7 +32,7 @@ export class TabsPage implements OnInit {
   }
 
   ngOnInit() {
-    this.clubList$ = this.fbService.getClubList();
+    this.clubList$ = this.fbService.getClubList().pipe(shareReplay(1));
 
     this.menuCtrl.enable(true, "menu");
   }

@@ -37,7 +37,10 @@
       <ion-icon slot="start" name="people-circle-outline"></ion-icon>
       <ion-label>{{"common.parents" | translate}}</ion-label>
     </ion-item>
-    }
+    } @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ |
+    async; as clubAdminList) { @if (isTeamAdmin(teamAdminList, teamId) ||
+    isClubAdmin(clubAdminList, clubId)) {
+    <!-- Admin sieht immer die E-Mail -->
     <ion-item>
       <ion-icon slot="start" name="mail"></ion-icon>
       <ion-label>{{userProfile.email}}</ion-label>
@@ -49,7 +52,24 @@
         (click)="copy(userProfile.email)"
       ></ion-icon>
     </ion-item>
-    @if (!isRequest && userProfile.phonenumber) {
+    } @else { @if (!userProfile.hideEmail) {
+    <!-- Normale Mitglieder sehen E-Mail nur wenn nicht versteckt -->
+    <ion-item>
+      <ion-icon slot="start" name="mail"></ion-icon>
+      <ion-label>{{userProfile.email}}</ion-label>
+      <ion-icon
+        size="small"
+        color="primary"
+        name="copy-outline"
+        slot="end"
+        (click)="copy(userProfile.email)"
+      ></ion-icon>
+    </ion-item>
+    } } } } @if (!isRequest && userProfile.phonenumber) { @if (teamAdminList$ |
+    async; as teamAdminList) { @if (clubAdminList$ | async; as clubAdminList) {
+    @if (isTeamAdmin(teamAdminList, teamId) || isClubAdmin(clubAdminList,
+    clubId)) {
+    <!-- Admin sieht immer die Telefonnummer -->
     <ion-item>
       <ion-icon slot="start" name="call"></ion-icon>
       <ion-label>{{userProfile.phonenumber}}</ion-label>
@@ -61,14 +81,30 @@
         (click)="copy(userProfile.phonenumber)"
       ></ion-icon>
     </ion-item>
-    } @if (isRequest && requestTeam$ | async; as requestTeam) {
+    } @else { @if (!userProfile.hidePhoneNumber) {
+    <!-- Normale Mitglieder sehen Telefonnummer nur wenn nicht versteckt -->
+    <ion-item>
+      <ion-icon slot="start" name="call"></ion-icon>
+      <ion-label>{{userProfile.phonenumber}}</ion-label>
+      <ion-icon
+        size="small"
+        color="primary"
+        name="copy-outline"
+        slot="end"
+        (click)="copy(userProfile.phonenumber)"
+      ></ion-icon>
+    </ion-item>
+    } } } } } @if (isRequest && requestTeam$ | async; as requestTeam) {
     <ion-item>
       <ion-icon slot="start" name="information-circle-outline"></ion-icon>
       <ion-label
         >{{'common.requested_for' | translate}} {{requestTeam.name}}</ion-label
       >
     </ion-item>
-    } @if (isAdmin$ | async) { @if (!isRequest && userProfile.dateOfBirth) {
+    } @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ |
+    async; as clubAdminList) { @if (isTeamAdmin(teamAdminList, teamId) ||
+    isClubAdmin(clubAdminList, clubId)) { @if (!isRequest &&
+    userProfile.dateOfBirth) {
     <ion-item>
       <ion-icon slot="start" name="calendar"></ion-icon>
       <ion-label>
@@ -82,7 +118,7 @@
         (click)="copy(userProfile.dateOfBirth)"
       ></ion-icon>
     </ion-item>
-    } }
+    } } } }
   </ion-list>
   @if (children$ | async; as childrenList) {
   <ion-list [inset]="true">

@@ -424,6 +424,8 @@ export class TeamAdminListPage implements OnInit {
       showBackdrop: true,
       componentProps: {
         data: member,
+        clubId: this.team.clubId,
+        teamId: this.team.id,
       },
     });
     modal.present();

@@ -167,6 +167,22 @@
       </ion-item>
     </ion-item-group>
   </ion-list>
-  }
+  } @if (clubAdminList$ | async; as clubAdminList) { @if
+  (isClubAdmin(clubAdminList, club.id)) {
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+
+    <ion-fab-list side="top">
+      <ion-fab-button (click)="addParentToClub()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button>
+        <ion-icon name="send-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+  } }
 </ion-content>
 }

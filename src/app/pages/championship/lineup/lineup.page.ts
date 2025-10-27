@@ -146,6 +146,8 @@ export class LineupPage implements OnInit {
       showBackdrop: true,
       componentProps: {
         data: member,
+        clubId: this.game.clubId,
+        teamId: this.game.teamId,
       },
     });
     modal.present();

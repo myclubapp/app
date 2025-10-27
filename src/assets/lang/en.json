@@ -6,6 +6,7 @@
     "description": "Description",
     "cancel": "Cancel",
     "ok": "OK",
+    "apply": "Apply",
     "confirmation": "Confirmation",
     "confirm": "Confirm",
     "success__saved": "Successfully saved",
@@ -85,6 +86,7 @@
     "admins": "Administrators",
     "addAdministrator": "Add administrator",
     "addMember": "Add member",
+    "addFromParents": "Add from parents",
     "add": "Add",
     "club": "Club",
     "location": "Name/Hall/Designation",
@@ -164,6 +166,10 @@
     "text": "Text",
     "date": "Date",
     "url": "URL"
+  },
+  "auth": {
+    "session_expired": "Session expired",
+    "session_expired_message": "Your session has expired. Please log in again."
   },
   "login": {
     "login_title": "Sign in with your account",
@@ -339,7 +345,9 @@
     "filter__by_club_team": "Filter by club or team.",
     "create_news": "Create news",
     "news_entry": "News entry",
-    "upcomingGames": "Upcoming Games"
+    "upcomingGames": "Upcoming Games",
+    "upcomingGamesEnabled": "Upcoming games activated",
+    "upcomingGamesDisabled": "Upcoming games deactivated"
   },
   "not-found": {
     "not_found": "Not found"
@@ -423,10 +431,15 @@
     "generally": "General",
     "birthdate": "Date of birth",
     "phonenumber": "Phone number",
+    "hide_phone_number": "Hide phone number",
+    "hide_email": "Hide email address",
+    "hide_info_note": "This information remains visible to team and club admins for organizational reasons and is only hidden from other team members.",
     "address": "Address",
     "contact__information": "Contact information",
     "license__number": "License number",
     "diverses": "Miscellaneous",
+    "show_game_preview": "Show game preview",
+    "game_preview_info_note": "The club's games for the next 10 days are displayed.",
     "sport": "Sport",
     "change_email_header": "Change email address",
     "change_email_message": "Change your profile email address here.",

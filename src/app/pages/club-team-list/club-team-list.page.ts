@@ -5,7 +5,7 @@ import {
   AlertController,
   IonRouterOutlet,
 } from "@ionic/angular";
-import { Observable, lastValueFrom } from "rxjs";
+import { Observable, lastValueFrom, shareReplay } from "rxjs";
 import { Team } from "src/app/models/team";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { TeamPage } from "../team/team-detail/team.page";
@@ -46,11 +46,15 @@ export class ClubTeamListPage implements OnInit {
 
   ngOnInit() {
     // NavParams migration: now using @Input property directly
-    this.teamList$ = this.fbService.getClubTeamList(this.clubId);
+    this.teamList$ = this.fbService
+      .getClubTeamList(this.clubId)
+      .pipe(shareReplay(1));
     this.club$ = this.fbService.getClubRef(this.clubId);
 
     this.setupAlerts();
-    this.clubAdminList$ = this.fbService.getClubAdminList();
+    this.clubAdminList$ = this.fbService
+      .getClubAdminList()
+      .pipe(shareReplay(1));
     this.isAdmin$ = this.clubAdminList$.pipe(
       map((clubAdminList) =>
         this.fbService.isClubAdmin(clubAdminList, this.clubId),

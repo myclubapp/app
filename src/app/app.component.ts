@@ -1,13 +1,11 @@
-import {
-  AfterViewInit,
-  Component,
-  LOCALE_ID,
-  NgZone,
-  OnInit,
-} from "@angular/core";
+import { AfterViewInit, Component, NgZone, OnInit } from "@angular/core";
 import { SwUpdate, VersionEvent } from "@angular/service-worker";
 import { registerLocaleData } from "@angular/common";
 import localeDe from "@angular/common/locales/de";
+import { CommonModule } from "@angular/common";
+import { IonicModule } from "@ionic/angular";
+import { RouterModule } from "@angular/router";
+import { TranslateModule } from "@ngx-translate/core";
 
 import {
   AlertController,
@@ -30,6 +28,7 @@ import { Club } from "./models/club";
 import { UiService } from "./services/ui.service";
 import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
 import { StatusBar, Style } from "@capacitor/status-bar";
+import { Browser } from "@capacitor/browser";
 
 // Register German locale
 registerLocaleData(localeDe);
@@ -102,8 +101,20 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.user = user;
         // console.log(">>> user.metadata", user.metadata);
         // console.log(">>> lastSignInTime", user.metadata?.lastSignInTime);
-        await this.user.getIdToken();
-        // console.log(">>> token", token);
+
+        // Validate and refresh token on app start
+        const tokenValid = await this.authService.validateAndRefreshToken();
+        if (!tokenValid) {
+          console.error(
+            "Token validation failed - logging out user due to expired/invalid token",
+          );
+          await this.presentAlertSessionExpired();
+          await this.authService.logout();
+          return;
+        }
+
+        // Give Firebase client time to apply the new token
+        await new Promise((resolve) => setTimeout(resolve, 200));
 
         if (!user.emailVerified) {
           const navOnboardingEmail =
@@ -257,8 +268,23 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.setStatusBar();
     this.setDefaultLanguage();
 
-    App.addListener("resume", () => {
+    App.addListener("resume", async () => {
       this.applySystemTheme();
+
+      // Validate token when app resumes from background
+      if (this.authService.auth.currentUser) {
+        const tokenValid = await this.authService.validateAndRefreshToken();
+        if (!tokenValid) {
+          console.error(
+            "Token validation failed on app resume - logging out user",
+          );
+          await this.presentAlertSessionExpired();
+          await this.authService.logout();
+        } else {
+          // Give Firebase client time to apply the new token
+          await new Promise((resolve) => setTimeout(resolve, 200));
+        }
+      }
     });
 
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
@@ -704,9 +730,35 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
   }
 
+  async presentAlertSessionExpired() {
+    const translations = await Promise.all([
+      lastValueFrom(this.translate.get("auth.session_expired")),
+      lastValueFrom(this.translate.get("auth.session_expired_message")),
+      lastValueFrom(this.translate.get("common.ok")),
+    ]);
+
+    const alert = await this.alertController.create({
+      header: translations[0],
+      message: translations[1],
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: translations[2],
+          role: "confirm",
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
   async logout() {
     console.log("logout");
     await this.authService.logout();
+  }
+
+  async openFaq() {
+    await Browser.open({ url: "https://my-club.app/faq" });
   }
   /*async addListeners() {
     await PushNotifications.addListener('registration', async token => {
