@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 
 export interface Veranstaltung {
   id: string;
@@ -32,6 +32,12 @@ export interface Veranstaltung {
   attendees: any;
   countNeeded: number;
   countAttendees: number;
+  closedEvent: boolean;
+  cancelled?: boolean;
+  cancelledReason?: string;
+  lastReminderSent?: Timestamp;
+  isMember?: boolean;
+  children?: any[];
 }
 export interface HelferEvent extends Veranstaltung {
   schichten?: [Schicht];

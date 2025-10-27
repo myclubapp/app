@@ -41,3 +41,6 @@ resources/android/**/*
 
 android/KeyStore
 android/private_key.pepk
+android_backup/
+android_backup/KeyStore
+android_backup/private_key.pepk

@@ -1,7 +1,11 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { ModalController, NavParams, ToastController } from "@ionic/angular";
+import {
+  AlertController,
+  ModalController,
+  ToastController,
+} from "@ionic/angular";
 import { User } from "firebase/auth";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import {
   Observable,
   Subscription,
@@ -16,20 +20,26 @@ import {
   switchMap,
   take,
   tap,
+  lastValueFrom,
 } from "rxjs";
 import { Team } from "src/app/models/team";
 import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
+import { UiService } from "src/app/services/ui.service";
+import { TranslateService } from "@ngx-translate/core";
 
 @Component({
   selector: "app-training-create",
   templateUrl: "./training-create.page.html",
   styleUrls: ["./training-create.page.scss"],
+  standalone: false,
 })
 export class TrainingCreatePage implements OnInit {
-  @Input("data") trainingCopy: Training;
+  @Input() data!: Training;
+
+  trainingCopy: Training;
   training: Training;
   user$: Observable<User>;
 
@@ -38,13 +48,27 @@ export class TrainingCreatePage implements OnInit {
   constructor(
     private readonly modalCtrl: ModalController,
     private trainingService: TrainingService,
+    private readonly alertController: AlertController,
     private readonly authService: AuthService,
-
     private readonly toastController: ToastController,
-
     private fbService: FirebaseService,
-    public navParams: NavParams
+
+    private uiService: UiService,
+    private translate: TranslateService,
   ) {
+    const now = new Date();
+    const utcNow = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        now.getUTCHours(),
+        now.getUTCMinutes(),
+        0,
+        0,
+      ),
+    );
+
     this.training = {
       id: "",
       name: "",
@@ -57,11 +81,10 @@ export class TrainingCreatePage implements OnInit {
 
       date: Timestamp.fromDate(new Date()),
 
-      timeFrom: new Date().toISOString(),
-      timeTo: new Date().toISOString(),
-
-      startDate: new Date().toISOString(),
-      endDate: new Date().toISOString(),
+      timeFrom: utcNow.toISOString(),
+      timeTo: utcNow.toISOString(),
+      startDate: utcNow.toISOString(),
+      endDate: utcNow.toISOString(),
 
       repeatFrequency: "W",
       repeatAmount: "1",
@@ -71,30 +94,38 @@ export class TrainingCreatePage implements OnInit {
       liga: "",
 
       status: true,
+      isMember: true,
       attendees: [],
       exercises: [],
       countAttendees: 0,
+      children: [],
+      cancelled: false,
+      cancelledReason: "",
     };
   }
 
   ngOnInit() {
-    this.trainingCopy = this.navParams.get("data");
-    if (this.trainingCopy.id) {
+    // NavParams migration: now using @Input property directly
+    this.trainingCopy = this.data;
+
+    console.log(this.trainingCopy);
+    if (this.trainingCopy && this.trainingCopy.id) {
       this.training = this.trainingCopy;
 
-      const startDate: Timestamp = this.trainingCopy.startDate as any;
-      const endDate: Timestamp = this.trainingCopy.endDate as any;
-      this.training.startDate = startDate.toDate().toISOString();
-      this.training.endDate = endDate.toDate().toISOString();
-
-      this.training.timeFrom = new Date(
-        new Date(this.trainingCopy.timeFrom).getTime() -
-        new Date(this.trainingCopy.timeFrom).getTimezoneOffset() * 60 * 1000
-      ).toISOString();
-      this.training.timeTo = new Date(
-        new Date(this.trainingCopy.timeTo).getTime() -
-        new Date(this.trainingCopy.timeTo).getTimezoneOffset() * 60 * 1000
-      ).toISOString();
+      const now = new Date();
+      /*const utcNow = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        now.getUTCHours(),
+        now.getUTCMinutes(),
+        0,
+        0
+      ));*/
+      this.training.timeFrom = now.toISOString();
+      this.training.timeTo = now.toISOString();
+      this.training.startDate = now.toISOString();
+      this.training.endDate = now.toISOString();
     }
 
     this.teamAdminList$ = this.fbService.getTeamAdminList();
@@ -104,81 +135,185 @@ export class TrainingCreatePage implements OnInit {
     });
   }
 
-  ngOnDestroy(): void { }
+  ngOnDestroy(): void {}
 
   changeTimeFrom(ev) {
-    console.log(ev.detail.value);
+    /*console.log("changeTimeFrom local time: " + ev.detail.value);
+
+    const newDate = new Date(ev.detail.value);
+
+    // Lokale Zeit beibehalten
+    this.training.timeFrom = new Date(Date.UTC(
+      newDate.getFullYear(),
+      newDate.getMonth(),
+      newDate.getDate(),
+      newDate.getHours(),    // Hier verwenden wir getHours statt getUTCHours
+      newDate.getMinutes(),
+      0,
+      0
+    )).toISOString();
+
     if (this.training.timeFrom > this.training.timeTo) {
       this.training.timeTo = this.training.timeFrom;
-    }
+    }*/
   }
+  // In your component:
+  /*getLocalTimeFrom(): string {
+    if (!this.training.timeFrom) return '';
+    
+    // Convert UTC to local time for display
+    const date = new Date(this.training.timeFrom);
+    return new Date(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        date.getUTCHours(),
+        date.getUTCMinutes()
+    ).toISOString();
+  }*/
 
   changeStartDate(ev) {
-    console.log(ev.detail.value);
+    /*console.log("changeStartDate " + ev.detail.value);
     if (this.training.startDate > this.training.endDate) {
       this.training.endDate = this.training.startDate;
-    }
+    }*/
   }
 
   async close() {
     return this.modalCtrl.dismiss(null, "close");
   }
 
-  async createTraining() {
-    //Set Hours/Minutes of endDate to TimeFrom of training
-    console.log(`Start Date before calculation: ${this.training.startDate}`);
-    const calculatedStartDate = new Date(this.training.startDate);
-    calculatedStartDate.setHours(new Date(this.training.timeFrom).getHours());
-    calculatedStartDate.setMinutes(
-      new Date(this.training.timeFrom).getMinutes()
-    );
-    calculatedStartDate.setSeconds(0);
-    calculatedStartDate.setMilliseconds(0);
-    this.training.startDate = calculatedStartDate.toISOString();
-    console.log(`Start Date after calculation: ${this.training.startDate}`);
-
-    console.log(`End Date before calculation: ${this.training.endDate}`);
-    const calcualtedEndDate = new Date(this.training.endDate);
-    calcualtedEndDate.setHours(new Date(this.training.timeFrom).getHours());
-    calcualtedEndDate.setMinutes(new Date(this.training.timeFrom).getMinutes());
-    calcualtedEndDate.setSeconds(0);
-    calcualtedEndDate.setMilliseconds(0);
-    this.training.endDate = calcualtedEndDate.toISOString();
-    console.log(`End Date after calculation: ${this.training.endDate}`);
-
-    const calculatedTimeFrom = new Date(this.training.timeFrom);
-    calculatedTimeFrom.setDate(new Date(this.training.startDate).getDate());
-    calculatedTimeFrom.setMonth(new Date(this.training.startDate).getMonth());
-    calculatedTimeFrom.setFullYear(
-      new Date(this.training.startDate).getFullYear()
-    );
-    calculatedTimeFrom.setSeconds(0);
-    calculatedTimeFrom.setMilliseconds(0);
-    this.training.timeFrom = calculatedTimeFrom.toISOString();
-
-    const calculatedTimeTo = new Date(this.training.timeTo);
-    calculatedTimeTo.setDate(new Date(this.training.startDate).getDate());
-    calculatedTimeTo.setMonth(new Date(this.training.startDate).getMonth());
-    calculatedTimeTo.setFullYear(
-      new Date(this.training.startDate).getFullYear()
-    );
-    calculatedTimeTo.setSeconds(0);
-    calculatedTimeTo.setMilliseconds(0);
-    this.training.timeTo = calculatedTimeTo.toISOString();
-
-    delete this.training.attendees;
-
-    const training = await this.trainingService.setCreateTraining(this.training).catch(e => {
-      console.log(e.message);
-      this.toastActionError(e);
-    })
-    if (training) {
-      console.log(training.id);
-      return this.modalCtrl.dismiss({}, "confirm");
+  combineDateAndTime(dateValue, timeValue) {
+    // Handle case where inputs might be strings
+    let dateObj = dateValue;
+    if (!(dateValue instanceof Date)) {
+      dateObj = new Date(dateValue);
     }
 
-    return null;
+    // Get the date portion (year, month, day)
+    const year = dateObj.getFullYear();
+    const month = dateObj.getMonth();
+    const day = dateObj.getDate();
+
+    // Parse the time string (handling ISO format like "2025-03-03T21:00:00")
+    let hours = 0,
+      minutes = 0,
+      seconds = 0;
+
+    if (typeof timeValue === "string") {
+      // Check if it's ISO format with "T" separator
+      if (timeValue.includes("T")) {
+        // Parse ISO format (2025-03-03T21:00:00)
+        const timeObj = new Date(timeValue);
+        hours = timeObj.getHours();
+        minutes = timeObj.getMinutes();
+        seconds = timeObj.getSeconds();
+      } else {
+        // Fallback to original parsing for "HH:MM:SS" format
+        const timeParts = timeValue.split(":");
+        hours = parseInt(timeParts[0], 10) || 0;
+        minutes = parseInt(timeParts[1], 10) || 0;
+        seconds = parseInt(timeParts[2], 10) || 0;
+      }
+    } else if (timeValue instanceof Date) {
+      hours = timeValue.getHours();
+      minutes = timeValue.getMinutes();
+      seconds = timeValue.getSeconds();
+    }
+
+    // Create a new date with combined date and time
+    const combinedDateTime = new Date(
+      year,
+      month,
+      day,
+      hours,
+      minutes,
+      seconds,
+    );
+    return combinedDateTime;
   }
+
+  async createTraining() {
+    console.log(`Start Date before calculation: ${this.training.startDate}`);
+    console.log(`Start Time before calculation: ${this.training.timeFrom}`);
+
+    console.log(`End Date before calculation: ${this.training.endDate}`);
+    console.log(`End Time before calculation: ${this.training.timeTo}`);
+
+    // Überprüfe grundlegende Felder
+    if (
+      !this.training.name ||
+      !this.training.location ||
+      !this.training.streetAndNumber ||
+      !this.training.postalCode ||
+      !this.training.city ||
+      !this.training.teamId ||
+      !this.training.timeFrom ||
+      !this.training.timeTo
+    ) {
+      this.toastActionError({ message: "Bitte füllen Sie alle Felder aus." });
+      return null;
+    }
+
+    const result = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(this.translate.get("common.confirmation")),
+      message: await lastValueFrom(
+        this.translate.get("training.create_training_confirm"),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    if (result) {
+      // Training erstellen
+      console.log("Training wird erstellt");
+
+      // Combine start date with time from
+      const combinedStartDateTime = this.combineDateAndTime(
+        this.training.startDate,
+        this.training.timeFrom, // ISO format: "2025-03-03T21:00:00"
+      );
+
+      // Combine end date with time to
+      const combinedEndDateTime = this.combineDateAndTime(
+        this.training.endDate,
+        this.training.timeTo, // ISO format: "2025-03-03T21:00:00"
+      );
+
+      // Or if you want to update the original fields:
+      this.training.startDate = combinedStartDateTime.toISOString();
+      this.training.timeFrom = combinedStartDateTime.toISOString();
+
+      this.training.endDate = combinedEndDateTime.toISOString();
+      this.training.timeTo = combinedEndDateTime.toISOString();
+
+      console.log(`Start Date after calculation: ${this.training.startDate}`);
+      console.log(`Start Time after calculation: ${this.training.timeFrom}`);
+
+      console.log(`End Date after calculation: ${this.training.endDate}`);
+      console.log(`End Time after calculation: ${this.training.timeTo}`);
+
+      delete this.training.attendees;
+
+      const training = await this.trainingService
+        .setCreateTraining(this.training)
+        .catch((e) => {
+          console.log(e.message);
+          this.toastActionError(e);
+        });
+
+      if (training) {
+        console.log(training.id);
+        return this.modalCtrl.dismiss({}, "confirm");
+      }
+
+      return null;
+    } else {
+      console.log("Training-Erstellung abgebrochen");
+      return null;
+    }
+  }
+
   async toastActionError(error) {
     const toast = await this.toastController.create({
       message: error.message,
@@ -189,5 +324,4 @@ export class TrainingCreatePage implements OnInit {
 
     await toast.present();
   }
-
 }

@@ -1,0 +1,118 @@
+@if (club$ | async; as club) {
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    @if (clubAdminList$ | async; as clubAdminList) { @if
+    (isClubAdmin(clubAdminList, club.id)) {
+    <ion-buttons slot="secondary">
+      @if (!allowEdit) {
+      <ion-button (click)="edit()">{{"common.edit" | translate}}</ion-button>
+      } @if (allowEdit) {
+      <ion-button (click)="edit()">{{"common.done" | translate}}</ion-button>
+      }
+    </ion-buttons>
+    } }
+    <ion-title>{{"common.parents" | translate}}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{"common.parents" | translate}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-searchbar
+    [debounce]="1000"
+    (ionChange)="handleSearch($event)"
+    animated="true"
+    search-icon="search-circle"
+    [value]="searchTerm.value"
+    placeholder='{{"common.searchfield" | translate}}'
+  ></ion-searchbar>
+  <div class="ion-padding">
+    <!--<ng-container *ngIf="clubAdminList$ | async as clubAdminList">
+            <ion-button *ngIf="isClubAdmin(clubAdminList, club.id)" shape="round" size="small" (click)="addRole()">
+              {{"common.add" | translate}}
+              <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+            </ion-button>
+          </ng-container>-->
+    @for (role of club['roles']; track role) {
+    <ion-button (click)="setFilter(role)" shape="round" size="small">
+      {{role}}
+    </ion-button>
+    }
+  </div>
+  @if (filteredClubParents$ | async; as clubParentsList) {
+  <ion-list [inset]="true">
+    <ion-item-group>
+      @for (groupBy of groupArray; track $index) {
+      <ion-item-divider color="light">
+        <ion-label> {{groupBy}} </ion-label>
+      </ion-item-divider>
+      @for (parent of clubParentsList; track parent.id) { @if (parent.groupBy ==
+      groupBy) {
+      <ion-item-sliding #item>
+        <app-user-list-item
+          [profile]="parent"
+          [allowEdit]="allowEdit"
+          [showDateOfBirth]="(clubAdminList$ | async) && isClubAdmin((clubAdminList$ | async), club.id)"
+          [showRoles]="true"
+          [childrenCount]="parent.childrenCount"
+          (open)="openParent(parent)"
+          (remove)="deleteClubParent(parent)"
+        ></app-user-list-item>
+      </ion-item-sliding>
+      } } }
+    </ion-item-group>
+  </ion-list>
+  } @if (clubAdminList$ | async; as clubAdminList) { @if
+  (isClubAdmin(clubAdminList, club.id)) {
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addClubMemberToParent()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  } }
+</ion-content>
+}
+
+<ng-template #loading>
+  <ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-title>{{"common.parents" | translate}}</ion-title>
+      <ion-buttons slot="primary">
+        <ion-button (click)="close()"
+          >{{"common.close" | translate}}</ion-button
+        >
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content [fullscreen]="true">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">{{"common.parents" | translate}}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-searchbar
+      [debounce]="1000"
+      (ionChange)="handleSearch($event)"
+      animated="true"
+      search-icon="search-circle"
+      placeholder='{{"common.searchfield" | translate}}'
+    ></ion-searchbar>
+
+    <ion-list [inset]="true">
+      <ion-item-group>
+        @for (groupBy of groupArray; track $index) {
+        <ion-item-divider color="light">
+          <ion-label> {{groupBy}} </ion-label>
+        </ion-item-divider>
+        }
+      </ion-item-group>
+    </ion-list>
+  </ion-content>
+</ng-template>

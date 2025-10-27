@@ -1,25 +1,37 @@
-import { Component, NgZone, OnInit } from "@angular/core";
-import { SwPush, SwUpdate, VersionEvent } from "@angular/service-worker";
+import { AfterViewInit, Component, NgZone, OnInit } from "@angular/core";
+import { SwUpdate, VersionEvent } from "@angular/service-worker";
+import { registerLocaleData } from "@angular/common";
+import localeDe from "@angular/common/locales/de";
+import { CommonModule } from "@angular/common";
+import { IonicModule } from "@ionic/angular";
+import { RouterModule } from "@angular/router";
+import { TranslateModule } from "@ngx-translate/core";
+
 import {
   AlertController,
   MenuController,
   ModalController,
-  ToastController,
 } from "@ionic/angular";
-import { App } from '@capacitor/app';
-import { ConfirmResult, Dialog } from "@capacitor/dialog";
+import { App } from "@capacitor/app";
+import { Dialog } from "@capacitor/dialog";
 import { AuthService } from "./services/auth.service";
 import packagejson from "./../../package.json";
 import { FirebaseService } from "./services/firebase.service";
 import { Router } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { Observable, Subscription, of, switchMap, take, tap } from "rxjs";
-import { User, onAuthStateChanged } from "@angular/fire/auth";
+import { Observable, of, switchMap, take, tap } from "rxjs";
+import { User } from "@angular/fire/auth";
 import { UserProfileService } from "./services/firebase/user-profile.service";
 import { Device, DeviceId, DeviceInfo, LanguageTag } from "@capacitor/device";
-import { Network, ConnectionStatus } from "@capacitor/network";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "./models/club";
+import { UiService } from "./services/ui.service";
+import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
+import { StatusBar, Style } from "@capacitor/status-bar";
+import { Browser } from "@capacitor/browser";
+
+// Register German locale
+registerLocaleData(localeDe);
 
 import {
   ActionPerformed,
@@ -28,21 +40,28 @@ import {
   Token,
 } from "@capacitor/push-notifications";
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
+import { lastValueFrom } from "rxjs";
+
+// Add this to your app.component.ts to register Swiper globally
+// src/app/app.component.ts
+import { register } from "swiper/element/bundle";
+import { Capacitor } from "@capacitor/core";
+
+// Register Swiper custom elements
+register();
 
 @Component({
   selector: "app-root",
   templateUrl: "app.component.html",
   styleUrls: ["app.component.scss"],
+  standalone: false,
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   public email: string;
   public appVersion: string = packagejson.version;
+  public buildNumber: string = packagejson.buildNumber;
 
   clubList$: Observable<Club[]>;
-
-
-  private clubListSub: Subscription;
-
 
   user: User;
   deviceId: DeviceId;
@@ -54,8 +73,6 @@ export class AppComponent implements OnInit {
   constructor(
     private readonly swUpdate: SwUpdate,
     private readonly modalCtrl: ModalController,
-    // private readonly routerOutlet: IonRouterOutlet,
-    // private readonly swPush: SwPush,
     private readonly alertController: AlertController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -63,83 +80,116 @@ export class AppComponent implements OnInit {
     private readonly router: Router,
     public readonly menuCtrl: MenuController,
     private translate: TranslateService,
-    public toastController: ToastController,
+    private uiService: UiService,
     private ngZone: NgZone,
-
   ) {
     this.initializeApp();
+    //for menu layout enable/disable, club liste wird oben schon einmal gelesen, aber als Promise.
+    this.clubList$ = this.fbService.getClubList().pipe(take(1));
+  }
 
-    onAuthStateChanged(this.authService.auth, async (user) => {
+  ngOnInit(): void {
+    App.removeAllListeners().then(() => {
+      this.registerBackButton();
+    });
+
+    // Subscribe to auth state changes
+    this.authService.user$.subscribe(async (user) => {
       if (user) {
         // 0. LOGIN
         this.email = user.email;
         this.user = user;
+        // console.log(">>> user.metadata", user.metadata);
+        // console.log(">>> lastSignInTime", user.metadata?.lastSignInTime);
+
+        // Validate and refresh token on app start
+        const tokenValid = await this.authService.validateAndRefreshToken();
+        if (!tokenValid) {
+          console.error(
+            "Token validation failed - logging out user due to expired/invalid token",
+          );
+          await this.presentAlertSessionExpired();
+          await this.authService.logout();
+          return;
+        }
+
+        // Give Firebase client time to apply the new token
+        await new Promise((resolve) => setTimeout(resolve, 200));
 
         if (!user.emailVerified) {
-          const navOnboardingEmail = await this.router.navigateByUrl('/onboarding-email');
+          const navOnboardingEmail =
+            await this.router.navigateByUrl("/onboarding-email");
           if (navOnboardingEmail) {
-            console.log('Navigation success to onboarding Email Page');
+            console.log("Navigation success to onboarding Email Page");
           } else {
-            console.error('Navigation ERROR to onboarding Email Page');
+            console.error("Navigation ERROR to onboarding Email Page");
           }
         } else {
-          console.log("E-Mail IS verified. Go ahead..")
-          console.log(user.email, user.displayName, user.emailVerified)
-          this.clubListSub = this.clubList$
-            .pipe(
-              take(1),
-              tap(async (clubList) => {
-                if (clubList.length == 0) {
-                  console.log("NO! Club Data received. > Call Club Onboarding");
-                  try {
-                    const navOnboardingClub = await this.router.navigateByUrl('/onboarding-club');
-                    if (navOnboardingClub) {
-                      console.log('Navigation success to onboarding Club Page');
-                    } else {
-                      console.error('Navigation ERROR to onboarding Club Page');
-                    }
-                  } catch (error) {
-                    console.error('Navigation Exception:', error);
-                    window.location.reload();
-                  }
+          // console.log("E-Mail IS verified. Go ahead..");
+          // console.log(user.email, user.displayName, user.emailVerified);
+
+          try {
+            const clubList = await lastValueFrom(
+              this.fbService.getClubList().pipe(take(1)),
+            );
+
+            if (clubList.length === 0) {
+              // console.log("NO! Club Data received. > Call Club Onboarding");
+              try {
+                const navOnboardingClub =
+                  await this.router.navigateByUrl("/onboarding-club");
+                if (navOnboardingClub) {
+                  // console.log("Navigation success to onboarding Club Page");
                 } else {
-                  // CHECK SUBSCRIPTION FOR CLUB
-                  // console.log(clubList.find((club:any)=>club.subscriptionActive == false ))
-
-                  if (clubList.find((club: any) => club.subscriptionActive == false)) {
-                    console.log("NO SUBSCRIPTION FOUND")
-                    const modal = await this.modalCtrl.create({
-                      component: ClubSubscriptionPage,
-                      presentingElement: await this.modalCtrl.getTop(),
-                      canDismiss: true,
-                      showBackdrop: true,
-                      componentProps: {
-                        clubId: clubList.find((club: any) => club.subscriptionActive == false).id,
-                      },
-                    });
-                    modal.present();
-
-                    const { role } = await modal.onWillDismiss();
-                    console.log(role)
-                    if (role === "close" || role == "backdrop") {
-                      this.authService.logout();
-                    }
-                  } else {
-                    console.log("Club is active")
-                  }
-
+                  console.error("Navigation ERROR to onboarding Club Page");
                 }
-              })
-            )
-            .subscribe();
+              } catch (error) {
+                console.error("Navigation Exception:", error);
+                window.location.reload();
+              }
+            } else {
+              const inactiveClub = clubList.find(
+                (club: any) => club.subscriptionActive === false,
+              );
+
+              if (inactiveClub) {
+                // console.log("NO SUBSCRIPTION FOUND");
+                const modal = await this.modalCtrl.create({
+                  component: ClubSubscriptionPage,
+                  presentingElement: await this.modalCtrl.getTop(),
+                  canDismiss: true,
+                  showBackdrop: true,
+                  componentProps: {
+                    clubId: inactiveClub.id,
+                  },
+                });
+                modal.present();
+
+                const { role } = await modal.onWillDismiss();
+                // console.log(role);
+                if (role === "close" || role === "backdrop") {
+                  this.authService.logout();
+                }
+              } else {
+                // console.log("Club is active");
+
+                const currentPath = this.router.url;
+                if (currentPath === "/login") {
+                  this.menuCtrl.enable(true, "menu");
+                  await this.router.navigateByUrl("/t");
+                }
+              }
+            }
+          } catch (error) {
+            console.error("Error processing club list:", error);
+          }
         }
         // }
-
 
         // SEt DEVICE INFOS
         this.deviceInfo = await Device.getInfo();
         this.deviceId = await Device.getId();
-        console.log(this.deviceInfo);
+        // console.log(this.deviceInfo);
         // Register Native Push
         if (
           this.deviceInfo.platform == "android" ||
@@ -151,10 +201,7 @@ export class AppComponent implements OnInit {
           // Register Web Push, if available
         }
 
-
-
         // this.platform.ready().then(async () => {
-
 
         // })
         // READ USER LANGUAGE FROM DATABASE if AVAILABLE
@@ -168,74 +215,78 @@ export class AppComponent implements OnInit {
         console.log("User is signed out");
         this.menuCtrl.enable(false, "menu");
         this.email = "";
-        const navLogout = await this.router.navigateByUrl('/login');
+        const navLogout = await this.router.navigateByUrl("/login");
         if (navLogout) {
-          console.log('Navigation SUCCESS to Logout Page');
+          console.log("Navigation SUCCESS to Logout Page");
         } else {
-          console.error('Navigation ERROR to Logout Page');
+          console.error("Navigation ERROR to Logout Page");
         }
       }
     });
 
-
-  }
-  ngOnInit(): void {
-    App.removeAllListeners().then(() => {
-      this.registerBackButton();
-    });
-
-    this.clubList$ = this.fbService.getClubList();
-    Network.addListener(
+    /*Network.addListener(
       "networkStatusChange",
       async (status: ConnectionStatus) => {
         if (!status.connected) {
-          // const toast = await this.toastController.create({
-          //   message: "Du bist offline",
-          //   duration: 3000,
-          //   position: "top",
-          //   buttons: [
-          //     {
-          //       // text:"Ok",
-          //       icon: "cloud-offline-outline"
-          //     }
-          //   ],
-          //   color: "danger",
-          // });
-          // await toast.present();
+          await this.uiService.showErrorToast(
+            await lastValueFrom(this.translate.get("common.offline")),
+          );
         } else {
-          // const toast = await this.toastController.create({
-          //   message: "Du bist online",
-          //   duration: 1500,
-          //   position: "top",
-          //   color: "success",
-          //   buttons: [
-          //     {
-          //       // text:"Ok",
-          //       icon: "wifi-outline"
-          //     }
-          //   ],
-          // });
-          // await toast.present();
+          console.log("Network is connected");
+           await this.uiService.showSuccessToast(
+            await lastValueFrom(this.translate.get("common.online")),
+          );
         }
-      }
-    );
+      },
+    );*/
+  }
 
+  ngAfterViewInit() {
+    // console.log("CSS DEBUG: AppComponent View initialized");
+    // this.setStatusBarAndSafeArea();
+
+    // iOS only
+    if (Capacitor.getPlatform() === "ios") {
+      window.addEventListener("statusTap", () => {
+        const content = document.querySelector("ion-content");
+        if (content) {
+          content.scrollToTop(500);
+        }
+      });
+    }
   }
 
   ngOnDestroy() {
-    Network.removeAllListeners();
+    // Network.removeAllListeners();
 
     App.removeAllListeners();
-
-    if (this.clubListSub) {
-      this.clubListSub.unsubscribe();
-    }
-
   }
 
   initializeApp(): void {
+    // this.setStatusBarAndSafeArea();
     this.showSplashScreen();
+    this.setStatusBar();
     this.setDefaultLanguage();
+
+    App.addListener("resume", async () => {
+      this.applySystemTheme();
+
+      // Validate token when app resumes from background
+      if (this.authService.auth.currentUser) {
+        const tokenValid = await this.authService.validateAndRefreshToken();
+        if (!tokenValid) {
+          console.error(
+            "Token validation failed on app resume - logging out user",
+          );
+          await this.presentAlertSessionExpired();
+          await this.authService.logout();
+        } else {
+          // Give Firebase client time to apply the new token
+          await new Promise((resolve) => setTimeout(resolve, 200));
+        }
+      }
+    });
+
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
       if (event.type === "VERSION_READY") {
         this.presentAlertUpdateVersion();
@@ -244,12 +295,12 @@ export class AppComponent implements OnInit {
   }
 
   private registerBackButton() {
-    App.addListener('backButton', async ({ canGoBack }) => {
+    App.addListener("backButton", async ({ canGoBack }) => {
       // console.log("backbutton", canGoBack);
       // console.log(">", this.router.lastSuccessfulNavigation)
       // console.log(">>", this.router.getCurrentNavigation())
       // console.log(">>>", window.history.length);
-      const modal = await this.modalCtrl.getTop()
+      const modal = await this.modalCtrl.getTop();
       if (modal) {
         modal.dismiss();
         return;
@@ -291,7 +342,9 @@ export class AppComponent implements OnInit {
         result.value == "en" ||
         result.value == "it"
       ) {
-        console.log("Set Fallback Language to Device Language: " + result.value);
+        console.log(
+          "Set Fallback Language to Device Language: " + result.value,
+        );
         this.translate.use(result.value);
       } else {
         console.log("Set Fallback Language to DE");
@@ -308,14 +361,14 @@ export class AppComponent implements OnInit {
         take(1),
         tap((user) => (this.user = user)),
         switchMap((user) =>
-          user ? this.profileService.getUserProfile(user) : of(null)
-        )
+          user ? this.profileService.getUserProfile(user) : of(null),
+        ),
       )
       .subscribe((profile) => {
         if (profile) {
           if (profile.language) {
             if (profile.language.length > 0) {
-              console.log("set user langauge: " + profile.language);
+              // console.log("set user langauge: " + profile.language);
               this.translate.use(profile.language);
               return;
             }
@@ -391,92 +444,205 @@ export class AppComponent implements OnInit {
     });
   }
 
+  applySystemTheme() {
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
+    if (prefersDark) {
+      console.log("DEBUG CSS: applySystemTheme: Dark Mode");
+      if (Capacitor.isPluginAvailable("StatusBar")) {
+        StatusBar.setStyle({ style: Style.Dark });
+      }
+      document.documentElement.style.colorScheme = "dark";
+      const darkColor = getComputedStyle(document.body)
+        .getPropertyValue("--ion-color-primary")
+        .trim();
+      console.log("DEBUG CSS: darkColor", darkColor);
+      if (Capacitor.isPluginAvailable("StatusBar")) {
+        StatusBar.setBackgroundColor({ color: darkColor });
+      }
+      if (Capacitor.isPluginAvailable("EdgeToEdge")) {
+        EdgeToEdge.setBackgroundColor({ color: darkColor });
+      }
+    } else {
+      console.log("DEBUG CSS: applySystemTheme: Light Mode");
+      if (Capacitor.isPluginAvailable("StatusBar")) {
+        StatusBar.setStyle({ style: Style.Light });
+      }
+      document.documentElement.style.colorScheme = "light";
+      const lightColor = getComputedStyle(document.body)
+        .getPropertyValue("--ion-color-primary")
+        .trim();
+      console.log("DEBUG CSS: lightColor", lightColor);
+      if (Capacitor.isPluginAvailable("StatusBar")) {
+        StatusBar.setBackgroundColor({ color: lightColor });
+      }
+      if (Capacitor.isPluginAvailable("EdgeToEdge")) {
+        EdgeToEdge.setBackgroundColor({ color: lightColor });
+      }
+    }
+  }
+
+  async setStatusBar() {
+    if (Capacitor.isPluginAvailable("StatusBar")) {
+      console.log("StatusBar is available");
+
+      console.log("StatusBar set overlay to false");
+      await StatusBar.setOverlaysWebView({
+        overlay: false,
+      });
+
+      this.applySystemTheme();
+
+      // Listen for system theme changes
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", async (e) => {
+          console.log("DEBUG CSS: Theme-Change-Event gefeuert!", e);
+          const newColorScheme = e.matches ? "dark" : "light";
+          console.log("DEBUG CSS: System theme changed to:", newColorScheme);
+          if (newColorScheme == "dark") {
+            if (Capacitor.isPluginAvailable("StatusBar")) {
+              await StatusBar.setStyle({ style: Style.Dark });
+            }
+            document.documentElement.style.colorScheme = "dark";
+            const darkColor = getComputedStyle(document.body)
+              .getPropertyValue("--ion-color-primary")
+              .trim();
+            console.log("DEBUG CSS: darkColor", darkColor);
+            if (Capacitor.isPluginAvailable("StatusBar")) {
+              await StatusBar.setBackgroundColor({ color: darkColor });
+            }
+            if (Capacitor.isPluginAvailable("EdgeToEdge")) {
+              await EdgeToEdge.setBackgroundColor({ color: darkColor });
+            }
+          } else {
+            if (Capacitor.isPluginAvailable("StatusBar")) {
+              await StatusBar.setStyle({ style: Style.Light });
+            }
+            document.documentElement.style.colorScheme = "light";
+            const lightColor = getComputedStyle(document.body)
+              .getPropertyValue("--ion-color-primary")
+              .trim();
+            console.log("DEBUG CSS: lightColor", lightColor);
+            if (Capacitor.isPluginAvailable("StatusBar")) {
+              await StatusBar.setBackgroundColor({ color: lightColor });
+            }
+            if (Capacitor.isPluginAvailable("EdgeToEdge")) {
+              await EdgeToEdge.setBackgroundColor({ color: lightColor });
+            }
+          }
+        });
+    } else {
+      // console.log("Status Bar not supported");
+    }
+  }
+
   async presentAlertNoClub() {
+    const translations = await Promise.all([
+      lastValueFrom(this.translate.get("onboarding.no_club_found")),
+      lastValueFrom(this.translate.get("onboarding.no_club_found_message")),
+      lastValueFrom(this.translate.get("common.yes")),
+      lastValueFrom(this.translate.get("common.logout")),
+    ]);
+
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
-      header: "Kein Club gefunden",
+      header: translations[0],
       subHeader: "",
-      message:
-        "Damit du myclub nutzen kannst, musst du zuerst einem Club beitreten. Möchtest du einem Club beitreten?",
+      message: translations[1],
       buttons: [
         {
-          text: "Ja",
-          handler: () => {
-            this.router.navigateByUrl("onboarding", {});
-          },
+          text: translations[2],
+          role: "confirm",
         },
         {
-          text: "Logout",
+          text: translations[3],
           role: "cancel",
-          handler: () => {
-            this.authService.logout();
-          },
         },
       ],
     });
 
     await alert.present();
+    const { role } = await alert.onWillDismiss();
 
-    const { role } = await alert.onDidDismiss();
-    console.log("onDidDismiss resolved with role", role);
+    if (role === "confirm") {
+      await this.router.navigateByUrl("onboarding", {});
+    } else if (role === "cancel") {
+      await this.authService.logout();
+    }
   }
 
   async presentClubRequstOpen() {
+    const translations = await Promise.all([
+      lastValueFrom(this.translate.get("onboarding.open_club_requests")),
+      lastValueFrom(
+        this.translate.get("onboarding.open_club_requests_message"),
+      ),
+      lastValueFrom(this.translate.get("onboarding.join_new_club")),
+      lastValueFrom(this.translate.get("onboarding.manage_profile")),
+    ]);
+
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
-      header: "Offene Club-Anfragen vorhanden",
+      header: translations[0],
       subHeader: "",
-      message: "Du hast berets offene Club anfragen.",
+      message: translations[1],
       buttons: [
         {
-          text: "Neuen Club beitreten",
-          handler: () => {
-            this.router.navigateByUrl("onboarding", {});
-          },
+          text: translations[2],
+          role: "confirm",
         },
         {
-          text: "Profil verwalten",
+          text: translations[3],
           role: "cancel",
-          handler: () => {
-            this.router.navigateByUrl("profile", {});
-          },
         },
       ],
     });
 
     await alert.present();
+    const { role } = await alert.onWillDismiss();
 
-    const { role } = await alert.onDidDismiss();
-    console.log("onDidDismiss resolved with role", role);
+    if (role === "confirm") {
+      await this.router.navigateByUrl("onboarding", {});
+    } else if (role === "cancel") {
+      await this.router.navigateByUrl("profile", {});
+    }
   }
 
   async presentAlertNoTeam() {
+    const translations = await Promise.all([
+      lastValueFrom(this.translate.get("onboarding.no_team_found")),
+      lastValueFrom(this.translate.get("onboarding.no_team_found_message")),
+      lastValueFrom(this.translate.get("onboarding.join_team")),
+      lastValueFrom(this.translate.get("onboarding.show_profile")),
+    ]);
+
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
-      header: "Kein Team gefunden",
+      header: translations[0],
       subHeader: "",
-      message:
-        "Du wurdest noch keinem Team zugeteilt aber das ist kein Problem. Du kannst ganz einfach einem Team beitreten oder deinen Club Antrag im Profil wieder löschen.",
+      message: translations[1],
       buttons: [
         {
-          text: "Team beitreten",
-          handler: () => {
-            this.router.navigateByUrl("team-list", {});
-          },
+          text: translations[2],
+          role: "confirm",
         },
         {
-          text: "Profil anzeigen",
-          handler: () => {
-            this.router.navigateByUrl("profile", {});
-          },
+          text: translations[3],
+          role: "cancel",
         },
       ],
     });
 
     await alert.present();
+    const { role } = await alert.onWillDismiss();
 
-    const { role } = await alert.onDidDismiss();
-    console.log("onDidDismiss resolved with role", role);
+    if (role === "confirm") {
+      await this.router.navigateByUrl("team-list", {});
+    } else if (role === "cancel") {
+      await this.router.navigateByUrl("profile", {});
+    }
   }
 
   async presentAlertEmailNotVerified() {
@@ -513,37 +679,72 @@ export class AppComponent implements OnInit {
     */
   }
   enableHelferEvents(clubList) {
-    return clubList && clubList.some(club => club.hasFeatureHelferEvent == true);
+    return (
+      clubList && clubList.some((club) => club.hasFeatureHelferEvent == true)
+    );
   }
   enableChampionship(clubList) {
-    return clubList && clubList.some(club => club.hasFeatureChampionship == true);
+    return (
+      clubList && clubList.some((club) => club.hasFeatureChampionship == true)
+    );
   }
 
   async presentAlertUpdateVersion() {
+    const translations = await Promise.all([
+      lastValueFrom(this.translate.get("common.app_update_available")),
+      lastValueFrom(
+        this.translate.get("common.app_update_message", {
+          version: this.appVersion,
+        }),
+      ),
+      lastValueFrom(this.translate.get("common.cancel")),
+      lastValueFrom(this.translate.get("common.load")),
+    ]);
+
     const alert = await this.alertController.create({
-      // cssClass: 'my-custom-class',
-      header: "App Update verfügbar",
-      message: `Eine neue Version ${this.appVersion} ist verfügbar. Neue Version laden?`,
+      header: translations[0],
+      message: translations[1],
       backdropDismiss: false,
       buttons: [
         {
-          text: "Abbrechen",
+          text: translations[2],
           role: "cancel",
-          cssClass: "secondary",
-          handler: (data: any) => {
-            // console.log('Confirm Cancel: data');
-          },
         },
         {
-          text: "Laden",
-          handler: async () => {
-            const resolver = await this.swUpdate.activateUpdate();
-            if (resolver) {
-              window.location.reload();
-            } else {
-              console.log("Already on latest version");
-            }
-          },
+          text: translations[3],
+          role: "confirm",
+        },
+      ],
+    });
+
+    await alert.present();
+    const { role } = await alert.onWillDismiss();
+
+    if (role === "confirm") {
+      const resolver = await this.swUpdate.activateUpdate();
+      if (resolver) {
+        window.location.reload();
+      } else {
+        console.log("Already on latest version");
+      }
+    }
+  }
+
+  async presentAlertSessionExpired() {
+    const translations = await Promise.all([
+      lastValueFrom(this.translate.get("auth.session_expired")),
+      lastValueFrom(this.translate.get("auth.session_expired_message")),
+      lastValueFrom(this.translate.get("common.ok")),
+    ]);
+
+    const alert = await this.alertController.create({
+      header: translations[0],
+      message: translations[1],
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: translations[2],
+          role: "confirm",
         },
       ],
     });
@@ -554,6 +755,10 @@ export class AppComponent implements OnInit {
   async logout() {
     console.log("logout");
     await this.authService.logout();
+  }
+
+  async openFaq() {
+    await Browser.open({ url: "https://my-club.app/faq" });
   }
   /*async addListeners() {
     await PushNotifications.addListener('registration', async token => {
@@ -587,209 +792,118 @@ export class AppComponent implements OnInit {
     });
   }*/
   async registerNotifications() {
-    // Request permission to use push notifications
-    // iOS will prompt user and return if they granted permission or not
-    // Android will just grant without prompting
-    PushNotifications.requestPermissions().then((result) => {
+    try {
+      const result = await PushNotifications.requestPermissions();
       if (result.receive === "granted") {
-        // Register with Apple / Google to receive push via APNS/FCM
-        PushNotifications.register();
+        try {
+          await PushNotifications.register();
+        } catch (error) {
+          console.error("Fehler bei der Push-Registrierung:", error);
+          const translations = await Promise.all([
+            lastValueFrom(
+              this.translate.get("error__push_notification_not_available"),
+            ),
+          ]);
+        }
       } else {
-        // Show some error
+        console.warn("Push-Benachrichtigungen wurden nicht erlaubt");
       }
-    });
+    } catch (error) {
+      console.error("Fehler beim Anfordern der Push-Berechtigungen:", error);
+      const translations = await Promise.all([
+        lastValueFrom(
+          this.translate.get("error_device_not_support_push_notifications"),
+        ),
+      ]);
+    }
 
-    PushNotifications.addListener("registration", (token: Token) => {
-      // alert('Push registration success, token: ' + token.value);
-      /*this.toastController.create({
-        message: "Push erfolgreich registriert",
-        color: "primary",
-        duration: 1500,
-        position: "top",
-      }).then(toast=>{
-        toast.present();
-      });*/
-
-      this.profileService
-        .addPushSubscriber(null, this.deviceId, this.deviceInfo, token.value)
-        .catch((err) => {
-          console.error("Could not subscribe to notifications", err);
-          // this.errorPushMessageEnable("Could not subscribe to notifications");
-        })
-        .then((ok) => {
-          console.log(ok);
-        });
-    });
-
-    PushNotifications.addListener("registrationError", (error: any) => {
-      // alert('Error on registration: ' + JSON.stringify(error));
-    });
-
-    PushNotifications.addListener(
-      "pushNotificationReceived",
-      async (notification: PushNotificationSchema) => {
-        // alert('Push received: ' + JSON.stringify(notification));
-
-        console.log("PUSH MESSAGE RECEIVED");
-        console.log("TYPE:  " + notification.data.type);
-
-        if (
-          notification.data.type &&
-          notification.data.type === "helferEvent"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
+    try {
+      PushNotifications.addListener("registration", (token: Token) => {
+        this.profileService
+          .addPushSubscriber(null, this.deviceId, this.deviceInfo, token.value)
+          .catch((err) => {
+            console.error("Could not subscribe to notifications", err);
           })
-
-          if (value) {
-            this.ngZone.run(() => {
-              this.router.navigateByUrl("/t/helfer", {
-                state: notification.data,
-              }).catch(e => {
-                console.log(e);
-              });
-            });
-          }
-
-        } else if (
-          notification.data.type &&
-          notification.data.type === "clubEvent"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
-          })
-          if (value) {
-            this.ngZone.run(() => {
-              this.router.navigateByUrl("/t/events", {
-                state: notification.data,
-              }).catch(e => {
-                console.log(e);
-              });
-            });
-          }
-
-        } else if (
-          notification.data.type &&
-          notification.data.type === "clubRequest"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
-          })
-          if (value) {
-          }
-
-        } else if (
-          notification.data.type &&
-          notification.data.type === "clubRequestAdmin"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
-          })
-          if (value) {
-          }
-
-        } else if (
-          notification.data.type &&
-          notification.data.type === "news"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
-          })
-          if (value) {
-            this.ngZone.run(() => {
-              this.router.navigateByUrl("/t/news", {
-                state: notification.data,
-              }).catch(e => {
-                console.log(e);
-              });
-            });
-          }
-        } else if (
-          notification.data.type &&
-          notification.data.type === "clubNews"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
-          })
-          if (value) {
-            this.ngZone.run(() => {
-              this.router.navigateByUrl("/t/news", {
-                state: notification.data,
-              }).catch(e => {
-                console.log(e);
-              });
-            });
-          }
-        } else if (
-          notification.data.type &&
-          notification.data.type === "training"
-        ) {
-          const { value } = await Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "Öffnen",
-            cancelButtonTitle: "Abbrechen",
-          })
-          if (value) {
-            this.ngZone.run(() => {
-              this.router.navigateByUrl("/t/training", {
-                state: notification.data,
-              }).catch(e => {
-                console.log(e);
-              });
-            });
-          }
-        } else {
-          Dialog.confirm({
-            title: notification.title,
-            message: notification.body,
-            okButtonTitle: "OK",
+          .then((ok) => {
+            console.log(ok);
           });
-        }
-      }
-    );
+      });
 
-    PushNotifications.addListener(
-      "pushNotificationActionPerformed",
-      (notification: ActionPerformed) => {
-        console.log(notification);
-        // alert('Push action performed: ' + JSON.stringify(notification));
-      }
-    );
+      PushNotifications.addListener("registrationError", (error: any) => {
+        console.error("Registration error:", error);
+      });
 
-    // OLD CODE
-    /*
-        let permStatus = await PushNotifications.checkPermissions();
-        if (permStatus.receive === 'prompt') {
-          permStatus = await PushNotifications.requestPermissions();
-        }
-        if (permStatus.receive !== 'granted') {
-          throw new Error('User denied permissions!');
-        }
-        PushNotifications.removeAllListeners();
-        await this.addListeners();
-        await PushNotifications.register();
-      }
-    
-      subscribeMobileNotifications() {
-       */
+      PushNotifications.addListener(
+        "pushNotificationReceived",
+        async (notification: PushNotificationSchema) => {
+          try {
+            console.log("PUSH MESSAGE RECEIVED");
+            console.log("TYPE:  " + notification.data.type);
+
+            const translations = await Promise.all([
+              lastValueFrom(this.translate.get("common.open")),
+              lastValueFrom(this.translate.get("common.cancel")),
+              lastValueFrom(this.translate.get("common.ok")),
+            ]);
+
+            const { value } = await Dialog.confirm({
+              title: notification.title,
+              message: notification.body,
+              okButtonTitle: translations[0],
+              cancelButtonTitle: translations[1],
+            });
+
+            if (value) {
+              this.ngZone.run(async () => {
+                let route = "";
+                switch (notification.data.type) {
+                  case "helferEvent":
+                    route = "/t/helfer";
+                    break;
+                  case "clubEvent":
+                    route = "/t/events";
+                    break;
+                  case "news":
+                  case "clubNews":
+                    route = "/t/news";
+                    break;
+                  case "training":
+                    route = "/t/training";
+                    break;
+                  default:
+                    Dialog.confirm({
+                      title: notification.title,
+                      message: notification.body,
+                      okButtonTitle: translations[2],
+                    });
+                    return;
+                }
+
+                if (route) {
+                  this.router
+                    .navigateByUrl(route, {
+                      state: notification.data,
+                    })
+                    .catch((e) => {
+                      console.error("Navigation error:", e);
+                    });
+                }
+              });
+            }
+          } catch (error) {
+            console.error("Error processing push notification:", error);
+          }
+        },
+      );
+
+      PushNotifications.addListener(
+        "pushNotificationActionPerformed",
+        (notification: ActionPerformed) => {
+          console.log(notification);
+        },
+      );
+    } catch (error) {
+      console.error("Error setting up push notification listeners:", error);
+    }
   }
 }

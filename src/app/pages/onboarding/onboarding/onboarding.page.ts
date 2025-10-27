@@ -3,7 +3,6 @@ import {
   AlertController,
   MenuController,
   ModalController,
-  NavParams,
   ToastController,
 } from "@ionic/angular";
 // import { Camera, CameraResultType } from '@capacitor/camera';
@@ -32,11 +31,13 @@ import { Profile } from "src/app/models/user";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { TranslateService } from "@ngx-translate/core";
 import { PushNotifications } from "@capacitor/push-notifications";
+import { UiService } from "src/app/services/ui.service";
 
 @Component({
   selector: "app-onboarding",
   templateUrl: "./onboarding.page.html",
   styleUrls: ["./onboarding.page.scss"],
+  standalone: false,
 })
 export class OnboardingPage implements OnInit {
   @Input("data") user: User;
@@ -58,7 +59,6 @@ export class OnboardingPage implements OnInit {
 
   // inviteList: Array<firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>>
   constructor(
-    public navParams: NavParams,
     private readonly fbService: FirebaseService,
     public menuCtrl: MenuController,
     private readonly modalCtrl: ModalController,
@@ -68,16 +68,17 @@ export class OnboardingPage implements OnInit {
     private readonly profileService: UserProfileService,
     private readonly router: Router,
     private readonly alertController: AlertController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private readonly uiService: UiService,
   ) {
     this.menuCtrl.enable(false, "menu");
   }
 
   async ngOnInit() {
+    // NavParams migration: now using @Input property directly
     this.clubListSU = [];
     this.clubListSV = [];
     this.clubListSH = [];
-    this.user = this.navParams.get("data");
 
     this.menuCtrl.enable(false, "menu");
 
@@ -123,7 +124,7 @@ export class OnboardingPage implements OnInit {
       catchError((err) => {
         console.error("Error fetching user profile", err);
         return of(null); // Handle the error and return a default value
-      })
+      }),
     );
   }
   registerPushDevice() {
@@ -177,7 +178,7 @@ export class OnboardingPage implements OnInit {
   async togglePushModule(event, module) {
     await this.profileService.changeSettingsPushModule(
       event.detail.checked,
-      module
+      module,
     );
     this.toastActionSaved();
   }
@@ -190,21 +191,65 @@ export class OnboardingPage implements OnInit {
 
   async toggleEmailReporting(event) {
     await this.profileService.changeSettingsEmailReporting(
-      event.detail.checked
+      event.detail.checked,
     );
     console.log("email");
     this.toastActionSaved();
   }
   async toastActionSaved() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.success__saved")),
-      duration: 1500,
-      position: "top",
-      color: "success",
-    });
-
-    await toast.present();
+    await this.presentToast();
   }
+
+  async presentToast() {
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.success__saved")),
+    );
+  }
+
+  async presentErrorToast(error) {
+    await this.uiService.showErrorToast(error.message);
+  }
+
+  private async showEmailVerificationAlert() {
+    await this.uiService.showInfoDialog({
+      header: "E-Mail-Verifizierung",
+      message:
+        "Bitte überprüfen Sie Ihre E-Mails und bestätigen Sie Ihre E-Mail-Adresse, bevor Sie fortfahren.",
+    });
+  }
+
+  private async showEmailVerificationSentAlert() {
+    await this.uiService.showInfoDialog({
+      header: "E-Mail gesendet",
+      message:
+        "Eine Bestätigungs-E-Mail wurde an Ihre Adresse gesendet. Bitte überprüfen Sie Ihren Posteingang.",
+    });
+  }
+
+  private async showEmailVerificationErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Fehler",
+      message:
+        "Beim Senden der Bestätigungs-E-Mail ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    });
+  }
+
+  private async showProfileCreationErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Fehler",
+      message:
+        "Beim Erstellen Ihres Profils ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    });
+  }
+
+  private async showClubSelectionErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Fehler",
+      message:
+        "Beim Auswählen des Clubs ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    });
+  }
+
   verifyEmailAddress() {
     this.authService.sendVerifyEmail();
   }
@@ -231,9 +276,9 @@ export class OnboardingPage implements OnInit {
             clubs.filter((searchClub) =>
               searchClub.name
                 .toLowerCase()
-                .includes(event.detail.value.toLowerCase())
-            )
-          )
+                .includes(event.detail.value.toLowerCase()),
+            ),
+          ),
           // return club.name.search(searchValue)
         )
         .subscribe((data: any) => {
@@ -255,12 +300,21 @@ export class OnboardingPage implements OnInit {
 
     if (club.active) {
       const alert = await this.alertCtrl.create({
+        inputs: [
+          {
+            type: "checkbox",
+            label: "Ich möchte als Elternteil eingetragen werden",
+            name: "parent",
+            value: "parent",
+            checked: false,
+          },
+        ],
         message:
           (await lastValueFrom(
-            this.translate.get("onboarding.do_you_want_to_join__club")
+            this.translate.get("onboarding.do_you_want_to_join__club"),
           )) + ` ${club.name}`,
         header: await lastValueFrom(
-          this.translate.get("onboarding.join__club")
+          this.translate.get("onboarding.join__club"),
         ),
         buttons: [
           {
@@ -275,7 +329,12 @@ export class OnboardingPage implements OnInit {
             text: await lastValueFrom(this.translate.get("common.yes")),
             handler: async (data: any) => {
               try {
-                await this.fbService.setClubRequest(club.id, this.user.uid)
+                await this.fbService.setClubRequest(
+                  club.id,
+                  this.user.uid,
+                  data.isParent,
+                  "",
+                );
                 await this.presentRequestToast();
                 await this.presentRequestSentAlert(club.name);
               } catch (err) {
@@ -286,7 +345,6 @@ export class OnboardingPage implements OnInit {
               }
             },
           },
-         
         ],
       });
       await alert.present();
@@ -298,7 +356,7 @@ export class OnboardingPage implements OnInit {
   async presentRequestToast() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(
-        this.translate.get("onboarding.success__request_sent")
+        this.translate.get("onboarding.success__request_sent"),
       ),
       duration: 1500,
       position: "top",
@@ -310,7 +368,7 @@ export class OnboardingPage implements OnInit {
   async presentCancelToast() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(
-        this.translate.get("onboarding.warning__action_canceled")
+        this.translate.get("onboarding.warning__action_canceled"),
       ),
       duration: 1500,
       position: "top",
@@ -324,11 +382,11 @@ export class OnboardingPage implements OnInit {
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
       header: await lastValueFrom(
-        this.translate.get("onboarding.success__application_sent")
+        this.translate.get("onboarding.success__application_sent"),
       ),
       subHeader: "",
       message: await lastValueFrom(
-        this.translate.get("onboarding.success__application_sent_desc")
+        this.translate.get("onboarding.success__application_sent_desc"),
       ),
       buttons: [
         {
@@ -350,17 +408,16 @@ export class OnboardingPage implements OnInit {
     const alert = await this.alertController.create({
       cssClass: "my-custom-class",
       header: await lastValueFrom(
-        this.translate.get("onboarding.error__clubRequest")
+        this.translate.get("onboarding.error__clubRequest"),
       ),
       subHeader: "",
       message: await lastValueFrom(
-        this.translate.get("onboarding.error__clubRequest_desc")
+        this.translate.get("onboarding.error__clubRequest_desc"),
       ),
       buttons: [
         {
           text: await lastValueFrom(this.translate.get("common.ok")),
-          handler: async () => {
-          },
+          handler: async () => {},
         },
       ],
     });
@@ -370,8 +427,6 @@ export class OnboardingPage implements OnInit {
     const { role } = await alert.onDidDismiss();
     console.log("onDidDismiss resolved with role", role);
   }
-
-
 
   /*
     async scanCode () {

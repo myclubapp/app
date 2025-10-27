@@ -1,0 +1,149 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{period.name}}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{'common.close' | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{period.name}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-segment [(ngModel)]="segment">
+    <ion-segment-button value="members"> Mitglieder </ion-segment-button>
+
+    <ion-segment-button value="invoices">
+      Rechnungen @if (invoices$ | async; as invoices) { {{invoices.length}} }
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- Team-Filter Dropdown -->
+
+  <!-- Mitglieder-Sicht -->
+  @if (segment === 'members') {
+  <ion-searchbar
+    [debounce]="1000"
+    (ionChange)="handleSearch($event)"
+    animated="true"
+    search-icon="search-circle"
+    [value]="searchTerm.value"
+    placeholder="Mitglied suchen"
+  ></ion-searchbar>
+  @if (filteredClubMembers$ | async; as clubMemberList) {
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-label>Team</ion-label>
+      <ion-select
+        [(ngModel)]="selectedTeamId"
+        interface="popover"
+        [cancelText]="'common.cancel' | translate"
+      >
+        <ion-select-option value="all">Alle</ion-select-option>
+        @for (team of teams; track team.id) {
+        <ion-select-option [value]="team.id">{{team.name}}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+    <ion-list-header>
+      <ion-lablel> Mitglieder </ion-lablel>
+      <ion-button (click)="selectAll()"> alle </ion-button>
+      <ion-button (click)="deselectAll()"> keine </ion-button>
+    </ion-list-header>
+    <ion-item-group>
+      @for (groupBy of groupArray; track $index) {
+      <ion-item-divider color="light">
+        <ion-label> {{groupBy}} </ion-label>
+      </ion-item-divider>
+      @for (member of clubMemberList; track member.id) { @if (member.groupBy ==
+      groupBy) {
+      <ion-item>
+        <ion-checkbox
+          slot="start"
+          labelPlacement="end"
+          [checked]="isMemberSelected(member)"
+          [disabled]="isMemberInvoiced(member)"
+          (ionChange)="toggleMemberSelection(member, $event.detail.checked)"
+        >
+          {{member.firstName}} {{member.lastName}}
+        </ion-checkbox>
+        <!-- Team-Beiträge als Badges anzeigen -->
+        @for (team of getBeitragTeamsForMember(member); track team.id) {
+        <ion-badge slot="end"
+          >{{team.jahresbeitragWert}} {{team.jahresbeitragWaehrung}}</ion-badge
+        >
+        }
+        <!-- Warnung, falls kein Beitrag hinterlegt ist -->
+        @if (getBeitragTeamsForMember(member).length === 0 &&
+        hasTeamWithoutBeitrag(member)) {
+        <ion-badge slot="end" color="warning">
+          Kein Beitrag im Team hinterlegt!
+        </ion-badge>
+        }
+      </ion-item>
+      } } }
+    </ion-item-group>
+  </ion-list>
+  } @if ((filteredClubMembers$ | async)?.length === 0) {
+  <ion-item>
+    <ion-label color="medium">Noch keine Mitglieder vorhanden.</ion-label>
+  </ion-item>
+  } }
+
+  <!-- Rechnungen-Sicht -->
+  @if (segment === 'invoices') {
+  <ion-list [inset]="true" lines="none">
+    <ion-list-header>
+      <ion-label>Datei Upload</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <input type="file" accept=".xml" (change)="onCamtupload($event)" />
+    </ion-item>
+  </ion-list>
+  <ion-note color="medium" class="ion-margin-horizontal">
+    Die Datei muss im CAMT.053 Format sein.
+  </ion-note>
+  @if (invoices$ | async; as invoices) {
+  <ion-list [inset]="true">
+    <ion-list-header>
+      <ion-label>Rechnungen</ion-label>
+    </ion-list-header>
+    @for (invoice of invoices; track invoice.id) {
+    <ion-item>
+      <ion-label (click)="openInvoiceDetail(invoice)">
+        {{invoice.firstName}} {{invoice.lastName}}<br />
+        <small>{{invoice.amount}} {{invoice.currency}}</small>
+      </ion-label>
+      <ion-badge slot="end"> {{invoice.status}} </ion-badge>
+    </ion-item>
+    } @if (invoices.length === 0) {
+    <ion-item>
+      <ion-label color="medium">Noch keine Rechnungen vorhanden.</ion-label>
+    </ion-item>
+    }
+  </ion-list>
+  } }
+</ion-content>
+
+@if (segment === 'members' && selectedMembers.length > 0) {
+<ion-footer>
+  <ion-toolbar>
+    <ion-button fill="clear" (click)="generateInvoicesForSelected()">
+      Rechnungen generieren ({{ selectedMembers.length }})
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>
+} @if (segment === 'invoices' && invoices$ | async; as invoices) { @if
+(invoices.length > 0 && filterForDraftInvoices(invoices) > 0) {
+<ion-footer>
+  <ion-toolbar>
+    <ion-button fill="clear" (click)="sendInvoicesForSelected()">
+      {{filterForDraftInvoices(invoices)}} Rechnunge(n) versenden
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>
+} }

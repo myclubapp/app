@@ -17,6 +17,7 @@
             "index": "src/index.html",
             "polyfills": ["src/polyfills.ts", "@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
+            "externalDependencies": ["myclub-game-preview"],
             "assets": [
               {
                 "glob": "**/*",
@@ -34,10 +35,9 @@
                 "output": "./svg"
               },
               "src/manifest.webmanifest"
-
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss"],
-            "scripts": [],
+
             "extractLicenses": false,
             "sourceMap": true,
             "optimization": false,
@@ -68,6 +68,11 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/default",
                   "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -80,7 +85,14 @@
                 "src/custom-themes/default/variables.scss",
                 "src/global.scss"
               ],
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
@@ -116,6 +128,11 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/default",
                   "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -128,7 +145,374 @@
                 "src/custom-themes/default/variables.scss",
                 "src/global.scss"
               ],
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            },
+            "app-unihockey": {
+              "index": "src/custom-themes/app-unihockey/index.html",
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
+                {
+                  "glob": "**/*.svg",
+                  "input": "node_modules/ionicons/dist/ionicons/svg",
+                  "output": "./svg"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "src/custom-themes/app-unihockey/assets",
+                  "output": "./assets"
+                },
+                {
+                  "glob": "manifest.webmanifest",
+                  "input": "src/custom-themes/app-unihockey",
+                  "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "styles": [
+                "src/custom-themes/app-unihockey/variables.scss",
+                "src/global.scss"
+              ],
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            },
+            "app-volleyball": {
+              "index": "src/custom-themes/app-volleyball/index.html",
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
+                {
+                  "glob": "**/*.svg",
+                  "input": "node_modules/ionicons/dist/ionicons/svg",
+                  "output": "./svg"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "src/custom-themes/app-volleyball/assets",
+                  "output": "./assets"
+                },
+                {
+                  "glob": "manifest.webmanifest",
+                  "input": "src/custom-themes/app-volleyball",
+                  "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "styles": [
+                "src/custom-themes/app-volleyball/variables.scss",
+                "src/global.scss"
+              ],
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            },
+            "app-handball": {
+              "index": "src/custom-themes/app-handball/index.html",
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
+                {
+                  "glob": "**/*.svg",
+                  "input": "node_modules/ionicons/dist/ionicons/svg",
+                  "output": "./svg"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "src/custom-themes/app-handball/assets",
+                  "output": "./assets"
+                },
+                {
+                  "glob": "manifest.webmanifest",
+                  "input": "src/custom-themes/app-handball",
+                  "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "styles": [
+                "src/custom-themes/app-handball/variables.scss",
+                "src/global.scss"
+              ],
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            },
+            "app-fussball": {
+              "index": "src/custom-themes/app-fussball/index.html",
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
+                {
+                  "glob": "**/*.svg",
+                  "input": "node_modules/ionicons/dist/ionicons/svg",
+                  "output": "./svg"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "src/custom-themes/app-fussball/assets",
+                  "output": "./assets"
+                },
+                {
+                  "glob": "manifest.webmanifest",
+                  "input": "src/custom-themes/app-fussball",
+                  "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "styles": [
+                "src/custom-themes/app-fussball/variables.scss",
+                "src/global.scss"
+              ],
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            },
+            "app-basketball": {
+              "index": "src/custom-themes/app-basketball/index.html",
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
+                {
+                  "glob": "**/*.svg",
+                  "input": "node_modules/ionicons/dist/ionicons/svg",
+                  "output": "./svg"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "src/custom-themes/app-basketball/assets",
+                  "output": "./assets"
+                },
+                {
+                  "glob": "manifest.webmanifest",
+                  "input": "src/custom-themes/app-basketball",
+                  "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "styles": [
+                "src/custom-themes/app-basketball/variables.scss",
+                "src/global.scss"
+              ],
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            },
+            "app-turnverein": {
+              "index": "src/custom-themes/app-turnverein/index.html",
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/assets",
+                  "output": "assets"
+                },
+                {
+                  "glob": "**/*.svg",
+                  "input": "node_modules/ionicons/dist/ionicons/svg",
+                  "output": "./svg"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "src/custom-themes/app-turnverein/assets",
+                  "output": "./assets"
+                },
+                {
+                  "glob": "manifest.webmanifest",
+                  "input": "src/custom-themes/app-turnverein",
+                  "output": "./"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
+                  "output": "assets"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "styles": [
+                "src/custom-themes/app-turnverein/variables.scss",
+                "src/global.scss"
+              ],
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
@@ -176,7 +560,14 @@
                 "src/custom-themes/app-kadetten-unihockey/variables.scss",
                 "src/global.scss"
               ],
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
@@ -224,7 +615,14 @@
                 "src/custom-themes/app-uhc-win-u/variables.scss",
                 "src/global.scss"
               ],
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
@@ -272,7 +670,14 @@
                 "src/custom-themes/app-stv-spreitenbach/variables.scss",
                 "src/global.scss"
               ],
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
@@ -320,7 +725,14 @@
                 "src/custom-themes/app-vbc-schaffhausen/variables.scss",
                 "src/global.scss"
               ],
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
@@ -368,7 +780,14 @@
                 "src/custom-themes/app-kadetten-handball/variables.scss",
                 "src/global.scss"
               ],
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
@@ -396,8 +815,7 @@
             "production": {
               "buildTarget": "app:build:production"
             },
-            "ci": {
-            }
+            "ci": {}
           }
         },
         "extract-i18n": {
@@ -483,6 +901,30 @@
     },
     "@ionic/angular-toolkit:page": {
       "styleext": "scss"
+    },
+    "@schematics/angular:component": {
+      "type": "component"
+    },
+    "@schematics/angular:directive": {
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
     }
   }
 }

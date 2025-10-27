@@ -10,7 +10,6 @@
 #endif
 #endif
 
-#import "CapacitorGoogleMapsPlugin.h"
 
 FOUNDATION_EXPORT double CapacitorGoogleMapsVersionNumber;
 FOUNDATION_EXPORT const unsigned char CapacitorGoogleMapsVersionString[];

@@ -1,0 +1,155 @@
+.welcome-content {
+  --background: transparent;
+}
+
+.welcome-container {
+  height: 100vh;
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.skip-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  --color: white;
+}
+
+.slides-container {
+  flex: 1 1 0;
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+
+  &.active {
+    opacity: 1;
+    z-index: 1;
+  }
+}
+
+.slide-content {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  color: white;
+  padding: 20px;
+}
+
+.slide-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.slide-subtitle {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  opacity: 0.9;
+}
+
+.slide-description {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
+.bottom-navigation {
+  width: 100vw;
+  box-sizing: border-box;
+  padding: 20px 0 32px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.18) 70%,
+    rgba(0, 0, 0, 0.01) 100%
+  );
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.bottom-navigation > * {
+  pointer-events: auto;
+}
+
+.slide-indicators {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &.active {
+    background-color: white;
+    transform: scale(1.2);
+  }
+}
+
+.navigation-buttons {
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+.nav-button {
+  --color: white;
+  --background: rgba(255, 255, 255, 0.2);
+  --background-hover: rgba(255, 255, 255, 0.3);
+  --background-activated: rgba(255, 255, 255, 0.4);
+  --border-radius: 20px;
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+
+  &.get-started {
+    --background: white;
+    --color: var(--ion-color-primary);
+  }
+}
+
+ng-lottie {
+  display: block !important;
+  width: 220px !important;
+  height: 220px !important;
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -2,19 +2,16 @@ import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   ModalController,
-  NavParams,
   ToastController,
+  IonRouterOutlet,
 } from "@ionic/angular";
 import { Browser } from "@capacitor/browser";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
   Observable,
-  Subscription,
   catchError,
   combineLatest,
-  finalize,
-  first,
   forkJoin,
   lastValueFrom,
   map,
@@ -24,28 +21,38 @@ import {
   take,
   tap,
 } from "rxjs";
-import { Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { MemberPage } from "../member/member.page";
 import { ClubMemberListPage } from "../club-member-list/club-member-list.page";
 import { ClubAdminListPage } from "../club-admin-list/club-admin-list.page";
-import { TeamListPage } from "../team-list/team-list.page";
 import { ClubTeamListPage } from "../club-team-list/club-team-list.page";
 import { ClubRequestListPage } from "../club-request-list/club-request-list.page";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { HelferPunkteClubPage } from "../helfer/helfer-punkte-club/helfer-punkte-club.page";
 import { Club } from "src/app/models/club";
 import { ClubSubscriptionPage } from "../club-subscription/club-subscription.page";
+import { ClubParentsListPage } from "../club-parents-list/club-parents-list.page";
+import { Optional } from "@angular/core";
+import { ClubLinksPage } from "../club-links/club-links.page";
+import {
+  Camera,
+  CameraResultType,
+  CameraSource,
+  Photo,
+} from "@capacitor/camera";
+import { ClubBillingPeriodPage } from "../club-billing-period/club-billing-period.page";
 
 @Component({
   selector: "app-club",
   templateUrl: "./club.page.html",
   styleUrls: ["./club.page.scss"],
+  standalone: false,
 })
 export class ClubPage implements OnInit {
-  @Input("data") club: any;
+  @Input() data!: any;
+
+  club: any;
 
   club$: Observable<any>;
 
@@ -60,27 +67,27 @@ export class ClubPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public navParams: NavParams,
+
     private readonly alertCtrl: AlertController,
     private readonly toastCtrl: ToastController,
     private readonly userProfileService: UserProfileService,
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
     private cdr: ChangeDetectorRef,
-    private translate: TranslateService
-  ) { }
+    private translate: TranslateService,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
+  ) {}
 
   ngOnInit() {
-    this.club = this.navParams.get("data");
+    // NavParams migration: now using @Input property directly
+    this.club = this.data;
 
     this.club$ = this.getClub(this.club.id);
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
   }
 
-  ngOnDestroy() {
-
-  }
+  ngOnDestroy() {}
   edit() {
     if (this.allowEdit) {
       this.allowEdit = false;
@@ -90,11 +97,29 @@ export class ClubPage implements OnInit {
   }
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+    return this.fbService.isClubAdmin(clubAdminList, clubId);
   }
+
+  hasFeatureHelferEvent(clubList, clubId) {
+    return (
+      clubList &&
+      clubList.some(
+        (club) => club.hasFeatureHelferEvent == true && club.id == clubId,
+      )
+    );
+  }
+  hasFeatureMyClubPro(clubList, clubId) {
+    return (
+      clubList &&
+      clubList.some(
+        (club) => club.hasFeatureMyClubPro == true && club.id == clubId,
+      )
+    );
+  }
+
   async openUrl(url: string) {
     Browser.open({
-      url: url
+      url: url,
     });
   }
   getClub(clubId: string) {
@@ -120,117 +145,168 @@ export class ClubPage implements OnInit {
           clubAdmins: this.fbService.getClubAdminRefs(clubId),
           clubRequests: this.fbService.getClubRequestRefs(clubId),
           clubTeams: this.fbService.getClubTeamRefs(clubId),
+          clubParents: this.fbService.getClubParentsRefs(clubId),
         }).pipe(
-          switchMap(({
-            clubMembers,
-            clubAdmins,
-            clubRequests,
-            clubTeams,
-          }) => {
-            const memberProfiles$ = clubMembers.map((member) =>
-              this.userProfileService.getUserProfileById(member.id).pipe(
-                take(1),
-                catchError(() =>
-                  of({ ...member, firstName: "Unknown", lastName: "Unknown" })
-                )
-              )
-            );
-            const adminProfiles$ = clubAdmins.map((admin) =>
-              this.userProfileService.getUserProfileById(admin.id).pipe(
-                take(1),
-                catchError(() =>
-                  of({ ...admin, firstName: "Unknown", lastName: "Unknown" })
-                )
-              )
-            );
-            const clubRequests$ = clubRequests.map((request) =>
-              this.userProfileService.getUserProfileById(request.id).pipe(
-                take(1),
-                catchError(() =>
-                  of({ ...request, firstName: "Unknown", lastName: "Unknown" })
-                )
-              )
-            );
-            // console.log(clubTeams)
-            
-            return forkJoin({
-              clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
-              clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
-              clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
-              clubTeams: of(clubTeams) 
-            }).pipe(
-              map(({
-                clubMembers,
-                clubAdmins,
-                clubRequests,
-                clubTeams
-              }) => ({
-                clubMembers: clubMembers.filter(
-                  (member) => member !== undefined
-                ), // Filter out undefined
-                clubAdmins: clubAdmins.filter((admin) => admin !== undefined), // Filter out undefined
-                clubRequests: clubRequests.filter(
-                  (request) => request !== undefined
-                ), // Filter out undefined*/
-                clubTeams:clubTeams,
-              }))
-            );
-          }),
-          map(({
-            clubMembers,
-            clubAdmins,
-            clubRequests,
-            clubTeams
-          }) => {
-
-            const ages = clubMembers
-              .map((member) =>
-                member.hasOwnProperty("dateOfBirth")
-                  ? calculateAge(member.dateOfBirth)
-                  : 0
-              )
-              .filter((age) => age > 0); // Filter out invalid or 'Unknown' ages
-            // console.log(ages);
-
-            const averageAge =
-              ages.length > 0
-                ? ages.reduce((a, b) => a + b, 0) / ages.length
-                : 0; // Calculate average or set to 0 if no valid ages
-            console.log(clubTeams)
-            return {
-              ...club,
-              clubTeams,
-              updated: Timestamp.fromMillis(club.updated.seconds * 1000).toDate().toISOString(),
-              averageAge: averageAge.toFixed(1), // Keep two decimal places
+          switchMap(
+            ({
               clubMembers,
               clubAdmins,
               clubRequests,
-            };
-          })
+              clubTeams,
+              clubParents,
+            }) => {
+              const memberProfiles$ = clubMembers.map((member) =>
+                this.userProfileService.getUserProfileById(member.id).pipe(
+                  take(1),
+                  catchError(() =>
+                    of({
+                      ...member,
+                      firstName: "Unknown",
+                      lastName: "Unknown",
+                    }),
+                  ),
+                ),
+              );
+              const adminProfiles$ = clubAdmins.map((admin) =>
+                this.userProfileService.getUserProfileById(admin.id).pipe(
+                  take(1),
+                  catchError(() =>
+                    of({ ...admin, firstName: "Unknown", lastName: "Unknown" }),
+                  ),
+                ),
+              );
+              const clubRequests$ = clubRequests.map((request) =>
+                this.userProfileService.getUserProfileById(request.id).pipe(
+                  take(1),
+                  catchError(() =>
+                    of({
+                      ...request,
+                      firstName: "Unknown",
+                      lastName: "Unknown",
+                    }),
+                  ),
+                ),
+              );
+
+              const clubTeams$ = clubTeams.map((team) =>
+                this.fbService.getTeamRef(team.id).pipe(
+                  take(1),
+                  map((team) => (team ? { ...team, id: team.id } : null)),
+                  catchError(() => of(null)),
+                ),
+              );
+
+              const parentProfiles$ = clubParents.map((parent) =>
+                this.userProfileService.getUserProfileById(parent.id).pipe(
+                  take(1),
+                  catchError(() =>
+                    of({
+                      ...parent,
+                      firstName: "Unknown",
+                      lastName: "Unknown",
+                    }),
+                  ),
+                ),
+              );
+
+              return forkJoin({
+                clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
+                clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
+                clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
+                clubTeams: forkJoin(clubTeams$).pipe(startWith([])),
+                clubParents: forkJoin(parentProfiles$).pipe(startWith([])),
+              }).pipe(
+                map(
+                  ({
+                    clubMembers,
+                    clubAdmins,
+                    clubRequests,
+                    clubTeams,
+                    clubParents,
+                  }) => ({
+                    clubMembers: clubMembers.filter(
+                      (member) => member !== undefined,
+                    ), // Filter out undefined
+                    clubAdmins: clubAdmins.filter(
+                      (admin) => admin !== undefined,
+                    ), // Filter out undefined
+                    clubRequests: clubRequests.filter(
+                      (request) => request !== undefined,
+                    ), // Filter out undefined*/
+                    clubTeams: clubTeams.filter(
+                      (team) => team !== null && team !== undefined,
+                    ), // Filter out undefined
+                    clubParents: clubParents.filter(
+                      (parent) => parent !== undefined,
+                    ),
+                  }),
+                ),
+              );
+            },
+          ),
+          map(
+            ({
+              clubMembers,
+              clubAdmins,
+              clubRequests,
+              clubTeams,
+              clubParents,
+            }) => {
+              const ages = clubMembers
+                .map((member) =>
+                  member.hasOwnProperty("dateOfBirth")
+                    ? calculateAge(member.dateOfBirth)
+                    : 0,
+                )
+                .filter((age) => age > 0); // Filter out invalid or 'Unknown' ages
+              // console.log(ages);
+
+              const averageAge =
+                ages.length > 0
+                  ? ages.reduce((a, b) => a + b, 0) / ages.length
+                  : 0; // Calculate average or set to 0 if no valid ages
+              // console.log(clubTeams)
+              return {
+                ...club,
+                clubTeams,
+                updated: Timestamp.fromMillis(club.updated.seconds * 1000)
+                  .toDate()
+                  .toISOString(),
+                averageAge: averageAge.toFixed(1), // Keep two decimal places
+                clubMembers,
+                clubAdmins,
+                clubRequests,
+                clubParents,
+              };
+            },
+          ),
         );
       }),
       catchError((err) => {
         this.toastActionError(err);
         console.error("Error in getClubWithMembersAndAdmins:", err);
         return of(null);
-      })
+      }),
     );
   }
 
-  onInput(ev, fieldname){
+  onInput(ev, fieldname) {
     console.log(ev.detail.value);
-    this.fbService.setClubThreshold(this.club.id, fieldname, ev.detail.value)
+    this.fbService.setClubThreshold(this.club.id, fieldname, ev.detail.value);
   }
 
   async openRequestList() {
     console.log("open Club Request List");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: ClubRequestListPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        club: this.club
+        club: this.club,
       },
     });
     modal.present();
@@ -241,16 +317,40 @@ export class ClubPage implements OnInit {
     }
   }
 
+  async openClubBilling() {
+    console.log("open Club Invoice List");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
+    const modal = await this.modalCtrl.create({
+      component: ClubBillingPeriodPage,
+      presentingElement,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        club: this.club,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
 
   async openMemberList() {
     console.log("open Club Member List");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: ClubMemberListPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        club: this.club
+        club: this.club,
       },
     });
     modal.present();
@@ -260,17 +360,19 @@ export class ClubPage implements OnInit {
     if (role === "confirm") {
     }
   }
-
 
   async openAdminList() {
     console.log("open Club Admin");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: ClubAdminListPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
-        club: this.club
+        club: this.club,
       },
     });
     modal.present();
@@ -280,33 +382,37 @@ export class ClubPage implements OnInit {
     if (role === "confirm") {
     }
   }
-  /*
-    async openRequestMember(member: Profile) {
-      console.log("open Request Member");
-      const modal = await this.modalCtrl.create({
-        component: MemberPage,
-        presentingElement: await this.modalCtrl.getTop(),
-        canDismiss: true,
-        showBackdrop: true,
-        componentProps: {
-          data: member,
-          isRequest: true,
-          clubId: this.club.id
-        },
-      });
-      modal.present();
-  
-      const { data, role } = await modal.onWillDismiss();
-  
-      if (role === "confirm") {
-      }
-    }*/
+
+  async openParentList() {
+    console.log("open Club Parents List");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
+    const modal = await this.modalCtrl.create({
+      component: ClubParentsListPage,
+      presentingElement,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        club: this.club,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
 
   async openSubscription() {
     console.log("open openSubscription CLUB");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: ClubSubscriptionPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -319,14 +425,16 @@ export class ClubPage implements OnInit {
 
     if (role === "confirm") {
     }
-
   }
 
   async openHelferPunkteClub() {
     console.log("open HelferPunkte CLUB");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: HelferPunkteClubPage,
-      presentingElement: await this.modalCtrl.getTop(),
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -339,20 +447,17 @@ export class ClubPage implements OnInit {
 
     if (role === "confirm") {
     }
-
   }
-  changeEmail(event){
-    console.log(event.detail.value)
+  changeEmail(event) {
+    console.log(event.detail.value);
     //this.fbService.setClub
   }
 
- /* changeClubttribute(value: any, fieldname) {
+  /* changeClubttribute(value: any, fieldname) {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return updateDoc(userProfileRef, { [fieldname]: value });
   }*/
-
-
 
   async openTeamList() {
     console.log("open Team List");
@@ -373,6 +478,27 @@ export class ClubPage implements OnInit {
     }
   }
 
+  async openLinksList() {
+    console.log("open Club Links List");
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
+    const modal = await this.modalCtrl.create({
+      component: ClubLinksPage,
+      presentingElement,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        clubId: this.club.id,
+      },
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
 
   async toastActionSaved() {
     const toast = await this.toastCtrl.create({
@@ -387,7 +513,9 @@ export class ClubPage implements OnInit {
 
   async toastActionCanceled() {
     const toast = await this.toastCtrl.create({
-      message: await lastValueFrom(this.translate.get("common.action__canceled")),
+      message: await lastValueFrom(
+        this.translate.get("common.action__canceled"),
+      ),
       duration: 1500,
       position: "top",
       color: "danger",
@@ -412,5 +540,35 @@ export class ClubPage implements OnInit {
 
   async confirm() {
     return await this.modalCtrl.dismiss(this.club, "confirm");
+  }
+
+  async changeClubLogo(club: Club) {
+    try {
+      const photo: Photo = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true,
+        resultType: CameraResultType.Base64,
+        source: CameraSource.Prompt,
+        width: 400,
+        height: 400,
+      });
+      await this.fbService.setClubLogo(club.id, photo);
+      // Club-Observable neu laden
+      this.club$ = this.getClub(club.id);
+      await this.toastActionSaved();
+    } catch (error) {
+      await this.toastActionError(error);
+    }
+  }
+
+  async changeClubAttribute(event, fieldname) {
+    const value = event.detail.value;
+    try {
+      await this.fbService.setClubAttribute(this.club.id, fieldname, value);
+      await this.toastActionSaved();
+      this.club$ = this.getClub(this.club.id);
+    } catch (error) {
+      await this.toastActionError(error);
+    }
   }
 }

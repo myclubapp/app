@@ -1,43 +1,38 @@
-import { Injectable, inject } from '@angular/core';
-import { AuthService } from '../auth.service';
+import {
+  Injectable,
+  inject,
+  Injector,
+  runInInjectionContext,
+} from "@angular/core";
+import { AuthService } from "../auth.service";
 import {
   Firestore,
-  addDoc,
   collection,
   collectionData,
   doc,
-  docData,
   deleteDoc,
   updateDoc,
-  DocumentReference,
-  setDoc,
+  getDocs,
+  addDoc,
+  orderBy,
+  query,
+  where,
+  Timestamp,
 } from "@angular/fire/firestore";
-import {
-  Observable,
-  Observer,
-  catchError,
-  combineLatest,
-  map,
-  mergeMap,
-  of,
-  switchMap,
-  take,
-  tap,
-} from "rxjs";
-import { User } from 'firebase/auth';
-import { orderBy, query, Timestamp, where } from 'firebase/firestore';
+import { Observable, shareReplay } from "rxjs";
+import { User } from "@angular/fire/auth";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class HelferService {
   user: User;
-  constructor(
-    private readonly firestore: Firestore = inject(Firestore),
-    private readonly authService: AuthService
-  ) { 
+  private injector = inject(Injector);
 
-  }
+  constructor(
+    private readonly firestore: Firestore,
+    private readonly authService: AuthService,
+  ) {}
   /*getHelferPunkteList() {
     return this.authService.getUser$().pipe(
       take(1),
@@ -57,38 +52,124 @@ export class HelferService {
     );
   }*/
 
-  getUserHelferPunkteRefs(userId: any, clubId: string): Observable<any[]> {
-    // console.log(userId, clubId)
-    const helferPunkteRefList = collection(
+  async deleteHelferPunkt(
+    clubId: string,
+    helferPunktId: string,
+  ): Promise<void> {
+    const docRef = doc(
       this.firestore,
-      `club/${clubId}/helferPunkte`
+      `club/${clubId}/helferPunkte/${helferPunktId}`,
     );
-    const q = query(
-      helferPunkteRefList,
-      where("userId", "==", userId),
-      orderBy("eventDate", "desc")
-    )
-    return collectionData(q, {
-      idField: "id",
+    await deleteDoc(docRef);
+  }
+
+  updateHelferPunkt(clubId: string, helferPunktId: string, data: any) {
+    const helferPunktRef = doc(
+      this.firestore,
+      `club/${clubId}/helferPunkte/${helferPunktId}`,
+    );
+    return updateDoc(helferPunktRef, data, { merge: true });
+  }
+
+  getHelferPunkteRefs(clubId: string): Observable<any[]> {
+    // console.log(userId, clubId)
+    return runInInjectionContext(this.injector, () => {
+      const helferPunkteRefList = collection(
+        this.firestore,
+        `club/${clubId}/helferPunkte`,
+      );
+      const q = query(
+        helferPunkteRefList,
+
+        orderBy("eventDate", "desc"),
+      );
+      return collectionData(q, {
+        idField: "id",
+      }).pipe(shareReplay(1));
     }) as Observable<any[]>;
   }
 
-
-  getUserHelferPunkteRefsWithFilter(userId: any, clubId: string, dateFrom:Timestamp, dateTo: Timestamp): Observable<any[]> {
-    console.log(userId, clubId, dateFrom, dateTo)
-    const helferPunkteRefList = collection(
-      this.firestore,
-      `club/${clubId}/helferPunkte`
-    );
-    const q = query(
-      helferPunkteRefList,
-      where("userId", "==", userId),
-      where("eventDate", ">=", dateFrom),
-      where("eventDate", "<=", dateTo),
-      orderBy("eventDate", "desc")
-    )
-    return collectionData(q, {
-      idField: "id",
+  getUserHelferPunkteRefs(userId: any, clubId: string): Observable<any[]> {
+    console.log(userId, clubId);
+    return runInInjectionContext(this.injector, () => {
+      const helferPunkteRefList = collection(
+        this.firestore,
+        `club/${clubId}/helferPunkte`,
+      );
+      const q = query(
+        helferPunkteRefList,
+        where("userId", "==", userId),
+        orderBy("eventDate", "desc"),
+      );
+      return collectionData(q, {
+        idField: "id",
+      }).pipe(shareReplay(1));
     }) as Observable<any[]>;
+  }
+
+  getUserHelferPunkteRefsWithFilter(
+    userId: any,
+    clubId: string,
+    dateFrom: Timestamp,
+    dateTo: Timestamp,
+  ): Observable<any[]> {
+    //  console.log(userId, clubId, dateFrom, dateTo)
+    return runInInjectionContext(this.injector, () => {
+      const helferPunkteRefList = collection(
+        this.firestore,
+        `club/${clubId}/helferPunkte`,
+      );
+      const q = query(
+        helferPunkteRefList,
+        where("userId", "==", userId),
+        where("eventDate", ">=", dateFrom),
+        where("eventDate", "<=", dateTo),
+        orderBy("eventDate", "desc"),
+      );
+      return collectionData(q, {
+        idField: "id",
+      }).pipe(shareReplay(1));
+    }) as Observable<any[]>;
+  }
+
+  createHelferPunkt(
+    clubId: string,
+    userId: string,
+    name: string,
+    eventDate: string,
+    points: number,
+  ) {
+    console.log(clubId, userId, name, eventDate, points);
+    const helferPunktRef = collection(
+      this.firestore,
+      `club/${clubId}/helferPunkte`,
+    );
+    return addDoc(helferPunktRef, {
+      userId: userId,
+      userRef: doc(this.firestore, `userProfile/${userId}`),
+      name: name,
+      eventName: name,
+      date: new Date(),
+      eventDate: new Date(eventDate),
+      points: points,
+      status: true,
+      confirmed: true,
+      confirmedBy: doc(
+        this.firestore,
+        `userProfile/${this.authService.auth.currentUser?.uid}`,
+      ),
+    });
+  }
+
+  async getHelferPunkte(clubId: string): Promise<any[]> {
+    const helferPunkteRef = collection(
+      this.firestore,
+      `club/${clubId}/helferPunkte`,
+    );
+    const snapshot = await getDocs(helferPunkteRef);
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
   }
 }

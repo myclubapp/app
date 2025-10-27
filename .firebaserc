@@ -8,23 +8,14 @@
         "beta": [
           "beta-myclub"
         ],
-        "app-turnverein": [
-          "turnverein"
+        "app-myclub": [
+          "my-club"
         ],
-        "app-volleyball": [
-          "volleyballclubapp"
+        "app-basketball": [
+          "basketballclub"
         ],
         "app-kadetten-unihockey": [
           "kadetten-unihockey"
-        ],
-        "app-handball": [
-          "handballclub"
-        ],
-        "app-fussball": [
-          "fussballclub"
-        ],
-        "app-unihockey": [
-          "unihockey"
         ],
         "app-uhc-win-u": [
           "uhc-win-u"
@@ -37,6 +28,21 @@
         ],
         "app-kadetten-handball": [
           "kadetten-handball"
+        ],
+        "app-handball": [
+          "handballschweiz"
+        ],
+        "app-volleyball": [
+          "swissvolley"
+        ],
+        "app-unihockey": [
+          "unihockey"
+        ],
+        "app-turnverein": [
+          "turnverein"
+        ],
+        "app-fussball": [
+          "fussballclub"
         ]
       }
     }

@@ -1,7 +1,11 @@
-import { Injectable, inject } from "@angular/core";
+import {
+  Injectable,
+  inject,
+  Injector,
+  runInInjectionContext,
+} from "@angular/core";
 import {
   limit,
-  Timestamp,
   Firestore,
   addDoc,
   collection,
@@ -11,44 +15,29 @@ import {
   query,
   where,
   docData,
+  updateDoc,
+  deleteDoc,
+  orderBy,
+  Timestamp,
 } from "@angular/fire/firestore";
 
 // import firebase from 'firebase/compat/app';
-import {
-  Observable,
-  Observer,
-  Subscription,
-  catchError,
-  concatMap,
-  defaultIfEmpty,
-  finalize,
-  forkJoin,
-  from,
-  map,
-  of,
-  switchMap,
-  take,
-  tap,
-} from "rxjs";
+import { Observable, shareReplay } from "rxjs";
 
 import { AuthService } from "src/app/services/auth.service";
 import { Training } from "src/app/models/training";
-import { User } from "firebase/auth";
 import { FirebaseService } from "../firebase.service";
-import { Team } from "src/app/models/team";
-import { deleteDoc } from "firebase/firestore";
 
 @Injectable({
   providedIn: "root",
 })
 export class TrainingService {
-  private subscription: Subscription;
-
   teamList: any[] = [];
+  private injector = inject(Injector);
+
   constructor(
-    private firestore: Firestore = inject(Firestore),
+    private firestore: Firestore,
     private readonly authService: AuthService,
-    private readonly fbService: FirebaseService
   ) {}
 
   async setCreateTraining(training: Training) {
@@ -57,7 +46,7 @@ export class TrainingService {
     // console.log(training);
     return addDoc(
       collection(this.firestore, `userProfile/${user.uid}/trainings`),
-      training
+      training,
     );
   }
 
@@ -65,90 +54,105 @@ export class TrainingService {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const gameRef = doc(
       this.firestore,
-      `teams/${teamId}/trainings/${trainingId}`
+      `teams/${teamId}/trainings/${trainingId}`,
     );
-    return docData(gameRef, { idField: "id" }) as Observable<Training>;
+    return runInInjectionContext(this.injector, () =>
+      docData(gameRef, { idField: "id" }).pipe(shareReplay(10)),
+    ) as Observable<Training>;
   }
 
   /* TEAM TrainingS */
   getTeamTrainingsRefs(teamId: string): Observable<Training[]> {
-    console.log(`Read Team Trainings List Ref ${teamId}`)
-    const trainingsRefList = collection(
-      this.firestore,
-      `teams/${teamId}/trainings`
-    );
-    const q = query(
-      trainingsRefList,
-      where(
-        "date", // date = endDate
-        ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600  * 1)) // 1 Hour after training ends
-      )
-    );
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
-      Training[]
-    >;
+    // console.log(`Read Team Trainings List Ref ${teamId}`);
+    return runInInjectionContext(this.injector, () => {
+      const trainingsRefList = collection(
+        this.firestore,
+        `teams/${teamId}/trainings`,
+      );
+      const q = query(
+        trainingsRefList,
+        where(
+          "date", // date = endDate
+          ">=",
+          Timestamp.fromMillis(Date.now() - 1000 * 3600 * 1), // 1 Hour after training ends
+        ),
+        orderBy("date", "asc"),
+      );
+      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+    }) as unknown as Observable<Training[]>;
   }
 
   // PAST 20 Entries
   getTeamTrainingsPastRefs(teamId: string): Observable<Training[]> {
     // console.log(`Read Team Trainings List Ref ${teamId}`)
-    const trainingsRefList = collection(
-      this.firestore,
-      `teams/${teamId}/trainings`
-    );
-    const q = query(
-      trainingsRefList,
-      where(
-        "date", //  date = endDate of training
-        "<",
-        Timestamp.fromDate(new Date(Date.now())) // sofort als "vergangen" anzeigen
-      ),
-      limit(20) 
-    ); 
-    return collectionData(q, { idField: "id" }) as unknown as Observable<
-      Training[]
-    >;
+    return runInInjectionContext(this.injector, () => {
+      const trainingsRefList = collection(
+        this.firestore,
+        `teams/${teamId}/trainings`,
+      );
+      const q = query(
+        trainingsRefList,
+        where(
+          "date", //  date = endDate of training
+          "<",
+          Timestamp.fromMillis(Date.now()), // sofort als "vergangen" anzeigen
+        ),
+        orderBy("date", "desc"),
+        limit(30),
+      );
+      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+    }) as unknown as Observable<Training[]>;
   }
 
-  /* CLUB TrainingS
-  getClubTrainingsRef(clubId: string): Observable<Training> {
-    const trainingsRefList = collection(
-      this.firestore,
-      `club/${clubId}/trainings`
-    );
-    return collectionData(trainingsRefList, {
-      idField: "id",
-    }) as unknown as Observable<Training>;
-  } */
+  getTeamTrainingsByDateRange(
+    teamId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Observable<Training[]> {
+    return runInInjectionContext(this.injector, () => {
+      const trainingsRefList = collection(
+        this.firestore,
+        `teams/${teamId}/trainings`,
+      );
+      const q = query(
+        trainingsRefList,
+        where("date", ">=", Timestamp.fromMillis(startDate.getTime())),
+        where("date", "<=", Timestamp.fromMillis(endDate.getTime())),
+        orderBy("date", "asc"),
+      );
+      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+    }) as unknown as Observable<Training[]>;
+  }
 
   /* TEAM TrainingS ATTENDEES */
   getTeamTrainingsAttendeesRef(
     teamId: string,
-    trainingId: string
+    trainingId: string,
   ): Observable<any[]> {
     // console.log(`Read Team Trainings Attendees List Ref ${teamId} with Training ${trainingId}`)
     const attendeesRefList = collection(
       this.firestore,
-      `teams/${teamId}/trainings/${trainingId}/attendees`
+      `teams/${teamId}/trainings/${trainingId}/attendees`,
     );
-    return collectionData(attendeesRefList, {
-      idField: "id",
-    }) as unknown as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(attendeesRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as unknown as Observable<any[]>;
   }
 
   /* TEAM TrainingS ATTENDEE Status */
   async setTeamTrainingAttendeeStatus(
     status: boolean,
     teamId: string,
-    trainingId: string
+    trainingId: string,
   ) {
     const user = this.authService.auth.currentUser;
     const statusRef = doc(
       this.firestore,
-      `teams/${teamId}/trainings/${trainingId}/attendees/${user.uid}`
+      `teams/${teamId}/trainings/${trainingId}/attendees/${user.uid}`,
     );
-    return await setDoc(statusRef, { status });
+    return await setDoc(statusRef, { status, changedAt: Timestamp.now() });
   }
 
   async setTeamTrainingAttendeeStatusAdmin(
@@ -159,16 +163,40 @@ export class TrainingService {
   ) {
     const statusRef = doc(
       this.firestore,
-      `teams/${teamId}/trainings/${trainingId}/attendees/${memberId}`
+      `teams/${teamId}/trainings/${trainingId}/attendees/${memberId}`,
     );
-    return await setDoc(statusRef, { status });
+    return await setDoc(statusRef, { status, changedAt: Timestamp.now() });
   }
 
   deleteTeamTraining(teamId: string, trainingId: string) {
     const gameRef = doc(
       this.firestore,
-      `teams/${teamId}/trainings/${trainingId}`
+      `teams/${teamId}/trainings/${trainingId}`,
     );
     return deleteDoc(gameRef);
+  }
+
+  async updateTraining(
+    teamId: string,
+    trainingId: string,
+    data: Partial<Training>,
+  ) {
+    const trainingRef = doc(
+      this.firestore,
+      `teams/${teamId}/trainings/${trainingId}`,
+    );
+    return updateDoc(trainingRef, data);
+  }
+
+  async sendReminder(teamId: string, trainingId: string) {
+    console.log("sendReminder", teamId, trainingId);
+    const trainingRef = doc(
+      this.firestore,
+      `teams/${teamId}/trainings/${trainingId}`,
+    );
+
+    return updateDoc(trainingRef, {
+      lastReminderSent: Timestamp.now(),
+    });
   }
 }

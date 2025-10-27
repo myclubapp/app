@@ -14,93 +14,171 @@
     </ion-toolbar>
   </ion-header>
 
-
-  <ng-container *ngIf="notifications$ | async as notificationsList; else loading">
-
-    <ion-list *ngIf="notificationsList.length > 0">
-      <ion-list-header>
-        <ion-label>{{ "common.notifications_open" | translate }}</ion-label>
-        <ion-button (click)="markALlAsRead()" size="small" fill="clear"> {{"common.all_read" | translate}}</ion-button>
-      </ion-list-header>
-      <ion-item *ngFor="let notification of notificationsList" detail>
-        <ion-icon color="primary" *ngIf="!notification.opened" name="notifications" slot="start" (click)="toggle(notification)"></ion-icon>
-        <ion-label (click)="openNotification(notification)">
-          <h2>{{ notification.title }}</h2>
-          <h3>{{ notification.message }}</h3>
-          <h3>{{ notification.date.toDate() | date:'dd.MM.YYYY hh:mm'}}</h3>
-        </ion-label>
-
-      </ion-item>
-
-    </ion-list>
-    <ion-list *ngIf="notificationsList.length==0">
-      <ion-list-header>
-        {{ "common.notifications_open" | translate }}
-      </ion-list-header>
-      <ion-item>
-        <ion-note> Keine offenen Benachrichtigungen gefunden </ion-note>
-      </ion-item>
-    </ion-list>
-  </ng-container>
-
-  <ng-container *ngIf="notificationsRead$ | async as notificationsReadList; else loading">
-
-    <ion-list *ngIf="notificationsReadList.length > 0">
-      <ion-list-header>
-        {{ "common.notifications_read" | translate }}
-      </ion-list-header>
-      <ion-item *ngFor="let notification of notificationsReadList" detail (click)="openNotification(notification)">
-
-        <ion-icon color="primary" *ngIf="notification.opened" name="notifications-outline" slot="start" ></ion-icon>
-
-        <ion-label >
-          <h2>{{ notification.title }}</h2>
-          <h3>{{ notification.message }}</h3>
-          <h3>{{ notification.date.toDate() | date:'dd.MM.YYYY hh:mm'}}</h3>
-        </ion-label>
-
-      </ion-item>
-
-    </ion-list>
-    <ion-list  *ngIf="notificationsReadList.length == 0">
-      <ion-list-header>
-        {{ "common.notifications_read" | translate }}
-      </ion-list-header>
-      <ion-item>
-        <ion-note> Keine Benachrichtigungen gefunden </ion-note>
-      </ion-item>
-    </ion-list>
-  </ng-container>
-
-
-</ion-content>
-
-
-<ng-template #loading>
+  @if (notifications$ | async; as notificationsList) { @if
+  (notificationsList.length > 0) {
+  <ion-list>
+    <ion-list-header>
+      <ion-label>{{ "common.notifications_open" | translate }}</ion-label>
+      <ion-button (click)="markALlAsRead()" size="small" fill="clear">
+        {{"common.all_read" | translate}}</ion-button
+      >
+    </ion-list-header>
+    @for (notification of notificationsList; track notification.id) {
+    <ion-item detail>
+      @if (!notification.opened) {
+      <ion-icon
+        color="primary"
+        name="notifications"
+        slot="start"
+        (click)="toggle(notification)"
+      ></ion-icon>
+      }
+      <ion-label (click)="openNotification(notification)">
+        <h2>{{ notification.title }}</h2>
+        <h3>{{ notification.message }}</h3>
+        <h3>{{ notification.date.toDate() | date:'dd.MM.yyyy HH:mm'}}</h3>
+      </ion-label>
+    </ion-item>
+    }
+  </ion-list>
+  } @if (notificationsList.length==0) {
+  <ion-list>
+    <ion-list-header>
+      {{ "common.notifications_open" | translate }}
+    </ion-list-header>
+    <ion-item>
+      <ion-note> Keine offenen Benachrichtigungen gefunden </ion-note>
+    </ion-item>
+  </ion-list>
+  } } @else {
   <ion-list>
     <ion-grid>
       <ion-row>
-        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
+        @for (item of skeleton; track $index) {
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
           <ion-card>
             <ion-card-header>
               <ion-card-subtitle>
-                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%"
+                ></ion-skeleton-text>
               </ion-card-subtitle>
               <ion-card-title>
-                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%"
+                ></ion-skeleton-text>
               </ion-card-title>
             </ion-card-header>
-
             <ion-card-content>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
             </ion-card-content>
           </ion-card>
         </ion-col>
+        }
       </ion-row>
     </ion-grid>
   </ion-list>
-</ng-template>
+  } @if (notificationsRead$ | async; as notificationsReadList) { @if
+  (notificationsReadList.length > 0) {
+  <ion-list>
+    <ion-list-header>
+      {{ "common.notifications_read" | translate }}
+    </ion-list-header>
+    @for (notification of notificationsReadList; track notification.id) {
+    <ion-item detail (click)="openNotification(notification)">
+      @if (notification.opened) {
+      <ion-icon
+        color="primary"
+        name="notifications-outline"
+        slot="start"
+      ></ion-icon>
+      }
+      <ion-label>
+        <h2>{{ notification.title }}</h2>
+        <h3>{{ notification.message }}</h3>
+        <h3>{{ notification.date.toDate() | date:'dd.MM.yyyy HH:mm'}}</h3>
+      </ion-label>
+    </ion-item>
+    }
+  </ion-list>
+  } @if (notificationsReadList.length == 0) {
+  <ion-list>
+    <ion-list-header>
+      {{ "common.notifications_read" | translate }}
+    </ion-list-header>
+    <ion-item>
+      <ion-note> Keine Benachrichtigungen gefunden </ion-note>
+    </ion-item>
+  </ion-list>
+  } } @else {
+  <ion-list>
+    <ion-grid>
+      <ion-row>
+        @for (item of skeleton; track $index) {
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-subtitle>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%"
+                ></ion-skeleton-text>
+              </ion-card-subtitle>
+              <ion-card-title>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%"
+                ></ion-skeleton-text>
+              </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 60%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        }
+      </ion-row>
+    </ion-grid>
+  </ion-list>
+  }
+</ion-content>

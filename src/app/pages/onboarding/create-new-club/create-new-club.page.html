@@ -1,0 +1,234 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ 'onboarding.create_new_club' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">
+        {{ 'common.close' | translate }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large"
+        >{{ 'onboarding.create_new_club' | translate }}</ion-title
+      >
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list [inset]="true">
+    <ion-accordion-group [value]="currentStep">
+      <!-- Schritt 1: Vereinsart -->
+      <ion-accordion value="type">
+        <ion-item slot="header">
+          <ion-label
+            ><b>{{ 'common.step_with_number' | translate:{num: 1} }}:</b> {{
+            'onboarding.club_type.label' | translate }}</ion-label
+          >
+        </ion-item>
+        <div slot="content">
+          <ion-list [inset]="true">
+            <ion-radio-group
+              [(ngModel)]="clubData.type"
+              (ionChange)="onTypeChange()"
+            >
+              <ion-item button="false">
+                <ion-radio
+                  slot="start"
+                  labelPlacement="end"
+                  justify="space-between"
+                  value="sports"
+                  >{{ 'onboarding.club_type.sports' | translate }}</ion-radio
+                >
+              </ion-item>
+              <ion-item button="false">
+                <ion-radio
+                  slot="start"
+                  labelPlacement="end"
+                  justify="space-between"
+                  value="culture"
+                  >{{ 'onboarding.club_type.culture' | translate }}</ion-radio
+                >
+              </ion-item>
+              <ion-item button="false">
+                <ion-radio
+                  slot="start"
+                  labelPlacement="end"
+                  justify="space-between"
+                  value="other"
+                  >{{ 'onboarding.club_type.other' | translate }}</ion-radio
+                >
+              </ion-item>
+            </ion-radio-group>
+            <ion-button
+              expand="block"
+              class="ion-margin-top"
+              (click)="goToNext('type')"
+              [disabled]="!clubData.type"
+              >Weiter</ion-button
+            >
+          </ion-list>
+        </div>
+      </ion-accordion>
+
+      <!-- Schritt 2: Sportart (nur bei Sportverein) -->
+      @if (clubData.type === 'sports') {
+      <ion-accordion value="sportType">
+        <ion-item slot="header">
+          <ion-label
+            ><b>{{ 'common.step_with_number' | translate:{num: 2} }}:</b> {{
+            'onboarding.sport_type.label' | translate }}</ion-label
+          >
+        </ion-item>
+        <div slot="content">
+          <ion-list [inset]="true">
+            <ion-text color="warning">
+              @if (clubData.type === 'sports' && clubData.sportType !== 'other')
+              {
+              <p style="font-size: 0.95em; margin: 1em">
+                Hinweis: Hier können nur Vereine hinzugefügt werden, die keinem
+                offiziellen Verband angeschlossen sind.
+              </p>
+              }
+            </ion-text>
+            <ion-radio-group [(ngModel)]="clubData.sportType">
+              <ion-item button="false">
+                <ion-radio
+                  slot="start"
+                  labelPlacement="end"
+                  justify="space-between"
+                  value="other"
+                  >{{ 'onboarding.sport_type.other' | translate }}</ion-radio
+                >
+              </ion-item>
+              <ion-item button="false">
+                <ion-radio
+                  slot="start"
+                  labelPlacement="end"
+                  justify="space-between"
+                  value="unihockey"
+                  >{{ 'onboarding.sports.unihockey' | translate }}</ion-radio
+                >
+              </ion-item>
+              <ion-item button="false">
+                <ion-radio
+                  slot="start"
+                  labelPlacement="end"
+                  justify="space-between"
+                  value="volleyball"
+                  >{{ 'onboarding.sports.volleyball' | translate }}</ion-radio
+                >
+              </ion-item>
+              <ion-item button="false">
+                <ion-radio
+                  slot="start"
+                  labelPlacement="end"
+                  justify="space-between"
+                  value="handball"
+                  >{{ 'onboarding.sports.handball' | translate }}</ion-radio
+                >
+              </ion-item>
+              <ion-item button="false">
+                <ion-radio
+                  slot="start"
+                  labelPlacement="end"
+                  justify="space-between"
+                  value="gymnastics"
+                  >{{ 'onboarding.sports.gymnastics' | translate }}</ion-radio
+                >
+              </ion-item>
+            </ion-radio-group>
+            <!-- Input-Feld für 'Andere Sportart' außerhalb der Radio-Gruppe -->
+            @if (clubData?.sportType === 'other') {
+            <ion-item>
+              <ion-input
+                label="{{ 'onboarding.sport_type.other_placeholder' | translate }}"
+                labelPlacement="stacked"
+                type="text"
+                [(ngModel)]="clubData.sportTypeOther"
+                required="true"
+              ></ion-input>
+            </ion-item>
+            }
+            <ion-button
+              expand="block"
+              class="ion-margin-top"
+              (click)="goToNext('sportType')"
+              [disabled]="!isSportTypeValid()"
+              >Weiter</ion-button
+            >
+          </ion-list>
+        </div>
+      </ion-accordion>
+      }
+
+      <!-- Schritt 3/2: Details -->
+      <ion-accordion value="details">
+        <ion-item slot="header">
+          <ion-label
+            ><b
+              >{{ 'common.step_with_number' | translate:{num: getStepNumber()}
+              }}:</b
+            >
+            {{ 'onboarding.club_questionnaire.intro' | translate }}</ion-label
+          >
+        </ion-item>
+        <div slot="content">
+          <ion-list [inset]="true">
+            @if (clubData.type === 'other') {
+            <ion-item>
+              <ion-input
+                label="{{ 'onboarding.club_type.other_placeholder' | translate }}"
+                labelPlacement="stacked"
+                type="text"
+                [(ngModel)]="clubData.otherType"
+                required="true"
+              ></ion-input>
+            </ion-item>
+            }
+            <ion-item>
+              <ion-input
+                label="{{ 'onboarding.club_name' | translate }}"
+                labelPlacement="stacked"
+                type="text"
+                [(ngModel)]="clubData.name"
+                required="true"
+              ></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input
+                label="{{ 'onboarding.club_questionnaire.teams' | translate }}"
+                labelPlacement="stacked"
+                type="number"
+                min="1"
+                [(ngModel)]="clubData.teams"
+                required="true"
+              ></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input
+                label="{{ 'onboarding.club_questionnaire.members' | translate }}"
+                labelPlacement="stacked"
+                type="number"
+                min="1"
+                [(ngModel)]="clubData.members"
+                required="true"
+              ></ion-input>
+            </ion-item>
+            <ion-button
+              expand="block"
+              class="ion-margin-top"
+              (click)="confirm()"
+              [disabled]="!isDetailsValid()"
+              >Fertig</ion-button
+            >
+          </ion-list>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </ion-list>
+</ion-content>
+
+<!-- Footer-Button entfernen -->

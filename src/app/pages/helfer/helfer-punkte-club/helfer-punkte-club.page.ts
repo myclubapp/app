@@ -1,162 +1,401 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { IonItemSliding, ModalController, NavParams } from '@ionic/angular';
-import { BehaviorSubject, Observable, catchError, combineLatest, debounceTime, defaultIfEmpty, forkJoin, map, of, switchMap, tap } from 'rxjs';
-import { FirebaseService } from 'src/app/services/firebase.service';
-import { HelferService } from 'src/app/services/firebase/helfer.service';
-import { UserProfileService } from 'src/app/services/firebase/user-profile.service';
-import { HelferDetailPage } from '../helfer-detail/helfer-detail.page';
-import { Club } from 'src/app/models/club';
-import { Timestamp } from 'firebase/firestore';
+import { Component, Input, OnInit } from "@angular/core";
+import {
+  AlertController,
+  IonItemSliding,
+  ModalController,
+  ToastController,
+  ToggleChangeEventDetail,
+} from "@ionic/angular";
+import {
+  BehaviorSubject,
+  Observable,
+  catchError,
+  combineLatest,
+  debounceTime,
+  forkJoin,
+  lastValueFrom,
+  map,
+  of,
+  switchMap,
+  take,
+  tap,
+} from "rxjs";
+import { FirebaseService } from "src/app/services/firebase.service";
+import { HelferService } from "src/app/services/firebase/helfer.service";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { HelferDetailPage } from "../helfer-detail/helfer-detail.page";
+import { HelferPunkteDetailPage } from "../helfer-punkte-detail/helfer-punkte-detail.page";
+import { Club } from "src/app/models/club";
+import { Timestamp } from "@angular/fire/firestore";
+import { TranslateService } from "@ngx-translate/core";
+import { EventService } from "src/app/services/firebase/event.service";
+import { Firestore } from "@angular/fire/firestore";
 
 @Component({
-  selector: 'app-helfer-punkte-club',
-  templateUrl: './helfer-punkte-club.page.html',
-  styleUrls: ['./helfer-punkte-club.page.scss'],
+  selector: "app-helfer-punkte-club",
+  templateUrl: "./helfer-punkte-club.page.html",
+  styleUrls: ["./helfer-punkte-club.page.scss"],
+  standalone: false,
 })
 export class HelferPunkteClubPage implements OnInit {
-  @Input("clubId") clubId: any;
+  @Input() clubId!: string;
   clubAdminList$: Observable<Club[]>;
   allowEdit: boolean = false;
 
   club$: Observable<Club | any>;
-  helferPunkteList$: Observable<any[]>;
-  filteredHelferPunkteList$: Observable<any[]>;
+  clubMembers$: Observable<any[]>;
+  filteredClubMembers$: Observable<any[]>;
 
-  groupArray = [];
+  groupArray: string[] = [];
 
-  searchTerm = new BehaviorSubject<string>('');  // Initialized with an empty string
+  plannedToggle = new BehaviorSubject<boolean>(false);
+
+  searchTerm = new BehaviorSubject<string>("");
+
+  pointsRange = new BehaviorSubject<{ lower: number; upper: number }>({
+    lower: 0,
+    upper: 99,
+  }); // Default range with higher upper limit
 
   minDate: string = "";
   maxDate: string = "";
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public navParams: NavParams,
-    private readonly helferService: HelferService,
-    private readonly userProfileService: UserProfileService,
-    private readonly fbService: FirebaseService,
-  ) {
+    private translate: TranslateService,
 
-  }
+    private readonly alertController: AlertController,
+    private readonly helferService: HelferService,
+    private readonly eventService: EventService,
+    private readonly userProfileService: UserProfileService,
+    private readonly toastController: ToastController,
+    private readonly fbService: FirebaseService,
+    private readonly firestore: Firestore,
+  ) {}
 
   ngOnInit() {
-
+    console.log("ngOnInit called with clubId:", this.clubId);
+    // Initialize date ranges
     let dateFrom = new Date();
     dateFrom.setFullYear(new Date().getFullYear() - 2);
     this.minDate = dateFrom.toISOString();
-    
+
     let dateTo = new Date();
     dateTo.setFullYear(new Date().getFullYear() + 2);
     this.maxDate = dateTo.toISOString();
 
-    this.club$ = this.fbService.getClubRef(this.clubId);
+    // Initialize plannedToggle with false
+    this.plannedToggle.next(false);
 
-    this.initializeClubMembersWithHelferPunkte(this.clubId);
+    // Load club data
+    this.club$ = this.fbService.getClubRef(this.clubId).pipe(
+      take(1),
+      tap((club) => {
+        console.log("Club data loaded:", club);
+        if (!club) {
+          console.error("No club found with ID:", this.clubId);
+        }
+      }),
+      catchError((err) => {
+        console.error("Error loading club data:", err);
+        return of(null);
+      }),
+    );
 
-    this.clubAdminList$ = this.fbService.getClubAdminList();
+    // Initialize members list
+    this.initializeClubMembers(this.clubId);
 
-    const currentYear = new Date().getFullYear();
-    this.groupArray.push(currentYear);
-    this.groupArray.push(currentYear - 1);
-    this.groupArray.push(currentYear - 2);
-    this.groupArray.push(currentYear - 3);
+    // Load admin list
+    this.clubAdminList$ = this.fbService.getClubAdminList().pipe(
+      tap((admins) => console.log("Club admin list loaded:", admins)),
+      catchError((err) => {
+        console.error("Error loading admin list:", err);
+        return of([]);
+      }),
+    );
+  }
+  onHelferPunktePlanned(event: CustomEvent<ToggleChangeEventDetail>) {
+    this.plannedToggle.next(event.detail.checked);
   }
 
-  handleSearch(event: any) {
-    const searchTerm = event.detail.value || '';
-    console.log('Handling Search Event:', searchTerm);
-    this.searchTerm.next(searchTerm.trim()); // Trim and update the search term
+  downloadClubPoints() {
+    console.log("downloadClubPoints");
+
+    this.clubMembers$.pipe(take(1)).subscribe(async (members) => {
+      if (!members || members.length === 0) {
+        const toast = await this.toastController.create({
+          message: "Keine Mitglieder gefunden",
+          duration: 2000,
+          color: "warning",
+        });
+        await toast.present();
+        return;
+      }
+
+      // CSV Header
+      let csvContent =
+        "Vorname,Nachname,Rollen,Gesamtpunkte,Helferpunkte Details\n";
+
+      // CSV Daten
+      members.forEach((member) => {
+        const firstName = member.profile.firstName || "";
+        const lastName = member.profile.lastName || "";
+        const roles = member.roles?.join("; ") || "";
+        const totalPoints = member.totalPoints || 0;
+        const helferPunkte = member.helferPunkte || 0;
+        // Helferpunkte Details
+        const helferDetails =
+          member.helferevents
+            ?.filter((event) => event.status)
+            ?.map(
+              (event) =>
+                `${event.name} (${event.points} Punkte am ${event.eventDate?.toDate().toLocaleDateString()})`,
+            )
+            ?.join("; ") || "";
+
+        csvContent += `"${firstName}","${lastName}","${roles}",${helferPunkte},${totalPoints},"${helferDetails}"\n`;
+      });
+
+      // Erstelle Blob und Download
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `helferpunkte_${new Date().toISOString().split("T")[0]}.csv`,
+      );
+      link.style.visibility = "hidden";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
   }
+  async changeDate(event, fieldname) {
+    await this.fbService.setClubHelferReportingDate(
+      this.clubId,
+      fieldname,
+      event.detail.value,
+    );
+  }
+  initializeClubMembers(clubId: string) {
+    console.log("initializeClubMembers called with clubId:", clubId);
 
-  initializeClubMembersWithHelferPunkte(clubId) {
-    this.groupArray = [];  // Initialize or clear the group array
-
-    this.helferPunkteList$ = this.fbService.getClubRef(clubId).pipe(
-      tap(club => console.log("Fetched club:", club)),
+    this.clubMembers$ = this.fbService.getClubRef(clubId).pipe(
       switchMap((club) => {
         if (!club) {
-          console.log("No club found for ID:", clubId);
-          return of(null);
+          console.error("No club found for members processing");
+          return of([]);
         }
+
+        // Lade alle Events mit Schichten einmal
+        const eventsWithSchichten$ = this.eventService
+          .getClubHelferEventRefsByDate(
+            this.clubId,
+            Timestamp.fromDate(new Date(club["helferReportingDateFrom"])),
+            Timestamp.fromDate(new Date(club["helferReportingDateTo"])),
+          )
+          .pipe(
+            switchMap((events) => {
+              if (events.length === 0) return of([]);
+              return combineLatest(
+                events.map((event) =>
+                  this.eventService
+                    .getClubHelferEventSchichtenRef(this.clubId, event.id)
+                    .pipe(
+                      switchMap((schichten) => {
+                        if (schichten.length === 0)
+                          return of({ ...event, schichten: [] });
+                        return combineLatest(
+                          schichten.map((schicht) =>
+                            this.eventService
+                              .getClubHelferEventSchichtAttendeesRef(
+                                this.clubId,
+                                event.id,
+                                schicht.id,
+                              )
+                              .pipe(
+                                map((attendees) => ({
+                                  ...schicht,
+                                  attendees: attendees,
+                                  countAttendees: attendees.filter(
+                                    (att) => att.status === true,
+                                  ).length,
+                                })),
+                              ),
+                          ),
+                        ).pipe(
+                          map((schichtenWithAttendees) => ({
+                            ...event,
+                            schichten: schichtenWithAttendees,
+                          })),
+                        );
+                      }),
+                    ),
+                ),
+              );
+            }),
+          );
+
         return this.fbService.getClubMemberRefs(clubId).pipe(
-          tap(members => console.log("Fetched members:", members)),
+          tap((members) => console.log("Club members loaded:", members.length)),
           switchMap((members) => {
             if (!members.length) {
-              console.log("No members found in club:", clubId);
-              this.groupArray = [];
+              console.log("No members found in club");
               return of([]);
             }
-            const memberDetailsWithHelferPunkte$ = members.map((member) =>
-              this.userProfileService.getUserProfileById(member.id).pipe(
-                switchMap((profile) => {
-                  if (!profile) {
-                    return of({ profile: { ...member, firstName: "Unknown", lastName: "Unknown", roles: member.roles || [] }, helferPunkte: [], totalPoints: 0 });
-                  }
-                  return this.helferService.getUserHelferPunkteRefsWithFilter(profile.id, clubId, Timestamp.fromDate(new Date(club.helferReportingDateFrom)), Timestamp.fromDate(new Date(club.helferReportingDateTo))).pipe(
-                    map((helferPunkte) => ({
+            console.log("Members found in club:", members.length);
+
+            // Kombiniere die Events mit den Member-Details
+            return combineLatest([
+              eventsWithSchichten$,
+              ...members.map((member) =>
+                combineLatest([
+                  this.userProfileService.getUserProfileById(member.id),
+                  this.helferService.getUserHelferPunkteRefsWithFilter(
+                    member.id,
+                    this.clubId,
+                    Timestamp.fromDate(
+                      new Date(club["helferReportingDateFrom"]),
+                    ),
+                    Timestamp.fromDate(new Date(club["helferReportingDateTo"])),
+                  ),
+                ]).pipe(
+                  map(([profile, helferevents]) => ({
+                    member,
+                    profile,
+                    helferevents,
+                  })),
+                ),
+              ),
+            ]).pipe(
+              map(([eventsWithSchichten, ...memberDetails]) => {
+                return memberDetails.map(
+                  ({ member, profile, helferevents }) => {
+                    // Filtere die Events für den aktuellen Member
+                    const memberEventsWithSchichten = eventsWithSchichten
+                      .map((event) => {
+                        const memberSchichten = event.schichten.filter(
+                          (schicht) => {
+                            const memberAttendee = schicht.attendees.find(
+                              (att) => att.id === member.id,
+                            );
+                            return (
+                              memberAttendee &&
+                              memberAttendee.status === true &&
+                              (!memberAttendee.confirmed ||
+                                memberAttendee.confirmed === false ||
+                                !memberAttendee.confirmed === true)
+                            );
+                          },
+                        );
+                        return {
+                          ...event,
+                          schichten: memberSchichten,
+                        };
+                      })
+                      .filter((event) => event.schichten.length > 0);
+
+                    if (!profile) {
+                      return {
+                        id: member.id,
+                        profile: {
+                          ...member,
+                          firstName: "Unknown",
+                          lastName: "Unknown",
+                          roles: member.roles || [],
+                        },
+                        groupBy: "U",
+                        roles: member.roles || [],
+                        helferPunkte:
+                          member?.helferPunkte ?? club?.helferPunkte,
+                        helferevents: helferevents || [],
+                        helfereventsPlanned: memberEventsWithSchichten || [],
+                        totalPointsPlanned: memberEventsWithSchichten.length,
+                      };
+                    }
+
+                    const filteredHelferPunkte =
+                      helferevents?.filter((punkt) => punkt.status === true) ||
+                      [];
+                    const totalPoints = filteredHelferPunkte.reduce(
+                      (sum, punkt) => Number(sum) + Number(punkt.points || 0),
+                      0,
+                    );
+
+                    return {
+                      id: profile.id,
                       profile,
-                      helferPunkte,
-                      totalPoints: helferPunkte.reduce((sum, item) => sum + Number(item.points), 0),
-                      groupBy: profile.firstName.charAt(0).toUpperCase(),
-                      roles: member.roles || []
-                    })),
-                    catchError((err) => {
-                      return of({ profile, helferPunkte: [], totalPoints: 0 });
-                    })
-                  );
-                }),
-                catchError((err) => {
-                  return of({
-                    profile: {
-                      ...member, firstName: "Unknown", lastName: "Unknown",
-                      roles: member.roles || [] // Ensure role or other attributes are included even in error
-                    }, helferPunkte: [], totalPoints: 0
-                  });
-                })
-              )
+                      groupBy: profile.firstName
+                        ? profile.firstName.charAt(0).toUpperCase()
+                        : "Z",
+                      roles: member.roles || [],
+                      totalPoints: totalPoints,
+                      helferPunkte: member.helferPunkte ?? club.helferPunkte,
+                      helferevents: helferevents,
+                      helfereventsPlanned: memberEventsWithSchichten,
+                      totalPointsPlanned: memberEventsWithSchichten.length,
+                    };
+                  },
+                );
+              }),
             );
-            return combineLatest(memberDetailsWithHelferPunkte$);
           }),
-          map(memberDetails => {
-            // Integrate search filter here
-            memberDetails.map(member => {
-              console.log(member)
-              const groupByChar = member.profile.firstName.charAt(0).toUpperCase();
-              if (!this.groupArray.includes(groupByChar)) {
-                this.groupArray.push(groupByChar);
-              }
-            });
-            return memberDetails.sort((a, b) => a.profile.firstName.localeCompare(b.profile.firstName));
+          map((memberDetails) => {
+            // Update groupArray based on available data
+            const groups = [
+              ...new Set(memberDetails.map((member) => member.groupBy)),
+            ].sort();
+
+            // Only update if we have results, otherwise keep existing groups
+            if (groups.length > 0) {
+              this.groupArray = groups;
+            }
+
+            console.log("Final member details count:", memberDetails.length);
+            console.log("Group array:", this.groupArray);
+
+            return memberDetails.sort((a, b) =>
+              a.profile.firstName.localeCompare(b.profile.firstName),
+            );
           }),
-          catchError((err) => {
-            console.error("Error fetching members for club:", clubId, err);
-            return of([]);
-          })
         );
       }),
       catchError((err) => {
-        console.error("Error fetching club with ID:", clubId, err);
+        console.error("Error in outer stream:", err);
         return of([]);
-      })
+      }),
     );
 
-
-    this.filteredHelferPunkteList$ = combineLatest([this.helferPunkteList$, this.searchTerm]).pipe(
+    // Apply search filter
+    this.filteredClubMembers$ = combineLatest([
+      this.clubMembers$,
+      this.searchTerm,
+    ]).pipe(
       debounceTime(300),
       map(([members, term]) => {
         if (!term) return members;
 
-        const filtered = members.filter(member =>
-          member.profile.firstName.toLowerCase().includes(term.toLowerCase()) ||
-          member.profile.lastName.toLowerCase().includes(term.toLowerCase()) ||
-          member.roles.find(role => role.toLowerCase().includes(term.toLowerCase()))
+        const filtered = members.filter(
+          (member) =>
+            member.profile.firstName
+              .toLowerCase()
+              .includes(term.toLowerCase()) ||
+            member.profile.lastName
+              .toLowerCase()
+              .includes(term.toLowerCase()) ||
+            member.roles.find((role) =>
+              role.toLowerCase().includes(term.toLowerCase()),
+            ),
         );
         return filtered;
       }),
-      map(filtered => {
+      map((filtered) => {
         // Update the groupArray
         this.groupArray = [];
-        filtered.forEach(member => {
+        filtered.forEach((member) => {
           const groupByChar = member.profile.firstName.charAt(0).toUpperCase();
           if (!this.groupArray.includes(groupByChar)) {
             this.groupArray.push(groupByChar);
@@ -164,103 +403,108 @@ export class HelferPunkteClubPage implements OnInit {
         });
         return filtered;
       }),
-      tap(filtered => console.log("Filtered members:", filtered.length)),
-      catchError(err => {
+      tap((filtered) => console.log("Filtered members:", filtered.length)),
+      catchError((err) => {
         console.error("Error filtering members:", err);
         return of([]);
-      })
+      }),
     );
   }
 
-  changeHelferPunkt(slidingItem: IonItemSliding, member, helferPunkt) {
-    slidingItem.closeOpened();
-
-    console.log(member, helferPunkt)
+  handleSearch(event: any) {
+    const searchTerm = event.detail.value || "";
+    console.log("Handling Search Event:", searchTerm);
+    this.searchTerm.next(searchTerm.trim());
   }
 
-  deleteHelferPunkt(slidingItem: IonItemSliding, member, helferPunkt) {
-    slidingItem.closeOpened();
-
-    console.log(member, helferPunkt)
-  }
-
-  /*
-    getClubMembersWithHelferPunkte(clubId: string) {
-      return this.fbService.getClubRef(clubId).pipe(
-        tap(club => console.log("Fetched club:", club)),
-        switchMap((club) => {
-          if (!club) {
-            console.log("No club found for ID:", clubId);
-            return of(null);
-          }
-          return this.fbService.getClubMemberRefs(clubId).pipe(
-            tap(members => console.log("Fetched members:", members)),
-            switchMap((members) => {
-              if (!members.length) {
-                console.log("No members found in club:", clubId);
-                return of([]);
-              }
-              const memberDetailsWithHelferPunkte$ = members.map((member) =>
-                this.userProfileService.getUserProfileById(member.id).pipe(
-                  switchMap((profile) => {
-                    if (!profile) {
-                      return of({ profile: { ...member, firstName: "Unknown", lastName: "Unknown" }, helferPunkte: [], totalPoints: 0 });
-                    }
-                    return this.helferService.getUserHelferPunkteRefs(profile.id, clubId).pipe(
-                      map((helferPunkte) => ({
-                        profile,
-                        helferPunkte,
-                        totalPoints: helferPunkte.reduce((sum, item) => sum + Number(item.points), 0)
-                      })),
-                      catchError((err) => {
-                        return of({ profile, helferPunkte: [], totalPoints: 0 });
-                      })
-                    );
-                  }),
-                  catchError((err) => {
-                    return of({ profile: { ...member, firstName: "Unknown", lastName: "Unknown" }, helferPunkte: [], totalPoints: 0 });
-                  })
-                )
-              );
-              return combineLatest(memberDetailsWithHelferPunkte$);
-            }),
-            map(memberDetails => {
-              // Integrate search filter here
-              return memberDetails.sort((a, b) => a.profile.firstName.localeCompare(b.profile.firstName));
-            }),
-            catchError((err) => {
-              console.error("Error fetching members for club:", clubId, err);
-              return of([]);
-            })
-          );
-        }),
-        catchError((err) => {
-          console.error("Error fetching club with ID:", clubId, err);
-          return of([]);
-        })
-      );
-    }*/
-
-  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some(club => club.id === clubId);
-  }
-  setFilter(role) {
-    this.handleSearch({ detail: { value: role } })
-  }
-  edit() {
-
-    if (this.allowEdit) {
-      this.allowEdit = false;
-    } else {
-      this.allowEdit = true;
+  async openHelferPunktDetailModal(helferData: any) {
+    console.log("openHelferPunktDetailModal", helferData);
+    console.log("eventsWithSchichten", helferData.eventsWithSchichten);
+    const modal = await this.modalCtrl.create({
+      component: HelferPunkteDetailPage,
+      presentingElement: await this.modalCtrl.getTop(),
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: helferData,
+        clubId: this.clubId,
+      },
+    });
+    modal.present();
+    const { data, role } = await modal.onWillDismiss();
+    if (role === "confirm") {
+      // Refresh the list if confirmed
     }
   }
 
-  async changeDate(event, fieldname) {
-    await this.fbService.setClubHelferReportingDate(this.clubId, fieldname, event.detail.value)
+  async changeHelferPunkt(slidingItem: IonItemSliding, member, helferPunkt) {
+    await slidingItem.closeOpened();
 
+    const alert = await this.alertController.create({
+      message: "asdasd",
+      header: "Helferpunkt ändern",
+      inputs: [
+        {
+          id: "points",
+          value: helferPunkt.points,
+        },
+      ],
+      buttons: [
+        {
+          id: "ok",
+          text: "Speichern",
+          handler: (data) => {
+            console.log(data.points);
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+
+    // this.presentToast();
+    console.log(member, helferPunkt);
   }
 
+  onHelferPunkteMinChange(event: CustomEvent) {
+    const value = Number(event.detail.value);
+    console.log("Min range changed to:", value);
+    this.pointsRange.next({
+      lower: value,
+      upper: this.pointsRange.value.upper,
+    });
+  }
+
+  onHelferPunkteMaxChange(event: CustomEvent) {
+    const value = Number(event.detail.value);
+    console.log("Max range changed to:", value);
+    this.pointsRange.next({
+      lower: this.pointsRange.value.lower,
+      upper: value,
+    });
+  }
+
+  async presentToast() {
+    const toast = await this.toastController.create({
+      message: await lastValueFrom(this.translate.get("common.success__saved")),
+      color: "success",
+      duration: 1500,
+      position: "top",
+    });
+    toast.present();
+  }
+
+  isClubAdmin(clubAdminList: any[], clubId: string): boolean {
+    return this.fbService.isClubAdmin(clubAdminList, clubId);
+  }
+
+  setFilter(role) {
+    this.handleSearch({ detail: { value: role } });
+  }
+
+  edit() {
+    this.allowEdit = !this.allowEdit;
+  }
 
   async openHelferEvent(helferPunkt) {
     const modal = await this.modalCtrl.create({
@@ -272,7 +516,7 @@ export class HelferPunkteClubPage implements OnInit {
         data: {
           ...helferPunkt,
           clubId: helferPunkt.clubRef.id,
-          id: helferPunkt.eventRef.id
+          id: helferPunkt.eventRef.id,
         },
         isFuture: false,
       },
@@ -282,10 +526,9 @@ export class HelferPunkteClubPage implements OnInit {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
+      // Refresh the list if confirmed
     }
-
   }
-
 
   async close() {
     return await this.modalCtrl.dismiss(null, "close");
@@ -293,5 +536,143 @@ export class HelferPunkteClubPage implements OnInit {
 
   async confirm() {
     return await this.modalCtrl.dismiss(null, "confirm");
+  }
+
+  async openHelferPunktCreateModal() {
+    const members = await lastValueFrom(this.clubMembers$.pipe(take(1)));
+    if (!members || members.length === 0) {
+      const toast = await this.toastController.create({
+        message: "Keine Mitglieder gefunden",
+        duration: 2000,
+        color: "warning",
+      });
+      await toast.present();
+      return;
+    }
+
+    const memberOptions = members.map((member) => ({
+      label: `${member.profile.firstName} ${member.profile.lastName}`,
+      type: "radio" as const,
+      value: member.profile.id,
+    }));
+
+    // Erster Alert für Mitgliederauswahl
+    const memberAlert = await this.alertController.create({
+      header: "Mitglied auswählen",
+      inputs: memberOptions,
+      buttons: [
+        {
+          text: "Abbrechen",
+          role: "cancel",
+        },
+        {
+          text: "Weiter",
+          role: "confirm",
+        },
+      ],
+    });
+
+    await memberAlert.present();
+    const memberResult = await memberAlert.onWillDismiss();
+
+    if (memberResult.role !== "confirm" || !memberResult.data?.values) {
+      const toast = await this.toastController.create({
+        message: "Bitte wählen Sie ein Mitglied aus",
+        duration: 2000,
+        position: "top",
+        color: "warning",
+      });
+      await toast.present();
+      return;
+    }
+
+    const memberId = memberResult.data.values;
+
+    // Zweiter Alert für Details
+    const detailsAlert = await this.alertController.create({
+      header: "Helferpunkt Details",
+      inputs: [
+        {
+          name: "name",
+          type: "text" as const,
+          placeholder: "Beschreibung",
+          label: "Beschreibung",
+        },
+        {
+          name: "date",
+          type: "date" as const,
+          label: "Datum",
+        },
+        {
+          name: "points",
+          type: "number" as const,
+          placeholder: "Punkte",
+          label: "Punkte",
+          value: "1",
+          min: "1",
+          max: "10",
+        },
+      ],
+      buttons: [
+        {
+          text: "Zurück",
+          role: "cancel",
+        },
+        {
+          text: "Speichern",
+          role: "confirm",
+        },
+      ],
+    });
+
+    await detailsAlert.present();
+    const detailsResult = await detailsAlert.onWillDismiss();
+
+    if (detailsResult.role === "cancel") {
+      this.openHelferPunktCreateModal();
+      return;
+    }
+
+    if (detailsResult.role !== "confirm" || !detailsResult.data) {
+      const toast = await this.toastController.create({
+        message: "Bitte füllen Sie alle Felder aus",
+        duration: 2000,
+        position: "top",
+        color: "warning",
+      });
+      await toast.present();
+      return;
+    }
+
+    const details = detailsResult.data;
+
+    try {
+      const helferPunkt = await this.helferService.createHelferPunkt(
+        this.clubId,
+        memberId,
+        details.name,
+        details.date,
+        Number(details.points),
+      );
+      console.log("helferPunkt id", helferPunkt.id);
+
+      const toast = await this.toastController.create({
+        message: "Helferpunkt erfolgreich erstellt",
+        duration: 2000,
+        position: "top",
+        color: "success",
+      });
+      await toast.present();
+
+      this.initializeClubMembers(this.clubId);
+    } catch (error) {
+      console.error("Error creating Helferpunkt:", error);
+      const toast = await this.toastController.create({
+        message: "Fehler beim Erstellen des Helferpunkts",
+        duration: 2000,
+        color: "danger",
+      });
+      await toast.present();
+    }
   }
 }

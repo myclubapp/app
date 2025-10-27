@@ -1,71 +1,16 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-menu-button *ngIf="!isModal"></ion-menu-button>
+      @if (!isModal) {
+      <ion-menu-button></ion-menu-button>
+      }
     </ion-buttons>
     <ion-title> {{"common.training" | translate}}</ion-title>
-    <ion-buttons *ngIf="isModal" slot="primary">
+    @if (isModal) {
+    <ion-buttons slot="primary">
       <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
     </ion-buttons>
-    <!--<ion-buttons slot="end">
-      <ion-button id="trainingMoreButton">
-        <ion-icon slot="icon-only" name="ellipsis-horizontal-outline"></ion-icon>
-      </ion-button>
-      <ion-popover trigger="trainingMoreButton" size="auto">
-        <ng-template>
-          <ion-content class="ion-padding">
-            <ion-list>
-              <ion-list-header>
-                <ion-note>
-                  Alle Trainings
-                </ion-note>
-              </ion-list-header>
-              <ion-item type="button" detail="true">
-                <ion-icon slot="start" name="checkmark-circle" color="success">
-                </ion-icon>
-                <ion-label>
-                  zusagen
-                </ion-label></ion-item>
-              <ion-item type="button" detail="true">
-                <ion-icon slot="start" name="close-circle" color="danger">
-                </ion-icon>
-                <ion-label>
-                  absagen
-                </ion-label>
-              </ion-item>
-            </ion-list>
-            <ion-list>
-              <ion-list-header>
-                <ion-note>
-                  Administration
-                </ion-note>
-              </ion-list-header>
-
-              <ion-item type="button" detail="true">
-                <ion-icon slot="start" name="cloud-download-outline" color="primary">
-                </ion-icon>
-                <ion-label>
-                  J&S Export
-                </ion-label>
-              </ion-item>
-
-            </ion-list>
-          </ion-content>
-        </ng-template>
-      </ion-popover>
-    </ion-buttons>-->
-    <!--<ion-buttons slot="end">
-      <ng-container *ngIf="teamList$ | async as teamList">
-        <ng-container *ngIf="teamList.length > 0">
-          <ion-button *ngIf="!filterValue" (click)="openFilter($event)">
-            <ion-icon slot="icon-only" name="filter"></ion-icon>
-          </ion-button>
-          <ion-button *ngIf="filterValue" (click)="openFilter($event)">
-            <ion-icon slot="icon-only" name="filter-circle"></ion-icon>
-          </ion-button>
-        </ng-container>
-      </ng-container>
-    </ion-buttons>-->
+    }
   </ion-toolbar>
 </ion-header>
 
@@ -73,186 +18,367 @@
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">{{"common.training" | translate}}</ion-title>
-
+      <!-- <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
+      </ion-button>
+    </ion-buttons>-->
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="trainingList$ | async as trainingList; else loading">
-    <ion-list *ngIf="trainingList.length > 0" lines="full">
-      <ion-list-header>
-        <ion-label>{{"training.upcomming__training" | translate}}</ion-label>
-        <ion-button (click)="toggleAll()" size="small" fill="clear"> {{"common.alle_anmelden" | translate}}</ion-button>
-      </ion-list-header>
-      <ion-item>
-        <ion-label slot="start">
-          <p>{{"common.status" | translate}}</p>
+  @if (trainingList$ | async; as trainingList) { @if (trainingList.length > 0) {
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>{{"training.upcomming__training" | translate}}</ion-label>
+      @if (children.length == 0) {
+      <ion-button (click)="toggleAll()" size="small" fill="clear">
+        {{"common.alle_anmelden" | translate}}</ion-button
+      >
+      }
+    </ion-list-header>
+    <ion-item>
+      <ion-label slot="start">
+        <p>{{"common.status" | translate}}</p>
+      </ion-label>
+      <ion-label slot="end">
+        <p>{{"common.participant" | translate}}</p>
+      </ion-label>
+    </ion-item>
+    @for (training of trainingList; track training.id) {
+    <ion-item-sliding #item>
+      <ion-item type="button" detail="true">
+        <app-status-icon
+          slot="start"
+          [status]="training.status"
+          [cancelled]="training.cancelled"
+          [closedEvent]="false"
+          (iconClick)="toggle($event, training)"
+          [isMember]="training.isMember"
+        ></app-status-icon>
+        <ion-label (click)="openTrainingDetailModal(training, true)">
+          <h2>{{training.name}}</h2>
+          <h3>
+            <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+            {{training.date.toDate() | date:'dd.MM.yyyy'}} {{training.timeFrom |
+            date:'HH:mm'}} Uhr - {{training.timeTo | date:'HH:mm'}} Uhr
+          </h3>
+          <h3>
+            <ion-icon slot="icon-only" name="location-outline"></ion-icon>
+            {{training.location}} {{training.streetAndNumber}} {{training.city}}
+          </h3>
+          <h3>
+            <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
+            {{training.liga}} {{training.teamName}}
+          </h3>
+          @if (training.exercises.length > 0) {
+          <h3>
+            <ion-badge color="light"
+              >{{training.exercises.length}} Übungen vorhanden</ion-badge
+            >
+          </h3>
+          } @if (training.cancelled === true && training.cancelledReason) {
+          <h3>
+            <ion-icon
+              slot="icon-only"
+              color="danger"
+              name="alert-circle"
+            ></ion-icon>
+            <ion-text color="danger"> {{training.cancelledReason}} </ion-text>
+          </h3>
+          }
         </ion-label>
-        <ion-label slot="end">
-          <p>{{"common.participant" | translate}}</p>
-        </ion-label>
+        <ion-badge
+          slot="end"
+          (click)="openTrainingDetailModal(training,true)"
+          color="primary"
+          >{{training.countAttendees}}</ion-badge
+        >
       </ion-item>
-      <ion-item-sliding #item *ngFor="let training of trainingList">
-        <ion-item type="button" detail="true">
-          <ion-icon *ngIf="training.status === null" slot="icon-only" color="warning" slot="start" name="help-circle"
-            (click)="toggle(true, training)"></ion-icon>
-          <ion-icon *ngIf="training.status === false" slot="icon-only" color="danger" slot="start" name="close-circle"
-            (click)="toggle( true, training)"></ion-icon>
-          <ion-icon *ngIf="training.status === true" slot="icon-only" color="success" slot="start"
-            name="checkmark-circle" (click)="toggle(false, training)"></ion-icon>
-          <ion-label (click)="openTrainingDetailModal(training, true)">
-            <h2>{{training.name}}</h2>
-            <h3>
-              <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
-              {{training.date.toDate() | date:'dd.MM.YYYY '}}
-              {{training.timeFrom | date:'HH:mm'}} Uhr - {{training.timeTo |
-              date:'HH:mm'}} Uhr
-            </h3>
-            <h3>
-              <ion-icon slot="icon-only" name="location-outline"></ion-icon>
-              {{training.location}} {{training.streetAndNumber}} {{training.city}}
-            </h3>
 
-            <h3>
-              <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
-              {{training.liga}} {{training.teamName}}
-            </h3>
-            <h3 *ngIf="training.exercises.length > 0">
-              <ion-badge color="light">{{training.exercises.length}} Übungen vorhanden</ion-badge>
-            </h3>
-          </ion-label>
-          <ion-badge slot="end" (click)="openTrainingDetailModal(training,true)" color="primary">{{training.countAttendees}}</ion-badge>
-
-        </ion-item>
-
-        <ion-item-options side="start">
-          <ion-item-option color="success" *ngIf="training.status === false || training.status === null"
-            (click)="toggleItem(item, true, training)">
-            <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-          </ion-item-option>
-          <ion-item-option color="danger" *ngIf="training.status === true || training.status === null"
-            (click)="toggleItem(item, false, training)">
-            <ion-icon slot="icon-only" name="close-circle"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
-
-        <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-          <ion-item-options side="end" *ngIf="isTeamAdmin(teamAdminList, training.teamId)">
-            <ion-item-option color="medium" (click)="copyTraining(item, training)">
-              <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
-            </ion-item-option>
-            <ion-item-option color="danger" (click)="deleteTraining(item, training)">
-              <ion-icon slot="icon-only" name="trash"></ion-icon>
-            </ion-item-option>
-          </ion-item-options>
-        </ng-container>
-      </ion-item-sliding>
-    </ion-list>
-
-    <ion-list class="ion-padding" *ngIf="trainingList.length==0">
-      <ion-list-header>
-        <ion-label>{{"training.upcomming__training" | translate}}</ion-label>
-       
-      </ion-list-header>
+      @if (!training?.cancelled && training.isMember) {
+      <ion-item-options side="start">
+        @if (training.status === false || training.status === null) {
+        <ion-item-option
+          color="success"
+          (click)="toggleItem(item, true, training)"
+        >
+          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+        </ion-item-option>
+        } @if (training.status === true || training.status === null) {
+        <ion-item-option
+          color="danger"
+          (click)="toggleItem(item, false, training)"
+        >
+          <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+        </ion-item-option>
+        }
+      </ion-item-options>
+      } @if (teamAdminList$ | async; as teamAdminList) { @if
+      (isTeamAdmin(teamAdminList, training.teamId)) {
+      <ion-item-options side="end">
+        <ion-item-option
+          color="danger"
+          (click)="deleteTraining(item, training)"
+        >
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="medium" (click)="copyTraining(item, training)">
+          <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+        </ion-item-option>
+        <ion-item-option
+          color="primary"
+          (click)="openTrainingActions(item, training)"
+        >
+          <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+      } }
+    </ion-item-sliding>
+    @for (child of training.children; track child.id) {
+    <ion-item-sliding #childItem>
       <ion-item>
-        <ion-note> {{"training.no_training__found" | translate}} </ion-note>
+        <app-status-icon
+          slot="start"
+          [status]="child?.status"
+          [cancelled]="training.cancelled"
+          [closedEvent]="false"
+          (iconClick)="toggleChildren(!child?.status, training, child.id)"
+        >
+        </app-status-icon>
+        <ion-label>{{child.firstName}} {{child.lastName}}</ion-label>
       </ion-item>
-    </ion-list>
-  </ng-container>
-
-  <ng-container *ngIf="trainingListPast$ | async as trainingListPast; else loading">
-    <ion-list *ngIf="trainingListPast.length > 0" lines="full">
-      <ion-list-header>
-        <ion-label>{{"training.past__training" | translate}}</ion-label>
-      </ion-list-header>
-      <ion-item>
-        <ion-label slot="start">
-          <p>{{"common.status" | translate}}</p>
-        </ion-label>
-        <ion-label slot="end">
-          <p>{{"common.participant" | translate}}</p>
-        </ion-label>
-      </ion-item>
-      <ion-item-sliding #item *ngFor="let training of trainingListPast">
-        <ion-item type="button" detail="true">
-          <ion-icon *ngIf="training.status === null" slot="icon-only" color="warning" slot="start"
-            name="help-circle"></ion-icon>
-          <ion-icon *ngIf="training.status === false" slot="icon-only" color="danger" slot="start"
-            name="close-circle"></ion-icon>
-          <ion-icon *ngIf="training.status === true" slot="icon-only" color="success" slot="start"
-            name="checkmark-circle"></ion-icon>
-          <ion-label (click)="openTrainingDetailModal(training, false)">
-            <h2>{{training.name}}</h2>
-            <h3>
-              <ion-icon slot="icon-only" name="location-outline"></ion-icon>
-              {{training.location}} {{training.streetAndNumber}} {{training.city}}
-            </h3>
-            <h3>
-              <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
-              {{training.date.toDate() | date:'dd.MM.YYYY '}}
-              {{training.timeFrom | date:'HH:mm'}} Uhr - {{training.timeTo |
-              date:'HH:mm'}} Uhr
-            </h3>
-            <h3>
-              <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
-              {{training.liga}} {{training.teamName}}
-            </h3>
-          </ion-label>
-          <ion-badge slot="end" (click)="openTrainingDetailModal(training,false)" color="primary">{{training.countAttendees}}</ion-badge>
-
-        </ion-item>
-
-        <ion-item-options side="end">
-          <ion-item-option color="medium" (click)="copyTraining(item, training)">
-            <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
-    </ion-list>
-
-    <ion-list class="ion-padding" *ngIf="trainingListPast.length==0">
-      <ion-list-header>
-        <ion-label>{{"training.past__training" | translate}}</ion-label>
-      </ion-list-header>
-      <ion-item>
-        <ion-note> {{"training.no_training__found" | translate}} </ion-note>
-      </ion-item>
-    </ion-list>
-  </ng-container>
-
-  <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-    <ion-fab *ngIf="teamAdminList.length > 0" vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button (click)="openTrainingCreateModal()">
-        <ion-icon name="add-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-  </ng-container>
-</ion-content>
-
-<ng-template #loading>
-  <ion-list>
-    <ion-grid>
-      <ion-row>
-        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
-          <ion-card>
-            <ion-card-header>
-              <ion-card-subtitle>
-                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              </ion-card-subtitle>
-              <ion-card-title>
-                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              </ion-card-title>
-            </ion-card-header>
-
-            <ion-card-content>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+      @if (!training?.cancelled) {
+      <ion-item-options side="start">
+        @if (child.status === false || child.status === null) {
+        <ion-item-option
+          color="success"
+          (click)="toggleChildrenItem(childItem, true, training, child.id)"
+        >
+          <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+        </ion-item-option>
+        } @if (child.status === true || child.status === null) {
+        <ion-item-option
+          color="danger"
+          (click)="toggleChildrenItem(childItem, false, training, child.id)"
+        >
+          <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+        </ion-item-option>
+        }
+      </ion-item-options>
+      }
+    </ion-item-sliding>
+    } }
   </ion-list>
-</ng-template>
+  } @if (trainingList.length==0) {
+  <ion-list class="ion-padding">
+    <ion-list-header>
+      <ion-label>{{"training.upcomming__training" | translate}}</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-note> {{"training.no_training__found" | translate}} </ion-note>
+    </ion-item>
+  </ion-list>
+  } } @else {
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label slot="start">
+        <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+      </ion-label>
+      <ion-label slot="end">
+        <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    @for (item of skeleton; track $index) {
+    <ion-item>
+      <ion-icon slot="start">
+        <ion-skeleton-text
+          animated
+          style="width: 24px; height: 24px; border-radius: 50%"
+        ></ion-skeleton-text>
+      </ion-icon>
+      <ion-label>
+        <h2>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </h2>
+        <h3>
+          <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+          <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+        </h3>
+        <h3>
+          <ion-icon slot="icon-only" name="location-outline"></ion-icon>
+          <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+        </h3>
+        <h3>
+          <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
+          <ion-skeleton-text animated style="width: 45%"></ion-skeleton-text>
+        </h3>
+        <h3>
+          <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+        </h3>
+      </ion-label>
+      <ion-badge slot="end">
+        <ion-skeleton-text animated style="width: 20px"></ion-skeleton-text>
+      </ion-badge>
+    </ion-item>
+    }
+  </ion-list>
+  } @if (trainingListPast$ | async; as trainingListPast) { @if
+  (trainingListPast.length > 0) {
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>{{"training.past__training" | translate}}</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label slot="start">
+        <p>{{"common.status" | translate}}</p>
+      </ion-label>
+      <ion-label slot="end">
+        <p>{{"common.participant" | translate}}</p>
+      </ion-label>
+    </ion-item>
+    @for (training of trainingListPast; track training.id) {
+    <ion-item-sliding #item>
+      <ion-item type="button" detail="true">
+        <app-status-icon
+          slot="start"
+          [status]="training.status"
+          [cancelled]="training.cancelled"
+          [closedEvent]="false"
+          [clickable]="false"
+          [isMember]="training.isMember"
+        ></app-status-icon>
+        <ion-label (click)="openTrainingDetailModal(training, false)">
+          <h2>{{training.name}}</h2>
+          <h3>
+            <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+            {{training.date.toDate() | date:'dd.MM.yyyy'}} {{training.timeFrom |
+            date:'HH:mm'}} Uhr - {{training.timeTo | date:'HH:mm'}} Uhr
+          </h3>
+          <h3>
+            <ion-icon slot="icon-only" name="location-outline"></ion-icon>
+            {{training.location}} {{training.streetAndNumber}} {{training.city}}
+          </h3>
+          <h3>
+            <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
+            {{training.liga}} {{training.teamName}}
+          </h3>
+          @if (training.exercises.length > 0) {
+          <h3>
+            <ion-badge color="light"
+              >{{training.exercises.length}} Übungen vorhanden</ion-badge
+            >
+          </h3>
+          } @if (training.cancelled === true && training.cancelledReason) {
+          <h3>
+            <ion-icon
+              slot="icon-only"
+              color="danger"
+              name="alert-circle"
+            ></ion-icon>
+            <ion-text color="danger"> {{training.cancelledReason}} </ion-text>
+          </h3>
+          }
+        </ion-label>
+        <ion-badge
+          slot="end"
+          (click)="openTrainingDetailModal(training,false)"
+          color="primary"
+          >{{training.countAttendees}}</ion-badge
+        >
+      </ion-item>
+
+      @if (teamAdminList$ | async; as teamAdminList) { @if
+      (isTeamAdmin(teamAdminList, training.teamId)) {
+      <ion-item-options side="end">
+        <ion-item-option color="medium" (click)="copyTraining(item, training)">
+          <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+      } }
+    </ion-item-sliding>
+    @for (child of training.children; track child.id) {
+    <ion-item>
+      <app-status-icon
+        slot="start"
+        [status]="child?.status"
+        [cancelled]="training.cancelled"
+        [closedEvent]="false"
+        [clickable]="false"
+      >
+      </app-status-icon>
+      <ion-label>{{child.firstName}} {{child.lastName}}</ion-label>
+    </ion-item>
+    } }
+  </ion-list>
+  } @if (trainingListPast.length==0) {
+  <ion-list class="ion-padding">
+    <ion-list-header>
+      <ion-label>{{"training.past__training" | translate}}</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-note> {{"training.no_training__found" | translate}} </ion-note>
+    </ion-item>
+  </ion-list>
+  } } @else {
+  <ion-list lines="full">
+    <ion-list-header>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label slot="start">
+        <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+      </ion-label>
+      <ion-label slot="end">
+        <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    @for (item of skeleton; track $index) {
+    <ion-item>
+      <ion-icon slot="start">
+        <ion-skeleton-text
+          animated
+          style="width: 24px; height: 24px; border-radius: 50%"
+        ></ion-skeleton-text>
+      </ion-icon>
+      <ion-label>
+        <h2>
+          <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+        </h2>
+        <h3>
+          <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+          <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+        </h3>
+        <h3>
+          <ion-icon slot="icon-only" name="location-outline"></ion-icon>
+          <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+        </h3>
+        <h3>
+          <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
+          <ion-skeleton-text animated style="width: 45%"></ion-skeleton-text>
+        </h3>
+        <h3>
+          <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+        </h3>
+      </ion-label>
+      <ion-badge slot="end">
+        <ion-skeleton-text animated style="width: 20px"></ion-skeleton-text>
+      </ion-badge>
+    </ion-item>
+    }
+  </ion-list>
+  } @if (teamAdminList$ | async; as teamAdminList) { @if (teamAdminList.length >
+  0) {
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openTrainingCreateModal()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  } }
+</ion-content>

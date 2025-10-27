@@ -1,0 +1,164 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Abrechnungen</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{'common.close' | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Abrechnungen</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list [inset]="true">
+    <ion-accordion-group>
+      <ion-accordion value="creditor">
+        <ion-item slot="header">
+          <ion-label>Bankverbindung (QR-Rechnung)</ion-label>
+        </ion-item>
+        <div slot="content">
+          <ion-list [inset]="true">
+            <ion-item>
+              <ion-label position="stacked">QR-IBAN</ion-label>
+              <ion-input [(ngModel)]="creditor.account"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Name</ion-label>
+              <ion-input [(ngModel)]="creditor.name"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Adresse</ion-label>
+              <ion-input [(ngModel)]="creditor.address"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Hausnummer</ion-label>
+              <ion-input [(ngModel)]="creditor.buildingNumber"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">PLZ</ion-label>
+              <ion-input [(ngModel)]="creditor.zip"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Ort</ion-label>
+              <ion-input [(ngModel)]="creditor.city"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Land</ion-label>
+              <ion-input [(ngModel)]="creditor.country"></ion-input>
+            </ion-item>
+          </ion-list>
+          <ion-button expand="block" (click)="saveCreditor()"
+            >Speichern</ion-button
+          >
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+
+    <!-- Team-Mitgliederbeiträge Accordion -->
+    <ion-accordion-group>
+      <ion-accordion value="teams">
+        <ion-item slot="header">
+          <ion-label>{{'common.team_member_fees' | translate}}</ion-label>
+        </ion-item>
+        <div slot="content">
+          @if (teams$ | async; as teams) {
+          <ion-list>
+            @for (team of teams; track team.id) {
+            <ion-item (click)="changeJahresbeitrag(team)" detail="true">
+              <ion-label> {{ team.name }} </ion-label>
+              <ion-text slot="end">
+                {{ team.jahresbeitragWaehrung }} {{ team.jahresbeitragWert }}
+              </ion-text>
+            </ion-item>
+            }
+          </ion-list>
+          }
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+
+    <!-- Zuschläge/Abzüge Accordion -->
+    <ion-accordion-group>
+      <ion-accordion value="surcharges">
+        <ion-item slot="header">
+          <ion-label>{{'common.surcharges_deductions' | translate}}</ion-label>
+        </ion-item>
+        <div slot="content">
+          @if (surcharges.length > 0) {
+          <ion-list>
+            @for (surcharge of surcharges; track surcharge; let i = $index) {
+            <ion-item>
+              <ion-label> {{ surcharge.name }} </ion-label>
+              <ion-text slot="end">
+                {{ surcharge.amount | currency:'CHF':'symbol':'1.2-2' }}
+              </ion-text>
+              <ion-button fill="clear" size="small" (click)="editSurcharge(i)">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+              <ion-button
+                fill="clear"
+                size="small"
+                color="danger"
+                (click)="deleteSurcharge(i)"
+              >
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </ion-item>
+            }
+          </ion-list>
+          } @else {
+          <ion-item>
+            <ion-label color="medium"
+              >{{'club-billing-period.no_surcharges_recorded' |
+              translate}}</ion-label
+            >
+          </ion-item>
+          }
+          <ion-button expand="block" (click)="addSurcharge()"
+            >{{'common.add_button' | translate}}</ion-button
+          >
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </ion-list>
+
+  @if (periodGroups$ | async; as periodGroups) {
+  <ion-list [inset]="true">
+    @for (group of periodGroups; track group) {
+    <ion-item-group>
+      <ion-item-divider color="light">
+        <ion-label>{{ group.year }}</ion-label>
+      </ion-item-divider>
+      @for (period of group.periods; track period) {
+      <ion-item-sliding>
+        <ion-item (click)="openInvoice(period)" detail="true">
+          <ion-label>{{period.name}}</ion-label>
+          <ion-note slot="end"
+            >{{period.createdAt.toDate() | date:'yyyy'}}</ion-note
+          >
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="primary" (click)="editPeriod(period)">
+            <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger" (click)="deletePeriod(period)">
+            <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+      }
+    </ion-item-group>
+    }
+  </ion-list>
+  }
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addPeriod()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { MyClubAppWidget } from 'myclub-widget-plugin';
 
 import {
   IonItemSliding,
@@ -15,11 +14,11 @@ import {
   Subscription,
   catchError,
   combineLatest,
-  first,
   lastValueFrom,
   map,
   mergeMap,
   of,
+  shareReplay,
   switchMap,
   take,
   tap,
@@ -29,17 +28,22 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
 import { EventAddPage } from "../event-add/event-add.page";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { EventDetailPage } from "../event-detail/event-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
 import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
 import { ActivatedRoute, Router } from "@angular/router";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { Profile } from "src/app/models/user";
+import { UiService } from "src/app/services/ui.service";
+import { Optional } from "@angular/core";
 
 @Component({
   selector: "app-events",
   templateUrl: "./events.page.html",
   styleUrls: ["./events.page.scss"],
+  standalone: false,
 })
 export class EventsPage implements OnInit {
   skeleton = new Array(12);
@@ -54,10 +58,11 @@ export class EventsPage implements OnInit {
   activatedRouteSub: Subscription;
 
   subscription: Subscription;
+  children: Profile[] = [];
 
   constructor(
     public toastController: ToastController,
-    private readonly routerOutlet: IonRouterOutlet,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly alertCtrl: AlertController,
     private readonly modalCtrl: ModalController,
     private readonly authService: AuthService,
@@ -66,23 +71,25 @@ export class EventsPage implements OnInit {
     private readonly menuCtrl: MenuController,
     private translate: TranslateService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private userProfileService: UserProfileService,
+    private uiService: UiService,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
 
   ngOnInit() {
-    this.eventList$ = this.getClubEvent();
-    this.eventListPast$ = this.getClubEventPast();
+    this.eventList$ = this.getClubEvent().pipe(shareReplay(1));
+    this.eventListPast$ = this.getClubEventPast().pipe(shareReplay(1));
 
-    this.subscription = this.eventList$.pipe(
+    /*this.subscription = this.eventList$.pipe(
       tap(async (events) => {
         const event = events[0];
-        console.log('Widget Value for Key=NextEvent: ', event.name);
+        console.log('Widget Value for Key=NextEvent: ', event?.name);
         // MyClubAppWidget.echo({ value: event.name });
 
         try {
-          await MyClubAppWidget.setItem({ key: 'nextEvent', value: event.name, group: 'group.app.myclub.default' }); 
+          await MyClubAppWidget.setItem({ key: 'nextEvent', value: event?.name, group: 'group.app.myclub.default' }); 
         } catch (error) { 
           console.error('Widget Error setItem: ', error); 
         }
@@ -96,15 +103,13 @@ export class EventsPage implements OnInit {
         }
 
       })
-    ).subscribe();
-
+    ).subscribe();*/
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
 
     this.handleNavigationData();
   }
-
 
   ngOnDestroy() {
     if (this.activatedRouteSub) {
@@ -116,40 +121,45 @@ export class EventsPage implements OnInit {
   }
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+    return this.fbService.isClubAdmin(clubAdminList, clubId);
   }
 
   handleNavigationData() {
     this.activatedRouteSub = this.activatedRoute.url.subscribe(() => {
-      const navigation = this.router.getCurrentNavigation();
-      if (navigation && navigation.extras.state && navigation.extras.state["type"] === 'clubEvent') {
+      const navigation = this.router.currentNavigation();
+      if (
+        navigation &&
+        navigation.extras.state &&
+        navigation.extras.state["type"] === "clubEvent"
+      ) {
         const pushData = navigation.extras.state;
-        console.log('PUSHDATA', JSON.stringify(pushData));
+        console.log("PUSHDATA", JSON.stringify(pushData));
         const clubEvent: Veranstaltung = {
           id: pushData["id"],
-          name: '',
-          description: '',
-          location: '',
-          streetAndNumber: '',
-          postalCode: '',
-          city: '',
+          name: "",
+          description: "",
+          location: "",
+          streetAndNumber: "",
+          postalCode: "",
+          city: "",
           date: Timestamp.now(),
-          startDate: '',
-          endDate: '',
-          timeFrom: '',
-          timeTo: '',
+          startDate: "",
+          endDate: "",
+          timeFrom: "",
+          timeTo: "",
           clubId: pushData["clubId"],
-          clubName: '',
-          link_poll: '',
-          link_web: '',
+          clubName: "",
+          link_poll: "",
+          link_web: "",
           status: false,
           attendees: undefined,
           countAttendees: 0,
           countNeeded: 0,
+          closedEvent: false,
         };
         this.openEventDetailModal(clubEvent, true);
       } else {
-        console.log('no data');
+        // console.log("no data");
       }
     });
   }
@@ -159,71 +169,166 @@ export class EventsPage implements OnInit {
       take(1),
       tap((user) => {
         this.user = user;
+        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.fbService.getUserClubRefs(user);
+        return combineLatest([
+          this.fbService.getUserClubRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+            }),
+            switchMap((children: Profile[]) =>
+              children.length > 0
+                ? combineLatest(
+                    children.map((child) => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      return this.fbService.getUserClubRefs(childUser);
+                    }),
+                  )
+                : of([]),
+            ),
+            map((childrenClubs) => childrenClubs.flat()),
+            // tap((clubs) => console.log("Children Clubs:", clubs)),
+            catchError((error) => {
+              console.error("Error fetching children clubs:", error);
+              return of([]);
+            }),
+          ),
+        ]).pipe(
+          map(([userClubs, childrenClubs]) => {
+            const allClubs = [...userClubs, ...childrenClubs];
+            return allClubs.filter(
+              (club, index, self) =>
+                index === self.findIndex((c) => c.id === club.id),
+            );
+          }),
+        );
       }),
-      // tap((clubs) => console.log("Clubs:", clubs)),
       mergeMap((clubs) => {
         if (clubs.length === 0) return of([]);
-        return combineLatest(
+
+        // Hole Club-Mitglieder einmalig pro Club
+        const clubMembersMap$ = combineLatest(
           clubs.map((club) =>
-            combineLatest([
-              this.eventService.getClubEventsRef(club.id),
-              this.fbService.getClubRef(club.id) // Fetch the club details here
-            ]).pipe(
-              switchMap(([clubEvents, clubDetails]) => {
-                if (clubEvents.length === 0) return of([]);
-                return combineLatest(
-                  clubEvents.map((event) =>
-                    this.eventService.getClubEventAttendeesRef(club.id, event.id).pipe(
-                      map((attendees) => {
-                        const userAttendee = attendees.find(
-                          (att) => att.id == this.user.uid
-                        );
-                        const status = userAttendee ? userAttendee.status : null;
-                        return {
-                          ...event,
-                          attendees,
-                          status,
-                          countAttendees: attendees.filter((att) => att.status == true).length,
-                          clubId: club.id,
-                          club: clubDetails // Append club details to each event
-                        };
-                      }),
-                      catchError(() =>
-                        of({
-                          ...event,
-                          attendees: [],
-                          status: null,
-                          countAttendees: 0,
-                          clubId: club.id,
-                          club: clubDetails // Also provide club details here in case of error
-                        })
-                      )
-                    )
-                  )
-                );
-              }),
-              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
-              catchError(() => of([])) // If error in fetching events, return empty array
-            )
-          )
+            this.fbService
+              .getClubMemberRefs(club.id)
+              .pipe(map((members) => ({ clubId: club.id, members }))),
+          ),
         ).pipe(
+          map((clubMembers) =>
+            clubMembers.reduce((acc, curr) => {
+              acc[curr.clubId] = curr.members;
+              return acc;
+            }, {}),
+          ),
+        );
+
+        return combineLatest([
+          clubMembersMap$,
+          combineLatest(
+            clubs.map((club) =>
+              combineLatest([
+                this.eventService.getClubEventsRef(club.id),
+                this.fbService.getClubRef(club.id), // Fetch the club details here
+              ]).pipe(
+                switchMap(([clubEvents, clubDetails]) => {
+                  if (clubEvents.length === 0) return of([]);
+                  return combineLatest(
+                    clubEvents.map((event) =>
+                      this.eventService
+                        .getClubEventAttendeesRef(club.id, event.id)
+                        .pipe(
+                          map((attendees) => ({
+                            event,
+                            attendees,
+                            clubDetails,
+                            clubId: club.id,
+                          })),
+                          catchError(() =>
+                            of({
+                              event,
+                              attendees: [],
+                              clubDetails,
+                              clubId: club.id,
+                            }),
+                          ),
+                        ),
+                    ),
+                  );
+                }),
+                catchError(() => of([])), // If error in fetching events, return empty array
+              ),
+            ),
+          ),
+        ]).pipe(
+          map(([clubMembersMap, clubsEvents]) => {
+            const flattenedEvents = clubsEvents.flat();
+            return flattenedEvents.map((item) => {
+              const clubMembers = clubMembersMap[item.clubId] || [];
+              const isMember = clubMembers.some(
+                (member) => member.id === this.user.uid,
+              );
+
+              // Finde den Status des aktuellen Benutzers
+              const userStatus =
+                item.attendees.find((att: any) => att.id === this.user.uid)
+                  ?.status ?? null;
+
+              // Finde die relevanten Kinder mit ihren Status
+              const relevantChildren = clubMembers
+                .filter((att) =>
+                  this.children.some((child) => child.id === att.id),
+                )
+                .map((att) => {
+                  const child = this.children.find(
+                    (child) => child.id === att.id,
+                  );
+                  const childStatus =
+                    item.attendees.find((attendee) => attendee.id === att.id)
+                      ?.status ?? null;
+                  return child
+                    ? {
+                        firstName: child.firstName,
+                        lastName: child.lastName,
+                        status: childStatus,
+                        id: child.id,
+                      }
+                    : {};
+                });
+
+              return {
+                ...item.event,
+                attendees: item.attendees,
+                status: userStatus,
+                isMember,
+                children: relevantChildren,
+                countAttendees: item.attendees.filter(
+                  (att) => att.status == true,
+                ).length,
+                clubId: item.clubId,
+                club: item.clubDetails, // Append club details to each event
+              };
+            });
+          }),
           map((clubsEvents) => clubsEvents.flat()), // Flatten to get all events across all clubs
-          map((allEvents) =>
-            allEvents.sort((a, b) =>
-              Timestamp.fromMillis(a.dateTime).seconds - Timestamp.fromMillis(b.dateTime).seconds
-            ) // Sort events by date
-          )
+          map(
+            (allEvents) =>
+              allEvents.sort(
+                (a, b) =>
+                  Timestamp.fromMillis(a.date).seconds -
+                  Timestamp.fromMillis(b.date).seconds,
+              ), // Sort events by date
+          ),
         );
       }),
       // tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
         console.error("Error in getClubEvent:", err);
         return of([]); // Return an empty array on error
-      })
+      }),
     );
   }
 
@@ -235,159 +340,325 @@ export class EventsPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.fbService.getUserClubRefs(user);
-      }),
-      // tap((clubs) => console.log("Teams:", clubs)),
-      mergeMap((teams) => {
-        if (teams.length === 0) return of([]);
-        return combineLatest(
-          teams.map((team) =>
-            this.eventService.getClubEventsPastRef(team.id).pipe(
-              switchMap((teamevents) => {
-                if (teamevents.length === 0) return of([]);
-                return combineLatest(
-                  teamevents.map((game) =>
-                    this.eventService
-                      .getClubEventAttendeesRef(team.id, game.id)
-                      .pipe(
-                        map((attendees) => {
-                          const userAttendee = attendees.find(
-                            (att) => att.id == this.user.uid
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null; // default to false if user is not found in attendees list
-                          return {
-                            ...game,
-                            attendees,
-                            status: status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true
-                            ).length,
-                            teamId: team.id,
-                          };
-                        }),
-                        catchError(() =>
-                          of({
-                            ...game,
-                            attendees: [],
-                            status: null,
-                            countAttendees: 0,
-                            teamId: team.id,
-                          })
-                        ) // If error, return game with empty attendees
-                      )
+        return combineLatest([
+          this.fbService.getUserClubRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+            }),
+            switchMap((children: Profile[]) =>
+              children.length > 0
+                ? combineLatest(
+                    children.map((child) => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      return this.fbService.getUserClubRefs(childUser);
+                    }),
                   )
-                );
-              }),
-              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
-              catchError(() => of([])) // If error in fetching events, return empty array
-            )
-          )
+                : of([]),
+            ),
+            map((childrenClubs) => childrenClubs.flat()),
+            // tap((clubs) => console.log("Children Clubs:", clubs)),
+            catchError((error) => {
+              console.error("Error fetching children clubs:", error);
+              return of([]);
+            }),
+          ),
+        ]).pipe(
+          map(([userClubs, childrenClubs]) => {
+            const allClubs = [...userClubs, ...childrenClubs];
+            return allClubs.filter(
+              (club, index, self) =>
+                index === self.findIndex((c) => c.id === club.id),
+            );
+          }),
+        );
+      }),
+      mergeMap((clubs) => {
+        if (clubs.length === 0) return of([]);
+
+        // Hole Club-Mitglieder einmalig pro Club
+        const clubMembersMap$ = combineLatest(
+          clubs.map((club) =>
+            this.fbService
+              .getClubMemberRefs(club.id)
+              .pipe(map((members) => ({ clubId: club.id, members }))),
+          ),
         ).pipe(
+          map((clubMembers) =>
+            clubMembers.reduce((acc, curr) => {
+              acc[curr.clubId] = curr.members;
+              return acc;
+            }, {}),
+          ),
+        );
+
+        return combineLatest([
+          clubMembersMap$,
+          combineLatest(
+            clubs.map((club) =>
+              combineLatest([
+                this.eventService.getClubEventsPastRef(club.id),
+                this.fbService.getClubRef(club.id), // Fetch the club details here
+              ]).pipe(
+                switchMap(([clubEvents, clubDetails]) => {
+                  if (clubEvents.length === 0) return of([]);
+                  return combineLatest(
+                    clubEvents.map((event) =>
+                      this.eventService
+                        .getClubEventAttendeesRef(club.id, event.id)
+                        .pipe(
+                          map((attendees) => ({
+                            event,
+                            attendees,
+                            clubDetails,
+                            clubId: club.id,
+                          })),
+                          catchError(() =>
+                            of({
+                              event,
+                              attendees: [],
+                              clubDetails,
+                              clubId: club.id,
+                            }),
+                          ),
+                        ),
+                    ),
+                  );
+                }),
+                catchError(() => of([])), // If error in fetching events, return empty array
+              ),
+            ),
+          ),
+        ]).pipe(
+          map(([clubMembersMap, clubsEvents]) => {
+            const flattenedEvents = clubsEvents.flat();
+            return flattenedEvents.map((item) => {
+              const clubMembers = clubMembersMap[item.clubId] || [];
+              const isMember = clubMembers.some(
+                (member) => member.id === this.user.uid,
+              );
+
+              // Finde den Status des aktuellen Benutzers
+              const userStatus =
+                item.attendees.find((att: any) => att.id === this.user.uid)
+                  ?.status ?? null;
+
+              // Finde die relevanten Kinder mit ihren Status
+              const relevantChildren = clubMembers
+                .filter((att) =>
+                  this.children.some((child) => child.id === att.id),
+                )
+                .map((att) => {
+                  const child = this.children.find(
+                    (child) => child.id === att.id,
+                  );
+                  const childStatus =
+                    item.attendees.find((attendee) => attendee.id === att.id)
+                      ?.status ?? null;
+                  return child
+                    ? {
+                        firstName: child.firstName,
+                        lastName: child.lastName,
+                        status: childStatus,
+                        id: child.id,
+                      }
+                    : {};
+                });
+
+              return {
+                ...item.event,
+                attendees: item.attendees,
+                status: userStatus,
+                isMember,
+                children: relevantChildren,
+                countAttendees: item.attendees.filter(
+                  (att) => att.status == true,
+                ).length,
+                clubId: item.clubId,
+                club: item.clubDetails, // Append club details to each event
+              };
+            });
+          }),
           map((teamsevents) => teamsevents.flat()), // Flatten to get all events across all teams
           map(
-            (allevents) =>
-              allevents.sort(
-                (a, b) =>
-                  Timestamp.fromMillis(a.dateTime).seconds -
-                  Timestamp.fromMillis(b.dateTime).seconds
-              ) // Sort events by date
-          )
+            (allEvents) =>
+              allEvents.sort(
+                (a, b) => {
+                  // console.log(a);
+                  return (
+                    Timestamp.fromMillis(b.date).seconds -
+                    Timestamp.fromMillis(a.date).seconds
+                  );
+                },
+
+                // a.startDate.getTime() - b.dateTime.getTime()
+                //
+              ), // Sort events by date
+          ),
         );
       }),
       // tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
         console.error("Error in getClubEventPast:", err);
         return of([]); // Return an empty array on error
-      })
+      }),
     );
   }
 
-
   async toggle(status: boolean, event: Veranstaltung | any) {
-    console.log(
-      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
+    // Hole die Club-Mitglieder
+    const clubMembers = await lastValueFrom(
+      this.fbService.getClubMemberRefs(event.clubId).pipe(take(1)),
     );
+    // Hole die Kinder des aktuellen Benutzers
+    const children = await lastValueFrom(
+      this.userProfileService.getChildren(this.user.uid).pipe(take(1)),
+    );
+    // Sammle alle möglichen Mitglieder (aktueller Benutzer + Kinder)
+    const possibleMembers = [
+      this.user,
+      ...children.map((child) => ({ uid: child.id })),
+    ];
+    // Filtere die tatsächlichen Club-Mitglieder
+    const clubMemberIds = clubMembers.map((member) => member.id);
+    const validMembers = possibleMembers.filter((member) =>
+      clubMemberIds.includes(member.uid),
+    );
+    if (validMembers.length === 0) {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("common.error__no_club_member")),
+      );
+      return;
+    }
+
+    let selectedUserId: string;
+
+    if (validMembers.length === 1) {
+      // Wenn nur ein Mitglied gefunden wurde, verwende dieses
+      selectedUserId = validMembers[0].uid;
+      await this.processToggle(selectedUserId, status, event);
+    } else {
+      // Wenn mehrere Mitglieder gefunden wurden, zeige einen Auswahlalert (Radio, nicht Checkbox)
+      const alert = await this.alertCtrl.create({
+        header: await lastValueFrom(this.translate.get("common.select_member")),
+        inputs: await Promise.all(
+          validMembers.map(async (member) => {
+            const profile =
+              member.uid === this.user.uid
+                ? { firstName: "Ich", lastName: "" }
+                : await lastValueFrom(
+                    this.userProfileService
+                      .getUserProfileById(member.uid)
+                      .pipe(take(1)),
+                  );
+            return {
+              type: "radio",
+              label: `${profile.firstName} ${profile.lastName}`,
+              value: member.uid,
+            };
+          }),
+        ),
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("common.cancel")),
+            role: "cancel",
+          },
+          {
+            text: await lastValueFrom(this.translate.get("common.ok")),
+            role: "confirm",
+          },
+        ],
+      });
+      await alert.present();
+
+      const { data, role } = await alert.onDidDismiss();
+      if (role === "confirm" && data) {
+        await this.processToggle(data, status, event);
+      }
+    }
+  }
+
+  private async processToggle(
+    userId: string,
+    status: boolean,
+    event: Veranstaltung | any,
+  ) {
     const newStartDate = event.date.toDate();
     newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
-    // console.log(newStartDate);
-
-    // Get team threshold via training.teamId
-    console.log("Grenzwert ")
     const eventThreshold = event.club.eventThreshold || 0;
-    console.log(eventThreshold);
-    // Verpätete Abmeldung?
-    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * eventThreshold)) && status == false && eventThreshold) {
-      console.log("too late");
+    if (
+      newStartDate.getTime() - new Date().getTime() <
+        1000 * 60 * 60 * eventThreshold &&
+      status == false &&
+      eventThreshold
+    ) {
       await this.tooLateToggle();
-
     } else {
-      // OK
-      await this.eventService.setClubEventAttendeeStatus(
+      await this.eventService.setClubEventAttendeeStatusAdmin(
         status,
         event.clubId,
-        event.id
+        event.id,
+        userId,
       );
       this.presentToast();
     }
-
   }
-
 
   async toggleItem(
     slidingItem: IonItemSliding,
     status: boolean,
-    event: Veranstaltung | any
+    event: Veranstaltung | any,
   ) {
     slidingItem.closeOpened();
 
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`,
     );
     const newStartDate = event.date.toDate();
     newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
     // console.log(newStartDate);
 
     // Get team threshold via training.teamId
-    console.log("Grenzwert ")
+    console.log("Grenzwert ");
     const eventThreshold = event.club.eventThreshold || 0;
     console.log(eventThreshold);
 
     // Verpätete Abmeldung?
-    if (((newStartDate.getTime() - new Date().getTime()) < (1000 * 60 * 60 * eventThreshold)) && status == false && eventThreshold) {
+    if (
+      newStartDate.getTime() - new Date().getTime() <
+        1000 * 60 * 60 * eventThreshold &&
+      status == false &&
+      eventThreshold
+    ) {
       console.log("too late");
       await this.tooLateToggle();
-
     } else {
       // OK
       await this.eventService.setClubEventAttendeeStatus(
         status,
         event.clubId,
-        event.id
+        event.id,
       );
       this.presentToast();
     }
   }
 
-
   async presentToast() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.changes__saved")),
-      color: "primary",
-      duration: 1500,
-      position: "top",
-    });
-    toast.present();
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.changes__saved")),
+    );
   }
 
   async copyEvent(slidingItem: IonItemSliding, event: Veranstaltung) {
     slidingItem.closeOpened();
 
-    // const presentingElement = await this.modalCtrl.getTop();
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: EventAddPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -402,13 +673,13 @@ export class EventsPage implements OnInit {
     }
   }
 
-  async createHelferEvent(slidingItem: IonItemSliding, event: Veranstaltung) {
-    slidingItem.closeOpened();
+  async createHelferEvent(event: Veranstaltung) {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
 
-    // const presentingElement = await this.modalCtrl.getTop();
     const modal = await this.modalCtrl.create({
       component: HelferAddPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -427,7 +698,9 @@ export class EventsPage implements OnInit {
     slidingItem.closeOpened();
     await this.eventService.deleteClubEvent(event.clubId, event.id);
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.success__event_deleted")),
+      message: await lastValueFrom(
+        this.translate.get("common.success__event_deleted"),
+      ),
       color: "danger",
       duration: 1500,
       position: "top",
@@ -435,19 +708,61 @@ export class EventsPage implements OnInit {
     toast.present();
   }
 
+  async cancelEvent(event: any) {
+    const result = await this.uiService.showFormDialog({
+      header: await lastValueFrom(this.translate.get("events.cancel_event")),
+      inputs: [
+        {
+          name: "reason",
+          type: "textarea",
+          placeholder: await lastValueFrom(
+            this.translate.get("events.cancel_reason_placeholder"),
+          ),
+          attributes: {
+            maxlength: 200,
+          },
+        },
+      ],
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    if (result) {
+      if (!result.reason) {
+        await this.uiService.showErrorToast(
+          await lastValueFrom(
+            this.translate.get("events.cancel_reason_required"),
+          ),
+        );
+        return;
+      }
+
+      try {
+        await this.eventService.changeClubEvent(
+          {
+            cancelled: true,
+            cancelledReason: result.reason,
+          },
+          event.clubId,
+          event.id,
+        );
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(this.translate.get("events.event_cancelled")),
+        );
+      } catch (error) {
+        console.error("Error cancelling event:", error);
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
+    }
+  }
+
   async tooLateToggle() {
-    const alert = await this.alertCtrl.create({
+    await this.uiService.showInfoDialog({
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
-      buttons: [{
-        role: "",
-        text: "OK",
-        handler: (data) => {
-          console.log(data)
-        }
-      }]
-    })
-    alert.present()
+    });
   }
   async openFilter(ev: Event) {
     /*
@@ -522,10 +837,12 @@ export class EventsPage implements OnInit {
   }
 
   async openEventCreateModal() {
-    // const presentingElement = await this.modalCtrl.getTop();
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: EventAddPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -543,9 +860,12 @@ export class EventsPage implements OnInit {
   async openEventDetailModal(event: Veranstaltung, isFuture: boolean) {
     console.log("Open Modal");
     console.log(JSON.stringify(event));
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: EventDetailPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -559,5 +879,107 @@ export class EventsPage implements OnInit {
 
     if (role === "confirm") {
     }
+  }
+
+  async sendReminder(event: any) {
+    // Hole alle Club-Mitglieder
+    const clubMembers = await lastValueFrom(
+      this.fbService.getClubMemberRefs(event.clubId).pipe(take(1)),
+    );
+
+    // Hole alle Teilnehmer des Events
+    const attendees = await lastValueFrom(
+      this.eventService
+        .getClubEventAttendeesRef(event.clubId, event.id)
+        .pipe(take(1)),
+    );
+
+    // Filtere Mitglieder, die noch nicht geantwortet haben
+    const pendingMembers = clubMembers.filter(
+      (member) => !attendees.some((attendee) => attendee.id === member.id),
+    );
+
+    if (pendingMembers.length === 0) {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("events.all_members_responded")),
+      );
+      return;
+    }
+
+    const result = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(this.translate.get("events.send_reminder")),
+      message: await lastValueFrom(
+        this.translate.get("events.send_reminder_confirm", {
+          count: pendingMembers.length,
+        }),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    if (result) {
+      try {
+        await this.eventService.sendReminder(event.clubId, event.id);
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(this.translate.get("events.reminder_sent")),
+        );
+      } catch (error) {
+        console.error("Error sending reminder:", error);
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
+    }
+  }
+
+  async openEventActions(slidingItem: IonItemSliding, event: any) {
+    slidingItem.closeOpened();
+    const actionSheet = await this.uiService.showActionSheet({
+      header: await lastValueFrom(this.translate.get("events.actions")),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("events.create_helfer")),
+          icon: "help-buoy-outline",
+          handler: () => {
+            this.createHelferEvent(event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("events.cancel_event")),
+          icon: "alert-circle-outline",
+          handler: () => {
+            this.cancelEvent(event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("events.send_reminder")),
+          icon: "notifications-outline",
+          handler: () => {
+            this.sendReminder(event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          // icon: "close",
+          role: "destructive",
+        },
+      ],
+    });
+  }
+
+  toggleChildren(status: boolean, event: any, childrenId: string) {
+    console.log("toggleChildren", event);
+    this.processToggle(childrenId, status, event);
+  }
+
+  toggleChildrenItem(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    event: any,
+    childrenId: string,
+  ) {
+    console.log("toggleChildrenItem", event);
+    slidingItem.closeOpened();
+    this.processToggle(childrenId, status, event);
   }
 }

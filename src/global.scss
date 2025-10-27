@@ -10,11 +10,13 @@
  */
 
 /* Core CSS required for Ionic components to work properly */
-@import "@ionic/angular/css/core.css";
+// @import "@ionic/angular/css/core.css";
+// @import "~@ionic/angular/css/core.css";
+@import "@ionic/angular/css/ionic.bundle.css";
 
-/* Basic CSS for apps built with Ionic */
+/* Basic CSS for apps built with Ionic
 @import "@ionic/angular/css/normalize.css";
-@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/structure.css"; */
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
 
@@ -25,51 +27,33 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-ion-content {
-    --background: transparent;
-}
-
-body {
-    background: transparent;
-}
-
-ion-content {
-    --ion-background-color: transparent;
-}
-
-html {
-    background-color: transparent;
-}
-
-// ion-header {
-//     --background: transparent;
-// }
-// ion-modal {
-//     --ion-background-color: transparent;
-// }
-
 .myclubStatus {
-    margin-top: 10px !important;
-    margin-bottom: 10px !important;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
 }
 
 ion-spinner {
-    left: 50%;
-    right: 50%;
-    top: 30%;
+  left: 50%;
+  right: 50%;
+  top: 30%;
 }
 
 // Alert iOS Popup
 @media (prefers-color-scheme: dark) {
-    .ios input {
-        --ion-text-color: #FFFFFF;
-        --ion-text-color-rgb: 255, 255, 255;
-        color: var(--ion-text-color);
-    }
+  .ios input {
+    --ion-text-color: #ffffff;
+    --ion-text-color-rgb: 255, 255, 255;
+    color: var(--ion-text-color);
+  }
 
-    .md input {
-        --ion-text-color: #FFFFFF;
-        --ion-text-color-rgb: 255, 255, 255;
-        color: var(--ion-text-color);
-    }
+  .md input {
+    --ion-text-color: #ffffff;
+    --ion-text-color-rgb: 255, 255, 255;
+    color: var(--ion-text-color);
+  }
+}
+
+.confirm-button-disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }

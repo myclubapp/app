@@ -1,0 +1,40 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Rechnungen</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{'common.close' | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Rechnungen</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list [inset]="true">
+    @for (year of years; track year) {
+    <ion-item-group>
+      <ion-item-divider color="light">
+        <ion-label> {{ year }} </ion-label>
+      </ion-item-divider>
+      @if (invoices$ | async; as invoices) { @for (invoice of invoices; track
+      invoice) {
+      <ion-item
+        type="button"
+        detail="true"
+        (click)="openInvoiceDetail(invoice)"
+      >
+        <ion-label>
+          <h2>{{invoice.purpose}}</h2>
+          <h2>{{invoice.amount}} {{invoice.currency}}</h2>
+        </ion-label>
+        <ion-badge slot="end"> {{invoice.status}} </ion-badge>
+      </ion-item>
+      } }
+    </ion-item-group>
+    }
+  </ion-list>
+</ion-content>

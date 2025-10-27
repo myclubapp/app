@@ -1,11 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { Component, OnInit, Optional } from "@angular/core";
 import {
+  AlertController,
   IonItemSliding,
   IonRouterOutlet,
   ModalController,
   MenuController,
   ToastController,
-  AlertController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
 import {
@@ -17,25 +17,30 @@ import {
   map,
   mergeMap,
   of,
+  shareReplay,
   switchMap,
   take,
   tap,
 } from "rxjs";
-import { HelferEvent, Veranstaltung } from "src/app/models/event";
+import { HelferEvent } from "src/app/models/event";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
 import { HelferAddPage } from "../helfer-add/helfer-add.page";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { HelferDetailPage } from "../helfer-detail/helfer-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
 import { ActivatedRoute, Router } from "@angular/router";
+import { Profile } from "src/app/models/user";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { UiService } from "src/app/services/ui.service";
 
 @Component({
   selector: "app-helfer",
   templateUrl: "./helfer.page.html",
   styleUrls: ["./helfer.page.scss"],
+  standalone: false,
 })
 export class HelferPage implements OnInit {
   skeleton = new Array(12);
@@ -50,9 +55,11 @@ export class HelferPage implements OnInit {
 
   activatedRouteSub: Subscription;
 
+  children: Profile[] = [];
+
   constructor(
     public toastController: ToastController,
-    private readonly routerOutlet: IonRouterOutlet,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly modalCtrl: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
@@ -61,20 +68,21 @@ export class HelferPage implements OnInit {
     private translate: TranslateService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
+    private userProfileService: UserProfileService,
+    private uiService: UiService,
+    private readonly alertCtrl: AlertController,
   ) {
     this.menuCtrl.enable(true, "menu");
-
   }
 
   ngOnInit() {
-    this.helferList$ = this.getHelferEvent();
-    this.helferListPast$ = this.getHelferEventPast();
+    this.helferList$ = this.getHelferEvent().pipe(shareReplay(1));
+    this.helferListPast$ = this.getHelferEventPast().pipe(shareReplay(1));
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
     this.handleNavigationData();
   }
-
 
   ngOnDestroy() {
     if (this.activatedRouteSub) {
@@ -83,12 +91,18 @@ export class HelferPage implements OnInit {
   }
 
   handleNavigationData() {
-    this.activatedRouteSub = this.activatedRoute.url.subscribe(data => {
-      if (this.router.getCurrentNavigation().extras && this.router.getCurrentNavigation().extras.state && this.router.getCurrentNavigation().extras.state["type"] === "helferEvent") {
-        const pushData = this.router.getCurrentNavigation().extras.state;
+    this.activatedRouteSub = this.activatedRoute.url.subscribe(() => {
+      const navigation = this.router.currentNavigation();
+      if (
+        navigation &&
+        navigation.extras.state &&
+        navigation.extras.state["type"] === "helferEvent"
+      ) {
+        const pushData = this.router.currentNavigation().extras.state;
+        // console.log("PUSHDATA " + JSON.stringify(pushData));
         // console.log("PUSHDATA " + JSON.stringify(pushData));
         let helferEvent: HelferEvent = {
-          id: "",
+          id: pushData["id"],
           name: "",
           description: "",
           location: "",
@@ -100,23 +114,24 @@ export class HelferPage implements OnInit {
           endDate: "",
           timeFrom: "",
           timeTo: "",
-          clubId: "",
+          clubId: pushData["clubId"],
           clubName: "",
           link_poll: "",
           link_web: "",
           status: false,
           attendees: undefined,
           countAttendees: 0,
-          countNeeded: 0
+          countNeeded: 0,
+          closedEvent: false,
         };
         this.openEventDetailModal(helferEvent, true);
       } else {
-        console.log("no data");
+        // console.log("no data");
       }
     });
   }
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
-    return clubAdminList && clubAdminList.some(club => club.id === clubId);
+    return this.fbService.isClubAdmin(clubAdminList, clubId);
   }
 
   getHelferEvent() {
@@ -127,7 +142,40 @@ export class HelferPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.fbService.getUserClubRefs(user);
+        // Get user's teams and children's teams
+        return combineLatest([
+          this.fbService.getUserClubRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+            }),
+            switchMap((children: Profile[]) =>
+              children.length > 0
+                ? combineLatest(
+                    children.map((child) => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      return this.fbService.getUserClubRefs(childUser);
+                    }),
+                  )
+                : of([]),
+            ),
+            map((childrenClubs) => childrenClubs.flat()),
+            // tap((clubs) => console.log("Children Clubs:", clubs)),
+            catchError((error) => {
+              console.error("Error fetching children clubs:", error);
+              return of([]);
+            }),
+          ),
+        ]).pipe(
+          map(([userClubs, childrenClubs]) => {
+            const allClubs = [...userClubs, ...childrenClubs];
+            return allClubs.filter(
+              (club, index, self) =>
+                index === self.findIndex((c) => c.id === club.id),
+            );
+          }),
+        );
       }),
       // tap((clubs) => console.log("Clubs:", clubs)),
       mergeMap((clubs) => {
@@ -139,14 +187,22 @@ export class HelferPage implements OnInit {
                 if (events.length === 0) return of([]);
                 return combineLatest(
                   events.map((event) =>
-                    this.eventService.getClubHelferEventSchichtenRef(club.id, event.id).pipe(
-                      switchMap((schichten) => {
-                        if (schichten.length === 0) return of([]);
-                        return combineLatest(
-                          schichten.map((schicht) =>
-                            this.eventService.getClubHelferEventSchichtAttendeesRef(club.id, event.id, schicht.id).pipe(
-                              map((attendees) => {
-                                /*const attendeeDetails = attendees.map(attendee => {
+                    this.eventService
+                      .getClubHelferEventSchichtenRef(club.id, event.id)
+                      .pipe(
+                        switchMap((schichten) => {
+                          if (schichten.length === 0) return of([]);
+                          return combineLatest(
+                            schichten.map((schicht) =>
+                              this.eventService
+                                .getClubHelferEventSchichtAttendeesRef(
+                                  club.id,
+                                  event.id,
+                                  schicht.id,
+                                )
+                                .pipe(
+                                  map((attendees) => {
+                                    /*const attendeeDetails = attendees.map(attendee => {
                                     return {
                                         ...attendee,
                                         status: attendee.status,
@@ -154,134 +210,70 @@ export class HelferPage implements OnInit {
                                     };
                                 });
                                 */
-                                return {
-                                  ...schicht,
-                                  // attendees: attendeeDetails,
-                                  countAttendees: attendees.filter((att) => att.status === true).length,
-                                  countNeeded: schicht.countNeeded,
-                                };
-                              }),
-                              catchError(() => of({
-                                ...schicht,
-                                // attendees: [],
-                                countAttendees: 0,
-                                countNeeded: schicht.neededAttendees
-                              }))
-                            )
-                          )
-                        );
-                      }),
-                      map((schichtenWithDetails) => ({
-                        ...event,
-                        schichten: schichtenWithDetails,
-                        countAttendees: schichtenWithDetails.reduce((acc, schicht) => acc + Number(schicht.countAttendees), 0),
-                        countNeeded: schichtenWithDetails.reduce((acc, schicht) => acc + Number(schicht.countNeeded), 0),
-                      })),
-                      catchError(() => of({
-                        ...event,
-                        schichten: [],
-                        countAttendees: 0,
-                        countNeeded: 0
-                      }))
-                    )
-                  )
+                                    return {
+                                      ...schicht,
+                                      // attendees: attendeeDetails,
+                                      countAttendees: attendees.filter(
+                                        (att) => att.status === true,
+                                      ).length,
+                                      countNeeded: schicht.countNeeded,
+                                    };
+                                  }),
+                                  catchError(() =>
+                                    of({
+                                      ...schicht,
+                                      // attendees: [],
+                                      countAttendees: 0,
+                                      countNeeded: schicht.neededAttendees,
+                                    }),
+                                  ),
+                                ),
+                            ),
+                          );
+                        }),
+                        map((schichtenWithDetails) => ({
+                          ...event,
+                          schichten: schichtenWithDetails,
+                          countAttendees: schichtenWithDetails.reduce(
+                            (acc, schicht) =>
+                              acc + Number(schicht.countAttendees),
+                            0,
+                          ),
+                          countNeeded: schichtenWithDetails.reduce(
+                            (acc, schicht) => acc + Number(schicht.countNeeded),
+                            0,
+                          ),
+                        })),
+                        catchError(() =>
+                          of({
+                            ...event,
+                            schichten: [],
+                            countAttendees: 0,
+                            countNeeded: 0,
+                          }),
+                        ),
+                      ),
+                  ),
                 );
               }),
               map((eventsWithSchichten) => eventsWithSchichten), // Flatten events array for each club
-              catchError(() => of([])) // If error in fetching events, return empty array
-            )
-          )
+              catchError(() => of([])), // If error in fetching events, return empty array
+            ),
+          ),
         ).pipe(
           map((clubsEvents) => clubsEvents.flat()), // Flatten to get all events across all clubs
           map((allEvents) =>
             allEvents.sort(
-              (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime() // Sort events by date
-            )
-          )
+              (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(), // Sort events by date
+            ),
+          ),
         );
       }),
       // tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
         console.error("Error in getHelferEvent:", err);
         return of([]); // Return an empty array on error
-      })
-    );
-  }
-
-  getHelferEvent2() {
-    return this.authService.getUser$().pipe(
-      take(1),
-      tap((user) => {
-        this.user = user;
       }),
-      switchMap((user) => {
-        if (!user) return of([]);
-        return this.fbService.getUserClubRefs(user);
-      }),
-      tap((clubs) => console.log("Teams:", clubs)),
-      mergeMap((clubs) => {
-        if (clubs.length === 0) return of([]);
-        return combineLatest(
-          clubs.map((club) =>
-            this.eventService.getClubHelferEventRefs(club.id).pipe(
-              switchMap((clubevents) => {
-                if (clubevents.length === 0) return of([]);
-                return combineLatest(
-                  clubevents.map((event) =>
-                    this.eventService
-                      .getClubHelferEventAttendeesRef(club.id, event.id)
-                      .pipe(
-                        map((attendees) => {
-                          const userAttendee = attendees.find(
-                            (att) => att.id == this.user.uid
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null; // default to false if user is not found in attendees list
-                          return {
-                            ...event,
-                            attendees,
-                            status: status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true
-                            ).length,
-                            clubId: club.id,
-                          };
-                        }),
-                        catchError(() =>
-                          of({
-                            ...event,
-                            attendees: [],
-                            status: null,
-                            countAttendees: 0,
-                            clubId: club.id,
-                          })
-                        ) // If error, return game with empty attendees
-                      )
-                  )
-                );
-              }),
-              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each club
-              catchError(() => of([])) // If error in fetching events, return empty array
-            )
-          )
-        ).pipe(
-          map((clubsevents) => clubsevents.flat()), // Flatten to get all events across all clubs
-          map(
-            (allevents) =>
-              allevents.sort(
-                (a, b) =>
-                  Timestamp.fromMillis(a.dateTime).seconds -
-                  Timestamp.fromMillis(b.dateTime).seconds
-              ) // Sort events by date
-          )
-        );
-      }),
-      // tap((results) => console.log("Final results with all events:", results)),
-      catchError((err) => {
-        console.error("Error in getTeameventsUpcoming:", err);
-        return of([]); // Return an empty array on error
-      })
     );
   }
 
@@ -293,82 +285,222 @@ export class HelferPage implements OnInit {
       }),
       switchMap((user) => {
         if (!user) return of([]);
-        return this.fbService.getUserClubRefs(user);
+        // Get user's teams and children's teams
+        return combineLatest([
+          this.fbService.getUserClubRefs(user),
+          this.userProfileService.getChildren(user.uid).pipe(
+            tap((children) => {
+              this.children = children;
+            }),
+            switchMap((children: Profile[]) =>
+              children.length > 0
+                ? combineLatest(
+                    children.map((child) => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      return this.fbService.getUserClubRefs(childUser);
+                    }),
+                  )
+                : of([]),
+            ),
+            map((childrenClubs) => childrenClubs.flat()),
+            // tap((clubs) => console.log("Children Clubs:", clubs)),
+            catchError((error) => {
+              console.error("Error fetching children clubs:", error);
+              return of([]);
+            }),
+          ),
+        ]).pipe(
+          map(([userClubs, childrenClubs]) => {
+            const allClubs = [...userClubs, ...childrenClubs];
+            return allClubs.filter(
+              (club, index, self) =>
+                index === self.findIndex((c) => c.id === club.id),
+            );
+          }),
+        );
       }),
-      tap((clubs) => console.log("Teams:", clubs)),
+      // tap((clubs) => console.log("Teams:", clubs)),
       mergeMap((clubs) => {
         if (clubs.length === 0) return of([]);
         return combineLatest(
           clubs.map((club) =>
             this.eventService.getClubHelferEventPastRefs(club.id).pipe(
-              switchMap((clubevents) => {
-                if (clubevents.length === 0) return of([]);
+              switchMap((events) => {
+                if (events.length === 0) return of([]);
                 return combineLatest(
-                  clubevents.map((game) =>
+                  events.map((event) =>
                     this.eventService
-                      .getClubHelferEventAttendeesRef(club.id, game.id)
+                      .getClubHelferEventSchichtenRef(club.id, event.id)
                       .pipe(
-                        map((attendees) => {
-                          const userAttendee = attendees.find(
-                            (att) => att.id == this.user.uid
+                        switchMap((schichten) => {
+                          if (schichten.length === 0) return of([]);
+                          return combineLatest(
+                            schichten.map((schicht) =>
+                              this.eventService
+                                .getClubHelferEventSchichtAttendeesRef(
+                                  club.id,
+                                  event.id,
+                                  schicht.id,
+                                )
+                                .pipe(
+                                  map((attendees) => {
+                                    /*const attendeeDetails = attendees.map(attendee => {
+                                    return {
+                                        ...attendee,
+                                        status: attendee.status,
+                                        confirmed: attendee.confirmed
+                                    };
+                                });
+                                */
+                                    return {
+                                      ...schicht,
+                                      // attendees: attendeeDetails,
+                                      countAttendees: attendees.filter(
+                                        (att) => att.status === true,
+                                      ).length,
+                                      countNeeded: schicht.countNeeded,
+                                    };
+                                  }),
+                                  catchError(() =>
+                                    of({
+                                      ...schicht,
+                                      // attendees: [],
+                                      countAttendees: 0,
+                                      countNeeded: schicht.neededAttendees,
+                                    }),
+                                  ),
+                                ),
+                            ),
                           );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null; // default to false if user is not found in attendees list
-                          return {
-                            ...game,
-                            attendees,
-                            status: status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true
-                            ).length,
-                            clubId: club.id,
-                          };
                         }),
+                        map((schichtenWithDetails) => ({
+                          ...event,
+                          schichten: schichtenWithDetails,
+                          countAttendees: schichtenWithDetails.reduce(
+                            (acc, schicht) =>
+                              acc + Number(schicht.countAttendees),
+                            0,
+                          ),
+                          countNeeded: schichtenWithDetails.reduce(
+                            (acc, schicht) => acc + Number(schicht.countNeeded),
+                            0,
+                          ),
+                        })),
                         catchError(() =>
                           of({
-                            ...game,
-                            attendees: [],
-                            status: null,
+                            ...event,
+                            schichten: [],
                             countAttendees: 0,
-                            clubId: club.id,
-                          })
-                        ) // If error, return game with empty attendees
-                      )
-                  )
+                            countNeeded: 0,
+                          }),
+                        ),
+                      ),
+                  ),
                 );
               }),
-              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each club
-              catchError(() => of([])) // If error in fetching events, return empty array
-            )
-          )
+              map((eventsWithSchichten) => eventsWithSchichten), // Flatten events array for each club
+              catchError(() => of([])), // If error in fetching events, return empty array
+            ),
+          ),
         ).pipe(
-          map((clubsevents) => clubsevents.flat()), // Flatten to get all events across all clubs
+          map((clubsEvents) => clubsEvents.flat()), // Flatten to get all events across all clubs
           map(
-            (allevents) =>
-              allevents.sort(
+            (allEvents) =>
+              allEvents.sort(
                 (a, b) =>
-                  Timestamp.fromMillis(a.dateTime).seconds -
-                  Timestamp.fromMillis(b.dateTime).seconds
-              ) // Sort events by date
-          )
+                  Timestamp.fromMillis(b.date).seconds -
+                  Timestamp.fromMillis(a.date).seconds,
+              ), // Sort events by date
+          ),
         );
       }),
       // tap((results) => console.log("Final results with all events:", results)),
       catchError((err) => {
-        console.error("Error in getTeameventsUpcoming:", err);
+        console.error("Error in getHelferEvent:", err);
         return of([]); // Return an empty array on error
-      })
+      }),
     );
   }
   async toggle(status: boolean, event: HelferEvent) {
-    console.log(
-      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and training ${event.id}`
+    // Hole die Club-Mitglieder
+    const clubMembers = await lastValueFrom(
+      this.fbService.getClubMemberRefs(event.clubId).pipe(take(1)),
     );
-    await this.eventService.setClubHelferEventAttendeeStatus(
+    // Hole die Kinder des aktuellen Benutzers
+    const children = await lastValueFrom(
+      this.userProfileService.getChildren(this.user.uid).pipe(take(1)),
+    );
+    // Sammle alle möglichen Mitglieder (aktueller Benutzer + Kinder)
+    const possibleMembers = [
+      this.user,
+      ...children.map((child) => ({ uid: child.id })),
+    ];
+    // Filtere die tatsächlichen Club-Mitglieder
+    const clubMemberIds = clubMembers.map((member) => member.id);
+    const validMembers = possibleMembers.filter((member) =>
+      clubMemberIds.includes(member.uid),
+    );
+    if (validMembers.length === 0) {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("common.error__no_club_member")),
+      );
+      return;
+    }
+    if (validMembers.length === 1) {
+      // Nur ein Kind oder nur Elternteil: direkt zusagen
+      await this.processToggle(validMembers[0].uid, status, event);
+    } else {
+      // Mehrere Kinder/Eltern: Auswahl anzeigen
+      const alert = await this.alertCtrl.create({
+        header: await lastValueFrom(this.translate.get("common.select_member")),
+        inputs: await Promise.all(
+          validMembers.map(async (member) => {
+            const profile =
+              member.uid === this.user.uid
+                ? { firstName: "Ich", lastName: "" }
+                : await lastValueFrom(
+                    this.userProfileService
+                      .getUserProfileById(member.uid)
+                      .pipe(take(1)),
+                  );
+            return {
+              type: "radio" as const,
+              label: `${profile.firstName} ${profile.lastName}`,
+              value: member.uid,
+            };
+          }),
+        ),
+        buttons: [
+          {
+            text: await lastValueFrom(this.translate.get("common.cancel")),
+            role: "cancel",
+          },
+          {
+            text: await lastValueFrom(this.translate.get("common.ok")),
+            role: "confirm",
+            handler: (selectedId) => {
+              if (selectedId) {
+                this.processToggle(selectedId, status, event);
+              }
+            },
+          },
+        ],
+      });
+      await alert.present();
+    }
+  }
+
+  private async processToggle(
+    userId: string,
+    status: boolean,
+    event: HelferEvent,
+  ) {
+    await this.eventService.setClubHelferEventAttendeeStatusAdmin(
       status,
       event.clubId,
-      event.id
+      event.id,
+      userId,
     );
     this.presentToast();
   }
@@ -376,48 +508,67 @@ export class HelferPage implements OnInit {
   async toggleItem(
     slidingItem: IonItemSliding,
     status: boolean,
-    event: HelferEvent
+    event: HelferEvent,
   ) {
     slidingItem.closeOpened();
 
     console.log(
-      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and training ${event.id}`
+      `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and training ${event.id}`,
     );
     await this.eventService.setClubHelferEventAttendeeStatus(
       status,
       event.clubId,
-      event.id
+      event.id,
     );
     this.presentToast();
   }
 
   async presentToast() {
-    const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.changes__saved")),
-      color: "primary",
-      duration: 1500,
-      position: "top",
+    await this.uiService.showSuccessToast(
+      await lastValueFrom(this.translate.get("common.success__saved")),
+    );
+  }
+
+  async presentErrorToast(error) {
+    await this.uiService.showErrorToast(error.message);
+  }
+
+  private async showAddHelferSuccessAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Erfolg",
+      message: "Der Helfer wurde erfolgreich hinzugefügt.",
     });
-    toast.present();
+  }
+
+  private async showAddHelferErrorAlert() {
+    await this.uiService.showInfoDialog({
+      header: "Fehler",
+      message:
+        "Beim Hinzufügen des Helfers ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    });
   }
 
   async copyEvent(slidingItem: IonItemSliding, event) {
     slidingItem.closeOpened();
-  
+
     try {
       const schichten = await lastValueFrom(
-        this.eventService.getClubHelferEventSchichtenRef(event.clubId, event.id).pipe(
-          take(1),
-          map((schichten) => schichten.sort((a, b) => a.timeFrom.localeCompare(b.timeFrom))),
-          catchError((err) => {
-            console.error("Error in getHelferEventSchichten:", err);
-            return of([]); // Return an empty array on error
-          })
-        )
+        this.eventService
+          .getClubHelferEventSchichtenRef(event.clubId, event.id)
+          .pipe(
+            take(1),
+            map((schichten) =>
+              schichten.sort((a, b) => a.timeFrom.localeCompare(b.timeFrom)),
+            ),
+            catchError((err) => {
+              console.error("Error in getHelferEventSchichten:", err);
+              return of([]); // Return an empty array on error
+            }),
+          ),
       );
-  
+
       event["schichten"] = schichten;
-  
+
       const modal = await this.modalCtrl.create({
         component: HelferAddPage,
         presentingElement: this.routerOutlet.nativeEl, // make sure this is correct
@@ -425,15 +576,14 @@ export class HelferPage implements OnInit {
         showBackdrop: true,
         componentProps: { data: event },
       });
-  
+
       await modal.present();
-  
+
       const { data, role } = await modal.onWillDismiss();
-  
+
       if (role === "confirm") {
         // Handle confirm action if necessary
       }
-  
     } catch (error) {
       console.error("Failed to process event schichten:", error);
     }
@@ -443,7 +593,9 @@ export class HelferPage implements OnInit {
     slidingItem.closeOpened();
     await this.eventService.deleteHelferEvent(event.clubId, event.id);
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get("common.success__helfer_deleted")),
+      message: await lastValueFrom(
+        this.translate.get("common.success__helfer_deleted"),
+      ),
       color: "danger",
       duration: 1500,
       position: "top",

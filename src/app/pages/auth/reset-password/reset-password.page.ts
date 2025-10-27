@@ -16,9 +16,10 @@ import { UserCredentialLogin } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 
 @Component({
-  selector: "app-reset-password",
-  templateUrl: "./reset-password.page.html",
-  styleUrls: ["./reset-password.page.scss"],
+    selector: "app-reset-password",
+    templateUrl: "./reset-password.page.html",
+    styleUrls: ["./reset-password.page.scss"],
+    standalone: false
 })
 export class ResetPasswordPage implements OnInit {
   public user: UserCredentialLogin;

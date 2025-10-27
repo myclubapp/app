@@ -1,4 +1,4 @@
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from "@angular/fire/firestore";
 
 export interface Training {
   id: string;
@@ -21,17 +21,22 @@ export interface Training {
   startDate: string;
   endDate: string;
 
-  repeatAmount: string,
-  repeatFrequency: string,
+  repeatAmount: string;
+  repeatFrequency: string;
 
-   // TEAM FIELDS based on TeamID
+  // TEAM FIELDS based on TeamID
   teamId: string;
   teamName: string;
   liga: string;
 
   // Business Logic Fields
+  isMember: boolean;
   status: boolean;
   countAttendees: number;
   attendees: any;
   exercises: any;
+  children: any;
+  cancelled: boolean;
+  cancelledReason: string;
+  lastReminderSent?: Timestamp;
 }

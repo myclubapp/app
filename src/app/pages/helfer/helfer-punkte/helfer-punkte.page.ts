@@ -1,77 +1,146 @@
 import { Component, OnInit } from "@angular/core";
-import { ModalController } from "@ionic/angular";
+import { ModalController, ToastController } from "@ionic/angular";
 import { Observable, catchError, combineLatest, map, of, switchMap, take, tap } from "rxjs";
 import { HelferService } from "src/app/services/firebase/helfer.service";
 import { HelferDetailPage } from "../helfer-detail/helfer-detail.page";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
+import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import { Profile } from "src/app/models/user";
+
+interface User {
+  firstName: string;
+  lastName: string;
+}
 
 @Component({
-  selector: "app-helfer-punkte",
-  templateUrl: "./helfer-punkte.page.html",
-  styleUrls: ["./helfer-punkte.page.scss"],
+    selector: "app-helfer-punkte",
+    templateUrl: "./helfer-punkte.page.html",
+    styleUrls: ["./helfer-punkte.page.scss"],
+    standalone: false
 })
 export class HelferPunktePage implements OnInit {
   helferPunkteList$: Observable<any[]>;
-  groupArray = [];
+  groupArray: number[] = [];
+
   constructor(
     private readonly modalCtrl: ModalController,
     private readonly authService: AuthService,
     private readonly fbService: FirebaseService,
-    private readonly helferService: HelferService
+    private readonly helferService: HelferService,
+    private readonly userProfileService: UserProfileService,
+    private readonly toastCtrl: ToastController
   ) {
-
     this.helferPunkteList$ = this.getHelferEinsatz();
-
   }
 
   ngOnInit() {
-    const currentYear = new Date().getFullYear();
+    this.helferPunkteList$.subscribe(helferPunkte => {
+      // Extrahiere alle Jahre aus den eventDates
+      const years = helferPunkte
+        .map(punkt => new Date(punkt.eventDate.toDate()).getFullYear())
+        .filter((year, index, self) => self.indexOf(year) === index) // Entferne Duplikate
+        .sort((a, b) => b - a); // Sortiere absteigend
 
-    this.groupArray.push(currentYear);
-    this.groupArray.push(currentYear - 1);
-    this.groupArray.push(currentYear - 2);
-    this.groupArray.push(currentYear - 3);
+      this.groupArray = years;
+    });
   }
 
   getHelferEinsatz() {
     return this.authService.getUser$().pipe(
-        take(1),
-        tap((user) => {
-            if (!user) {
-                console.log("No user found");
-                throw new Error("User not found");
+      take(1),
+      tap((user) => {
+        if (!user) {
+          console.log("No user found");
+          throw new Error("User not found");
+        }
+      }),
+      switchMap(user =>
+        this.fbService.getUserClubRefs(user).pipe(
+          tap(clubs => console.log("Clubs:", clubs)),
+          switchMap(clubs => {
+            if (clubs.length === 0) {
+              console.log("No clubs associated with the user");
+              return of([]);
             }
-        }),
-        switchMap(user => this.fbService.getUserClubRefs(user).pipe(
-            tap(clubs => console.log("Clubs:", clubs)),
-            switchMap(clubs => {
-                if (clubs.length === 0) {
-                    console.log("No clubs associated with the user");
+  
+            const clubHelferPunkte$ = clubs.map(club =>
+              this.helferService.getUserHelferPunkteRefs(user.uid, club.id).pipe(
+                switchMap(helferPunkte => {
+                  if (!helferPunkte || helferPunkte.length === 0) {
                     return of([]);
-                }
-                // Map over each club and fetch HelferPunkte for the user
-                const clubHelferPunkte$ = clubs.map(club =>
-                    this.helferService.getUserHelferPunkteRefs(user.uid, club.id).pipe(
-                        catchError(err => {
-                            console.error(`Failed to fetch HelferPunkte for club ${club.id}:`, err);
-                            return of([]); // Returning an empty array in case of error
-                        })
-                    )
-                );
-                return combineLatest(clubHelferPunkte$).pipe(
-                    map(helferPunkteArrays => helferPunkteArrays.flat()) // Flatten the array of arrays into a single array of HelferPunkte
-                );
-            })
-        )),
-        catchError(err => {
-            console.error("Error fetching HelferEinsatz:", err);
-            return of([]);
-        })
+                  }
+  
+                  const helferPunkteWithUser$ = helferPunkte.map(punkt => {
+                    if (!punkt.confirmedBy || !punkt.confirmedBy.id) {
+                      return of({
+                        ...punkt,
+                        confirmedByFirstName: 'Unbekannt',
+                        confirmedByLastName: ''
+                      });
+                    }
+  
+                    return this.userProfileService.getUserProfileById(punkt.confirmedBy.id).pipe(
+                      map((user: any) => ({
+                        ...punkt,
+                        confirmedByFirstName: user?.firstName || 'Unbekannt',
+                        confirmedByLastName: user?.lastName || ''
+                      })),
+                      catchError((error) => {
+                        console.warn(`Fehler beim Laden des Benutzerprofils für Helferpunkt ${punkt.id}:`, error);
+                        return of({
+                          ...punkt,
+                          confirmedByFirstName: 'Unbekannt',
+                          confirmedByLastName: ''
+                        });
+                      })
+                    );
+                  });
+  
+                  return combineLatest(helferPunkteWithUser$).pipe(
+                    catchError(error => {
+                      console.error('Fehler beim Kombinieren der Helferpunkte:', error);
+                      return of(helferPunkte.map(punkt => ({
+                        ...punkt,
+                        confirmedByFirstName: 'Unbekannt',
+                        confirmedByLastName: ''
+                      })));
+                    })
+                  );
+                }),
+                catchError(err => {
+                  console.error(`Failed to fetch HelferPunkte for club ${club.id}:`, err);
+                  return of([]);
+                })
+              )
+            );
+  
+            return combineLatest(clubHelferPunkte$).pipe(
+              map(helferPunkteArrays => helferPunkteArrays.flat()),
+              tap(helferPunkte => console.log('helferPunkte', helferPunkte))
+            );
+          })
+        )
+      ),
+      catchError(err => {
+        console.error("Error fetching HelferEinsatz:", err);
+        return of([]);
+      })
     );
-}
+  }
 
-  async openHelferEinsatz(helfereinsatz){
+  async openHelferEinsatz(helfereinsatz) {
+    if (!helfereinsatz.eventRef) {
+      const toast = await this.toastCtrl.create({
+        message: 'Diese Funktion ist leider nicht verfügbar',
+        duration: 2000,
+        position: 'top',
+        color: 'primary'
+      });
+      await toast.present();
+      return;
+    }
+    
     const modal = await this.modalCtrl.create({
       component: HelferDetailPage,
       presentingElement: await this.modalCtrl.getTop(),
@@ -92,7 +161,6 @@ export class HelferPunktePage implements OnInit {
 
     if (role === "confirm") {
     }
-
   }
 
   async close() {

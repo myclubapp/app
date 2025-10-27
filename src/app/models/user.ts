@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 
 export interface UserCredentialLogin {
   email: string;
@@ -13,9 +13,15 @@ export interface Profile {
   phonenumber: number;
   dateOfBirth: Timestamp;
   streetAndNumber: string;
+  street?: string;
+  houseNumber?: string;
   postalcode: number;
   city: string;
   licenseNumber: string;
+  gender?: string; // m, w, männlich, weiblich
+  ahvNumber?: string;
+  nationality?: string; // z.B. CH, DE, IT
+  country?: string; // z.B. CH, DE, IT
   settingsPush: boolean;
   settingsPushNews: boolean;
   settingsPushNewsVerband: boolean;
@@ -25,11 +31,18 @@ export interface Profile {
   settingsPushHelfer: boolean;
   settingsEmail: boolean;
   settingsEmailReporting: boolean;
+  showGamePreview: boolean;
+  hideEmail: boolean;
+  hidePhoneNumber: boolean;
   language: string;
   favTeam: string;
   favClub: string;
   roles: [string];
+  kids: any[];
+  helferPunkte: number;
 
   // Business Logic Fields
   isAdmin: boolean;
+  isParent: boolean;
+  requestTeamId?: string;
 }

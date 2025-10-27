@@ -1,70 +1,169 @@
 <ion-content>
+  @if (!closable) {
   <ion-fab vertical="top" horizontal="end">
     <ion-fab-button size="small" (click)="logout()">
       <ion-icon name="log-out-outline" size="small"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+  } @if (closable) {
+  <ion-fab vertical="top" horizontal="end">
+    <ion-fab-button size="small" (click)="close()">
+      <ion-icon name="close-outline" size="small"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  }
 
-  <ion-grid class="ion-no-padding" style="height: 100vh;">
-    <ion-row style="height: 100%;">
+  <ion-grid class="ion-no-padding" style="height: 100vh">
+    <ion-row style="height: 100%">
       <!-- Login Form Column -->
-      <ion-col size-md="6" size-lg="5" style="display: flex; align-items: center; justify-content: center;">
-        <ion-card class="ion-no-margin" style="max-width: 500px; width: 100%;">
+      <ion-col
+        size-md="6"
+        size-lg="5"
+        style="display: flex; align-items: center; justify-content: center"
+      >
+        <ion-card class="ion-no-margin" style="max-width: 500px; width: 100%">
           <ion-card-content>
-            <ion-img src="assets/logo_trans.png" alt="Logo" style="max-height: 100px; max-width: 100px;"></ion-img>
-            <ion-card-title>Trete deinem Club bei</ion-card-title>           
+            <ion-img
+              src="assets/logo_trans.png"
+              alt="Logo"
+              style="max-height: 100px; max-width: 100px"
+            ></ion-img>
+            <ion-card-title
+              >{{ 'onboarding.join_club_title' | translate }}</ion-card-title
+            >
             <ion-text>
-              <p>Damit wir dein Profil fertig einrichten könnnen, musst du zuerst einem Club beitreten.</p>
+              <p>{{ 'onboarding.join_club_description' | translate }}</p>
               <!--<p>Suche deinen Club über das Suchfeld und stelle anschliessend eine Beitrittsanfrage an deinen Verein. Die Verantworlichen Personen werden anschliessend prüfen ob du berechtigt bist, diesem Verein beizutreten und fügen dich einem Team hinzu. Du wirst per E-Mail Benachrichtigt, wenn dein Antrag angenommen wurde.</p>-->
             </ion-text>
-            <ion-searchbar  class="ion-no-padding" (ionInput)="handleChange($event)" animated="false"
-              search-icon="search-circle" placeholder='{{"common.searchfield" | translate}}'
-              [placeholder]='"onboarding.search_by_club__pholder" |  translate'></ion-searchbar>
+
+            <ion-searchbar
+              class="ion-no-padding"
+              (ionInput)="handleChange($event)"
+              animated="false"
+              search-icon="search-circle"
+              placeholder='{{"common.searchfield" | translate}}'
+              [placeholder]='"onboarding.search_by_club__pholder" |  translate'
+            ></ion-searchbar>
+
             <ion-list [inset]="true" class="ion-no-margin">
-              <ion-list-header *ngIf="clubListSU.length > 0">
-                Unihockey
+              @if (clubListSU.length > 0) {
+              <ion-list-header>
+                {{ 'onboarding.sports.unihockey' | translate }}
               </ion-list-header>
-              <ion-item lines="full" *ngFor="let club of clubListSU" (click)="joinClub(club)" button>
+              } @for (club of clubListSU; track club.id) {
+              <ion-item lines="full" (click)="joinClub(club)" button>
                 <ion-avatar slot="start">
                   <img alt="{{club.name}}" src="{{club.logo}}" />
                 </ion-avatar>
                 <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
               </ion-item>
-
-              <ion-list-header *ngIf="clubListSV.length > 0">
-                Volleyball
+              } @if (clubListSV.length > 0) {
+              <ion-list-header>
+                {{ 'onboarding.sports.volleyball' | translate }}
               </ion-list-header>
-              <ion-item lines="full" *ngFor="let club of clubListSV" (click)="joinClub(club)" button>
+              } @for (club of clubListSV; track club.id) {
+              <ion-item lines="full" (click)="joinClub(club)" button>
                 <ion-avatar slot="start">
                   <img alt="{{club.name}}" src="{{club.logo}}" />
                 </ion-avatar>
                 <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
               </ion-item>
-
-              <ion-list-header *ngIf="clubListSH.length > 0">
-                Handball
+              } @if (clubListSH.length > 0) {
+              <ion-list-header>
+                {{ 'onboarding.sports.handball' | translate }}
               </ion-list-header>
-              <ion-item lines="full" *ngFor="let club of clubListSH" (click)="joinClub(club)" button>
+              } @for (club of clubListSH; track club.id) {
+              <ion-item lines="full" (click)="joinClub(club)" button>
                 <ion-avatar slot="start">
                   <img alt="{{club.name}}" src="{{club.logo}}" />
                 </ion-avatar>
                 <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
               </ion-item>
+              } @if (clubListST.length > 0) {
+              <ion-list-header>
+                {{ 'onboarding.sports.gymnastics' | translate }}
+              </ion-list-header>
+              } @for (club of clubListST; track club.id) {
+              <ion-item lines="full" (click)="joinClub(club)" button>
+                <ion-avatar slot="start">
+                  <img alt="{{club.name}}" src="{{club.logo}}" />
+                </ion-avatar>
+                <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
+              </ion-item>
+              }
 
+              <!-- Sports -->
+              @if (clubListSports.length > 0) {
+              <ion-list-header> Sportvereine </ion-list-header>
+              } @for (club of clubListSports; track club.id) {
+              <ion-item lines="full" (click)="joinClub(club)" button>
+                <ion-avatar slot="start">
+                  <img alt="{{club.name}}" src="{{club.logo}}" />
+                </ion-avatar>
+                <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
+              </ion-item>
+              }
 
+              <!-- Culture -->
+              @if (clubListCulture.length > 0) {
+              <ion-list-header> Kulturvereine </ion-list-header>
+              } @for (club of clubListCulture; track club.id) {
+              <ion-item lines="full" (click)="joinClub(club)" button>
+                <ion-avatar slot="start">
+                  <img alt="{{club.name}}" src="{{club.logo}}" />
+                </ion-avatar>
+                <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
+              </ion-item>
+              }
+
+              <!-- Other -->
+              @if (clubListOther.length > 0) {
+              <ion-list-header> Andere Vereine </ion-list-header>
+              } @for (club of clubListOther; track club.id) {
+              <ion-item lines="full" (click)="joinClub(club)" button>
+                <ion-avatar slot="start">
+                  <img alt="{{club.name}}" src="{{club.logo}}" />
+                </ion-avatar>
+                <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
+              </ion-item>
+              } @if (clubListByContactEmail$ | async; as clubListByContactEmail)
+              { @if (clubListByContactEmail.length > 0) {
+              <ion-list-header>
+                {{ 'onboarding.linked_clubs' | translate }}
+              </ion-list-header>
+              } @for (club of clubListByContactEmail; track club.id) {
+              <ion-item (click)="joinClub(club)" lines="full" button>
+                <ion-avatar slot="start">
+                  <img alt="{{club.name}}" src="{{club.logo}}" />
+                </ion-avatar>
+                <ion-label class="ion-text-wrap">{{club.name}} </ion-label>
+              </ion-item>
+              } }
             </ion-list>
-
           </ion-card-content>
         </ion-card>
       </ion-col>
       <!-- Image Column -->
-      <ion-col size-md="6" size-lg="7" style="padding: 0;" class="ion-hide-md-down">
+      <ion-col
+        size-md="6"
+        size-lg="7"
+        style="padding: 0"
+        class="ion-hide-md-down"
+      >
         <div
-          style="height: 100%; background-image: url('assets/bg/login.jpg'); background-size: cover; background-position: center;">
-        </div>
+          style="
+            height: 100%;
+            background-image: url(&quot;assets/bg/login.jpg&quot;);
+            background-size: cover;
+            background-position: center;
+          "
+        ></div>
       </ion-col>
     </ion-row>
   </ion-grid>
-
-
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="createNewClub()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

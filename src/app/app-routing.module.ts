@@ -7,8 +7,13 @@ import {
 } from "@angular/fire/auth-guard";
 import { map, pipe } from "rxjs";
 
-const redirectUnverifiedTo = (redirect: any[]) => pipe(emailVerified, map(emailVerified => emailVerified || redirect));
-const redirectUnauthorizedToLogin = () => redirectUnverifiedTo(['/onboarding-email']);
+const redirectUnverifiedTo = (redirect: any[]) =>
+  pipe(
+    emailVerified,
+    map((emailVerified) => emailVerified || redirect),
+  );
+const redirectUnauthorizedToLogin = () =>
+  redirectUnverifiedTo(["/onboarding-email"]);
 const redirectToLogin = () => redirectUnauthorizedTo(["login"]);
 const routes: Routes = [
   {
@@ -27,14 +32,14 @@ const routes: Routes = [
     path: "logout",
     loadChildren: () =>
       import("./pages/auth/logout/logout.module").then(
-        (m) => m.LogoutPageModule
+        (m) => m.LogoutPageModule,
       ),
   },
   {
     path: "signup",
     loadChildren: () =>
       import("./pages/auth/signup/signup.module").then(
-        (m) => m.SignupPageModule
+        (m) => m.SignupPageModule,
       ),
   },
 
@@ -47,28 +52,26 @@ const routes: Routes = [
     path: "club-list",
     loadChildren: () =>
       import("./pages/club-list/club-list.module").then(
-        (m) => m.ClubListPageModule
+        (m) => m.ClubListPageModule,
       ),
   },
   {
     path: "team-list",
     loadChildren: () =>
       import("./pages/team-list/team-list.module").then(
-        (m) => m.TeamListPageModule
+        (m) => m.TeamListPageModule,
       ),
   },
   {
     path: "news",
     loadChildren: () =>
       import("./pages/news/news/news.module").then((m) => m.NewsPageModule),
-
-
   },
   {
     path: "reset-password",
     loadChildren: () =>
       import("./pages/auth/reset-password/reset-password.module").then(
-        (m) => m.ResetPasswordPageModule
+        (m) => m.ResetPasswordPageModule,
       ),
   },
   {
@@ -80,47 +83,57 @@ const routes: Routes = [
     path: "trainings",
     loadChildren: () =>
       import("./pages/training/trainings/trainings.module").then(
-        (m) => m.TrainingsPageModule
+        (m) => m.TrainingsPageModule,
       ),
   },
   {
     path: "events",
     loadChildren: () =>
       import("./pages/event/events/events.module").then(
-        (m) => m.EventsPageModule
+        (m) => m.EventsPageModule,
       ),
   },
   {
     path: "championship",
     loadChildren: () =>
       import("./pages/championship/championship/championship.module").then(
-        (m) => m.ChampionshipPageModule
+        (m) => m.ChampionshipPageModule,
       ),
   },
   {
     path: "onboarding",
     loadChildren: () =>
       import("./pages/onboarding/onboarding/onboarding.module").then(
-        (m) => m.OnboardingPageModule
+        (m) => m.OnboardingPageModule,
       ),
   },
   {
-    path: 'onboarding-club',
-    loadChildren: () => import('./pages/onboarding/onboarding-club/onboarding-club.module').then( m => m.OnboardingClubPageModule),
-    
+    path: "onboarding-club",
+    loadChildren: () =>
+      import("./pages/onboarding/onboarding-club/onboarding-club.module").then(
+        (m) => m.OnboardingClubPageModule,
+      ),
   },
   {
-    path: 'onboarding-email',
-    loadChildren: () => import('./pages/onboarding/onboarding-email/onboarding-email.module').then( m => m.OnboardingEmailPageModule),
-  
+    path: "onboarding-email",
+    loadChildren: () =>
+      import(
+        "./pages/onboarding/onboarding-email/onboarding-email.module"
+      ).then((m) => m.OnboardingEmailPageModule),
   },
   {
     path: "onboarding-team",
     loadChildren: () =>
       import("./pages/onboarding/onboarding-team/onboarding-team.module").then(
-        (m) => m.OnboardingTeamPageModule
+        (m) => m.OnboardingTeamPageModule,
       ),
-      
+  },
+  {
+    path: "welcome",
+    loadChildren: () =>
+      import("./pages/onboarding/welcome/welcome.module").then(
+        (m) => m.WelcomePageModule,
+      ),
   },
   {
     path: "info",
@@ -139,24 +152,23 @@ const routes: Routes = [
     path: "helfer",
     loadChildren: () =>
       import("./pages/helfer/helfer/helfer.module").then(
-        (m) => m.HelferPageModule
+        (m) => m.HelferPageModule,
       ),
   },
   {
     path: "lineup",
     loadChildren: () =>
       import("./pages/championship/lineup/lineup.module").then(
-        (m) => m.LineupPageModule
+        (m) => m.LineupPageModule,
       ),
   },
   {
     path: "**",
     loadChildren: () =>
       import("./pages/not-found/not-found.module").then(
-        (m) => m.NotFoundPageModule
+        (m) => m.NotFoundPageModule,
       ),
   },
-
 ];
 
 @NgModule({

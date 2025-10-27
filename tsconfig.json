@@ -5,29 +5,24 @@
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
+    "esModuleInterop": true,
     "declaration": false,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "es2022",
     "module": "es2020",
-    "lib": [
-      "es2019", 
-      "dom"
-    ],
-    "allowSyntheticDefaultImports": true,
+    "lib": ["es2019", "es2021", "dom"],
     "resolveJsonModule": true,
     "useDefineForClassFields": false,
     "types": ["node"],
     "forceConsistentCasingInFileNames": true,
-    "strict": false, // Change this to TRUE if every file is rewritten..
+    "strict": false,
     "noImplicitOverride": true,
-    "noImplicitAny": false, // remove this in the future..
+    "noImplicitAny": false,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-
+    "noFallthroughCasesInSwitch": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

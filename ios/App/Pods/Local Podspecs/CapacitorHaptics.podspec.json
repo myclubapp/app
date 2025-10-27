@@ -1,20 +1,20 @@
 {
   "name": "CapacitorHaptics",
-  "version": "6.0.1",
+  "version": "7.0.2",
   "summary": "The Haptics API provides physical feedback to the user through touch or vibration.",
   "license": "MIT",
   "homepage": "https://capacitorjs.com",
   "authors": "Ionic <hi@ionicframework.com>",
   "source": {
     "git": "https://github.com/ionic-team/capacitor-plugins.git",
-    "tag": "@capacitor/haptics@6.0.1"
+    "tag": "@capacitor/haptics@7.0.2"
   },
   "source_files": [
     "ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}",
     "haptics/ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}"
   ],
   "platforms": {
-    "ios": "13.0"
+    "ios": "14.0"
   },
   "dependencies": {
     "Capacitor": [

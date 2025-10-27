@@ -32,6 +32,8 @@
 	<string>Need camera access to select profile image.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Need your location access for Navigation for sports venue</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Need your location access for Navigation for sports venue or showing a in-App Map</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Need photo library access to select profile image.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

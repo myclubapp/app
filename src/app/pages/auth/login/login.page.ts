@@ -9,19 +9,28 @@ import {
   Validators,
   UntypedFormBuilder,
 } from "@angular/forms";
-import { AlertController, LoadingController, MenuController } from "@ionic/angular";
+import {
+  AlertController,
+  LoadingController,
+  MenuController,
+  ModalController,
+} from "@ionic/angular";
 import { AuthService } from "src/app/services/auth.service";
 import { TranslateService } from "@ngx-translate/core";
 import { lastValueFrom } from "rxjs";
+import { UiService } from "src/app/services/ui.service";
+
 @Component({
   selector: "app-login",
   templateUrl: "./login.page.html",
   styleUrls: ["./login.page.scss"],
+  standalone: false,
 })
 export class LoginPage implements OnInit {
   public user: UserCredentialLogin;
   public authForm: UntypedFormGroup;
   public show: boolean;
+  public isPasswordFocused: boolean = false;
 
   constructor(
     private readonly alertCtrl: AlertController,
@@ -30,7 +39,9 @@ export class LoginPage implements OnInit {
     private readonly router: Router,
     private readonly formBuilder: UntypedFormBuilder,
     public readonly menuCtrl: MenuController,
-    private translate: TranslateService
+    private readonly translate: TranslateService,
+    private readonly modalCtrl: ModalController,
+    private readonly uiService: UiService,
   ) {
     this.menuCtrl.enable(true, "menu");
     this.authForm = this.formBuilder.group({
@@ -49,75 +60,51 @@ export class LoginPage implements OnInit {
 
   async submitCredentials(authForm: any) {
     const loading = await this.loadingCtrl.create({
-      message: 'Login...',
-      duration: 0,
-      backdropDismiss: false,
+      message: await lastValueFrom(this.translate.get("login.loading")),
     });
-    loading.present();
+
     try {
-      const userCredential: UserCredential = await this.authService.login(
+      await loading.present();
+      await this.authService.login(
         authForm.value.email,
-        authForm.value.password
+        authForm.value.password,
       );
-      loading.dismiss();
-      this.menuCtrl.enable(true, "menu");
-      this.router.navigateByUrl("/t").catch((error) => {
-        console.error(error.message);
-        this.router.navigateByUrl("");
-      });
-    } catch (err) {
-      loading.dismiss();
-      let message =
-        (await lastValueFrom(
-          this.translate.get("common.general__error_occurred")
-        )) +
-        " " +
-        err.code +
-        " / " +
-        err.message;
-      console.error(err.code);
+      await loading.dismiss();
+      // await this.modalCtrl.dismiss({}, "confirm");
+      // await this.router.navigateByUrl('/t/news');
+    } catch (error) {
+      await loading.dismiss();
+      console.log("error", error);
+      let message = await lastValueFrom(
+        this.translate.get("login.error_message"),
+      );
 
-      if (err.code == "auth/user-not-found") {
+      if (error.code === "auth/user-not-found") {
         message = await lastValueFrom(
-          this.translate.get("login.error__no_acount_found")
+          this.translate.get("login.error_user_not_found"),
         );
-      } else if (err.code == "auth/wrong-password") {
+      } else if (error.code === "auth/wrong-password") {
         message = await lastValueFrom(
-          this.translate.get("login.error__no_acount_found")
+          this.translate.get("login.error_wrong_password"),
         );
-
-      } else if (err.code == "auth/invalid-email") {
+      } else if (error.code === "auth/invalid-email") {
         message = await lastValueFrom(
-          this.translate.get("login.error__no_acount_found")
+          this.translate.get("login.error_invalid_email"),
         );
-        
-      } else if (err.code == "auth/network-request-failed") {
+      } else if (error.code === "auth/user-disabled") {
         message = await lastValueFrom(
-          this.translate.get("login.error__network_connection")
+          this.translate.get("login.error_user_disabled"),
         );
-      } else if (err.code == "auth/invalid-login-credentials") {
+      } else if (error.code === "auth/invalid-credential") {
         message = await lastValueFrom(
-          this.translate.get("login.error__invalid_login_credentials")
+          this.translate.get("login.error_user_credential"),
         );
-      } else if (err.code == "auth/invalid-credential") {
-        message = await lastValueFrom(
-          this.translate.get("login.error__invalid_credentials")
-        );
-      } else {
-        console.log("Error");
       }
 
-      const alert = await this.alertCtrl.create({
+      await this.uiService.showInfoDialog({
         header: await lastValueFrom(this.translate.get("login.error")),
         message: message,
-        buttons: [
-          {
-            text: await lastValueFrom(this.translate.get("common.ok")),
-            role: "cancel",
-          },
-        ],
       });
-      alert.present();
     }
   }
 }

@@ -4,3 +4,42 @@ ion-img {
   margin-right: auto;
   width: 200px;
 }
+
+.content-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.logo-image {
+  max-width: 200px;
+  margin: 1rem 0;
+}
+
+.update-section {
+  margin-top: 2rem;
+}
+
+ion-card {
+  margin: 1rem 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+ion-card-header {
+  padding: 1rem;
+}
+
+ion-card-content {
+  padding: 0;
+}
+
+ion-item {
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  --min-height: 3.5rem;
+}
+
+.update-button {
+  margin: 1rem 0;
+  --border-radius: 8px;
+}

@@ -2,7 +2,16 @@ import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Team } from "src/app/models/team";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { Observable, catchError, first, lastValueFrom, of, switchMap, take } from "rxjs";
+import {
+  Observable,
+  catchError,
+  first,
+  lastValueFrom,
+  of,
+  shareReplay,
+  switchMap,
+  take,
+} from "rxjs";
 import { User } from "@angular/fire/auth";
 import {
   AlertController,
@@ -14,11 +23,13 @@ import { TeamPage } from "../team/team-detail/team.page";
 import { Profile } from "src/app/models/user";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { TranslateService } from "@ngx-translate/core";
+import { Optional } from "@angular/core";
 
 @Component({
   selector: "app-team-list",
   templateUrl: "./team-list.page.html",
   styleUrls: ["./team-list.page.scss"],
+  standalone: false,
 })
 export class TeamListPage implements OnInit {
   teamList$: Observable<Team[]>;
@@ -31,25 +42,24 @@ export class TeamListPage implements OnInit {
   constructor(
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
-    private readonly routerOutlet: IonRouterOutlet,
+    @Optional() private readonly routerOutlet: IonRouterOutlet,
     private readonly toastController: ToastController,
     private readonly alertController: AlertController,
     private translate: TranslateService,
     private readonly modalCtrl: ModalController,
-
-  ) { }
+    private readonly toastCtrl: ToastController,
+  ) {}
 
   ngOnInit() {
-    this.teamList$ = this.fbService.getTeamList();
+    this.teamList$ = this.fbService.getTeamList().pipe(shareReplay(1));
   }
 
-  ngOnDestroy() { }
+  ngOnDestroy() {}
 
   async leaveTeam(team) {
-
     const alert = await this.alertController.create({
       message: await lastValueFrom(
-        this.translate.get("team-list.leave_team__confirm")
+        this.translate.get("team-list.leave_team__confirm"),
       ),
       buttons: [
         {
@@ -63,38 +73,39 @@ export class TeamListPage implements OnInit {
         {
           text: await lastValueFrom(this.translate.get("common.yes")),
           handler: async () => {
-            this.authService.getUser$().pipe(
-              first(), // Ensures that only the first value is taken and the observable completes.
-              switchMap(userProfile => {
-                if (userProfile) {
-                  return this.fbService.leaveTeam(team.id, userProfile.uid);
-                } else {
-                  return of(null); // Handle the case where userProfile is not available.
-                }
-              }),
-              catchError(err => {
-                console.error('Error leaving team:', err);
-                return of(null); // Handle errors gracefully.
-              })
-            ).subscribe({
-              next: () => {
-                console.log('Successfully left the team.');
-                // Optional: Add additional logic after leaving the team successfully.
-              },
-              error: err => console.error('An error occurred:', err)
-            });
+            this.authService
+              .getUser$()
+              .pipe(
+                first(), // Ensures that only the first value is taken and the observable completes.
+                switchMap((userProfile) => {
+                  if (userProfile) {
+                    return this.fbService.leaveTeam(team.id, userProfile.uid);
+                  } else {
+                    return of(null); // Handle the case where userProfile is not available.
+                  }
+                }),
+                catchError((err) => {
+                  console.error("Error leaving team:", err);
+                  return of(null); // Handle errors gracefully.
+                }),
+              )
+              .subscribe({
+                next: () => {
+                  console.log("Successfully left the team.");
+                  // Optional: Add additional logic after leaving the team successfully.
+                },
+                error: (err) => console.error("An error occurred:", err),
+              });
           },
         },
-
       ],
     });
     alert.present();
-
   }
   async presentCancelToast() {
     const toast = await this.toastController.create({
       message: await lastValueFrom(
-        this.translate.get("onboarding.warning__action_canceled")
+        this.translate.get("onboarding.warning__action_canceled"),
       ),
       duration: 1500,
       position: "top",
@@ -105,7 +116,6 @@ export class TeamListPage implements OnInit {
   }
 
   edit() {
-
     if (this.allowEdit) {
       this.allowEdit = false;
     } else {
@@ -113,10 +123,12 @@ export class TeamListPage implements OnInit {
     }
   }
   async openModal(team: Team) {
-    // const presentingElement = await this.modalCtrl.getTop();
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
     const modal = await this.modalCtrl.create({
       component: TeamPage,
-      presentingElement: this.routerOutlet.nativeEl,
+      presentingElement,
       canDismiss: true,
       showBackdrop: true,
       componentProps: {
@@ -130,5 +142,4 @@ export class TeamListPage implements OnInit {
     if (role === "confirm") {
     }
   }
-
 }

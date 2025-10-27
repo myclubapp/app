@@ -5,73 +5,145 @@
     </ion-buttons>
     <ion-title>{{"helfer-add.new__helper_event" | translate}}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button strong="true" (click)="createEvent()">{{"common.create" | translate}}</ion-button>
+      <ion-button strong="true" (click)="createEvent()"
+        >{{"common.create" | translate}}</ion-button
+      >
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">{{"helfer-add.new__helper_event" | translate}}</ion-title>
+      <ion-title size="large"
+        >{{"helfer-add.new__helper_event" | translate}}</ion-title
+      >
     </ion-toolbar>
   </ion-header>
 
   <ion-list [inset]="true">
-    <div *ngIf="clubAdminList$ | async as clubList">
-      <ion-item *ngIf="clubList.length > 1">
-        <ion-select [label]='"common.club" | translate' label-placement="stacked" [(ngModel)]="event.clubId"
-          value="{{event.clubId}}">
-          <ion-select-option *ngFor="let club of clubList" value="{{club.id}}">{{club.name}}</ion-select-option>
+    @if (clubAdminList$ | async; as clubList) {
+    <div>
+      @if (clubList.length > 1) {
+      <ion-item>
+        <ion-select
+          [label]='"common.club" | translate'
+          label-placement="stacked"
+          [(ngModel)]="event.clubId"
+          (ionChange)="setClubId($event.detail.value)"
+          value="{{event.clubId}}"
+          [cancelText]="'common.cancel' | translate"
+        >
+          @for (club of clubList; track club.id) {
+          <ion-select-option value="{{club.id}}"
+            >{{club.name}}</ion-select-option
+          >
+          }
         </ion-select>
       </ion-item>
+      }
     </div>
+    } @if (clubGamesList$ | async; as clubGamesList) {
+    <div>
+      @if (clubGamesList.length > 1) {
+      <ion-item>
+        <ion-select
+          label="Vorlage Club Spiele"
+          label-placement="stacked"
+          (ionChange)="setClubGameAsTemplate($event.detail.value)"
+          [cancelText]="'common.cancel' | translate"
+        >
+          @for (clubGame of clubGamesList; track clubGame) {
+          <ion-select-option [value]="clubGame"
+            >{{clubGame.date}} - {{clubGame.name}}</ion-select-option
+          >
+          }
+        </ion-select>
+      </ion-item>
+      }
+    </div>
+    }
 
     <ion-item>
-      <ion-input [label]="'common.name' | translate" label-placement="stacked" [(ngModel)]="event.name"
-        value="{{event.name}}">
+      <ion-input
+        [label]="'common.name' | translate"
+        label-placement="stacked"
+        [(ngModel)]="event.name"
+        value="{{event.name}}"
+      >
       </ion-input>
     </ion-item>
     <ion-item>
-      <ion-textarea [label]='"common.description" | translate' label-placement="stacked" value="{{event.description}}"
-        [(ngModel)]="event.description">
+      <ion-textarea
+        [autoGrow]="true"
+        [label]='"common.description" | translate'
+        label-placement="stacked"
+        value="{{event.description}}"
+        [(ngModel)]="event.description"
+      >
       </ion-textarea>
     </ion-item>
   </ion-list>
   <ion-list [inset]="true">
     <ion-item>
-      <ion-input [label]='"common.location" | translate' label-placement="stacked" value="{{event.location}}"
-        [(ngModel)]="event.location">
+      <ion-input
+        [label]='"common.location" | translate'
+        label-placement="stacked"
+        value="{{event.location}}"
+        [(ngModel)]="event.location"
+      >
       </ion-input>
     </ion-item>
 
     <ion-item>
-      <ion-input [label]='"common.street__house_number" | translate' label-placement="stacked"
-        value="{{event.streetAndNumber}}" [(ngModel)]="event.streetAndNumber">
+      <ion-input
+        [label]='"common.street__house_number" | translate'
+        label-placement="stacked"
+        value="{{event.streetAndNumber}}"
+        [(ngModel)]="event.streetAndNumber"
+      >
       </ion-input>
     </ion-item>
     <ion-item>
-      <ion-input [label]='"common.postal__code" | translate' label-placement="stacked" value="{{event.postalCode}}"
-        [(ngModel)]="event.postalCode">
+      <ion-input
+        [label]='"common.postal__code" | translate'
+        label-placement="stacked"
+        value="{{event.postalCode}}"
+        [(ngModel)]="event.postalCode"
+      >
       </ion-input>
     </ion-item>
     <ion-item>
-      <ion-input [label]="'common.locality' | translate" label-placement="stacked" value="{{event.city}}"
-        [(ngModel)]="event.city">
+      <ion-input
+        [label]="'common.locality' | translate"
+        label-placement="stacked"
+        value="{{event.city}}"
+        [(ngModel)]="event.city"
+      >
       </ion-input>
     </ion-item>
   </ion-list>
 
   <ion-list [inset]="true">
     <ion-item>
-      <ion-input [label]="'common.link__web' | translate" label-placement="stacked" type="url"
-        value="{{event.link_web}}" [(ngModel)]="event.link_web" [placeholder]="'common.link__placeholder' | translate">
+      <ion-input
+        [label]="'common.link__web' | translate"
+        label-placement="stacked"
+        type="url"
+        value="{{event.link_web}}"
+        [(ngModel)]="event.link_web"
+        [placeholder]="'common.link__placeholder' | translate"
+      >
       </ion-input>
     </ion-item>
     <ion-item>
-      <ion-input [label]="'common.link__poll' | translate" label-placement="stacked" type="url"
-        value="{{event.link_poll}}" [(ngModel)]="event.link_poll"
-        [placeholder]="'common.link__placeholder' | translate">
+      <ion-input
+        [label]="'common.link__poll' | translate"
+        label-placement="stacked"
+        type="url"
+        value="{{event.link_poll}}"
+        [(ngModel)]="event.link_poll"
+        [placeholder]="'common.link__placeholder' | translate"
+      >
       </ion-input>
     </ion-item>
   </ion-list>
@@ -85,9 +157,14 @@
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime presentation="time" id="timeFrom" (ionChange)="changeTimeFrom($event)"
-            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" value="{{event.timeFrom}}"
-            [(ngModel)]="event.timeFrom"></ion-datetime>
+          <ion-datetime
+            presentation="time"
+            id="timeFrom"
+            (ionChange)="changeTimeFrom($event)"
+            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+            value="{{event.timeFrom}}"
+            [(ngModel)]="event.timeFrom"
+          ></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
@@ -98,8 +175,13 @@
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime presentation="time" id="timeTo" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
-            value="{{event.timeTo}}" [(ngModel)]="event.timeTo"></ion-datetime>
+          <ion-datetime
+            presentation="time"
+            id="timeTo"
+            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+            value="{{event.timeTo}}"
+            [(ngModel)]="event.timeTo"
+          ></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
@@ -108,12 +190,21 @@
       <ion-label position="default">
         {{"common.start__date" | translate}}:
       </ion-label>
-      <ion-datetime-button slot="end" datetime="startDate"></ion-datetime-button>
+      <ion-datetime-button
+        slot="end"
+        datetime="startDate"
+      ></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime [firstDayOfWeek]="1" (ionChange)="changeStartDate($event)" presentation="date" id="startDate"
-            value="{{event.startDate}}" [(ngModel)]="event.startDate"></ion-datetime>
+          <ion-datetime
+            [firstDayOfWeek]="1"
+            (ionChange)="changeStartDate($event)"
+            presentation="date"
+            id="startDate"
+            value="{{event.startDate}}"
+            [(ngModel)]="event.startDate"
+          ></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
@@ -126,49 +217,61 @@
 
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime [firstDayOfWeek]="1" presentation="date" id="endDate" value="{{event.endDate}}"
-            [(ngModel)]="event.endDate"></ion-datetime>
+          <ion-datetime
+            [firstDayOfWeek]="1"
+            presentation="date"
+            id="endDate"
+            value="{{event.endDate}}"
+            [(ngModel)]="event.endDate"
+          ></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
   </ion-list>
 
-
-
   <ion-list lines="full" [inset]="true">
     <ion-list-header>
       <ion-label> {{"helfer.schichten" | translate}} </ion-label>
-      <ion-button (click)="addSchicht()">hinzufügen</ion-button>
+      <ion-button (click)="addSchicht()"
+        >{{'common.add_button' | translate}}</ion-button
+      >
     </ion-list-header>
-    <ng-container *ngIf="event.schichten.length > 0; else schichtenTemplate">
-
-      <ion-item *ngFor="let schicht of event.schichten">
-
-
-        <ion-icon color="danger" (click)="deleteSchicht(schicht)" slot="start" name="trash" size="medium"></ion-icon>
-        <ion-icon color="primary" (click)="copySchicht(schicht)" slot="start" name="copy" size="medium"></ion-icon>
-
-
-        <ion-label (click)="editSchicht(schicht)">
-          <h3>{{schicht.name}}</h3>
-          <h2>{{schicht.timeFrom}} {{schicht.timeTo}}</h2>
-        </ion-label>
-        <ion-badge slot="end">{{schicht.countNeeded}}</ion-badge>
-      </ion-item>
-    </ng-container>
+    @if (event.schichten.length > 0) { @for (schicht of event.schichten; track
+    schicht) {
+    <ion-item>
+      <ion-icon
+        color="danger"
+        (click)="deleteSchicht(schicht)"
+        slot="start"
+        name="trash"
+        size="medium"
+      ></ion-icon>
+      <ion-icon
+        color="primary"
+        (click)="copySchicht(schicht)"
+        slot="start"
+        name="copy"
+        size="medium"
+      ></ion-icon>
+      <ion-label (click)="editSchicht(schicht)">
+        <h3>{{schicht.name}}</h3>
+        <h2>{{schicht.timeFrom}} {{schicht.timeTo}}</h2>
+      </ion-label>
+      <ion-badge slot="end">{{schicht.countNeeded}}</ion-badge>
+    </ion-item>
+    } } @else {
+    <ion-item>
+      <ion-label>
+        <h3><ion-skeleton-text style="width: 60%"></ion-skeleton-text></h3>
+        <h2>
+          <ion-skeleton-text style="width: 30%"></ion-skeleton-text>
+          <ion-skeleton-text style="width: 40%"></ion-skeleton-text>
+        </h2>
+      </ion-label>
+    </ion-item>
+    }
   </ion-list>
 </ion-content>
-
-<ng-template #schichtenTemplate>
-  <ion-item>
-    <ion-label>
-      <h3><ion-skeleton-text style="width: 60%"></ion-skeleton-text></h3>
-      <h2><ion-skeleton-text style="width: 30%"></ion-skeleton-text> <ion-skeleton-text
-          style="width: 40%"></ion-skeleton-text></h2>
-    </ion-label>
-
-  </ion-item>
-</ng-template>
 
 <ng-template #loading>
   <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>

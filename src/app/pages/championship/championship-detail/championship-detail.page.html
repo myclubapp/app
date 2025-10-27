@@ -1,244 +1,537 @@
-<ng-container *ngIf="game$ | async as game">
-  <!--<ion-header [translucent]="true">
-    <ion-toolbar>
-      <ion-title></ion-title>
-      <ion-buttons slot="primary">
-        <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>-->
-
-  <!-- class="ion-padding" -->
-  <ion-content>
-    
-    <ion-fab vertical="top" horizontal="end">
-      <ion-fab-button size="small" (click)="close()">
-        <ion-icon name="close" size="small"></ion-icon>
+@if (game$ | async; as game) {
+<!--<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title></ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>-->
+<!-- class="ion-padding" -->
+<ion-content>
+  <ion-fab vertical="top" horizontal="end">
+    <ion-fab-button size="small" (click)="close()">
+      <ion-icon name="close" size="small"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  @if (game.latitude && game.longitude && !platform.is('android')) {
+  <capacitor-google-map #map></capacitor-google-map>
+  }
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-avatar slot="start">
+        <img src="{{game.teamHomeLogo}}" />
+      </ion-avatar>
+      <ion-label>
+        <h2>{{game.teamHome}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-avatar slot="start">
+        <img src="{{game.teamAwayLogo}}" />
+      </ion-avatar>
+      <ion-label>
+        <h2>{{game.teamAway}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="home-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.description}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="calendar-outline"></ion-icon>
+      <ion-label>
+        <h2>{{game.date}} {{game.time}} Uhr</h2>
+      </ion-label>
+    </ion-item>
+    @if (game.location) {
+    <ion-item>
+      <ion-icon slot="start" name="location-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.location}} {{game.city}}</h2>
+      </ion-label>
+      @if (game.longitude) {
+      <ion-icon
+        color="primary"
+        (click)="openMaps(game)"
+        slot="end"
+        name="map-outline"
+      ></ion-icon>
+      }
+    </ion-item>
+    }
+    <ion-item>
+      <ion-icon slot="start" name="trophy-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.liga}} {{game.teamName}}</h2>
+      </ion-label>
+    </ion-item>
+    @if (game.result && game.result != '0:0(0:0)') {
+    <ion-item>
+      <ion-icon slot="start" name="podium-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.result}}</h2>
+      </ion-label>
+    </ion-item>
+    } @if (game.referee1) {
+    <ion-item>
+      <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.referee1}} {{game.referee2}}</h2>
+      </ion-label>
+    </ion-item>
+    } @if (game.spectators && game.spectators != '0' ) {
+    <ion-item>
+      <ion-icon slot="start" name="people-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.spectators}}</h2>
+      </ion-label>
+    </ion-item>
+    }
+  </ion-list>
+  <!--
+  <ion-list [inset]="true" lines="none">
+    <ion-item (click)="openLineup(game)" detail="true"> Lineup </ion-item>
+  </ion-list>
+  -->
+  @if (isFuture) {
+  <ion-list [inset]="true" lines="none">
+    <ion-list-header>
+      {{"common.attendances__absences" | translate}}
+    </ion-list-header>
+    <ion-item class="myclubStatus">
+      @if (game.hasOwnProperty('status')) { @for (status of game.status; track
+      status) { @if (status.status === null) {
+      <ion-fab-button
+        (click)="processToggle(status.id, true, game)"
+        size="small"
+        color="warning"
+        slot="start"
+      >
+        <ion-icon name="help-circle"> </ion-icon>
       </ion-fab-button>
-    </ion-fab>
-    <capacitor-google-map #map *ngIf="game.latitude && game.longitude"></capacitor-google-map>
-    <ion-list [inset]="true">
-
-      <ion-item>
-        <ion-avatar slot="start">
-          <img src="{{game.teamHomeLogo}}" />
-        </ion-avatar>
-        <ion-label>
-          <h2>{{game.teamHome}}</h2>
-        </ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-avatar slot="start">
-          <img src="{{game.teamAwayLogo}}" />
-        </ion-avatar>
-        <ion-label>
-          <h2>{{game.teamAway}}</h2>
-        </ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-icon slot="start" name="home-outline"></ion-icon>
-        <ion-label class="ion-text-wrap">
-          <h2>{{game.description}}</h2>
-        </ion-label>
-      </ion-item>
-
-      <ion-item>
-        <ion-icon slot="start" name="calendar-outline"></ion-icon>
-        <ion-label>
-          <h2>{{game.date}} {{game.time}} Uhr</h2>
-        </ion-label>
-      </ion-item>
-
-      <ion-item *ngIf="game.location">
-        <ion-icon slot="start" name="location-outline"></ion-icon>
-        <ion-label class="ion-text-wrap">
-          <h2>{{game.location}} {{game.city}}</h2>
-        </ion-label>
-        <ion-icon *ngIf="game.longitude" color="primary" (click)="openMaps(game)" slot="end" name="map-outline"></ion-icon>
-      </ion-item>
-
-      <ion-item>
-        <ion-icon slot="start" name="trophy-outline"></ion-icon>
-        <ion-label class="ion-text-wrap">
-          <h2>{{game.liga}} {{game.teamName}}</h2>
-        </ion-label>
-      </ion-item>
-
-      <ion-item *ngIf="game.result && game.result != '0:0(0:0)'">
-        <ion-icon slot="start" name="podium-outline"></ion-icon>
-        <ion-label class="ion-text-wrap">
-          <h2>{{game.result}}</h2>
-        </ion-label>
-      </ion-item>
-
-      <ion-item *ngIf="game.referee1">
-        <ion-icon slot="start" name="person-circle-outline"></ion-icon>
-        <ion-label class="ion-text-wrap">
-          <h2>{{game.referee1}} {{game.referee2}}</h2>
-        </ion-label>
-      </ion-item>
-
-      <ion-item *ngIf="game.spectators && game.spectators != '0' ">
-        <ion-icon slot="start" name="people-outline"></ion-icon>
-        <ion-label class="ion-text-wrap">
-          <h2>{{game.spectators}}</h2>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-    <!--
-      <ion-list [inset]="true" lines="none">
-        <ion-item (click)="openLineup(game)" detail="true"> Lineup </ion-item>
-      </ion-list>
-    -->
-
-    <ion-list [inset]="true" lines="none" *ngIf="isFuture">
-      <ion-list-header>
-        {{"common.attendances__absences" | translate}}
-      </ion-list-header>
-      <ion-item class="myclubStatus">
-        <ng-container *ngIf="game.hasOwnProperty('status'); else loading">
-          <ion-fab-button (click)="toggle(true, game)" size="small" color="warning" slot="start"
-            *ngIf="game.status === null">
-            <ion-icon name="help-circle"> </ion-icon>
-          </ion-fab-button>
-
-          <ion-fab-button (click)="toggle(true, game)" size="small" color="danger" slot="start"
-            *ngIf="game.status === false">
-            <ion-icon name="close-circle"> </ion-icon>
-          </ion-fab-button>
-
-          <ion-fab-button (click)="toggle(false, game)" size="small" color="success" slot="start"
-            *ngIf="game.status === true">
-            <ion-icon name="checkmark-circle"> </ion-icon>
-          </ion-fab-button>
-
-          <ion-label>{{"common.my__status" | translate}}</ion-label>
-        </ng-container>
-      </ion-item>
-      <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-        <ion-item *ngIf="game['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList, game.teamId)">
-          <ion-icon color="warning" slot="start" name="help-circle">
-          </ion-icon>
-          <ion-label>{{"common.noreply" | translate}}: {{game['unrespondedMembers'].length}}</ion-label>
-
-          <ion-button
-            fill="clear" slot="end" (click)="toggleAll(true, game)">{{"common.alle_anmelden" |
-            translate}}</ion-button>
+      } @if (status.status === false) {
+      <ion-fab-button
+        (click)="processToggle(status.id, true, game)"
+        size="small"
+        color="danger"
+        slot="start"
+      >
+        <ion-icon name="close-circle"> </ion-icon>
+      </ion-fab-button>
+      } @if (status.status === true) {
+      <ion-fab-button
+        (click)="processToggle(status.id, false, game)"
+        size="small"
+        color="success"
+        slot="start"
+      >
+        <ion-icon name="checkmark-circle"> </ion-icon>
+      </ion-fab-button>
+      } @if (status.id === user.uid) {
+      <ion-label>{{"common.my__status" | translate}}</ion-label>
+      } @if (status.id !== user.uid) {
+      <ion-label>{{status.firstName}} {{status.lastName}} </ion-label>
+      } }
+      <!-- NEU: Falls keine Status-Einträge vorhanden sind, Teilnahme ermöglichen -->
+      @if (game.status.length === 0) {
+      <ion-fab-button
+        (click)="processToggle(user.uid, true, game)"
+        size="small"
+        color="warning"
+        slot="start"
+      >
+        <ion-icon name="help-circle"> </ion-icon>
+      </ion-fab-button>
+      <ion-label>{{'common.my__status' | translate}}</ion-label>
+      } } @else {
+      <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      }
+    </ion-item>
+    @if (teamAdminList$ | async; as teamAdminList) { @if
+    (game['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList,
+    game.teamId)) {
+    <ion-item>
+      <ion-icon color="warning" slot="start" name="help-circle"> </ion-icon>
+      <ion-label
+        >{{"common.noreply" | translate}}:
+        {{game['unrespondedMembers'].length}}</ion-label
+      >
+      <ion-button fill="clear" slot="end" (click)="toggleAll(true, game)"
+        >{{"common.alle_anmelden" | translate}}</ion-button
+      >
+    </ion-item>
+    } }
+  </ion-list>
+  }
+  <ion-list [inset]="true">
+    <ion-accordion-group [multiple]="true" [value]="['yes']">
+      @if (game['attendeeListTrue'].length > 0) {
+      <ion-accordion value="yes"
+        >>
+        <ion-item slot="header" color="light">
+          <ion-label
+            >{{"common.present" | translate}}:
+            {{game['attendeeListTrue'].length}}</ion-label
+          >
         </ion-item>
+        <div slot="content">
+          <!-- class="ion-padding"-->
+          <ion-list>
+            @for (member of game['attendeeListTrue']; track member.id) {
+            <ion-item-sliding #item>
+              <ion-item detail="true">
+                <ion-icon color="success" slot="start" name="checkmark-circle">
+                </ion-icon>
+                <ion-label class="ion-text-wrap" (click)="openMember(member)">
+                  <h2>{{member.firstName}} {{member.lastName}}</h2>
+                  @if (member.gameCenterPosition ||
+                  member.gameCenterShirtNumber) {
+                  <h3>
+                    {{member.gameCenterShirtNumber }} -
+                    {{member.gameCenterPosition}}
+                  </h3>
+                  } @for (role of member.roles; track role) {
+                  <ion-badge>{{role}}</ion-badge>
+                  }
+                </ion-label>
+              </ion-item>
+              @if (teamAdminList$ | async; as teamAdminList) { @if
+              (isTeamAdmin(teamAdminList, game.teamId)) {
+              <ion-item-options side="end">
+                @if (member.status === false || member.status === null) {
+                <ion-item-option
+                  color="success"
+                  (click)="toggleItem(item, true, game, member.id)"
+                >
+                  <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                </ion-item-option>
+                } @if (member.status === true || member.status === null) {
+                <ion-item-option
+                  color="danger"
+                  (click)="toggleItem(item, false, game, member.id)"
+                >
+                  <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                </ion-item-option>
+                }
+              </ion-item-options>
+              } }
+            </ion-item-sliding>
+            }
+          </ion-list>
+        </div>
+      </ion-accordion>
+      } @if (game['attendeeListFalse'].length > 0) {
+      <ion-accordion value="no"
+        >>
+        <ion-item slot="header" color="light">
+          <ion-label
+            >{{"common.absent" | translate}}:
+            {{game['attendeeListFalse'].length}}</ion-label
+          >
+        </ion-item>
+        <div slot="content">
+          <!-- class="ion-padding"-->
+          <ion-list>
+            @for (member of game['attendeeListFalse']; track member.id) {
+            <ion-item-sliding #item>
+              <ion-item detail="true">
+                <ion-icon color="danger" slot="start" name="close-circle">
+                </ion-icon>
+                <ion-label class="ion-text-wrap" (click)="openMember(member)">
+                  <h2>{{member.firstName}} {{member.lastName}}</h2>
+                  @if (member.gameCenterPosition ||
+                  member.gameCenterShirtNumber) {
+                  <h3>
+                    {{member.gameCenterShirtNumber }} -
+                    {{member.gameCenterPosition}}
+                  </h3>
+                  } @for (role of member.roles; track role) {
+                  <ion-badge>{{role}}</ion-badge>
+                  }
+                </ion-label>
+              </ion-item>
+              @if (teamAdminList$ | async; as teamAdminList) { @if
+              (isTeamAdmin(teamAdminList, game.teamId)) {
+              <ion-item-options side="end">
+                @if (member.status === false || member.status === null) {
+                <ion-item-option
+                  color="success"
+                  (click)="toggleItem(item, true, game, member.id)"
+                >
+                  <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                </ion-item-option>
+                } @if (member.status === true || member.status === null) {
+                <ion-item-option
+                  color="danger"
+                  (click)="toggleItem(item, false, game, member.id)"
+                >
+                  <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                </ion-item-option>
+                }
+              </ion-item-options>
+              } }
+            </ion-item-sliding>
+            }
+          </ion-list>
+        </div>
+      </ion-accordion>
+      } @if (game['unrespondedMembers'].length > 0) {
+      <ion-accordion value="null">
+        <ion-item slot="header" color="light">
+          <ion-label
+            >{{"common.noreply" | translate}}:
+            {{game['unrespondedMembers'].length}}</ion-label
+          >
+          <!--<ng-container *ngIf="teamAdminList$ | async as teamAdminList">
+                            <ion-button *ngIf="game['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList, game.teamId)"
+                              fill="clear" slot="end" (click)="toggleAll(true, game)">{{"common.alle_anmelden" |
+                            translate}}</ion-button>
+                          </ng-container>-->
+        </ion-item>
+        <div slot="content">
+          <!-- class="ion-padding"-->
+          <ion-list>
+            @for (member of game['unrespondedMembers']; track member.id) {
+            <ion-item-sliding #item>
+              <ion-item detail="true">
+                <ion-icon color="warning" slot="start" name="help-circle">
+                </ion-icon>
+                <ion-label class="ion-text-wrap" (click)="openMember(member)">
+                  <h2>{{member.firstName}} {{member.lastName}}</h2>
+                  @if (member.gameCenterPosition ||
+                  member.gameCenterShirtNumber) {
+                  <h3>
+                    {{member.gameCenterShirtNumber }} -
+                    {{member.gameCenterPosition}}
+                  </h3>
+                  } @for (role of member.roles; track role) {
+                  <ion-badge>{{role}}</ion-badge>
+                  }
+                </ion-label>
+              </ion-item>
+              @if (teamAdminList$ | async; as teamAdminList) { @if
+              (isTeamAdmin(teamAdminList, game.teamId)) {
+              <ion-item-options side="end">
+                @if (member.status === false || member.status === null) {
+                <ion-item-option
+                  color="success"
+                  (click)="toggleItem(item, true, game, member.id)"
+                >
+                  <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
+                </ion-item-option>
+                } @if (member.status === true || member.status === null) {
+                <ion-item-option
+                  color="danger"
+                  (click)="toggleItem(item, false, game, member.id)"
+                >
+                  <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+                </ion-item-option>
+                }
+              </ion-item-options>
+              } }
+            </ion-item-sliding>
+            }
+          </ion-list>
+        </div>
+      </ion-accordion>
+      }
+    </ion-accordion-group>
+  </ion-list>
+  <ion-text class="ion-text-center" color="medium">
+    <ion-note>
+      <p>Game ID: {{game.id}}</p>
+    </ion-note>
+  </ion-text>
+</ion-content>
+} @else {
+<ion-content>
+  <!-- FAB Button -->
+  <ion-fab vertical="top" horizontal="end">
+    <ion-fab-button size="small">
+      <ion-icon name="close" size="small"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <!-- Map Placeholder -->
+  <div style="width: 100%; height: 200px; background: #e0e0e0">
+    <ion-skeleton-text
+      animated
+      style="width: 100%; height: 100%"
+    ></ion-skeleton-text>
+  </div>
+  <!-- Teams and Game Info -->
+  <ion-list [inset]="true">
+    <!-- Home Team -->
+    <ion-item>
+      <ion-avatar slot="start">
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </ion-avatar>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Away Team -->
+    <ion-item>
+      <ion-avatar slot="start">
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </ion-avatar>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Description -->
+    <ion-item>
+      <ion-icon slot="start" name="home-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <ion-skeleton-text animated style="width: 85%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Date & Time -->
+    <ion-item>
+      <ion-icon slot="start" name="calendar-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Location -->
+    <ion-item>
+      <ion-icon slot="start" name="location-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+      </ion-label>
+      <ion-icon slot="end" name="map-outline"></ion-icon>
+    </ion-item>
+    <!-- League/Competition -->
+    <ion-item>
+      <ion-icon slot="start" name="trophy-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Result -->
+    <ion-item>
+      <ion-icon slot="start" name="podium-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Referee -->
+    <ion-item>
+      <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 65%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Spectators -->
+    <ion-item>
+      <ion-icon slot="start" name="people-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 25%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <!-- Attendance Section -->
+  <ion-list [inset]="true" lines="none">
+    <ion-list-header>
+      <ion-skeleton-text animated style="width: 140px"></ion-skeleton-text>
+    </ion-list-header>
+    <ion-item>
+      <ion-skeleton-text
+        animated
+        slot="start"
+        style="width: 40px; height: 40px; border-radius: 50%"
+      >
+      </ion-skeleton-text>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 100px"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="help-circle"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 120px"></ion-skeleton-text>
+      </ion-label>
+      <ion-skeleton-text
+        slot="end"
+        animated
+        style="width: 80px"
+      ></ion-skeleton-text>
+    </ion-item>
+  </ion-list>
+  <!-- Attendance Lists -->
+  <ion-list [inset]="true">
+    <ion-accordion-group [multiple]="true" [value]="['yes']">
+      <!-- Present -->
+      <ion-accordion value="yes">
+        <ion-item slot="header" color="light">
+          <ion-label>
+            <ion-skeleton-text
+              animated
+              style="width: 150px"
+            ></ion-skeleton-text>
+          </ion-label>
+        </ion-item>
+        <div slot="content">
+          <ion-list>
+            <ion-item>
+              <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+              <ion-label>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%"
+                ></ion-skeleton-text>
+              </ion-label>
+              <ion-skeleton-text
+                slot="end"
+                animated
+                style="width: 40px"
+              ></ion-skeleton-text>
+            </ion-item>
+            <ion-item>
+              <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+              <ion-label>
+                <ion-skeleton-text
+                  animated
+                  style="width: 70%"
+                ></ion-skeleton-text>
+              </ion-label>
+              <ion-skeleton-text
+                slot="end"
+                animated
+                style="width: 40px"
+              ></ion-skeleton-text>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-accordion>
+      <!-- Absent -->
+      <ion-accordion value="no">
+        <ion-item slot="header" color="light">
+          <ion-label>
+            <ion-skeleton-text
+              animated
+              style="width: 130px"
+            ></ion-skeleton-text>
+          </ion-label>
+        </ion-item>
+      </ion-accordion>
+      <!-- No Reply -->
+      <ion-accordion value="null">
+        <ion-item slot="header" color="light">
+          <ion-label>
+            <ion-skeleton-text
+              animated
+              style="width: 140px"
+            ></ion-skeleton-text>
+          </ion-label>
+        </ion-item>
+      </ion-accordion>
+    </ion-accordion-group>
+  </ion-list>
+</ion-content>
+}
 
-
-      </ng-container>
-    </ion-list>
-
-    <ion-list [inset]="true">
-      <ion-accordion-group [multiple]="true" [value]="['yes']">
-        <ion-accordion value="yes" *ngIf="game['attendeeListTrue'].length > 0">>
-          <ion-item slot="header" color="light">
-            <ion-label>{{"common.present" | translate}}:
-              {{game['attendeeListTrue'].length}}</ion-label>
-          </ion-item>
-          <div slot="content">
-            <!-- class="ion-padding"-->
-            <ion-list>
-              <ion-item-sliding #item *ngFor="let member of game['attendeeListTrue']">
-                <ion-item detail="true">
-                  <ion-icon color="success" slot="start" name="checkmark-circle">
-                  </ion-icon>
-
-                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
-                  <ion-badge *ngFor="let role of member.roles" slot="end">{{role}}</ion-badge>
-                </ion-item>
-                <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-                  <ion-item-options *ngIf="isTeamAdmin(teamAdminList, game.teamId)" side="end">
-                    <ion-item-option color="success" *ngIf="member.status === false || member.status === null"
-                      (click)="toggleItem(item, true, game, member.id)">
-                      <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-                    </ion-item-option>
-                    <ion-item-option color="danger" *ngIf="member.status === true || member.status === null"
-                      (click)="toggleItem(item, false, game, member.id)">
-                      <ion-icon slot="icon-only" name="close-circle"></ion-icon>
-                    </ion-item-option>
-                  </ion-item-options>
-                </ng-container>
-              </ion-item-sliding>
-            </ion-list>
-          </div>
-        </ion-accordion>
-        <ion-accordion value="no" *ngIf="game['attendeeListFalse'].length > 0">>
-          <ion-item slot="header" color="light">
-            <ion-label>{{"common.absent" | translate}}:
-              {{game['attendeeListFalse'].length}}</ion-label>
-          </ion-item>
-          <div slot="content">
-            <!-- class="ion-padding"-->
-            <ion-list>
-              <ion-item-sliding #item *ngFor="let member of game['attendeeListFalse']">
-                <ion-item detail="true">
-                  <ion-icon color="danger" slot="start" name="close-circle">
-                  </ion-icon>
-                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
-                  <ion-badge *ngFor="let role of member.roles" slot="end">{{role}}</ion-badge>
-                </ion-item>
-                <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-                  <ion-item-options *ngIf="isTeamAdmin(teamAdminList, game.teamId)" side="end">
-                    <ion-item-option color="success" *ngIf="member.status === false || member.status === null"
-                      (click)="toggleItem(item, true, game, member.id)">
-                      <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-                    </ion-item-option>
-                    <ion-item-option color="danger" *ngIf="member.status === true || member.status === null"
-                      (click)="toggleItem(item, false, game, member.id)">
-                      <ion-icon slot="icon-only" name="close-circle"></ion-icon>
-                    </ion-item-option>
-                  </ion-item-options>
-                </ng-container>
-              </ion-item-sliding>
-            </ion-list>
-          </div>
-        </ion-accordion>
-        <ion-accordion value="null" *ngIf="game['unrespondedMembers'].length > 0">
-          <ion-item slot="header" color="light">
-            <ion-label>{{"common.noreply" | translate}}:
-              {{game['unrespondedMembers'].length}}</ion-label>
-            <!--<ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-              <ion-button *ngIf="game['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList, game.teamId)"
-                fill="clear" slot="end" (click)="toggleAll(true, game)">{{"common.alle_anmelden" |
-                translate}}</ion-button>
-            </ng-container>-->
-          </ion-item>
-          <div slot="content">
-            <!-- class="ion-padding"-->
-            <ion-list>
-              <ion-item-sliding #item *ngFor="let member of game['unrespondedMembers']">
-
-                <ion-item detail="true">
-                  <ion-icon color="warning" slot="start" name="help-circle">
-                  </ion-icon>
-
-                  <ion-label (click)="openMember(member)">{{member.firstName}} {{member.lastName}}</ion-label>
-                  <ion-badge *ngFor="let role of member.roles" slot="end">{{role}}</ion-badge>
-                </ion-item>
-                <ng-container *ngIf="teamAdminList$ | async as teamAdminList">
-                  <ion-item-options *ngIf="isTeamAdmin(teamAdminList, game.teamId)" side="end">
-                    <ion-item-option color="success" *ngIf="member.status === false || member.status === null"
-                      (click)="toggleItem(item, true, game, member.id)">
-                      <ion-icon slot="icon-only" name="checkmark-circle"></ion-icon>
-                    </ion-item-option>
-                    <ion-item-option color="danger" *ngIf="member.status === true || member.status === null"
-                      (click)="toggleItem(item, false, game, member.id)">
-                      <ion-icon slot="icon-only" name="close-circle"></ion-icon>
-                    </ion-item-option>
-                  </ion-item-options>
-                </ng-container>
-              </ion-item-sliding>
-            </ion-list>
-          </div>
-        </ion-accordion>
-      </ion-accordion-group>
-    </ion-list>
-  </ion-content>
-</ng-container>
-
-<ng-template #loading>
-  <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>
-  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-</ng-template>
+<!-- Game Details Skeleton -->
