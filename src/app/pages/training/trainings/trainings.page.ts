@@ -1,9 +1,4 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  Optional,
-} from "@angular/core";
+import { Component, Input, OnInit, Optional } from "@angular/core";
 import {
   IonItemSliding,
   IonRouterOutlet,
@@ -209,12 +204,12 @@ export class TrainingsPage implements OnInit {
             switchMap((children: Profile[]) =>
               children.length > 0
                 ? combineLatest(
-                  children.map((child) => {
-                    // Create a User-like object with uid from child.id
-                    const childUser = { uid: child.id } as User;
-                    return this.fbService.getUserTeamRefs(childUser);
-                  }),
-                )
+                    children.map((child) => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      return this.fbService.getUserTeamRefs(childUser);
+                    }),
+                  )
                 : of([]),
             ),
             map((childrenTeams) => childrenTeams.flat()),
@@ -347,7 +342,9 @@ export class TrainingsPage implements OnInit {
               );
 
               // Finde den Status des aktuellen Benutzers
-              const userStatus = item.attendees.find((att) => att.id === this.user.uid)?.status ?? null;
+              const userStatus =
+                item.attendees.find((att) => att.id === this.user.uid)
+                  ?.status ?? null;
 
               // Finde die relevanten Kinder mit ihren Status
               const relevantChildren = teamMembers
@@ -358,9 +355,16 @@ export class TrainingsPage implements OnInit {
                   const child = this.children.find(
                     (child) => child.id === att.id,
                   );
-                  const childStatus = item.attendees.find((attendee) => attendee.id === att.id)?.status ?? null;
+                  const childStatus =
+                    item.attendees.find((attendee) => attendee.id === att.id)
+                      ?.status ?? null;
                   return child
-                    ? { firstName: child.firstName, lastName: child.lastName, status: childStatus, id: child.id }
+                    ? {
+                        firstName: child.firstName,
+                        lastName: child.lastName,
+                        status: childStatus,
+                        id: child.id,
+                      }
                     : {};
                 });
 
@@ -369,7 +373,9 @@ export class TrainingsPage implements OnInit {
                 cancelled: item.training.cancelled ?? false,
                 attendees: item.attendees,
                 exercises: item.exercises,
-                isMember: teamMembers.some((member) => member.id === this.user.uid),
+                isMember: teamMembers.some(
+                  (member) => member.id === this.user.uid,
+                ),
                 team: item.teamDetails || {},
                 status: userStatus,
                 countAttendees: validAttendees.length,
@@ -409,12 +415,12 @@ export class TrainingsPage implements OnInit {
             switchMap((children: Profile[]) =>
               children.length > 0
                 ? combineLatest(
-                  children.map((child) => {
-                    // Create a User-like object with uid from child.id
-                    const childUser = { uid: child.id } as User;
-                    return this.fbService.getUserTeamRefs(childUser);
-                  }),
-                )
+                    children.map((child) => {
+                      // Create a User-like object with uid from child.id
+                      const childUser = { uid: child.id } as User;
+                      return this.fbService.getUserTeamRefs(childUser);
+                    }),
+                  )
                 : of([]),
             ),
             map((childrenTeams) => childrenTeams.flat()),
@@ -552,7 +558,9 @@ export class TrainingsPage implements OnInit {
               );
 
               // Finde den Status des aktuellen Benutzers
-              const userStatus = item.attendees.find((att) => att.id === this.user.uid)?.status ?? null;
+              const userStatus =
+                item.attendees.find((att) => att.id === this.user.uid)
+                  ?.status ?? null;
 
               // Finde die relevanten Kinder mit ihren Status
               const relevantChildren = teamMembers
@@ -563,9 +571,16 @@ export class TrainingsPage implements OnInit {
                   const child = this.children.find(
                     (child) => child.id === att.id,
                   );
-                  const childStatus = item.attendees.find((attendee) => attendee.id === att.id)?.status ?? null;
+                  const childStatus =
+                    item.attendees.find((attendee) => attendee.id === att.id)
+                      ?.status ?? null;
                   return child
-                    ? { firstName: child.firstName, lastName: child.lastName, status: childStatus, id: child.id }
+                    ? {
+                        firstName: child.firstName,
+                        lastName: child.lastName,
+                        status: childStatus,
+                        id: child.id,
+                      }
                     : {};
                 });
 
@@ -574,7 +589,9 @@ export class TrainingsPage implements OnInit {
                 cancelled: item.training.cancelled ?? false,
                 attendees: item.attendees,
                 exercises: item.exercises,
-                isMember: teamMembers.some((member) => member.id === this.user.uid),
+                isMember: teamMembers.some(
+                  (member) => member.id === this.user.uid,
+                ),
                 team: item.teamDetails || {},
                 children: relevantChildren,
                 status: userStatus,
@@ -763,22 +780,26 @@ export class TrainingsPage implements OnInit {
     this.processToggle(this.user.uid, status, training);
   }
 
-  toggleChildren( status: boolean, training: any, childrenId) {
+  toggleChildren(status: boolean, training: any, childrenId) {
     console.log("toggleChildren", training);
 
-    this.processToggle(childrenId, status, training)
+    this.processToggle(childrenId, status, training);
   }
 
-  toggleChildrenItem(slidingItem: IonItemSliding, status: boolean, training: any, childrenId) {
+  toggleChildrenItem(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    training: any,
+    childrenId,
+  ) {
     console.log("toggleChildrenItem", training);
     slidingItem.closeOpened();
-    this.processToggle(childrenId, status, training)
+    this.processToggle(childrenId, status, training);
   }
 
   toggle(status: boolean, training: any) {
     this.processToggle(this.user.uid, status, training);
   }
-
 
   private async processToggle(userId: string, status: boolean, training: any) {
     console.log(
@@ -791,7 +812,7 @@ export class TrainingsPage implements OnInit {
 
     if (
       newStartDate.getTime() - new Date().getTime() <
-      1000 * 60 * 60 * trainingThreshold &&
+        1000 * 60 * 60 * trainingThreshold &&
       status == false &&
       trainingThreshold
     ) {
@@ -817,12 +838,6 @@ export class TrainingsPage implements OnInit {
   async presentErrorToast(error) {
     await this.uiService.showErrorToast(error.message);
   }
-
-
-
-
-
-
 
   async tooLateToggle() {
     await this.uiService.showInfoDialog({
@@ -970,5 +985,4 @@ export class TrainingsPage implements OnInit {
       ],
     });
   }
-
 }
