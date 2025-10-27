@@ -7,184 +7,188 @@
   </ion-toolbar>
 </ion-header>
 
-<ng-container *ngIf="invoice$ | async as invoice">
-  <ion-content [fullscreen]="true">
-    <ion-header collapse="condense">
-      <ion-toolbar>
-        <ion-title size="large">Rechnungsdetails</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-list [inset]="true">
-      <ion-list-header>
-        <ion-label>Allgemeine Informationen</ion-label>
-      </ion-list-header>
-      <ion-item>
-        <ion-input
-          label="Vorname"
-          labelPlacement="stacked"
-          [value]="invoice.firstName"
-          readonly
-        ></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input
-          label="Nachname"
-          labelPlacement="stacked"
-          [value]="invoice.lastName"
-          readonly
-        ></ion-input>
-      </ion-item>
-      <ion-item *ngIf="invoice.email">
-        <ion-input
-          label="Email"
-          labelPlacement="stacked"
-          [value]="invoice.email"
-          readonly
-        ></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input
-          label="Betrag"
-          labelPlacement="stacked"
-          [value]="invoice.amount + ' ' + invoice.currency"
-          readonly
-        ></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input
-          label="Status"
-          labelPlacement="stacked"
-          [value]="invoice.status"
-          readonly
-        ></ion-input>
-      </ion-item>
-      <ion-item *ngIf="invoice.purpose">
-        <ion-input
-          label="Zweck"
-          labelPlacement="stacked"
-          [value]="invoice.purpose"
-          readonly
-        ></ion-input>
-      </ion-item>
-      <ion-item *ngIf="invoice.referenceNumber">
-        <ion-input
-          label="Referenznummer für Rechnung"
-          labelPlacement="stacked"
-          [value]="invoice.referenceNumber"
-          readonly
-        ></ion-input>
-        <ion-button
-          slot="end"
-          fill="outline"
-          color="primary"
-          (click)="copyReferenceNumber(invoice)"
-        >
-          <ion-icon name="copy-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
-      <ion-item (click)="showQRInvoice()" detail="true">
-        <ion-label> Einzahlungsschein anzeigen </ion-label>
-
-        <!--<div style="width: 100%; height: 100px;" [innerHTML]="qrSVG"></div>-->
-      </ion-item>
-    </ion-list>
-
-    <ion-list
-      [inset]="true"
-      *ngIf="invoice.positions && invoice.positions.length > 0 && invoice.status === 'draft'"
-    >
-      <ion-list-header>
-        <ion-label>Positionen</ion-label>
-        <ion-button *ngIf="!fromProfile" (click)="addPosition(invoice)"
-          >hinzufügen</ion-button
-        >
-      </ion-list-header>
-      <ion-item-sliding *ngFor="let pos of invoice.positions; let i = index">
-        <ion-item>
-          <ion-label> {{ pos.name }} </ion-label>
-          <ion-text slot="end">
-            {{ pos.amount | number:'1.2-2' }} {{ pos.currency }}
-          </ion-text>
-        </ion-item>
-        <ion-item-options side="end">
-          <ion-item-option color="danger" (click)="deletePosition(invoice, i)">
-            <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
-    </ion-list>
-
-    <ion-list [inset]="true" *ngIf="invoice.status === 'bezahlt'">
-      <ion-list-header>
-        <ion-label>Zahlungsdetails</ion-label>
-      </ion-list-header>
-      <ion-item *ngIf="invoice.paymentDate">
-        <ion-input
-          label="Zahlungsdatum"
-          labelPlacement="stacked"
-          [value]="invoice.paymentDate.toDate() | date:'dd.MM.yyyy'"
-          readonly
-        ></ion-input>
-      </ion-item>
-      <ion-item *ngIf="invoice.payer">
-        <ion-input
-          label="Zahler"
-          labelPlacement="stacked"
-          [value]="invoice.payer"
-          readonly
-        ></ion-input>
-      </ion-item>
-      <ion-item *ngIf="invoice.camtUploadDate">
-        <ion-input
-          label="CAMT Upload Datum"
-          labelPlacement="stacked"
-          value="{{invoice.camtUploadDate.toDate() | date:'dd.MM.yyyy HH:mm'}}"
-          readonly
-        ></ion-input>
-      </ion-item>
-      <ion-item *ngIf="invoice.filename">
-        <ion-input
-          label="Dateiname"
-          labelPlacement="stacked"
-          [value]="invoice.filename"
-          readonly
-        ></ion-input>
-      </ion-item>
-    </ion-list>
-
-    <div class="ion-padding" *ngIf="!fromProfile">
+@if (invoice$ | async; as invoice) {
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Rechnungsdetails</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-list [inset]="true">
+    <ion-list-header>
+      <ion-label>Allgemeine Informationen</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-input
+        label="Vorname"
+        labelPlacement="stacked"
+        [value]="invoice.firstName"
+        readonly
+      ></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        label="Nachname"
+        labelPlacement="stacked"
+        [value]="invoice.lastName"
+        readonly
+      ></ion-input>
+    </ion-item>
+    @if (invoice.email) {
+    <ion-item>
+      <ion-input
+        label="Email"
+        labelPlacement="stacked"
+        [value]="invoice.email"
+        readonly
+      ></ion-input>
+    </ion-item>
+    }
+    <ion-item>
+      <ion-input
+        label="Betrag"
+        labelPlacement="stacked"
+        [value]="invoice.amount + ' ' + invoice.currency"
+        readonly
+      ></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        label="Status"
+        labelPlacement="stacked"
+        [value]="invoice.status"
+        readonly
+      ></ion-input>
+    </ion-item>
+    @if (invoice.purpose) {
+    <ion-item>
+      <ion-input
+        label="Zweck"
+        labelPlacement="stacked"
+        [value]="invoice.purpose"
+        readonly
+      ></ion-input>
+    </ion-item>
+    } @if (invoice.referenceNumber) {
+    <ion-item>
+      <ion-input
+        label="Referenznummer für Rechnung"
+        labelPlacement="stacked"
+        [value]="invoice.referenceNumber"
+        readonly
+      ></ion-input>
       <ion-button
-        expand="block"
+        slot="end"
+        fill="outline"
         color="primary"
-        (click)="sendInvoice()"
-        *ngIf="invoice?.status === 'draft'"
+        (click)="copyReferenceNumber(invoice)"
       >
-        <ion-icon name="send-outline" slot="start"></ion-icon>
-        Rechnung senden
+        <ion-icon name="copy-outline"></ion-icon>
       </ion-button>
-
-      <ion-button
-        *ngIf="invoice?.status !== 'bezahlt'"
-        expand="block"
-        fill="outline"
-        color="danger"
-        (click)="deleteInvoice()"
-      >
-        <ion-icon name="trash-outline" slot="start"></ion-icon>
-        Rechnung löschen
-      </ion-button>
-
-      <ion-button
-        *ngIf="invoice?.status !== 'bezahlt'"
-        expand="block"
-        fill="outline"
-        color="success"
-        (click)="markAsPaid()"
-      >
-        <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
-        Als bezahlt markieren
-      </ion-button>
-    </div>
-  </ion-content>
-</ng-container>
+    </ion-item>
+    }
+    <ion-item (click)="showQRInvoice()" detail="true">
+      <ion-label> Einzahlungsschein anzeigen </ion-label>
+      <!--<div style="width: 100%; height: 100px;" [innerHTML]="qrSVG"></div>-->
+    </ion-item>
+  </ion-list>
+  @if (invoice.positions && invoice.positions.length > 0 && invoice.status ===
+  'draft') {
+  <ion-list [inset]="true">
+    <ion-list-header>
+      <ion-label>Positionen</ion-label>
+      @if (!fromProfile) {
+      <ion-button (click)="addPosition(invoice)">hinzufügen</ion-button>
+      }
+    </ion-list-header>
+    @for (pos of invoice.positions; track pos; let i = $index) {
+    <ion-item-sliding>
+      <ion-item>
+        <ion-label> {{ pos.name }} </ion-label>
+        <ion-text slot="end">
+          {{ pos.amount | number:'1.2-2' }} {{ pos.currency }}
+        </ion-text>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="deletePosition(invoice, i)">
+          <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+    }
+  </ion-list>
+  } @if (invoice.status === 'bezahlt') {
+  <ion-list [inset]="true">
+    <ion-list-header>
+      <ion-label>Zahlungsdetails</ion-label>
+    </ion-list-header>
+    @if (invoice.paymentDate) {
+    <ion-item>
+      <ion-input
+        label="Zahlungsdatum"
+        labelPlacement="stacked"
+        [value]="invoice.paymentDate.toDate() | date:'dd.MM.yyyy'"
+        readonly
+      ></ion-input>
+    </ion-item>
+    } @if (invoice.payer) {
+    <ion-item>
+      <ion-input
+        label="Zahler"
+        labelPlacement="stacked"
+        [value]="invoice.payer"
+        readonly
+      ></ion-input>
+    </ion-item>
+    } @if (invoice.camtUploadDate) {
+    <ion-item>
+      <ion-input
+        label="CAMT Upload Datum"
+        labelPlacement="stacked"
+        value="{{invoice.camtUploadDate.toDate() | date:'dd.MM.yyyy HH:mm'}}"
+        readonly
+      ></ion-input>
+    </ion-item>
+    } @if (invoice.filename) {
+    <ion-item>
+      <ion-input
+        label="Dateiname"
+        labelPlacement="stacked"
+        [value]="invoice.filename"
+        readonly
+      ></ion-input>
+    </ion-item>
+    }
+  </ion-list>
+  } @if (!fromProfile) {
+  <div class="ion-padding">
+    @if (invoice?.status === 'draft') {
+    <ion-button expand="block" color="primary" (click)="sendInvoice()">
+      <ion-icon name="send-outline" slot="start"></ion-icon>
+      Rechnung senden
+    </ion-button>
+    } @if (invoice?.status !== 'bezahlt') {
+    <ion-button
+      expand="block"
+      fill="outline"
+      color="danger"
+      (click)="deleteInvoice()"
+    >
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      Rechnung löschen
+    </ion-button>
+    } @if (invoice?.status !== 'bezahlt') {
+    <ion-button
+      expand="block"
+      fill="outline"
+      color="success"
+      (click)="markAsPaid()"
+    >
+      <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
+      Als bezahlt markieren
+    </ion-button>
+    }
+  </div>
+  }
+</ion-content>
+}

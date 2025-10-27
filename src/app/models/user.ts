@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 
 export interface UserCredentialLogin {
   email: string;
@@ -31,6 +31,9 @@ export interface Profile {
   settingsPushHelfer: boolean;
   settingsEmail: boolean;
   settingsEmailReporting: boolean;
+  showGamePreview: boolean;
+  hideEmail: boolean;
+  hidePhoneNumber: boolean;
   language: string;
   favTeam: string;
   favClub: string;
@@ -41,4 +44,5 @@ export interface Profile {
   // Business Logic Fields
   isAdmin: boolean;
   isParent: boolean;
+  requestTeamId?: string;
 }

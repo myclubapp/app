@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   ModalController,
-  NavParams,
   IonRouterOutlet,
   LoadingController,
 } from "@ionic/angular";
@@ -15,6 +14,7 @@ import {
   lastValueFrom,
   map,
   of,
+  shareReplay,
   startWith,
   switchMap,
   take,
@@ -29,7 +29,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { MemberPage } from "../../member/member.page";
 import { TeamAdminListPage } from "../../team-admin-list/team-admin-list.page";
 import { TeamMemberListPage } from "../../team-member-list/team-member-list.page";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { Club } from "src/app/models/club";
 import { TeamExercisesPage } from "../team-exercises/team-exercises.page";
 import { ChampionshipPage } from "../../championship/championship/championship.page";
@@ -52,7 +52,9 @@ import * as XLSX from "xlsx";
   standalone: false,
 })
 export class TeamPage implements OnInit {
-  @Input("data") team: Team;
+  @Input() data!: Team;
+
+  team: Team;
 
   team$: Observable<any>;
   isLoading = false;
@@ -70,7 +72,7 @@ export class TeamPage implements OnInit {
   constructor(
     private readonly modalCtrl: ModalController,
     // private readonly router: Router,
-    public navParams: NavParams,
+
     private readonly alertCtrl: AlertController,
     private readonly userProfileService: UserProfileService,
     private readonly fbService: FirebaseService,
@@ -83,14 +85,20 @@ export class TeamPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.team = this.navParams.get("data");
+    // NavParams migration: now using @Input property directly
+    this.team = this.data;
+
     // this.team$ = of(this.team);
 
     this.team$ = this.getTeam(this.team.id);
     // TODO GET CLUB BASED ON TEAM
-    this.clubList$ = this.fbService.getClubList();
-    this.clubAdminList$ = this.fbService.getClubAdminList();
-    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    this.clubList$ = this.fbService.getClubList().pipe(shareReplay(1));
+    this.clubAdminList$ = this.fbService
+      .getClubAdminList()
+      .pipe(shareReplay(1));
+    this.teamAdminList$ = this.fbService
+      .getTeamAdminList()
+      .pipe(shareReplay(1));
   }
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
     return this.fbService.isClubAdmin(clubAdminList, clubId);
@@ -383,6 +391,8 @@ export class TeamPage implements OnInit {
       showBackdrop: true,
       componentProps: {
         data: member,
+        clubId: this.team.clubId,
+        teamId: this.team.id,
       },
     });
     modal.present();

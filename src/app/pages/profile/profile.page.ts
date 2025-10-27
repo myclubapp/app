@@ -10,6 +10,7 @@ import {
   lastValueFrom,
   Observable,
   of,
+  shareReplay,
   Subscription,
 } from "rxjs";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
@@ -51,9 +52,10 @@ import { TranslateService } from "@ngx-translate/core";
 import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
 import { HelferPunktePage } from "../helfer/helfer-punkte/helfer-punkte.page";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { MemberPage } from "../member/member.page";
 import { MemberInvoiceListPage } from "../member-invoice-list/member-invoice-list.page";
+import { Preferences } from "@capacitor/preferences";
 
 @Component({
   selector: "app-profile",
@@ -112,7 +114,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     this.deviceInfo = await Device.getInfo();
     // console.log(this.deviceInfo);
 
-    this.clubList$ = this.fbService.getClubList();
+    this.clubList$ = this.fbService.getClubList().pipe(shareReplay(1));
 
     this.userProfile$.pipe(take(1)).subscribe((userProfile) => {
       this.kidsRequests$ = this.profileService
@@ -215,6 +217,12 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   enableMyClubPro(clubList) {
     return (
       clubList && clubList.some((club) => club.hasFeatureMyClubPro == true)
+    );
+  }
+
+  enableChampionship(clubList: Club[]): boolean {
+    return (
+      clubList && clubList.some((club) => club.hasFeatureChampionship == true)
     );
   }
   async setupAlerts(profile: Profile) {
@@ -324,6 +332,8 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
       showBackdrop: true,
       componentProps: {
         data: member,
+        clubId: null,
+        teamId: null,
       },
     });
     modal.present();
@@ -561,6 +571,34 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
       event.detail.checked,
     );
     console.log("email");
+    this.toastActionSaved();
+  }
+
+  async toggleGamePreview(event) {
+    const isEnabled = event.detail.checked;
+
+    // Update local storage
+    await Preferences.set({
+      key: "showGamePreview",
+      value: isEnabled.toString(),
+    });
+
+    // Update user profile in database
+    await this.profileService.changeShowGamePreview(isEnabled);
+
+    console.log("Game preview toggled:", isEnabled);
+    this.toastActionSaved();
+  }
+
+  async toggleHideEmail(event) {
+    await this.profileService.changeHideEmail(event.detail.checked);
+    console.log("Hide email toggled:", event.detail.checked);
+    this.toastActionSaved();
+  }
+
+  async toggleHidePhoneNumber(event) {
+    await this.profileService.changeHidePhoneNumber(event.detail.checked);
+    console.log("Hide phone number toggled:", event.detail.checked);
     this.toastActionSaved();
   }
 

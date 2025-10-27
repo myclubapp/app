@@ -95,6 +95,10 @@ export class LoginPage implements OnInit {
         message = await lastValueFrom(
           this.translate.get("login.error_user_disabled"),
         );
+      } else if (error.code === "auth/invalid-credential") {
+        message = await lastValueFrom(
+          this.translate.get("login.error_user_credential"),
+        );
       }
 
       await this.uiService.showInfoDialog({

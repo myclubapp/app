@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
-import { ModalController, NavParams, ToastController } from "@ionic/angular";
+import { ModalController, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { Observable } from "rxjs";
 import { Club } from "src/app/models/club";
 import { Veranstaltung } from "src/app/models/event";
@@ -16,7 +16,9 @@ import { EventService } from "src/app/services/firebase/event.service";
   standalone: false,
 })
 export class EventAddPage implements OnInit {
-  @Input("data") eventCopy: Veranstaltung;
+  @Input() data!: Veranstaltung;
+
+  eventCopy: Veranstaltung;
   event: Veranstaltung;
   user$: Observable<User>;
   user: User;
@@ -29,7 +31,7 @@ export class EventAddPage implements OnInit {
     private cdr: ChangeDetectorRef,
     private fbService: FirebaseService,
     private readonly toastController: ToastController,
-    public navParams: NavParams,
+
     private translate: TranslateService,
   ) {
     this.event = {
@@ -68,8 +70,10 @@ export class EventAddPage implements OnInit {
   }
 
   ngOnInit() {
-    this.eventCopy = this.navParams.get("data");
-    if (this.eventCopy.id) {
+    // NavParams migration: now using @Input property directly
+    this.eventCopy = this.data;
+
+    if (this.eventCopy && this.eventCopy.id) {
       this.event = this.eventCopy;
     }
 

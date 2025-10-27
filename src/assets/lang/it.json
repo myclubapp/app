@@ -6,6 +6,7 @@
     "description": "Descrizione",
     "cancel": "Annulla",
     "ok": "OK",
+    "apply": "Applica",
     "confirmation": "Conferma",
     "confirm": "Conferma",
     "success__saved": "Salvato con successo",
@@ -85,6 +86,7 @@
     "admins": "Amministratori",
     "addAdministrator": "Aggiungi amministratore",
     "addMember": "Aggiungi membro",
+    "addFromParents": "Aggiungi genitori",
     "add": "Aggiungi",
     "club": "Club",
     "location": "Nome/Sala/Designazione",
@@ -165,21 +167,20 @@
     "date": "Data",
     "url": "URL"
   },
+  "auth": {
+    "session_expired": "Sessione scaduta",
+    "session_expired_message": "La tua sessione è scaduta. Per favore, accedi di nuovo."
+  },
   "login": {
-    "login__title": "Accedi con il tuo account",
+    "login_title": "Accedi con il tuo account",
     "loading": "Accesso in corso...",
     "error": "Errore",
-    "error__no_acount_found": "Nessun account trovato con questo indirizzo email",
-    "error__invalid_username_password": "La combinazione nome utente/password non è corretta.",
-    "error__invalid_login_credentials": "La combinazione nome utente/password non è corretta.",
-    "error__invalid_credentials": "La combinazione nome utente/password non è valida.",
-    "error__network_connection": "C'è un problema con la connessione di rete",
-    "error_message": "Si è verificato un errore",
     "error_user_not_found": "Nessun utente trovato con questo indirizzo email",
     "error_wrong_password": "Password errata",
     "error_invalid_email": "Indirizzo email non valido",
     "error_user_disabled": "Questo utente è stato disabilitato",
-    "login__button": "Accedi",
+    "error_user_credential": "Login non valido",
+    "login_button": "Accedi",
     "create_new_account": "crea un nuovo account",
     "email_placeholder": "Inserisci il tuo indirizzo email",
     "password_placeholder": "Inserisci la tua password"
@@ -343,7 +344,10 @@
     "filter__news": "Filtra notizie",
     "filter__by_club_team": "Filtra per club o squadre.",
     "create_news": "Crea notizia",
-    "news_entry": "Voce notizia"
+    "news_entry": "Voce notizia",
+    "upcomingGames": "Prossime partite",
+    "upcomingGamesEnabled": "Prossime partite attivate",
+    "upcomingGamesDisabled": "Prossime partite disattivate"
   },
   "not-found": {
     "not_found": "Non trovato"
@@ -427,10 +431,15 @@
     "generally": "In generale",
     "birthdate": "Data di nascita",
     "phonenumber": "Numero di telefono",
+    "hide_phone_number": "Nascondi numero di telefono",
+    "hide_email": "Nascondi indirizzo email",
+    "hide_info_note": "Queste informazioni rimangono visibili per gli amministratori di squadra e club per motivi organizzativi e sono nascoste solo per gli altri membri della squadra.",
     "address": "Indirizzo",
     "contact__information": "Informazioni di contatto",
     "license__number": "Numero di licenza",
     "diverses": "Varie",
+    "show_game_preview": "Mostra anteprima giochi",
+    "game_preview_info_note": "Vengono mostrati i giochi del club dei prossimi 10 giorni.",
     "sport": "Sport",
     "change_email_header": "Modifica indirizzo email",
     "change_email_message": "Modifica qui il tuo indirizzo email del profilo.",

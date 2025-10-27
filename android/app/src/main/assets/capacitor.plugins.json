@@ -48,6 +48,10 @@
 		"classpath": "com.capacitorjs.plugins.network.NetworkPlugin"
 	},
 	{
+		"pkg": "@capacitor/preferences",
+		"classpath": "com.capacitorjs.plugins.preferences.PreferencesPlugin"
+	},
+	{
 		"pkg": "@capacitor/push-notifications",
 		"classpath": "com.capacitorjs.plugins.pushnotifications.PushNotificationsPlugin"
 	},
@@ -70,5 +74,9 @@
 	{
 		"pkg": "capacitor-plugin-safe-area",
 		"classpath": "com.capacitor.safearea.SafeAreaPlugin"
+	},
+	{
+		"pkg": "@jcesarmobile/ssl-skip",
+		"classpath": "com.jcesarmobile.sslskip.SslSkipPlugin"
 	}
 ]

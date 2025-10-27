@@ -36,21 +36,22 @@
                   <ion-icon slot="start" name="barbell-outline"></ion-icon>
                   <ion-label>{{ "common.training" | translate }}</ion-label>
                 </ion-item>
-                <ng-container *ngIf="clubList$ | async as clubList">
-                  <ion-item
-                    *ngIf="enableChampionship(clubList)"
-                    routerDirection="root"
-                    [routerLink]="['/t/championship']"
-                    lines="none"
-                    detail="true"
-                    routerLinkActive="selected"
-                  >
-                    <ion-icon slot="start" name="trophy-outline"></ion-icon>
-                    <ion-label>{{
-                      "common.championship" | translate
-                    }}</ion-label>
-                  </ion-item>
-                </ng-container>
+                @if (clubList$ | async; as clubList) {
+                  @if (enableChampionship(clubList)) {
+                    <ion-item
+                      routerDirection="root"
+                      [routerLink]="['/t/championship']"
+                      lines="none"
+                      detail="true"
+                      routerLinkActive="selected"
+                    >
+                      <ion-icon slot="start" name="trophy-outline"></ion-icon>
+                      <ion-label>{{
+                        "common.championship" | translate
+                      }}</ion-label>
+                    </ion-item>
+                  }
+                }
                 <ion-item
                   routerDirection="root"
                   [routerLink]="['/t/events']"
@@ -61,19 +62,23 @@
                   <ion-icon slot="start" name="calendar-outline"></ion-icon>
                   <ion-label>{{ "common.events" | translate }}</ion-label>
                 </ion-item>
-                <ng-container *ngIf="clubList$ | async as clubList">
-                  <ion-item
-                    *ngIf="enableHelferEvents(clubList)"
-                    routerDirection="root"
-                    [routerLink]="['/t/helfer']"
-                    lines="none"
-                    detail="true"
-                    routerLinkActive="selected"
-                  >
-                    <ion-icon slot="start" name="help-buoy-outline"></ion-icon>
-                    <ion-label>{{ "common.helper" | translate }}</ion-label>
-                  </ion-item>
-                </ng-container>
+                @if (clubList$ | async; as clubList) {
+                  @if (enableHelferEvents(clubList)) {
+                    <ion-item
+                      routerDirection="root"
+                      [routerLink]="['/t/helfer']"
+                      lines="none"
+                      detail="true"
+                      routerLinkActive="selected"
+                    >
+                      <ion-icon
+                        slot="start"
+                        name="help-buoy-outline"
+                      ></ion-icon>
+                      <ion-label>{{ "common.helper" | translate }}</ion-label>
+                    </ion-item>
+                  }
+                }
                 <ion-item
                   routerDirection="root"
                   [routerLink]="['/profile']"
@@ -82,8 +87,8 @@
                   routerLinkActive="selected"
                 >
                   <!--<ion-avatar class="menu-avatar" size="small" slot="start">
-                    <img *ngIf="user?.photoURL" src="{{user?.photoURL}}" />
-                  </ion-avatar>-->
+                  <img *ngIf="user?.photoURL" src="{{user?.photoURL}}" />
+                </ion-avatar>-->
                   <ion-icon
                     slot="start"
                     name="person-circle-outline"
@@ -105,6 +110,10 @@
                   <ion-label>{{
                     "side_bar.info__and__help" | translate
                   }}</ion-label>
+                </ion-item>
+                <ion-item button lines="none" detail="true" (click)="openFaq()">
+                  <ion-icon slot="start" name="help-circle-outline"></ion-icon>
+                  <ion-label>FAQ / Hilfe</ion-label>
                 </ion-item>
               </ion-menu-toggle>
             </ion-list>
@@ -160,33 +169,33 @@
         </ion-note>
         <!--
 
-        <ion-list id="inbox-list">
-          <ion-list-header>myclub</ion-list-header>
-              <ion-menu-toggle auto-hide="false">
-            <ion-item routerDirection="root"  lines="none" detail="false" routerLinkActive="selected">
-              <ion-icon slot="start" name="newspaper-outline" ></ion-icon>
-              <ion-label>News</ion-label>
-            </ion-item>
-            <ion-item routerDirection="root" lines="none" detail="false" routerLinkActive="selected">
-              <ion-icon slot="start" name="barbell-outline"></ion-icon>
-              <ion-label>Training</ion-label>
-            </ion-item>
-            <ion-item routerDirection="root"  lines="none" detail="false" routerLinkActive="selected">
-              <ion-icon slot="start" name="trophy-outline"></ion-icon>
-              <ion-label>Meisterschaft</ion-label>
-            </ion-item>
-            <ion-item routerDirection="root"  lines="none" detail="false" routerLinkActive="selected">
-              <ion-icon slot="start" name="calendar-outline"></ion-icon>
-              <ion-label>Events</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-        </ion-list>
+      <ion-list id="inbox-list">
+        <ion-list-header>myclub</ion-list-header>
+        <ion-menu-toggle auto-hide="false">
+          <ion-item routerDirection="root"  lines="none" detail="false" routerLinkActive="selected">
+            <ion-icon slot="start" name="newspaper-outline" ></ion-icon>
+            <ion-label>News</ion-label>
+          </ion-item>
+          <ion-item routerDirection="root" lines="none" detail="false" routerLinkActive="selected">
+            <ion-icon slot="start" name="barbell-outline"></ion-icon>
+            <ion-label>Training</ion-label>
+          </ion-item>
+          <ion-item routerDirection="root"  lines="none" detail="false" routerLinkActive="selected">
+            <ion-icon slot="start" name="trophy-outline"></ion-icon>
+            <ion-label>Meisterschaft</ion-label>
+          </ion-item>
+          <ion-item routerDirection="root"  lines="none" detail="false" routerLinkActive="selected">
+            <ion-icon slot="start" name="calendar-outline"></ion-icon>
+            <ion-label>Events</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
 
-        <ion-list id="labels-list">
-          <ion-list-header>Administration</ion-list-header>
+      <ion-list id="labels-list">
+        <ion-list-header>Administration</ion-list-header>
 
-        
-        </ion-list>-->
+
+      </ion-list>-->
       </ion-content>
     </ion-menu>
     <ion-router-outlet id="main-content"></ion-router-outlet>

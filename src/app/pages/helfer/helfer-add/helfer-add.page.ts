@@ -2,11 +2,10 @@ import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   ModalController,
-  NavParams,
   ToastController,
 } from "@ionic/angular";
 import { User } from "firebase/auth";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import {
   BehaviorSubject,
   Observable,
@@ -31,7 +30,9 @@ import { UiService } from "src/app/services/ui.service";
   standalone: false,
 })
 export class HelferAddPage implements OnInit {
-  @Input("data") eventCopy: HelferEvent;
+  @Input() data!: HelferEvent;
+
+  eventCopy: HelferEvent;
   event: HelferEvent;
   user: User;
 
@@ -50,7 +51,7 @@ export class HelferAddPage implements OnInit {
     private readonly authService: AuthService,
     private fbService: FirebaseService,
     private alertController: AlertController,
-    public navParams: NavParams,
+
     private championshipService: ChampionshipService,
     private uiService: UiService,
   ) {
@@ -92,8 +93,10 @@ export class HelferAddPage implements OnInit {
   }
 
   ngOnInit() {
-    this.eventCopy = this.navParams.get("data");
-    if (this.eventCopy.id) {
+    // NavParams migration: now using @Input property directly
+    this.eventCopy = this.data;
+
+    if (this.eventCopy && this.eventCopy.id) {
       this.event = this.eventCopy;
       console.log(this.event);
 

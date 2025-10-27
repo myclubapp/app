@@ -74,7 +74,8 @@
       </ion-accordion>
 
       <!-- Schritt 2: Sportart (nur bei Sportverein) -->
-      <ion-accordion value="sportType" *ngIf="clubData.type === 'sports'">
+      @if (clubData.type === 'sports') {
+      <ion-accordion value="sportType">
         <ion-item slot="header">
           <ion-label
             ><b>{{ 'common.step_with_number' | translate:{num: 2} }}:</b> {{
@@ -84,13 +85,13 @@
         <div slot="content">
           <ion-list [inset]="true">
             <ion-text color="warning">
-              <p
-                *ngIf="clubData.type === 'sports' && clubData.sportType !== 'other'"
-                style="font-size: 0.95em; margin: 1em"
-              >
+              @if (clubData.type === 'sports' && clubData.sportType !== 'other')
+              {
+              <p style="font-size: 0.95em; margin: 1em">
                 Hinweis: Hier können nur Vereine hinzugefügt werden, die keinem
                 offiziellen Verband angeschlossen sind.
               </p>
+              }
             </ion-text>
             <ion-radio-group [(ngModel)]="clubData.sportType">
               <ion-item button="false">
@@ -140,7 +141,8 @@
               </ion-item>
             </ion-radio-group>
             <!-- Input-Feld für 'Andere Sportart' außerhalb der Radio-Gruppe -->
-            <ion-item *ngIf="clubData?.sportType === 'other'">
+            @if (clubData?.sportType === 'other') {
+            <ion-item>
               <ion-input
                 label="{{ 'onboarding.sport_type.other_placeholder' | translate }}"
                 labelPlacement="stacked"
@@ -149,6 +151,7 @@
                 required="true"
               ></ion-input>
             </ion-item>
+            }
             <ion-button
               expand="block"
               class="ion-margin-top"
@@ -159,6 +162,7 @@
           </ion-list>
         </div>
       </ion-accordion>
+      }
 
       <!-- Schritt 3/2: Details -->
       <ion-accordion value="details">
@@ -173,7 +177,8 @@
         </ion-item>
         <div slot="content">
           <ion-list [inset]="true">
-            <ion-item *ngIf="clubData.type === 'other'">
+            @if (clubData.type === 'other') {
+            <ion-item>
               <ion-input
                 label="{{ 'onboarding.club_type.other_placeholder' | translate }}"
                 labelPlacement="stacked"
@@ -182,6 +187,7 @@
                 required="true"
               ></ion-input>
             </ion-item>
+            }
             <ion-item>
               <ion-input
                 label="{{ 'onboarding.club_name' | translate }}"

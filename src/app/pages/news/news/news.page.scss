@@ -12,7 +12,119 @@ div.web-social-share-action-sheet-group {
   margin-bottom: 60px !important;
 }
 
-
 img {
   min-width: 100%;
+}
+
+// Aktuelle Clubspiele Sektion
+.games-section {
+  padding: 0 0 8px 0;
+  background: var(--ion-background-color);
+
+  ion-grid {
+    padding: 0 16px;
+  }
+
+  .games-swiper {
+    padding: 0 16px;
+  }
+}
+
+.news-header {
+  margin-top: 16px;
+
+  ion-toolbar {
+    --padding-top: 0;
+    --padding-bottom: 0;
+  }
+}
+
+.game-card {
+  margin: 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: visible;
+
+  swiper-slide & {
+    max-width: 500px; // Limit card width on large screens
+  }
+
+  .game-datetime {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px 8px 16px;
+    border-bottom: 1px solid var(--ion-color-light);
+  }
+
+  .game-teams {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 16px 8px;
+
+    .game-team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+
+      .team-logo {
+        width: 48px;
+        height: 48px;
+        object-fit: contain;
+        border-radius: 8px;
+      }
+
+      .team-logo-placeholder {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        background: var(--ion-color-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: var(--ion-color-medium);
+      }
+
+      .team-name {
+        font-size: 0.85rem;
+        text-align: center;
+        line-height: 1.2;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+    }
+
+    .game-vs {
+      padding: 0 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+
+      .game-result {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+
+  .game-location {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 16px 12px 16px;
+    border-top: 1px solid var(--ion-color-light);
+
+    ion-icon {
+      color: var(--ion-color-medium);
+    }
+  }
 }

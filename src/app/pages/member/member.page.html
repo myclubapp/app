@@ -14,163 +14,190 @@
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="userProfile$ | async as userProfile; else loading">
-    <ion-list lines="full" [inset]="true">
-      <ion-item>
-        <ion-avatar slot="start">
-          <img
-            *ngIf="!userProfile.profilePicture"
-            alt="Silhouette of a person's head"
-            src="https://ionicframework.com/docs/img/demos/avatar.svg"
-          />
-          <img
-            *ngIf="userProfile.profilePicture"
-            alt="{{userProfile.firstName}} {{userProfile.lastName}}"
-            src="{{userProfile.profilePicture}}"
-          />
-        </ion-avatar>
-
-        <ion-label
-          >{{userProfile.firstName}} {{userProfile.lastName}}</ion-label
-        >
-      </ion-item>
-      <ion-item *ngIf="isRequest && isParent">
-        <ion-icon slot="start" name="people-circle-outline"></ion-icon>
-        <ion-label>{{"common.parents" | translate}}</ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-icon slot="start" name="mail"></ion-icon>
-        <ion-label>{{userProfile.email}}</ion-label>
-        <ion-icon
-          size="small"
-          color="primary"
-          name="copy-outline"
-          slot="end"
-          (click)="copy(userProfile.email)"
-        ></ion-icon>
-      </ion-item>
-      <ion-item *ngIf="!isRequest && userProfile.phonenumber">
-        <ion-icon slot="start" name="call"></ion-icon>
-        <ion-label>{{userProfile.phonenumber}}</ion-label>
-        <ion-icon
-          size="small"
-          color="primary"
-          name="copy-outline"
-          slot="end"
-          (click)="copy(userProfile.phonenumber)"
-        ></ion-icon>
-      </ion-item>
-
-      <ion-item *ngIf="isRequest && requestTeam$ | async as requestTeam">
-        <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-        <ion-label
-          >{{'common.requested_for' | translate}}
-          {{requestTeam.name}}</ion-label
-        >
-      </ion-item>
-
-      <ng-container *ngIf="isAdmin$ | async">
-        <ion-item *ngIf="!isRequest && userProfile.dateOfBirth">
-          <ion-icon slot="start" name="calendar"></ion-icon>
-          <ion-label>
-            {{ userProfile.dateOfBirth?.toDate() | date: 'dd.MM.YYYY ' }}
-          </ion-label>
-          <ion-icon
-            size="small"
-            color="primary"
-            name="copy-outline"
-            slot="end"
-            (click)="copy(userProfile.dateOfBirth)"
-          ></ion-icon>
-        </ion-item>
-      </ng-container>
-    </ion-list>
-
-    <ion-list *ngIf="children$ | async as childrenList" [inset]="true">
-      <ion-list-header *ngIf="childrenList.length > 0">
-        <ion-label> {{ "common.children" | translate}} </ion-label>
-      </ion-list-header>
-
-      <ion-item
-        *ngFor="let child of childrenList"
-        (click)="openMember(child)"
-        detail="true"
+  @if (userProfile$ | async; as userProfile) {
+  <ion-list lines="full" [inset]="true">
+    <ion-item>
+      <ion-avatar slot="start">
+        @if (!userProfile.profilePicture) {
+        <img
+          alt="Silhouette of a person's head"
+          src="https://ionicframework.com/docs/img/demos/avatar.svg"
+        />
+        } @if (userProfile.profilePicture) {
+        <img
+          alt="{{userProfile.firstName}} {{userProfile.lastName}}"
+          src="{{userProfile.profilePicture}}"
+        />
+        }
+      </ion-avatar>
+      <ion-label>{{userProfile.firstName}} {{userProfile.lastName}}</ion-label>
+    </ion-item>
+    @if (isRequest && isParent) {
+    <ion-item>
+      <ion-icon slot="start" name="people-circle-outline"></ion-icon>
+      <ion-label>{{"common.parents" | translate}}</ion-label>
+    </ion-item>
+    } @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ |
+    async; as clubAdminList) { @if (isTeamAdmin(teamAdminList, teamId) ||
+    isClubAdmin(clubAdminList, clubId)) {
+    <!-- Admin sieht immer die E-Mail -->
+    <ion-item>
+      <ion-icon slot="start" name="mail"></ion-icon>
+      <ion-label>{{userProfile.email}}</ion-label>
+      <ion-icon
+        size="small"
+        color="primary"
+        name="copy-outline"
+        slot="end"
+        (click)="copy(userProfile.email)"
+      ></ion-icon>
+    </ion-item>
+    } @else { @if (!userProfile.hideEmail) {
+    <!-- Normale Mitglieder sehen E-Mail nur wenn nicht versteckt -->
+    <ion-item>
+      <ion-icon slot="start" name="mail"></ion-icon>
+      <ion-label>{{userProfile.email}}</ion-label>
+      <ion-icon
+        size="small"
+        color="primary"
+        name="copy-outline"
+        slot="end"
+        (click)="copy(userProfile.email)"
+      ></ion-icon>
+    </ion-item>
+    } } } } @if (!isRequest && userProfile.phonenumber) { @if (teamAdminList$ |
+    async; as teamAdminList) { @if (clubAdminList$ | async; as clubAdminList) {
+    @if (isTeamAdmin(teamAdminList, teamId) || isClubAdmin(clubAdminList,
+    clubId)) {
+    <!-- Admin sieht immer die Telefonnummer -->
+    <ion-item>
+      <ion-icon slot="start" name="call"></ion-icon>
+      <ion-label>{{userProfile.phonenumber}}</ion-label>
+      <ion-icon
+        size="small"
+        color="primary"
+        name="copy-outline"
+        slot="end"
+        (click)="copy(userProfile.phonenumber)"
+      ></ion-icon>
+    </ion-item>
+    } @else { @if (!userProfile.hidePhoneNumber) {
+    <!-- Normale Mitglieder sehen Telefonnummer nur wenn nicht versteckt -->
+    <ion-item>
+      <ion-icon slot="start" name="call"></ion-icon>
+      <ion-label>{{userProfile.phonenumber}}</ion-label>
+      <ion-icon
+        size="small"
+        color="primary"
+        name="copy-outline"
+        slot="end"
+        (click)="copy(userProfile.phonenumber)"
+      ></ion-icon>
+    </ion-item>
+    } } } } } @if (isRequest && requestTeam$ | async; as requestTeam) {
+    <ion-item>
+      <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+      <ion-label
+        >{{'common.requested_for' | translate}} {{requestTeam.name}}</ion-label
       >
-        <ion-avatar (click)="openMember(child)" slot="start">
-          <img
-            *ngIf="!child.profilePicture"
-            alt="Silhouette of a person's head"
-            src="https://ionicframework.com/docs/img/demos/avatar.svg"
-          />
-          <img *ngIf="child.profilePicture" src="{{child?.profilePicture}}" />
-        </ion-avatar>
-        <ion-label>
-          <h2>{{ child.firstName }} {{ child.lastName }}</h2>
-          <p>{{ child.email }}</p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
+    </ion-item>
+    } @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ |
+    async; as clubAdminList) { @if (isTeamAdmin(teamAdminList, teamId) ||
+    isClubAdmin(clubAdminList, clubId)) { @if (!isRequest &&
+    userProfile.dateOfBirth) {
+    <ion-item>
+      <ion-icon slot="start" name="calendar"></ion-icon>
+      <ion-label>
+        {{ userProfile.dateOfBirth?.toDate() | date: 'dd.MM.yyyy' }}
+      </ion-label>
+      <ion-icon
+        size="small"
+        color="primary"
+        name="copy-outline"
+        slot="end"
+        (click)="copy(userProfile.dateOfBirth)"
+      ></ion-icon>
+    </ion-item>
+    } } } }
+  </ion-list>
+  @if (children$ | async; as childrenList) {
+  <ion-list [inset]="true">
+    @if (childrenList.length > 0) {
+    <ion-list-header>
+      <ion-label> {{ "common.children" | translate}} </ion-label>
+    </ion-list-header>
+    } @for (child of childrenList; track child.id) {
+    <ion-item (click)="openMember(child)" detail="true">
+      <ion-avatar (click)="openMember(child)" slot="start">
+        @if (!child.profilePicture) {
+        <img
+          alt="Silhouette of a person's head"
+          src="https://ionicframework.com/docs/img/demos/avatar.svg"
+        />
+        } @if (child.profilePicture) {
+        <img src="{{child?.profilePicture}}" />
+        }
+      </ion-avatar>
+      <ion-label>
+        <h2>{{ child.firstName }} {{ child.lastName }}</h2>
+        <p>{{ child.email }}</p>
+      </ion-label>
+    </ion-item>
+    }
+  </ion-list>
+  } @if (parents$ | async; as parentsList) {
+  <ion-list [inset]="true">
+    @if (parentsList.length > 0) {
+    <ion-list-header>
+      <ion-label> {{ "common.parents" | translate}} </ion-label>
+    </ion-list-header>
+    } @for (parent of parentsList; track parent.id) {
+    <ion-item (click)="openMember(parent)" detail="true">
+      <ion-avatar (click)="openMember(parent)" slot="start">
+        @if (!parent.profilePicture) {
+        <img
+          alt="Silhouette of a person's head"
+          src="https://ionicframework.com/docs/img/demos/avatar.svg"
+        />
+        } @if (parent.profilePicture) {
+        <img src="{{parent?.profilePicture}}" />
+        }
+      </ion-avatar>
+      <ion-label>
+        <h2>{{ parent.firstName }} {{ parent.lastName }}</h2>
+        <p>{{ parent.email }}</p>
+      </ion-label>
+    </ion-item>
+    }
+  </ion-list>
+  } @if (isRequest) {
+  <div class="ion-padding">
+    <ion-button expand="block" color="success" id="present-alert-approve">
+      {{ "common.approve_request" | translate}}
+    </ion-button>
+    <ion-alert
+      trigger="present-alert-approve"
+      [header]="'club.request_approve_header' | translate"
+      [subHeader]="'club.request_approve_subheader' | translate"
+      [message]="'club.request_add_user_to_club' | translate"
+      [buttons]="alertButtonsApproveClub"
+    ></ion-alert>
+    <ion-button
+      fill="outline"
+      expand="block"
+      color="danger"
+      (click)="deleteClubRequest(userProfile)"
+    >
+      {{ "common.delete_request" | translate}}
+    </ion-button>
+  </div>
+  } } @else {
 
-    <ion-list *ngIf="parents$ | async as parentsList" [inset]="true">
-      <ion-list-header *ngIf="parentsList.length > 0">
-        <ion-label> {{ "common.parents" | translate}} </ion-label>
-      </ion-list-header>
-
-      <ion-item
-        *ngFor="let parent of parentsList"
-        (click)="openMember(parent)"
-        detail="true"
-      >
-        <ion-avatar (click)="openMember(parent)" slot="start">
-          <img
-            *ngIf="!parent.profilePicture"
-            alt="Silhouette of a person's head"
-            src="https://ionicframework.com/docs/img/demos/avatar.svg"
-          />
-          <img *ngIf="parent.profilePicture" src="{{parent?.profilePicture}}" />
-        </ion-avatar>
-        <ion-label>
-          <h2>{{ parent.firstName }} {{ parent.lastName }}</h2>
-          <p>{{ parent.email }}</p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-
-    <div class="ion-padding" *ngIf="isRequest">
-      <ion-button expand="block" color="success" id="present-alert-approve">
-        {{ "common.approve_request" | translate}}
-      </ion-button>
-      <ion-alert
-        trigger="present-alert-approve"
-        [header]="'club.request_approve_header' | translate"
-        [subHeader]="'club.request_approve_subheader' | translate"
-        [message]="'club.request_add_user_to_club' | translate"
-        [buttons]="alertButtonsApproveClub"
-      ></ion-alert>
-
-      <ion-button
-        fill="outline"
-        expand="block"
-        color="danger"
-        (click)="deleteClubRequest(userProfile)"
-      >
-        {{ "common.delete_request" | translate}}
-      </ion-button>
-    </div>
-  </ng-container>
-</ion-content>
-
-<ng-template #loading>
-  <ion-list *ngIf="loading">
+  <ion-list>
     <ion-grid>
       <ion-row>
-        <ion-col
-          size-lg="4"
-          size-md="6"
-          size-sm="6"
-          size="12"
-          *ngFor="let item of skeleton"
-        >
+        @for (item of skeleton; track $index) {
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
           <ion-card>
             <ion-card-header>
               <ion-card-subtitle>
@@ -186,7 +213,6 @@
                 ></ion-skeleton-text>
               </ion-card-title>
             </ion-card-header>
-
             <ion-card-content>
               <ion-skeleton-text
                 animated
@@ -211,7 +237,10 @@
             </ion-card-content>
           </ion-card>
         </ion-col>
+        }
       </ion-row>
     </ion-grid>
   </ion-list>
-</ng-template>
+
+  }
+</ion-content>

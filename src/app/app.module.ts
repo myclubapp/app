@@ -70,7 +70,6 @@ import { TeamCreatePage } from "./pages/team/team-create/team-create.page";
 import { HelferPunkteClubPage } from "./pages/helfer/helfer-punkte-club/helfer-punkte-club.page";
 import { HelferPunkteDetailPage } from "./pages/helfer/helfer-punkte-detail/helfer-punkte-detail.page";
 import { ClubSubscriptionPage } from "./pages/club-subscription/club-subscription.page";
-import { GamePreviewPage } from "./pages/championship/game-preview/game-preview.page";
 import { NotificationPage } from "./pages/news/notification/notification.page";
 import { ClubParentsListPage } from "./pages/club-parents-list/club-parents-list.page";
 import { ClubLinksPage } from "./pages/club-links/club-links.page";
@@ -83,6 +82,7 @@ import { CreateNewClubPage } from "./pages/onboarding/create-new-club/create-new
 import { CreateNewsPage } from "./pages/news/create-news/create-news.page";
 import { MemberInvoiceListPage } from "./pages/member-invoice-list/member-invoice-list.page";
 import { QrInvoiceModalPage } from "./pages/qr-invoice-modal/qr-invoice-modal.page";
+import { UserListItemComponent } from "./components/user-list-item/user-list-item.component";
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
@@ -142,7 +142,6 @@ const getConfig = () => {
     TrainingExercisesPage,
     TrainingDetailPage,
     TrainingCreatePage,
-    GamePreviewPage,
     EventAddPage,
     EventDetailPage,
     ClubPage,
@@ -165,6 +164,7 @@ const getConfig = () => {
     TeamExercisesPage,
     TeamCreatePage,
     QrInvoiceModalPage,
+    UserListItemComponent,
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

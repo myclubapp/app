@@ -1,5 +1,11 @@
 import { AfterViewInit, Component, NgZone, OnInit } from "@angular/core";
 import { SwUpdate, VersionEvent } from "@angular/service-worker";
+import { registerLocaleData } from "@angular/common";
+import localeDe from "@angular/common/locales/de";
+import { CommonModule } from "@angular/common";
+import { IonicModule } from "@ionic/angular";
+import { RouterModule } from "@angular/router";
+import { TranslateModule } from "@ngx-translate/core";
 
 import {
   AlertController,
@@ -14,7 +20,7 @@ import { FirebaseService } from "./services/firebase.service";
 import { Router } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { Observable, of, switchMap, take, tap } from "rxjs";
-import { User, onAuthStateChanged } from "@angular/fire/auth";
+import { User } from "@angular/fire/auth";
 import { UserProfileService } from "./services/firebase/user-profile.service";
 import { Device, DeviceId, DeviceInfo, LanguageTag } from "@capacitor/device";
 import { TranslateService } from "@ngx-translate/core";
@@ -22,6 +28,10 @@ import { Club } from "./models/club";
 import { UiService } from "./services/ui.service";
 import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
 import { StatusBar, Style } from "@capacitor/status-bar";
+import { Browser } from "@capacitor/browser";
+
+// Register German locale
+registerLocaleData(localeDe);
 
 import {
   ActionPerformed,
@@ -76,16 +86,35 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.initializeApp();
     //for menu layout enable/disable, club liste wird oben schon einmal gelesen, aber als Promise.
     this.clubList$ = this.fbService.getClubList().pipe(take(1));
+  }
 
-    onAuthStateChanged(this.authService.auth, async (user) => {
+  ngOnInit(): void {
+    App.removeAllListeners().then(() => {
+      this.registerBackButton();
+    });
+
+    // Subscribe to auth state changes
+    this.authService.user$.subscribe(async (user) => {
       if (user) {
         // 0. LOGIN
         this.email = user.email;
         this.user = user;
-        console.log(">>> user.metadata", user.metadata);
-        console.log(">>> lastSignInTime", user.metadata?.lastSignInTime);
-        await this.user.getIdToken();
-        // console.log(">>> token", token);
+        // console.log(">>> user.metadata", user.metadata);
+        // console.log(">>> lastSignInTime", user.metadata?.lastSignInTime);
+
+        // Validate and refresh token on app start
+        const tokenValid = await this.authService.validateAndRefreshToken();
+        if (!tokenValid) {
+          console.error(
+            "Token validation failed - logging out user due to expired/invalid token",
+          );
+          await this.presentAlertSessionExpired();
+          await this.authService.logout();
+          return;
+        }
+
+        // Give Firebase client time to apply the new token
+        await new Promise((resolve) => setTimeout(resolve, 200));
 
         if (!user.emailVerified) {
           const navOnboardingEmail =
@@ -96,8 +125,8 @@ export class AppComponent implements OnInit, AfterViewInit {
             console.error("Navigation ERROR to onboarding Email Page");
           }
         } else {
-          console.log("E-Mail IS verified. Go ahead..");
-          console.log(user.email, user.displayName, user.emailVerified);
+          // console.log("E-Mail IS verified. Go ahead..");
+          // console.log(user.email, user.displayName, user.emailVerified);
 
           try {
             const clubList = await lastValueFrom(
@@ -105,12 +134,12 @@ export class AppComponent implements OnInit, AfterViewInit {
             );
 
             if (clubList.length === 0) {
-              console.log("NO! Club Data received. > Call Club Onboarding");
+              // console.log("NO! Club Data received. > Call Club Onboarding");
               try {
                 const navOnboardingClub =
                   await this.router.navigateByUrl("/onboarding-club");
                 if (navOnboardingClub) {
-                  console.log("Navigation success to onboarding Club Page");
+                  // console.log("Navigation success to onboarding Club Page");
                 } else {
                   console.error("Navigation ERROR to onboarding Club Page");
                 }
@@ -124,7 +153,7 @@ export class AppComponent implements OnInit, AfterViewInit {
               );
 
               if (inactiveClub) {
-                console.log("NO SUBSCRIPTION FOUND");
+                // console.log("NO SUBSCRIPTION FOUND");
                 const modal = await this.modalCtrl.create({
                   component: ClubSubscriptionPage,
                   presentingElement: await this.modalCtrl.getTop(),
@@ -137,12 +166,12 @@ export class AppComponent implements OnInit, AfterViewInit {
                 modal.present();
 
                 const { role } = await modal.onWillDismiss();
-                console.log(role);
+                // console.log(role);
                 if (role === "close" || role === "backdrop") {
                   this.authService.logout();
                 }
               } else {
-                console.log("Club is active");
+                // console.log("Club is active");
 
                 const currentPath = this.router.url;
                 if (currentPath === "/login") {
@@ -194,27 +223,6 @@ export class AppComponent implements OnInit, AfterViewInit {
         }
       }
     });
-  }
-
-  ngAfterViewInit() {
-    // console.log("CSS DEBUG: AppComponent View initialized");
-    // this.setStatusBarAndSafeArea();
-
-    // iOS only
-    if (Capacitor.getPlatform() === "ios") {
-      window.addEventListener("statusTap", () => {
-        const content = document.querySelector("ion-content");
-        if (content) {
-          content.scrollToTop(500);
-        }
-      });
-    }
-  }
-
-  ngOnInit(): void {
-    App.removeAllListeners().then(() => {
-      this.registerBackButton();
-    });
 
     /*Network.addListener(
       "networkStatusChange",
@@ -233,6 +241,21 @@ export class AppComponent implements OnInit, AfterViewInit {
     );*/
   }
 
+  ngAfterViewInit() {
+    // console.log("CSS DEBUG: AppComponent View initialized");
+    // this.setStatusBarAndSafeArea();
+
+    // iOS only
+    if (Capacitor.getPlatform() === "ios") {
+      window.addEventListener("statusTap", () => {
+        const content = document.querySelector("ion-content");
+        if (content) {
+          content.scrollToTop(500);
+        }
+      });
+    }
+  }
+
   ngOnDestroy() {
     // Network.removeAllListeners();
 
@@ -245,8 +268,23 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.setStatusBar();
     this.setDefaultLanguage();
 
-    App.addListener("resume", () => {
+    App.addListener("resume", async () => {
       this.applySystemTheme();
+
+      // Validate token when app resumes from background
+      if (this.authService.auth.currentUser) {
+        const tokenValid = await this.authService.validateAndRefreshToken();
+        if (!tokenValid) {
+          console.error(
+            "Token validation failed on app resume - logging out user",
+          );
+          await this.presentAlertSessionExpired();
+          await this.authService.logout();
+        } else {
+          // Give Firebase client time to apply the new token
+          await new Promise((resolve) => setTimeout(resolve, 200));
+        }
+      }
     });
 
     this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
@@ -330,7 +368,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         if (profile) {
           if (profile.language) {
             if (profile.language.length > 0) {
-              console.log("set user langauge: " + profile.language);
+              // console.log("set user langauge: " + profile.language);
               this.translate.use(profile.language);
               return;
             }
@@ -496,7 +534,7 @@ export class AppComponent implements OnInit, AfterViewInit {
           }
         });
     } else {
-      console.log("Status Bar not supported");
+      // console.log("Status Bar not supported");
     }
   }
 
@@ -692,9 +730,35 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
   }
 
+  async presentAlertSessionExpired() {
+    const translations = await Promise.all([
+      lastValueFrom(this.translate.get("auth.session_expired")),
+      lastValueFrom(this.translate.get("auth.session_expired_message")),
+      lastValueFrom(this.translate.get("common.ok")),
+    ]);
+
+    const alert = await this.alertController.create({
+      header: translations[0],
+      message: translations[1],
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: translations[2],
+          role: "confirm",
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
   async logout() {
     console.log("logout");
     await this.authService.logout();
+  }
+
+  async openFaq() {
+    await Browser.open({ url: "https://my-club.app/faq" });
   }
   /*async addListeners() {
     await PushNotifications.addListener('registration', async token => {

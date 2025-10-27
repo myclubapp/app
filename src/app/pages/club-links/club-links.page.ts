@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, Optional } from "@angular/core";
 import {
   ModalController,
-  NavParams,
   ToastController,
   ItemReorderEventDetail,
   IonItem,
@@ -34,7 +33,7 @@ import { ClubLinksEditPage } from "../club-links-edit/club-links-edit.page";
   standalone: false,
 })
 export class ClubLinksPage implements OnInit {
-  @Input("clubId") clubId: any;
+  @Input() clubId!: any;
   club$: Observable<Club>;
   links$: Observable<ClubLink[]>;
   clubAdminList$: Observable<any[]>;
@@ -43,13 +42,13 @@ export class ClubLinksPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    private readonly navParams: NavParams,
+
     private readonly fbService: FirebaseService,
     private readonly toastCtrl: ToastController,
     private readonly translate: TranslateService,
     @Optional() private readonly routerOutlet: IonRouterOutlet,
   ) {
-    this.clubId = this.navParams.get("clubId");
+    // NavParams migration: now using @Input property directly
   }
 
   ngOnInit() {

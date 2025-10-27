@@ -15,25 +15,26 @@
   </ion-header>
 
   <ion-list [inset]="true">
-    <ion-item-group *ngFor="let year of years">
+    @for (year of years; track year) {
+    <ion-item-group>
       <ion-item-divider color="light">
         <ion-label> {{ year }} </ion-label>
       </ion-item-divider>
-      <ng-container *ngIf="invoices$ | async as invoices">
-        <ion-item
-          *ngFor="let invoice of invoices"
-          type="button"
-          detail="true"
-          (click)="openInvoiceDetail(invoice)"
-        >
-          <ion-label>
-            <h2>{{invoice.purpose}}</h2>
-            <h2>{{invoice.amount}} {{invoice.currency}}</h2>
-          </ion-label>
-
-          <ion-badge slot="end"> {{invoice.status}} </ion-badge>
-        </ion-item>
-      </ng-container>
+      @if (invoices$ | async; as invoices) { @for (invoice of invoices; track
+      invoice) {
+      <ion-item
+        type="button"
+        detail="true"
+        (click)="openInvoiceDetail(invoice)"
+      >
+        <ion-label>
+          <h2>{{invoice.purpose}}</h2>
+          <h2>{{invoice.amount}} {{invoice.currency}}</h2>
+        </ion-label>
+        <ion-badge slot="end"> {{invoice.status}} </ion-badge>
+      </ion-item>
+      } }
     </ion-item-group>
+    }
   </ion-list>
 </ion-content>

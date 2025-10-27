@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   ModalController,
-  NavParams,
   ToastController,
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
@@ -31,7 +30,7 @@ import { MemberPage } from "../member/member.page";
   standalone: false,
 })
 export class ClubRequestListPage implements OnInit {
-  @Input("club") club: any;
+  @Input() club!: any;
   club$: Observable<any>;
 
   allowEdit: boolean = false;
@@ -44,7 +43,7 @@ export class ClubRequestListPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public navParams: NavParams,
+
     private readonly alertCtrl: AlertController,
     private readonly toastCtrl: ToastController,
     private readonly userProfileService: UserProfileService,
@@ -54,7 +53,7 @@ export class ClubRequestListPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.club = this.navParams.get("club");
+    // NavParams migration: now using @Input property directly
     this.club$ = this.club$ = this.fbService.getClubRef(this.club.id);
     this.initializeClubMembers();
   }
@@ -168,6 +167,7 @@ export class ClubRequestListPage implements OnInit {
         data: member,
         isRequest: true,
         clubId: this.club.id,
+        teamId: null,
       },
     });
     modal.present();

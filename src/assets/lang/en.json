@@ -6,6 +6,7 @@
     "description": "Description",
     "cancel": "Cancel",
     "ok": "OK",
+    "apply": "Apply",
     "confirmation": "Confirmation",
     "confirm": "Confirm",
     "success__saved": "Successfully saved",
@@ -85,6 +86,7 @@
     "admins": "Administrators",
     "addAdministrator": "Add administrator",
     "addMember": "Add member",
+    "addFromParents": "Add from parents",
     "add": "Add",
     "club": "Club",
     "location": "Name/Hall/Designation",
@@ -165,21 +167,20 @@
     "date": "Date",
     "url": "URL"
   },
+  "auth": {
+    "session_expired": "Session expired",
+    "session_expired_message": "Your session has expired. Please log in again."
+  },
   "login": {
-    "login__title": "Sign in with your account",
+    "login_title": "Sign in with your account",
     "loading": "Signing in...",
     "error": "Error",
-    "error__no_acount_found": "No account found with this email address",
-    "error__invalid_username_password": "The username/password combination is incorrect.",
-    "error__invalid_login_credentials": "The username/password combination is incorrect.",
-    "error__invalid_credentials": "The username/password combination is invalid.",
-    "error__network_connection": "There is a problem with the network connection",
-    "error_message": "An error has occurred",
     "error_user_not_found": "No user found with this email address",
     "error_wrong_password": "Wrong password",
     "error_invalid_email": "Invalid email address",
     "error_user_disabled": "This user has been disabled",
-    "login__button": "Sign In",
+    "error_user_credential": "Invalid Login",
+    "login_button": "Sign In",
     "create_new_account": "create a new account",
     "email_placeholder": "Enter your email address",
     "password_placeholder": "Enter your password"
@@ -343,7 +344,10 @@
     "filter__news": "Filter news",
     "filter__by_club_team": "Filter by club or team.",
     "create_news": "Create news",
-    "news_entry": "News entry"
+    "news_entry": "News entry",
+    "upcomingGames": "Upcoming Games",
+    "upcomingGamesEnabled": "Upcoming games activated",
+    "upcomingGamesDisabled": "Upcoming games deactivated"
   },
   "not-found": {
     "not_found": "Not found"
@@ -427,10 +431,15 @@
     "generally": "General",
     "birthdate": "Date of birth",
     "phonenumber": "Phone number",
+    "hide_phone_number": "Hide phone number",
+    "hide_email": "Hide email address",
+    "hide_info_note": "This information remains visible to team and club admins for organizational reasons and is only hidden from other team members.",
     "address": "Address",
     "contact__information": "Contact information",
     "license__number": "License number",
     "diverses": "Miscellaneous",
+    "show_game_preview": "Show game preview",
+    "game_preview_info_note": "The club's games for the next 10 days are displayed.",
     "sport": "Sport",
     "change_email_header": "Change email address",
     "change_email_message": "Change your profile email address here.",

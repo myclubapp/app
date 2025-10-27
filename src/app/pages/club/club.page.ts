@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   ModalController,
-  NavParams,
   ToastController,
   IonRouterOutlet,
 } from "@ionic/angular";
@@ -29,7 +28,7 @@ import { ClubMemberListPage } from "../club-member-list/club-member-list.page";
 import { ClubAdminListPage } from "../club-admin-list/club-admin-list.page";
 import { ClubTeamListPage } from "../club-team-list/club-team-list.page";
 import { ClubRequestListPage } from "../club-request-list/club-request-list.page";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { HelferPunkteClubPage } from "../helfer/helfer-punkte-club/helfer-punkte-club.page";
 import { Club } from "src/app/models/club";
 import { ClubSubscriptionPage } from "../club-subscription/club-subscription.page";
@@ -51,7 +50,9 @@ import { ClubBillingPeriodPage } from "../club-billing-period/club-billing-perio
   standalone: false,
 })
 export class ClubPage implements OnInit {
-  @Input("data") club: any;
+  @Input() data!: any;
+
+  club: any;
 
   club$: Observable<any>;
 
@@ -66,7 +67,7 @@ export class ClubPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public navParams: NavParams,
+
     private readonly alertCtrl: AlertController,
     private readonly toastCtrl: ToastController,
     private readonly userProfileService: UserProfileService,
@@ -78,7 +79,8 @@ export class ClubPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.club = this.navParams.get("data");
+    // NavParams migration: now using @Input property directly
+    this.club = this.data;
 
     this.club$ = this.getClub(this.club.id);
 
@@ -143,88 +145,141 @@ export class ClubPage implements OnInit {
           clubAdmins: this.fbService.getClubAdminRefs(clubId),
           clubRequests: this.fbService.getClubRequestRefs(clubId),
           clubTeams: this.fbService.getClubTeamRefs(clubId),
+          clubParents: this.fbService.getClubParentsRefs(clubId),
         }).pipe(
-          switchMap(({ clubMembers, clubAdmins, clubRequests, clubTeams }) => {
-            const memberProfiles$ = clubMembers.map((member) =>
-              this.userProfileService.getUserProfileById(member.id).pipe(
-                take(1),
-                catchError(() =>
-                  of({ ...member, firstName: "Unknown", lastName: "Unknown" }),
-                ),
-              ),
-            );
-            const adminProfiles$ = clubAdmins.map((admin) =>
-              this.userProfileService.getUserProfileById(admin.id).pipe(
-                take(1),
-                catchError(() =>
-                  of({ ...admin, firstName: "Unknown", lastName: "Unknown" }),
-                ),
-              ),
-            );
-            const clubRequests$ = clubRequests.map((request) =>
-              this.userProfileService.getUserProfileById(request.id).pipe(
-                take(1),
-                catchError(() =>
-                  of({ ...request, firstName: "Unknown", lastName: "Unknown" }),
-                ),
-              ),
-            );
-
-            const clubTeams$ = clubTeams.map((team) =>
-              this.fbService.getTeamRef(team.id).pipe(
-                take(1),
-                map((team) => (team ? { ...team, id: team.id } : null)),
-                catchError(() => of(null)),
-              ),
-            );
-
-            return forkJoin({
-              clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
-              clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
-              clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
-              clubTeams: forkJoin(clubTeams$).pipe(startWith([])),
-            }).pipe(
-              map(({ clubMembers, clubAdmins, clubRequests, clubTeams }) => ({
-                clubMembers: clubMembers.filter(
-                  (member) => member !== undefined,
-                ), // Filter out undefined
-                clubAdmins: clubAdmins.filter((admin) => admin !== undefined), // Filter out undefined
-                clubRequests: clubRequests.filter(
-                  (request) => request !== undefined,
-                ), // Filter out undefined*/
-                clubTeams: clubTeams.filter(
-                  (team) => team !== null && team !== undefined,
-                ), // Filter out undefined
-              })),
-            );
-          }),
-          map(({ clubMembers, clubAdmins, clubRequests, clubTeams }) => {
-            const ages = clubMembers
-              .map((member) =>
-                member.hasOwnProperty("dateOfBirth")
-                  ? calculateAge(member.dateOfBirth)
-                  : 0,
-              )
-              .filter((age) => age > 0); // Filter out invalid or 'Unknown' ages
-            // console.log(ages);
-
-            const averageAge =
-              ages.length > 0
-                ? ages.reduce((a, b) => a + b, 0) / ages.length
-                : 0; // Calculate average or set to 0 if no valid ages
-            // console.log(clubTeams)
-            return {
-              ...club,
-              clubTeams,
-              updated: Timestamp.fromMillis(club.updated.seconds * 1000)
-                .toDate()
-                .toISOString(),
-              averageAge: averageAge.toFixed(1), // Keep two decimal places
+          switchMap(
+            ({
               clubMembers,
               clubAdmins,
               clubRequests,
-            };
-          }),
+              clubTeams,
+              clubParents,
+            }) => {
+              const memberProfiles$ = clubMembers.map((member) =>
+                this.userProfileService.getUserProfileById(member.id).pipe(
+                  take(1),
+                  catchError(() =>
+                    of({
+                      ...member,
+                      firstName: "Unknown",
+                      lastName: "Unknown",
+                    }),
+                  ),
+                ),
+              );
+              const adminProfiles$ = clubAdmins.map((admin) =>
+                this.userProfileService.getUserProfileById(admin.id).pipe(
+                  take(1),
+                  catchError(() =>
+                    of({ ...admin, firstName: "Unknown", lastName: "Unknown" }),
+                  ),
+                ),
+              );
+              const clubRequests$ = clubRequests.map((request) =>
+                this.userProfileService.getUserProfileById(request.id).pipe(
+                  take(1),
+                  catchError(() =>
+                    of({
+                      ...request,
+                      firstName: "Unknown",
+                      lastName: "Unknown",
+                    }),
+                  ),
+                ),
+              );
+
+              const clubTeams$ = clubTeams.map((team) =>
+                this.fbService.getTeamRef(team.id).pipe(
+                  take(1),
+                  map((team) => (team ? { ...team, id: team.id } : null)),
+                  catchError(() => of(null)),
+                ),
+              );
+
+              const parentProfiles$ = clubParents.map((parent) =>
+                this.userProfileService.getUserProfileById(parent.id).pipe(
+                  take(1),
+                  catchError(() =>
+                    of({
+                      ...parent,
+                      firstName: "Unknown",
+                      lastName: "Unknown",
+                    }),
+                  ),
+                ),
+              );
+
+              return forkJoin({
+                clubMembers: forkJoin(memberProfiles$).pipe(startWith([])),
+                clubAdmins: forkJoin(adminProfiles$).pipe(startWith([])),
+                clubRequests: forkJoin(clubRequests$).pipe(startWith([])),
+                clubTeams: forkJoin(clubTeams$).pipe(startWith([])),
+                clubParents: forkJoin(parentProfiles$).pipe(startWith([])),
+              }).pipe(
+                map(
+                  ({
+                    clubMembers,
+                    clubAdmins,
+                    clubRequests,
+                    clubTeams,
+                    clubParents,
+                  }) => ({
+                    clubMembers: clubMembers.filter(
+                      (member) => member !== undefined,
+                    ), // Filter out undefined
+                    clubAdmins: clubAdmins.filter(
+                      (admin) => admin !== undefined,
+                    ), // Filter out undefined
+                    clubRequests: clubRequests.filter(
+                      (request) => request !== undefined,
+                    ), // Filter out undefined*/
+                    clubTeams: clubTeams.filter(
+                      (team) => team !== null && team !== undefined,
+                    ), // Filter out undefined
+                    clubParents: clubParents.filter(
+                      (parent) => parent !== undefined,
+                    ),
+                  }),
+                ),
+              );
+            },
+          ),
+          map(
+            ({
+              clubMembers,
+              clubAdmins,
+              clubRequests,
+              clubTeams,
+              clubParents,
+            }) => {
+              const ages = clubMembers
+                .map((member) =>
+                  member.hasOwnProperty("dateOfBirth")
+                    ? calculateAge(member.dateOfBirth)
+                    : 0,
+                )
+                .filter((age) => age > 0); // Filter out invalid or 'Unknown' ages
+              // console.log(ages);
+
+              const averageAge =
+                ages.length > 0
+                  ? ages.reduce((a, b) => a + b, 0) / ages.length
+                  : 0; // Calculate average or set to 0 if no valid ages
+              // console.log(clubTeams)
+              return {
+                ...club,
+                clubTeams,
+                updated: Timestamp.fromMillis(club.updated.seconds * 1000)
+                  .toDate()
+                  .toISOString(),
+                averageAge: averageAge.toFixed(1), // Keep two decimal places
+                clubMembers,
+                clubAdmins,
+                clubRequests,
+                clubParents,
+              };
+            },
+          ),
         );
       }),
       catchError((err) => {

@@ -18,6 +18,7 @@ import {
   map,
   mergeMap,
   of,
+  shareReplay,
   switchMap,
   take,
   tap,
@@ -27,7 +28,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
 import { EventAddPage } from "../event-add/event-add.page";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { EventDetailPage } from "../event-detail/event-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
@@ -78,8 +79,8 @@ export class EventsPage implements OnInit {
   }
 
   ngOnInit() {
-    this.eventList$ = this.getClubEvent();
-    this.eventListPast$ = this.getClubEventPast();
+    this.eventList$ = this.getClubEvent().pipe(shareReplay(1));
+    this.eventListPast$ = this.getClubEventPast().pipe(shareReplay(1));
 
     /*this.subscription = this.eventList$.pipe(
       tap(async (events) => {
@@ -125,7 +126,7 @@ export class EventsPage implements OnInit {
 
   handleNavigationData() {
     this.activatedRouteSub = this.activatedRoute.url.subscribe(() => {
-      const navigation = this.router.getCurrentNavigation();
+      const navigation = this.router.currentNavigation();
       if (
         navigation &&
         navigation.extras.state &&
@@ -158,7 +159,7 @@ export class EventsPage implements OnInit {
         };
         this.openEventDetailModal(clubEvent, true);
       } else {
-        console.log("no data");
+        // console.log("no data");
       }
     });
   }
@@ -184,14 +185,13 @@ export class EventsPage implements OnInit {
                     children.map((child) => {
                       // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
                       return this.fbService.getUserClubRefs(childUser);
                     }),
                   )
                 : of([]),
             ),
             map((childrenClubs) => childrenClubs.flat()),
-            tap((clubs) => console.log("Children Clubs:", clubs)),
+            // tap((clubs) => console.log("Children Clubs:", clubs)),
             catchError((error) => {
               console.error("Error fetching children clubs:", error);
               return of([]);
@@ -209,63 +209,110 @@ export class EventsPage implements OnInit {
       }),
       mergeMap((clubs) => {
         if (clubs.length === 0) return of([]);
-        return combineLatest(
+
+        // Hole Club-Mitglieder einmalig pro Club
+        const clubMembersMap$ = combineLatest(
           clubs.map((club) =>
-            combineLatest([
-              this.eventService.getClubEventsRef(club.id),
-              this.fbService.getClubRef(club.id), // Fetch the club details here
-            ]).pipe(
-              switchMap(([clubEvents, clubDetails]) => {
-                if (clubEvents.length === 0) return of([]);
-                return combineLatest(
-                  clubEvents.map((event) =>
-                    this.eventService
-                      .getClubEventAttendeesRef(club.id, event.id)
-                      .pipe(
-                        map((attendees) => {
-                          console.log("attendees", attendees);
-                          const allIds = [
-                            this.user.uid,
-                            ...(this.children?.map((child) => child.id) || []),
-                          ];
-                          console.log("all ids", allIds);
-                          const userAttendee = attendees.find((att) =>
-                            allIds.includes(att.id),
-                          );
-                          console.log(userAttendee);
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null;
-                          return {
-                            ...event,
-                            attendees,
-                            status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true,
-                            ).length,
-                            clubId: club.id,
-                            club: clubDetails, // Append club details to each event
-                          };
-                        }),
-                        catchError(() =>
-                          of({
-                            ...event,
-                            attendees: [],
-                            status: null,
-                            countAttendees: 0,
-                            clubId: club.id,
-                            club: clubDetails, // Also provide club details here in case of error
-                          }),
-                        ),
-                      ),
-                  ),
-                );
-              }),
-              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
-              catchError(() => of([])), // If error in fetching events, return empty array
-            ),
+            this.fbService
+              .getClubMemberRefs(club.id)
+              .pipe(map((members) => ({ clubId: club.id, members }))),
           ),
         ).pipe(
+          map((clubMembers) =>
+            clubMembers.reduce((acc, curr) => {
+              acc[curr.clubId] = curr.members;
+              return acc;
+            }, {}),
+          ),
+        );
+
+        return combineLatest([
+          clubMembersMap$,
+          combineLatest(
+            clubs.map((club) =>
+              combineLatest([
+                this.eventService.getClubEventsRef(club.id),
+                this.fbService.getClubRef(club.id), // Fetch the club details here
+              ]).pipe(
+                switchMap(([clubEvents, clubDetails]) => {
+                  if (clubEvents.length === 0) return of([]);
+                  return combineLatest(
+                    clubEvents.map((event) =>
+                      this.eventService
+                        .getClubEventAttendeesRef(club.id, event.id)
+                        .pipe(
+                          map((attendees) => ({
+                            event,
+                            attendees,
+                            clubDetails,
+                            clubId: club.id,
+                          })),
+                          catchError(() =>
+                            of({
+                              event,
+                              attendees: [],
+                              clubDetails,
+                              clubId: club.id,
+                            }),
+                          ),
+                        ),
+                    ),
+                  );
+                }),
+                catchError(() => of([])), // If error in fetching events, return empty array
+              ),
+            ),
+          ),
+        ]).pipe(
+          map(([clubMembersMap, clubsEvents]) => {
+            const flattenedEvents = clubsEvents.flat();
+            return flattenedEvents.map((item) => {
+              const clubMembers = clubMembersMap[item.clubId] || [];
+              const isMember = clubMembers.some(
+                (member) => member.id === this.user.uid,
+              );
+
+              // Finde den Status des aktuellen Benutzers
+              const userStatus =
+                item.attendees.find((att: any) => att.id === this.user.uid)
+                  ?.status ?? null;
+
+              // Finde die relevanten Kinder mit ihren Status
+              const relevantChildren = clubMembers
+                .filter((att) =>
+                  this.children.some((child) => child.id === att.id),
+                )
+                .map((att) => {
+                  const child = this.children.find(
+                    (child) => child.id === att.id,
+                  );
+                  const childStatus =
+                    item.attendees.find((attendee) => attendee.id === att.id)
+                      ?.status ?? null;
+                  return child
+                    ? {
+                        firstName: child.firstName,
+                        lastName: child.lastName,
+                        status: childStatus,
+                        id: child.id,
+                      }
+                    : {};
+                });
+
+              return {
+                ...item.event,
+                attendees: item.attendees,
+                status: userStatus,
+                isMember,
+                children: relevantChildren,
+                countAttendees: item.attendees.filter(
+                  (att) => att.status == true,
+                ).length,
+                clubId: item.clubId,
+                club: item.clubDetails, // Append club details to each event
+              };
+            });
+          }),
           map((clubsEvents) => clubsEvents.flat()), // Flatten to get all events across all clubs
           map(
             (allEvents) =>
@@ -305,14 +352,13 @@ export class EventsPage implements OnInit {
                     children.map((child) => {
                       // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
                       return this.fbService.getUserClubRefs(childUser);
                     }),
                   )
                 : of([]),
             ),
             map((childrenClubs) => childrenClubs.flat()),
-            tap((clubs) => console.log("Children Clubs:", clubs)),
+            // tap((clubs) => console.log("Children Clubs:", clubs)),
             catchError((error) => {
               console.error("Error fetching children clubs:", error);
               return of([]);
@@ -330,60 +376,110 @@ export class EventsPage implements OnInit {
       }),
       mergeMap((clubs) => {
         if (clubs.length === 0) return of([]);
-        return combineLatest(
+
+        // Hole Club-Mitglieder einmalig pro Club
+        const clubMembersMap$ = combineLatest(
           clubs.map((club) =>
-            combineLatest([
-              this.eventService.getClubEventsPastRef(club.id),
-              this.fbService.getClubRef(club.id), // Fetch the club details here
-            ]).pipe(
-              switchMap(([clubEvents, clubDetails]) => {
-                if (clubEvents.length === 0) return of([]);
-                return combineLatest(
-                  clubEvents.map((event) =>
-                    this.eventService
-                      .getClubEventAttendeesRef(club.id, event.id)
-                      .pipe(
-                        map((attendees) => {
-                          const attendeeIds = [
-                            this.user.uid,
-                            ...this.children.map((child) => child.id),
-                          ];
-                          const userAttendee = attendees.find((att) =>
-                            attendeeIds.includes(att.id),
-                          );
-                          const status = userAttendee
-                            ? userAttendee.status
-                            : null;
-                          return {
-                            ...event,
-                            attendees,
-                            status,
-                            countAttendees: attendees.filter(
-                              (att) => att.status == true,
-                            ).length,
-                            clubId: club.id,
-                            club: clubDetails, // Append club details to each event
-                          };
-                        }),
-                        catchError(() =>
-                          of({
-                            ...event,
-                            attendees: [],
-                            status: null,
-                            countAttendees: 0,
-                            clubId: club.id,
-                            club: clubDetails, // Also provide club details here in case of error
-                          }),
-                        ), // If error, return game with empty attendees
-                      ),
-                  ),
-                );
-              }),
-              map((eventsWithAttendees) => eventsWithAttendees), // Flatten events array for each team
-              catchError(() => of([])), // If error in fetching events, return empty array
-            ),
+            this.fbService
+              .getClubMemberRefs(club.id)
+              .pipe(map((members) => ({ clubId: club.id, members }))),
           ),
         ).pipe(
+          map((clubMembers) =>
+            clubMembers.reduce((acc, curr) => {
+              acc[curr.clubId] = curr.members;
+              return acc;
+            }, {}),
+          ),
+        );
+
+        return combineLatest([
+          clubMembersMap$,
+          combineLatest(
+            clubs.map((club) =>
+              combineLatest([
+                this.eventService.getClubEventsPastRef(club.id),
+                this.fbService.getClubRef(club.id), // Fetch the club details here
+              ]).pipe(
+                switchMap(([clubEvents, clubDetails]) => {
+                  if (clubEvents.length === 0) return of([]);
+                  return combineLatest(
+                    clubEvents.map((event) =>
+                      this.eventService
+                        .getClubEventAttendeesRef(club.id, event.id)
+                        .pipe(
+                          map((attendees) => ({
+                            event,
+                            attendees,
+                            clubDetails,
+                            clubId: club.id,
+                          })),
+                          catchError(() =>
+                            of({
+                              event,
+                              attendees: [],
+                              clubDetails,
+                              clubId: club.id,
+                            }),
+                          ),
+                        ),
+                    ),
+                  );
+                }),
+                catchError(() => of([])), // If error in fetching events, return empty array
+              ),
+            ),
+          ),
+        ]).pipe(
+          map(([clubMembersMap, clubsEvents]) => {
+            const flattenedEvents = clubsEvents.flat();
+            return flattenedEvents.map((item) => {
+              const clubMembers = clubMembersMap[item.clubId] || [];
+              const isMember = clubMembers.some(
+                (member) => member.id === this.user.uid,
+              );
+
+              // Finde den Status des aktuellen Benutzers
+              const userStatus =
+                item.attendees.find((att: any) => att.id === this.user.uid)
+                  ?.status ?? null;
+
+              // Finde die relevanten Kinder mit ihren Status
+              const relevantChildren = clubMembers
+                .filter((att) =>
+                  this.children.some((child) => child.id === att.id),
+                )
+                .map((att) => {
+                  const child = this.children.find(
+                    (child) => child.id === att.id,
+                  );
+                  const childStatus =
+                    item.attendees.find((attendee) => attendee.id === att.id)
+                      ?.status ?? null;
+                  return child
+                    ? {
+                        firstName: child.firstName,
+                        lastName: child.lastName,
+                        status: childStatus,
+                        id: child.id,
+                      }
+                    : {};
+                });
+
+              return {
+                ...item.event,
+                attendees: item.attendees,
+                status: userStatus,
+                isMember,
+                children: relevantChildren,
+                countAttendees: item.attendees.filter(
+                  (att) => att.status == true,
+                ).length,
+                clubId: item.clubId,
+                club: item.clubDetails, // Append club details to each event
+              };
+            });
+          }),
           map((teamsevents) => teamsevents.flat()), // Flatten to get all events across all teams
           map(
             (allEvents) =>
@@ -435,11 +531,15 @@ export class EventsPage implements OnInit {
       );
       return;
     }
+
+    let selectedUserId: string;
+
     if (validMembers.length === 1) {
-      // Nur ein Kind oder nur Elternteil: direkt zusagen
-      await this.processToggle(validMembers[0].uid, status, event);
+      // Wenn nur ein Mitglied gefunden wurde, verwende dieses
+      selectedUserId = validMembers[0].uid;
+      await this.processToggle(selectedUserId, status, event);
     } else {
-      // Mehrere Kinder/Eltern: Auswahl anzeigen
+      // Wenn mehrere Mitglieder gefunden wurden, zeige einen Auswahlalert (Radio, nicht Checkbox)
       const alert = await this.alertCtrl.create({
         header: await lastValueFrom(this.translate.get("common.select_member")),
         inputs: await Promise.all(
@@ -453,7 +553,7 @@ export class EventsPage implements OnInit {
                       .pipe(take(1)),
                   );
             return {
-              type: "checkbox" as const,
+              type: "radio",
               label: `${profile.firstName} ${profile.lastName}`,
               value: member.uid,
             };
@@ -467,18 +567,15 @@ export class EventsPage implements OnInit {
           {
             text: await lastValueFrom(this.translate.get("common.ok")),
             role: "confirm",
-            handler: (selectedId) => {
-              console.log(selectedId);
-              if (selectedId) {
-                for (const id of selectedId) {
-                  this.processToggle(id, status, event);
-                }
-              }
-            },
           },
         ],
       });
       await alert.present();
+
+      const { data, role } = await alert.onDidDismiss();
+      if (role === "confirm" && data) {
+        await this.processToggle(data, status, event);
+      }
     }
   }
 
@@ -868,5 +965,21 @@ export class EventsPage implements OnInit {
         },
       ],
     });
+  }
+
+  toggleChildren(status: boolean, event: any, childrenId: string) {
+    console.log("toggleChildren", event);
+    this.processToggle(childrenId, status, event);
+  }
+
+  toggleChildrenItem(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    event: any,
+    childrenId: string,
+  ) {
+    console.log("toggleChildrenItem", event);
+    slidingItem.closeOpened();
+    this.processToggle(childrenId, status, event);
   }
 }

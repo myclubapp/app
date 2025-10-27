@@ -24,27 +24,27 @@
       <ion-list-header>
         <ion-label>{{'news.news_article' | translate}}</ion-label>
       </ion-list-header>
-      <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-        <ion-item *ngIf="clubAdminList.length > 1">
-          <ion-select
-            [label]="'common.club' | translate"
-            label-placement="stacked"
-            [(ngModel)]="news.clubId"
-            name="clubId"
-            [cancelText]="'common.cancel' | translate"
-            required
-          >
-            <ion-select-option
-              *ngFor="let club of clubAdminList"
-              [value]="club.id"
-              >{{club.name}}</ion-select-option
-            >
-          </ion-select>
-        </ion-item>
-        <ion-item *ngIf="clubAdminList.length === 1">
-          <ion-label>{{clubAdminList[0].name}}</ion-label>
-        </ion-item>
-      </ng-container>
+      @if (clubAdminList$ | async; as clubAdminList) { @if (clubAdminList.length
+      > 1) {
+      <ion-item>
+        <ion-select
+          [label]="'common.club' | translate"
+          label-placement="stacked"
+          [(ngModel)]="news.clubId"
+          name="clubId"
+          [cancelText]="'common.cancel' | translate"
+          required
+        >
+          @for (club of clubAdminList; track club.id) {
+          <ion-select-option [value]="club.id">{{club.name}}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      } @if (clubAdminList.length === 1) {
+      <ion-item>
+        <ion-label>{{clubAdminList[0].name}}</ion-label>
+      </ion-item>
+      } }
       <ion-item>
         <ion-input
           [label]="'common.title' | translate"

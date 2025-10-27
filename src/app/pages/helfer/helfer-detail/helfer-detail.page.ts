@@ -3,7 +3,6 @@ import {
   AlertController,
   IonItemSliding,
   ModalController,
-  NavParams,
   ToastController,
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
@@ -39,8 +38,10 @@ import { UiService } from "src/app/services/ui.service";
   standalone: false,
 })
 export class HelferDetailPage implements OnInit {
-  @Input("data") event: HelferEvent;
-  @Input("isFuture") isFuture: boolean;
+  @Input() data!: HelferEvent;
+  @Input() isFuture!: boolean;
+
+  event: HelferEvent;
 
   event$: Observable<any>;
   schichten$: Observable<any[]>;
@@ -60,7 +61,7 @@ export class HelferDetailPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public navParams: NavParams,
+
     private readonly userProfileService: UserProfileService,
     private readonly eventService: EventService,
     private readonly fbService: FirebaseService,
@@ -72,8 +73,13 @@ export class HelferDetailPage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.event = this.navParams.get("data");
-    this.isFuture = this.navParams.get("isFuture");
+    // NavParams migration: now using @Input property directly
+    this.event = this.data;
+
+    if (!this.event) {
+      console.error("Helfer event data not provided");
+      return;
+    }
 
     this.event$ = this.getHelferEvent(this.event.clubId, this.event.id);
 
@@ -127,7 +133,7 @@ export class HelferDetailPage implements OnInit {
         return this.userProfileService.getChildren(user.uid).pipe(
           tap((children) => {
             this.children = children;
-            console.log("children", this.children);
+            // console.log("children", this.children);
           }),
         );
       }),
@@ -543,6 +549,8 @@ export class HelferDetailPage implements OnInit {
       showBackdrop: true,
       componentProps: {
         data: member,
+        clubId: this.event.clubId,
+        teamId: null,
       },
     });
     modal.present();

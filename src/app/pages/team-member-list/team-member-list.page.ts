@@ -2,7 +2,6 @@ import { Component, Input, OnInit, ViewChild } from "@angular/core";
 import {
   AlertController,
   ModalController,
-  NavParams,
   ToastController,
   IonList,
   IonItemSliding,
@@ -40,7 +39,7 @@ import { Club } from "src/app/models/club";
   standalone: false,
 })
 export class TeamMemberListPage implements OnInit {
-  @Input("team") team: any;
+  @Input() team!: any;
   team$: Observable<any>;
 
   allowEdit: boolean = false;
@@ -56,7 +55,7 @@ export class TeamMemberListPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public navParams: NavParams,
+
     private readonly alertCtrl: AlertController,
     private readonly toastCtrl: ToastController,
     private readonly userProfileService: UserProfileService,
@@ -67,7 +66,7 @@ export class TeamMemberListPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.team = this.navParams.get("team");
+    // NavParams migration: now using @Input property directly
     if (this.team.roles && this.team.roles.lenght > 0) {
     } else {
       this.team.roles = [];
@@ -407,7 +406,7 @@ export class TeamMemberListPage implements OnInit {
           text: await lastValueFrom(this.translate.get("common.cancel")),
           role: "cancel",
           handler: () => {
-            console.log("Cancel clicked"), this.toastActionCanceled();
+            (console.log("Cancel clicked"), this.toastActionCanceled());
           },
         },
         {

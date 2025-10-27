@@ -1,5 +1,4 @@
 import { Component, OnInit, Optional } from "@angular/core";
-import { user } from "@angular/fire/auth";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { IonRouterOutlet, ModalController, Platform } from "@ionic/angular";
 import { Router } from "@angular/router";
@@ -7,7 +6,7 @@ import { Router } from "@angular/router";
 import { map, Observable, Subscription, switchMap, take, tap } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { NotificationService } from "src/app/services/firebase/notification.service";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { ClubInvoiceDetailPage } from "../../club-invoice-detail/club-invoice-detail.page";
 
 @Component({

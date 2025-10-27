@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 
 export interface Game {
   id: string;
@@ -46,6 +46,7 @@ export interface Game {
   countAttendees: number;
   attendees: any;
   children: any;
+  isMember?: boolean;
 
   gameStatus: any;
 }

@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   ModalController,
-  NavParams,
   ToastController,
   IonItemSliding,
 } from "@ionic/angular";
@@ -36,7 +35,7 @@ import { UiService } from "src/app/services/ui.service";
   standalone: false,
 })
 export class ClubParentsListPage implements OnInit {
-  @Input("club") club: any;
+  @Input() club!: any;
   club$: Observable<any>;
 
   allowEdit: boolean = false;
@@ -51,7 +50,7 @@ export class ClubParentsListPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public navParams: NavParams,
+
     private readonly alertCtrl: AlertController,
     private readonly toastCtrl: ToastController,
     private readonly userProfileService: UserProfileService,
@@ -63,7 +62,7 @@ export class ClubParentsListPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.club = this.navParams.get("club");
+    // NavParams migration: now using @Input property directly
     if (this.club.roles && this.club.roles.lenght > 0) {
     } else {
       this.club.roles = [];
@@ -239,14 +238,18 @@ export class ClubParentsListPage implements OnInit {
           return of([]); // Emit an empty array to keep the observable alive
         }
         const profiles$ = parents.map((parent) =>
-          this.userProfileService.getUserProfileById(parent.id).pipe(
-            map((profile) => ({
+          combineLatest([
+            this.userProfileService.getUserProfileById(parent.id),
+            this.userProfileService.getChildren(parent.id),
+          ]).pipe(
+            map(([profile, children]) => ({
               ...parent, // Spread member to retain all original attributes
               ...profile, // Spread profile to overwrite and add profile attributes
               firstName: profile.firstName || "Unknown",
               lastName: profile.lastName || "Unknown",
               roles: parent.roles || [],
               dateOfBirth: profile.dateOfBirth || null,
+              childrenCount: children ? children.length : 0,
             })),
             catchError(() =>
               of({
@@ -255,6 +258,7 @@ export class ClubParentsListPage implements OnInit {
                 lastName: "Unknown",
                 dateOfBirth: null,
                 roles: parent.roles || [], // Ensure role or other attributes are included even in error
+                childrenCount: 0,
               }),
             ),
           ),
@@ -421,7 +425,7 @@ export class ClubParentsListPage implements OnInit {
           text: await lastValueFrom(this.translate.get("common.cancel")),
           role: "cancel",
           handler: () => {
-            console.log("Cancel clicked"), this.toastActionCanceled();
+            (console.log("Cancel clicked"), this.toastActionCanceled());
           },
         },
         {
@@ -489,6 +493,7 @@ export class ClubParentsListPage implements OnInit {
       componentProps: {
         data: parent,
         clubId: this.club.id,
+        teamId: null,
       },
     });
     modal.present();

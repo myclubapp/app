@@ -6,130 +6,381 @@
     <ion-title>{{"common.news" | translate}}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="openNotification()">
-        <ng-container
-          *ngIf="notifications$ | async as notificationsList; else loading"
-        >
-          <ion-icon
-            *ngIf="notificationsList.length > 0"
-            slot="icon-only"
-            name="notifications"
-          ></ion-icon>
-          <ion-icon
-            *ngIf="notificationsList.length == 0"
-            slot="icon-only"
-            name="notifications-outline"
-          ></ion-icon>
-        </ng-container>
-      </ion-button>
-      <!-- <ion-button>
         <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
       </ion-button>
-   -->
+      <ion-button (click)="openFilter()">
+        <ion-icon
+          slot="icon-only"
+          [name]="currentSegment === 'all' ? 'filter-circle-outline' : 'filter-circle'"
+        ></ion-icon>
+      </ion-button>
     </ion-buttons>
-    <!--<ion-buttons slot="end">
-      <ion-button *ngIf="!filterValue" (click)="openFilter($event)">
-        <ion-icon slot="icon-only" name="filter"></ion-icon>
-      </ion-button>
-      <ion-button *ngIf="filterValue" (click)="openFilter($event)">
-        <ion-icon slot="icon-only" name="filter-circle"></ion-icon>
-      </ion-button>
-    </ion-buttons>-->
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">{{"common.news" | translate}}</ion-title>
+      <ion-title size="large">
+        @if (showGamePreview && clubGames$ | async; as clubGames) { @if
+        (clubGames.length > 0) { {{"news.upcomingGames" | translate}} } @else {
+        {{"common.news" | translate}} } } @else { {{"common.news" | translate}}
+        }
+      </ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <ng-container *ngIf="newsList$ | async as newsList; else loading">
-    <ion-list *ngIf="newsList.length > 0">
-      <ion-grid>
-        <ion-row>
-          <ion-col
-            size-lg="4"
-            size-md="6"
-            size-sm="6"
-            size="12"
-            *ngFor="let news of newsList"
-          >
-            <ion-card button="true">
-              <ion-fab *ngIf="news.url" vertical="top" horizontal="end">
-                <ion-fab-button size="small" (click)="share(news)">
-                  <ion-icon name="share" size="small"></ion-icon>
-                </ion-fab-button>
-              </ion-fab>
-
-              <ion-img
-                (click)="openModal(news)"
-                [src]="news.image"
-                [alt]="news.title"
-              />
-              <ion-card-header (click)="openModal(news)">
-                <ion-card-subtitle
-                  >{{news.date | date:'dd.MM.YYYY HH:mm'}}</ion-card-subtitle
-                >
-                <ion-card-title>{{news.title}}</ion-card-title>
-              </ion-card-header>
-
-              <ion-card-content
-                (click)="openModal(news)"
-                [innerHTML]="news.leadText"
-              >
-              </ion-card-content>
-              <ion-row>
-                <ion-col size="8">
-                  <ion-chip>
-                    <ion-avatar>
-                      <img src="{{news.authorImage}}" />
-                    </ion-avatar>
-                    <ion-label>{{news.author}}</ion-label>
-                  </ion-chip>
-                </ion-col>
-                <ion-col size="4">
-                  <ion-label></ion-label>
-                </ion-col>
-              </ion-row>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-list>
-  </ng-container>
-  <!--
-
-  <ion-list *ngIf="loading">
+  <!-- Aktuelle Clubspiele -->
+  @if (showGamePreview && clubGames$ | async; as clubGames) { @if
+  (clubGames.length > 0) {
+  <div class="games-section">
+    @if (clubGames.length === 1) {
+    <!-- Single game: full width -->
     <ion-grid>
-      <ion-row  > 
-        <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
-          <ion-card >
-            <ion-card-header>
-              <ion-card-subtitle>
-                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              </ion-card-subtitle>
-              <ion-card-title>
-                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              </ion-card-title>
-            </ion-card-header>
+      <ion-row class="ion-justify-content-center">
+        @for (game of clubGames; track game.id) {
+        <ion-col size="12" size-md="8" size-lg="6">
+          <ion-card
+            class="game-card"
+            button="true"
+            (click)="openGameDetails(game)"
+          >
+            <!-- Datum & Zeit -->
+            <div class="game-datetime">
+              <ion-text color="medium">
+                <small
+                  >{{game.dateTime.toDate() | date:'EEEE, dd.MM.yyyy':'':'de'}}
+                  - {{game.time}}</small
+                >
+              </ion-text>
+              <ion-badge color="primary">{{game.liga}}</ion-badge>
+            </div>
 
-            <ion-card-content>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-              <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
-            </ion-card-content>
+            <!-- Teams -->
+            <div class="game-teams">
+              <!-- Heim Team -->
+              <div class="game-team">
+                @if (game.teamHomeLogo) {
+                <img
+                  [src]="game.teamHomeLogo"
+                  [alt]="game.teamHome"
+                  class="team-logo"
+                />
+                } @else {
+                <div class="team-logo-placeholder">
+                  <ion-text
+                    >{{game.teamHomeLogoText || game.teamHome.substring(0,
+                    3)}}</ion-text
+                  >
+                </div>
+                }
+                <ion-text class="team-name">{{game.teamHome}}</ion-text>
+              </div>
+
+              <!-- VS oder Resultat -->
+              <div class="game-vs">
+                @if (game.result) {
+                <ion-text class="game-result">{{game.result}}</ion-text>
+                } @else {
+                <ion-text color="medium">vs</ion-text>
+                }
+              </div>
+
+              <!-- Auswärts Team -->
+              <div class="game-team">
+                @if (game.teamAwayLogo) {
+                <img
+                  [src]="game.teamAwayLogo"
+                  [alt]="game.teamAway"
+                  class="team-logo"
+                />
+                } @else {
+                <div class="team-logo-placeholder">
+                  <ion-text
+                    >{{game.teamAwayLogoText || game.teamAway.substring(0,
+                    3)}}</ion-text
+                  >
+                </div>
+                }
+                <ion-text class="team-name">{{game.teamAway}}</ion-text>
+              </div>
+            </div>
+
+            <!-- Spielort -->
+            <div class="game-location">
+              <ion-icon name="location-outline" size="small"></ion-icon>
+              <ion-text color="medium">
+                <small>{{game.location}}, {{game.city}}</small>
+              </ion-text>
+            </div>
           </ion-card>
-
         </ion-col>
-        
+        }
       </ion-row>
     </ion-grid>
-    
+    } @else {
+    <!-- Multiple games: swiper -->
+    <swiper-container
+      [slidesPerView]="'auto'"
+      [spaceBetween]="12"
+      [breakpoints]="{
+              '0': { slidesPerView: 1.2 },
+              '768': { slidesPerView: 2.2 },
+              '1024': { slidesPerView: 3.2 }
+            }"
+      class="games-swiper"
+    >
+      @for (game of clubGames; track game.id) {
+      <swiper-slide>
+        <ion-card
+          class="game-card"
+          button="true"
+          (click)="openGameDetails(game)"
+        >
+          <!-- Datum & Zeit -->
+          <div class="game-datetime">
+            <ion-text color="medium">
+              <small
+                >{{game.dateTime.toDate() | date:'EEEE, dd.MM.yyyy':'':'de'}} -
+                {{game.time}}</small
+              >
+            </ion-text>
+            <ion-badge color="primary">{{game.liga}}</ion-badge>
+          </div>
+
+          <!-- Teams -->
+          <div class="game-teams">
+            <!-- Heim Team -->
+            <div class="game-team">
+              @if (game.teamHomeLogo) {
+              <img
+                [src]="game.teamHomeLogo"
+                [alt]="game.teamHome"
+                class="team-logo"
+              />
+              } @else {
+              <div class="team-logo-placeholder">
+                <ion-text
+                  >{{game.teamHomeLogoText || game.teamHome.substring(0,
+                  3)}}</ion-text
+                >
+              </div>
+              }
+              <ion-text class="team-name">{{game.teamHome}}</ion-text>
+            </div>
+
+            <!-- VS oder Resultat -->
+            <div class="game-vs">
+              @if (game.result) {
+              <ion-text class="game-result">{{game.result}}</ion-text>
+              } @else {
+              <ion-text color="medium">vs</ion-text>
+              }
+            </div>
+
+            <!-- Auswärts Team -->
+            <div class="game-team">
+              @if (game.teamAwayLogo) {
+              <img
+                [src]="game.teamAwayLogo"
+                [alt]="game.teamAway"
+                class="team-logo"
+              />
+              } @else {
+              <div class="team-logo-placeholder">
+                <ion-text
+                  >{{game.teamAwayLogoText || game.teamAway.substring(0,
+                  3)}}</ion-text
+                >
+              </div>
+              }
+              <ion-text class="team-name">{{game.teamAway}}</ion-text>
+            </div>
+          </div>
+
+          <!-- Spielort -->
+          <div class="game-location">
+            <ion-icon name="location-outline" size="small"></ion-icon>
+            <ion-text color="medium">
+              <small>{{game.location}}, {{game.city}}</small>
+            </ion-text>
+          </div>
+        </ion-card>
+      </swiper-slide>
+      }
+    </swiper-container>
+    }
+  </div>
+  } } @if (showGamePreview && clubGames$ | async; as clubGames) { @if
+  (clubGames.length > 0) {
+  <ion-header collapse="condense" class="news-header">
+    <ion-toolbar>
+      <ion-title size="large">{{"common.news" | translate}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  } } @if (filteredNewsList$ | async; as newsList) { @if (newsList.length > 0) {
+  <ion-list>
+    <ion-grid>
+      <ion-row>
+        @for (news of newsList; track news.id) {
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
+          <ion-card button="true">
+            @if (news.url) {
+            <ion-fab vertical="top" horizontal="end">
+              <ion-fab-button size="small" (click)="share(news)">
+                <ion-icon name="share" size="small"></ion-icon>
+              </ion-fab-button>
+            </ion-fab>
+            }
+            <ion-img
+              (click)="openModal(news)"
+              [src]="news.image"
+              [alt]="news.title"
+            />
+            <ion-card-header (click)="openModal(news)">
+              <ion-card-subtitle
+                >{{news.date | date:'dd.MM.yyyy HH:mm'}}</ion-card-subtitle
+              >
+              <ion-card-title [innerHTML]="news.title"></ion-card-title>
+            </ion-card-header>
+            <ion-card-content
+              (click)="openModal(news)"
+              [innerHTML]="news.leadText"
+            >
+            </ion-card-content>
+            <ion-row>
+              <ion-col size="8">
+                <ion-chip>
+                  <ion-avatar>
+                    <img src="{{news.authorImage}}" />
+                  </ion-avatar>
+                  <ion-label>{{news.author}}</ion-label>
+                </ion-chip>
+              </ion-col>
+              <ion-col size="4">
+                <ion-label></ion-label>
+              </ion-col>
+            </ion-row>
+          </ion-card>
+        </ion-col>
+        }
+      </ion-row>
+    </ion-grid>
   </ion-list>
--->
+  } } @else {
+  <ion-list>
+    <ion-grid>
+      <ion-row>
+        @for (item of skeleton; track $index) {
+        <ion-col size-lg="4" size-md="6" size-sm="6" size="12">
+          <ion-card>
+            <!-- FAB-Button Platzhalter -->
+            <ion-fab vertical="top" horizontal="end">
+              <ion-fab-button size="small" disabled>
+                <ion-icon name="share" size="small"></ion-icon>
+              </ion-fab-button>
+            </ion-fab>
+            <!-- Bild Platzhalter -->
+            <ion-skeleton-text
+              animated
+              style="
+                width: 100%;
+                height: 180px;
+                display: block;
+                border-radius: 8px;
+              "
+            ></ion-skeleton-text>
+            <!-- Header Platzhalter -->
+            <ion-card-header>
+              <ion-card-subtitle>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%"
+                ></ion-skeleton-text>
+              </ion-card-subtitle>
+              <ion-card-title>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%"
+                ></ion-skeleton-text>
+              </ion-card-title>
+            </ion-card-header>
+            <!-- LeadText Platzhalter -->
+            <ion-card-content>
+              <ion-skeleton-text
+                animated
+                style="width: 90%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 80%"
+              ></ion-skeleton-text>
+              <ion-skeleton-text
+                animated
+                style="width: 85%"
+              ></ion-skeleton-text>
+            </ion-card-content>
+            <!-- Autorenzeile Platzhalter -->
+            <ion-row>
+              <ion-col size="8">
+                <ion-chip>
+                  <ion-avatar>
+                    <ion-skeleton-text
+                      animated
+                      style="width: 32px; height: 32px; border-radius: 50%"
+                    ></ion-skeleton-text>
+                  </ion-avatar>
+                  <ion-label>
+                    <ion-skeleton-text
+                      animated
+                      style="width: 60px"
+                    ></ion-skeleton-text>
+                  </ion-label>
+                </ion-chip>
+              </ion-col>
+              <ion-col size="4">
+                <ion-label></ion-label>
+              </ion-col>
+            </ion-row>
+          </ion-card>
+        </ion-col>
+        }
+      </ion-row>
+    </ion-grid>
+  </ion-list>
+  }
+  <!--
+
+    <ion-list *ngIf="loading">
+      <ion-grid>
+        <ion-row  >
+          <ion-col size-lg="4" size-md="6" size-sm="6" size="12" *ngFor="let item of skeleton">
+            <ion-card >
+              <ion-card-header>
+                <ion-card-subtitle>
+                  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                </ion-card-subtitle>
+                <ion-card-title>
+                  <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                </ion-card-title>
+              </ion-card-header>
+
+              <ion-card-content>
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
+              </ion-card-content>
+            </ion-card>
+
+          </ion-col>
+
+        </ion-row>
+      </ion-grid>
+
+    </ion-list>
+    -->
 
   <web-social-share
     [show]="showSocialShare"
@@ -172,102 +423,11 @@
     ></fa-icon>
   </web-social-share>
 
-  <ng-container *ngIf="clubAdminList$ | async as clubAdminList">
-    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button (click)="openAddNews()">
-        <ion-icon name="add-outline"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-  </ng-container>
+  @if (clubAdminList$ | async; as clubAdminList) {
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openAddNews()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  }
 </ion-content>
-
-<ng-template #loading>
-  <ion-list>
-    <ion-grid>
-      <ion-row>
-        <ion-col
-          size-lg="4"
-          size-md="6"
-          size-sm="6"
-          size="12"
-          *ngFor="let item of skeleton"
-        >
-          <ion-card>
-            <!-- FAB-Button Platzhalter -->
-            <ion-fab vertical="top" horizontal="end">
-              <ion-fab-button size="small" disabled>
-                <ion-icon name="share" size="small"></ion-icon>
-              </ion-fab-button>
-            </ion-fab>
-
-            <!-- Bild Platzhalter -->
-            <ion-skeleton-text
-              animated
-              style="
-                width: 100%;
-                height: 180px;
-                display: block;
-                border-radius: 8px;
-              "
-            ></ion-skeleton-text>
-
-            <!-- Header Platzhalter -->
-            <ion-card-header>
-              <ion-card-subtitle>
-                <ion-skeleton-text
-                  animated
-                  style="width: 60%"
-                ></ion-skeleton-text>
-              </ion-card-subtitle>
-              <ion-card-title>
-                <ion-skeleton-text
-                  animated
-                  style="width: 80%"
-                ></ion-skeleton-text>
-              </ion-card-title>
-            </ion-card-header>
-
-            <!-- LeadText Platzhalter -->
-            <ion-card-content>
-              <ion-skeleton-text
-                animated
-                style="width: 90%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 80%"
-              ></ion-skeleton-text>
-              <ion-skeleton-text
-                animated
-                style="width: 85%"
-              ></ion-skeleton-text>
-            </ion-card-content>
-
-            <!-- Autorenzeile Platzhalter -->
-            <ion-row>
-              <ion-col size="8">
-                <ion-chip>
-                  <ion-avatar>
-                    <ion-skeleton-text
-                      animated
-                      style="width: 32px; height: 32px; border-radius: 50%"
-                    ></ion-skeleton-text>
-                  </ion-avatar>
-                  <ion-label>
-                    <ion-skeleton-text
-                      animated
-                      style="width: 60px"
-                    ></ion-skeleton-text>
-                  </ion-label>
-                </ion-chip>
-              </ion-col>
-              <ion-col size="4">
-                <ion-label></ion-label>
-              </ion-col>
-            </ion-row>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ion-list>
-</ng-template>

@@ -3,7 +3,6 @@ import {
   AlertController,
   IonItemSliding,
   ModalController,
-  NavParams,
   ToastController,
   ToggleChangeEventDetail,
 } from "@ionic/angular";
@@ -27,7 +26,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { HelferDetailPage } from "../helfer-detail/helfer-detail.page";
 import { HelferPunkteDetailPage } from "../helfer-punkte-detail/helfer-punkte-detail.page";
 import { Club } from "src/app/models/club";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { TranslateService } from "@ngx-translate/core";
 import { EventService } from "src/app/services/firebase/event.service";
 import { Firestore } from "@angular/fire/firestore";
@@ -39,7 +38,7 @@ import { Firestore } from "@angular/fire/firestore";
   standalone: false,
 })
 export class HelferPunkteClubPage implements OnInit {
-  @Input("clubId") clubId: string;
+  @Input() clubId!: string;
   clubAdminList$: Observable<Club[]>;
   allowEdit: boolean = false;
 
@@ -64,7 +63,7 @@ export class HelferPunkteClubPage implements OnInit {
   constructor(
     private readonly modalCtrl: ModalController,
     private translate: TranslateService,
-    public navParams: NavParams,
+
     private readonly alertController: AlertController,
     private readonly helferService: HelferService,
     private readonly eventService: EventService,
@@ -301,6 +300,7 @@ export class HelferPunkteClubPage implements OnInit {
 
                     if (!profile) {
                       return {
+                        id: member.id,
                         profile: {
                           ...member,
                           firstName: "Unknown",
@@ -326,6 +326,7 @@ export class HelferPunkteClubPage implements OnInit {
                     );
 
                     return {
+                      id: profile.id,
                       profile,
                       groupBy: profile.firstName
                         ? profile.firstName.charAt(0).toUpperCase()

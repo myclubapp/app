@@ -1,4 +1,9 @@
-import { Injectable, inject } from "@angular/core";
+import {
+  Injectable,
+  inject,
+  Injector,
+  runInInjectionContext,
+} from "@angular/core";
 import { AuthService } from "../auth.service";
 import {
   Firestore,
@@ -8,17 +13,22 @@ import {
   deleteDoc,
   updateDoc,
   getDocs,
+  addDoc,
+  orderBy,
+  query,
+  where,
+  Timestamp,
 } from "@angular/fire/firestore";
-import { addDoc, Timestamp } from "firebase/firestore";
 import { Observable, shareReplay } from "rxjs";
-import { User } from "firebase/auth";
-import { orderBy, query, where } from "firebase/firestore";
+import { User } from "@angular/fire/auth";
 
 @Injectable({
   providedIn: "root",
 })
 export class HelferService {
   user: User;
+  private injector = inject(Injector);
+
   constructor(
     private readonly firestore: Firestore,
     private readonly authService: AuthService,
@@ -63,34 +73,38 @@ export class HelferService {
 
   getHelferPunkteRefs(clubId: string): Observable<any[]> {
     // console.log(userId, clubId)
-    const helferPunkteRefList = collection(
-      this.firestore,
-      `club/${clubId}/helferPunkte`,
-    );
-    const q = query(
-      helferPunkteRefList,
+    return runInInjectionContext(this.injector, () => {
+      const helferPunkteRefList = collection(
+        this.firestore,
+        `club/${clubId}/helferPunkte`,
+      );
+      const q = query(
+        helferPunkteRefList,
 
-      orderBy("eventDate", "desc"),
-    );
-    return collectionData(q, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<any[]>;
+        orderBy("eventDate", "desc"),
+      );
+      return collectionData(q, {
+        idField: "id",
+      }).pipe(shareReplay(1));
+    }) as Observable<any[]>;
   }
 
   getUserHelferPunkteRefs(userId: any, clubId: string): Observable<any[]> {
     console.log(userId, clubId);
-    const helferPunkteRefList = collection(
-      this.firestore,
-      `club/${clubId}/helferPunkte`,
-    );
-    const q = query(
-      helferPunkteRefList,
-      where("userId", "==", userId),
-      orderBy("eventDate", "desc"),
-    );
-    return collectionData(q, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () => {
+      const helferPunkteRefList = collection(
+        this.firestore,
+        `club/${clubId}/helferPunkte`,
+      );
+      const q = query(
+        helferPunkteRefList,
+        where("userId", "==", userId),
+        orderBy("eventDate", "desc"),
+      );
+      return collectionData(q, {
+        idField: "id",
+      }).pipe(shareReplay(1));
+    }) as Observable<any[]>;
   }
 
   getUserHelferPunkteRefsWithFilter(
@@ -100,20 +114,22 @@ export class HelferService {
     dateTo: Timestamp,
   ): Observable<any[]> {
     //  console.log(userId, clubId, dateFrom, dateTo)
-    const helferPunkteRefList = collection(
-      this.firestore,
-      `club/${clubId}/helferPunkte`,
-    );
-    const q = query(
-      helferPunkteRefList,
-      where("userId", "==", userId),
-      where("eventDate", ">=", dateFrom),
-      where("eventDate", "<=", dateTo),
-      orderBy("eventDate", "desc"),
-    );
-    return collectionData(q, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () => {
+      const helferPunkteRefList = collection(
+        this.firestore,
+        `club/${clubId}/helferPunkte`,
+      );
+      const q = query(
+        helferPunkteRefList,
+        where("userId", "==", userId),
+        where("eventDate", ">=", dateFrom),
+        where("eventDate", "<=", dateTo),
+        orderBy("eventDate", "desc"),
+      );
+      return collectionData(q, {
+        idField: "id",
+      }).pipe(shareReplay(1));
+    }) as Observable<any[]>;
   }
 
   createHelferPunkt(

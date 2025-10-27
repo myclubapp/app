@@ -1,0 +1,48 @@
+@if (isMember) {
+  <!-- Status: null (unbekannt) -->
+  @if (status === null && !cancelled && !closedEvent) {
+    <ion-icon
+      color="warning"
+      slot="start"
+      name="help-circle"
+      (click)="onIconClick()"
+    ></ion-icon>
+  }
+
+  <!-- Status: false (abgelehnt) -->
+  @if (status === false && !cancelled && !closedEvent) {
+    <ion-icon
+      color="danger"
+      slot="start"
+      name="close-circle"
+      (click)="onIconClick()"
+    ></ion-icon>
+  }
+
+  <!-- Status: true (zugesagt) -->
+  @if (status === true && !cancelled && !closedEvent) {
+    <ion-icon
+      color="success"
+      slot="start"
+      name="checkmark-circle"
+      (click)="onIconClick()"
+    ></ion-icon>
+  }
+
+  <!-- Event geschlossen -->
+  @if (closedEvent) {
+    <ion-icon color="primary" slot="start" name="information-circle"></ion-icon>
+  }
+
+  <!-- Abgesagt -->
+  @if (cancelled) {
+    <ion-icon color="danger" slot="start" name="alert-circle"></ion-icon>
+  }
+} @else {
+  <ion-icon
+    color="primary"
+    slot="start"
+    size="small"
+    name="person-remove-outline"
+  ></ion-icon>
+}

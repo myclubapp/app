@@ -9,7 +9,7 @@ import { InvoiceService } from "src/app/services/firebase/invoice.service";
 import { TranslateService } from "@ngx-translate/core";
 import { Observable, of } from "rxjs";
 import { Club } from "src/app/models/club";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { ClubInvoicePage } from "../club-invoice/club-invoice.page";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";

@@ -1,7 +1,11 @@
-import { Injectable } from "@angular/core";
+import {
+  Injectable,
+  inject,
+  Injector,
+  runInInjectionContext,
+} from "@angular/core";
 import {
   limit,
-  Timestamp,
   Firestore,
   addDoc,
   collection,
@@ -12,6 +16,9 @@ import {
   where,
   docData,
   updateDoc,
+  deleteDoc,
+  orderBy,
+  Timestamp,
 } from "@angular/fire/firestore";
 
 // import firebase from 'firebase/compat/app';
@@ -20,13 +27,14 @@ import { Observable, shareReplay } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { Training } from "src/app/models/training";
 import { FirebaseService } from "../firebase.service";
-import { deleteDoc, orderBy } from "firebase/firestore";
 
 @Injectable({
   providedIn: "root",
 })
 export class TrainingService {
   teamList: any[] = [];
+  private injector = inject(Injector);
+
   constructor(
     private firestore: Firestore,
     private readonly authService: AuthService,
@@ -48,52 +56,52 @@ export class TrainingService {
       this.firestore,
       `teams/${teamId}/trainings/${trainingId}`,
     );
-    return docData(gameRef, { idField: "id" }).pipe(
-      shareReplay(10),
+    return runInInjectionContext(this.injector, () =>
+      docData(gameRef, { idField: "id" }).pipe(shareReplay(10)),
     ) as Observable<Training>;
   }
 
   /* TEAM TrainingS */
   getTeamTrainingsRefs(teamId: string): Observable<Training[]> {
-    console.log(`Read Team Trainings List Ref ${teamId}`);
-    const trainingsRefList = collection(
-      this.firestore,
-      `teams/${teamId}/trainings`,
-    );
-    const q = query(
-      trainingsRefList,
-      where(
-        "date", // date = endDate
-        ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 1)), // 1 Hour after training ends
-      ),
-      orderBy("date", "asc"),
-    );
-    return collectionData(q, { idField: "id" }).pipe(
-      shareReplay(1),
-    ) as unknown as Observable<Training[]>;
+    // console.log(`Read Team Trainings List Ref ${teamId}`);
+    return runInInjectionContext(this.injector, () => {
+      const trainingsRefList = collection(
+        this.firestore,
+        `teams/${teamId}/trainings`,
+      );
+      const q = query(
+        trainingsRefList,
+        where(
+          "date", // date = endDate
+          ">=",
+          Timestamp.fromMillis(Date.now() - 1000 * 3600 * 1), // 1 Hour after training ends
+        ),
+        orderBy("date", "asc"),
+      );
+      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+    }) as unknown as Observable<Training[]>;
   }
 
   // PAST 20 Entries
   getTeamTrainingsPastRefs(teamId: string): Observable<Training[]> {
     // console.log(`Read Team Trainings List Ref ${teamId}`)
-    const trainingsRefList = collection(
-      this.firestore,
-      `teams/${teamId}/trainings`,
-    );
-    const q = query(
-      trainingsRefList,
-      where(
-        "date", //  date = endDate of training
-        "<",
-        Timestamp.fromDate(new Date(Date.now())), // sofort als "vergangen" anzeigen
-      ),
-      orderBy("date", "desc"),
-      limit(30),
-    );
-    return collectionData(q, { idField: "id" }).pipe(
-      shareReplay(1),
-    ) as unknown as Observable<Training[]>;
+    return runInInjectionContext(this.injector, () => {
+      const trainingsRefList = collection(
+        this.firestore,
+        `teams/${teamId}/trainings`,
+      );
+      const q = query(
+        trainingsRefList,
+        where(
+          "date", //  date = endDate of training
+          "<",
+          Timestamp.fromMillis(Date.now()), // sofort als "vergangen" anzeigen
+        ),
+        orderBy("date", "desc"),
+        limit(30),
+      );
+      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+    }) as unknown as Observable<Training[]>;
   }
 
   getTeamTrainingsByDateRange(
@@ -101,19 +109,19 @@ export class TrainingService {
     startDate: Date,
     endDate: Date,
   ): Observable<Training[]> {
-    const trainingsRefList = collection(
-      this.firestore,
-      `teams/${teamId}/trainings`,
-    );
-    const q = query(
-      trainingsRefList,
-      where("date", ">=", Timestamp.fromDate(startDate)),
-      where("date", "<=", Timestamp.fromDate(endDate)),
-      orderBy("date", "asc"),
-    );
-    return collectionData(q, { idField: "id" }).pipe(
-      shareReplay(1),
-    ) as unknown as Observable<Training[]>;
+    return runInInjectionContext(this.injector, () => {
+      const trainingsRefList = collection(
+        this.firestore,
+        `teams/${teamId}/trainings`,
+      );
+      const q = query(
+        trainingsRefList,
+        where("date", ">=", Timestamp.fromMillis(startDate.getTime())),
+        where("date", "<=", Timestamp.fromMillis(endDate.getTime())),
+        orderBy("date", "asc"),
+      );
+      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+    }) as unknown as Observable<Training[]>;
   }
 
   /* TEAM TrainingS ATTENDEES */
@@ -126,9 +134,11 @@ export class TrainingService {
       this.firestore,
       `teams/${teamId}/trainings/${trainingId}/attendees`,
     );
-    return collectionData(attendeesRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as unknown as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(attendeesRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as unknown as Observable<any[]>;
   }
 
   /* TEAM TrainingS ATTENDEE Status */

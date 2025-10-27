@@ -1,8 +1,7 @@
-import { Component, Input, OnInit } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
-import { IonicModule, ModalController } from "@ionic/angular";
-import { TranslateModule, TranslateService } from "@ngx-translate/core";
+import { Component } from "@angular/core";
+
+import { ModalController } from "@ionic/angular";
+import { TranslateService } from "@ngx-translate/core";
 import { lastValueFrom } from "rxjs";
 import { UiService } from "src/app/services/ui.service";
 

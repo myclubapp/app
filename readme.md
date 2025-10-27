@@ -31,14 +31,12 @@ Wir bieten eine zentrale Plattform für modernes Vereinsmanagement, die alle Ver
 #### Zusatzmodule
 
 - **🏆 Meisterschafts-Modul**: CHF 5.90/Monat
-
   - API-Zugriff Verbandsdaten
   - Verbandnews Integration
   - Maps Integration
   - Ergebnisse & Tabellen
 
 - **🤝 Helfer-Modul**: CHF 4.90/Monat
-
   - Helfer-Events erstellen
   - Schichtplanung
   - Helfer-Punktesystem
@@ -91,14 +89,14 @@ ionic serve
 
 ### Tech Stack
 
-- Ionic Framework (v8)
-- Capacitor JS (v7)
-- Angular v19.1 & Angular PWA
-- Firebase 11.3
-- RXJS 7.8.1
-- Typescipt 5.7.3
+- Ionic Framework 8.7.5
+- Capacitor JS 7.4.3
+- Angular 20.3.3 & Angular PWA
+- Firebase 12.3.0
+- RxJS 7.8.2
+- TypeScript 5.9.3
 - Tailwind CSS
-- Fontawesome Icons
+- Fontawesome 6.7.2
 - Ionicons v5
 
 ### Backend

@@ -17,6 +17,7 @@ import {
   map,
   mergeMap,
   of,
+  shareReplay,
   switchMap,
   take,
   tap,
@@ -26,7 +27,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { EventService } from "src/app/services/firebase/event.service";
 import { HelferAddPage } from "../helfer-add/helfer-add.page";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { HelferDetailPage } from "../helfer-detail/helfer-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
@@ -75,8 +76,8 @@ export class HelferPage implements OnInit {
   }
 
   ngOnInit() {
-    this.helferList$ = this.getHelferEvent();
-    this.helferListPast$ = this.getHelferEventPast();
+    this.helferList$ = this.getHelferEvent().pipe(shareReplay(1));
+    this.helferListPast$ = this.getHelferEventPast().pipe(shareReplay(1));
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
@@ -91,13 +92,13 @@ export class HelferPage implements OnInit {
 
   handleNavigationData() {
     this.activatedRouteSub = this.activatedRoute.url.subscribe(() => {
-      const navigation = this.router.getCurrentNavigation();
+      const navigation = this.router.currentNavigation();
       if (
         navigation &&
         navigation.extras.state &&
         navigation.extras.state["type"] === "helferEvent"
       ) {
-        const pushData = this.router.getCurrentNavigation().extras.state;
+        const pushData = this.router.currentNavigation().extras.state;
         // console.log("PUSHDATA " + JSON.stringify(pushData));
         // console.log("PUSHDATA " + JSON.stringify(pushData));
         let helferEvent: HelferEvent = {
@@ -125,7 +126,7 @@ export class HelferPage implements OnInit {
         };
         this.openEventDetailModal(helferEvent, true);
       } else {
-        console.log("no data");
+        // console.log("no data");
       }
     });
   }
@@ -154,14 +155,13 @@ export class HelferPage implements OnInit {
                     children.map((child) => {
                       // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
                       return this.fbService.getUserClubRefs(childUser);
                     }),
                   )
                 : of([]),
             ),
             map((childrenClubs) => childrenClubs.flat()),
-            tap((clubs) => console.log("Children Clubs:", clubs)),
+            // tap((clubs) => console.log("Children Clubs:", clubs)),
             catchError((error) => {
               console.error("Error fetching children clubs:", error);
               return of([]);
@@ -298,14 +298,13 @@ export class HelferPage implements OnInit {
                     children.map((child) => {
                       // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
                       return this.fbService.getUserClubRefs(childUser);
                     }),
                   )
                 : of([]),
             ),
             map((childrenClubs) => childrenClubs.flat()),
-            tap((clubs) => console.log("Children Clubs:", clubs)),
+            // tap((clubs) => console.log("Children Clubs:", clubs)),
             catchError((error) => {
               console.error("Error fetching children clubs:", error);
               return of([]);

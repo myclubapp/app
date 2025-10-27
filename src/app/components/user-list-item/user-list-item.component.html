@@ -1,0 +1,38 @@
+<ion-item detail="true">
+  @if (allowEdit) {
+    <ion-icon
+      slot="icon-only"
+      color="danger"
+      slot="start"
+      name="trash"
+      (click)="onRemove()"
+    ></ion-icon>
+  }
+  <ion-avatar (click)="onOpen()" slot="start">
+    @if (!profile?.profilePicture) {
+      <img
+        alt="Silhouette of a person's head"
+        src="https://ionicframework.com/docs/img/demos/avatar.svg"
+      />
+    }
+    @if (profile?.profilePicture) {
+      <img [src]="profile.profilePicture" />
+    }
+  </ion-avatar>
+  <ion-label class="ion-text-wrap" (click)="onOpen()">
+    <h2>{{ profile?.firstName }} {{ profile?.lastName }}</h2>
+    @if (showDateOfBirth) {
+      <h3>{{ profile?.dateOfBirth?.toDate() | date: "dd.MM.yyyy" }}</h3>
+    }
+    @if (showRoles && profile?.roles?.length > 0) {
+      @for (role of profile.roles; track role) {
+        <ion-badge>{{ role }}</ion-badge>
+      }
+    }
+  </ion-label>
+  @if (childrenCount > 0) {
+    <ion-note slot="end" color="medium">
+      {{ childrenCount }} {{ childrenCount === 1 ? "Kind" : "Kinder" }}
+    </ion-note>
+  }
+</ion-item>

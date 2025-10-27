@@ -32,12 +32,11 @@ import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { NavigationExtras, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { ChampionshipDetailPage } from "../championship-detail/championship-detail.page";
 import { Team } from "src/app/models/team";
-import { GamePreviewPage } from "../game-preview/game-preview.page";
 import { Club } from "src/app/models/club";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { Profile } from "src/app/models/user";
@@ -51,10 +50,8 @@ import { SwissUnihockeyService } from "src/app/services/swiss-unihockey.service"
   standalone: false,
 })
 export class ChampionshipPage implements OnInit {
-  @Input("team")
-  team!: Team;
-  @Input("isModal")
-  isModal!: boolean;
+  @Input() team!: Team;
+  @Input() isModal!: boolean;
   skeleton = new Array(12);
   user$!: Observable<User>;
   user!: User;
@@ -105,8 +102,8 @@ export class ChampionshipPage implements OnInit {
   }
 
   ngOnInit() {
-    this.gameList$ = this.getTeamGamesUpcoming();
-    this.gameListPast$ = this.getTeamGamesPast();
+    this.gameList$ = this.getTeamGamesUpcoming().pipe(shareReplay(1));
+    this.gameListPast$ = this.getTeamGamesPast().pipe(shareReplay(1));
 
     // Get dynamic season from Swiss Unihockey API
     this.swissUnihockeyService.getCurrentSeason().subscribe((season) => {
@@ -152,7 +149,6 @@ export class ChampionshipPage implements OnInit {
                     children.map((child) => {
                       // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
                       return this.fbService.getUserTeamRefs(childUser);
                     }),
                   )
@@ -251,7 +247,7 @@ export class ChampionshipPage implements OnInit {
           this.userProfileService.getChildren(user.uid).pipe(
             tap((children) => {
               this.children = children;
-              console.log("children", this.children);
+              // console.log("children", this.children);
             }),
             switchMap((children: Profile[]) =>
               children.length > 0
@@ -372,6 +368,12 @@ export class ChampionshipPage implements OnInit {
                   teamMembers.some((member) => member.id === att.id),
               );
 
+              // Finde den Status des aktuellen Benutzers
+              const userStatus =
+                item.attendees.find((att) => att.id === this.user.uid)
+                  ?.status ?? null;
+
+              // Finde die relevanten Kinder mit ihren Status
               const relevantChildren = teamMembers
                 .filter((att) =>
                   this.children.some((child) => child.id === att.id),
@@ -380,8 +382,16 @@ export class ChampionshipPage implements OnInit {
                   const child = this.children.find(
                     (child) => child.id === att.id,
                   );
+                  const childStatus =
+                    item.attendees.find((attendee) => attendee.id === att.id)
+                      ?.status ?? null;
                   return child
-                    ? { firstName: child.firstName, lastName: child.lastName }
+                    ? {
+                        firstName: child.firstName,
+                        lastName: child.lastName,
+                        status: childStatus,
+                        id: child.id,
+                      }
                     : {};
                 });
 
@@ -389,14 +399,11 @@ export class ChampionshipPage implements OnInit {
                 ...item.game,
                 team: item.teamDetails || {},
                 attendees: item.attendees,
+                isMember: teamMembers.some(
+                  (member) => member.id === this.user.uid,
+                ),
                 children: relevantChildren,
-                status:
-                  item.attendees.find((att) =>
-                    [
-                      this.user.uid,
-                      ...this.children.map((child) => child.id),
-                    ].includes(att.id),
-                  )?.status ?? null,
+                status: userStatus,
                 countAttendees: validAttendees.length,
                 teamId: item.teamId,
               };
@@ -428,7 +435,7 @@ export class ChampionshipPage implements OnInit {
           this.userProfileService.getChildren(user.uid).pipe(
             tap((children) => {
               this.children = children;
-              console.log("children", this.children);
+              // console.log("children", this.children);
             }),
             switchMap((children: Profile[]) =>
               children.length > 0
@@ -549,6 +556,12 @@ export class ChampionshipPage implements OnInit {
                   teamMembers.some((member) => member.id === att.id),
               );
 
+              // Finde den Status des aktuellen Benutzers
+              const userStatus =
+                item.attendees.find((att) => att.id === this.user.uid)
+                  ?.status ?? null;
+
+              // Finde die relevanten Kinder mit ihren Status
               const relevantChildren = teamMembers
                 .filter((att) =>
                   this.children.some((child) => child.id === att.id),
@@ -557,8 +570,16 @@ export class ChampionshipPage implements OnInit {
                   const child = this.children.find(
                     (child) => child.id === att.id,
                   );
+                  const childStatus =
+                    item.attendees.find((attendee) => attendee.id === att.id)
+                      ?.status ?? null;
                   return child
-                    ? { firstName: child.firstName, lastName: child.lastName }
+                    ? {
+                        firstName: child.firstName,
+                        lastName: child.lastName,
+                        status: childStatus,
+                        id: child.id,
+                      }
                     : {};
                 });
 
@@ -566,14 +587,11 @@ export class ChampionshipPage implements OnInit {
                 ...item.game,
                 team: item.teamDetails || {},
                 attendees: item.attendees,
+                isMember: teamMembers.some(
+                  (member) => member.id === this.user.uid,
+                ),
                 children: relevantChildren,
-                status:
-                  item.attendees.find((att) =>
-                    [
-                      this.user.uid,
-                      ...this.children.map((child) => child.id),
-                    ].includes(att.id),
-                  )?.status ?? null,
+                status: userStatus,
                 countAttendees: validAttendees.length,
                 teamId: item.teamId,
               };
@@ -803,27 +821,6 @@ export class ChampionshipPage implements OnInit {
     await this.uiService.showErrorToast(error.message);
   }
 
-  async shareSocialMedia(slidingItem: IonItemSliding, game) {
-    slidingItem.closeOpened();
-
-    const modal = await this.modalCtrl.create({
-      component: GamePreviewPage,
-      // presentingElement: this.routerOutlet.nativeEl,
-      presentingElement: await this.modalCtrl.getTop(),
-      canDismiss: true,
-      showBackdrop: true,
-      componentProps: {
-        data: game,
-      },
-    });
-    modal.present();
-
-    const { data, role } = await modal.onWillDismiss();
-
-    if (role === "confirm") {
-    }
-  }
-
   async close() {
     return await this.modalCtrl.dismiss(null, "close");
   }
@@ -847,6 +844,22 @@ export class ChampionshipPage implements OnInit {
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
     });
+  }
+
+  toggleChildren(status: boolean, game: any, childrenId: string) {
+    console.log("toggleChildren", game);
+    this.processToggle(childrenId, status, game);
+  }
+
+  toggleChildrenItem(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    game: any,
+    childrenId: string,
+  ) {
+    console.log("toggleChildrenItem", game);
+    slidingItem.closeOpened();
+    this.processToggle(childrenId, status, game);
   }
   /*  async openFilter(ev: Event) {
 

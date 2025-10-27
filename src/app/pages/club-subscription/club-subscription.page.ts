@@ -3,7 +3,6 @@ import {
   AlertController,
   ModalController,
   LoadingController,
-  NavParams,
   ToastController,
 } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
@@ -34,7 +33,7 @@ import { Browser } from "@capacitor/browser";
   standalone: false,
 })
 export class ClubSubscriptionPage implements OnInit {
-  @Input("clubId") clubId: any;
+  @Input() clubId!: any;
   club$: Observable<any>;
 
   clubMemberCount$: Observable<number>;
@@ -54,11 +53,10 @@ export class ClubSubscriptionPage implements OnInit {
     private readonly fbService: FirebaseService,
     private translate: TranslateService,
     private readonly authService: AuthService,
-    public navParams: NavParams,
   ) {}
 
   ngOnInit() {
-    this.clubId = this.navParams.get("clubId");
+    // NavParams migration: now using @Input property directly
     this.club$ = this.getClub(this.clubId);
     this.products$ = this.getProductsAndPrices();
     this.modules$ = this.getModules();

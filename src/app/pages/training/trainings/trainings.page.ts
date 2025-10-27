@@ -1,17 +1,9 @@
+import { Component, Input, OnInit, Optional } from "@angular/core";
 import {
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnInit,
-  Optional,
-} from "@angular/core";
-import {
-  AlertController,
   IonItemSliding,
   IonRouterOutlet,
   MenuController,
   ModalController,
-  NavController,
   ToastController,
 } from "@ionic/angular";
 import { User } from "@angular/fire/auth";
@@ -34,7 +26,7 @@ import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
 import { TrainingCreatePage } from "../training-create/training-create.page";
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { TrainingDetailPage } from "../training-detail/training-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Team } from "src/app/models/team";
@@ -52,8 +44,8 @@ import { UiService } from "src/app/services/ui.service";
   standalone: false,
 })
 export class TrainingsPage implements OnInit {
-  @Input("team") team: Team;
-  @Input("isModal") isModal: boolean;
+  @Input() team!: Team;
+  @Input() isModal!: boolean;
   skeleton = new Array(12);
 
   user: User;
@@ -86,10 +78,7 @@ export class TrainingsPage implements OnInit {
     private readonly fbService: FirebaseService,
     private readonly trainingService: TrainingService,
     private readonly menuCtrl: MenuController,
-    private readonly alertCtrl: AlertController,
-    private cdr: ChangeDetectorRef,
     private translate: TranslateService,
-    private navCtrl: NavController,
     // private filterService: FilterService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -102,8 +91,8 @@ export class TrainingsPage implements OnInit {
 
   ngOnInit() {
     // DATA
-    this.trainingList$ = this.getTeamTraining();
-    this.trainingListPast$ = this.getTeamTrainingPast();
+    this.trainingList$ = this.getTeamTraining().pipe(shareReplay(1));
+    this.trainingListPast$ = this.getTeamTrainingPast().pipe(shareReplay(1));
     // CREATE
     this.teamAdminList$ = this.fbService.getTeamAdminList();
 
@@ -151,15 +140,15 @@ export class TrainingsPage implements OnInit {
     return await this.modalController.dismiss(null, "close");
   }
   handleNavigationData() {
-    this.activatedRouteSub = this.activatedRoute.url.subscribe((data) => {
+    this.activatedRouteSub = this.activatedRoute.url.subscribe(() => {
       if (
         this.router &&
-        this.router.getCurrentNavigation() &&
-        this.router.getCurrentNavigation().extras &&
-        this.router.getCurrentNavigation().extras.state &&
-        this.router.getCurrentNavigation().extras.state["type"] === "training"
+        this.router.currentNavigation() &&
+        this.router.currentNavigation().extras &&
+        this.router.currentNavigation().extras.state &&
+        this.router.currentNavigation().extras.state["type"] === "training"
       ) {
-        const pushData = this.router.getCurrentNavigation().extras.state;
+        const pushData = this.router.currentNavigation().extras.state;
         console.log("PUSHDATA " + pushData);
         let training: Training = {
           id: pushData["id"],
@@ -180,6 +169,7 @@ export class TrainingsPage implements OnInit {
           teamName: "",
           liga: "",
           status: false,
+          isMember: true,
           countAttendees: 0,
           attendees: undefined,
           exercises: undefined,
@@ -189,7 +179,7 @@ export class TrainingsPage implements OnInit {
         };
         this.openTrainingDetailModal(training, true);
       } else {
-        console.log("no data");
+        // console.log("no data");
       }
     });
   }
@@ -209,7 +199,7 @@ export class TrainingsPage implements OnInit {
           this.userProfileService.getChildren(user.uid).pipe(
             tap((children) => {
               this.children = children;
-              console.log("children", this.children);
+              // console.log("children", this.children);
             }),
             switchMap((children: Profile[]) =>
               children.length > 0
@@ -339,7 +329,8 @@ export class TrainingsPage implements OnInit {
             // Remove duplicate trainings by ID
             const uniqueTrainings = flattenedTrainings.filter(
               (training, index, self) =>
-                index === self.findIndex((t) => t.training.id === training.training.id),
+                index ===
+                self.findIndex((t) => t.training.id === training.training.id),
             );
 
             return uniqueTrainings.map((item) => {
@@ -350,6 +341,12 @@ export class TrainingsPage implements OnInit {
                   teamMembers.some((member) => member.id === att.id),
               );
 
+              // Finde den Status des aktuellen Benutzers
+              const userStatus =
+                item.attendees.find((att) => att.id === this.user.uid)
+                  ?.status ?? null;
+
+              // Finde die relevanten Kinder mit ihren Status
               const relevantChildren = teamMembers
                 .filter((att) =>
                   this.children.some((child) => child.id === att.id),
@@ -358,8 +355,16 @@ export class TrainingsPage implements OnInit {
                   const child = this.children.find(
                     (child) => child.id === att.id,
                   );
+                  const childStatus =
+                    item.attendees.find((attendee) => attendee.id === att.id)
+                      ?.status ?? null;
                   return child
-                    ? { firstName: child.firstName, lastName: child.lastName }
+                    ? {
+                        firstName: child.firstName,
+                        lastName: child.lastName,
+                        status: childStatus,
+                        id: child.id,
+                      }
                     : {};
                 });
 
@@ -368,14 +373,11 @@ export class TrainingsPage implements OnInit {
                 cancelled: item.training.cancelled ?? false,
                 attendees: item.attendees,
                 exercises: item.exercises,
+                isMember: teamMembers.some(
+                  (member) => member.id === this.user.uid,
+                ),
                 team: item.teamDetails || {},
-                status:
-                  item.attendees.find((att) =>
-                    [
-                      this.user.uid,
-                      ...this.children.map((child) => child.id),
-                    ].includes(att.id),
-                  )?.status ?? null,
+                status: userStatus,
                 countAttendees: validAttendees.length,
                 teamId: item.teamId,
                 children: relevantChildren,
@@ -416,14 +418,13 @@ export class TrainingsPage implements OnInit {
                     children.map((child) => {
                       // Create a User-like object with uid from child.id
                       const childUser = { uid: child.id } as User;
-                      console.log("Child User:", childUser);
                       return this.fbService.getUserTeamRefs(childUser);
                     }),
                   )
                 : of([]),
             ),
             map((childrenTeams) => childrenTeams.flat()),
-            tap((teams) => console.log("Children Teams:", teams)),
+            // tap((teams) => console.log("Children Teams:", teams)),
             catchError((error) => {
               console.error("Error fetching children teams:", error);
               return of([]);
@@ -544,7 +545,8 @@ export class TrainingsPage implements OnInit {
             // Remove duplicate trainings by ID
             const uniqueTrainings = flattenedTrainings.filter(
               (training, index, self) =>
-                index === self.findIndex((t) => t.training.id === training.training.id),
+                index ===
+                self.findIndex((t) => t.training.id === training.training.id),
             );
 
             return uniqueTrainings.map((item) => {
@@ -555,6 +557,12 @@ export class TrainingsPage implements OnInit {
                   teamMembers.some((member) => member.id === att.id),
               );
 
+              // Finde den Status des aktuellen Benutzers
+              const userStatus =
+                item.attendees.find((att) => att.id === this.user.uid)
+                  ?.status ?? null;
+
+              // Finde die relevanten Kinder mit ihren Status
               const relevantChildren = teamMembers
                 .filter((att) =>
                   this.children.some((child) => child.id === att.id),
@@ -563,8 +571,16 @@ export class TrainingsPage implements OnInit {
                   const child = this.children.find(
                     (child) => child.id === att.id,
                   );
+                  const childStatus =
+                    item.attendees.find((attendee) => attendee.id === att.id)
+                      ?.status ?? null;
                   return child
-                    ? { firstName: child.firstName, lastName: child.lastName }
+                    ? {
+                        firstName: child.firstName,
+                        lastName: child.lastName,
+                        status: childStatus,
+                        id: child.id,
+                      }
                     : {};
                 });
 
@@ -573,16 +589,12 @@ export class TrainingsPage implements OnInit {
                 cancelled: item.training.cancelled ?? false,
                 attendees: item.attendees,
                 exercises: item.exercises,
+                isMember: teamMembers.some(
+                  (member) => member.id === this.user.uid,
+                ),
                 team: item.teamDetails || {},
                 children: relevantChildren,
-                status:
-                  item.attendees.find((att) =>
-                    [
-                      this.user.uid,
-                      ...this.children.map((child) => child.id),
-                    ].includes(att.id),
-                  )?.status ?? null,
-                // status: item.attendees.find((att) => att.id == this.user.uid)?.status ?? null,
+                status: userStatus,
                 countAttendees: validAttendees.length,
                 teamId: item.teamId,
               };
@@ -639,7 +651,7 @@ export class TrainingsPage implements OnInit {
 
     await modal.present();
 
-    const { data, role } = await modal.onWillDismiss();
+    const { role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
     }
@@ -662,7 +674,7 @@ export class TrainingsPage implements OnInit {
     });
     modal.present();
 
-    const { data, role } = await modal.onWillDismiss();
+    const { role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
     }
@@ -685,7 +697,7 @@ export class TrainingsPage implements OnInit {
     });
     modal.present();
 
-    const { data, role } = await modal.onWillDismiss();
+    const { role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
     }
@@ -765,92 +777,28 @@ export class TrainingsPage implements OnInit {
   toggleItem(slidingItem: IonItemSliding, status: boolean, training: any) {
     console.log("toggleItem", training);
     slidingItem.closeOpened();
-    this.toggle(status, training);
+    this.processToggle(this.user.uid, status, training);
   }
 
-  async toggle(status: boolean, training: any) {
-    // Hole die Team-Mitglieder
-    const teamMembers = await lastValueFrom(
-      this.fbService.getTeamMemberRefs(training.teamId).pipe(take(1)),
-    );
-    // console.log("teamMembers", teamMembers);
-    // Hole die Kinder des aktuellen Benutzers
-    const children = await lastValueFrom(
-      this.userProfileService.getChildren(this.user.uid).pipe(take(1)),
-    );
-    // console.log("children", children);
-    // Sammle alle möglichen Team-Mitglieder (aktueller Benutzer + Kinder)
-    const possibleMembers = [
-      this.user,
-      ...children.map((child) => ({ uid: child.id })),
-    ];
+  toggleChildren(status: boolean, training: any, childrenId) {
+    console.log("toggleChildren", training);
 
-    // Filtere die tatsächlichen Team-Mitglieder
-    const teamMemberIds = teamMembers.map((member) => member.id);
-    const validMembers = possibleMembers.filter((member) =>
-      teamMemberIds.includes(member.uid),
-    );
+    this.processToggle(childrenId, status, training);
+  }
 
-    if (validMembers.length === 0) {
-      const toast = await this.toastController.create({
-        message: await lastValueFrom(
-          this.translate.get("common.error__no_team_member"),
-        ),
-        color: "danger",
-        duration: 1500,
-        position: "top",
-      });
-      toast.present();
-      return;
-    }
-    // console.log("validMembers", validMembers);
+  toggleChildrenItem(
+    slidingItem: IonItemSliding,
+    status: boolean,
+    training: any,
+    childrenId,
+  ) {
+    console.log("toggleChildrenItem", training);
+    slidingItem.closeOpened();
+    this.processToggle(childrenId, status, training);
+  }
 
-    let selectedUserId: string;
-
-    if (validMembers.length === 1) {
-      // Wenn nur ein Mitglied gefunden wurde, verwende dieses
-      selectedUserId = validMembers[0].uid;
-      await this.processToggle(selectedUserId, status, training);
-    } else {
-      // Wenn mehrere Mitglieder gefunden wurden, zeige einen Auswahlalert
-      const alert = await this.alertCtrl.create({
-        header: await lastValueFrom(this.translate.get("common.select_member")),
-        inputs: await Promise.all(
-          validMembers.map(async (member) => {
-            const profile =
-              member.uid === this.user.uid
-                ? { firstName: "Ich", lastName: "" } // Für den aktuellen Benutzer
-                : await lastValueFrom(
-                    this.userProfileService
-                      .getUserProfileById(member.uid)
-                      .pipe(take(1)),
-                  );
-
-            return {
-              type: "radio",
-              label: `${profile.firstName} ${profile.lastName}`,
-              value: member.uid,
-            };
-          }),
-        ),
-        buttons: [
-          {
-            text: await lastValueFrom(this.translate.get("common.cancel")),
-            role: "cancel",
-          },
-          {
-            text: await lastValueFrom(this.translate.get("common.ok")),
-            role: "confirm",
-          },
-        ],
-      });
-      await alert.present();
-
-      const { data, role } = await alert.onDidDismiss();
-      if (role === "confirm" && data) {
-        await this.processToggle(data, status, training);
-      }
-    }
+  toggle(status: boolean, training: any) {
+    this.processToggle(this.user.uid, status, training);
   }
 
   private async processToggle(userId: string, status: boolean, training: any) {
@@ -889,54 +837,6 @@ export class TrainingsPage implements OnInit {
 
   async presentErrorToast(error) {
     await this.uiService.showErrorToast(error.message);
-  }
-
-  private async showDeleteTrainingConfirmationAlert() {
-    await this.uiService.showConfirmDialog({
-      header: "Training löschen",
-      message: "Möchten Sie dieses Training wirklich löschen?",
-      confirmText: "Ja",
-      cancelText: "Nein",
-    });
-  }
-
-  private async showDeleteTrainingSuccessAlert() {
-    await this.uiService.showInfoDialog({
-      header: "Erfolg",
-      message: "Das Training wurde erfolgreich gelöscht.",
-    });
-  }
-
-  private async showDeleteTrainingErrorAlert() {
-    await this.uiService.showInfoDialog({
-      header: "Fehler",
-      message:
-        "Beim Löschen des Trainings ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
-    });
-  }
-
-  private async showCancelTrainingConfirmationAlert() {
-    await this.uiService.showConfirmDialog({
-      header: "Training absagen",
-      message: "Möchten Sie dieses Training wirklich absagen?",
-      confirmText: "Ja",
-      cancelText: "Nein",
-    });
-  }
-
-  private async showCancelTrainingSuccessAlert() {
-    await this.uiService.showInfoDialog({
-      header: "Erfolg",
-      message: "Das Training wurde erfolgreich abgesagt.",
-    });
-  }
-
-  private async showCancelTrainingErrorAlert() {
-    await this.uiService.showInfoDialog({
-      header: "Fehler",
-      message:
-        "Beim Absagen des Trainings ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
-    });
   }
 
   async tooLateToggle() {
@@ -1056,7 +956,6 @@ export class TrainingsPage implements OnInit {
 
   async openTrainingActions(slidingItem: IonItemSliding, training: any) {
     slidingItem.closeOpened();
-
     const actionSheet = await this.uiService.showActionSheet({
       header: await lastValueFrom(this.translate.get("training.actions")),
       buttons: [

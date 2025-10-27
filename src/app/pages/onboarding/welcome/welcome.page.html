@@ -2,19 +2,16 @@
 <ion-content [fullscreen]="true" class="welcome-content">
   <div class="welcome-container">
     <!-- Skip Button -->
-    <ion-button
-      fill="clear"
-      class="skip-button"
-      (click)="skip()"
-      *ngIf="currentSlide < welcomeSlides.length - 1"
-    >
+    @if (currentSlide < welcomeSlides.length - 1) {
+    <ion-button fill="clear" class="skip-button" (click)="skip()">
       {{"common.skip" | translate}}
     </ion-button>
+    }
 
     <!-- Slides Container -->
     <div class="slides-container">
+      @for (slide of welcomeSlides; track slide; let i = $index) {
       <div
-        *ngFor="let slide of welcomeSlides; let i = index"
         class="slide"
         [class.active]="i === currentSlide"
         [style.background]="'linear-gradient(135deg, ' + slide.backgroundColor + ', ' + slide.backgroundColor + '99)'"
@@ -23,7 +20,6 @@
           <div class="animation-placeholder">
             <ion-icon name="trophy" size="large"></ion-icon>
           </div>
-
           <div class="text-content">
             <h1 class="slide-title">{{ slide.title }}</h1>
             <h2 class="slide-subtitle">{{ slide.subtitle }}</h2>
@@ -31,18 +27,20 @@
           </div>
         </div>
       </div>
+      }
     </div>
 
     <!-- Bottom Navigation -->
     <div class="bottom-navigation">
       <!-- Slide Indicators -->
       <div class="slide-indicators">
+        @for (slide of welcomeSlides; track slide; let i = $index) {
         <div
-          *ngFor="let slide of welcomeSlides; let i = index"
           class="indicator"
           [class.active]="i === currentSlide"
           (click)="goToSlide(i)"
         ></div>
+        }
       </div>
 
       <!-- Navigation Buttons -->
@@ -66,16 +64,13 @@
           [class.get-started]="currentSlide === welcomeSlides.length - 1"
           (click)="currentSlide === welcomeSlides.length - 1 ? getStarted() : nextSlide()"
         >
-          <span *ngIf="currentSlide < welcomeSlides.length - 1">Weiter</span>
-          <span *ngIf="currentSlide === welcomeSlides.length - 1"
-            >Loslegen</span
-          >
-          <ion-icon
-            *ngIf="currentSlide < welcomeSlides.length - 1"
-            name="chevron-forward"
-            slot="end"
-          >
-          </ion-icon>
+          @if (currentSlide < welcomeSlides.length - 1) {
+          <span>Weiter</span>
+          } @if (currentSlide === welcomeSlides.length - 1) {
+          <span>Loslegen</span>
+          } @if (currentSlide < welcomeSlides.length - 1) {
+          <ion-icon name="chevron-forward" slot="end"> </ion-icon>
+          }
         </ion-button>
       </div>
     </div>

@@ -6,6 +6,7 @@
     "description": "Description",
     "cancel": "Annuler",
     "ok": "OK",
+    "apply": "Appliquer",
     "confirmation": "Confirmation",
     "confirm": "Confirmer",
     "success__saved": "Enregistré avec succès",
@@ -85,6 +86,7 @@
     "admins": "Administrateurs",
     "addAdministrator": "Ajouter un administrateur",
     "addMember": "Ajouter un membre",
+    "addFromParents": "Ajouter des parents",
     "add": "Ajouter",
     "club": "Club",
     "location": "Nom/Salle/Désignation",
@@ -165,21 +167,20 @@
     "date": "Date",
     "url": "URL"
   },
+  "auth": {
+    "session_expired": "Session expirée",
+    "session_expired_message": "Votre session a expiré. Veuillez vous reconnecter."
+  },
   "login": {
-    "login__title": "Connectez-vous avec votre compte",
+    "login_title": "Connectez-vous avec votre compte",
     "loading": "Connexion en cours...",
     "error": "Erreur",
-    "error__no_acount_found": "Aucun compte trouvé avec cette adresse e-mail",
-    "error__invalid_username_password": "La combinaison nom d'utilisateur/mot de passe est incorrecte.",
-    "error__invalid_login_credentials": "La combinaison nom d'utilisateur/mot de passe est incorrecte.",
-    "error__invalid_credentials": "La combinaison nom d'utilisateur/mot de passe est invalide.",
-    "error__network_connection": "Il y a un problème avec la connexion réseau",
-    "error_message": "Une erreur s'est produite",
     "error_user_not_found": "Aucun utilisateur trouvé avec cette adresse e-mail",
     "error_wrong_password": "Mot de passe incorrect",
     "error_invalid_email": "Adresse e-mail invalide",
     "error_user_disabled": "Cet utilisateur a été désactivé",
-    "login__button": "Se connecter",
+    "error_user_credential": "Connexion invalide",
+    "login_button": "Se connecter",
     "create_new_account": "créer un nouveau compte",
     "email_placeholder": "Entrez votre adresse e-mail",
     "password_placeholder": "Entrez votre mot de passe"
@@ -343,7 +344,10 @@
     "filter__news": "Filtrer les actualités",
     "filter__by_club_team": "Filtrer par club ou équipes.",
     "create_news": "Créer une actualité",
-    "news_entry": "Article d'actualité"
+    "news_entry": "Article d'actualité",
+    "upcomingGames": "Prochains matchs",
+    "upcomingGamesEnabled": "Prochains matchs activés",
+    "upcomingGamesDisabled": "Prochains matchs désactivés"
   },
   "not-found": {
     "not_found": "Non trouvé"
@@ -427,10 +431,15 @@
     "generally": "En général",
     "birthdate": "Date de naissance",
     "phonenumber": "Numéro de téléphone",
+    "hide_phone_number": "Masquer le numéro de téléphone",
+    "hide_email": "Masquer l'adresse e-mail",
+    "hide_info_note": "Ces informations restent visibles pour les administrateurs d'équipe et de club pour des raisons organisationnelles et ne sont masquées que pour les autres membres de l'équipe.",
     "address": "Adresse",
     "contact__information": "Informations de contact",
     "license__number": "Numéro de licence",
     "diverses": "Divers",
+    "show_game_preview": "Afficher l'aperçu des jeux",
+    "game_preview_info_note": "Les jeux du club des 10 prochains jours sont affichés.",
     "sport": "Sport",
     "change_email_header": "Modifier l'adresse e-mail",
     "change_email_message": "Modifiez ici votre adresse e-mail de profil.",

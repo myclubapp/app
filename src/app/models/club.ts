@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import { Timestamp } from "@angular/fire/firestore";
 import { ClubLink } from "./club-link";
 
 export interface Creditor {
@@ -32,6 +32,10 @@ export interface Club {
   links: ClubLink[];
   creditor?: Creditor;
   surcharges?: { name: string; amount: number; currency: string }[];
+  hasFeatureChampionship?: boolean;
+  hasFeatureTrainingExercise?: boolean;
+  hasFeatureHelferEvent?: boolean;
+  hasFeatureMyClubPro?: boolean;
 }
 
 export interface SwissUnihockeyClub extends Club {}

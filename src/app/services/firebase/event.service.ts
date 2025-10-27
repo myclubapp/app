@@ -1,6 +1,10 @@
-import { Injectable } from "@angular/core";
+import {
+  Injectable,
+  inject,
+  Injector,
+  runInInjectionContext,
+} from "@angular/core";
 
-import { limit, orderBy, Timestamp } from "firebase/firestore";
 import {
   Firestore,
   addDoc,
@@ -14,17 +18,23 @@ import {
   query,
   where,
   getDoc,
+  limit,
+  orderBy,
+  Timestamp,
 } from "@angular/fire/firestore";
 import { Observable } from "rxjs";
 import { HelferEvent, Veranstaltung } from "src/app/models/event";
 import { AuthService } from "../auth.service";
 import { shareReplay } from "rxjs/operators";
 import { FirebaseService } from "../firebase.service";
+import { User } from "@angular/fire/auth";
 
 @Injectable({
   providedIn: "root",
 })
 export class EventService {
+  private injector = inject(Injector);
+
   constructor(
     private firestore: Firestore,
     private readonly authService: AuthService,
@@ -43,41 +53,45 @@ export class EventService {
   getClubEventRef(clubId: string, eventId: string): Observable<Veranstaltung> {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const eventRef = doc(this.firestore, `club/${clubId}/events/${eventId}`);
-    return docData(eventRef, { idField: "id" }).pipe(
-      shareReplay(10),
+    return runInInjectionContext(this.injector, () =>
+      docData(eventRef, { idField: "id" }).pipe(shareReplay(10)),
     ) as Observable<Veranstaltung>;
   }
 
   getClubEventsRef(clubId: string): Observable<Veranstaltung[]> {
-    const eventsRefList = collection(this.firestore, `club/${clubId}/events`);
-    const q = query(
-      eventsRefList,
-      where(
-        "date",
-        ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)), // 2h lang anzeigen lassen
-      ),
-    ); // StartDatum der Veranstaltung - 12h
-    return collectionData(q, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as unknown as Observable<Veranstaltung[]>;
+    return runInInjectionContext(this.injector, () => {
+      const eventsRefList = collection(this.firestore, `club/${clubId}/events`);
+      const q = query(
+        eventsRefList,
+        where(
+          "date",
+          ">=",
+          Timestamp.fromMillis(Date.now() - 1000 * 3600 * 2), // 2h lang anzeigen lassen
+        ),
+      ); // StartDatum der Veranstaltung - 12h
+      return collectionData(q, {
+        idField: "id",
+      }).pipe(shareReplay(1));
+    }) as unknown as Observable<Veranstaltung[]>;
   }
   getClubEventsPastRef(clubId: string): Observable<Veranstaltung[]> {
-    const eventsRefList = collection(this.firestore, `club/${clubId}/events`);
-    const q = query(
-      eventsRefList,
-      where(
-        "date",
-        "<",
-        Timestamp.fromDate(new Date(Date.now())), // sofort als vergangen auflisten
-      ),
-      limit(30),
-      orderBy("date", "desc"),
-    ); // heute - 1 Tag = gestern
+    return runInInjectionContext(this.injector, () => {
+      const eventsRefList = collection(this.firestore, `club/${clubId}/events`);
+      const q = query(
+        eventsRefList,
+        where(
+          "date",
+          "<",
+          Timestamp.fromMillis(Date.now()), // sofort als vergangen auflisten
+        ),
+        limit(30),
+        orderBy("date", "desc"),
+      ); // heute - 1 Tag = gestern
 
-    return collectionData(q, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as unknown as Observable<Veranstaltung[]>;
+      return collectionData(q, {
+        idField: "id",
+      }).pipe(shareReplay(1));
+    }) as unknown as Observable<Veranstaltung[]>;
   }
 
   getClubEventAttendeesRef(clubId: string, eventId: string): Observable<any[]> {
@@ -85,9 +99,11 @@ export class EventService {
       this.firestore,
       `club/${clubId}/events/${eventId}/attendees`,
     );
-    return collectionData(attendeesRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as unknown as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(attendeesRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as unknown as Observable<any[]>;
   }
   async setClubEventAttendeeStatus(
     status: boolean,
@@ -143,8 +159,8 @@ export class EventService {
       this.firestore,
       `club/${clubId}/helferEvents/${eventId}`,
     );
-    return docData(eventRef, { idField: "id" }).pipe(
-      shareReplay(10),
+    return runInInjectionContext(this.injector, () =>
+      docData(eventRef, { idField: "id" }).pipe(shareReplay(10)),
     ) as Observable<HelferEvent>;
   }
 
@@ -155,57 +171,63 @@ export class EventService {
   ): Observable<HelferEvent[]> {
     console.log(">>>>dateFrom", dateFrom);
     console.log(">>>>dateTo", dateTo);
-    const eventsRefList = collection(
-      this.firestore,
-      `club/${clubId}/helferEvents`,
-    );
-    const q = query(
-      eventsRefList,
-      where("date", ">=", dateFrom),
-      where("date", "<=", dateTo),
-      orderBy("date", "desc"),
-    ); // StartDatum der Veranstaltung - 12h
-    return collectionData(q, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as unknown as Observable<HelferEvent[]>;
+    return runInInjectionContext(this.injector, () => {
+      const eventsRefList = collection(
+        this.firestore,
+        `club/${clubId}/helferEvents`,
+      );
+      const q = query(
+        eventsRefList,
+        where("date", ">=", dateFrom),
+        where("date", "<=", dateTo),
+        orderBy("date", "desc"),
+      ); // StartDatum der Veranstaltung - 12h
+      return collectionData(q, {
+        idField: "id",
+      }).pipe(shareReplay(1));
+    }) as unknown as Observable<HelferEvent[]>;
   }
 
   getClubHelferEventRefs(clubId: string): Observable<HelferEvent[]> {
-    const eventsRefList = collection(
-      this.firestore,
-      `club/${clubId}/helferEvents`,
-    );
-    const q = query(
-      eventsRefList,
-      where(
-        "date", // muss auf Event End Date umgestellt werden.
-        ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)), // 2h lang noch anzeigen
-      ),
-    ); // StartDatum der Veranstaltung - 12h
-    return collectionData(q, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as unknown as Observable<HelferEvent[]>;
+    return runInInjectionContext(this.injector, () => {
+      const eventsRefList = collection(
+        this.firestore,
+        `club/${clubId}/helferEvents`,
+      );
+      const q = query(
+        eventsRefList,
+        where(
+          "date", // muss auf Event End Date umgestellt werden.
+          ">=",
+          Timestamp.fromMillis(Date.now() - 1000 * 3600 * 2), // 2h lang noch anzeigen
+        ),
+      ); // StartDatum der Veranstaltung - 12h
+      return collectionData(q, {
+        idField: "id",
+      }).pipe(shareReplay(1));
+    }) as unknown as Observable<HelferEvent[]>;
   }
   getClubHelferEventPastRefs(clubId: string): Observable<HelferEvent[]> {
-    const eventsRefList = collection(
-      this.firestore,
-      `club/${clubId}/helferEvents`,
-    );
-    const q = query(
-      eventsRefList,
-      where(
-        "date",
-        "<",
-        Timestamp.fromDate(new Date(Date.now())), // sofort anzeigen
-      ),
-      orderBy("date", "desc"),
-      limit(30),
-    ); // heute - 1 Tag
+    return runInInjectionContext(this.injector, () => {
+      const eventsRefList = collection(
+        this.firestore,
+        `club/${clubId}/helferEvents`,
+      );
+      const q = query(
+        eventsRefList,
+        where(
+          "date",
+          "<",
+          Timestamp.fromMillis(Date.now()), // sofort anzeigen
+        ),
+        orderBy("date", "desc"),
+        limit(30),
+      ); // heute - 1 Tag
 
-    return collectionData(q, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<HelferEvent[]>;
+      return collectionData(q, {
+        idField: "id",
+      }).pipe(shareReplay(1));
+    }) as Observable<HelferEvent[]>;
   }
 
   getClubHelferEventAttendeesRef(
@@ -216,9 +238,11 @@ export class EventService {
       this.firestore,
       `club/${clubId}/helferEvents/${eventId}/attendees`,
     );
-    return collectionData(attendeesRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(attendeesRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<any[]>;
   }
 
   getClubHelferEventSchichtenRef(
@@ -229,9 +253,11 @@ export class EventService {
       this.firestore,
       `club/${clubId}/helferEvents/${eventId}/schichten`,
     );
-    return collectionData(schichtenRefList, {
-      idField: "id",
-    }).pipe(shareReplay(10)) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(schichtenRefList, {
+        idField: "id",
+      }).pipe(shareReplay(10)),
+    ) as Observable<any[]>;
   }
 
   addNewHelferEventSchicht(clubId: string, eventId: string, schicht: any) {
@@ -279,9 +305,11 @@ export class EventService {
       `club/${clubId}/helferEvents/${eventId}/schichten/${schichtId}/attendees`,
     );
     // console.log(schichtAttendeesListRef.id, schichtAttendeesListRef.path);
-    return collectionData(schichtAttendeesListRef, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(schichtAttendeesListRef, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<any[]>;
   }
 
   setClubHelferEventSchichtAttendeeStatus(
@@ -430,7 +458,7 @@ export class EventService {
       where(
         "dateTime",
         ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 7))
+        Timestamp.fromMillis(Date.now() - 1000 * 3600 * 24 * 7)
       )
     ); // heute - 7 Tage
     return collectionData(q, { idField: "id" }) as unknown as Observable<
@@ -447,23 +475,24 @@ export class EventService {
       where(
         "dateTime",
         "<",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 24 * 7))
+        Timestamp.fromMillis(Date.now() - 1000 * 3600 * 24 * 7)
       ),
       limit(30)
     ); // heute - 7 Tage
     return collectionData(q, { idField: "id" }) as unknown as Observable<
     Veranstaltung[]
     >;
+  }
+  */
   async setCreateTeamEvent(event: Veranstaltung, user: User) {
     console.log("event");
     console.log(event);
     return addDoc(
       collection(this.firestore, `userProfile/${user.uid}/teamEvent`),
-      event
+      event,
     );
   }
-  }
-
+  /*
   getTeamEventsAttendeesRef(
     teamId: string,
     eventId: string
@@ -477,7 +506,7 @@ export class EventService {
       idField: "id",
     }) as unknown as Observable<any[]>;
   }
-    async setTeamEventAttendeeStatus(
+  async setTeamEventAttendeeStatus(
     userId: string,
     status: boolean,
     teamId: string,
@@ -485,9 +514,9 @@ export class EventService {
   ) {
     const statusRef = doc(
       this.firestore,
-      `teams/${teamId}/events/${eventId}/attendees/${userId}`    );
+      `teams/${teamId}/events/${eventId}/attendees/${userId}`
+    );
     return await setDoc(statusRef, { status });
   }
-
   */
 }

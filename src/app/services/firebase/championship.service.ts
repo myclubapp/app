@@ -1,8 +1,12 @@
-import { Injectable, inject } from "@angular/core";
+import {
+  Injectable,
+  inject,
+  Injector,
+  runInInjectionContext,
+} from "@angular/core";
 
 import {
   limit,
-  Timestamp,
   Firestore,
   collection,
   collectionData,
@@ -12,8 +16,9 @@ import {
   setDoc,
   query,
   where,
+  orderBy,
+  Timestamp,
 } from "@angular/fire/firestore";
-import { orderBy } from "firebase/firestore";
 import { Observable, shareReplay } from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "../auth.service";
@@ -22,6 +27,8 @@ import { AuthService } from "../auth.service";
   providedIn: "root",
 })
 export class ChampionshipService {
+  private injector = inject(Injector);
+
   constructor(
     private readonly authService: AuthService,
     private firestore: Firestore,
@@ -34,57 +41,61 @@ export class ChampionshipService {
       this.firestore,
       `teams/${teamId}/ranking/${year}/table`,
     );
-    return collectionData(tableRef, { idField: "id" }) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(tableRef, { idField: "id" }),
+    ) as Observable<any[]>;
   }
 
   getTeamRanking(teamId: string, year: string): Observable<any> {
     const tableRef = doc(this.firestore, `teams/${teamId}/ranking/${year}`);
-    return docData(tableRef, { idField: "id" }) as Observable<any>;
+    return runInInjectionContext(this.injector, () =>
+      docData(tableRef, { idField: "id" }),
+    ) as Observable<any>;
   }
 
   getTeamGameRef(teamId: string, gameId: string): Observable<Game> {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const gameRef = doc(this.firestore, `teams/${teamId}/games/${gameId}`);
-    return docData(gameRef, { idField: "id" }).pipe(
-      shareReplay(10),
+    return runInInjectionContext(this.injector, () =>
+      docData(gameRef, { idField: "id" }).pipe(shareReplay(10)),
     ) as Observable<Game>;
   }
 
   /* TEAM GAMES */
   getTeamGamesRefs(teamId: string): Observable<Game[]> {
     // console.log(`Read Team Games List Ref ${teamId}`)
-    const gamesRefList = collection(this.firestore, `teams/${teamId}/games`);
-    const q = query(
-      gamesRefList,
-      where(
-        "dateTime",
-        ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)), // 2h lang das "alte Spiel" anzeigen
-      ),
-      orderBy("dateTime", "asc"),
-    ); // heute - 1 Tag
-    return collectionData(q, { idField: "id" }).pipe(
-      shareReplay(1),
-    ) as Observable<Game[]>;
+    return runInInjectionContext(this.injector, () => {
+      const gamesRefList = collection(this.firestore, `teams/${teamId}/games`);
+      const q = query(
+        gamesRefList,
+        where(
+          "dateTime",
+          ">=",
+          Timestamp.fromMillis(Date.now() - 1000 * 3600 * 2), // 2h lang das "alte Spiel" anzeigen
+        ),
+        orderBy("dateTime", "asc"),
+      ); // heute - 1 Tag
+      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+    }) as Observable<Game[]>;
   }
 
   // PAST 20 Entries
   getTeamGamesPastRefs(teamId: string): Observable<Game[]> {
     //console.log(`Read Team Games List Ref ${teamId}`)
-    const gamesRefList = collection(this.firestore, `teams/${teamId}/games`);
-    const q = query(
-      gamesRefList,
-      where(
-        "dateTime",
-        "<",
-        Timestamp.fromDate(new Date(Date.now())), // sofort in "vergangen" anzeigen
-      ),
-      limit(30),
-      orderBy("dateTime", "desc"),
-    ); // heute - 1 Tag
-    return collectionData(q, { idField: "id" }).pipe(
-      shareReplay(1),
-    ) as Observable<Game[]>;
+    return runInInjectionContext(this.injector, () => {
+      const gamesRefList = collection(this.firestore, `teams/${teamId}/games`);
+      const q = query(
+        gamesRefList,
+        where(
+          "dateTime",
+          "<",
+          Timestamp.fromMillis(Date.now()), // sofort in "vergangen" anzeigen
+        ),
+        limit(30),
+        orderBy("dateTime", "desc"),
+      ); // heute - 1 Tag
+      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+    }) as Observable<Game[]>;
   }
 
   getTeamGamesByDateRange(
@@ -92,33 +103,33 @@ export class ChampionshipService {
     startDate: Date,
     endDate: Date,
   ): Observable<Game[]> {
-    const gamesRefList = collection(this.firestore, `teams/${teamId}/games`);
-    const q = query(
-      gamesRefList,
-      where("dateTime", ">=", Timestamp.fromDate(startDate)),
-      where("dateTime", "<=", Timestamp.fromDate(endDate)),
-      orderBy("dateTime", "asc"),
-    );
-    return collectionData(q, { idField: "id" }).pipe(
-      shareReplay(1),
-    ) as Observable<Game[]>;
+    return runInInjectionContext(this.injector, () => {
+      const gamesRefList = collection(this.firestore, `teams/${teamId}/games`);
+      const q = query(
+        gamesRefList,
+        where("dateTime", ">=", Timestamp.fromMillis(startDate.getTime())),
+        where("dateTime", "<=", Timestamp.fromMillis(endDate.getTime())),
+        orderBy("dateTime", "asc"),
+      );
+      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+    }) as Observable<Game[]>;
   }
 
   /* CLUB GAMES */
   getClubGamesRef(clubId: string): Observable<Game[]> {
-    const gamesRefList = collection(this.firestore, `club/${clubId}/games`);
-    const q = query(
-      gamesRefList,
-      where(
-        "dateTime",
-        ">=",
-        Timestamp.fromDate(new Date(Date.now() - 1000 * 3600 * 2)), // 2h lang das "alte Spiel" anzeigen
-      ),
-      orderBy("dateTime", "asc"),
-    ); // heute - 1 Tag
-    return collectionData(q, { idField: "id" }).pipe(
-      shareReplay(1),
-    ) as Observable<Game[]>;
+    return runInInjectionContext(this.injector, () => {
+      const gamesRefList = collection(this.firestore, `club/${clubId}/games`);
+      const q = query(
+        gamesRefList,
+        where(
+          "dateTime",
+          ">=",
+          Timestamp.fromMillis(Date.now() - 1000 * 3600 * 2), // 2h lang das "alte Spiel" anzeigen
+        ),
+        orderBy("dateTime", "asc"),
+      ); // heute - 1 Tag
+      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+    }) as Observable<Game[]>;
   }
 
   /* TEAM GAMES ATTENDEES */
@@ -128,9 +139,11 @@ export class ChampionshipService {
       this.firestore,
       `teams/${teamId}/games/${gameId}/attendees`,
     );
-    return collectionData(attendeesRefList, {
-      idField: "id",
-    }).pipe(shareReplay(1)) as Observable<any[]>;
+    return runInInjectionContext(this.injector, () =>
+      collectionData(attendeesRefList, {
+        idField: "id",
+      }).pipe(shareReplay(1)),
+    ) as Observable<any[]>;
   }
 
   /* SET TEAM GAMES ATTENDEE Status */

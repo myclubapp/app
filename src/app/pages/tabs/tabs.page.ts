@@ -5,10 +5,10 @@ import {
   NavController,
   AnimationController,
 } from "@ionic/angular";
-import { Observable } from "rxjs";
+import { Observable, shareReplay } from "rxjs";
 import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { getAnalytics, logEvent } from "firebase/analytics";
+import { Analytics, logEvent } from "@angular/fire/analytics";
 
 @Component({
   selector: "app-tabs",
@@ -26,12 +26,13 @@ export class TabsPage implements OnInit {
     private readonly fbService: FirebaseService,
     private navCtrl: NavController,
     private animationCtrl: AnimationController,
+    private analytics: Analytics,
   ) {
     this.menuCtrl.enable(true, "menu");
   }
 
   ngOnInit() {
-    this.clubList$ = this.fbService.getClubList();
+    this.clubList$ = this.fbService.getClubList().pipe(shareReplay(1));
 
     this.menuCtrl.enable(true, "menu");
   }
@@ -82,9 +83,8 @@ export class TabsPage implements OnInit {
   }
 
   async onTabsWillChange(event) {
-    console.log("event", event);
-    const analytics = getAnalytics();
-    logEvent(analytics, "tabs_will_change_" + event.tab);
+    // console.log("event", event);
+    logEvent(this.analytics, "tabs_will_change_" + event.tab);
     this.animation();
   }
 }
