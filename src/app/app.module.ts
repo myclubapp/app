@@ -26,8 +26,14 @@ import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 import { provideFirebaseApp, getApp, initializeApp } from "@angular/fire/app";
 import { getFirestore, provideFirestore } from "@angular/fire/firestore";
-import { provideAuth, getAuth, initializeAuth } from "@angular/fire/auth";
-import { indexedDBLocalPersistence } from "firebase/auth";
+import {
+  provideAuth,
+  getAuth,
+  setPersistence,
+  indexedDBLocalPersistence,
+  initializeAuth,
+  browserSessionPersistence,
+} from "@angular/fire/auth";
 import { provideStorage, getStorage } from "@angular/fire/storage";
 import { provideMessaging, getMessaging } from "@angular/fire/messaging";
 import { getAnalytics, provideAnalytics } from "@angular/fire/analytics";
@@ -198,13 +204,13 @@ const getConfig = () => {
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),
     provideAuth(() => {
+      const auth = getAuth();
       if (Capacitor.isNativePlatform()) {
-        return initializeAuth(getApp(), {
-          persistence: indexedDBLocalPersistence,
-        });
+        setPersistence(auth, indexedDBLocalPersistence);
       } else {
-        return getAuth();
+        setPersistence(auth, browserSessionPersistence);
       }
+      return auth;
       // const auth = getAuth();
       // setPersistence(auth,browserSessionPersistence);
       // return auth;

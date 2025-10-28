@@ -66,7 +66,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   user: User;
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
-
+  private tokenKeepAliveId?: number;
   userHasTeam: boolean = false;
   userHasClub: boolean = false;
 
@@ -89,6 +89,20 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        this.authService.validateAndRefreshToken();
+      }
+    });
+
+    // alle 45 Minuten refreshen
+    this.tokenKeepAliveId = window.setInterval(
+      () => {
+        this.authService.validateAndRefreshToken();
+      },
+      45 * 60 * 1000,
+    );
+
     App.removeAllListeners().then(() => {
       this.registerBackButton();
     });
@@ -258,7 +272,9 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   ngOnDestroy() {
     // Network.removeAllListeners();
-
+    if (this.tokenKeepAliveId) {
+      clearInterval(this.tokenKeepAliveId);
+    }
     App.removeAllListeners();
   }
 
