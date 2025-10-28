@@ -6,7 +6,15 @@
     <ion-title>{{"common.news" | translate}}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="openNotification()">
-        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+        @if (notifications$ | async; as notifications) {
+          @if (notifications.length > 0) {
+            <ion-icon slot="icon-only" name="notifications"></ion-icon>
+          } @else {
+            <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+          }
+        } @else {
+          <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+        }
       </ion-button>
       <ion-button (click)="openFilter()">
         <ion-icon
