@@ -1,0 +1,186 @@
+@if (game$ | async; as game) {
+<ion-content>
+  <ion-fab vertical="top" horizontal="end">
+    <ion-fab-button size="small" (click)="close()">
+      <ion-icon name="close" size="small"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  @if (game.latitude && game.longitude && !platform.is('android')) {
+  <capacitor-google-map #map></capacitor-google-map>
+  }
+
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-avatar slot="start">
+        <img src="{{game.teamHomeLogo}}" />
+      </ion-avatar>
+      <ion-label>
+        <h2>{{game.teamHome}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-avatar slot="start">
+        <img src="{{game.teamAwayLogo}}" />
+      </ion-avatar>
+      <ion-label>
+        <h2>{{game.teamAway}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="home-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.description}}</h2>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="calendar-outline"></ion-icon>
+      <ion-label>
+        <h2>{{game.date}} {{game.time}} Uhr</h2>
+      </ion-label>
+    </ion-item>
+    @if (game.location) {
+    <ion-item>
+      <ion-icon slot="start" name="location-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.location}} {{game.city}}</h2>
+      </ion-label>
+      @if (game.longitude) {
+      <ion-icon
+        color="primary"
+        (click)="openMaps(game)"
+        slot="end"
+        name="map-outline"
+      ></ion-icon>
+      }
+    </ion-item>
+    }
+    <ion-item>
+      <ion-icon slot="start" name="trophy-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.liga}} {{game.teamName}}</h2>
+      </ion-label>
+    </ion-item>
+    @if (game.result && game.result != '0:0(0:0)') {
+    <ion-item>
+      <ion-icon slot="start" name="podium-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.result}}</h2>
+      </ion-label>
+    </ion-item>
+    } @if (game.referee1) {
+    <ion-item>
+      <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.referee1}} {{game.referee2}}</h2>
+      </ion-label>
+    </ion-item>
+    } @if (game.spectators && game.spectators != '0' ) {
+    <ion-item>
+      <ion-icon slot="start" name="people-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h2>{{game.spectators}}</h2>
+      </ion-label>
+    </ion-item>
+    }
+  </ion-list>
+
+  <!-- Kanva Button -->
+  <ion-button expand="block" (click)="openKanva(game)" class="kanva-button">
+    <ion-icon slot="start" name="images-outline"></ion-icon>
+    Open in Kanva Studio
+  </ion-button>
+
+  <ion-text class="ion-text-center" color="medium">
+    <ion-note>
+      <p>Game ID: {{game.id}}</p>
+    </ion-note>
+  </ion-text>
+</ion-content>
+} @else {
+<ion-content>
+  <!-- FAB Button -->
+  <ion-fab vertical="top" horizontal="end">
+    <ion-fab-button size="small">
+      <ion-icon name="close" size="small"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <!-- Map Placeholder -->
+  <div style="width: 100%; height: 200px; background: #e0e0e0">
+    <ion-skeleton-text
+      animated
+      style="width: 100%; height: 100%"
+    ></ion-skeleton-text>
+  </div>
+  <!-- Teams and Game Info -->
+  <ion-list [inset]="true">
+    <!-- Home Team -->
+    <ion-item>
+      <ion-avatar slot="start">
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </ion-avatar>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Away Team -->
+    <ion-item>
+      <ion-avatar slot="start">
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </ion-avatar>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Description -->
+    <ion-item>
+      <ion-icon slot="start" name="home-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <ion-skeleton-text animated style="width: 85%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Date & Time -->
+    <ion-item>
+      <ion-icon slot="start" name="calendar-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 40%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Location -->
+    <ion-item>
+      <ion-icon slot="start" name="location-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+      </ion-label>
+      <ion-icon slot="end" name="map-outline"></ion-icon>
+    </ion-item>
+    <!-- League/Competition -->
+    <ion-item>
+      <ion-icon slot="start" name="trophy-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Result -->
+    <ion-item>
+      <ion-icon slot="start" name="podium-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Referee -->
+    <ion-item>
+      <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 65%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <!-- Spectators -->
+    <ion-item>
+      <ion-icon slot="start" name="people-outline"></ion-icon>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 25%"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+}

@@ -1,0 +1,33 @@
+/* The Google Map element itself comes unstyled,
+so you should style it to fit within the layout of your page structure.
+Because we're rendering a view into this slot,
+by itself the element has no width or height,
+so be sure to set those explicitly.
+
+capacitor-google-map {
+  display: inline-block;
+  width: 275px;
+  height: 400px;
+}
+*/
+
+capacitor-google-map {
+  display: inline-block;
+  width: 100%;
+  height: 300px; // adjust as needed
+  z-index: 1;
+}
+
+ion-fab {
+  position: absolute;
+  top: 32px;
+  right: 16px;
+}
+
+.kanva-button {
+  margin: 16px;
+  --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --background-hover: linear-gradient(135deg, #5568d3 0%, #66408a 100%);
+  --background-activated: linear-gradient(135deg, #4a5ac0 0%, #563775 100%);
+  font-weight: 600;
+}
