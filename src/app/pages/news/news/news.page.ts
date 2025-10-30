@@ -46,7 +46,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { CreateNewsPage } from "../create-news/create-news.page";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { Game } from "src/app/models/game";
-import { ChampionshipDetailPage } from "src/app/pages/championship/championship-detail/championship-detail.page";
+import { ClubGamePreviewPage } from "src/app/pages/championship/club-game-preview/club-game-preview.page";
 import { BehaviorSubject, Subject } from "rxjs";
 
 @Component({
@@ -723,7 +723,7 @@ export class NewsPage implements OnInit {
     const presentingElement = topModal || this.routerOutlet?.nativeEl;
     console.log(game);
     const modal = await this.modalCtrl.create({
-      component: ChampionshipDetailPage,
+      component: ClubGamePreviewPage,
       presentingElement,
       canDismiss: true,
       cssClass: "transparent-modal",

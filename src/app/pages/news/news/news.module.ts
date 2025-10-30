@@ -1,14 +1,15 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from "@ionic/angular";
 
-import { NewsPageRoutingModule } from './news-routing.module';
+import { NewsPageRoutingModule } from "./news-routing.module";
 
-import { NewsPage } from './news.page';
-import { TranslateModule } from '@ngx-translate/core';
+import { NewsPage } from "./news.page";
+import { TranslateModule } from "@ngx-translate/core";
+import { ClubGamePreviewPageModule } from "../../championship/club-game-preview/club-game-preview.module";
 
 @NgModule({
   imports: [
@@ -17,9 +18,10 @@ import { TranslateModule } from '@ngx-translate/core';
     FormsModule,
     IonicModule,
     NewsPageRoutingModule,
-    TranslateModule
+    TranslateModule,
+    ClubGamePreviewPageModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  declarations: [NewsPage]
+  declarations: [NewsPage],
 })
 export class NewsPageModule {}
