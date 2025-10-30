@@ -114,8 +114,6 @@ PODS:
     - GoogleUtilities/Privacy
   - IONFilesystemLib (1.0.1)
   - IONGeolocationLib (1.0.1)
-  - JcesarmobileSslSkip (0.4.0):
-    - Capacitor
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
     - nanopb/encode (= 2.30908.0)
@@ -148,7 +146,6 @@ DEPENDENCIES:
   - Firebase/Messaging (= 7.11.0)
   - FirebaseCore (= 7.11.0)
   - GoogleMaps (~> 8.4)
-  - "JcesarmobileSslSkip (from `../../node_modules/@jcesarmobile/ssl-skip`)"
 
 SPEC REPOS:
   trunk:
@@ -210,8 +207,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/status-bar"
   CordovaPlugins:
     :path: "../capacitor-cordova-ios-plugins"
-  JcesarmobileSslSkip:
-    :path: "../../node_modules/@jcesarmobile/ssl-skip"
 
 SPEC CHECKSUMS:
   Capacitor: b4741ca7affb32c1b70debd03df92cbf522d8a80
@@ -247,10 +242,9 @@ SPEC CHECKSUMS:
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
   IONGeolocationLib: 20f9d0248a0b5264511fb57a37e25dd2badf797a
-  JcesarmobileSslSkip: b0f921e9d397a57f7983731209ca1ee244119c1f
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
 
-PODFILE CHECKSUM: 82dfabe81952f8e7664f7fa6bd4707b7de9ccd00
+PODFILE CHECKSUM: bfb1e9e767b4c9229bc515e18386c55b00d547ff
 
 COCOAPODS: 1.16.2
