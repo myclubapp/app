@@ -59,6 +59,15 @@
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">{{"common.championship" | translate}}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="gameListActions()">
+          <ion-icon
+            slot="icon-only"
+            ios="ellipsis-horizontal"
+            md="ellipsis-vertical"
+          ></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
   @if (mode=='games') { @if (gameList$ | async; as gameList) { @if

@@ -27,6 +27,9 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { MemberPage } from "../../member/member.page";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { Club } from "src/app/models/club";
+import { UiService } from "src/app/services/ui.service";
+import { EventAddPage } from "../event-add/event-add.page";
+import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
 
 @Component({
   selector: "app-event-detail",
@@ -65,6 +68,7 @@ export class EventDetailPage implements OnInit {
     private readonly toastController: ToastController,
     private readonly authService: AuthService,
     private translate: TranslateService,
+    private readonly uiService: UiService,
   ) {}
 
   ngOnInit() {
@@ -252,7 +256,7 @@ export class EventDetailPage implements OnInit {
     );
   }
   async openMember(member: Profile) {
-    console.log("openMember");
+    //  console.log("openMember");
     const modal = await this.modalCtrl.create({
       component: MemberPage,
       presentingElement: await this.modalCtrl.getTop(),
@@ -269,6 +273,187 @@ export class EventDetailPage implements OnInit {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
+    }
+  }
+
+  async openAdminActions() {
+    const actionSheet = await this.uiService.showActionSheet({
+      header: await lastValueFrom(this.translate.get("events.actions")),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("events.create_helfer")),
+          icon: "help-buoy-outline",
+          handler: () => {
+            this.createHelferEvent(this.event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("events.cancel_event")),
+          icon: "alert-circle-outline",
+          handler: () => {
+            this.cancelEvent(this.event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("events.send_reminder")),
+          icon: "notifications-outline",
+          handler: () => {
+            this.sendReminder(this.event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.copy")),
+          icon: "copy-outline",
+          handler: () => {
+            this.copyEvent(this.event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.delete")),
+          icon: "trash",
+          role: "destructive",
+          handler: () => {
+            this.deleteEvent(this.event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "cancel",
+        },
+      ],
+    });
+  }
+
+  async copyEvent(event: Veranstaltung) {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || (await this.modalCtrl.getTop());
+    const modal = await this.modalCtrl.create({
+      component: EventAddPage,
+      presentingElement,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: event,
+      },
+    });
+    modal.present();
+    await modal.onWillDismiss();
+  }
+
+  async createHelferEvent(event: Veranstaltung) {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || (await this.modalCtrl.getTop());
+    const modal = await this.modalCtrl.create({
+      component: HelferAddPage,
+      presentingElement,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: event,
+      },
+    });
+    modal.present();
+    await modal.onWillDismiss();
+  }
+
+  async deleteEvent(event: Veranstaltung) {
+    await this.eventService.deleteClubEvent(event.clubId, event.id);
+    const toast = await this.toastController.create({
+      message: await lastValueFrom(
+        this.translate.get("common.success__event_deleted"),
+      ),
+      color: "danger",
+      duration: 1500,
+      position: "top",
+    });
+    toast.present();
+  }
+
+  async cancelEvent(event: any) {
+    const result = await this.uiService.showFormDialog({
+      header: await lastValueFrom(this.translate.get("events.cancel_event")),
+      inputs: [
+        {
+          name: "reason",
+          type: "textarea",
+          placeholder: await lastValueFrom(
+            this.translate.get("events.cancel_reason_placeholder"),
+          ),
+          attributes: { maxlength: 200 },
+        },
+      ],
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    if (result) {
+      if (!result.reason) {
+        await this.uiService.showErrorToast(
+          await lastValueFrom(
+            this.translate.get("events.cancel_reason_required"),
+          ),
+        );
+        return;
+      }
+      try {
+        await this.eventService.changeClubEvent(
+          {
+            cancelled: true,
+            cancelledReason: result.reason,
+          },
+          event.clubId,
+          event.id,
+        );
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(this.translate.get("events.event_cancelled")),
+        );
+      } catch (error) {
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
+    }
+  }
+
+  async sendReminder(event: any) {
+    const clubMembers = await lastValueFrom(
+      this.fbService.getClubMemberRefs(event.clubId).pipe(take(1)),
+    );
+    const attendees = await lastValueFrom(
+      this.eventService
+        .getClubEventAttendeesRef(event.clubId, event.id)
+        .pipe(take(1)),
+    );
+    const pendingMembers = clubMembers.filter(
+      (member) => !attendees.some((attendee) => attendee.id === member.id),
+    );
+    if (pendingMembers.length === 0) {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("events.all_members_responded")),
+      );
+      return;
+    }
+    const result = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(this.translate.get("events.send_reminder")),
+      message: await lastValueFrom(
+        this.translate.get("events.send_reminder_confirm", {
+          count: pendingMembers.length,
+        }),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+    if (result) {
+      try {
+        await this.eventService.sendReminder(event.clubId, event.id);
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(this.translate.get("events.reminder_sent")),
+        );
+      } catch (error) {
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
     }
   }
 

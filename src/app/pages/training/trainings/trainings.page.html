@@ -1,16 +1,16 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      @if (!isModal) {
-      <ion-menu-button></ion-menu-button>
-      }
-    </ion-buttons>
-    <ion-title> {{"common.training" | translate}}</ion-title>
     @if (isModal) {
     <ion-buttons slot="primary">
       <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
     </ion-buttons>
     }
+    <ion-title> {{"common.training" | translate}}</ion-title>
+    <ion-buttons slot="secondary">
+      @if (!isModal) {
+      <ion-menu-button></ion-menu-button>
+      }
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -18,11 +18,15 @@
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">{{"common.training" | translate}}</ion-title>
-      <!-- <ion-buttons slot="end">
-      <ion-button>
-        <ion-icon slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
-      </ion-button>
-    </ion-buttons>-->
+      <ion-buttons slot="end">
+        <ion-button (click)="trainingListActions()">
+          <ion-icon
+            slot="icon-only"
+            ios="ellipsis-horizontal"
+            md="ellipsis-vertical"
+          ></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 
@@ -30,11 +34,6 @@
   <ion-list lines="full">
     <ion-list-header>
       <ion-label>{{"training.upcomming__training" | translate}}</ion-label>
-      @if (children.length == 0) {
-      <ion-button (click)="toggleAll()" size="small" fill="clear">
-        {{"common.alle_anmelden" | translate}}</ion-button
-      >
-      }
     </ion-list-header>
     <ion-item>
       <ion-label slot="start">

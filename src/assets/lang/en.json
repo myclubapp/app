@@ -30,6 +30,7 @@
     "success__event_deleted": "Event successfully deleted",
     "success__helfer_deleted": "Helper event successfully deleted",
     "success__training_deleted": "Training successfully deleted",
+    "success__news_deleted": "News successfully deleted",
     "success__exercise_deleted": "Exercise successfully removed",
     "success__exercise_added": "Exercise successfully added",
     "alle_anmelden": "Register all",
@@ -99,6 +100,7 @@
     "end__date": "End date",
     "no_event__found": "No events found",
     "delete": "Delete",
+    "copy": "Copy",
     "helper": "Helper events",
     "helper_points": "Helper points",
     "my_helper_points": "My helper points",
@@ -347,7 +349,11 @@
     "news_entry": "News entry",
     "upcomingGames": "Upcoming Games",
     "upcomingGamesEnabled": "Upcoming games activated",
-    "upcomingGamesDisabled": "Upcoming games deactivated"
+    "upcomingGamesDisabled": "Upcoming games deactivated",
+    "actions": "News actions",
+    "delete_news": "Delete news",
+    "delete_news_confirm": "Do you really want to delete this news?",
+    "deleted_reason": "News was deleted"
   },
   "not-found": {
     "not_found": "Not found"

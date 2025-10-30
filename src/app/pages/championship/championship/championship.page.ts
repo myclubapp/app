@@ -121,8 +121,12 @@ export class ChampionshipPage implements OnInit {
       );
     });
 
-    this.teamAdminList$ = this.fbService.getTeamAdminList();
-    this.clubAdminList$ = this.fbService.getClubAdminList();
+    this.teamAdminList$ = this.fbService
+      .getTeamAdminList()
+      .pipe(shareReplay(1));
+    this.clubAdminList$ = this.fbService
+      .getClubAdminList()
+      .pipe(shareReplay(1));
   }
 
   ngOnDestroy(): void {}
@@ -659,6 +663,43 @@ export class ChampionshipPage implements OnInit {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
+    }
+  }
+
+  async gameListActions() {
+    const actionSheet = await this.uiService.showActionSheet({
+      header: await lastValueFrom(this.translate.get("training.actions")),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.alle_anmelden")),
+          handler: () => {
+            this.toggleAllGames();
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "destructive",
+        },
+      ],
+    });
+  }
+
+  async toggleAllGames() {
+    try {
+      const gameList = await lastValueFrom(this.gameList$.pipe(take(1)));
+      for (const game of gameList) {
+        await this.championshipService.setTeamGameAttendeeStatus(
+          true,
+          game.teamId,
+          game.id,
+        );
+      }
+      await this.presentToast();
+    } catch (error) {
+      console.error("Error during toggleAllGames operation:", error);
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("common.error")),
+      );
     }
   }
 

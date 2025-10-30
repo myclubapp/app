@@ -1280,6 +1280,17 @@ export class FirebaseService {
     return getDownloadURL(storageRef);
   }
 
+  async uploadClubNewsImage(
+    clubId: string,
+    newsId: string,
+    file: File,
+  ): Promise<string> {
+    const filePath = `club/${clubId}/news/${newsId}`;
+    const storageRef = ref(this.storage, filePath);
+    await uploadBytes(storageRef, file);
+    return getDownloadURL(storageRef);
+  }
+
   /**
    * Setzt das Team-Logo (upload + update Firestore)
    */

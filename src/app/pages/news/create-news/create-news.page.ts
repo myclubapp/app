@@ -30,6 +30,9 @@ export class CreateNewsPage implements OnInit {
     clubId: "",
   };
 
+  selectedFile: File | null = null;
+  previewUrl: string | null = null;
+
   constructor(
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
@@ -51,6 +54,19 @@ export class CreateNewsPage implements OnInit {
     });
   }
 
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+    if (this.selectedFile) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.previewUrl = e.target.result;
+      };
+      reader.readAsDataURL(this.selectedFile);
+    } else {
+      this.previewUrl = null;
+    }
+  }
+
   async createNews() {
     // Autor setzen
     this.news.author =
@@ -70,7 +86,20 @@ export class CreateNewsPage implements OnInit {
       ...this.news,
     };
     // Speichern in club/{clubId}/news
-    await this.newsService.createClubNews(this.news.clubId, this.news);
+    const ref = await this.newsService.createClubNews(
+      this.news.clubId,
+      this.news,
+    );
+    if (this.selectedFile) {
+      const url = await this.fbService.uploadClubNewsImage(
+        this.news.clubId,
+        ref.id,
+        this.selectedFile,
+      );
+      await this.newsService.updateClubNews(this.news.clubId, ref.id, {
+        image: url,
+      });
+    }
     await this.close();
   }
 

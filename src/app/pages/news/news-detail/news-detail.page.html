@@ -1,20 +1,54 @@
 @if (news$ | async; as news) {
-<!--<ion-header [translucent]="true">
+<ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title></ion-title>
-    <ion-buttons slot="primary">
+    <ion-buttons slot="secondary">
       <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
     </ion-buttons>
+
+    <ion-title>{{"common.details" | translate}}</ion-title>
+    <ion-buttons slot="primary">
+      @if (clubAdminList$ | async; as clubAdminList) { @if
+      (isClubAdmin(clubAdminList, this.news.clubId)) { @if (isVereinSource) {
+      @if (!allowEdit) {
+      <ion-button strong="true" (click)="edit()"
+        >{{"common.edit" | translate}}</ion-button
+      >
+      } @if (allowEdit) {
+      <ion-button strong="true" (click)="edit()"
+        >{{"common.done" | translate}}</ion-button
+      >
+      } } } }
+    </ion-buttons>
   </ion-toolbar>
-</ion-header>-->
+</ion-header>
 <ion-content>
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{"common.details" | translate}}</ion-title>
+
+      <ion-buttons slot="end">
+        @if (clubAdminList$ | async; as clubAdminList) { @if
+        (isClubAdmin(clubAdminList, this.news.clubId)) { @if (isVereinSource) {
+        <ion-button (click)="openAdminActions()">
+          <ion-icon
+            slot="icon-only"
+            ios="ellipsis-horizontal"
+            md="ellipsis-vertical"
+          ></ion-icon>
+        </ion-button>
+        } } }
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
   <ion-card>
-    <ion-fab vertical="top" horizontal="end">
+    <!--<ion-fab vertical="top" horizontal="end">
       <ion-fab-button size="small" (click)="close()">
         <ion-icon name="close" size="small"></ion-icon>
       </ion-fab-button>
-    </ion-fab>
+    </ion-fab>-->
     <ion-img [src]="news.image" [alt]="news.title" />
+    @if (!allowEdit) {
     <ion-card-header>
       <ion-card-subtitle
         >{{news.date | date:'dd.MM.yyyy HH:mm'}}</ion-card-subtitle
@@ -22,6 +56,47 @@
       <ion-card-title [innerHTML]="news.title"></ion-card-title>
     </ion-card-header>
     <ion-card-content [innerHTML]="news.text"> </ion-card-content>
+    } @if (allowEdit) {
+    <ion-list lines="none">
+      <ion-item>
+        <ion-input
+          [label]="'common.title' | translate"
+          label-placement="stacked"
+          (ionChange)="updateNewsField($event, 'title')"
+          [value]="news.title"
+        >
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          label="Slug"
+          label-placement="stacked"
+          (ionChange)="updateNewsField($event, 'leadText')"
+          [value]="news.leadText"
+        >
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-textarea
+          [autoGrow]="true"
+          (ionChange)="updateNewsField($event, 'text')"
+          [label]="'common.text' | translate"
+          label-placement="stacked"
+          [value]="news.text"
+        >
+        </ion-textarea>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Bild</ion-label>
+        <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+      </ion-item>
+      @if (previewUrl) {
+      <ion-item lines="none">
+        <ion-img [src]="previewUrl"></ion-img>
+      </ion-item>
+      }
+    </ion-list>
+    }
     <ion-row>
       <ion-col size="8">
         <ion-chip>

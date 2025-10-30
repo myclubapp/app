@@ -18,6 +18,15 @@
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">{{"events.event" | translate}}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="eventsListActions()">
+          <ion-icon
+            slot="icon-only"
+            ios="ellipsis-horizontal"
+            md="ellipsis-vertical"
+          ></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-toolbar>
   </ion-header>
 

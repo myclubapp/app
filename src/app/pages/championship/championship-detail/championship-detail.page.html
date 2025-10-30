@@ -1,19 +1,47 @@
 @if (game$ | async; as game) {
-<!--<ion-header [translucent]="true">
+
+<ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title></ion-title>
-    <ion-buttons slot="primary">
+    <ion-buttons slot="secondary">
       <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
     </ion-buttons>
+
+    <ion-title>{{"common.details" | translate}}</ion-title>
+    <!--<ion-buttons slot="primary">
+          @if (teamAdminList$ | async; as teamAdminList) { @if
+          (isTeamAdmin(teamAdminList, this.game.teamId)) {
+          @if (!allowEdit) {
+          <ion-button strong="true" (click)="edit()">{{"common.edit" | translate}}</ion-button>
+          } @if (allowEdit) {
+          <ion-button strong="true" (click)="edit()">{{"common.done" | translate}}</ion-button>
+          }
+          } }
+        </ion-buttons>-->
   </ion-toolbar>
-</ion-header>-->
-<!-- class="ion-padding" -->
+</ion-header>
+
 <ion-content>
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{"common.details" | translate}}</ion-title>
+
+      <ion-buttons slot="end">
+        @if (teamAdminList$ | async; as teamAdminList) { @if
+        (isTeamAdmin(teamAdminList, this.game.teamId)) {
+        <!-- <ion-button (click)="openAdminActions()">
+          <ion-icon slot="icon-only" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
+        </ion-button>-->
+        } }
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <!--
   <ion-fab vertical="top" horizontal="end">
     <ion-fab-button size="small" (click)="close()">
       <ion-icon name="close" size="small"></ion-icon>
     </ion-fab-button>
-  </ion-fab>
+  </ion-fab>-->
   @if (game.latitude && game.longitude && !platform.is('android')) {
   <capacitor-google-map #map></capacitor-google-map>
   }

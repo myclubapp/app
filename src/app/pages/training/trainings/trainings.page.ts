@@ -774,6 +774,24 @@ export class TrainingsPage implements OnInit {
     }
   }
 
+  async trainingListActions() {
+    const actionSheet = await this.uiService.showActionSheet({
+      header: await lastValueFrom(this.translate.get("training.actions")),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.alle_anmelden")),
+          handler: () => {
+            this.toggleAll();
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "destructive",
+        },
+      ],
+    });
+  }
+
   toggleItem(slidingItem: IonItemSliding, status: boolean, training: any) {
     console.log("toggleItem", training);
     slidingItem.closeOpened();

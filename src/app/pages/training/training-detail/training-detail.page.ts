@@ -43,6 +43,7 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
 import { UiService } from "src/app/services/ui.service";
+import { TrainingCreatePage } from "../training-create/training-create.page";
 
 @Component({
   selector: "app-training-detail",
@@ -547,6 +548,204 @@ export class TrainingDetailPage implements OnInit {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
+    }
+  }
+
+  async openAdminActions() {
+    const actionSheet = await this.uiService.showActionSheet({
+      header: await lastValueFrom(this.translate.get("training.actions")),
+      buttons: [
+        {
+          text: await lastValueFrom(
+            this.translate.get("training.cancel_training"),
+          ),
+          icon: "alert-circle-outline",
+          handler: () => {
+            this.cancelTraining(this.training);
+          },
+        },
+        {
+          text: await lastValueFrom(
+            this.translate.get("training.send_reminder"),
+          ),
+          icon: "notifications-outline",
+          handler: () => {
+            this.sendReminder(this.training);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.copy")),
+          icon: "copy-outline",
+          handler: () => {
+            this.copyTraining(this.training);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.delete")),
+          icon: "trash",
+          role: "destructive",
+          handler: () => {
+            this.deleteTraining(this.training);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "cancel",
+        },
+      ],
+    });
+  }
+
+  async copyTraining(training: Training) {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
+    const modal = await this.modalCtrl.create({
+      component: TrainingCreatePage,
+      presentingElement,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: training,
+      },
+    });
+    modal.present();
+    await modal.onWillDismiss();
+  }
+
+  async deleteTraining(training: Training) {
+    const result = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(
+        this.translate.get("training.delete_training"),
+      ),
+      message: await lastValueFrom(
+        this.translate.get("training.delete_training_confirm"),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    if (result) {
+      try {
+        await this.trainingService.updateTraining(
+          training.teamId,
+          training.id,
+          {
+            cancelled: true,
+            cancelledReason: await lastValueFrom(
+              this.translate.get("training.deleted_reason"),
+            ),
+          },
+        );
+        await this.trainingService.deleteTeamTraining(
+          training.teamId,
+          training.id,
+        );
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(
+            this.translate.get("common.success__training_deleted"),
+          ),
+        );
+      } catch (error) {
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
+    }
+  }
+
+  async sendReminder(training: any) {
+    const teamMembers = await lastValueFrom(
+      this.fbService.getTeamMemberRefs(training.teamId).pipe(take(1)),
+    );
+    const attendees = await lastValueFrom(
+      this.trainingService
+        .getTeamTrainingsAttendeesRef(training.teamId, training.id)
+        .pipe(take(1)),
+    );
+    const pendingMembers = teamMembers.filter(
+      (member) => !attendees.some((attendee) => attendee.id === member.id),
+    );
+    if (pendingMembers.length === 0) {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(
+          this.translate.get("training.all_members_responded"),
+        ),
+      );
+      return;
+    }
+    const result = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(this.translate.get("training.send_reminder")),
+      message: await lastValueFrom(
+        this.translate.get("training.send_reminder_confirm", {
+          count: pendingMembers.length,
+        }),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+    if (result) {
+      try {
+        await this.trainingService.sendReminder(training.teamId, training.id);
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(this.translate.get("training.reminder_sent")),
+        );
+      } catch (error) {
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
+    }
+  }
+
+  async cancelTraining(training: any) {
+    const result = await this.uiService.showFormDialog({
+      header: await lastValueFrom(
+        this.translate.get("training.cancel_training"),
+      ),
+      inputs: [
+        {
+          name: "reason",
+          type: "textarea",
+          placeholder: await lastValueFrom(
+            this.translate.get("training.cancel_reason_placeholder"),
+          ),
+          attributes: {
+            maxlength: 200,
+          },
+        },
+      ],
+      confirmText: await lastValueFrom(this.translate.get("common.confirm")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    const reason = result?.reason ?? result?.values?.reason;
+    if (reason) {
+      try {
+        await this.trainingService.updateTraining(
+          training.teamId,
+          training.id,
+          {
+            cancelled: true,
+            cancelledReason: reason,
+          },
+        );
+        await this.uiService.showSuccessToast(
+          await lastValueFrom(
+            this.translate.get("training.training_cancelled"),
+          ),
+        );
+      } catch (error) {
+        await this.uiService.showErrorToast(
+          await lastValueFrom(this.translate.get("common.error")),
+        );
+      }
+    } else {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(
+          this.translate.get("training.cancel_reason_required"),
+        ),
+      );
     }
   }
   async openTrainingExerciseModal() {

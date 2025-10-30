@@ -30,6 +30,7 @@ import { MemberPage } from "../../member/member.page";
 import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UiService } from "src/app/services/ui.service";
+import { HelferAddPage } from "../helfer-add/helfer-add.page";
 
 @Component({
   selector: "app-helfer-detail",
@@ -381,6 +382,79 @@ export class HelferDetailPage implements OnInit {
     Browser.open({
       url: url,
     });
+  }
+
+  async openAdminActions() {
+    const actionSheet = await this.uiService.showActionSheet({
+      header: await lastValueFrom(this.translate.get("events.actions")),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.copy")),
+          icon: "copy-outline",
+          handler: () => {
+            this.copyEvent(this.event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.delete")),
+          icon: "trash",
+          role: "destructive",
+          handler: () => {
+            this.deleteEvent(this.event);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "cancel",
+        },
+      ],
+    });
+  }
+
+  async copyEvent(event: HelferEvent) {
+    try {
+      const schichten = await lastValueFrom(
+        this.eventService
+          .getClubHelferEventSchichtenRef(event.clubId, event.id)
+          .pipe(
+            take(1),
+            map((items) =>
+              items.sort((a, b) => a.timeFrom.localeCompare(b.timeFrom)),
+            ),
+            catchError(() => of([])),
+          ),
+      );
+
+      const copyPayload = { ...event, schichten } as any;
+
+      const topModal = await this.modalCtrl.getTop();
+      const presentingElement = topModal || (await this.modalCtrl.getTop());
+
+      const modal = await this.modalCtrl.create({
+        component: HelferAddPage,
+        presentingElement,
+        canDismiss: true,
+        showBackdrop: true,
+        componentProps: { data: copyPayload },
+      });
+      await modal.present();
+      await modal.onWillDismiss();
+    } catch (e) {
+      console.error("Failed to prepare copy for helfer event", e);
+    }
+  }
+
+  async deleteEvent(event: HelferEvent) {
+    await this.eventService.deleteHelferEvent(event.clubId, event.id);
+    const toast = await this.toastController.create({
+      message: await lastValueFrom(
+        this.translate.get("common.success__helfer_deleted"),
+      ),
+      color: "danger",
+      duration: 1500,
+      position: "top",
+    });
+    toast.present();
   }
 
   // Add checck for too late?

@@ -30,6 +30,7 @@
     "success__event_deleted": "Veranstaltung erfolgreich gelöscht",
     "success__helfer_deleted": "Helferevent erfolgreich gelöscht",
     "success__training_deleted": "Training erfolgreich gelöscht",
+    "success__news_deleted": "News erfolgreich gelöscht",
     "success__exercise_deleted": "Übung erfolgreich entfernt",
     "success__exercise_added": "Übung erfolgreich hinzugefügt",
     "alle_anmelden": "alle anmelden",
@@ -114,6 +115,7 @@
     "end__date": "Enddatum",
     "no_event__found": "keine Veranstaltungen gefunden",
     "delete": "Löschen",
+    "copy": "Kopieren",
     "helper": "Helferevents",
     "helper_points": "Helferpunkte",
     "my_helper_points": "Meine Helferpunkte",
@@ -433,7 +435,11 @@
     "no_open_notifications": "Keine offenen Benachrichtigungen gefunden",
     "upcomingGames": "Kommende Spiele",
     "upcomingGamesEnabled": "Kommende Spiele aktiviert",
-    "upcomingGamesDisabled": "Kommende Spiele deaktiviert"
+    "upcomingGamesDisabled": "Kommende Spiele deaktiviert",
+    "actions": "News Aktionen",
+    "delete_news": "News löschen",
+    "delete_news_confirm": "Möchten Sie diese News wirklich löschen?",
+    "deleted_reason": "News wurde gelöscht"
   },
   "news-detail": {},
   "not-found": {

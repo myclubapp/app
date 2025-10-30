@@ -380,7 +380,7 @@ export class NewsPage implements OnInit {
           allNews.push(...typeNews);
         });
 
-        // Remove duplicates and sort
+        // Duplikate entfernen und sortieren (ISO-String oder Date wird von Date-Parser unterstützt)
         return allNews
           .filter(
             (news, index, self) =>

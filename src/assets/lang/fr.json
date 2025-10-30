@@ -30,6 +30,7 @@
     "success__event_deleted": "Événement supprimé avec succès",
     "success__helfer_deleted": "Événement d'aide supprimé avec succès",
     "success__training_deleted": "Entraînement supprimé avec succès",
+    "success__news_deleted": "Actualité supprimée avec succès",
     "success__exercise_deleted": "Exercice supprimé avec succès",
     "success__exercise_added": "Exercice ajouté avec succès",
     "alle_anmelden": "Inscrire tous",
@@ -99,6 +100,7 @@
     "end__date": "Date de fin",
     "no_event__found": "Aucun événement trouvé",
     "delete": "Supprimer",
+    "copy": "Copier",
     "helper": "Événements d'aide",
     "helper_points": "Points d'aide",
     "my_helper_points": "Mes points d'aide",
@@ -347,7 +349,11 @@
     "news_entry": "Article d'actualité",
     "upcomingGames": "Prochains matchs",
     "upcomingGamesEnabled": "Prochains matchs activés",
-    "upcomingGamesDisabled": "Prochains matchs désactivés"
+    "upcomingGamesDisabled": "Prochains matchs désactivés",
+    "actions": "Actions actualité",
+    "delete_news": "Supprimer l'actualité",
+    "delete_news_confirm": "Voulez-vous vraiment supprimer cette actualité ?",
+    "deleted_reason": "L'actualité a été supprimée"
   },
   "not-found": {
     "not_found": "Non trouvé"

@@ -30,6 +30,7 @@
     "success__event_deleted": "Evento eliminato con successo",
     "success__helfer_deleted": "Evento di aiuto eliminato con successo",
     "success__training_deleted": "Allenamento eliminato con successo",
+    "success__news_deleted": "Notizia eliminata con successo",
     "success__exercise_deleted": "Esercizio rimosso con successo",
     "success__exercise_added": "Esercizio aggiunto con successo",
     "alle_anmelden": "Registra tutti",
@@ -99,6 +100,7 @@
     "end__date": "Data di fine",
     "no_event__found": "Nessun evento trovato",
     "delete": "Elimina",
+    "copy": "Copia",
     "helper": "Eventi di aiuto",
     "helper_points": "Punti di aiuto",
     "my_helper_points": "I miei punti di aiuto",
@@ -347,7 +349,11 @@
     "news_entry": "Voce notizia",
     "upcomingGames": "Prossime partite",
     "upcomingGamesEnabled": "Prossime partite attivate",
-    "upcomingGamesDisabled": "Prossime partite disattivate"
+    "upcomingGamesDisabled": "Prossime partite disattivate",
+    "actions": "Azioni notizia",
+    "delete_news": "Elimina notizia",
+    "delete_news_confirm": "Vuoi davvero eliminare questa notizia?",
+    "deleted_reason": "La notizia è stata eliminata"
   },
   "not-found": {
     "not_found": "Non trovato"

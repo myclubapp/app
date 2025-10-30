@@ -74,6 +74,15 @@
           auto-grow="true"
         ></ion-textarea>
       </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Bild</ion-label>
+        <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+      </ion-item>
+      @if (previewUrl) {
+      <ion-item lines="none">
+        <ion-img [src]="previewUrl"></ion-img>
+      </ion-item>
+      }
     </ion-list>
   </form>
 </ion-content>

@@ -17,8 +17,11 @@ import {
   limit,
   setDoc,
   addDoc,
+  updateDoc,
+  deleteDoc,
 } from "@angular/fire/firestore";
 import { Observable, shareReplay } from "rxjs";
+import { DocumentReference } from "@angular/fire/firestore";
 import { News } from "src/app/models/news";
 
 @Injectable({
@@ -91,11 +94,36 @@ export class NewsService {
     }) as unknown as Observable<News[]>;
   }
 
-  async createClubNews(clubId: string, news: any): Promise<void> {
+  async createClubNews(clubId: string, news: any): Promise<DocumentReference> {
     const newsCollection = collection(this.firestore, `club/${clubId}/news`);
-    await addDoc(newsCollection, {
+    return await addDoc(newsCollection, {
       ...news,
-      date: new Date(),
+      // Speichere Datum konsistent als ISO-String, damit die bestehenden where()-Filter mit ISO funktionieren
+      date: new Date().toISOString(),
     });
+  }
+
+  async updateNews(newsId: string, changes: Partial<News>): Promise<void> {
+    const newsRef = doc(this.firestore, `news/${newsId}`);
+    await updateDoc(newsRef, changes as any);
+  }
+
+  async updateClubNews(
+    clubId: string,
+    newsId: string,
+    changes: Partial<News>,
+  ): Promise<void> {
+    const newsRef = doc(this.firestore, `club/${clubId}/news/${newsId}`);
+    await updateDoc(newsRef, changes as any);
+  }
+
+  async deleteNews(newsId: string): Promise<void> {
+    const newsRef = doc(this.firestore, `news/${newsId}`);
+    await deleteDoc(newsRef);
+  }
+
+  async deleteClubNews(clubId: string, newsId: string): Promise<void> {
+    const newsRef = doc(this.firestore, `club/${clubId}/news/${newsId}`);
+    await deleteDoc(newsRef);
   }
 }

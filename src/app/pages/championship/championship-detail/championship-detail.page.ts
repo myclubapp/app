@@ -46,6 +46,8 @@ export class ChampionshipDetailPage implements OnInit {
   mapRef: ElementRef<HTMLElement>;
   newMap: GoogleMap;
 
+  allowEdit: boolean = false;
+
   game$: Observable<Game>;
 
   mode = "yes";
@@ -164,6 +166,16 @@ export class ChampionshipDetailPage implements OnInit {
       this.newMap.destroy();
     }
   }
+
+  async edit() {
+    if (this.allowEdit) {
+      this.allowEdit = false;
+    } else {
+      this.allowEdit = true;
+    }
+  }
+
+  async openAdminActions() {}
   // ng
   getGame(teamId: string, gameId: string) {
     return this.authService.getUser$().pipe(

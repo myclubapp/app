@@ -858,8 +858,8 @@ export class EventsPage implements OnInit {
   }
 
   async openEventDetailModal(event: Veranstaltung, isFuture: boolean) {
-    console.log("Open Modal");
-    console.log(JSON.stringify(event));
+    // console.log("Open Modal");
+    // console.log(JSON.stringify(event));
     const topModal = await this.modalCtrl.getTop();
     const presentingElement = topModal || this.routerOutlet?.nativeEl;
 
@@ -878,6 +878,43 @@ export class EventsPage implements OnInit {
     const { data, role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
+    }
+  }
+
+  async eventsListActions() {
+    const actionSheet = await this.uiService.showActionSheet({
+      header: await lastValueFrom(this.translate.get("events.actions")),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.alle_anmelden")),
+          handler: () => {
+            this.toggleAllEvents();
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "destructive",
+        },
+      ],
+    });
+  }
+
+  async toggleAllEvents() {
+    try {
+      const eventsList = await lastValueFrom(this.eventList$.pipe(take(1)));
+      for (const event of eventsList) {
+        await this.eventService.setClubEventAttendeeStatus(
+          true,
+          event.clubId,
+          event.id,
+        );
+      }
+      await this.presentToast();
+    } catch (error) {
+      console.error("Error during toggleAllEvents operation:", error);
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("common.error")),
+      );
     }
   }
 
