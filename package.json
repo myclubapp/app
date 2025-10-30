@@ -1,12 +1,7 @@
 {
   "name": "myclub",
-<<<<<<< HEAD
   "version": "2.4.0",
   "buildNumber": "216",
-=======
-  "version": "2.3.0",
-  "buildNumber": "215",
->>>>>>> 0140cd0a713500842fade8f9f9c7996c66e823e4
   "author": "liitu consulting gmbh",
   "homepage": "https://my-club.app/",
   "scripts": {
