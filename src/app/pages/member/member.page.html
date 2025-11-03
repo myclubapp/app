@@ -32,12 +32,8 @@
       </ion-avatar>
       <ion-label>{{userProfile.firstName}} {{userProfile.lastName}}</ion-label>
     </ion-item>
-    @if (isRequest && isParent) {
-    <ion-item>
-      <ion-icon slot="start" name="people-circle-outline"></ion-icon>
-      <ion-label>{{"common.parents" | translate}}</ion-label>
-    </ion-item>
-    } @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ |
+
+    @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ |
     async; as clubAdminList) { @if (isTeamAdmin(teamAdminList, teamId) ||
     isClubAdmin(clubAdminList, clubId)) {
     <!-- Admin sieht immer die E-Mail -->
@@ -94,16 +90,9 @@
         (click)="copy(userProfile.phonenumber)"
       ></ion-icon>
     </ion-item>
-    } } } } } @if (isRequest && requestTeam$ | async; as requestTeam) {
-    <ion-item>
-      <ion-icon slot="start" name="information-circle-outline"></ion-icon>
-      <ion-label
-        >{{'common.requested_for' | translate}} {{requestTeam.name}}</ion-label
-      >
-    </ion-item>
-    } @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ |
-    async; as clubAdminList) { @if (isTeamAdmin(teamAdminList, teamId) ||
-    isClubAdmin(clubAdminList, clubId)) { @if (!isRequest &&
+    } } } } } @if (teamAdminList$ | async; as teamAdminList) { @if
+    (clubAdminList$ | async; as clubAdminList) { @if (isTeamAdmin(teamAdminList,
+    teamId) || isClubAdmin(clubAdminList, clubId)) { @if (!isRequest &&
     userProfile.dateOfBirth) {
     <ion-item>
       <ion-icon slot="start" name="calendar"></ion-icon>
@@ -120,7 +109,29 @@
     </ion-item>
     } } } }
   </ion-list>
-  @if (children$ | async; as childrenList) {
+
+  @if (isRequest) {
+
+  <ion-list [inset]="true">
+    <ion-list-header>
+      <ion-label>{{"common.request" | translate}}</ion-label>
+    </ion-list-header>
+
+    @if (isRequest && isParent) {
+    <ion-item>
+      <ion-icon slot="start" name="people-circle-outline"></ion-icon>
+      <ion-label>{{"common.parents" | translate}}</ion-label>
+    </ion-item>
+    } @if (isRequest && requestTeam$ | async; as requestTeam) {
+    <ion-item>
+      <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+      <ion-label
+        >{{'common.requested_for' | translate}} {{requestTeam.name}}</ion-label
+      >
+    </ion-item>
+    }
+  </ion-list>
+  } @if (children$ | async; as childrenList) {
   <ion-list [inset]="true">
     @if (childrenList.length > 0) {
     <ion-list-header>
