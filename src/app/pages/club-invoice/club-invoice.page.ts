@@ -55,6 +55,7 @@ export class ClubInvoicePage implements OnInit {
   filteredClubMembers$: Observable<any[]>;
   searchTerm = new BehaviorSubject<string>("");
   groupArray = [];
+  allowEdit: boolean = false;
   segment: "members" | "invoices" = "members";
   teams: any[] = [];
   selectedTeamId$ = new BehaviorSubject<string>("all");
@@ -88,6 +89,14 @@ export class ClubInvoicePage implements OnInit {
     });
     this.loadTeams();
     this.initializeClubMembers();
+  }
+
+  edit() {
+    if (this.allowEdit) {
+      this.allowEdit = false;
+    } else {
+      this.allowEdit = true;
+    }
   }
 
   loadTeams() {
@@ -369,105 +378,174 @@ export class ClubInvoicePage implements OnInit {
     return [];
   }
 
+  async selectTeamAndPositionsForMember(
+    member: any,
+    teams: any[],
+  ): Promise<{ positions: ClubSurcharge[] } | null> {
+    // Erstelle Inputs: Checkboxen für Teams + Checkboxen für Zuschläge/Abzüge
+    const inputs: any[] = [];
+
+    // Checkboxen für Teams
+    inputs.push({
+      type: "checkbox" as const,
+      label: "─── Teams ───",
+      value: "divider-teams",
+      disabled: true,
+      cssClass: "alert-checkbox-group-divider",
+    });
+    teams.forEach((team, idx) => {
+      inputs.push({
+        type: "checkbox" as const,
+        label: `${team.name} (${team.jahresbeitragWert} ${team.jahresbeitragWaehrung})`,
+        value: `team-${team.id}`,
+        checked: idx === 0, // Erstes Team ist standardmäßig ausgewählt
+      });
+    });
+
+    // Checkboxen für Zuschläge/Abzüge
+    if (this.club.surcharges && this.club.surcharges.length > 0) {
+      inputs.push({
+        type: "checkbox" as const,
+        label: "─── Zuschläge/Abzüge ───",
+        value: "divider-surcharges",
+        disabled: true,
+        cssClass: "alert-checkbox-group-divider",
+      });
+      (this.club.surcharges as ClubSurcharge[]).forEach((s, i) => {
+        inputs.push({
+          type: "checkbox" as const,
+          label: `${s.name} (${s.amount > 0 ? "+" : ""}${s.amount} ${s.waehrung || teams[0]?.jahresbeitragWaehrung || "CHF"})`,
+          value: `surcharge-${i}`,
+          checked: false,
+        });
+      });
+    }
+
+    const alert = await this.alertCtrl.create({
+      header: `Positionen für ${member.firstName} ${member.lastName}`,
+      message: "Bitte wähle die Positionen für die Rechnung:",
+      inputs,
+      buttons: [
+        { text: "Abbrechen", role: "cancel" },
+        { text: "Weiter", role: "confirm" },
+      ],
+    });
+
+    await alert.present();
+    const { data, role } = await alert.onWillDismiss();
+
+    if (role === "confirm" && data && data.values) {
+      const selectedValues = Array.isArray(data.values)
+        ? data.values
+        : [data.values];
+
+      const positions: ClubSurcharge[] = [];
+
+      // Extrahiere ausgewählte Teams
+      for (const val of selectedValues) {
+        if (typeof val === "string" && val.startsWith("team-")) {
+          const teamId = val.replace("team-", "");
+          const team = teams.find((t) => t.id === teamId);
+          if (team) {
+            positions.push({
+              name: `Mitgliederbeitrag ${team.name}`,
+              amount: team.jahresbeitragWert,
+              waehrung: team.jahresbeitragWaehrung,
+            });
+          }
+        }
+      }
+
+      // Extrahiere ausgewählte Zuschläge/Abzüge
+      for (const val of selectedValues) {
+        if (typeof val === "string" && val.startsWith("surcharge-")) {
+          const idx = parseInt(val.replace("surcharge-", ""), 10);
+          if (!isNaN(idx) && (this.club.surcharges as ClubSurcharge[])[idx]) {
+            const s = (this.club.surcharges as ClubSurcharge[])[idx];
+            positions.push({
+              name: s.name,
+              amount: s.amount,
+              waehrung: s.waehrung || teams[0]?.jahresbeitragWaehrung || "CHF",
+            });
+          }
+        }
+      }
+
+      // Mindestens eine Position muss ausgewählt sein
+      if (positions.length === 0) {
+        this.ui.showErrorToast("Bitte wähle mindestens eine Position aus!");
+        return this.selectTeamAndPositionsForMember(member, teams);
+      }
+
+      return { positions };
+    }
+    return null;
+  }
+
   async generateInvoicesForSelected() {
     if (this.selectedMembers.length === 0) return;
 
-    // Für alle Mitglieder Teambeitrag-Objekt bestimmen
-    const teamBeitraege = this.selectedMembers.map((member) => {
+    // Für jedes Mitglied: kombinierter Dialog für Team + Positionen
+    for (const [index, member] of this.selectedMembers.entries()) {
       const teams = this.getTeamsForMember(member);
-      const beitragTeam = teams.find(
+      const beitragTeams = teams.filter(
         (team) => team.jahresbeitragWert && team.jahresbeitragWaehrung,
       );
-      return beitragTeam
-        ? {
-            name: `Mitgliederbeitrag ${beitragTeam.name}`,
-            amount: beitragTeam.jahresbeitragWert,
-            waehrung: beitragTeam.jahresbeitragWaehrung,
-          }
-        : null;
-    });
 
-    // Prüfen, ob alle Teambeiträge gleich sind
-    const first = teamBeitraege[0];
-    const allEqual = teamBeitraege.every(
-      (t) =>
-        t &&
-        t.name === first.name &&
-        t.amount === first.amount &&
-        t.waehrung === first.waehrung,
-    );
+      if (beitragTeams.length === 0) {
+        this.ui.showErrorToast(
+          `Kein Beitrag für ${member.firstName} ${member.lastName} hinterlegt!`,
+        );
+        continue;
+      }
 
-    if (allEqual) {
-      // Dialog einmal, Auswahl für alle
-      const selectedPositions = await this.selectPositionsDialog(first);
-      if (selectedPositions.length === 0) return;
-      for (const [index, member] of this.selectedMembers.entries()) {
-        const currency = first.waehrung;
-        const amount = selectedPositions
-          .filter((p) => p.waehrung === currency)
-          .reduce((sum, p) => sum + Number(p.amount), 0);
-        const referenceId =
-          this.period.referenceId + Date.now().toString().slice(1, 12) + index;
-        const modulo10 = this.mod10(referenceId);
-        const referenceNumber = referenceId.toString() + modulo10.toString();
-        await this.invoiceService.generateInvoiceForMember(
-          this.club.id,
-          this.period.id,
-          member,
-          {
-            amount,
-            currency,
-            referenceNumber,
-            status: "draft",
-            purpose: this.period.name,
-            positions: selectedPositions,
-          },
-        );
+      // Zeige kombinierten Dialog (Team + Positionen)
+      const result = await this.selectTeamAndPositionsForMember(
+        member,
+        beitragTeams,
+      );
+
+      if (!result) {
+        // Benutzer hat abgebrochen - alle weiteren Mitglieder überspringen
+        return;
       }
-    } else {
-      // Dialog für jedes Mitglied einzeln
-      for (const [index, member] of this.selectedMembers.entries()) {
-        const beitrag = teamBeitraege[index];
-        if (!beitrag) {
-          this.ui.showErrorToast(
-            `Kein Beitrag für ${member.firstName} ${member.lastName} hinterlegt!`,
-          );
-          continue;
-        }
-        // Teamname extrahieren
-        const teams = this.getTeamsForMember(member);
-        const beitragTeam = teams.find(
-          (team) => team.jahresbeitragWert && team.jahresbeitragWaehrung,
-        );
-        const teamName = beitragTeam ? beitragTeam.name : "";
-        const selectedPositions = await this.selectPositionsDialog(
-          beitrag,
-          member,
-          teamName,
-        );
-        if (selectedPositions.length === 0) continue;
-        const currency = beitrag.waehrung;
-        const amount = selectedPositions
-          .filter((p) => p.waehrung === currency)
-          .reduce((sum, p) => sum + Number(p.amount), 0);
-        const referenceId =
-          this.period.referenceId + Date.now().toString().slice(1, 12) + index;
-        const modulo10 = this.mod10(referenceId);
-        const referenceNumber = referenceId.toString() + modulo10.toString();
-        await this.invoiceService.generateInvoiceForMember(
-          this.club.id,
-          this.period.id,
-          member,
-          {
-            amount,
-            currency,
-            referenceNumber,
-            status: "draft",
-            purpose: this.period.name,
-            positions: selectedPositions,
-          },
-        );
-      }
+
+      const { positions } = result;
+
+      // Berechne Gesamtbetrag - Gruppiere nach Währung
+      const currencyGroups = positions.reduce(
+        (acc, p) => {
+          if (!acc[p.waehrung]) acc[p.waehrung] = 0;
+          acc[p.waehrung] += Number(p.amount);
+          return acc;
+        },
+        {} as { [key: string]: number },
+      );
+
+      // Verwende die erste Währung (könnte erweitert werden für Multi-Währungs-Support)
+      const currency = Object.keys(currencyGroups)[0] || "CHF";
+      const amount = currencyGroups[currency] || 0;
+
+      // Generiere Referenznummer
+      const referenceId =
+        this.period.referenceId + Date.now().toString().slice(1, 12) + index;
+      const modulo10 = this.mod10(referenceId);
+      const referenceNumber = referenceId.toString() + modulo10.toString();
+
+      // Erstelle Rechnung
+      await this.invoiceService.generateInvoiceForMember(
+        this.club.id,
+        this.period.id,
+        member,
+        {
+          amount,
+          currency,
+          referenceNumber,
+          status: "draft",
+          purpose: this.period.name,
+          positions,
+        },
+      );
     }
     this.ui.showSuccessToast("Rechnungen für Auswahl generiert");
   }

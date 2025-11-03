@@ -1,8 +1,16 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="secondary">
+      <ion-button (click)="close()">{{'common.close' | translate}}</ion-button>
+    </ion-buttons>
     <ion-title>{{period.name}}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="close()">{{'common.close' | translate}}</ion-button>
+      <!--
+      @if (!allowEdit) {
+      <ion-button (click)="edit()">{{"common.edit" | translate}}</ion-button>
+      } @if (allowEdit) {
+      <ion-button (click)="edit()">{{"common.done" | translate}}</ion-button>
+    }-->
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -114,6 +122,11 @@
     </ion-list-header>
     @for (invoice of invoices; track invoice.id) {
     <ion-item>
+      @if (allowEdit) {
+      <ion-checkbox slot="start">
+        <ion-icon name="checkmark-outline"></ion-icon>
+      </ion-checkbox>
+      }
       <ion-label (click)="openInvoiceDetail(invoice)">
         {{invoice.firstName}} {{invoice.lastName}}<br />
         <small>{{invoice.amount}} {{invoice.currency}}</small>

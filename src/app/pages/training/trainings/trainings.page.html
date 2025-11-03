@@ -1,16 +1,15 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     @if (isModal) {
-    <ion-buttons slot="primary">
+    <ion-buttons slot="secondary">
       <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+    } @if (!isModal) {
+    <ion-buttons slot="secondary">
+      <ion-menu-button></ion-menu-button>
     </ion-buttons>
     }
     <ion-title> {{"common.training" | translate}}</ion-title>
-    <ion-buttons slot="secondary">
-      @if (!isModal) {
-      <ion-menu-button></ion-menu-button>
-      }
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
