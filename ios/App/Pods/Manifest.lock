@@ -1,5 +1,5 @@
 PODS:
-  - Capacitor (7.4.3):
+  - Capacitor (7.4.4):
     - CapacitorCordova
   - CapacitorApp (7.1.0):
     - Capacitor
@@ -9,7 +9,7 @@ PODS:
     - Capacitor
   - CapacitorClipboard (7.0.2):
     - Capacitor
-  - CapacitorCordova (7.4.3)
+  - CapacitorCordova (7.4.4)
   - CapacitorDevice (7.0.2):
     - Capacitor
   - CapacitorDialog (7.0.2):
@@ -30,7 +30,7 @@ PODS:
     - Capacitor
   - CapacitorNetwork (7.0.2):
     - Capacitor
-  - CapacitorPluginSafeArea (4.0.1):
+  - CapacitorPluginSafeArea (4.0.2):
     - Capacitor
   - CapacitorPreferences (7.0.2):
     - Capacitor
@@ -42,7 +42,7 @@ PODS:
     - Capacitor
   - CapacitorStatusBar (7.0.3):
     - Capacitor
-  - CordovaPlugins (7.4.3):
+  - CordovaPlugins (7.4.4):
     - CapacitorCordova
   - Firebase/CoreOnly (7.11.0):
     - FirebaseCore (= 7.11.0)
@@ -209,12 +209,12 @@ EXTERNAL SOURCES:
     :path: "../capacitor-cordova-ios-plugins"
 
 SPEC CHECKSUMS:
-  Capacitor: b4741ca7affb32c1b70debd03df92cbf522d8a80
+  Capacitor: 09d9ff8e9618e8c4b3cab2bbee34a17215dd2fef
   CapacitorApp: 846d4b4a1dbb19dd1e9029c08ba6f028aa7be862
   CapacitorBrowser: 45c681e7abc3b4384e54eb52bafeef1347d98fa8
   CapacitorCamera: 6e18d54c8ab30d7dc7b8cd93d96f9b4f57e9202a
   CapacitorClipboard: e8b3578b2fce3c4795a5bdf2990b3b7dcef83f65
-  CapacitorCordova: 435121e81a2df4d0034f0fb11fcefab5104cfdb5
+  CapacitorCordova: bf648a636f3c153f652d312ae145fb508b6ffced
   CapacitorDevice: a50a45f0d075e55e2392c7a4be5404d4f69515de
   CapacitorDialog: f23be5f188fbfedf7eca159c5d5bdab98b4c89c6
   CapacitorFilesystem: ac0a386949ed6c295a3dffa129ecd26b881ae5be
@@ -223,13 +223,13 @@ SPEC CHECKSUMS:
   CapacitorHaptics: 09d96bcb5a2b74ede8fd039b4cdf58fc43dcacf1
   CapacitorKeyboard: 3822c3a0c6b58168f96ca562f9534ed095d40860
   CapacitorNetwork: 9b9eaeb417ec0ffa22e2bc33a4c71df10e1d6f06
-  CapacitorPluginSafeArea: d0a81b96d101ebb7069cbd224cd474cec05a28ea
+  CapacitorPluginSafeArea: a705f02492c7d3094125f5cce02127dd6f7c5b3b
   CapacitorPreferences: b583b5deb74e564c35968189d25d32c0fd41200d
   CapacitorPushNotifications: 729ade0d2791ec1969feaf931a15e28d929a6d70
   CapacitorShare: 051c3ceee0ddf3bb54574851a622bbb317eed5bd
   CapacitorSplashScreen: d06ae8804808e9f649a08e7bb7f283c77b688084
   CapacitorStatusBar: 7d8fcbd6768db014bd721d75e246590b014928e8
-  CordovaPlugins: f3dbea75897c59666640a5b7bd2f25f43b521f60
+  CordovaPlugins: 9bbaa63428ec1aa31be329ed6adbbd0f8f860f07
   Firebase: c121feb35e4126c0b355e3313fa9b487d47319fd
   FirebaseCore: 907447d8917a4d3eb0cce2829c5a0ad21d90b432
   FirebaseCoreDiagnostics: 68ad972f99206cef818230f3f3179d52ccfb7f8c

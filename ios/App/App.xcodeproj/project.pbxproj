@@ -411,11 +411,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/AppDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-<<<<<<< HEAD
 				CURRENT_PROJECT_VERSION = 216;
-=======
-				CURRENT_PROJECT_VERSION = 215;
->>>>>>> 0140cd0a713500842fade8f9f9c7996c66e823e4
 				DEVELOPMENT_TEAM = U7DQUX87VS;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = myclub;
@@ -425,11 +421,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-<<<<<<< HEAD
 				MARKETING_VERSION = 2.4.0;
-=======
-				MARKETING_VERSION = 2.3.0;
->>>>>>> 0140cd0a713500842fade8f9f9c7996c66e823e4
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = app.myclub.default;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -446,11 +438,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/AppRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-<<<<<<< HEAD
 				CURRENT_PROJECT_VERSION = 216;
-=======
-				CURRENT_PROJECT_VERSION = 215;
->>>>>>> 0140cd0a713500842fade8f9f9c7996c66e823e4
 				DEVELOPMENT_TEAM = U7DQUX87VS;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = myclub;
@@ -460,11 +448,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-<<<<<<< HEAD
 				MARKETING_VERSION = 2.4.0;
-=======
-				MARKETING_VERSION = 2.3.0;
->>>>>>> 0140cd0a713500842fade8f9f9c7996c66e823e4
 				PRODUCT_BUNDLE_IDENTIFIER = app.myclub.default;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
