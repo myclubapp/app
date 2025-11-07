@@ -169,6 +169,7 @@ export class OnboardingClubPage implements OnInit {
     );
 
     if (teamInputs.length > 0) {
+      // Falls ein Club Teams hat, dann Teams Alert aufbauen.
       const alertTeam = await this.alertController.create({
         header: await lastValueFrom(
           this.translate.get("onboarding.select_team"),
@@ -240,31 +241,65 @@ export class OnboardingClubPage implements OnInit {
 
       await alert.present();
       const result = await alert.onWillDismiss();
-      console.log("result", result);
 
-      if (result.role === "destructive") {
+      if (result.role !== "confirm") {
         await this.presentCancelToast();
         return;
-      }
-
-      if (result.role === "confirm") {
+      } else {
         try {
           console.log("result.data", result.data);
-          console.log("result.data.values", result.data.isParent);
+          console.log("result.data.values", result.data?.values);
           console.log("teamData?.values", teamData?.values);
+
+          const selectedValues = Array.isArray(result?.data?.values)
+            ? result.data.values
+            : [];
+          const isParentSelected = selectedValues.includes("parent");
+
+          if (isParentSelected) {
+            const parentConfirmAlert = await this.alertController.create({
+              header: "Bitte bestätigen",
+              message:
+                "Ich habe die FAQ gelesen und bestätige, dass ich tatsächlich einen Eltern-Account benötige.",
+              buttons: [
+                {
+                  text: await lastValueFrom(
+                    this.translate.get("common.cancel"),
+                  ),
+                  role: "destructive",
+                },
+                {
+                  text: await lastValueFrom(
+                    this.translate.get("common.confirm"),
+                  ),
+                  role: "confirm",
+                },
+              ],
+            });
+
+            await parentConfirmAlert.present();
+            const parentConfirmResult =
+              await parentConfirmAlert.onWillDismiss();
+
+            if (parentConfirmResult.role !== "confirm") {
+              await this.presentCancelToast();
+              return;
+            }
+          }
+
           await this.fbService.setClubRequest(
             club.id,
             this.user.uid,
-            result?.data?.values.includes("parent") || false,
-            teamData?.values || "", // kann leer sein.. bspw. bei eltern
+            isParentSelected,
+            teamData?.values || "",
           );
           await this.presentRequestToast();
           await this.presentRequestSentAlert(club.name);
         } catch (err) {
           console.log(err.message);
           if (err.message === "Missing or insufficient permissions.") {
-            await this.presentErrorAlert();
             console.log("Maybe this member has already an open club request");
+            await this.presentErrorAlert(club);
           }
         }
       }
@@ -292,7 +327,7 @@ export class OnboardingClubPage implements OnInit {
       await alert.present();
       const result = await alert.onWillDismiss();
 
-      if (result.role === "cancel") {
+      if (result.role !== "confirm") {
         await this.presentCancelToast();
         return;
       }
@@ -309,7 +344,7 @@ export class OnboardingClubPage implements OnInit {
           await this.presentActivatetSentAlert(club.name);
         } catch (error) {
           console.error("Error setting club request:", error);
-          await this.presentErrorAlert();
+          await this.presentErrorAlert(club);
         }
       }
     }
@@ -353,7 +388,7 @@ export class OnboardingClubPage implements OnInit {
     });
   }
 
-  async presentErrorAlert() {
+  async presentErrorAlert(club: Club) {
     await this.uiService.showInfoDialog({
       header: await lastValueFrom(
         this.translate.get("onboarding.error__clubRequest"),
@@ -362,11 +397,30 @@ export class OnboardingClubPage implements OnInit {
         this.translate.get("onboarding.error__clubRequest_desc"),
       ),
     });
+
+    const shouldReset = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(
+        this.translate.get("onboarding.error__clubRequest"),
+      ),
+      message: await lastValueFrom(
+        this.translate.get("onboarding.error__clubRequest_reset_question"),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.yes")),
+      cancelText: await lastValueFrom(this.translate.get("common.no")),
+    });
+
+    if (shouldReset) {
+      await this.fbService.deleteClubRequest(this.user.uid, club.id);
+    }
   }
 
   handleChange(event: any) {
     const searchValue = event.detail.value?.trim();
     this.searchSubject.next(searchValue);
+  }
+
+  async openHelp() {
+    await Browser.open({ url: "https://my-club.app/faq" });
   }
 
   private performSearch(searchValue: string) {

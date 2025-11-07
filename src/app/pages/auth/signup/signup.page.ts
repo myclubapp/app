@@ -17,15 +17,16 @@ import { UserCredentialLogin, Profile } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 
 @Component({
-    selector: "app-signup",
-    templateUrl: "./signup.page.html",
-    styleUrls: ["./signup.page.scss"],
-    standalone: false
+  selector: "app-signup",
+  templateUrl: "./signup.page.html",
+  styleUrls: ["./signup.page.scss"],
+  standalone: false,
 })
 export class SignupPage implements OnInit {
   // private userProfileRef: AngularFirestoreDocument < UserProfile > ;
   public user: UserCredentialLogin;
   public authForm: UntypedFormGroup;
+  public isPasswordFocused: boolean = false;
   constructor(
     private readonly authService: AuthService,
     private readonly alertCtrl: AlertController,
@@ -34,7 +35,7 @@ export class SignupPage implements OnInit {
     public menuCtrl: MenuController,
     private readonly loadingCtrl: LoadingController,
     private readonly router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) {
     this.authForm = this.formBuilder.group({
       email: ["", Validators.compose([Validators.required, Validators.email])],
@@ -57,7 +58,7 @@ export class SignupPage implements OnInit {
       this.alertCtrl
         .create({
           message: await lastValueFrom(
-            this.translate.get("common.error__invalid_form")
+            this.translate.get("common.error__invalid_form"),
           ),
           buttons: [
             {
@@ -90,7 +91,7 @@ export class SignupPage implements OnInit {
           {
             firstName: authForm.value.firstName,
             lastName: authForm.value.lastName,
-          }
+          },
         );
 
         if (signupUserResponse.operationType !== "signIn") {
@@ -99,9 +100,11 @@ export class SignupPage implements OnInit {
 
         const alert = await this.alertCtrl.create({
           header: await lastValueFrom(
-            this.translate.get("signup.account__created")
+            this.translate.get("signup.account__created"),
           ),
-          message: await lastValueFrom(this.translate.get("signup.account__created_description")),
+          message: await lastValueFrom(
+            this.translate.get("signup.account__created_description"),
+          ),
           buttons: [
             {
               text: await lastValueFrom(this.translate.get("common.ok")),
@@ -114,14 +117,16 @@ export class SignupPage implements OnInit {
         const { data, role } = await alert.onDidDismiss();
         if (role === "confirm") {
         }
-        const usercredentials = await this.authService.login(credentials.email, credentials.password);
+        const usercredentials = await this.authService.login(
+          credentials.email,
+          credentials.password,
+        );
         console.log("user signed up " + usercredentials.user.email);
         await this.router.navigateByUrl("/"); // --> this should trigger appcomponent?
-
       } catch (err) {
         let message =
           (await lastValueFrom(
-            this.translate.get("common.general__error_occurred")
+            this.translate.get("common.general__error_occurred"),
           )) +
           ": " +
           err.code +
@@ -131,7 +136,7 @@ export class SignupPage implements OnInit {
 
         if (err.code == "auth/email-already-in-use") {
           message = await lastValueFrom(
-            this.translate.get("signup.email__already_in_use")
+            this.translate.get("signup.email__already_in_use"),
           );
         } else {
           console.log("Error");
@@ -169,7 +174,7 @@ export class SignupPage implements OnInit {
       credentials.email,
       credentials.password,
       userData.firstName,
-      userData.lastName
+      userData.lastName,
     );
   }
 }

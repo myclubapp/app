@@ -3,7 +3,7 @@
   <ion-toolbar>
     @if (clubAdminList$ | async; as clubAdminList) { @if
     (isClubAdmin(clubAdminList, club.id)) {
-    <ion-buttons slot="secondary">
+    <ion-buttons slot="primary">
       @if (!allowEdit) {
       <ion-button (click)="edit()">{{"common.edit" | translate}}</ion-button>
       } @if (allowEdit) {
@@ -12,7 +12,7 @@
     </ion-buttons>
     } }
     <ion-title>{{"club.links" | translate}}</ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons slot="secondary">
       <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
     </ion-buttons>
   </ion-toolbar>

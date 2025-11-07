@@ -50,7 +50,15 @@
                     formControlName="password"
                     required
                     placeholder="{{'common.password' | translate}}"
-                  ></ion-input>
+                    (ionFocus)="isPasswordFocused = true"
+                    (ionBlur)="isPasswordFocused = false"
+                  >
+                    @if (isPasswordFocused) {
+                    <ion-input-password-toggle
+                      slot="end"
+                    ></ion-input-password-toggle>
+                    }
+                  </ion-input>
                 </ion-item>
 
                 <ion-item lines="full">
