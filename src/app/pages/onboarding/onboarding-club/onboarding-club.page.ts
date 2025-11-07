@@ -389,22 +389,18 @@ export class OnboardingClubPage implements OnInit {
   }
 
   async presentErrorAlert(club: Club) {
-    await this.uiService.showInfoDialog({
-      header: await lastValueFrom(
-        this.translate.get("onboarding.error__clubRequest"),
-      ),
-      message: await lastValueFrom(
-        this.translate.get("onboarding.error__clubRequest_desc"),
-      ),
-    });
+    const errorDesc = await lastValueFrom(
+      this.translate.get("onboarding.error__clubRequest_desc"),
+    );
+    const resetQuestion = await lastValueFrom(
+      this.translate.get("onboarding.error__clubRequest_reset_question"),
+    );
 
     const shouldReset = await this.uiService.showConfirmDialog({
       header: await lastValueFrom(
         this.translate.get("onboarding.error__clubRequest"),
       ),
-      message: await lastValueFrom(
-        this.translate.get("onboarding.error__clubRequest_reset_question"),
-      ),
+      message: `${errorDesc}\n\n${resetQuestion}`,
       confirmText: await lastValueFrom(this.translate.get("common.yes")),
       cancelText: await lastValueFrom(this.translate.get("common.no")),
     });
