@@ -298,8 +298,8 @@ export class OnboardingClubPage implements OnInit {
         } catch (err) {
           console.log(err.message);
           if (err.message === "Missing or insufficient permissions.") {
-            await this.presentErrorAlert();
             console.log("Maybe this member has already an open club request");
+            await this.presentErrorAlert(club);
           }
         }
       }
@@ -344,7 +344,7 @@ export class OnboardingClubPage implements OnInit {
           await this.presentActivatetSentAlert(club.name);
         } catch (error) {
           console.error("Error setting club request:", error);
-          await this.presentErrorAlert();
+          await this.presentErrorAlert(club);
         }
       }
     }
@@ -388,7 +388,7 @@ export class OnboardingClubPage implements OnInit {
     });
   }
 
-  async presentErrorAlert() {
+  async presentErrorAlert(club: Club) {
     await this.uiService.showInfoDialog({
       header: await lastValueFrom(
         this.translate.get("onboarding.error__clubRequest"),
@@ -397,6 +397,21 @@ export class OnboardingClubPage implements OnInit {
         this.translate.get("onboarding.error__clubRequest_desc"),
       ),
     });
+
+    const shouldReset = await this.uiService.showConfirmDialog({
+      header: await lastValueFrom(
+        this.translate.get("onboarding.error__clubRequest"),
+      ),
+      message: await lastValueFrom(
+        this.translate.get("onboarding.error__clubRequest_reset_question"),
+      ),
+      confirmText: await lastValueFrom(this.translate.get("common.yes")),
+      cancelText: await lastValueFrom(this.translate.get("common.no")),
+    });
+
+    if (shouldReset) {
+      await this.fbService.deleteClubRequest(this.user.uid, club.id);
+    }
   }
 
   handleChange(event: any) {

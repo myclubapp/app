@@ -962,6 +962,12 @@ export class FirebaseService {
     );
   }
 
+  async deleteClubRequest(userId: string, clubId: string) {
+    await deleteDoc(
+      doc(this.firestore, `userProfile/${userId}/clubRequests`, clubId),
+    );
+  }
+
   async setClubRequest(
     clubId: string,
     userId: string,
