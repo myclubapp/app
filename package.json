@@ -45,7 +45,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^20.3.13",
+    "@angular/common": "^20.3.14",
     "@angular/core": "20.3.13",
     "@angular/fire": "^20.0.1",
     "@angular/forms": "^20.3.13",
