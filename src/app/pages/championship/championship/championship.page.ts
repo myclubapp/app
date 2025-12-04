@@ -36,6 +36,7 @@ import { Timestamp } from "@angular/fire/firestore";
 import { NavigationExtras, Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { ChampionshipDetailPage } from "../championship-detail/championship-detail.page";
+import { ChampionshipCreatePage } from "../championship-create/championship-create.page";
 import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
@@ -661,6 +662,27 @@ export class ChampionshipPage implements OnInit {
     modal.present();
 
     const { data, role } = await modal.onWillDismiss();
+
+    if (role === "confirm") {
+    }
+  }
+
+  async openChampionshipCreateModal() {
+    const topModal = await this.modalCtrl.getTop();
+    const presentingElement = topModal || this.routerOutlet?.nativeEl;
+
+    const modal = await this.modalCtrl.create({
+      component: ChampionshipCreatePage,
+      presentingElement,
+      canDismiss: true,
+      showBackdrop: true,
+      componentProps: {
+        data: "",
+      },
+    });
+    modal.present();
+
+    const { role } = await modal.onWillDismiss();
 
     if (role === "confirm") {
     }

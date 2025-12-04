@@ -451,5 +451,12 @@
       </ul>
     </ion-text>
   </div>
-  }
+  } @if (teamAdminList$ | async; as teamAdminList) { @if (teamAdminList.length >
+  0) {
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openChampionshipCreateModal()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  } }
 </ion-content>

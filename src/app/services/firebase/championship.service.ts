@@ -14,6 +14,7 @@ import {
   docData,
   deleteDoc,
   setDoc,
+  addDoc,
   query,
   where,
   orderBy,
@@ -177,5 +178,16 @@ export class ChampionshipService {
     );
 
     return deleteDoc(gameRef);
+  }
+
+  /* CREATE MANUAL GAME */
+  async setCreateGame(game: Game) {
+    if (!game.teamId) {
+      throw new Error("Team ID is required");
+    }
+    return addDoc(
+      collection(this.firestore, `teams/${game.teamId}/games`),
+      game,
+    );
   }
 }

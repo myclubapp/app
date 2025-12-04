@@ -38,6 +38,7 @@ import { NewsDetailPage } from "./pages/news/news-detail/news-detail.page";
 import { MemberPage } from "./pages/member/member.page";
 import { HelferPunktePage } from "./pages/helfer/helfer-punkte/helfer-punkte.page";
 // import { ChampionshipDetailPage } from "./pages/championship/championship-detail/championship-detail.page";
+import { ChampionshipCreatePage } from "./pages/championship/championship-create/championship-create.page";
 import { TrainingDetailPage } from "./pages/training/training-detail/training-detail.page";
 import { TrainingCreatePage } from "./pages/training/training-create/training-create.page";
 import { TrainingExercisesPage } from "./pages/training/training-exercises/training-exercises.page";
@@ -142,6 +143,7 @@ const getConfig = () => {
     TrainingExercisesPage,
     TrainingDetailPage,
     TrainingCreatePage,
+    ChampionshipCreatePage,
     EventAddPage,
     EventDetailPage,
     ClubPage,

@@ -291,9 +291,25 @@
     "defeat": "Niederlage",
     "goal__record": "Torbilanz",
     "points": "Punkte",
-    "upcomming__games": "Kommende Spiele"
+    "upcomming__games": "Kommende Spiele",
+    "create_game_confirm": "Möchten Sie dieses Spiel wirklich erstellen?"
   },
   "championship-detail": {},
+  "championship-create": {
+    "new__game": "Neues Spiel",
+    "team": "Team",
+    "team_home": "Heimmannschaft",
+    "team_away": "Gastmannschaft",
+    "liga": "Liga",
+    "game__details": "Spieldetails",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "optional__details": "Optionale Details",
+    "referee1": "Schiedsrichter 1",
+    "referee2": "Schiedsrichter 2",
+    "spectators": "Zuschauer",
+    "result": "Ergebnis"
+  },
   "club": {
     "details": "Club Details",
     "request_approve_header": "Club Anfrage",

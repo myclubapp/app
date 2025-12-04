@@ -1,0 +1,170 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="secondary">
+      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
+    </ion-buttons>
+    <ion-title>{{"championship-create.new__game" | translate}}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button strong="true" (click)="createGame()"
+        >{{"common.create" | translate}}</ion-button
+      >
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large"
+        >{{"championship-create.new__game" | translate}}</ion-title
+      >
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list [inset]="true">
+    @if (teamAdminList$ | async; as teamList) {
+    <div>
+      @if (teamList.length >= 1) {
+      <ion-item>
+        <ion-select
+          [label]="'championship-create.team' | translate"
+          label-placement="stacked"
+          [cancelText]="'common.cancel' | translate"
+          [okText]="'common.ok' | translate"
+          [(ngModel)]="game.teamId"
+          value="{{game.teamId}}"
+        >
+          @for (team of teamList; track team.id) {
+          <ion-select-option value="{{team.id}}"
+            >{{team.name}}</ion-select-option
+          >
+          }
+        </ion-select>
+      </ion-item>
+      }
+    </div>
+    }
+
+    <ion-item>
+      <ion-input
+        [label]="'championship-create.team_home' | translate"
+        label-placement="stacked"
+        [(ngModel)]="game.teamHome"
+        value="{{game.teamHome}}"
+        required
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        [label]="'championship-create.team_away' | translate"
+        label-placement="stacked"
+        [(ngModel)]="game.teamAway"
+        value="{{game.teamAway}}"
+        required
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        [label]="'common.name' | translate"
+        label-placement="stacked"
+        [(ngModel)]="game.name"
+        value="{{game.name}}"
+        placeholder="{{game.teamHome}} vs. {{game.teamAway}}"
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-textarea
+        [autoGrow]="true"
+        [label]='"common.description" | translate'
+        label-placement="stacked"
+        value="{{game.description}}"
+        [(ngModel)]="game.description"
+      >
+      </ion-textarea>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        [label]="'championship-create.liga' | translate"
+        label-placement="stacked"
+        [(ngModel)]="game.liga"
+        value="{{game.liga}}"
+      >
+      </ion-input>
+    </ion-item>
+  </ion-list>
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-input
+        [label]='"common.location" | translate'
+        label-placement="stacked"
+        value="{{game.location}}"
+        [(ngModel)]="game.location"
+        required
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input
+        [label]='"common.locality" | translate'
+        label-placement="stacked"
+        value="{{game.city}}"
+        [(ngModel)]="game.city"
+        required
+      >
+      </ion-input>
+    </ion-item>
+  </ion-list>
+
+  <ion-list [inset]="true">
+    <ion-list-header>
+      <ion-label>
+        {{"championship-create.game__details" | translate}}
+      </ion-label>
+    </ion-list-header>
+
+    <ion-item id="gameDateItem">
+      <ion-label position="default">
+        {{"championship-create.date" | translate}}:
+      </ion-label>
+      <ion-datetime-button slot="end" datetime="date"></ion-datetime-button>
+
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            [firstDayOfWeek]="1"
+            presentation="date"
+            id="date"
+            [value]="game.date"
+            [(ngModel)]="game.date"
+          ></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+
+    <ion-item id="gameTimeItem">
+      <ion-label position="">
+        {{"championship-create.time" | translate}}:
+      </ion-label>
+      <ion-datetime-button slot="end" datetime="gameTime"></ion-datetime-button>
+
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            presentation="time"
+            id="gameTime"
+            minuteValues="0,5,10,15,20,25,30,35,40,45,50,55"
+            value="{{game.time}}"
+            [(ngModel)]="game.time"
+          ></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ng-template #loading>
+  <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>
+  <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+</ng-template>
