@@ -108,6 +108,7 @@ export class ChampionshipPage implements OnInit {
 
     // Get dynamic season from Swiss Unihockey API
     this.swissUnihockeyService.getCurrentSeason().subscribe((season) => {
+      console.log("Current season:", season);
       this.teamRankings$ = this.getTeamsWithRankingsForYear(season.toString());
       // Create filtered observable for teams with actual ranking data
       this.teamsWithRankings$ = this.teamRankings$.pipe(

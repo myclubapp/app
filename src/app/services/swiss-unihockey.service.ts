@@ -51,55 +51,44 @@ export class SwissUnihockeyService {
   }
 
   /**
-   * Determines the correct season to use based on current date and API response
+   * Determines the correct season to use based on API response
    * Logic:
-   * - If we're in 2025 and API shows 2025/26 as highlighted, use 2025
-   * - If we're in 2026 but before April, use 2025 (previous season)
-   * - If we're in 2026 and after April, use 2026
+   * - Find the highlighted season entry
+   * - If the highlighted season year is greater than current year, use fallback (index 1)
+   * - Otherwise use the highlighted season
    */
   getCurrentSeason(): Observable<number> {
     return this.getSeasons().pipe(
       map((seasonsResponse) => {
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1; // getMonth() returns 0-11
+        const currentYear = new Date().getFullYear();
 
         // Find the highlighted season (current active season)
         const highlightedSeason = seasonsResponse.entries.find(
-          (entry) => entry.highlight,
+          (entry) => entry.highlight === true,
         );
 
         if (!highlightedSeason) {
-          // Fallback: use current year if no highlighted season found
           console.warn(
             "No highlighted season found, using current year as fallback",
           );
           return currentYear;
         }
 
-        const highlightedSeasonYear = highlightedSeason.set_in_context.season;
+        const seasonYear = highlightedSeason.set_in_context.season;
 
-        // If we're in the same year as the highlighted season, use it
-        if (currentYear === highlightedSeasonYear) {
-          return highlightedSeasonYear;
-        }
-
-        // If we're in the next year but before April, use the previous year
-        if (currentYear === highlightedSeasonYear + 1 && currentMonth < 4) {
-          return highlightedSeasonYear;
-        }
-
-        // If we're in the next year and after April, use current year
-        if (currentYear === highlightedSeasonYear + 1 && currentMonth >= 4) {
+        // If the highlighted season is greater than current year, use fallback entry at index 1
+        if (seasonYear > currentYear) {
+          const fallbackSeason = seasonsResponse.entries[1];
+          if (fallbackSeason && fallbackSeason.highlight === false) {
+            return fallbackSeason.set_in_context.season;
+          }
           return currentYear;
         }
 
-        // For any other case, use the highlighted season year
-        return highlightedSeasonYear;
+        return seasonYear;
       }),
       catchError((error) => {
         console.error("Error determining current season:", error);
-        // Fallback to current year
         return of(new Date().getFullYear());
       }),
     );
