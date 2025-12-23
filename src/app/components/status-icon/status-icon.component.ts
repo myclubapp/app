@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { IonicModule } from "@ionic/angular";
 
 @Component({
@@ -7,7 +7,7 @@ import { IonicModule } from "@ionic/angular";
   templateUrl: "./status-icon.component.html",
   styleUrls: ["./status-icon.component.scss"],
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [IonicModule],
 })
 export class StatusIconComponent {
   @Input() status: boolean | null = null;
