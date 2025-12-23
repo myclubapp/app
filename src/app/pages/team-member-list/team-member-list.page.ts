@@ -27,6 +27,10 @@ import {
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import {
+  ExportService,
+  MemberExportOptions,
+} from "src/app/services/export.service";
 import { MemberPage } from "../member/member.page";
 import { Profile } from "src/app/models/user";
 import { User } from "firebase/auth";
@@ -55,13 +59,13 @@ export class TeamMemberListPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-
     private readonly alertCtrl: AlertController,
     private readonly toastCtrl: ToastController,
     private readonly userProfileService: UserProfileService,
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
     private readonly alertController: AlertController,
+    private readonly exportService: ExportService,
     private readonly translate: TranslateService,
   ) {}
 
@@ -546,5 +550,93 @@ export class TeamMemberListPage implements OnInit {
 
   async confirm() {
     return await this.modalCtrl.dismiss(this.team, "confirm");
+  }
+
+  async openExportDialog() {
+    const alert = await this.alertCtrl.create({
+      header: await lastValueFrom(
+        this.translate.get("team-member-list.export_options"),
+      ),
+      inputs: [
+        {
+          type: "checkbox",
+          label: await lastValueFrom(
+            this.translate.get("team-member-list.include_email"),
+          ),
+          value: "email",
+          checked: true,
+        },
+        {
+          type: "checkbox",
+          label: await lastValueFrom(
+            this.translate.get("team-member-list.include_phone"),
+          ),
+          value: "phone",
+          checked: true,
+        },
+        {
+          type: "checkbox",
+          label: await lastValueFrom(
+            this.translate.get("team-member-list.include_birthdate"),
+          ),
+          value: "birthdate",
+          checked: true,
+        },
+        {
+          type: "checkbox",
+          label: await lastValueFrom(
+            this.translate.get("team-member-list.include_address"),
+          ),
+          value: "address",
+          checked: true,
+        },
+        {
+          type: "checkbox",
+          label: await lastValueFrom(
+            this.translate.get("team-member-list.include_functions"),
+          ),
+          value: "functions",
+          checked: true,
+        },
+      ],
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "cancel",
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.export")),
+          handler: (selectedOptions: string[]) => {
+            const options: MemberExportOptions = {
+              includeEmail: selectedOptions.includes("email"),
+              includePhone: selectedOptions.includes("phone"),
+              includeBirthdate: selectedOptions.includes("birthdate"),
+              includeAddress: selectedOptions.includes("address"),
+              includeTeams: false,
+              includeFunctions: selectedOptions.includes("functions"),
+            };
+            this.exportMembers(options);
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  async exportMembers(options: MemberExportOptions) {
+    const members = await lastValueFrom(
+      this.filteredTeamMembers$.pipe(take(1)),
+    );
+
+    const team = await lastValueFrom(this.team$.pipe(take(1)));
+
+    // Create a pseudo-club object for the export service
+    const exportClub = {
+      id: team.clubId,
+      name: team.name,
+    };
+
+    await this.exportService.exportMembers(members, exportClub as any, options);
   }
 }

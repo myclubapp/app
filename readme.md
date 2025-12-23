@@ -230,4 +230,4 @@ Bitte beachte unsere [Contribution Guidelines](link-to-contributing) und [Code o
 
 ## 📄 Lizenz
 
-Dieses Projekt ist lizenziert unter [LICENSE NAME] - siehe die [LICENSE](link-to-license) Datei für Details.
+Dieses Projekt ist lizenziert unter der **European Union Public Licence (EUPL) v. 1.2** - siehe die [LICENSE](LICENSE) Datei für Details.

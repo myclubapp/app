@@ -87,6 +87,17 @@
     "js_activities_competitions": "Aktivitäten J+S-Kurse (Wettkämpfe)",
     "exercise_selection": "Auswahl von Übungen",
     "exercises": "Übungen",
+    "export": "Exportieren",
+    "export_error": "Fehler beim Export",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "dateOfBirth": "Geburtsdatum",
+    "street": "Strasse",
+    "postalCode": "PLZ",
+    "city": "Ort",
+    "functions": "Funktionen",
     "subscription_purchase": "Abonnement kaufen",
     "order_history": "Bestellverlauf",
     "average__age": "Durchschnittsalter",
@@ -358,7 +369,22 @@
     "my__clubs": "Meine Clubs"
   },
   "club-member-list": {
-    "delete_member__confirm": "Möchtest du das Mitglied wirklich aus dem Club entfernen?"
+    "delete_member__confirm": "Möchtest du das Mitglied wirklich aus dem Club entfernen?",
+    "export_options": "Export-Optionen",
+    "export_members": "Mitglieder exportieren",
+    "include_email": "E-Mail",
+    "include_phone": "Telefonnummer",
+    "include_birthdate": "Geburtsdatum",
+    "include_address": "Adressdaten",
+    "include_teams": "Teams",
+    "include_functions": "Funktionen/Rollen",
+    "export_success": "Export erfolgreich",
+    "export_error": "Export fehlgeschlagen",
+    "no_members": "Keine Mitglieder zum Exportieren",
+    "add_role_header": "Rolle hinzufügen",
+    "add_role_message": "Bitte gib den Namen der Rolle ein.",
+    "role_placeholder": "Rollenname",
+    "edit_member_roles": "Mitglieder-Rollen bearbeiten"
   },
   "event-add": {
     "new__event": "Neue Veranstaltung",
@@ -697,7 +723,17 @@
     "leave_team__confirm": "Möchtest du das Team wirklich verlassen?"
   },
   "team-member-list": {
-    "delete_member__confirm": "Möchtest du das Mitglied wirklich aus dem Team entfernen?"
+    "delete_member__confirm": "Möchtest du das Mitglied wirklich aus dem Team entfernen?",
+    "export_options": "Export-Optionen",
+    "export_members": "Mitglieder exportieren",
+    "include_email": "E-Mail",
+    "include_phone": "Telefonnummer",
+    "include_birthdate": "Geburtsdatum",
+    "include_address": "Adressdaten",
+    "include_functions": "Funktionen/Rollen",
+    "export_success": "Export erfolgreich",
+    "export_error": "Export fehlgeschlagen",
+    "no_members": "Keine Mitglieder zum Exportieren"
   },
   "training-create": {
     "new__training": "Neues Training",

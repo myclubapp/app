@@ -78,6 +78,17 @@
     "noreply": "Nessuna risposta",
     "no_of__members": "Numero di membri",
     "average__age": "Età media",
+    "export": "Esporta",
+    "export_error": "Errore di esportazione",
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "email": "E-mail",
+    "phone": "Telefono",
+    "dateOfBirth": "Data di nascita",
+    "street": "Via",
+    "postalCode": "CAP",
+    "city": "Città",
+    "functions": "Funzioni",
     "request": "Richiesta",
     "requests": "Richieste",
     "approve_request": "Approva richiesta",
@@ -266,7 +277,22 @@
     "my__clubs": "I miei club"
   },
   "club-member-list": {
-    "delete_member__confirm": "Vuoi davvero rimuovere il membro dal club?"
+    "delete_member__confirm": "Vuoi davvero rimuovere il membro dal club?",
+    "export_options": "Opzioni di esportazione",
+    "export_members": "Esporta membri",
+    "include_email": "E-mail",
+    "include_phone": "Numero di telefono",
+    "include_birthdate": "Data di nascita",
+    "include_address": "Dati indirizzo",
+    "include_teams": "Squadre",
+    "include_functions": "Funzioni/Ruoli",
+    "export_success": "Esportazione riuscita",
+    "export_error": "Esportazione fallita",
+    "no_members": "Nessun membro da esportare",
+    "add_role_header": "Aggiungi ruolo",
+    "add_role_message": "Inserisci il nome del ruolo.",
+    "role_placeholder": "Nome ruolo",
+    "edit_member_roles": "Modifica ruoli membro"
   },
   "event-add": {
     "new__event": "Nuovo evento",
@@ -579,7 +605,17 @@
     "leave_team__confirm": "Vuoi davvero lasciare questa squadra?"
   },
   "team-member-list": {
-    "delete_member__confirm": "Vuoi davvero rimuovere questo membro dalla squadra?"
+    "delete_member__confirm": "Vuoi davvero rimuovere questo membro dalla squadra?",
+    "export_options": "Opzioni di esportazione",
+    "export_members": "Esporta membri",
+    "include_email": "E-mail",
+    "include_phone": "Numero di telefono",
+    "include_birthdate": "Data di nascita",
+    "include_address": "Dati indirizzo",
+    "include_functions": "Funzioni/Ruoli",
+    "export_success": "Esportazione riuscita",
+    "export_error": "Esportazione fallita",
+    "no_members": "Nessun membro da esportare"
   },
   "training-create": {
     "new__training": "Nuovo allenamento",

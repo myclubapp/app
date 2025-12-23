@@ -78,6 +78,17 @@
     "noreply": "Pas de réponse",
     "no_of__members": "Nombre de membres",
     "average__age": "Âge moyen",
+    "export": "Exporter",
+    "export_error": "Erreur d'exportation",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "dateOfBirth": "Date de naissance",
+    "street": "Rue",
+    "postalCode": "Code postal",
+    "city": "Ville",
+    "functions": "Fonctions",
     "request": "Demande",
     "requests": "Demandes",
     "approve_request": "Approuver la demande",
@@ -266,7 +277,22 @@
     "my__clubs": "Mes clubs"
   },
   "club-member-list": {
-    "delete_member__confirm": "Voulez-vous vraiment supprimer le membre du club ?"
+    "delete_member__confirm": "Voulez-vous vraiment supprimer le membre du club ?",
+    "export_options": "Options d'exportation",
+    "export_members": "Exporter les membres",
+    "include_email": "E-mail",
+    "include_phone": "Numéro de téléphone",
+    "include_birthdate": "Date de naissance",
+    "include_address": "Données d'adresse",
+    "include_teams": "Équipes",
+    "include_functions": "Fonctions/Rôles",
+    "export_success": "Exportation réussie",
+    "export_error": "Échec de l'exportation",
+    "no_members": "Aucun membre à exporter",
+    "add_role_header": "Ajouter un rôle",
+    "add_role_message": "Veuillez entrer le nom du rôle.",
+    "role_placeholder": "Nom du rôle",
+    "edit_member_roles": "Modifier les rôles des membres"
   },
   "event-add": {
     "new__event": "Nouvel événement",
@@ -579,7 +605,17 @@
     "leave_team__confirm": "Voulez-vous vraiment quitter cette équipe ?"
   },
   "team-member-list": {
-    "delete_member__confirm": "Voulez-vous vraiment supprimer ce membre de l'équipe ?"
+    "delete_member__confirm": "Voulez-vous vraiment supprimer ce membre de l'équipe ?",
+    "export_options": "Options d'exportation",
+    "export_members": "Exporter les membres",
+    "include_email": "E-mail",
+    "include_phone": "Numéro de téléphone",
+    "include_birthdate": "Date de naissance",
+    "include_address": "Données d'adresse",
+    "include_functions": "Fonctions/Rôles",
+    "export_success": "Exportation réussie",
+    "export_error": "Échec de l'exportation",
+    "no_members": "Aucun membre à exporter"
   },
   "training-create": {
     "new__training": "Nouvel entraînement",

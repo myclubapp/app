@@ -686,6 +686,37 @@ export class FirebaseService {
     ) as Observable<Team[]>;
   }
 
+  /**
+   * Get teams that a member belongs to within a club
+   * Returns teams where the member is a member
+   */
+  getMemberTeams(clubId: string, memberId: string): Observable<Team[]> {
+    // First get all teams for this club, then filter by member
+    return this.getClubTeamsRef(clubId).pipe(
+      switchMap((clubTeams) => {
+        if (!clubTeams || clubTeams.length === 0) {
+          return of([]);
+        }
+
+        // For each team, check if this member is part of it
+        const teamChecks = clubTeams.map((team) =>
+          this.getTeamMemberRefs(team.id).pipe(
+            take(1),
+            map((members) => {
+              const isMember = members.some((member) => member.id === memberId);
+              return isMember ? team : null;
+            }),
+            catchError(() => of(null)),
+          ),
+        );
+
+        return combineLatest(teamChecks).pipe(
+          map((results) => results.filter((team) => team !== null) as Team[]),
+        );
+      }),
+    );
+  }
+
   addClubTeam(team, clubId) {
     return addDoc(collection(this.firestore, `/club/${clubId}/teams/`), team);
   }

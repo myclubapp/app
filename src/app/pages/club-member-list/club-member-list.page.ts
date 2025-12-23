@@ -23,6 +23,10 @@ import {
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
+import {
+  ExportService,
+  MemberExportOptions,
+} from "src/app/services/export.service";
 import { MemberPage } from "../member/member.page";
 import { Profile } from "src/app/models/user";
 import { Club } from "src/app/models/club";
@@ -49,13 +53,13 @@ export class ClubMemberListPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-
     private readonly alertCtrl: AlertController,
     private readonly toastCtrl: ToastController,
     private readonly userProfileService: UserProfileService,
     private readonly fbService: FirebaseService,
     private readonly authService: AuthService,
     private readonly alertController: AlertController,
+    private readonly exportService: ExportService,
     private translate: TranslateService,
   ) {}
 
@@ -521,5 +525,113 @@ export class ClubMemberListPage implements OnInit {
 
   async confirm() {
     return await this.modalCtrl.dismiss(this.club, "confirm");
+  }
+
+  async openExportDialog() {
+    const alert = await this.alertCtrl.create({
+      header: await lastValueFrom(
+        this.translate.get("club-member-list.export_options"),
+      ),
+      inputs: [
+        {
+          type: "checkbox",
+          label: await lastValueFrom(
+            this.translate.get("club-member-list.include_email"),
+          ),
+          value: "email",
+          checked: true,
+        },
+        {
+          type: "checkbox",
+          label: await lastValueFrom(
+            this.translate.get("club-member-list.include_phone"),
+          ),
+          value: "phone",
+          checked: true,
+        },
+        {
+          type: "checkbox",
+          label: await lastValueFrom(
+            this.translate.get("club-member-list.include_birthdate"),
+          ),
+          value: "birthdate",
+          checked: true,
+        },
+        {
+          type: "checkbox",
+          label: await lastValueFrom(
+            this.translate.get("club-member-list.include_address"),
+          ),
+          value: "address",
+          checked: true,
+        },
+        {
+          type: "checkbox",
+          label: await lastValueFrom(
+            this.translate.get("club-member-list.include_teams"),
+          ),
+          value: "teams",
+          checked: false,
+        },
+        {
+          type: "checkbox",
+          label: await lastValueFrom(
+            this.translate.get("club-member-list.include_functions"),
+          ),
+          value: "functions",
+          checked: true,
+        },
+      ],
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get("common.cancel")),
+          role: "cancel",
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.export")),
+          handler: (selectedOptions: string[]) => {
+            const options: MemberExportOptions = {
+              includeEmail: selectedOptions.includes("email"),
+              includePhone: selectedOptions.includes("phone"),
+              includeBirthdate: selectedOptions.includes("birthdate"),
+              includeAddress: selectedOptions.includes("address"),
+              includeTeams: selectedOptions.includes("teams"),
+              includeFunctions: selectedOptions.includes("functions"),
+            };
+            this.exportMembers(options);
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+  }
+
+  async exportMembers(options: MemberExportOptions) {
+    // Get currently filtered members
+    const members = await lastValueFrom(
+      this.filteredClubMembers$.pipe(take(1)),
+    );
+
+    // Get club data
+    const club = await lastValueFrom(this.club$.pipe(take(1)));
+
+    // If teams are requested, fetch team memberships for each member
+    if (options.includeTeams) {
+      const membersWithTeams = await Promise.all(
+        members.map(async (member) => {
+          const teams = await lastValueFrom(
+            this.fbService.getMemberTeams(club.id, member.id).pipe(take(1)),
+          );
+          return {
+            ...member,
+            teams: teams.map((team) => team.name),
+          };
+        }),
+      );
+      await this.exportService.exportMembers(membersWithTeams, club, options);
+    } else {
+      await this.exportService.exportMembers(members, club, options);
+    }
   }
 }

@@ -78,6 +78,17 @@
     "noreply": "No reply",
     "no_of__members": "Number of members",
     "average__age": "Average age",
+    "export": "Export",
+    "export_error": "Export error",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "dateOfBirth": "Date of Birth",
+    "street": "Street",
+    "postalCode": "Postal Code",
+    "city": "City",
+    "functions": "Functions",
     "request": "Request",
     "requests": "Requests",
     "approve_request": "Approve request",
@@ -266,7 +277,22 @@
     "my__clubs": "My clubs"
   },
   "club-member-list": {
-    "delete_member__confirm": "Do you really want to remove the member from the club?"
+    "delete_member__confirm": "Do you really want to remove the member from the club?",
+    "export_options": "Export Options",
+    "export_members": "Export Members",
+    "include_email": "Email",
+    "include_phone": "Phone Number",
+    "include_birthdate": "Date of Birth",
+    "include_address": "Address Data",
+    "include_teams": "Teams",
+    "include_functions": "Functions/Roles",
+    "export_success": "Export successful",
+    "export_error": "Export failed",
+    "no_members": "No members to export",
+    "add_role_header": "Add Role",
+    "add_role_message": "Please enter the name of the role.",
+    "role_placeholder": "Role name",
+    "edit_member_roles": "Edit Member Roles"
   },
   "event-add": {
     "new__event": "New event",
@@ -579,7 +605,17 @@
     "leave_team__confirm": "Do you really want to leave the team?"
   },
   "team-member-list": {
-    "delete_member__confirm": "Do you really want to remove the member from the team?"
+    "delete_member__confirm": "Do you really want to remove the member from the team?",
+    "export_options": "Export Options",
+    "export_members": "Export Members",
+    "include_email": "Email",
+    "include_phone": "Phone Number",
+    "include_birthdate": "Date of Birth",
+    "include_address": "Address Data",
+    "include_functions": "Functions/Roles",
+    "export_success": "Export successful",
+    "export_error": "Export failed",
+    "no_members": "No members to export"
   },
   "training-create": {
     "new__training": "New training",
