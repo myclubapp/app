@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Observable, map, catchError, of } from "rxjs";
+import { Observable, catchError, of } from "rxjs";
 
 export interface SeasonEntry {
   text: string;
@@ -51,46 +51,18 @@ export class SwissUnihockeyService {
   }
 
   /**
-   * Determines the correct season to use based on API response
+   * Determines the correct season based on current date
    * Logic:
-   * - Find the highlighted season entry
-   * - If the highlighted season year is greater than current year, use fallback (index 1)
-   * - Otherwise use the highlighted season
+   * - Months 6-12 (June-December): season = current year
+   * - Months 1-5 (January-May): season = previous year
+   * This reflects that Swiss Unihockey seasons run from August to May
    */
   getCurrentSeason(): Observable<number> {
-    return this.getSeasons().pipe(
-      map((seasonsResponse) => {
-        const currentYear = new Date().getFullYear();
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // getMonth() is 0-indexed
 
-        // Find the highlighted season (current active season)
-        const highlightedSeason = seasonsResponse.entries.find(
-          (entry) => entry.highlight === true,
-        );
-
-        if (!highlightedSeason) {
-          console.warn(
-            "No highlighted season found, using current year as fallback",
-          );
-          return currentYear;
-        }
-
-        const seasonYear = highlightedSeason.set_in_context.season;
-
-        // If the highlighted season is greater than current year, use fallback entry at index 1
-        if (seasonYear > currentYear) {
-          const fallbackSeason = seasonsResponse.entries[1];
-          if (fallbackSeason && fallbackSeason.highlight === false) {
-            return fallbackSeason.set_in_context.season;
-          }
-          return currentYear;
-        }
-
-        return seasonYear;
-      }),
-      catchError((error) => {
-        console.error("Error determining current season:", error);
-        return of(new Date().getFullYear());
-      }),
-    );
+    const seasonYear = currentMonth >= 6 ? currentYear : currentYear - 1;
+    return of(seasonYear);
   }
 }
