@@ -105,6 +105,42 @@
       {{"common.attendances__absences" | translate}}
     </ion-list-header>
     @if (!training?.cancelled) {
+    <!-- Kinder anzeigen (wie auf der Hauptseite) -->
+    @if (training.children && training.children.length > 0) { @for (child of
+    training.children; track child.id) {
+    <ion-item class="myclubStatus">
+      @if (child.status === null) {
+      <ion-fab-button
+        (click)="processToggle(child.id, true, training)"
+        size="small"
+        color="warning"
+        slot="start"
+      >
+        <ion-icon name="help-circle"> </ion-icon>
+      </ion-fab-button>
+      } @if (child.status === false) {
+      <ion-fab-button
+        (click)="processToggle(child.id, true, training)"
+        size="small"
+        color="danger"
+        slot="start"
+      >
+        <ion-icon name="close-circle"> </ion-icon>
+      </ion-fab-button>
+      } @if (child.status === true) {
+      <ion-fab-button
+        (click)="processToggle(child.id, false, training)"
+        size="small"
+        color="success"
+        slot="start"
+      >
+        <ion-icon name="checkmark-circle"> </ion-icon>
+      </ion-fab-button>
+      }
+      <ion-label>{{child.firstName}} {{child.lastName}}</ion-label>
+    </ion-item>
+    } } @else {
+    <!-- Fallback: Eigener Status wenn keine Kinder vorhanden -->
     <ion-item class="myclubStatus">
       @if (training.hasOwnProperty('status')) { @for (status of training.status;
       track status.id) { @if (status.status === null) {
@@ -155,7 +191,7 @@
       <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
       }
     </ion-item>
-    } @if (teamAdminList$ | async; as teamAdminList) { @if
+    } } @if (teamAdminList$ | async; as teamAdminList) { @if
     (training['unrespondedMembers'].length > 0 && isTeamAdmin(teamAdminList,
     training.teamId)) {
     <ion-item>

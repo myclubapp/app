@@ -275,6 +275,42 @@
     <ion-list-header>
       {{"common.attendances__absences" | translate}}
     </ion-list-header>
+    <!-- Kinder anzeigen (wie auf der Hauptseite) -->
+    @if (event.children && event.children.length > 0) { @for (child of
+    event.children; track child.id) {
+    <ion-item class="myclubStatus">
+      @if (child.status === null) {
+      <ion-fab-button
+        (click)="processToggle(child.id, true, event)"
+        size="small"
+        color="warning"
+        slot="start"
+      >
+        <ion-icon name="help-circle"> </ion-icon>
+      </ion-fab-button>
+      } @if (child.status === false) {
+      <ion-fab-button
+        (click)="processToggle(child.id, true, event)"
+        size="small"
+        color="danger"
+        slot="start"
+      >
+        <ion-icon name="close-circle"> </ion-icon>
+      </ion-fab-button>
+      } @if (child.status === true) {
+      <ion-fab-button
+        (click)="processToggle(child.id, false, event)"
+        size="small"
+        color="success"
+        slot="start"
+      >
+        <ion-icon name="checkmark-circle"> </ion-icon>
+      </ion-fab-button>
+      }
+      <ion-label>{{child.firstName}} {{child.lastName}}</ion-label>
+    </ion-item>
+    } } @else {
+    <!-- Fallback: Eigener Status wenn keine Kinder vorhanden -->
     @if (event.hasOwnProperty('status')) {
     <!-- Ein Eintrag pro Person: zuerst ich, dann Kinder -->
     @if (event.status.length > 0) { @for (status of event.status; track
@@ -328,7 +364,7 @@
     } } @else {
     <ion-skeleton-text animated style="width: 10%"></ion-skeleton-text>
     <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
-    }
+    } }
   </ion-list>
   } @if (!allowEdit && !event.closedEvent) {
   <ion-list [inset]="true">

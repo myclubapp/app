@@ -237,12 +237,50 @@ export class TrainingDetailPage implements OnInit {
                               const child = this.children.find(
                                 (child) => child.id === att.id,
                               );
+                              const childStatus =
+                                attendeeDetails.find(
+                                  (attendee) => attendee.id === att.id,
+                                )?.status ?? null;
+                              const childChangedAt =
+                                attendeeDetails.find(
+                                  (attendee) => attendee.id === att.id,
+                                )?.changedAt ?? null;
                               return child
                                 ? {
                                     firstName: child.firstName,
                                     lastName: child.lastName,
+                                    status: childStatus,
+                                    id: child.id,
+                                    changedAt: childChangedAt,
                                   }
                                 : {};
+                            });
+
+                          // Build status array: include user if member, plus all children that are members
+                          const userIds = [
+                            this.user.uid,
+                            ...this.children.map((child) => child.id),
+                          ];
+                          const statusArray = userIds
+                            .filter((id) =>
+                              teamMembersWithDetails.some(
+                                (member) => member.id === id,
+                              ),
+                            )
+                            .map((id) => {
+                              const attendee = attendeeDetails.find(
+                                (att) => att.id === id,
+                              );
+                              const member = teamMembersWithDetails.find(
+                                (m) => m.id === id,
+                              );
+                              return {
+                                id: id,
+                                status: attendee?.status ?? null,
+                                firstName: member?.firstName || "Unknown",
+                                lastName: member?.lastName || "Unknown",
+                                changedAt: attendee?.changedAt ?? null,
+                              };
                             });
 
                           return {
@@ -254,20 +292,7 @@ export class TrainingDetailPage implements OnInit {
                             attendeeListFalse,
                             unrespondedMembers,
                             children: relevantChildren,
-                            status: attendeeDetails
-                              .filter((att) =>
-                                [
-                                  this.user.uid,
-                                  ...this.children.map((child) => child.id),
-                                ].includes(att.id),
-                              )
-                              .map((att) => ({
-                                id: att.id,
-                                status: att.status,
-                                firstName: att.firstName,
-                                lastName: att.lastName,
-                                changedAt: att.changedAt,
-                              })),
+                            status: statusArray,
                           };
                         }),
                         catchError((err) => {

@@ -177,33 +177,49 @@ export class EventDetailPage implements OnInit {
                             (child) => child.id,
                           );
 
-                          const myStatus = attendeeDetails.find(
-                            (att) => att.id === myId,
-                          );
-                          const childrenStatuses = attendeeDetails
-                            .filter((att) => childIds.includes(att.id))
+                          // Build children array with status (like in training/championship)
+                          const relevantChildren = clubMembers
+                            .filter((member) => childIds.includes(member.id))
+                            .map((member) => {
+                              const child = this.children.find(
+                                (c) => c.id === member.id,
+                              );
+                              const childAttendee = attendeeDetails.find(
+                                (att) => att.id === member.id,
+                              );
+                              return {
+                                id: member.id,
+                                firstName: child?.firstName || "Unknown",
+                                lastName: child?.lastName || "Unknown",
+                                status: childAttendee?.status ?? null,
+                              };
+                            })
                             .sort((a, b) =>
                               a.firstName.localeCompare(b.firstName),
                             );
 
-                          const orderedStatuses = [
-                            ...(myStatus
-                              ? [
-                                  {
-                                    id: myStatus.id,
-                                    status: myStatus.status,
-                                    firstName: myStatus.firstName,
-                                    lastName: myStatus.lastName,
-                                  },
-                                ]
-                              : []),
-                            ...childrenStatuses.map((att) => ({
-                              id: att.id,
-                              status: att.status,
-                              firstName: att.firstName,
-                              lastName: att.lastName,
-                            })),
-                          ];
+                          // Build status array: include user if member, plus all children that are members
+                          const userIds = [myId, ...childIds];
+                          const orderedStatuses = userIds
+                            .filter((id) =>
+                              clubMembersWithDetails.some(
+                                (member) => member && member.id === id,
+                              ),
+                            )
+                            .map((id) => {
+                              const attendee = attendeeDetails.find(
+                                (att) => att.id === id,
+                              );
+                              const member = clubMembersWithDetails.find(
+                                (m) => m && m.id === id,
+                              );
+                              return {
+                                id: id,
+                                status: attendee?.status ?? null,
+                                firstName: member?.firstName || "Unknown",
+                                lastName: member?.lastName || "Unknown",
+                              };
+                            });
 
                           return {
                             ...event,
@@ -212,6 +228,7 @@ export class EventDetailPage implements OnInit {
                             attendeeListTrue,
                             attendeeListFalse,
                             unrespondedMembers,
+                            children: relevantChildren,
                             status: orderedStatuses,
                           };
                         }),
