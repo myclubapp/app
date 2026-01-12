@@ -106,7 +106,7 @@
     "@angular-eslint/template-parser": "21.1.0",
     "@angular/build": "21.0.4",
     "@angular/cli": "^21.0.4",
-    "@angular/compiler": "^21.0.6",
+    "@angular/compiler": "^21.0.7",
     "@angular/compiler-cli": "^21.0.6",
     "@angular/localize": "^21.0.6",
     "@capacitor/cli": "7.4.4",
