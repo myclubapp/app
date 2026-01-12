@@ -32,6 +32,7 @@ export interface Profile {
   settingsEmail: boolean;
   settingsEmailReporting: boolean;
   showGamePreview: boolean;
+  gamePreviewDays: number;
   hideEmail: boolean;
   hidePhoneNumber: boolean;
   language: string;

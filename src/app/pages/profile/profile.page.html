@@ -357,13 +357,38 @@
       <ion-label>{{"profile.show_game_preview" | translate}}</ion-label>
     </ion-item>
     @if (userProfile.showGamePreview) {
-    <ion-item lines="none">
-      <ion-icon
-        color="medium"
-        name="information-circle-outline"
-        slot="start"
-      ></ion-icon>
-      <ion-note>{{"profile.game_preview_info_note" | translate}}</ion-note>
+    <ion-item>
+      <ion-icon name="calendar-outline" slot="start"></ion-icon>
+      <ion-select
+        labelPlacement="start"
+        [label]="'profile.game_preview_days' | translate"
+        [value]="userProfile.gamePreviewDays || 10"
+        [cancelText]="'common.cancel' | translate"
+        [okText]="'common.ok' | translate"
+        (ionChange)="changeGamePreviewDays($event)"
+      >
+        <ion-select-option [value]="3"
+          >3 {{"profile.days" | translate}}</ion-select-option
+        >
+        <ion-select-option [value]="5"
+          >5 {{"profile.days" | translate}}</ion-select-option
+        >
+        <ion-select-option [value]="7"
+          >7 {{"profile.days" | translate}}</ion-select-option
+        >
+        <ion-select-option [value]="10"
+          >10 {{"profile.days" | translate}}</ion-select-option
+        >
+        <ion-select-option [value]="14"
+          >14 {{"profile.days" | translate}}</ion-select-option
+        >
+        <ion-select-option [value]="21"
+          >21 {{"profile.days" | translate}}</ion-select-option
+        >
+        <ion-select-option [value]="30"
+          >30 {{"profile.days" | translate}}</ion-select-option
+        >
+      </ion-select>
     </ion-item>
     } }
   </ion-list>

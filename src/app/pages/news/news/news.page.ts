@@ -85,6 +85,7 @@ export class NewsPage implements OnInit {
 
   clubGames$: Observable<Game[]>;
   showGamePreview: boolean = false;
+  gamePreviewDays: number = 10;
   hasChampionshipModule: boolean = false;
 
   currentSegment: "all" | "verein" | "verband" = "all";
@@ -249,11 +250,13 @@ export class NewsPage implements OnInit {
           .toPromise();
         if (userProfile) {
           this.showGamePreview = userProfile.showGamePreview || false;
+          this.gamePreviewDays = userProfile.gamePreviewDays || 10;
         }
       }
     } catch (error) {
       console.error("Fehler beim Laden der Game-Preview Einstellung:", error);
       this.showGamePreview = false;
+      this.gamePreviewDays = 10;
     }
   }
 
@@ -631,15 +634,15 @@ export class NewsPage implements OnInit {
           (a, b) => a.dateTime.toMillis() - b.dateTime.toMillis(),
         );
 
-        // Filter: only games from today and tomorrow
+        // Filter: only games within the configured preview days
         const now = new Date();
-        const tomorrow = new Date(now);
-        tomorrow.setDate(tomorrow.getDate() + 10);
-        tomorrow.setHours(23, 59, 59, 999);
+        const endDate = new Date(now);
+        endDate.setDate(endDate.getDate() + this.gamePreviewDays);
+        endDate.setHours(23, 59, 59, 999);
 
         return sortedGames.filter((game) => {
           const gameDate = game.dateTime.toDate();
-          return gameDate <= tomorrow;
+          return gameDate <= endDate;
         });
       }),
       catchError((error) => {

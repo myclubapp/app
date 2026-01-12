@@ -590,6 +590,22 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     this.toastActionSaved();
   }
 
+  async changeGamePreviewDays(event) {
+    const days = event.detail.value;
+
+    // Update local storage
+    await Preferences.set({
+      key: "gamePreviewDays",
+      value: days.toString(),
+    });
+
+    // Update user profile in database
+    await this.profileService.changeGamePreviewDays(days);
+
+    console.log("Game preview days changed:", days);
+    this.toastActionSaved();
+  }
+
   async toggleHideEmail(event) {
     await this.profileService.changeHideEmail(event.detail.checked);
     console.log("Hide email toggled:", event.detail.checked);

@@ -256,6 +256,12 @@ export class UserProfileService {
     return updateDoc(userProfileRef, { showGamePreview: state });
   }
 
+  async changeGamePreviewDays(days: number) {
+    const user = this.authService.auth.currentUser;
+    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
+    return updateDoc(userProfileRef, { gamePreviewDays: days });
+  }
+
   async changeHideEmail(state: boolean) {
     const user = this.authService.auth.currentUser;
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
