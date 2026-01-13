@@ -7,7 +7,7 @@
     </ion-buttons>
     <ion-title>{{"common.championship" | translate}}</ion-title>
     @if (isModal) {
-    <ion-buttons slot="primary">
+    <ion-buttons slot="secondary">
       <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
     </ion-buttons>
     }
@@ -87,6 +87,7 @@
     @for (game of gameList; track game.id) {
     <ion-item-sliding #item>
       <ion-item type="button" detail="true">
+        @if (game.isMember || !game.children || game.children.length === 0) {
         <app-status-icon
           slot="start"
           [status]="game.status"
@@ -94,7 +95,9 @@
           [closedEvent]="false"
           (iconClick)="toggle($event, game)"
           [isMember]="game.isMember"
+          [hasChildren]="game.children?.length > 0"
         ></app-status-icon>
+        }
         <ion-label (click)="openChampionshipDetailModal(game, true)">
           <h2>{{game.name}}</h2>
           <h3>
@@ -258,6 +261,7 @@
     @for (game of gameListPast; track game.id) {
     <ion-item-sliding #item>
       <ion-item type="button" detail="true">
+        @if (game.isMember || !game.children || game.children.length === 0) {
         <app-status-icon
           slot="start"
           [status]="game.status"
@@ -265,7 +269,9 @@
           [closedEvent]="false"
           [clickable]="false"
           [isMember]="game.isMember"
+          [hasChildren]="game.children?.length > 0"
         ></app-status-icon>
+        }
         <ion-label
           class="ion-text-wrap"
           (click)="openChampionshipDetailModal(game, false)"

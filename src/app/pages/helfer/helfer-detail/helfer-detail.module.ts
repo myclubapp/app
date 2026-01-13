@@ -1,13 +1,14 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { NgModule } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
 
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from "@ionic/angular";
 
-import { HelferDetailPageRoutingModule } from './helfer-detail-routing.module';
+import { HelferDetailPageRoutingModule } from "./helfer-detail-routing.module";
 
-import { HelferDetailPage } from './helfer-detail.page';
-import { TranslateModule } from '@ngx-translate/core';
+import { HelferDetailPage } from "./helfer-detail.page";
+import { TranslateModule } from "@ngx-translate/core";
+import { StatusIconComponent } from "src/app/components/status-icon/status-icon.component";
 
 @NgModule({
   imports: [
@@ -15,8 +16,9 @@ import { TranslateModule } from '@ngx-translate/core';
     FormsModule,
     IonicModule,
     HelferDetailPageRoutingModule,
-    TranslateModule
+    TranslateModule,
+    StatusIconComponent,
   ],
-  declarations: [HelferDetailPage]
+  declarations: [HelferDetailPage],
 })
 export class HelferDetailPageModule {}

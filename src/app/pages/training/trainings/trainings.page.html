@@ -45,6 +45,8 @@
     @for (training of trainingList; track training.id) {
     <ion-item-sliding #item>
       <ion-item type="button" detail="true">
+        @if (training.isMember || !training.children || training.children.length
+        === 0) {
         <app-status-icon
           slot="start"
           [status]="training.status"
@@ -52,7 +54,9 @@
           [closedEvent]="false"
           (iconClick)="toggle($event, training)"
           [isMember]="training.isMember"
+          [hasChildren]="training.children?.length > 0"
         ></app-status-icon>
+        }
         <ion-label (click)="openTrainingDetailModal(training, true)">
           <h2>{{training.name}}</h2>
           <h3>
@@ -242,6 +246,8 @@
     @for (training of trainingListPast; track training.id) {
     <ion-item-sliding #item>
       <ion-item type="button" detail="true">
+        @if (training.isMember || !training.children || training.children.length
+        === 0) {
         <app-status-icon
           slot="start"
           [status]="training.status"
@@ -249,7 +255,9 @@
           [closedEvent]="false"
           [clickable]="false"
           [isMember]="training.isMember"
+          [hasChildren]="training.children?.length > 0"
         ></app-status-icon>
+        }
         <ion-label (click)="openTrainingDetailModal(training, false)">
           <h2>{{training.name}}</h2>
           <h3>

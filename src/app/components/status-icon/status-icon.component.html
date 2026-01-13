@@ -38,7 +38,7 @@
   @if (cancelled) {
     <ion-icon color="danger" slot="start" name="alert-circle"></ion-icon>
   }
-} @else {
+} @else if (!hasChildren) {
   <ion-icon
     color="primary"
     slot="start"

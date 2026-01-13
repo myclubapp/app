@@ -251,6 +251,19 @@ export class HelferDetailPage implements OnInit {
                                     a.changedAt.toDate().getTime() -
                                     b.changedAt.toDate().getTime(),
                                 ),
+                              children: this.children.map((child) => {
+                                const attendeeData = attendeeDetails.find(
+                                  (att) => att.id === child.id,
+                                );
+                                return {
+                                  id: child.id,
+                                  status: attendeeData?.status ?? null,
+                                  confirmed: attendeeData?.confirmed ?? false,
+                                  firstName: child.firstName,
+                                  lastName: child.lastName,
+                                  changedAt: attendeeData?.changedAt ?? null,
+                                };
+                              }),
                             };
                           }),
 
@@ -515,6 +528,31 @@ export class HelferDetailPage implements OnInit {
       );
       this.presentToast();
     }
+  }
+
+  async onSchichtIconClick(
+    slidingItem: IonItemSliding,
+    newStatus: any,
+    event: any,
+    schicht: any,
+  ) {
+    await this.toggleSchicht(slidingItem, newStatus as boolean, event, schicht);
+  }
+
+  async onChildIconClick(
+    slidingItem: IonItemSliding,
+    newStatus: any,
+    event: any,
+    schicht: any,
+    childId: string,
+  ) {
+    await this.toggleSchichtItem(
+      slidingItem,
+      newStatus as boolean,
+      event,
+      schicht,
+      childId,
+    );
   }
 
   async toggleSchicht(

@@ -799,7 +799,7 @@ export class TrainingsPage implements OnInit {
   }
 
   toggleChildren(status: boolean, training: any, childrenId) {
-    console.log("toggleChildren", training);
+    //console.log("toggleChildren", training);
 
     this.processToggle(childrenId, status, training);
   }
@@ -810,7 +810,7 @@ export class TrainingsPage implements OnInit {
     training: any,
     childrenId,
   ) {
-    console.log("toggleChildrenItem", training);
+    //console.log("toggleChildrenItem", training);
     slidingItem.closeOpened();
     this.processToggle(childrenId, status, training);
   }

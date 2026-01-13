@@ -14,6 +14,7 @@ export class StatusIconComponent {
   @Input() cancelled: boolean = false;
   @Input() closedEvent: boolean = false;
   @Input() isMember: boolean = true;
+  @Input() hasChildren: boolean = false;
   @Input() clickable: boolean = true;
   @Output() iconClick = new EventEmitter<boolean>();
 

@@ -51,4 +51,6 @@ export interface Schicht {
   timeTo: any;
   countNeeded: number;
   countAttendees: number;
+  children?: any[];
+  status?: any[];
 }

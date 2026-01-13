@@ -46,6 +46,7 @@
     @for (event of eventsList; track event.id) {
     <ion-item-sliding #item>
       <ion-item type="button" detail="true">
+        @if (event.isMember || !event.children || event.children.length === 0) {
         <app-status-icon
           slot="start"
           [status]="event.status"
@@ -53,7 +54,9 @@
           [closedEvent]="event.closedEvent"
           (iconClick)="toggle($event, event)"
           [isMember]="event.isMember"
+          [hasChildren]="event.children?.length > 0"
         ></app-status-icon>
+        }
         <ion-label (click)="openEventDetailModal(event, true)">
           <h2>{{event.name}}</h2>
           <h3>
@@ -224,6 +227,7 @@
     @for (event of eventsListPast; track event.id) {
     <ion-item-sliding #item>
       <ion-item type="button" detail="true">
+        @if (event.isMember || !event.children || event.children.length === 0) {
         <app-status-icon
           slot="start"
           [status]="event.status"
@@ -231,7 +235,9 @@
           [closedEvent]="event.closedEvent"
           [clickable]="false"
           [isMember]="event.isMember"
+          [hasChildren]="event.children?.length > 0"
         ></app-status-icon>
+        }
         <ion-label (click)="openEventDetailModal(event, false)">
           <h2>{{event.name}}</h2>
           <h3>

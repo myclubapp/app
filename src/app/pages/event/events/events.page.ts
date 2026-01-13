@@ -1005,7 +1005,7 @@ export class EventsPage implements OnInit {
   }
 
   toggleChildren(status: boolean, event: any, childrenId: string) {
-    console.log("toggleChildren", event);
+    //console.log("toggleChildren", event);
     this.processToggle(childrenId, status, event);
   }
 
@@ -1015,7 +1015,7 @@ export class EventsPage implements OnInit {
     event: any,
     childrenId: string,
   ) {
-    console.log("toggleChildrenItem", event);
+    //console.log("toggleChildrenItem", event);
     slidingItem.closeOpened();
     this.processToggle(childrenId, status, event);
   }

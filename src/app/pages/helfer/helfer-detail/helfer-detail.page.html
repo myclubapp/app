@@ -105,68 +105,41 @@
     @for (schicht of schichten; track schicht.id) {
     <ion-item-sliding #item>
       <ion-item>
-        @for (status of schicht.status; track status.id) { @if
-        (!schicht.confirmed && isFuture) { @if (status.status === null) {
+        <!-- Zeige Status-Icon NUR wenn keine Kinder vorhanden sind -->
+        @if (!schicht.children || schicht.children.length === 0) { @if
+        (schicht.status.length > 0 && schicht.status[0]) {
+        <!-- User hat bereits einen Status -->
+        @if (schicht.status[0].status === null || schicht.status[0].status ===
+        undefined) {
         <ion-icon
-          slot="icon-only"
+          slot="start"
           color="warning"
-          slot="start"
           name="help-circle"
-          (click)="toggleSchicht(item, true, event, schicht)"
+          (click)="isFuture && !schicht.confirmed && onSchichtIconClick(item, true, event, schicht)"
         ></ion-icon>
-        } @if (status.status === true) {
+        } @if (schicht.status[0].status === false) {
         <ion-icon
-          slot="icon-only"
-          color="success"
           slot="start"
-          name="checkmark-circle"
-          (click)="toggleSchicht(item, false, event, schicht)"
-        ></ion-icon>
-        } @if (status.status === false) {
-        <ion-icon
-          slot="icon-only"
           color="danger"
-          slot="start"
           name="close-circle"
-          (click)="toggleSchicht(item, true, event, schicht)"
+          (click)="isFuture && !schicht.confirmed && onSchichtIconClick(item, true, event, schicht)"
         ></ion-icon>
-        } @if (status.id === user.uid && schicht.status.length > 1) {
-        <ion-label>{{"common.my__status" | translate}}</ion-label>
-        } @if (status.id !== user.uid) {
-        <ion-label>{{status.firstName}} {{status.lastName}} </ion-label>
-        } } @if (!isFuture || schicht.confirmed) { @if (status.status === null)
-        {
+        } @if (schicht.status[0].status === true) {
         <ion-icon
-          slot="icon-only"
-          color="warning"
           slot="start"
-          name="help-circle"
-        ></ion-icon>
-        } @if (status.status === true) {
-        <ion-icon
-          slot="icon-only"
           color="success"
-          slot="start"
           name="checkmark-circle"
+          (click)="isFuture && !schicht.confirmed && onSchichtIconClick(item, false, event, schicht)"
         ></ion-icon>
-        } @if (status.status === false) {
+        } } @else {
+        <!-- User hat noch keinen Status -->
         <ion-icon
-          slot="icon-only"
-          color="danger"
           slot="start"
-          name="close-circle"
-        ></ion-icon>
-        } } }
-        <!-- NEU: Falls keine Status-Einträge vorhanden sind, Teilnahme ermöglichen -->
-        @if (schicht.status.length === 0 && isFuture && !schicht.confirmed) {
-        <ion-icon
-          slot="icon-only"
           color="warning"
-          slot="start"
           name="help-circle"
-          (click)="toggleSchicht(item, true, event, schicht)"
+          (click)="isFuture && !schicht.confirmed && onSchichtIconClick(item, true, event, schicht)"
         ></ion-icon>
-        }
+        } }
         <ion-label>
           <h2>{{schicht.name}}</h2>
           <h3>Zeit: {{schicht.timeFrom}} Uhr - {{schicht.timeTo}} Uhr</h3>
@@ -188,7 +161,38 @@
       </ion-item-options>
       } }
     </ion-item-sliding>
-    @if (schicht['attendeeListTrue'].length > 0) {
+
+    <!-- Kinder anzeigen (wie auf der Trainings-Seite) -->
+    @if (schicht.children && schicht.children.length > 0) { @for (child of
+    schicht.children; track child.id) {
+    <ion-item-sliding #childItem>
+      <ion-item>
+        @if (child.status !== true && child.status !== false) {
+        <ion-icon
+          slot="start"
+          color="warning"
+          name="help-circle"
+          (click)="isFuture && !schicht.confirmed && onChildIconClick(childItem, true, event, schicht, child.id)"
+        ></ion-icon>
+        } @if (child.status === false) {
+        <ion-icon
+          slot="start"
+          color="danger"
+          name="close-circle"
+          (click)="isFuture && !schicht.confirmed && onChildIconClick(childItem, true, event, schicht, child.id)"
+        ></ion-icon>
+        } @if (child.status === true) {
+        <ion-icon
+          slot="start"
+          color="success"
+          name="checkmark-circle"
+          (click)="isFuture && !schicht.confirmed && onChildIconClick(childItem, false, event, schicht, child.id)"
+        ></ion-icon>
+        }
+        <ion-label>{{child.firstName}} {{child.lastName}}</ion-label>
+      </ion-item>
+    </ion-item-sliding>
+    } } @if (schicht['attendeeListTrue'].length > 0) {
     <ion-accordion-group expand="inset">
       <ion-accordion value="yes">
         <ion-item slot="header" color="light">

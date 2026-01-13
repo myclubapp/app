@@ -2,10 +2,6 @@ import { AfterViewInit, Component, NgZone, OnInit } from "@angular/core";
 import { SwUpdate, VersionEvent } from "@angular/service-worker";
 import { registerLocaleData } from "@angular/common";
 import localeDe from "@angular/common/locales/de";
-import { CommonModule } from "@angular/common";
-import { IonicModule } from "@ionic/angular";
-import { RouterModule } from "@angular/router";
-import { TranslateModule } from "@ngx-translate/core";
 
 import {
   AlertController,
@@ -46,6 +42,7 @@ import { lastValueFrom } from "rxjs";
 // src/app/app.component.ts
 import { register } from "swiper/element/bundle";
 import { Capacitor } from "@capacitor/core";
+import { Network } from "@capacitor/network";
 
 // Register Swiper custom elements
 register();
@@ -136,12 +133,17 @@ export class AppComponent implements OnInit, AfterViewInit {
             if (clubList.length === 0) {
               // console.log("NO! Club Data received. > Call Club Onboarding");
               try {
-                const navOnboardingClub =
-                  await this.router.navigateByUrl("/onboarding-club");
-                if (navOnboardingClub) {
-                  // console.log("Navigation success to onboarding Club Page");
-                } else {
-                  console.error("Navigation ERROR to onboarding Club Page");
+                // Check network status before onboarding
+                const networkStatus = await Network.getStatus();
+
+                if (networkStatus.connected) {
+                  const navOnboardingClub =
+                    await this.router.navigateByUrl("/onboarding-club");
+                  if (navOnboardingClub) {
+                    // console.log("Navigation success to onboarding Club Page");
+                  } else {
+                    console.error("Navigation ERROR to onboarding Club Page");
+                  }
                 }
               } catch (error) {
                 console.error("Navigation Exception:", error);

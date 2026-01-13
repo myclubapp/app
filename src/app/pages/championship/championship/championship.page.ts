@@ -911,7 +911,7 @@ export class ChampionshipPage implements OnInit {
   }
 
   toggleChildren(status: boolean, game: any, childrenId: string) {
-    console.log("toggleChildren", game);
+    //console.log("toggleChildren", game);
     this.processToggle(childrenId, status, game);
   }
 
@@ -921,7 +921,7 @@ export class ChampionshipPage implements OnInit {
     game: any,
     childrenId: string,
   ) {
-    console.log("toggleChildrenItem", game);
+    //console.log("toggleChildrenItem", game);
     slidingItem.closeOpened();
     this.processToggle(childrenId, status, game);
   }
