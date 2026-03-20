@@ -134,16 +134,13 @@ export class AppComponent implements OnInit, AfterViewInit {
               // console.log("NO! Club Data received. > Call Club Onboarding");
               try {
                 // Check network status before onboarding
-                const networkStatus = await Network.getStatus();
-
-                if (networkStatus.connected) {
-                  const navOnboardingClub =
-                    await this.router.navigateByUrl("/onboarding-club");
-                  if (navOnboardingClub) {
-                    // console.log("Navigation success to onboarding Club Page");
-                  } else {
-                    console.error("Navigation ERROR to onboarding Club Page");
-                  }
+                // const networkStatus = await Network.getStatus();
+                const navOnboardingClub =
+                  await this.router.navigateByUrl("/onboarding-club");
+                if (navOnboardingClub) {
+                  // console.log("Navigation success to onboarding Club Page");
+                } else {
+                  console.error("Navigation ERROR to onboarding Club Page");
                 }
               } catch (error) {
                 console.error("Navigation Exception:", error);

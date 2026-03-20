@@ -156,9 +156,11 @@ export class HelferDetailPage implements OnInit {
 
           // Sort the schichten by timeFrom ascending and then by name A-Z
           const sortedSchichten = schichten.sort((a, b) => {
-            const timeComparison = a.timeFrom.localeCompare(b.timeFrom); // Ascending order by timeFrom
+            const timeComparison = (a.timeFrom || "").localeCompare(
+              b.timeFrom || "",
+            ); // Ascending order by timeFrom
             if (timeComparison !== 0) return timeComparison; // If timeFrom is different, use it
-            return a.name.localeCompare(b.name); // If timeFrom is the same, sort by name A-Z
+            return (a.name || "").localeCompare(b.name || ""); // If timeFrom is the same, sort by name A-Z
           });
 
           return this.fbService.getClubMemberRefs(clubId).pipe(
@@ -432,7 +434,9 @@ export class HelferDetailPage implements OnInit {
           .pipe(
             take(1),
             map((items) =>
-              items.sort((a, b) => a.timeFrom.localeCompare(b.timeFrom)),
+              items.sort((a, b) =>
+                (a.timeFrom || "").localeCompare(b.timeFrom || ""),
+              ),
             ),
             catchError(() => of([])),
           ),
@@ -753,6 +757,12 @@ export class HelferDetailPage implements OnInit {
     });
 
     if (data) {
+      if (!data.values.name || !data.values.timeFrom || !data.values.timeTo) {
+        await this.uiService.showErrorToast(
+          "Bitte alle Pflichtfelder ausfüllen (Beschreibung, Zeit von, Zeit bis).",
+        );
+        return;
+      }
       await this.eventService.changeHelferEventSchicht(
         this.event.clubId,
         this.event.id,
@@ -827,6 +837,12 @@ export class HelferDetailPage implements OnInit {
     });
 
     if (data) {
+      if (!data.values.name || !data.values.timeFrom || !data.values.timeTo) {
+        await this.uiService.showErrorToast(
+          "Bitte alle Pflichtfelder ausfüllen (Beschreibung, Zeit von, Zeit bis).",
+        );
+        return;
+      }
       await this.eventService.addNewHelferEventSchicht(
         this.event.clubId,
         this.event.id,
@@ -883,6 +899,12 @@ export class HelferDetailPage implements OnInit {
     });
 
     if (data) {
+      if (!data.values.name || !data.values.timeFrom || !data.values.timeTo) {
+        await this.uiService.showErrorToast(
+          "Bitte alle Pflichtfelder ausfüllen (Beschreibung, Zeit von, Zeit bis).",
+        );
+        return;
+      }
       await this.eventService.addNewHelferEventSchicht(
         this.event.clubId,
         this.event.id,
