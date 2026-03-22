@@ -39,9 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly) double viewingAngle;
 
 /**
- * Designated initializer. Configures this GMSCameraPosition with all available camera properties.
- * Building a GMSCameraPosition via this initializer (or by the following convenience constructors)
- * will implicitly clamp camera values.
+ * Designated initializer. Configures this `GMSCameraPosition` with all available camera properties.
+ * Building a `GMSCameraPosition` via this initializer (or by the following convenience
+ * constructors) will implicitly clamp camera values.
  *
  * @param target Location on the earth towards which the camera points.
  * @param zoom The zoom level near the center of the screen.
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
                   viewingAngle:(double)viewingAngle;
 
 /**
- * Convenience initializer for GMSCameraPosition for a particular target and zoom level. This will
+ * Convenience initializer for `GMSCameraPosition` for a particular target and zoom level. This will
  * set the bearing and viewingAngle properties of this camera to zero defaults (i.e., directly
  * facing the Earth's surface, with the top of the screen pointing north).
  *
@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTarget:(CLLocationCoordinate2D)target zoom:(float)zoom;
 
 /**
- * Convenience initializer for GMSCameraPosition for a particular latitidue, longitude and zoom
+ * Convenience initializer for `GMSCameraPosition` for a particular latitidue, longitude and zoom
  * level. This will set the bearing and viewingAngle properties of this camera to zero defaults
  * (i.e., directly facing the Earth's surface, with the top of the screen pointing north).
  *
@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
                             zoom:(float)zoom;
 
 /**
- * Convenience initializer for GMSCameraPosition, with latitude/longitude and all other camera
+ * Convenience initializer for `GMSCameraPosition`, with latitude/longitude and all other camera
  * properties as per -initWithTarget:zoom:bearing:viewingAngle:.
  *
  * @param latitude The latitude component of the location towards which the camera points.
@@ -95,20 +95,20 @@ NS_ASSUME_NONNULL_BEGIN
                     viewingAngle:(double)viewingAngle;
 
 /**
- * Convenience constructor for GMSCameraPosition for a particular target and zoom level. This will
+ * Convenience constructor for `GMSCameraPosition` for a particular target and zoom level. This will
  * set the bearing and viewingAngle properties of this camera to zero defaults (i.e., directly
  * facing the Earth's surface, with the top of the screen pointing north).
  */
 + (instancetype)cameraWithTarget:(CLLocationCoordinate2D)target zoom:(float)zoom;
 
-/** Convenience constructor for GMSCameraPosition, as per cameraWithTarget:zoom:. */
+/** Convenience constructor for `GMSCameraPosition`, as per `+cameraWithTarget:zoom:`. */
 + (instancetype)cameraWithLatitude:(CLLocationDegrees)latitude
                          longitude:(CLLocationDegrees)longitude
                               zoom:(float)zoom;
 
 /**
- * Convenience constructor for GMSCameraPosition, with all camera properties as per
- * initWithTarget:zoom:bearing:viewingAngle:.
+ * Convenience constructor for `GMSCameraPosition`, with all camera properties as per
+ * `+initWithTarget:zoom:bearing:viewingAngle:`.
  */
 + (instancetype)cameraWithTarget:(CLLocationCoordinate2D)target
                             zoom:(float)zoom
@@ -116,8 +116,8 @@ NS_ASSUME_NONNULL_BEGIN
                     viewingAngle:(double)viewingAngle;
 
 /**
- * Convenience constructor for GMSCameraPosition, with latitude/longitude and all other camera
- * properties as per initWithTarget:zoom:bearing:viewingAngle:.
+ * Convenience constructor for `GMSCameraPosition`, with latitude/longitude and all other camera
+ * properties as per `+initWithTarget:zoom:bearing:viewingAngle:`.
  */
 + (instancetype)cameraWithLatitude:(CLLocationDegrees)latitude
                          longitude:(CLLocationDegrees)longitude
@@ -126,8 +126,8 @@ NS_ASSUME_NONNULL_BEGIN
                       viewingAngle:(double)viewingAngle;
 
 /**
- * Get the zoom level at which |meters| distance, at given |coord| on Earth, correspond to the
- * specified number of screen |points|.
+ * Get the zoom level at which `meters` distance, at given `coord` on Earth, correspond to the
+ * specified number of screen `points`.
  *
  * For extremely large or small distances the returned zoom level may be smaller or larger than the
  * minimum or maximum zoom level allowed on the camera.
@@ -141,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-/** Mutable version of GMSCameraPosition. */
+/** Mutable version of `GMSCameraPosition`. */
 @interface GMSMutableCameraPosition : GMSCameraPosition
 @property(nonatomic) CLLocationCoordinate2D target;
 @property(nonatomic) float zoom;

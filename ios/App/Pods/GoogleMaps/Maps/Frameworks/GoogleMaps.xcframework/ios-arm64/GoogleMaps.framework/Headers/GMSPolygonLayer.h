@@ -16,12 +16,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * GMSPolygonLayer is a subclass of GMSOverlayLayer, available on a per-polygon basis, that allows
- * animation of several properties of its associated GMSPolygon.
+ * `GMSPolygonLayer` is a subclass of `GMSOverlayLayer`, available on a per-polygon basis, that
+ * allows animation of several properties of its associated `GMSPolygon`.
  *
- * Note that this CALayer is never actually rendered directly, as GMSMapView is provided entirely
- * via an OpenGL layer. As such, adjustments or animations to 'default' properties of CALayer will
- * not have any effect.
+ * Note that this `CALayer` is never actually rendered directly, as `GMSMapView` is provided
+ * entirely via an `OpenGL` layer. As such, adjustments or animations to 'default' properties of
+ * `CALayer` will not have any effect.
  */
 @interface GMSPolygonLayer : GMSOverlayLayer
 
@@ -30,13 +30,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * The color of the polygon outline. This is an assign property, there is an expectation for the
- * GMSPolygon to own the reference if necessary.
+ * `GMSPolygon` to own the reference if necessary.
  */
 @property(nonatomic, assign, nullable) CGColorRef strokeColor;
 
 /**
- * The fill color. This is an assign property, there is an expectation for the GMSPolygon to own the
- * reference if necessary.
+ * The fill color. This is an assign property, there is an expectation for the `GMSPolygon` to own
+ * the reference if necessary.
  */
 @property(nonatomic, assign, nullable) CGColorRef fillColor;
 

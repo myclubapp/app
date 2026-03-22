@@ -10,18 +10,20 @@
 
 #import <Foundation/Foundation.h>
 
-@class GMSIndoorBuilding;
+
+
 @class GMSIndoorLevel;
+@class GMSIndoorBuilding;
 
 NS_ASSUME_NONNULL_BEGIN
 
-/** Delegate for events on GMSIndoorDisplay. */
+/** Delegate for events on `GMSIndoorDisplay`. */
 @protocol GMSIndoorDisplayDelegate <NSObject>
 @optional
 
 /**
  * Raised when the activeBuilding has changed.  The activeLevel will also have already been updated
- * for the new building, but didChangeActiveLevel: will be raised after this method.
+ * for the new building, but `-didChangeActiveLevel:` will be raised after this method.
  */
 - (void)didChangeActiveBuilding:(nullable GMSIndoorBuilding *)building;
 
@@ -36,11 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Provides ability to observe or control the display of indoor level data.
  *
- * Like GMSMapView, GMSIndoorDisplay may only be used from the main thread.
+ * Like `GMSMapView`, `GMSIndoorDisplay` may only be used from the main thread.
  */
 @interface GMSIndoorDisplay : NSObject
 
-/** GMSIndoorDisplay delegate */
+/** `GMSIndoorDisplay` delegate */
 @property(nonatomic, weak, nullable) id<GMSIndoorDisplayDelegate> delegate;
 
 /**

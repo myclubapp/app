@@ -14,13 +14,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * GMSPanoramaCameraUpdate represents an update that may be applied to a GMSPanoramaView.
+ * `GMSPanoramaCameraUpdate` represents an update that may be applied to a `GMSPanoramaView`.
  * It encapsulates some logic for modifying the current camera.
  * It should only be constructed using the factory helper methods below.
  */
 @interface GMSPanoramaCameraUpdate : NSObject
 
-/** Returns an update that increments the camera heading with |deltaHeading|. */
+/** Returns an update that increments the camera heading with `deltaHeading`. */
 + (GMSPanoramaCameraUpdate *)rotateBy:(CGFloat)deltaHeading;
 
 /** Returns an update that sets the camera heading to the given value. */

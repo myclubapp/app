@@ -14,12 +14,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * GMSOverlayLayer is a custom subclass of CALayer, and an abstract baseclass for GMSOverlay layers
- * that allow custom animations.
+ * `GMSOverlayLayer` is a custom subclass of `CALayer`, and an abstract baseclass for `GMSOverlay`
+ * layers that allow custom animations.
  *
- * Note that this CALayer or any subclass are never actually rendered directly, as GMSMapView is
- * provided entirely via an OpenGL layer. As such, adjustments or animations to 'default' properties
- * of CALayer will not have any effect.
+ * Note that this `CALayer` or any subclass are never actually rendered directly, as `GMSMapView` is
+ * provided entirely via an `OpenGL` layer. As such, adjustments or animations to 'default'
+ * properties of `CALayer` will not have any effect.
  *
  * This is an implementation detail and it should not be instantiated directly.
  */

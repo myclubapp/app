@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @{
  */
 
-/** GMSGeocoder error codes, embedded in NSError. */
+/** `GMSGeocoder` error codes, embedded in NSError. */
 typedef NS_ENUM(NSInteger, GMSGeocoderErrorCode) {
   kGMSGeocoderErrorInvalidCoordinate = 1,
   kGMSGeocoderErrorInternal,
@@ -42,7 +42,7 @@ typedef void (^GMSReverseGeocodeCallback)(GMSReverseGeocodeResponse *_Nullable, 
  */
 @interface GMSGeocoder : NSObject
 
-/* Convenience constructor for GMSGeocoder. */
+/* Convenience constructor for `GMSGeocoder`. */
 + (GMSGeocoder *)geocoder;
 
 /**
@@ -63,7 +63,7 @@ typedef void (^GMSReverseGeocodeCallback)(GMSReverseGeocodeResponse *_Nullable, 
 /** Returns the first result, or nil if no results were available. */
 - (nullable GMSAddress *)firstResult;
 
-/** Returns an array of all the results (contains GMSAddress), including the first result. */
+/** Returns an array of all the results (contains `GMSAddress`), including the first result. */
 - (nullable NSArray<GMSAddress *> *)results;
 
 @end

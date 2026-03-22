@@ -17,28 +17,28 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * GMSGroundOverlay specifies the available options for a ground overlay that exists on the Earth's
- * surface. Unlike a marker, the position of a ground overlay is specified explicitly and it does
- * not face the camera.
+ * `GMSGroundOverlay` specifies the available options for a ground overlay that exists on the
+ * Earth's surface. Unlike a marker, the position of a ground overlay is specified explicitly and it
+ * does not face the camera.
  */
 @interface GMSGroundOverlay : GMSOverlay
 
 /**
- * The position of this GMSGroundOverlay, or more specifically, the physical position of its anchor.
- * If this is changed, |bounds| will be moved around the new position.
+ * The position of this `GMSGroundOverlay`, or more specifically, the physical position of its
+ * anchor. If this is changed, `bounds` will be moved around the new position.
  */
 @property(nonatomic) CLLocationCoordinate2D position;
 
 /**
- * The anchor specifies where this GMSGroundOverlay is anchored to the Earth in relation to
- * |bounds|. If this is modified, |position| will be set to the corresponding new position within
- * |bounds|.
+ * The anchor specifies where this `GMSGroundOverlay` is anchored to the Earth in relation to
+ * `bounds`. If this is modified, `position` will be set to the corresponding new position within
+ * `bounds`.
  */
 @property(nonatomic) CGPoint anchor;
 
 /**
- * Icon to render within |bounds| on the Earth. If this is nil, the overlay will not be visible
- * (unlike GMSMarker which has a default image).
+ * Icon to render within `bounds` on the Earth. If this is nil, the overlay will not be visible
+ * (unlike `GMSMarker` which has a default image).
  */
 @property(nonatomic, nullable) UIImage *icon;
 
@@ -55,21 +55,21 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic) CLLocationDirection bearing;
 
 /**
- * The 2D bounds on the Earth in which |icon| is drawn. Changing this value will adjust |position|
+ * The 2D bounds on the Earth in which `icon` is drawn. Changing this value will adjust `position`
  * accordingly.
  */
 @property(nonatomic, nullable) GMSCoordinateBounds *bounds;
 
 /**
- * Convenience constructor for GMSGroundOverlay for a particular |bounds| and |icon|. Will set
- * |position| accordingly.
+ * Convenience constructor for `GMSGroundOverlay` for a particular `bounds` and `icon`. Will set
+ * `position` accordingly.
  */
 + (instancetype)groundOverlayWithBounds:(nullable GMSCoordinateBounds *)bounds
                                    icon:(nullable UIImage *)icon;
 
 /**
- * Constructs a GMSGroundOverlay that renders the given |icon| at |position|, as if the image's
- * actual size matches camera pixels at |zoomLevel|.
+ * Constructs a `GMSGroundOverlay` that renders the given `icon` at `position`, as if the image's
+ * actual size matches camera pixels at `zoomLevel`.
  */
 + (instancetype)groundOverlayWithPosition:(CLLocationCoordinate2D)position
                                      icon:(nullable UIImage *)icon
@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * The default position of the ground anchor of a GMSGroundOverlay: the center point of the icon.
+ * The default position of the ground anchor of a `GMSGroundOverlay` the center point of the icon.
  */
 FOUNDATION_EXTERN const CGPoint kGMSGroundOverlayDefaultAnchor;
 

@@ -18,7 +18,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * GMSPolygon defines a polygon that appears on the map. A polygon (like a polyline) defines a
+ * `GMSPolygon` defines a polygon that appears on the map. A polygon (like a polyline) defines a
  * series of connected coordinates in an ordered sequence; additionally, polygons form a closed loop
  * and define a filled region.
  */
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, nullable) GMSPath *path;
 
 /**
- * The array of GMSPath instances that describes any holes in this polygon. The coordinates
+ * The array of `GMSPath` instances that describes any holes in this polygon. The coordinates
  * composing each path must be valid.
  */
 @property(nonatomic, copy, nullable) NSArray<GMSPath *> *holes;
@@ -45,12 +45,12 @@ NS_ASSUME_NONNULL_BEGIN
 /** Whether this polygon should be rendered with geodesic correction. */
 @property(nonatomic) BOOL geodesic;
 
-/** Provides the Core Animation layer for this GMSPolygon. */
+/** Provides the Core Animation layer for this `GMSPolygon`. */
 @property(nonatomic, readonly) GMSPolygonLayer *layer;
 
 /**
- * Convenience constructor for GMSPolygon for a particular path. Other properties will have default
- * values.
+ * Convenience constructor for `GMSPolygon` for a particular path. Other properties will have
+ * default values.
  */
 + (instancetype)polygonWithPath:(nullable GMSPath *)path;
 

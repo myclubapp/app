@@ -48,12 +48,12 @@
 @property(nonatomic) BOOL rotateGestures;
 
 /**
- * Controls whether gestures by users are completely consumed by the GMSMapView when gestures are
+ * Controls whether gestures by users are completely consumed by the `GMSMapView` when gestures are
  * enabled (default YES).  This prevents these gestures from being received by parent views.
  *
- * When the GMSMapView is contained by a UIScrollView (or other scrollable area), this means that
- * gestures on the map will not be additional consumed as scroll gestures.  However, disabling this
- * (set to NO) may be useful to support complex view hierarchies or requirements.
+ * When the `GMSMapView` is contained by a `UIScrollView` (or other scrollable area), this means
+ * that gestures on the map will not be additional consumed as scroll gestures.  However, disabling
+ * this (set to NO) may be useful to support complex view hierarchies or requirements.
  */
 @property(nonatomic) BOOL consumesGesturesInView;
 

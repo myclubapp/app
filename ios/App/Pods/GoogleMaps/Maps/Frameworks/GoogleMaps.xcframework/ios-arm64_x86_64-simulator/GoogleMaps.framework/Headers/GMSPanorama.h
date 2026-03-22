@@ -15,8 +15,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * GMSPanorama represents metadata for a specific panorama on the Earth. This class is not
- * instantiable directly and is obtained via GMSPanoramaService or GMSPanoramaView.
+ * `GMSPanorama` represents metadata for a specific panorama on the Earth. This class is not
+ * instantiable directly and is obtained via `GMSPanoramaService` or `GMSPanoramaView`.
  */
 @interface GMSPanorama : NSObject
 
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 /** The ID of this panorama. Panoramas may change ID over time, so this should not be persisted */
 @property(nonatomic, copy, readonly) NSString *panoramaID;
 
-/** An array of GMSPanoramaLink describing the neighboring panoramas. */
+/** An array of `GMSPanoramaLink` describing the neighboring panoramas. */
 @property(nonatomic, copy, readonly) NSArray<GMSPanoramaLink *> *links;
 
 @end

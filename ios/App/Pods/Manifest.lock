@@ -1,46 +1,46 @@
 PODS:
   - Capacitor (8.2.0):
     - CapacitorCordova
-  - CapacitorApp (7.1.0):
+  - CapacitorApp (8.0.1):
     - Capacitor
-  - CapacitorBrowser (7.0.2):
+  - CapacitorBrowser (8.0.2):
     - Capacitor
-  - CapacitorCamera (7.0.2):
+  - CapacitorCamera (8.0.2):
     - Capacitor
-  - CapacitorClipboard (7.0.2):
+  - CapacitorClipboard (8.0.1):
     - Capacitor
   - CapacitorCordova (8.2.0)
-  - CapacitorDevice (7.0.2):
+  - CapacitorDevice (8.0.1):
     - Capacitor
-  - CapacitorDialog (7.0.2):
+  - CapacitorDialog (8.0.1):
     - Capacitor
-  - CapacitorFilesystem (7.1.4):
+  - CapacitorFilesystem (8.1.2):
     - Capacitor
-    - IONFilesystemLib (~> 1.0.1)
-  - CapacitorGeolocation (7.1.5):
+    - IONFilesystemLib (~> 1.1.1)
+  - CapacitorGeolocation (8.1.0):
     - Capacitor
-    - IONGeolocationLib (= 1.0.1)
-  - CapacitorGoogleMaps (7.2.0):
+    - IONGeolocationLib (= 2.0.0)
+  - CapacitorGoogleMaps (8.0.1):
     - Capacitor
-    - Google-Maps-iOS-Utils (~> 5.0)
-    - GoogleMaps (~> 8.4)
-  - CapacitorHaptics (7.0.2):
+    - Google-Maps-iOS-Utils (= 6.1.0)
+    - GoogleMaps (~> 9.4)
+  - CapacitorHaptics (8.0.1):
     - Capacitor
-  - CapacitorKeyboard (7.0.3):
+  - CapacitorKeyboard (8.0.1):
     - Capacitor
-  - CapacitorNetwork (7.0.2):
+  - CapacitorNetwork (8.0.1):
     - Capacitor
-  - CapacitorPluginSafeArea (4.0.3):
+  - CapacitorPluginSafeArea (5.0.0):
     - Capacitor
-  - CapacitorPreferences (7.0.2):
+  - CapacitorPreferences (8.0.1):
     - Capacitor
-  - CapacitorPushNotifications (7.0.3):
+  - CapacitorPushNotifications (8.0.2):
     - Capacitor
-  - CapacitorShare (7.0.2):
+  - CapacitorShare (8.0.1):
     - Capacitor
-  - CapacitorSplashScreen (7.0.3):
+  - CapacitorSplashScreen (8.0.1):
     - Capacitor
-  - CapacitorStatusBar (7.0.3):
+  - CapacitorStatusBar (8.0.1):
     - Capacitor
   - CordovaPlugins (8.2.0):
     - CapacitorCordova
@@ -76,17 +76,15 @@ PODS:
     - GoogleUtilities/Environment (~> 7.0)
     - GoogleUtilities/Reachability (~> 7.0)
     - GoogleUtilities/UserDefaults (~> 7.0)
-  - Google-Maps-iOS-Utils (5.0.0):
-    - GoogleMaps (~> 8.0)
+  - Google-Maps-iOS-Utils (6.1.0):
+    - GoogleMaps (~> 9.0)
   - GoogleDataTransport (8.4.0):
     - GoogleUtilities/Environment (~> 7.2)
     - nanopb (~> 2.30908.0)
     - PromisesObjC (~> 1.2)
-  - GoogleMaps (8.4.0):
-    - GoogleMaps/Maps (= 8.4.0)
-  - GoogleMaps/Base (8.4.0)
-  - GoogleMaps/Maps (8.4.0):
-    - GoogleMaps/Base
+  - GoogleMaps (9.4.0):
+    - GoogleMaps/Maps (= 9.4.0)
+  - GoogleMaps/Maps (9.4.0)
   - GoogleUtilities/AppDelegateSwizzler (7.13.3):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -112,8 +110,8 @@ PODS:
   - GoogleUtilities/UserDefaults (7.13.3):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - IONFilesystemLib (1.0.1)
-  - IONGeolocationLib (1.0.1)
+  - IONFilesystemLib (1.1.2)
+  - IONGeolocationLib (2.0.0)
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
     - nanopb/encode (= 2.30908.0)
@@ -145,7 +143,7 @@ DEPENDENCIES:
   - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
   - Firebase/Messaging (= 7.11.0)
   - FirebaseCore (= 7.11.0)
-  - GoogleMaps (~> 8.4)
+  - GoogleMaps (~> 9.4)
 
 SPEC REPOS:
   trunk:
@@ -210,25 +208,25 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Capacitor: c04568d0798e8c9a481d70e8d3df1f7fe1966549
-  CapacitorApp: 846d4b4a1dbb19dd1e9029c08ba6f028aa7be862
-  CapacitorBrowser: 45c681e7abc3b4384e54eb52bafeef1347d98fa8
-  CapacitorCamera: 6e18d54c8ab30d7dc7b8cd93d96f9b4f57e9202a
-  CapacitorClipboard: e8b3578b2fce3c4795a5bdf2990b3b7dcef83f65
+  CapacitorApp: fcd990168c3249d2c5a7ae94920a031d05789e73
+  CapacitorBrowser: a9d79172878eea4b0cbfa7556bc9fa5338ca85fb
+  CapacitorCamera: 28ce747aeb97163dcd23c8ed8a624551b262918c
+  CapacitorClipboard: 1ba60616f1b2d3df52417000217ec810216bbbaf
   CapacitorCordova: a9ac88d84a1f5280f33b349fe50fce1902683ac0
-  CapacitorDevice: a50a45f0d075e55e2392c7a4be5404d4f69515de
-  CapacitorDialog: f23be5f188fbfedf7eca159c5d5bdab98b4c89c6
-  CapacitorFilesystem: ac0a386949ed6c295a3dffa129ecd26b881ae5be
-  CapacitorGeolocation: b96474c3259dd4a294227ea8ec19140b1837cceb
-  CapacitorGoogleMaps: 20b5445a532f80dbb120fa99941fd094bcc88af6
-  CapacitorHaptics: 09d96bcb5a2b74ede8fd039b4cdf58fc43dcacf1
-  CapacitorKeyboard: 3822c3a0c6b58168f96ca562f9534ed095d40860
-  CapacitorNetwork: 9b9eaeb417ec0ffa22e2bc33a4c71df10e1d6f06
-  CapacitorPluginSafeArea: 0b05430642c0da92b5f174e900ccecf39a71e2c3
-  CapacitorPreferences: b583b5deb74e564c35968189d25d32c0fd41200d
-  CapacitorPushNotifications: 729ade0d2791ec1969feaf931a15e28d929a6d70
-  CapacitorShare: 051c3ceee0ddf3bb54574851a622bbb317eed5bd
-  CapacitorSplashScreen: d06ae8804808e9f649a08e7bb7f283c77b688084
-  CapacitorStatusBar: 7d8fcbd6768db014bd721d75e246590b014928e8
+  CapacitorDevice: ebd210e29ae690225291b8616e6cfaf419d2e866
+  CapacitorDialog: d43769d1245d315ffc931b2ca3d4eea76870798b
+  CapacitorFilesystem: 7d3e3df84be4f0d999a5d6baa23aeb30c2de6450
+  CapacitorGeolocation: a2009727714adfa58bf093300b15856aa59e4b7a
+  CapacitorGoogleMaps: ab32ad2cfc3b6db1699b53d6cdd641bffcef01c0
+  CapacitorHaptics: af524744f86b761c13306b4c88a0de6cd28e3062
+  CapacitorKeyboard: cbbe3df7194442bfd18ed4ac1d9ed0294ce579a9
+  CapacitorNetwork: 7afc28ed4d9abe1d9801264fa485db32e4420546
+  CapacitorPluginSafeArea: 5c90e7423e8129641686afe8ae6084b65b20527e
+  CapacitorPreferences: 0fa33b3affebf12d96358b491ed7c2b39bec3270
+  CapacitorPushNotifications: ea06743630efa295851de6867b72bd8894c02928
+  CapacitorShare: 8a565649d321a05a1ae8b525b2a9b4f2d92c70ce
+  CapacitorSplashScreen: 1281f7df4d9b4a72bccab8d03e6b2bbd17dff122
+  CapacitorStatusBar: 7fc9bb6737a29524034dfdc51ae1f1880d972b4d
   CordovaPlugins: eb758acd2897d986b89b212cd70fde42859dcae4
   Firebase: c121feb35e4126c0b355e3313fa9b487d47319fd
   FirebaseCore: 907447d8917a4d3eb0cce2829c5a0ad21d90b432
@@ -236,15 +234,15 @@ SPEC CHECKSUMS:
   FirebaseInstallations: a58d4f72ec5861840b84df489f2668d970df558a
   FirebaseInstanceID: ad5135045a498d7775903efd39762d2cdfa1be27
   FirebaseMessaging: 163435fb6db065e3b6228f1e577b10ed2cc506d2
-  Google-Maps-iOS-Utils: 66d6de12be1ce6d3742a54661e7a79cb317a9321
+  Google-Maps-iOS-Utils: 0a484b05ed21d88c9f9ebbacb007956edd508a96
   GoogleDataTransport: cd9db2180fcecd8da1b561aea31e3e56cf834aa7
-  GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
+  GoogleMaps: 0608099d4870cac8754bdba9b6953db543432438
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
-  IONFilesystemLib: 89258b8e3e85465da93127d25d7ce37f977e8a6f
-  IONGeolocationLib: 20f9d0248a0b5264511fb57a37e25dd2badf797a
+  IONFilesystemLib: 21a63377696b2d8fab5632ecfb7d2ac67bddb68a
+  IONGeolocationLib: a5e40b54edc2ee9902036eda5aaa41ddf07bb68d
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
 
-PODFILE CHECKSUM: bfb1e9e767b4c9229bc515e18386c55b00d547ff
+PODFILE CHECKSUM: 1607ed993b24faaeaa0b0067ac1940d782d360fa
 
 COCOAPODS: 1.16.2

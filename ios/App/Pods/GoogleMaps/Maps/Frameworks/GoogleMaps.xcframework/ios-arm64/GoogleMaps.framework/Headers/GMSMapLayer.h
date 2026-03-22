@@ -17,12 +17,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 /*
  * The following layer properties and constants describe the camera properties that may be animated
- * on the custom model layer of a GMSMapView with Core Animation. For simple camera control and
- * animation, please see the helper methods in GMSMapView+Animation.h, and the camera object
- * definition within GMSCameraPosition.h.
+ * on the custom model layer of a `GMSMapView` with Core Animation. For simple camera control and
+ * animation, please see the helper methods in `GMSMapView+Animation.h`, and the camera object
+ * definition within `GMSCameraPosition`.h.
  *
  * Changing layer properties triggers an implicit animation, e.g.:-
- *   mapView_.layer.cameraBearing = 20;
+ *   `mapView_.layer.cameraBearing = 20;`
  *
  * An explicit animation, replacing the implicit animation, may be added after changing the
  * property, for example:
@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * kGMSLayerCameraLatitudeKey ranges from [-85, 85], and values outside this range will be clamped.
  *
- * @related GMSMapLayer
+ * @related `GMSMapLayer`
  */
 extern NSString *const kGMSLayerCameraLatitudeKey;
 
@@ -64,14 +64,14 @@ extern NSString *const kGMSLayerCameraLatitudeKey;
  * kGMSLayerCameraLongitudeKey ranges from [-180, 180), and values outside this range will be
  * wrapped to within this range.
  *
- * @related GMSMapLayer
+ * @related `GMSMapLayer`
  */
 extern NSString *const kGMSLayerCameraLongitudeKey;
 
 /**
  * kGMSLayerCameraBearingKey ranges from [0, 360), and values are wrapped.
  *
- * @related GMSMapLayer
+ * @related `GMSMapLayer`
  */
 extern NSString *const kGMSLayerCameraBearingKey;
 
@@ -79,7 +79,7 @@ extern NSString *const kGMSLayerCameraBearingKey;
  * kGMSLayerCameraZoomLevelKey ranges from [kGMSMinZoomLevel, kGMSMaxZoomLevel], and values are
  * clamped.
  *
- * @related GMSMapLayer
+ * @related `GMSMapLayer`
  */
 extern NSString *const kGMSLayerCameraZoomLevelKey;
 
@@ -87,17 +87,17 @@ extern NSString *const kGMSLayerCameraZoomLevelKey;
  * kGMSLayerCameraViewingAngleKey ranges from zero (i.e., facing straight down) and to between 30
  * and 45 degrees towards the horizon, depending on the model zoom level.
  *
- * @related GMSMapLayer
+ * @related `GMSMapLayer`
  */
 extern NSString *const kGMSLayerCameraViewingAngleKey;
 
 /**
- * GMSMapLayer is a custom subclass of CALayer, provided as the layer class on GMSMapView. This
- * layer should not be instantiated directly. It provides model access to the camera normally
- * defined on GMSMapView.
+ * `GMSMapLayer` is a custom subclass of `CALayer`, provided as the layer class on `GMSMapView`.
+ * This layer should not be instantiated directly. It provides model access to the camera normally
+ * defined on `GMSMapView`.
  *
  * Modifying or animating these properties will typically interrupt any current gesture on
- * GMSMapView, e.g., a user's pan or rotation. Similarly, if a user performs an enabled gesture
+ * `GMSMapView`, e.g., a user's pan or rotation. Similarly, if a user performs an enabled gesture
  * during an animation, the animation will stop 'in-place' (at the current presentation value).
  */
 @interface GMSMapLayer : GMSCALayer

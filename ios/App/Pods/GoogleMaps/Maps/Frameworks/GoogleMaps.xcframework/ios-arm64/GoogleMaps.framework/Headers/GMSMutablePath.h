@@ -14,35 +14,35 @@
 #import "GMSPath.h"
 
 /**
- * GMSMutablePath is a dynamic (resizable) array of CLLocationCoordinate2D. All coordinates must be
- * valid. GMSMutablePath is the mutable counterpart to the immutable GMSPath.
+ * `GMSMutablePath` is a dynamic (resizable) array of `CLLocationCoordinate2D`. All coordinates
+ * must be valid. `GMSMutablePath` is the mutable counterpart to the immutable `GMSPath`.
  */
 @interface GMSMutablePath : GMSPath
 
-/** Adds |coord| at the end of the path. */
+/** Adds `coord` at the end of the path. */
 - (void)addCoordinate:(CLLocationCoordinate2D)coord;
 
 /** Adds a new CLLocationCoordinate2D instance with the given lat/lng. */
 - (void)addLatitude:(CLLocationDegrees)latitude longitude:(CLLocationDegrees)longitude;
 
 /**
- * Inserts |coord| at |index|.
+ * Inserts `coord` at `index`.
  *
  * If this is smaller than the size of the path, shifts all coordinates forward by one. Otherwise,
- * behaves as replaceCoordinateAtIndex:withCoordinate:.
+ * behaves as `-replaceCoordinateAtIndex:withCoordinate:`.
  */
 - (void)insertCoordinate:(CLLocationCoordinate2D)coord atIndex:(NSUInteger)index;
 
 /**
- * Replace the coordinate at |index| with |coord|. If |index| is after the end, grows the array with
+ * Replace the coordinate at `index` with `coord`. If `index` is after the end, grows the array with
  * an undefined coordinate.
  */
 - (void)replaceCoordinateAtIndex:(NSUInteger)index withCoordinate:(CLLocationCoordinate2D)coord;
 
 /**
- * Remove entry at |index|.
+ * Remove entry at `index`.
  *
- * If |index| < count decrements size. If |index| >= count this is a silent no-op.
+ * If `index` < count decrements size. If `index` >= count this is a silent no-op.
  */
 - (void)removeCoordinateAtIndex:(NSUInteger)index;
 

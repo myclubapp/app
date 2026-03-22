@@ -12,12 +12,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
- * Describes a single level in a building.
- *
- * Multiple buildings can share a level - in this case the level instances will compare as equal,
- * even though the level numbers/names may be different.
- */
 @interface GMSIndoorLevel : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;

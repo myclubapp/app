@@ -15,12 +15,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * GMSOverlay is an abstract class that represents some overlay that may be attached to a specific
- * GMSMapView. It may not be instantiated directly; instead, instances of concrete overlay types
- * should be created directly (such as GMSMarker, GMSPolyline, and GMSPolygon).
+ * `GMSOverlay is an abstract class that represents some overlay that may be attached to a specific`
+ * `GMSMapView. It may not be instantiated directly; instead, instances of concrete overlay types`
+ * should be created directly (such as `GMSMarker`, `GMSPolyline`, and `GMSPolygon`).
  *
- * This supports the NSCopying protocol; [overlay_ copy] will return a copy of the overlay type, but
- * with |map| set to nil.
+ * This supports the `NSCopying` protocol; [overlay_ copy] will return a copy of the overlay type,
+ * but with `map` set to nil.
  */
 @interface GMSOverlay : NSObject <NSCopying>
 
@@ -44,9 +44,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, getter=isTappable) BOOL tappable;
 
 /**
- * Higher |zIndex| value overlays will be drawn on top of lower |zIndex| value tile layers and
+ * Higher `zIndex` value overlays will be drawn on top of lower `zIndex` value tile layers and
  * overlays.  Equal values result in undefined draw ordering.  Markers are an exception that
- * regardless of |zIndex|, they will always be drawn above tile layers and other non-marker
+ * regardless of `zIndex`, they will always be drawn above tile layers and other non-marker
  * overlays; they are effectively considered to be in a separate z-index group compared to other
  * overlays.
  */

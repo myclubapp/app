@@ -18,8 +18,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * GMSPolyline specifies the available options for a polyline that exists on the Earth's surface.
- * It is drawn as a physical line between the points specified in |path|.
+ * `GMSPolyline` specifies the available options for a polyline that exists on the Earth's surface.
+ * It is drawn as a physical line between the points specified in `path`.
  */
 @interface GMSPolyline : GMSOverlay
 
@@ -29,23 +29,23 @@ NS_ASSUME_NONNULL_BEGIN
 /** The width of the line in screen points. Defaults to 1. */
 @property(nonatomic) CGFloat strokeWidth;
 
-/** The UIColor used to render the polyline. Defaults to [UIColor blueColor]. */
+/** The `UIColor` used to render the polyline. Defaults to `[UIColor blueColor]`. */
 @property(nonatomic) UIColor *strokeColor;
 
 /** Whether this line should be rendered with geodesic correction. */
 @property(nonatomic) BOOL geodesic;
 
 /**
- * Convenience constructor for GMSPolyline for a particular path. Other properties will have
+ * Convenience constructor for `GMSPolyline` for a particular path. Other properties will have
  * default values.
  */
 + (instancetype)polylineWithPath:(nullable GMSPath *)path;
 
 /**
- * An array containing GMSStyleSpan, the spans used to render this polyline.
+ * An array containing `GMSStyleSpan`, the spans used to render this polyline.
  *
  * If this array contains fewer segments than the polyline itself, the final segment will be applied
- * over the remaining length. If this array is unset or empty, then |strokeColor| is used for the
+ * over the remaining length. If this array is unset or empty, then `strokeColor` is used for the
  * entire line instead.
  */
 @property(nonatomic, copy, nullable) NSArray<GMSStyleSpan *> *spans;

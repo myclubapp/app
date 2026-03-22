@@ -13,7 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * GMSMapStyle holds details about a style which can be applied to a map.
+ * `GMSMapStyle` holds details about a style which can be applied to a map.
  *
  * With style options you can customize the presentation of the standard Google map styles, changing
  * the visual display of features like roads, parks, and other points of interest. As well as
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Creates a style using a string containing JSON.
  *
- * Returns nil and populates |error| (if provided) if |style| is invalid.
+ * Returns nil and populates `error` (if provided) if `style` is invalid.
  */
 + (nullable instancetype)styleWithJSONString:(NSString *)style
                                        error:(NSError *__autoreleasing _Nullable *)error;
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Creates a style using a file containing JSON.
  *
- * Returns nil and populates |error| (if provided) if |style| is invalid, the file cannot be read,
+ * Returns nil and populates `error` (if provided) if `style` is invalid, the file cannot be read,
  * or the URL is not a file URL.
  */
 + (nullable instancetype)styleWithContentsOfFileURL:(NSURL *)fileURL
@@ -50,6 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
  * @return The hash value.
  * @note The current implementation uses an MD5 hash, which is sufficient for uniquifying styles.
  */
-NSUInteger GMSStyleHashForString(NSString *string);
+FOUNDATION_EXTERN NSUInteger GMSStyleHashForString(NSString *string);
 
 NS_ASSUME_NONNULL_END

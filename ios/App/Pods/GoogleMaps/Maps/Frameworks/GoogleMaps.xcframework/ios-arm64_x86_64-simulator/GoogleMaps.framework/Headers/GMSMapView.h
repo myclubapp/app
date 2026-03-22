@@ -12,11 +12,8 @@
 #import <UIKit/UIKit.h>
 
 
-#if __has_feature(modules)
-@import GoogleMapsBase;
-#else
-#import <GoogleMapsBase/GoogleMapsBase.h>
-#endif
+#import "GMSCompatabilityMacros.h"
+#import "GMSDeprecationMacros.h"
 #import "GMSFeature.h"
 #import "GMSFeatureLayer.h"
 #import "GMSPlaceFeature.h"
@@ -25,6 +22,7 @@
 @class GMSCameraPosition;
 @class GMSCameraUpdate;
 @class GMSCoordinateBounds;
+@class GMSDatasetFeatureLayer;
 @class GMSIndoorDisplay;
 @class GMSMapID;
 @class GMSMapStyle;
@@ -46,19 +44,19 @@ NS_ASSUME_NONNULL_BEGIN
  * other map setting) that can be used to indicate availability.
  */
 typedef NS_OPTIONS(NSUInteger, GMSMapCapabilityFlags) {
-  /** No conditional capabilities are enabled on the GMSMapView. */
+  /** No conditional capabilities are enabled on the `GMSMapView`. */
   GMSMapCapabilityFlagsNone = 0,
-  /** Advanced markers are enabled on the GMSMapView. */
+  /** Advanced markers are enabled on the `GMSMapView`. */
   GMSMapCapabilityFlagsAdvancedMarkers = 1 << 0,
-  /** Data driven styling is enabled on the GMSMapView. */
+  /** Data driven styling is enabled on the `GMSMapView`. */
   GMSMapCapabilityFlagsDataDrivenStyling = 1 << 1,
-  /** GMSPolyline with a stampStyle of GMSSpriteStyle is enabled on the GMSMapView. */
+  /** `GMSPolyline` with a stampStyle of `GMSSpriteStyle` is enabled on the `GMSMapView`. */
   GMSMapCapabilityFlagsSpritePolylines = 1 << 2,
 };
 
 /**@}*/
 
-/** Delegate for events on GMSMapView. */
+/** Delegate for events on `GMSMapView`. */
 @protocol GMSMapViewDelegate <NSObject>
 
 @optional
@@ -145,12 +143,12 @@ typedef NS_OPTIONS(NSUInteger, GMSMapCapabilityFlags) {
 
 /**
  * Called when a marker is about to become selected, and provides an optional custom info window to
- * use for that marker if this method returns a UIView.
+ * use for that marker if this method returns a `UIView`.
  *
  * If you change this view after this method is called, those changes will not necessarily be
  * reflected in the rendered version.
  *
- * The returned UIView must not have bounds greater than 500 points on either dimension.  As there
+ * The returned `UIView` must not have bounds greater than 500 points on either dimension.  As there
  * is only one info window shown at any time, the returned view may be reused between other info
  * windows.
  *
@@ -162,7 +160,7 @@ typedef NS_OPTIONS(NSUInteger, GMSMapCapabilityFlags) {
 - (nullable UIView *)mapView:(GMSMapView *)mapView markerInfoWindow:(GMSMarker *)marker;
 
 /**
- * Called when mapView:markerInfoWindow: returns nil. If this method returns a view, it will be
+ * Called when `-mapView:markerInfoWindow:` returns nil. If this method returns a view, it will be
  * placed within the default info window frame. If this method returns nil, then the default
  * rendering will be used instead.
  *
@@ -252,16 +250,16 @@ typedef NS_OPTIONS(NSUInteger, GMSMapCapabilityFlags) {
  */
 
 /**
- * Display types for GMSMapView.
+ * Display types for `GMSMapView`.
  */
 typedef NS_ENUM(NSUInteger, GMSMapViewType) {
-  /** Basic maps.  The default. */
+  /** Basic maps.  The default. Supports both Light and Dark color schemes. */
   kGMSTypeNormal GMS_SWIFT_NAME_2_0_3_0(Normal, normal) = 1,
 
   /** Satellite maps with no labels. */
   kGMSTypeSatellite GMS_SWIFT_NAME_2_0_3_0(Satellite, satellite),
 
-  /** Terrain maps. */
+  /** Terrain maps. Supports both Light and Dark color schemes. */
   kGMSTypeTerrain GMS_SWIFT_NAME_2_0_3_0(Terrain, terrain),
 
   /** Satellite maps with a transparent label overview. */
@@ -279,7 +277,7 @@ typedef NS_ENUM(NSUInteger, GMSMapViewType) {
  * @{
  */
 
-/** Rendering frame rates for GMSMapView. */
+/** Rendering frame rates for `GMSMapView`. */
 typedef NS_ENUM(NSUInteger, GMSFrameRate) {
   /** Use the minimum frame rate to conserve battery usage. */
   kGMSFrameRatePowerSave,
@@ -320,10 +318,10 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
 
 /**@}*/
 
-/** This class defines initialization-time options for GMSMapView. */
+/** This class defines initialization-time options for `GMSMapView`. */
 @interface GMSMapViewOptions : NSObject
 
-/** Initial frame for the view. Defaults to CGRectZero. */
+/** Initial frame for the view. Defaults to `CGRectZero`. */
 @property(nonatomic) CGRect frame;
 
 /** Initial camera position. Defaults to nil. */
@@ -334,8 +332,9 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
 
 /**
  * Specifies the background color of the map view, which displays whenever the map tiles are not
- * fully loaded. This is required because GMSMapView ignores the inherited mutable backgroundColor.
- * The color is displayed on the background of the map. Defaults to a light grey color.
+ * fully loaded. This is required because `GMSMapView` ignores the inherited mutable
+ * backgroundColor. The color is displayed on the background of the map. Defaults to a light grey
+ * color.
  */
 @property(nonatomic, nullable) UIColor *backgroundColor;
 
@@ -345,14 +344,14 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
  * This is the main class of the Google Maps SDK for iOS and is the entry point for all methods
  * related to the map.
  *
- * The map should be instantiated via one of the constructors -init or -initWithOptions:.
+ * The map should be instantiated with one of the constructors -init or `-initWithOptions:`.
  *
- * GMSMapView can only be read and modified from the main thread, similar to all UIKit objects.
+ * `GMSMapView` can only be read and modified from the main thread, similar to all `UIKit` objects.
  * Calling these methods from another thread will result in an exception or undefined behavior.
  */
 @interface GMSMapView : UIView
 
-/** GMSMapView delegate. */
+/** `GMSMapView` delegate. */
 @property(nonatomic, weak, nullable) IBOutlet id<GMSMapViewDelegate> delegate;
 
 /**
@@ -362,11 +361,11 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
 @property(nonatomic, copy) GMSCameraPosition *camera;
 
 /**
- * Returns a GMSProjection object that you can use to convert between screen coordinates and
+ * Returns a `GMSProjection` object that you can use to convert between screen coordinates and
  * latitude/longitude coordinates.
  *
  * This is a snapshot of the current projection, and will not automatically update when the camera
- * moves. It represents either the projection of the last drawn GMSMapView frame, or; where the
+ * moves. It represents either the projection of the last drawn `GMSMapView` frame, or; where the
  * camera has been explicitly set or the map just created, the upcoming frame. It will never be nil.
  */
 @property(nonatomic, readonly) GMSProjection *projection;
@@ -404,6 +403,13 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
  */
 @property(nonatomic, nullable) GMSMapStyle *mapStyle;
 
+/* Change the map to desired
+ * [UIUserInterfaceStyle](https://developer.apple.com/documentation/uikit/uiuserinterfacestyle?language=objc).
+ * This overrides the default UIKit behavior and defaults to `UIUserInterfaceStyleLight` to ensure
+ * backwards compatibility. This affects the color scheme of Normal and Terrain map types.
+ */
+@property(nonatomic) UIUserInterfaceStyle overrideUserInterfaceStyle;
+
 /**
  * Minimum zoom (the farthest the camera may be zoomed out). Defaults to kGMSMinZoomLevel. Modified
  * with -setMinZoom:maxZoom:.
@@ -433,12 +439,12 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
 @property(nonatomic, getter=isIndoorEnabled) BOOL indoorEnabled;
 
 /**
- * Gets the GMSIndoorDisplay instance which allows to observe or control aspects of indoor data
+ * Gets the `GMSIndoorDisplay` instance which allows to observe or control aspects of indoor data
  * display.
  */
 @property(nonatomic, readonly) GMSIndoorDisplay *indoorDisplay;
 
-/** Gets the GMSUISettings object, which controls user interface settings for the map. */
+/** Gets the `GMSUISettings` object, which controls user interface settings for the map. */
 @property(nonatomic, readonly) GMSUISettings *settings;
 
 /**
@@ -446,8 +452,8 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
  * view can be created which will contain map data but will not contain UI controls.
  *
  * If the padding is not balanced, the visual center of the view will move as appropriate.  Padding
- * will also affect the |projection| property so the visible region will not include the padding
- * area.  GMSCameraUpdate fitToBounds will ensure that both this padding and any padding requested
+ * will also affect the `projection` property so the visible region will not include the padding
+ * area.  `GMSCameraUpdate` fitToBounds will ensure that both this padding and any padding requested
  * will be taken into account.
  *
  * This property may be animated within a UIView-based animation block.
@@ -459,23 +465,23 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
  * position map controls such as the compass, my location button and floor picker within the device
  * safe area.
  *
- * Defaults to kGMSMapViewPaddingAdjustmentBehaviorAlways.
+ * Defaults to `kGMSMapViewPaddingAdjustmentBehaviorAlways`.
  */
 @property(nonatomic) GMSMapViewPaddingAdjustmentBehavior paddingAdjustmentBehavior;
 
 /**
- * Defaults to YES. If set to NO, GMSMapView will generate accessibility elements for overlay
- * objects, such as GMSMarker and GMSPolyline.
+ * Defaults to `YES`. If set to `NO`, `GMSMapView` will generate accessibility elements for overlay
+ * objects, such as `GMSMarker` and `GMSPolyline`.
  *
- * This property follows the informal UIAccessibility protocol, except for the default value of
- * YES.
+ * This property follows the informal `UIAccessibility` protocol, except for the default value of
+ * `YES`.
  */
 @property(nonatomic) BOOL accessibilityElementsHidden;
 
-/** Accessor for the custom CALayer type used for the layer. */
+/** Accessor for the custom `CALayer` type used for the layer. */
 @property(nonatomic, readonly, retain) GMSMapLayer *layer;
 
-/** Controls the rendering frame rate. Default value is kGMSFrameRateMaximum. */
+/** Controls the rendering frame rate. Default value is `kGMSFrameRateMaximum`. */
 @property(nonatomic) GMSFrameRate preferredFrameRate;
 
 /**
@@ -490,7 +496,7 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
  */
 @property(nonatomic, readonly) GMSMapCapabilityFlags mapCapabilities;
 
-/** Initializes with CGRectZero and default options. */
+/** Initializes with `CGRectZero` and default options. */
 - (instancetype)init;
 
 /**
@@ -508,8 +514,7 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
 /** Builds and returns a map view with a frame and camera target. */
 + (instancetype)mapWithFrame:(CGRect)frame
                       camera:(GMSCameraPosition *)camera
-    __GMS_AVAILABLE_BUT_DEPRECATED_MSG("Use -init or -initWithOptions: instead.")
-        ;
+    __GMS_AVAILABLE_BUT_DEPRECATED_MSG("Use -init or -initWithOptions: instead.");
 
 /** Convenience initializer to build and return a map view with a frame, map ID, and camera target.
  */
@@ -517,21 +522,18 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
                        mapID:(GMSMapID *)mapID
                       camera:(GMSCameraPosition *)camera
     NS_SWIFT_UNAVAILABLE("Use initializer instead")
-        __GMS_AVAILABLE_BUT_DEPRECATED_MSG("Use -init or -initWithOptions: instead.")
-            ;
+        __GMS_AVAILABLE_BUT_DEPRECATED_MSG("Use -init or -initWithOptions: instead.");
 
 /** Builds and returns a map view, with a frame and camera target. */
 - (instancetype)initWithFrame:(CGRect)frame
                        camera:(GMSCameraPosition *)camera
-    __GMS_AVAILABLE_BUT_DEPRECATED_MSG("Use -init or -initWithOptions: instead.")
-        ;
+    __GMS_AVAILABLE_BUT_DEPRECATED_MSG("Use -init or -initWithOptions: instead.");
 
 /** Builds and returns a map view with a frame, map ID, and camera target. */
 - (instancetype)initWithFrame:(CGRect)frame
                         mapID:(GMSMapID *)mapID
                        camera:(GMSCameraPosition *)camera
-    __GMS_AVAILABLE_BUT_DEPRECATED_MSG("Use -init or -initWithOptions: instead.")
-        ;
+    __GMS_AVAILABLE_BUT_DEPRECATED_MSG("Use -init or -initWithOptions: instead.");
 
 /** Tells this map to power up its renderer. This is optional and idempotent. */
 - (void)startRendering __GMS_AVAILABLE_BUT_DEPRECATED_MSG(
@@ -548,15 +550,15 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
 - (void)clear;
 
 /**
- * Sets |minZoom| and |maxZoom|. This method expects the minimum to be less than or equal to the
- * maximum, and will throw an exception with name NSRangeException otherwise.
+ * Sets `minZoom` and `maxZoom`. This method expects the minimum to be less than or equal to the
+ * maximum, and will throw an exception with name `NSRangeException` otherwise.
  */
 - (void)setMinZoom:(float)minZoom maxZoom:(float)maxZoom;
 
 /**
- * Build a GMSCameraPosition that presents |bounds| with |padding|. The camera will have a zero
+ * Build a `GMSCameraPosition` that presents `bounds` with `padding`. The camera will have a zero
  * bearing and tilt (i.e., facing north and looking directly at the Earth). This takes the frame and
- * padding of this GMSMapView into account.
+ * padding of this `GMSMapView` into account.
  *
  * If the bounds is invalid this method will return a nil camera.
  */
@@ -564,7 +566,7 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
                                          insets:(UIEdgeInsets)insets;
 
 /**
- * Changes the camera according to |update|. The camera change is instantaneous (with no
+ * Changes the camera according to `update`. The camera change is instantaneous (with no
  * animation).
  */
 - (void)moveCamera:(GMSCameraUpdate *)update;
@@ -581,14 +583,24 @@ typedef NS_ENUM(NSUInteger, GMSMapViewPaddingAdjustmentBehavior) {
  * Console.
  *
  * If a layer of the specified type does not exist on this map, or if data-driven styling is not
- * enabled, or if the Metal rendering framework is not used, the resulting layer's isAvailable will
- * be @c NO, and will not respond to any calls.
+ * enabled, or if the Metal rendering framework is not used, the resulting layer's `isAvailable`
+ * will be `NO`, and will not respond to any calls.
  *
  * Requires the Metal renderer. Learn how to enable Metal at
  * https://developers.google.com/maps/documentation/ios-sdk/config#use-metal
  */
 - (GMSFeatureLayer<GMSPlaceFeature *> *)featureLayerOfFeatureType:(GMSFeatureType)featureType
     NS_SWIFT_NAME(featureLayer(of:));
+
+/**
+ * Returns a dataset feature layer of the specified dataset. Dataset IDs must be configured in the
+ * Cloud Console.
+ *
+ * If a dataset of the specified ID does not exist on this map, or if data-driven styling is not
+ * enabled, the resulting layer's `isAvailable` will be `NO`, and will not respond to any calls.
+ */
+- (GMSDatasetFeatureLayer *)datasetFeatureLayerOfDatasetID:(NSString *)datasetID
+    NS_SWIFT_NAME(datasetFeatureLayer(of:));
 @end
 
 NS_ASSUME_NONNULL_END

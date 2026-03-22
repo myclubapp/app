@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic) CLLocationDistance radius;
 
 /**
- * The width of the circle's outline in screen points. Defaults to 1. As per GMSPolygon, the width
+ * The width of the circle's outline in screen points. Defaults to 1. As per `GMSPolygon`, the width
  * does not scale when the map is zoomed.
  *
  * Setting strokeWidth to 0 results in no stroke.
@@ -41,9 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, nullable) UIColor *fillColor;
 
 /**
- * Convenience constructor for GMSCircle for a particular position and radius. Other properties will
- * have default values. An invalid position will result in an overlay object that cannot be drawn on
- * the map.
+ * Convenience constructor for `GMSCircle` for a particular position and radius. Other properties
+ * will have default values. An invalid position will result in an overlay object that cannot be
+ * drawn on the map.
  */
 + (instancetype)circleWithPosition:(CLLocationCoordinate2D)position
                             radius:(CLLocationDistance)radius;

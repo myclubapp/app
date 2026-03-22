@@ -9,11 +9,7 @@
 //
 
 
-#if __has_feature(modules)
-@import GoogleMapsBase;
-#else
-#import <GoogleMapsBase/GoogleMapsBase.h>
-#endif
+#import "GMSCoordinateBounds.h"
 #import "GMSProjection.h"
 
 @class GMSPath;
@@ -22,13 +18,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GMSCoordinateBounds (GoogleMaps)
 
-/** Inits with bounds that encompass |region|. */
+/** Inits with bounds that encompass `region`. */
 - (id)initWithRegion:(GMSVisibleRegion)region;
 
-/** Inits with bounds that encompass |path|. */
+/** Inits with bounds that encompass `path`. */
 - (id)initWithPath:(GMSPath *)path;
 
-/** Returns a GMSCoordinateBounds representing the current bounds extended to include |path|. */
+/** Returns a `GMSCoordinateBounds` representing the current bounds extended to include `path`. */
 - (GMSCoordinateBounds *)includingPath:(GMSPath *)path;
 
 @end

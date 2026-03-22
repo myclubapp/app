@@ -17,22 +17,10 @@ RSYNC_PROTECT_TMP_FILES=(--filter "P .*.??????")
 variant_for_slice()
 {
   case "$1" in
-  "GoogleMapsBase.xcframework/ios-arm64")
-    echo ""
-    ;;
-  "GoogleMapsBase.xcframework/ios-arm64_x86_64-simulator")
-    echo "simulator"
-    ;;
   "GoogleMaps.xcframework/ios-arm64")
     echo ""
     ;;
   "GoogleMaps.xcframework/ios-arm64_x86_64-simulator")
-    echo "simulator"
-    ;;
-  "GoogleMapsCore.xcframework/ios-arm64")
-    echo ""
-    ;;
-  "GoogleMapsCore.xcframework/ios-arm64_x86_64-simulator")
     echo "simulator"
     ;;
   esac
@@ -41,22 +29,10 @@ variant_for_slice()
 archs_for_slice()
 {
   case "$1" in
-  "GoogleMapsBase.xcframework/ios-arm64")
-    echo "arm64"
-    ;;
-  "GoogleMapsBase.xcframework/ios-arm64_x86_64-simulator")
-    echo "arm64 x86_64"
-    ;;
   "GoogleMaps.xcframework/ios-arm64")
     echo "arm64"
     ;;
   "GoogleMaps.xcframework/ios-arm64_x86_64-simulator")
-    echo "arm64 x86_64"
-    ;;
-  "GoogleMapsCore.xcframework/ios-arm64")
-    echo "arm64"
-    ;;
-  "GoogleMapsCore.xcframework/ios-arm64_x86_64-simulator")
     echo "arm64 x86_64"
     ;;
   esac
@@ -141,7 +117,5 @@ install_xcframework() {
   echo "Copied $source to $destination"
 }
 
-install_xcframework "${PODS_ROOT}/GoogleMaps/Base/Frameworks/GoogleMapsBase.xcframework" "GoogleMaps/Base" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
 install_xcframework "${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.xcframework" "GoogleMaps/Maps" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
-install_xcframework "${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMapsCore.xcframework" "GoogleMaps/Maps" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
 

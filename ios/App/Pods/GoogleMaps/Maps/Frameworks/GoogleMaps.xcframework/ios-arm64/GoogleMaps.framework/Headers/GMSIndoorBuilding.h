@@ -24,7 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
  * The levels are in 'display order' from top to bottom.
  */
 @property(nonatomic, strong, readonly) NSArray<GMSIndoorLevel *> *levels;
-
 /**
  * Index in the levels array of the default level.
  */

@@ -10,11 +10,7 @@
 
 #import <Foundation/Foundation.h>
 
-#if __has_feature(modules)
-@import GoogleMapsBase;
-#else
-#import <GoogleMapsBase/GoogleMapsBase.h>
-#endif
+#import "GMSDeprecationMacros.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,8 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface GMSServices : NSObject
 
 /**
- * Provides the shared instance of GMSServices for the Google Maps SDK for iOS, creating it if
- * necessary. Classes such as GMSMapView and GMSPanoramaView will hold this instance to provide
+ * Provides the shared instance of `GMSServices` for the Google Maps SDK for iOS, creating it if
+ * necessary. Classes such as `GMSMapView` and `GMSPanoramaView` will hold this instance to provide
  * their connection to Google.
  *
  * This is an opaque object. If your application often creates and destroys view or service classes
@@ -36,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
  * take this object in advance of the first map creation, to reduce initial map creation performance
  * cost.
  *
- * This method will throw an exception if provideAPIKey: has not been called.
+ * This method will throw an exception if `+provideAPIKey:` has not been called.
  */
 + (id<NSObject>)sharedServices;
 
@@ -46,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
  * identify it. This must be called exactly once by your application before any iOS Maps SDK
  * object is initialized.
  *
- * @return YES if the APIKey was successfully provided.
+ * @return `YES` if the APIKey was successfully provided.
  */
 + (BOOL)provideAPIKey:(NSString *)APIKey;
 
@@ -57,15 +53,15 @@ NS_ASSUME_NONNULL_BEGIN
  * This may be called exactly once by your application and must be called before any iOS Maps SDK
  * object is initialized.
  *
- * @return YES if all the APIOptions were successfully provided.
+ * @return `YES` if all the APIOptions were successfully provided.
  */
 + (BOOL)provideAPIOptions:(NSArray<NSString *> *)APIOptions;
 
 /**
  * Enables the map to render using Metal instead of OpenGL.
  *
- * The rendering might look very slightly different between renderers. The default is @c YES and
- * value must be updated before the services instance is initialized.
+ * The rendering might look slightly different between renderers. The default is `YES` and
+ * the value must be updated before the services instance is initialized.
  *
  * This property must be set from the main thread.
  */
@@ -77,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Enables reporting of abnormal SDK terminations such as the app crashes while the SDK is still
- * running. This allows Google to improve SDK stability when applicable. The default is @c YES and
+ * running. This allows Google to improve SDK stability when applicable. The default is `YES` and
  * value must be updated before the services instance is initialized.
  *
  * This property must be set from the main thread.
@@ -98,6 +94,16 @@ NS_ASSUME_NONNULL_BEGIN
  * (102.1)".
  */
 + (NSString *)SDKLongVersion;
+
+/**
+ * Adds a usage attribution ID to the initializer, which helps Google understand which libraries and
+ * samples are helpful to developers, such as usage of a marker clustering library.
+ * To opt out of sending the usage attribution ID, it is safe to delete this function call or
+ * replace the value with an empty string.
+ *
+ * @param internalUsageAttributionID The usage attribution ID to add
+ */
++ (void)addInternalUsageAttributionID:(NSString *)internalUsageAttributionID;
 
 @end
 

@@ -8,22 +8,22 @@
 //  Service: https://cloud.google.com/maps-platform/terms
 //
 
-#import "GMSTileLayer.h"
+#import <Foundation/Foundation.h>
 
-@class NSURL;
+#import "GMSTileLayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * |GMSTileURLConstructor| is a block taking |x|, |y| and |zoom| and returning an NSURL, or nil to
+ * `GMSTileURLConstructor` is a block taking `x`, `y` and `zoom` and returning an NSURL, or nil to
  * indicate no tile for that location.
  *
- * @related GMSURLTileLayer
+ * @related `GMSURLTileLayer`
  */
 typedef NSURL *_Nullable (^GMSTileURLConstructor)(NSUInteger x, NSUInteger y, NSUInteger zoom);
 
 /**
- * GMSURLTileProvider fetches tiles based on the URLs returned from a GMSTileURLConstructor. For
+ * `GMSURLTileProvider` fetches tiles based on the URLs returned from a `GMSTileURLConstructor`. For
  * example:
  * <pre>
  *   GMSTileURLConstructor constructor = ^(NSUInteger x, NSUInteger y, NSUInteger zoom) {
@@ -37,12 +37,12 @@ typedef NSURL *_Nullable (^GMSTileURLConstructor)(NSUInteger x, NSUInteger y, NS
  *   layer.map = map;
  * </pre>
  *
- * GMSURLTileProvider may not be subclassed and should only be created via its convenience
+ * `GMSURLTileProvider` may not be subclassed and should only be created via its convenience
  * constructor.
  */
 @interface GMSURLTileLayer : GMSTileLayer
 
-/** Convenience constructor. |constructor| must be non-nil. */
+/** Convenience constructor. `constructor` must be non-nil. */
 + (instancetype)tileLayerWithURLConstructor:(GMSTileURLConstructor)constructor;
 
 /**

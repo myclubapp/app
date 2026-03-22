@@ -18,25 +18,25 @@ NS_ASSUME_NONNULL_BEGIN
 @interface GMSStyleSpan : NSObject
 
 /**
- * Factory returning a solid color span of length one segment. Equivalent to [GMSStyleSpan
- * spanWithStyle:[GMSStrokeStyle solidColor:|color|] segments:1].
+ * Factory returning a solid color span of length one segment. Equivalent to
+ * `[GMSStyleSpan spanWithStyle:[GMSStrokeStyle solidColor:color] segments:1]`.
  */
 + (instancetype)spanWithColor:(UIColor *)color;
 
 /**
- * Factory returning a solid color span with a given number of segments. Equivalent to [GMSStyleSpan
- * spanWithStyle:[GMSStrokeStyle solidColor:|color|] segments:|segments|].
+ * Factory returning a solid color span with a given number of segments. Equivalent to
+ * `[GMSStyleSpan spanWithStyle:[GMSStrokeStyle solidColor:color] segments:segments]`.
  */
 + (instancetype)spanWithColor:(UIColor *)color segments:(double)segments;
 
 /**
- * Factory returning a span with the given |style| of length one segment. Equivalent to
- * [GMSStyleSpan spanWithStyle:|style| segments:1].
+ * Factory returning a span with the given `style` of length one segment. Equivalent to
+ * `[GMSStyleSpan spanWithStyle:style segments:1]`.
  */
 + (instancetype)spanWithStyle:(GMSStrokeStyle *)style;
 
 /**
- * Factory returning a span with the given |style| and length in number of segments. |segments| must
+ * Factory returning a span with the given `style` and length in number of segments. `segments` must
  * be greater than 0 (i.e. can't be 0).
  */
 + (instancetype)spanWithStyle:(GMSStrokeStyle *)style segments:(double)segments;

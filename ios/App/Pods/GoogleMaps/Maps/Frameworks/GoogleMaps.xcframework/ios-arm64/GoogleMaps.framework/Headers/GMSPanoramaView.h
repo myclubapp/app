@@ -23,7 +23,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/** Delegate for events on GMSPanoramaView. */
+/** Delegate for events on `GMSPanoramaView`. */
 @protocol GMSPanoramaViewDelegate <NSObject>
 @optional
 
@@ -32,43 +32,43 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * This can be the result of interactive navigation to a neighbouring panorama.
  *
- * At the moment this method is called, the |view|.panorama is still pointing to the old panorama,
- * as the new panorama identified by |panoID| is not yet resolved. panoramaView:didMoveToPanorama:
- * will be called when the new panorama is ready.
+ * At the moment this method is called, the `view`.panorama is still pointing to the old panorama,
+ * as the new panorama identified by `panoID` is not yet resolved.
+ * `-panoramaView:didMoveToPanorama:` will be called when the new panorama is ready.
  */
 - (void)panoramaView:(GMSPanoramaView *)view willMoveToPanoramaID:(NSString *)panoramaID;
 
-/** This is invoked every time the |view|.panorama property changes. */
+/** This is invoked every time the `view`.panorama property changes. */
 - (void)panoramaView:(GMSPanoramaView *)view didMoveToPanorama:(nullable GMSPanorama *)panorama;
 
 /**
- * Called when the panorama change was caused by invoking moveToPanoramaNearCoordinate:. The
+ * Called when the panorama change was caused by invoking `-moveToPanoramaNearCoordinate:`. The
  * coordinate passed to that method will also be passed here.
  */
 - (void)panoramaView:(GMSPanoramaView *)view
     didMoveToPanorama:(GMSPanorama *)panorama
        nearCoordinate:(CLLocationCoordinate2D)coordinate;
 
-/** Called when moveNearCoordinate: produces an error. */
+/** Called when `-moveNearCoordinate:` produces an error. */
 - (void)panoramaView:(GMSPanoramaView *)view
                    error:(NSError *)error
     onMoveNearCoordinate:(CLLocationCoordinate2D)coordinate;
 
-/** Called when moveToPanoramaID: produces an error. */
+/** Called when `-moveToPanoramaID:` produces an error. */
 - (void)panoramaView:(GMSPanoramaView *)view
                  error:(NSError *)error
     onMoveToPanoramaID:(NSString *)panoramaID;
 
 /**
- * Called repeatedly during changes to the camera on GMSPanoramaView. This may not be called for all
- * intermediate camera values, but is always called for the final position of the camera after an
- * animation or gesture.
+ * Called repeatedly during changes to the camera on `GMSPanoramaView`. This may not be called for
+ * all intermediate camera values, but is always called for the final position of the camera after
+ * an animation or gesture.
  */
 - (void)panoramaView:(GMSPanoramaView *)panoramaView didMoveCamera:(GMSPanoramaCamera *)camera;
 
 /**
- * Called when a user has tapped on the GMSPanoramaView, but this tap was not consumed (taps may be
- * consumed by e.g., tapping on a navigation arrow).
+ * Called when a user has tapped on the `GMSPanoramaView`, but this tap was not consumed (taps may
+ * be consumed by e.g., tapping on a navigation arrow).
  */
 - (void)panoramaView:(GMSPanoramaView *)panoramaView didTap:(CGPoint)point;
 
@@ -93,11 +93,11 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * A panorama is used to display Street View imagery. It should be constructed via [[GMSPanoramaView
- * alloc] initWithFrame:], and configured post-initialization.
+ * A panorama is used to display Street View imagery. It should be constructed via
+ * `[[GMSPanoramaView alloc] initWithFrame:]`, and configured post-initialization.
  *
- * All properties and methods should be accessed on the main thread, similar to all UIKit objects.
- * The GMSPanoramaViewDelegate methods will also be called back only on the main thread.
+ * All properties and methods should be accessed on the main thread, similar to all `UIKit` objects.
+ * The `GMSPanoramaViewDelegate` methods will also be called back only on the main thread.
  *
  * The backgroundColor of this view is shown while no panorama is visible, such as while it is
  * loading or if the panorama is later set to nil. The alpha color of backgroundColor is not
@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic, nullable) GMSPanorama *panorama;
 
-/** GMSPanoramaView delegate. */
+/** `GMSPanoramaView` delegate. */
 @property(nonatomic, weak, nullable) IBOutlet id<GMSPanoramaViewDelegate> delegate;
 
 /**
@@ -162,47 +162,48 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property(nonatomic) GMSPanoramaCamera *camera;
 
-/** Accessor for the custom CALayer type used for the layer. */
+/** Accessor for the custom `CALayer` type used for the layer. */
 @property(nonatomic, readonly, retain) GMSPanoramaLayer *layer;
 
-/** Animates the camera of this GMSPanoramaView to |camera|, over |duration| (specified in seconds).
+/** Animates the camera of this `GMSPanoramaView` to `camera`, over `duration`
+ * (specified in seconds).
  */
 - (void)animateToCamera:(GMSPanoramaCamera *)camera animationDuration:(NSTimeInterval)duration;
 
-/** Modifies the camera according to |cameraUpdate|, over |duration| (specified in seconds). */
+/** Modifies the camera according to `cameraUpdate`, over `duration` (specified in seconds). */
 - (void)updateCamera:(GMSPanoramaCameraUpdate *)cameraUpdate
     animationDuration:(NSTimeInterval)duration;
 
 /**
- * Requests a panorama near |coordinate|.
+ * Requests a panorama near `coordinate`.
  *
- * Upon successful completion panoramaView:didMoveToPanorama: and
- * panoramaView:didMoveToPanorama:nearCoordinate: will be sent to GMSPanoramaViewDelegate.
+ * Upon successful completion `-panoramaView:didMoveToPanorama:` and
+ * `-panoramaView:didMoveToPanorama:nearCoordinate:` will be sent to `GMSPanoramaViewDelegate`.
  *
- * On error panoramaView:error:onMoveNearCoordinate: will be sent.
+ * On error `-panoramaView:error:onMoveNearCoordinate:` will be sent.
  *
- * Repeated calls to moveNearCoordinate: result in the previous pending (incomplete) transitions
- * being cancelled -- only the most recent of moveNearCoordinate: and moveToPanoramaId: will proceed
- * and generate events.
+ * Repeated calls to `-moveNearCoordinate:` result in the previous pending (incomplete) transitions
+ * being cancelled -- only the most recent of `-moveNearCoordinate:` and `-moveToPanoramaId:` will
+ * proceed and generate events.
  */
 - (void)moveNearCoordinate:(CLLocationCoordinate2D)coordinate;
 
 /**
- * Similar to moveNearCoordinate: but allows specifying a search radius (meters) around
- * |coordinate|.
+ * Similar to `-moveNearCoordinate:` but allows specifying a search radius (meters) around
+ * `coordinate`.
  */
 - (void)moveNearCoordinate:(CLLocationCoordinate2D)coordinate radius:(NSUInteger)radius;
 
 /**
- * Similar to moveNearCoordinate: but allows specifying a source near |coordinate|.
+ * Similar to `-moveNearCoordinate:` but allows specifying a source near `coordinate`.
  *
  * This API is experimental and may not always filter by source.
  */
 - (void)moveNearCoordinate:(CLLocationCoordinate2D)coordinate source:(GMSPanoramaSource)source;
 
 /**
- * Similar to moveNearCoordinate: but allows specifying a search radius (meters) around
- * |coordinate| and a source.
+ * Similar to `-moveNearCoordinate:` but allows specifying a search radius (meters) around
+ * `coordinate` and a source.
  *
  * This API is experimental and may not always filter by source.
  */
@@ -211,23 +212,23 @@ NS_ASSUME_NONNULL_BEGIN
                     source:(GMSPanoramaSource)source;
 
 /**
- * Requests a panorama with |panoramaID|.
+ * Requests a panorama with `panoramaID`.
  *
- * Upon successful completion panoramaView:didMoveToPanorama: will be sent to
- * GMSPanoramaViewDelegate.
+ * Upon successful completion `-panoramaView:didMoveToPanorama:` will be sent to
+ * `GMSPanoramaViewDelegate`.
  *
- * On error panoramaView:error:onMoveToPanoramaID: will be sent.
+ * On error `-panoramaView:error:onMoveToPanoramaID:` will be sent.
  *
- * Repeated calls to moveToPanoramaID: result in the previous pending (incomplete) transitions being
- * cancelled -- only the most recent of moveNearCoordinate: and moveToPanoramaId: will proceed and
- * generate events.
+ * Repeated calls to `-moveToPanoramaID:` result in the previous pending (incomplete) transitions
+ * being cancelled -- only the most recent of `-moveNearCoordinate:- and `-moveToPanoramaId:` will
+ * proceed and generate events.
  *
  * Only panoramaIDs obtained from the Google Maps SDK for iOS are supported.
  */
 - (void)moveToPanoramaID:(NSString *)panoramaID;
 
 /**
- * For the current view, returns the screen point the |orientation| points through.  This value may
+ * For the current view, returns the screen point the `orientation` points through.  This value may
  * be outside the view for forward facing orientations which are far enough away from straight
  * ahead.
  *
@@ -239,30 +240,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Given a point for this view, returns the current camera orientation pointing through that screen
- * location.  At the center of this view, the returned GMSOrientation will be approximately equal to
- * that of the current GMSPanoramaCamera.
+ * location.  At the center of this view, the returned `GMSOrientation` will be approximately equal
+ * to that of the current `GMSPanoramaCamera`.
  */
 - (GMSOrientation)orientationForPoint:(CGPoint)point;
 
 /**
- * Convenience constructor for GMSPanoramaView, which searches for and displays a GMSPanorama near
- * |coordinate|. This performs a similar action to that of moveNearCoordinate:, and will call the
- * same delegate methods.
+ * Convenience constructor for `GMSPanoramaView`, which searches for and displays a `GMSPanorama`
+ * near `coordinate`. This performs a similar action to that of `-moveNearCoordinate:`, and will
+ * call the same delegate methods.
  */
 + (instancetype)panoramaWithFrame:(CGRect)frame nearCoordinate:(CLLocationCoordinate2D)coordinate;
 
 /**
  * Similar to panoramaWithFrame:nearCoordinate: but allows specifying a search radius (meters)
- * around |coordinate|.
+ * around `coordinate`.
  */
 + (instancetype)panoramaWithFrame:(CGRect)frame
                    nearCoordinate:(CLLocationCoordinate2D)coordinate
                            radius:(NSUInteger)radius;
 
 /**
- * Convenience constructor for GMSPanoramaView, which searches for and displays a GMSPanorama near
- * |coordinate|. This performs a similar action to that of moveNearCoordinate:source, and will call
- * the same delegate methods.
+ * Convenience constructor for `GMSPanoramaView`, which searches for and displays a `GMSPanorama`
+ * near `coordinate`. This performs a similar action to that of `-moveNearCoordinate:source`, and
+ * will call the same delegate methods.
  *
  * This API is experimental and may not always filter by source.
  */
@@ -270,9 +271,9 @@ NS_ASSUME_NONNULL_BEGIN
                    nearCoordinate:(CLLocationCoordinate2D)coordinate
                            source:(GMSPanoramaSource)source;
 /**
- * Convenience constructor for GMSPanoramaView, which searches for and displays a GMSPanorama near
- * |coordinate|. This performs a similar action to that of moveNearCoordinate:radius:source, and
- * will call the same delegate methods.
+ * Convenience constructor for `GMSPanoramaView`, which searches for and displays a `GMSPanorama`
+ * near `coordinate`. This performs a similar action to that of `-moveNearCoordinate:radius:source`,
+ * and will call the same delegate methods.
  *
  * This API is experimental and may not always filter by source.
  */

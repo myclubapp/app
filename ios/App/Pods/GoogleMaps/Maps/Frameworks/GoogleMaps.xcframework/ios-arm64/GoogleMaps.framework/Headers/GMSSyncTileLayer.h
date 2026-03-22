@@ -15,15 +15,15 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * GMSSyncTileLayer is an abstract subclass of GMSTileLayer that provides a sync interface to
+ * `GMSSyncTileLayer` is an abstract subclass of `GMSTileLayer` that provides a sync interface to
  * generate image tile data.
  */
 @interface GMSSyncTileLayer : GMSTileLayer
 
 /**
- * As per requestTileForX:y:zoom:receiver: on GMSTileLayer, but provides a synchronous interface to
- * return tiles. This method may block or otherwise perform work, and is not called on the main
- * thread.
+ * As per `-requestTileForX:y:zoom:receiver:` on `GMSTileLayer`, but provides a synchronous
+ * interface to return tiles. This method may block or otherwise perform work, and is not called on
+ * the main thread.
  *
  * Calls to this method may also be made from multiple threads so implementations must be
  * threadsafe.

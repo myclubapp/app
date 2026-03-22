@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/** Links from a GMSPanorama to neighboring panoramas. */
+/** Links from a `GMSPanorama` to neighboring panoramas. */
 @interface GMSPanoramaLink : NSObject
 
 /** Angle of the neighboring panorama, clockwise from north in degrees. */

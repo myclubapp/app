@@ -43,12 +43,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, nullable) UIImage *icon;
 
 /**
- * Marker view to render. If left nil, falls back to the |icon| property instead.
+ * Marker view to render. If left nil, falls back to the `icon` property instead.
  *
- * Supports animation of all animatable properties of UIView, except |frame| and |center|. Changing
- * these properties or their corresponding CALayer version, including |position|, is not supported.
+ * Supports animation of all animatable properties of `UIView`, except `frame` and `center`.
+ * Changing these properties or their corresponding `CALayer` version, including `position`, is not
+ * supported.
  *
- * Note that the view behaves as if |clipsToBounds| is set to YES, regardless of its actual value.
+ * Note that the view behaves as if `clipsToBounds` is set to YES, regardless of its actual value.
  */
 @property(nonatomic, nullable) UIView *iconView;
 
@@ -58,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Note that when this changes from NO to YES, the icon is guaranteed to be redrawn next frame.
  *
  * Defaults to YES.
- * Has no effect if |iconView| is nil.
+ * Has no effect if `iconView` is nil.
  */
 @property(nonatomic) BOOL tracksViewChanges;
 
@@ -90,8 +91,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic) CGPoint infoWindowAnchor;
 
 /**
- * Controls the animation used when this marker is placed on a GMSMapView (default
- * kGMSMarkerAnimationNone, no animation).
+ * Controls the animation used when this marker is placed on a `GMSMapView` (default
+ * `kGMSMarkerAnimationNone`, no animation).
  */
 @property(nonatomic) GMSMarkerAnimation appearAnimation;
 
@@ -118,12 +119,12 @@ NS_ASSUME_NONNULL_BEGIN
 /** Sets the opacity of the marker, between 0 (completely transparent) and 1 (default) inclusive. */
 @property(nonatomic) float opacity;
 
-/** Provides the Core Animation layer for this GMSMarker. */
+/** Provides the Core Animation layer for this `GMSMarker`. */
 @property(nonatomic, readonly) GMSMarkerLayer *layer;
 
 /**
- * The |panoramaView| specifies which panorama view will attempt to show this marker.  Note that if
- * the marker's |position| is too far away from the |panoramaView|'s current panorama location, it
+ * The `panoramaView` specifies which panorama view will attempt to show this marker.  Note that if
+ * the marker's `position` is too far away from the `panoramaView`'s current panorama location, it
  * will not be displayed as it will be too small.
  *
  * Can be set to nil to remove the marker from any current panorama view it is attached to.
@@ -141,14 +142,14 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /**
- * The default position of the ground anchor of a GMSMarker: the center bottom point of the marker
+ * The default position of the ground anchor of a `GMSMarker`: the center bottom point of the marker
  * icon.
  */
 FOUNDATION_EXTERN const CGPoint kGMSMarkerDefaultGroundAnchor;
 
 /**
- * The default position of the info window anchor of a GMSMarker: the center top point of the marker
- * icon.
+ * The default position of the info window anchor of a `GMSMarker`: the center top point of the
+ * marker icon.
  */
 FOUNDATION_EXTERN const CGPoint kGMSMarkerDefaultInfoWindowAnchor;
 

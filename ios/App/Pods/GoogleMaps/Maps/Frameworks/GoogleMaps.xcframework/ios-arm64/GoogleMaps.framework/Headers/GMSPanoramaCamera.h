@@ -15,36 +15,36 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * GMSPanoramaCamera is used to control the viewing direction of a GMSPanoramaView. It does not
+ * `GMSPanoramaCamera` is used to control the viewing direction of a `GMSPanoramaView`. It does not
  * contain information about which particular panorama should be displayed.
  */
 @interface GMSPanoramaCamera : NSObject
 
 /**
- * Designated initializer. Configures this GMSPanoramaCamera with |orientation|, |zoom| and |FOV|.
+ * Designated initializer. Configures this `GMSPanoramaCamera` with `orientation`, `zoom` and `FOV`.
  * These values will be clamped to acceptable ranges.
  */
 - (id)initWithOrientation:(GMSOrientation)orientation zoom:(float)zoom FOV:(double)FOV;
 
 /**
- * Convenience constructor specifying heading and pitch as part of |orientation|, plus |zoom| and
+ * Convenience constructor specifying heading and pitch as part of `orientation`, plus `zoom` and
  * default field of view (90 degrees).
  */
 + (instancetype)cameraWithOrientation:(GMSOrientation)orientation zoom:(float)zoom;
 
 /**
- * Convenience constructor specifying |heading|, |pitch|, |zoom| with default field of view (90
+ * Convenience constructor specifying `heading`, `pitch`, `zoom` with default field of view (90
  * degrees).
  */
 + (instancetype)cameraWithHeading:(CLLocationDirection)heading pitch:(double)pitch zoom:(float)zoom;
 
 /**
- * Convenience constructor for GMSPanoramaCamera, specifying all camera properties with heading and
- * pitch as part of |orientation|.
+ * Convenience constructor for `GMSPanoramaCamera`, specifying all camera properties with heading
+ * and pitch as part of `orientation`.
  */
 + (instancetype)cameraWithOrientation:(GMSOrientation)orientation zoom:(float)zoom FOV:(double)FOV;
 
-/** Convenience constructor for GMSPanoramaCamera, specifying all camera properties. */
+/** Convenience constructor for `GMSPanoramaCamera`, specifying all camera properties. */
 + (instancetype)cameraWithHeading:(CLLocationDirection)heading
                             pitch:(double)pitch
                              zoom:(float)zoom
