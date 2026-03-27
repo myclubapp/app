@@ -723,6 +723,26 @@
     "create_link_confirm": "Do you really want to create this link?",
     "update_link_confirm": "Do you really want to update this link?"
   },
+  "invoice": {
+    "status": {
+      "draft": "Draft",
+      "sending": "Sending...",
+      "sent": "Sent",
+      "paid": "Paid",
+      "unknown": "Unknown"
+    },
+    "resend": "Resend",
+    "resend_confirm": "Do you want to resend the invoice?",
+    "resend_success": "Invoice is being resent",
+    "resend_all": "Resend failed",
+    "resend_all_success": "{{count}} invoice(s) being resent",
+    "send_reminder": "Send payment reminder",
+    "send_reminder_confirm": "Do you want to send a payment reminder to {{name}}?",
+    "send_reminder_all": "Remind all",
+    "send_reminder_all_confirm": "Do you want to send a payment reminder to {{count}} member(s)?",
+    "reminder_sent": "Payment reminder sent",
+    "reminder_all_sent": "{{count}} payment reminder(s) sent"
+  },
   "welcome": {
     "title": "Welcome to MyClub",
     "description": "The modern platform for sports clubs",

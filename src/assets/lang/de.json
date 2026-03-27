@@ -902,6 +902,26 @@
     "create_link_confirm": "Möchten Sie diesen Link wirklich erstellen?",
     "update_link_confirm": "Möchten Sie diesen Link wirklich aktualisieren?"
   },
+  "invoice": {
+    "status": {
+      "draft": "Entwurf",
+      "sending": "Wird versendet...",
+      "sent": "Versendet",
+      "paid": "Bezahlt",
+      "unknown": "Unbekannt"
+    },
+    "resend": "Erneut senden",
+    "resend_confirm": "Möchtest du die Rechnung erneut versenden?",
+    "resend_success": "Rechnung wird erneut versendet",
+    "resend_all": "Fehlgeschlagene erneut senden",
+    "resend_all_success": "{{count}} Rechnung(en) werden erneut versendet",
+    "send_reminder": "Zahlungserinnerung senden",
+    "send_reminder_confirm": "Möchtest du eine Zahlungserinnerung an {{name}} senden?",
+    "send_reminder_all": "Alle erinnern",
+    "send_reminder_all_confirm": "Möchtest du an {{count}} Mitglied(er) eine Zahlungserinnerung senden?",
+    "reminder_sent": "Zahlungserinnerung versendet",
+    "reminder_all_sent": "{{count}} Zahlungserinnerung(en) versendet"
+  },
   "welcome": {
     "title": "Willkommen bei MyClub",
     "description": "Die moderne Plattform für Sportvereine",

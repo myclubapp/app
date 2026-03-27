@@ -31,7 +31,9 @@
           <h2>{{invoice.purpose}}</h2>
           <h2>{{invoice.amount}} {{invoice.currency}}</h2>
         </ion-label>
-        <ion-badge slot="end"> {{invoice.status}} </ion-badge>
+        <ion-badge slot="end">
+          {{ getStatusTranslationKey(invoice.status) | translate }}
+        </ion-badge>
       </ion-item>
       } }
     </ion-item-group>

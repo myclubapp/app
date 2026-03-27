@@ -723,6 +723,26 @@
     "create_link_confirm": "Voulez-vous vraiment créer ce lien ?",
     "update_link_confirm": "Voulez-vous vraiment mettre à jour ce lien ?"
   },
+  "invoice": {
+    "status": {
+      "draft": "Brouillon",
+      "sending": "En cours d'envoi...",
+      "sent": "Envoyée",
+      "paid": "Payée",
+      "unknown": "Inconnu"
+    },
+    "resend": "Renvoyer",
+    "resend_confirm": "Voulez-vous renvoyer la facture ?",
+    "resend_success": "La facture est en cours de renvoi",
+    "resend_all": "Renvoyer les échecs",
+    "resend_all_success": "{{count}} facture(s) en cours de renvoi",
+    "send_reminder": "Envoyer un rappel de paiement",
+    "send_reminder_confirm": "Voulez-vous envoyer un rappel de paiement à {{name}} ?",
+    "send_reminder_all": "Rappeler tous",
+    "send_reminder_all_confirm": "Voulez-vous envoyer un rappel de paiement à {{count}} membre(s) ?",
+    "reminder_sent": "Rappel de paiement envoyé",
+    "reminder_all_sent": "{{count}} rappel(s) de paiement envoyé(s)"
+  },
   "welcome": {
     "title": "Bienvenue chez MyClub",
     "description": "La plateforme moderne pour les clubs sportifs",

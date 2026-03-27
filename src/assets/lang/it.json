@@ -723,6 +723,26 @@
     "create_link_confirm": "Vuoi davvero creare questo link?",
     "update_link_confirm": "Vuoi davvero aggiornare questo link?"
   },
+  "invoice": {
+    "status": {
+      "draft": "Bozza",
+      "sending": "In fase di invio...",
+      "sent": "Inviata",
+      "paid": "Pagata",
+      "unknown": "Sconosciuto"
+    },
+    "resend": "Reinvia",
+    "resend_confirm": "Vuoi reinviare la fattura?",
+    "resend_success": "La fattura viene reinviata",
+    "resend_all": "Reinvia fallite",
+    "resend_all_success": "{{count}} fattura/e in fase di reinvio",
+    "send_reminder": "Invia promemoria di pagamento",
+    "send_reminder_confirm": "Vuoi inviare un promemoria di pagamento a {{name}} ?",
+    "send_reminder_all": "Ricorda tutti",
+    "send_reminder_all_confirm": "Vuoi inviare un promemoria di pagamento a {{count}} membro/i ?",
+    "reminder_sent": "Promemoria di pagamento inviato",
+    "reminder_all_sent": "{{count}} promemoria di pagamento inviato/i"
+  },
   "welcome": {
     "title": "Benvenuto in MyClub",
     "description": "La piattaforma moderna per i club sportivi",

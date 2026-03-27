@@ -197,6 +197,21 @@ export class InvoiceService {
     );
   }
 
+  // Zahlungserinnerung senden
+  sendInvoiceReminder(
+    clubId: string,
+    periodId: string,
+    invoiceId: string,
+  ): Promise<void> {
+    return updateDoc(
+      doc(
+        this.firestore,
+        `club/${clubId}/invoicePeriods/${periodId}/invoices/${invoiceId}`,
+      ),
+      { lastReminderSent: Timestamp.now() },
+    );
+  }
+
   // Einzelne Rechnung löschen
   deleteInvoice(
     clubId: string,

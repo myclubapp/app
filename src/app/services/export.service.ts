@@ -224,6 +224,7 @@ export class ExportService {
     try {
       // Build headers based on selected options
       const headers: string[] = [
+        "ID",
         await lastValueFrom(this.translate.get("common.firstName")),
         await lastValueFrom(this.translate.get("common.lastName")),
       ];
@@ -258,6 +259,7 @@ export class ExportService {
       // Build data rows
       const data: (string | number)[][] = members.map((member) => {
         const row: (string | number)[] = [
+          member.id || "",
           member.firstName || "",
           member.lastName || "",
         ];

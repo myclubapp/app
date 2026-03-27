@@ -36,6 +36,16 @@ export class MemberInvoiceListPage implements OnInit {
     });
   }
 
+  getStatusTranslationKey(status: string): string {
+    const map: Record<string, string> = {
+      draft: "invoice.status.draft",
+      send: "invoice.status.sending",
+      sent: "invoice.status.sent",
+      bezahlt: "invoice.status.paid",
+    };
+    return map[status] || "invoice.status.unknown";
+  }
+
   async close() {
     await this.modalCtrl.dismiss(null, "close");
   }

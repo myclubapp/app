@@ -131,7 +131,9 @@
         {{invoice.firstName}} {{invoice.lastName}}<br />
         <small>{{invoice.amount}} {{invoice.currency}}</small>
       </ion-label>
-      <ion-badge slot="end"> {{invoice.status}} </ion-badge>
+      <ion-badge slot="end">
+        {{ getStatusTranslationKey(invoice.status) | translate }}
+      </ion-badge>
     </ion-item>
     } @if (invoices.length === 0) {
     <ion-item>
@@ -151,12 +153,27 @@
   </ion-toolbar>
 </ion-footer>
 } @if (segment === 'invoices' && invoices$ | async; as invoices) { @if
-(invoices.length > 0 && filterForDraftInvoices(invoices) > 0) {
+(invoices.length > 0 && (filterForDraftInvoices(invoices) > 0 ||
+filterForFailedInvoices(invoices) > 0 || filterForSentInvoices(invoices) > 0)) {
 <ion-footer>
   <ion-toolbar>
+    @if (filterForDraftInvoices(invoices) > 0) {
     <ion-button fill="clear" (click)="sendInvoicesForSelected()">
       {{filterForDraftInvoices(invoices)}} Rechnunge(n) versenden
     </ion-button>
+    } @if (filterForFailedInvoices(invoices) > 0) {
+    <ion-button fill="clear" color="warning" (click)="resendFailedInvoices()">
+      <ion-icon name="refresh-outline" slot="start"></ion-icon>
+      {{filterForFailedInvoices(invoices)}} {{ 'invoice.resend_all' | translate
+      }}
+    </ion-button>
+    } @if (filterForSentInvoices(invoices) > 0) {
+    <ion-button fill="clear" color="tertiary" (click)="sendReminderForAll()">
+      <ion-icon name="notifications-outline" slot="start"></ion-icon>
+      {{ 'invoice.send_reminder_all' | translate }}
+      ({{filterForSentInvoices(invoices)}})
+    </ion-button>
+    }
   </ion-toolbar>
 </ion-footer>
 } }

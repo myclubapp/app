@@ -18,6 +18,7 @@ import {
 } from "rxjs";
 import { Clipboard } from "@capacitor/clipboard";
 import { UiService } from "src/app/services/ui.service";
+import { TranslateService } from "@ngx-translate/core";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { SwissQRBill } from "swissqrbill/svg";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
@@ -47,6 +48,7 @@ export class ClubInvoiceDetailPage {
     private invoiceService: InvoiceService,
     private toastCtrl: ToastController,
     private uiService: UiService,
+    private translate: TranslateService,
     private userProfileService: UserProfileService,
     private alertCtrl: AlertController,
     private readonly fbService: FirebaseService,
@@ -63,8 +65,62 @@ export class ClubInvoiceDetailPage {
     this.generateQRCode();
   }
 
+  getStatusTranslationKey(status: string): string {
+    const map: Record<string, string> = {
+      draft: "invoice.status.draft",
+      send: "invoice.status.sending",
+      sent: "invoice.status.sent",
+      bezahlt: "invoice.status.paid",
+    };
+    return map[status] || "invoice.status.unknown";
+  }
+
   async close() {
     await this.modalCtrl.dismiss(null, "close");
+  }
+
+  async sendReminder() {
+    const invoice = await lastValueFrom(this.invoice$.pipe(take(1)));
+    const name = `${invoice.firstName} ${invoice.lastName}`;
+    const confirmed = await this.uiService.showConfirmDialog({
+      header: this.translate.instant("invoice.send_reminder"),
+      message: this.translate.instant("invoice.send_reminder_confirm", {
+        name,
+      }),
+    });
+    if (!confirmed) return;
+
+    await this.invoiceService.sendInvoiceReminder(
+      this.clubId,
+      this.periodId,
+      this.invoiceId,
+    );
+    this.uiService.showSuccessToast(
+      this.translate.instant("invoice.reminder_sent"),
+    );
+  }
+
+  async resendInvoice() {
+    // Set to draft first, then back to send to re-trigger the Cloud Function
+    await this.invoiceService.updateInvoiceStatus(
+      this.clubId,
+      this.periodId,
+      this.invoiceId,
+      "draft",
+    );
+    await this.invoiceService.updateInvoiceStatus(
+      this.clubId,
+      this.periodId,
+      this.invoiceId,
+      "send",
+    );
+    this.uiService.showSuccessToast(
+      this.translate.instant("invoice.resend_success"),
+    );
+    await this.modalCtrl.dismiss(
+      { invoice: { id: this.invoiceId, status: "send" } },
+      "resend",
+    );
   }
 
   async sendInvoice() {
@@ -126,6 +182,20 @@ export class ClubInvoiceDetailPage {
             .pipe(map((userProfile) => ({ invoice, club, userProfile })));
         }),
         tap(({ invoice, club, userProfile }) => {
+          // QR-Reference: 26 Ziffern + 1 MOD10-Prüfziffer = 27 Zeichen
+          let reference = (invoice.referenceNumber || "").replace(/\s/g, "");
+          // Basis auf 26 Zeichen bringen und Prüfziffer neu berechnen
+          const base = reference
+            .replace(/\D/g, "")
+            .padStart(26, "0")
+            .slice(-26);
+          const table = [0, 9, 4, 6, 8, 2, 7, 1, 3, 5];
+          let carry = 0;
+          for (let i = 0; i < base.length; i++) {
+            carry = table[(carry + parseInt(base[i], 10)) % 10];
+          }
+          reference = base + ((10 - carry) % 10).toString();
+
           const data: any = {
             amount: invoice.amount,
             creditor: club.creditor,
@@ -133,17 +203,29 @@ export class ClubInvoiceDetailPage {
             debtor: {
               address: userProfile?.street || "",
               buildingNumber: userProfile?.houseNumber || "",
-              city: userProfile?.city || club.creditor.city,
+              city: userProfile?.city || club.creditor?.city || "",
               country: userProfile?.country || "CH",
-              name: userProfile?.firstName + " " + userProfile?.lastName,
-              zip: userProfile?.postalcode,
+              name:
+                (userProfile?.firstName || "") +
+                " " +
+                (userProfile?.lastName || ""),
+              zip: userProfile?.postalcode || club.creditor?.zip || "0000",
             },
-            reference: invoice.referenceNumber,
+            reference: reference,
           };
-          const svg = new SwissQRBill(data);
-          this.qrSVGString = svg.element.outerHTML; // SVG als String für das neue Fenster
-          this.qrSVG = this.sanitizer.bypassSecurityTrustHtml(this.qrSVGString); // für die Anzeige im Template
-          console.log("qrSVG", this.qrSVG);
+
+          try {
+            const svg = new SwissQRBill(data);
+            this.qrSVGString = svg.element.outerHTML;
+            this.qrSVG = this.sanitizer.bypassSecurityTrustHtml(
+              this.qrSVGString,
+            );
+          } catch (err) {
+            console.error("QR Bill generation failed:", err);
+            this.qrSVG = this.sanitizer.bypassSecurityTrustHtml(
+              '<p style="color: red; padding: 20px;">QR-Einzahlungsschein konnte nicht generiert werden. Referenznummer möglicherweise ungültig.</p>',
+            );
+          }
         }),
       )
       .subscribe();

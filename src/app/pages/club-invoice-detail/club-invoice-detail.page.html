@@ -56,7 +56,7 @@
       <ion-input
         label="Status"
         labelPlacement="stacked"
-        [value]="invoice.status"
+        [value]="getStatusTranslationKey(invoice.status) | translate"
         readonly
       ></ion-input>
     </ion-item>
@@ -166,6 +166,16 @@
     <ion-button expand="block" color="primary" (click)="sendInvoice()">
       <ion-icon name="send-outline" slot="start"></ion-icon>
       Rechnung senden
+    </ion-button>
+    } @if (invoice?.status === 'send') {
+    <ion-button expand="block" color="warning" (click)="resendInvoice()">
+      <ion-icon name="refresh-outline" slot="start"></ion-icon>
+      {{ 'invoice.resend' | translate }}
+    </ion-button>
+    } @if (invoice?.status === 'sent') {
+    <ion-button expand="block" color="tertiary" (click)="sendReminder()">
+      <ion-icon name="notifications-outline" slot="start"></ion-icon>
+      {{ 'invoice.send_reminder' | translate }}
     </ion-button>
     } @if (invoice?.status !== 'bezahlt') {
     <ion-button

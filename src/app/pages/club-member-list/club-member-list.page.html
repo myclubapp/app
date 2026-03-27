@@ -4,6 +4,9 @@
     @if (clubAdminList$ | async; as clubAdminList) { @if
     (isClubAdmin(clubAdminList, club.id)) {
     <ion-buttons slot="primary">
+      <ion-button (click)="openExportDialog()">
+        <ion-icon name="download-outline" slot="icon-only"></ion-icon>
+      </ion-button>
       @if (!allowEdit) {
       <ion-button (click)="edit()">{{"common.edit" | translate}}</ion-button>
       } @if (allowEdit) {
@@ -21,12 +24,6 @@
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">{{"common.members" | translate}}</ion-title>
-
-      <ion-buttons slot="end">
-        <ion-button (click)="openExportDialog()">
-          <ion-icon name="download-outline" slot="icon-only"></ion-icon>
-        </ion-button>
-      </ion-buttons>
     </ion-toolbar>
   </ion-header>
   <ion-searchbar

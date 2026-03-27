@@ -526,9 +526,11 @@ export class ClubInvoicePage implements OnInit {
       const currency = Object.keys(currencyGroups)[0] || "CHF";
       const amount = currencyGroups[currency] || 0;
 
-      // Generiere Referenznummer
-      const referenceId =
+      // Generiere Referenznummer (muss exakt 27 Zeichen sein für QR-Reference)
+      const rawReferenceId =
         this.period.referenceId + Date.now().toString().slice(1, 12) + index;
+      // Auf 26 Zeichen padden/kürzen (+ 1 Prüfziffer = 27)
+      const referenceId = rawReferenceId.padStart(26, "0").slice(-26);
       const modulo10 = this.mod10(referenceId);
       const referenceNumber = referenceId.toString() + modulo10.toString();
 
@@ -713,8 +715,76 @@ export class ClubInvoicePage implements OnInit {
     this.ui.showSuccessToast(`${updatedCount} Rechnungen als bezahlt markiert`);
   }
 
+  getStatusTranslationKey(status: string): string {
+    const map: Record<string, string> = {
+      draft: "invoice.status.draft",
+      send: "invoice.status.sending",
+      sent: "invoice.status.sent",
+      bezahlt: "invoice.status.paid",
+    };
+    return map[status] || "invoice.status.unknown";
+  }
+
   filterForDraftInvoices(invoices: any[]) {
     return invoices.filter((invoice) => invoice.status === "draft").length;
+  }
+
+  filterForFailedInvoices(invoices: any[]) {
+    return invoices.filter((invoice) => invoice.status === "send").length;
+  }
+
+  async resendFailedInvoices() {
+    const invoices = await lastValueFrom(this.invoices$.pipe(take(1)));
+    const failed = invoices.filter((invoice) => invoice.status === "send");
+    for (const invoice of failed) {
+      await this.invoiceService.updateInvoiceStatus(
+        this.club.id,
+        this.period.id,
+        invoice.id,
+        "draft",
+      );
+      await this.invoiceService.updateInvoiceStatus(
+        this.club.id,
+        this.period.id,
+        invoice.id,
+        "send",
+      );
+    }
+    this.ui.showSuccessToast(
+      this.translate.instant("invoice.resend_all_success", {
+        count: failed.length,
+      }),
+    );
+  }
+
+  filterForSentInvoices(invoices: any[]) {
+    return invoices.filter((invoice) => invoice.status === "sent").length;
+  }
+
+  async sendReminderForAll() {
+    const invoices = await lastValueFrom(this.invoices$.pipe(take(1)));
+    const sent = invoices.filter((invoice) => invoice.status === "sent");
+
+    const confirmed = await this.ui.showConfirmDialog({
+      header: this.translate.instant("invoice.send_reminder_all"),
+      message: this.translate.instant("invoice.send_reminder_all_confirm", {
+        count: sent.length,
+      }),
+    });
+    if (!confirmed) return;
+
+    for (const invoice of sent) {
+      await this.invoiceService.sendInvoiceReminder(
+        this.club.id,
+        this.period.id,
+        invoice.id,
+      );
+    }
+    this.ui.showSuccessToast(
+      this.translate.instant("invoice.reminder_all_sent", {
+        count: sent.length,
+      }),
+    );
   }
 
   async sendInvoicesForSelected() {

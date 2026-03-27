@@ -3,6 +3,7 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 
 import { IonicModule } from "@ionic/angular";
+import { TranslateModule } from "@ngx-translate/core";
 
 import { MemberInvoiceListPageRoutingModule } from "./member-invoice-list-routing.module";
 
@@ -13,6 +14,7 @@ import { MemberInvoiceListPage } from "./member-invoice-list.page";
     CommonModule,
     FormsModule,
     IonicModule,
+    TranslateModule,
     MemberInvoiceListPageRoutingModule,
   ],
   declarations: [MemberInvoiceListPage],
