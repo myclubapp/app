@@ -24,7 +24,7 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/google-chrome-stable
       - name: Publish Test Results
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v2
         if: always()
         with:
           name: Karma Test Results
