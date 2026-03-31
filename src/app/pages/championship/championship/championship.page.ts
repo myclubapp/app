@@ -691,7 +691,7 @@ export class ChampionshipPage implements OnInit {
 
   async gameListActions() {
     const actionSheet = await this.uiService.showActionSheet({
-      header: await lastValueFrom(this.translate.get("training.actions")),
+      header: await lastValueFrom(this.translate.get("championship.actions")),
       buttons: [
         {
           text: await lastValueFrom(this.translate.get("common.alle_anmelden")),

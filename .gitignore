@@ -3,6 +3,7 @@
 
 *~
 *.sw[mnpcod]
+TESTS-*.xml
 .tmp
 *.tmp
 *.tmp.*

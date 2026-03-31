@@ -1,5 +1,5 @@
 PODS:
-  - Capacitor (8.2.0):
+  - Capacitor (8.3.0):
     - CapacitorCordova
   - CapacitorApp (8.0.1):
     - Capacitor
@@ -9,7 +9,7 @@ PODS:
     - Capacitor
   - CapacitorClipboard (8.0.1):
     - Capacitor
-  - CapacitorCordova (8.2.0)
+  - CapacitorCordova (8.3.0)
   - CapacitorDevice (8.0.1):
     - Capacitor
   - CapacitorDialog (8.0.1):
@@ -192,12 +192,12 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/status-bar"
 
 SPEC CHECKSUMS:
-  Capacitor: c04568d0798e8c9a481d70e8d3df1f7fe1966549
+  Capacitor: 9f1f99495b474d82bccfd27b15617b84f5938144
   CapacitorApp: fcd990168c3249d2c5a7ae94920a031d05789e73
   CapacitorBrowser: a9d79172878eea4b0cbfa7556bc9fa5338ca85fb
   CapacitorCamera: 28ce747aeb97163dcd23c8ed8a624551b262918c
   CapacitorClipboard: 1ba60616f1b2d3df52417000217ec810216bbbaf
-  CapacitorCordova: a9ac88d84a1f5280f33b349fe50fce1902683ac0
+  CapacitorCordova: 2e1e2bb93b2f365309dc4ff18b72b9a69a7814a9
   CapacitorDevice: ebd210e29ae690225291b8616e6cfaf419d2e866
   CapacitorDialog: d43769d1245d315ffc931b2ca3d4eea76870798b
   CapacitorFilesystem: 7d3e3df84be4f0d999a5d6baa23aeb30c2de6450

@@ -179,7 +179,81 @@
     "leadText": "Texte d'accroche",
     "text": "Texte",
     "date": "Date",
-    "url": "URL"
+    "url": "URL",
+    "add_button": "ajouter",
+    "administration": "Administration",
+    "already_enough_helpers": "Assez de bénévoles",
+    "author_line_placeholder": "Espace réservé pour la ligne d'auteur",
+    "billing_limits": "Limites de facturation",
+    "cancel_training_error": "Une erreur s'est produite lors de l'annulation de l'entraînement. Veuillez réessayer plus tard.",
+    "cancel_training_header": "Annuler l'entraînement",
+    "cancel_training_message": "Voulez-vous vraiment annuler cet entraînement ?",
+    "cannot_unregister": "Désinscription impossible",
+    "change_helper_point": "Modifier le point bénévole",
+    "confirmed_deployments": "Déploiements confirmés",
+    "create_event_confirm": "Voulez-vous vraiment créer cet événement ?",
+    "create_new_role": "Ajouter un nouveau rôle",
+    "create_new_role_desc": "Créez un nouveau rôle pour votre équipe.",
+    "delete_canceled": "Suppression annulée",
+    "delete_child_error": "Erreur lors de la suppression de l'enfant",
+    "delete_helper_point": "Supprimer le point bénévole",
+    "delete_helper_point_confirm": "Voulez-vous vraiment supprimer ce point bénévole ?",
+    "delete_request_error": "Erreur lors de la suppression de la demande",
+    "delete_shift_header": "Supprimer le créneau",
+    "delete_shift_message": "Voulez-vous vraiment supprimer ce créneau ?",
+    "delete_team_error_general": "Erreur lors de la suppression de l'équipe :",
+    "delete_team_header": "Supprimer l'équipe",
+    "delete_team_message": "Voulez-vous vraiment supprimer cette équipe ?",
+    "delete_training_header": "Supprimer l'entraînement",
+    "delete_training_message": "Voulez-vous vraiment supprimer cet entraînement ?",
+    "exercise_selection": "Sélection d'exercices",
+    "exercises": "Exercices",
+    "fab_button_placeholder": "Espace réservé pour le bouton FAB",
+    "fill_all_fields": "Veuillez remplir tous les champs.",
+    "fill_all_fields_required": "Veuillez remplir tous les champs",
+    "fill_required_fields": "Veuillez remplir tous les champs obligatoires (titre, description et type).",
+    "function_not_available": "Malheureusement, cette fonction n'est pas disponible",
+    "go_back": "Retour",
+    "header_placeholder": "Espace réservé pour l'en-tête",
+    "helper_add_error": "Une erreur s'est produite lors de l'ajout du bénévole. Veuillez réessayer plus tard.",
+    "helper_added_success": "Le bénévole a été ajouté avec succès.",
+    "helper_list_accordion": "Accordéon de la liste des bénévoles",
+    "helper_point_change_error": "Erreur lors de la modification du point bénévole",
+    "helper_point_changed_success": "Point bénévole modifié avec succès",
+    "helper_point_delete_error": "Erreur lors de la suppression du point bénévole",
+    "helper_point_deleted_success": "Point bénévole supprimé avec succès",
+    "hours_before_start": "Nombre d'heures avant le début du match, de l'entraînement ou",
+    "image_placeholder": "Espace réservé pour l'image",
+    "invoices_generated": "Factures générées pour la sélection",
+    "js_activities_competitions": "Activités cours J+S (compétitions)",
+    "js_activities_training": "Activités cours J+S (entraînements)",
+    "lead_text_placeholder": "Espace réservé pour le texte d'accroche",
+    "location_permission_needed": "Autorisation de localisation requise",
+    "location_permission_description": "Pour utiliser la carte et les fonctions de navigation, l'accès à votre localisation est requis. Veuillez activer l'autorisation de localisation dans les paramètres.",
+    "login_background_alt": "Image de fond pour la page de connexion",
+    "login_form_column": "Colonne du formulaire de connexion",
+    "min_confirmed_open": "min./confirmé/ouvert",
+    "my_device_id": "Mon identifiant d'appareil",
+    "no_status_entries_enable_participation": "NOUVEAU : Si aucune entrée de statut n'existe, activer la participation",
+    "one_entry_per_person": "Une entrée par personne : d'abord moi, puis les enfants",
+    "open_accordion": "Ouvrir l'accordéon",
+    "order_history": "Historique des commandes",
+    "placeholder_for_spacing": "Espace réservé pour l'espacement",
+    "please_select_member": "Veuillez sélectionner un membre",
+    "replace_existing_accordion": "Remplacer le contenu de l'accordéon existant par cette version",
+    "requested_for": "Demandé pour",
+    "select_positions": "Sélectionner des postes",
+    "select_surcharges_deductions": "Sélectionner suppléments/déductions",
+    "subscription_purchase": "Acheter un abonnement",
+    "surcharges_deductions": "Suppléments / déductions",
+    "team_delete_error": "Une erreur s'est produite lors de la suppression de l'équipe. Veuillez réessayer plus tard.",
+    "team_deleted_success": "L'équipe a été supprimée avec succès.",
+    "team_member_fees": "Cotisations des membres de l'équipe",
+    "teams_and_game_info": "Informations sur les équipes et les matchs",
+    "training_and_exercises": "Entraînement & exercices",
+    "training_delete_error": "Une erreur s'est produite lors de la suppression de l'entraînement. Veuillez réessayer plus tard.",
+    "training_deleted_success": "L'entraînement a été supprimé avec succès.",
+    "want_to_purchase_subscription": "Voulez-vous acheter l'abonnement pour"
   },
   "auth": {
     "session_expired": "Session expirée",
@@ -227,7 +301,9 @@
     "defeat": "Défaites",
     "goal__record": "Record de buts",
     "points": "Points",
-    "upcomming__games": "Jeux à venir"
+    "upcomming__games": "Jeux à venir",
+    "actions": "Actions du championnat",
+    "create_game_confirm": "Voulez-vous vraiment créer ce match ?"
   },
   "club": {
     "details": "Détails du Club",
@@ -358,7 +434,13 @@
     "on_date": "le",
     "points": "Points",
     "settings": "Paramètres",
-    "helper_points_label": "Points bénévoles"
+    "helper_points_label": "Points bénévoles",
+    "helper_events_with_shifts": "Événements bénévoles AVEC créneaux",
+    "confirm_helper_points": "Confirmer les points bénévoles",
+    "confirm_after_deployment": "Veuillez confirmer seulement après le déploiement !",
+    "select_members_confirm": "Sélectionnez les membres pour confirmer les points bénévoles :",
+    "no_deployments_to_confirm": "Aucun déploiement disponible à confirmer",
+    "add_shift_button": "ajouter"
   },
   "info": {
     "information": "Informations",
@@ -380,7 +462,9 @@
     "actions": "Actions actualité",
     "delete_news": "Supprimer l'actualité",
     "delete_news_confirm": "Voulez-vous vraiment supprimer cette actualité ?",
-    "deleted_reason": "L'actualité a été supprimée"
+    "deleted_reason": "L'actualité a été supprimée",
+    "news_article": "Article d'actualité",
+    "no_open_notifications": "Aucune notification ouverte trouvée"
   },
   "not-found": {
     "not_found": "Non trouvé"
@@ -454,7 +538,21 @@
     "email_verification_message": "Pour terminer la configuration de votre profil, vous devez d'abord vérifier votre adresse e-mail.",
     "email_verification_instruction": "Veuillez vérifier votre boîte de réception (vérifiez aussi votre dossier SPAM) et cliquez sur le lien \"Vérifier l'e-mail\".",
     "resend_email": "Renvoyer l'e-mail",
-    "continue": "Continuer"
+    "continue": "Continuer",
+    "error__clubRequest_reset_question": "Voulez-vous réinitialiser la demande existante et réessayer ?",
+    "invitation_code_scan": "Saisir ou scanner le code d'invitation",
+    "invitation_label": "Invitation",
+    "step1_club_type": "Étape 1 : Type de club",
+    "step2_sport_type": "Étape 2 : Type de sport (uniquement pour les clubs sportifs)",
+    "step3_details": "Étape 3/2 : Détails",
+    "hint_clubs_only": "Remarque : Seuls les clubs qui ne sont pas affiliés à une",
+    "official_association": "fédération officielle peuvent être ajoutés ici.",
+    "input_field_other_sport": "Champ de saisie pour 'Autre sport' en dehors du groupe radio",
+    "check_for_updates": "Vérifier les mises à jour",
+    "resend_activation_email": "Renvoyer l'e-mail",
+    "sports_clubs": "Clubs sportifs",
+    "other_clubs": "Autres clubs",
+    "as_parent_registration": "Je souhaite être enregistré en tant que parent"
   },
   "onboarding-team": {
     "onboarding__team": "Équipe d'intégration"
@@ -557,7 +655,10 @@
     "children": "Enfants",
     "add": "ajouter",
     "parent_info": "En tant que parent, vous serez informé de tous les événements importants concernant vos enfants.",
-    "license_number": "Numéro de licence"
+    "license_number": "Numéro de licence",
+    "gender.male": "Masculin",
+    "gender.female": "Féminin",
+    "gender.diverse": "Divers (pas pour J+S)"
   },
   "team": {
     "delete_button": "Supprimer l'équipe",
@@ -656,7 +757,9 @@
     "delete_training": "Supprimer l'entraînement",
     "delete_training_confirm": "Voulez-vous vraiment supprimer cet entraînement ?",
     "deleted_reason": "L'entraînement a été supprimé",
-    "create_training_confirm": "L'entraînement doit-il être créé ?"
+    "create_training_confirm": "L'entraînement doit-il être créé ?",
+    "all_trainings": "Tous les entraînements",
+    "exercises_available": "Exercices disponibles"
   },
   "side_bar": {
     "info__and__help": "Info",
@@ -678,7 +781,20 @@
     "created": "Créé le",
     "current_period_start": "Date de début",
     "current_period_end": "Date de fin",
-    "ended_at": "Terminé le"
+    "ended_at": "Terminé le",
+    "transparent_prices": "Prix transparents basés sur la taille de votre club. Aucune",
+    "no_feature_differences": "différence de fonctionnalités, pas de coûts cachés - pour les petits clubs",
+    "free_up_to_20": "jusqu'à 20 membres même complètement gratuit. Trouvez votre",
+    "for_your_club": "abonnement pour votre club",
+    "current_member_count": "Nombre actuel de membres (sans les parents) :",
+    "already_activated": "Cet abonnement a déjà été activé.",
+    "cannot_be_selected": "Cet abonnement ne peut pas être sélectionné.",
+    "additional_modules": "Modules supplémentaires (disponibles pour tous les abonnements)",
+    "pay_only_what_you_need": "Vous ne payez rien dont vous n'avez pas besoin. Avec nos modules supplémentaires",
+    "customize_myclub": "vous pouvez personnaliser myclub selon vos besoins.",
+    "module_already_activated": "Ce module a déjà été activé.",
+    "find_suitable_subscription": "Trouvez l'abonnement adapté à votre club",
+    "view_invoice": "Voir la facture"
   },
   "club-request-list": {
     "requests": "Demandes",
@@ -689,7 +805,9 @@
   "club-team-list": {
     "teams": "Équipes",
     "add_team": "Ajouter une équipe",
-    "no_teams": "Aucune équipe disponible"
+    "no_teams": "Aucune équipe disponible",
+    "add_team_header": "Ajouter une équipe",
+    "add_team_message": "Ajouter une équipe"
   },
   "club-admin-list": {
     "admins": "Administrateurs",
@@ -709,7 +827,13 @@
     "birthdate": "Date de naissance",
     "phone": "Numéro de téléphone",
     "email": "Email",
-    "address": "Adresse"
+    "address": "Adresse",
+    "invoices": "Factures",
+    "my_invoices": "Mes factures",
+    "my_clubs": "Mes clubs",
+    "my_teams": "Mes équipes",
+    "children_requests": "Demandes d'enfants",
+    "children": "Enfants"
   },
   "link": {
     "create_link": "Nouveau lien",
@@ -753,6 +877,60 @@
     "communication": "Communication",
     "communication_desc": "Restez connecté avec votre club",
     "start_onboarding": "Commencer l'intégration",
-    "skip": "Ignorer"
+    "skip": "Ignorer",
+    "keep_track_games": "Suivez tous vos matchs, résultats et prochaines rencontres en un seul endroit.",
+    "chat_with_members": "Discutez avec les membres de l'équipe, recevez des notifications et restez informé des actualités du club."
+  },
+  "championship-create": {
+    "new__game": "Nouveau match",
+    "team": "Équipe",
+    "team_home": "Équipe à domicile",
+    "team_away": "Équipe visiteuse",
+    "liga": "Ligue",
+    "game__details": "Détails du match",
+    "date": "Date",
+    "time": "Heure",
+    "optional__details": "Détails optionnels",
+    "referee1": "Arbitre 1",
+    "referee2": "Arbitre 2",
+    "spectators": "Spectateurs",
+    "result": "Résultat"
+  },
+  "club-billing-period": {
+    "team_member_fees_accordion": "Accordéon des cotisations membres d'équipe",
+    "surcharges_deductions_accordion": "Accordéon des suppléments/déductions",
+    "no_surcharges_recorded": "Aucun supplément ou déduction enregistré pour l'instant.",
+    "period_deleted": "Période supprimée",
+    "change_annual_fee": "Modifier la cotisation annuelle",
+    "currency_placeholder": "Devise (p. ex. CHF)",
+    "add_surcharge_deduction": "Ajouter un supplément/déduction",
+    "amount_placeholder": "Montant (p. ex. -30 pour une déduction, 50 pour un supplément)",
+    "surcharges_deductions_saved": "Suppléments/déductions enregistrés"
+  },
+  "club-invoice": {
+    "members_view": "Membres",
+    "invoices_view": "Factures",
+    "team_label": "Équipe",
+    "none_button": "aucun",
+    "warning_no_fee": "Avertissement si aucune cotisation n'est enregistrée",
+    "no_fee_in_team": "Aucune cotisation enregistrée dans l'équipe !",
+    "no_members_yet": "Aucun membre pour l'instant.",
+    "camt_format_required": "Le fichier doit être au format CAMT.053.",
+    "invoices_label": "Factures",
+    "no_invoices_yet": "Aucune facture pour l'instant.",
+    "generate_invoices": "Générer des factures",
+    "send_invoices": "Envoyer la/les facture(s)"
+  },
+  "club-invoice-detail": {
+    "invoice_details": "Détails de la facture",
+    "reference_number_label": "Numéro de référence pour la facture",
+    "send_invoice": "Envoyer la facture",
+    "delete_invoice": "Supprimer la facture",
+    "invoice_deleted": "Facture supprimée",
+    "no_surcharges_available": "Aucun supplément/déduction disponible",
+    "no_surcharges_defined": "Aucun supplément ou déduction de club défini. Veuillez d'abord créer des suppléments/déductions dans la section club.",
+    "select_surcharge_deduction": "Sélectionner supplément/déduction",
+    "positions_added": "Position(s) ajoutée(s)",
+    "position_deleted": "Position supprimée"
   }
 }

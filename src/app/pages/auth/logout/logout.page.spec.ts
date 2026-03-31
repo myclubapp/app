@@ -1,24 +1,30 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { LogoutPage } from "./logout.page";
+import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { MenuController } from "@ionic/angular";
+import { TranslateModule } from "@ngx-translate/core";
 
-import { LogoutPage } from './logout.page';
-
-describe('LogoutPage', () => {
+describe("LogoutPage", () => {
   let component: LogoutPage;
   let fixture: ComponentFixture<LogoutPage>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [LogoutPage],
-      imports: [IonicModule.forRoot()]
+      imports: [TranslateModule.forRoot()],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [
+        {
+          provide: MenuController,
+          useValue: jasmine.createSpyObj("MenuController", ["enable"]),
+        },
+      ],
     }).compileComponents();
-
     fixture = TestBed.createComponent(LogoutPage);
     component = fixture.componentInstance;
-    fixture.detectChanges();
-  }));
+  });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
-  })
+  });
 });

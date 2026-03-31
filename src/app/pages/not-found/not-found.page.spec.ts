@@ -1,24 +1,23 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { NotFoundPage } from "./not-found.page";
+import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { TranslateModule } from "@ngx-translate/core";
 
-import { NotFoundPage } from './not-found.page';
-
-describe('NotFoundPage', () => {
+describe("NotFoundPage", () => {
   let component: NotFoundPage;
   let fixture: ComponentFixture<NotFoundPage>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [NotFoundPage],
-      imports: [IonicModule.forRoot()]
+      imports: [TranslateModule.forRoot()],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
-
     fixture = TestBed.createComponent(NotFoundPage);
     component = fixture.componentInstance;
-    fixture.detectChanges();
-  }));
+  });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
-  })
+  });
 });

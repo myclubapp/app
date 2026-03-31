@@ -107,26 +107,6 @@
   @if (allowEdit) {
   <ion-list [inset]="true">
     <ion-item>
-      <ion-checkbox
-        labelPlacement="end"
-        (ionChange)="updateEvent($event, 'cancelled')"
-        [checked]="event.cancelled"
-      >
-        {{"events.cancelled" | translate}}
-      </ion-checkbox>
-    </ion-item>
-    @if (event.cancelled) {
-    <ion-item>
-      <ion-input
-        [label]='"events.cancelled_reason" | translate'
-        label-placement="stacked"
-        (ionChange)="updateEvent($event, 'cancelledReason')"
-        [value]="event.cancelledReason"
-      >
-      </ion-input>
-    </ion-item>
-    }
-    <ion-item>
       <ion-input
         [label]='"common.name" | translate'
         label-placement="stacked"

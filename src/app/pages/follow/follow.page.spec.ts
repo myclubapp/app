@@ -1,24 +1,24 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { FollowPage } from "./follow.page";
+import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { TranslateModule } from "@ngx-translate/core";
 
-import { FollowPage } from './follow.page';
-
-describe('FollowPage', () => {
+describe("FollowPage", () => {
   let component: FollowPage;
   let fixture: ComponentFixture<FollowPage>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [FollowPage],
-      imports: [IonicModule.forRoot()]
+      imports: [TranslateModule.forRoot()],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(FollowPage);
     component = fixture.componentInstance;
-    fixture.detectChanges();
-  }));
+  });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
-  })
+  });
 });

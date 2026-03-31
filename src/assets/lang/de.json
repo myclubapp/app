@@ -303,7 +303,8 @@
     "goal__record": "Torbilanz",
     "points": "Punkte",
     "upcomming__games": "Kommende Spiele",
-    "create_game_confirm": "Möchten Sie dieses Spiel wirklich erstellen?"
+    "create_game_confirm": "Möchten Sie dieses Spiel wirklich erstellen?",
+    "actions": "Meisterschaft Aktionen"
   },
   "championship-detail": {},
   "championship-create": {

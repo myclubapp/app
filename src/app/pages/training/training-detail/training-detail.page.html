@@ -364,26 +364,6 @@
   @if (allowEdit) {
   <ion-list [inset]="true">
     <ion-item>
-      <ion-checkbox
-        labelPlacement="end"
-        (ionChange)="updateTraining($event, 'cancelled')"
-        [checked]="training.cancelled"
-      >
-        {{"training.cancelled" | translate}}
-      </ion-checkbox>
-    </ion-item>
-    @if (training.cancelled) {
-    <ion-item>
-      <ion-input
-        [label]='"training.cancelled_reason" | translate'
-        label-placement="stacked"
-        (ionChange)="updateTraining($event, 'cancelledReason')"
-        [value]="training.cancelledReason"
-      >
-      </ion-input>
-    </ion-item>
-    }
-    <ion-item>
       <ion-input
         [label]='"common.name" | translate'
         label-placement="stacked"

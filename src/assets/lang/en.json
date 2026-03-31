@@ -179,7 +179,81 @@
     "leadText": "Lead text",
     "text": "Text",
     "date": "Date",
-    "url": "URL"
+    "url": "URL",
+    "add_button": "add",
+    "administration": "Administration",
+    "already_enough_helpers": "Enough helpers",
+    "author_line_placeholder": "Author line placeholder",
+    "billing_limits": "Billing limits",
+    "cancel_training_error": "An error occurred while cancelling the training. Please try again later.",
+    "cancel_training_header": "Cancel training",
+    "cancel_training_message": "Do you really want to cancel this training?",
+    "cannot_unregister": "Unregistration not possible",
+    "change_helper_point": "Change helper point",
+    "confirmed_deployments": "Confirmed deployments",
+    "create_event_confirm": "Do you really want to create this event?",
+    "create_new_role": "Add new role",
+    "create_new_role_desc": "Create a new role for your team.",
+    "delete_canceled": "Deletion canceled",
+    "delete_child_error": "Error while deleting the child",
+    "delete_helper_point": "Delete helper point",
+    "delete_helper_point_confirm": "Do you really want to delete this helper point?",
+    "delete_request_error": "Error while deleting the request",
+    "delete_shift_header": "Delete shift",
+    "delete_shift_message": "Do you really want to delete this shift?",
+    "delete_team_error_general": "Error while deleting the team:",
+    "delete_team_header": "Delete team",
+    "delete_team_message": "Do you really want to delete this team?",
+    "delete_training_header": "Delete training",
+    "delete_training_message": "Do you really want to delete this training?",
+    "exercise_selection": "Exercise selection",
+    "exercises": "Exercises",
+    "fab_button_placeholder": "FAB button placeholder",
+    "fill_all_fields": "Please fill in all fields.",
+    "fill_all_fields_required": "Please fill in all fields",
+    "fill_required_fields": "Please fill in all required fields (title, description and type).",
+    "function_not_available": "Unfortunately this function is not available",
+    "go_back": "Back",
+    "header_placeholder": "Header placeholder",
+    "helper_add_error": "An error occurred while adding the helper. Please try again later.",
+    "helper_added_success": "The helper was successfully added.",
+    "helper_list_accordion": "Helper list accordion",
+    "helper_point_change_error": "Error changing helper point",
+    "helper_point_changed_success": "Helper point successfully changed",
+    "helper_point_delete_error": "Error deleting helper point",
+    "helper_point_deleted_success": "Helper point successfully deleted",
+    "hours_before_start": "Number of hours before the start of the game, training or",
+    "image_placeholder": "Image placeholder",
+    "invoices_generated": "Invoices generated for selection",
+    "js_activities_competitions": "J+S course activities (competitions)",
+    "js_activities_training": "J+S course activities (trainings)",
+    "lead_text_placeholder": "Lead text placeholder",
+    "location_permission_needed": "Location permission required",
+    "location_permission_description": "To use the map and navigation features, access to your location is required. Please enable location permission in the settings.",
+    "login_background_alt": "Background image for the login",
+    "login_form_column": "Login form column",
+    "min_confirmed_open": "min./confirmed/open",
+    "my_device_id": "My device ID",
+    "no_status_entries_enable_participation": "NEW: If no status entries exist, enable participation",
+    "one_entry_per_person": "One entry per person: first me, then children",
+    "open_accordion": "Open accordion",
+    "order_history": "Order history",
+    "placeholder_for_spacing": "Placeholder for spacing",
+    "please_select_member": "Please select a member",
+    "replace_existing_accordion": "Replace the existing accordion content with this version",
+    "requested_for": "Requested for",
+    "select_positions": "Select positions",
+    "select_surcharges_deductions": "Select surcharges/deductions",
+    "subscription_purchase": "Purchase subscription",
+    "surcharges_deductions": "Surcharges / deductions",
+    "team_delete_error": "An error occurred while deleting the team. Please try again later.",
+    "team_deleted_success": "The team was successfully deleted.",
+    "team_member_fees": "Team member fees",
+    "teams_and_game_info": "Teams and game info",
+    "training_and_exercises": "Training & exercises",
+    "training_delete_error": "An error occurred while deleting the training. Please try again later.",
+    "training_deleted_success": "The training was successfully deleted.",
+    "want_to_purchase_subscription": "Do you want to purchase the subscription for"
   },
   "auth": {
     "session_expired": "Session expired",
@@ -227,7 +301,9 @@
     "defeat": "Defeat",
     "goal__record": "Goal record",
     "points": "Points",
-    "upcomming__games": "Upcoming games"
+    "upcomming__games": "Upcoming games",
+    "actions": "Championship Actions",
+    "create_game_confirm": "Do you really want to create this game?"
   },
   "club": {
     "details": "Club Details",
@@ -358,7 +434,13 @@
     "on_date": "on",
     "points": "Points",
     "settings": "Settings",
-    "helper_points_label": "Helper points"
+    "helper_points_label": "Helper points",
+    "helper_events_with_shifts": "Helper events WITH shifts",
+    "confirm_helper_points": "Confirm helper points",
+    "confirm_after_deployment": "Please confirm only after the deployment!",
+    "select_members_confirm": "Select the members to confirm the helper points:",
+    "no_deployments_to_confirm": "No deployments available to confirm",
+    "add_shift_button": "add"
   },
   "info": {
     "information": "Information",
@@ -380,7 +462,9 @@
     "actions": "News actions",
     "delete_news": "Delete news",
     "delete_news_confirm": "Do you really want to delete this news?",
-    "deleted_reason": "News was deleted"
+    "deleted_reason": "News was deleted",
+    "news_article": "News article",
+    "no_open_notifications": "No open notifications found"
   },
   "not-found": {
     "not_found": "Not found"
@@ -454,7 +538,21 @@
     "email_verification_message": "To complete your profile setup, you must first verify your email address.",
     "email_verification_instruction": "Please check your email inbox (also check your SPAM folder) and click on the \"Verify Email\" link.",
     "resend_email": "Resend Email",
-    "continue": "Continue"
+    "continue": "Continue",
+    "error__clubRequest_reset_question": "Do you want to reset the existing request and try again?",
+    "invitation_code_scan": "Enter or scan invitation code",
+    "invitation_label": "Invitation",
+    "step1_club_type": "Step 1: Club type",
+    "step2_sport_type": "Step 2: Sport type (sports clubs only)",
+    "step3_details": "Step 3/2: Details",
+    "hint_clubs_only": "Note: Only clubs that are not affiliated with an",
+    "official_association": "official association can be added here.",
+    "input_field_other_sport": "Input field for 'Other sport' outside the radio group",
+    "check_for_updates": "Check for updates",
+    "resend_activation_email": "Resend email",
+    "sports_clubs": "Sports clubs",
+    "other_clubs": "Other clubs",
+    "as_parent_registration": "I would like to be registered as a parent"
   },
   "onboarding-team": {
     "onboarding__team": "Onboarding team"
@@ -557,7 +655,10 @@
     "children": "Children",
     "add": "add",
     "parent_info": "As a parent, you will be informed about all important events concerning your children.",
-    "license_number": "License number"
+    "license_number": "License number",
+    "gender.male": "Male",
+    "gender.female": "Female",
+    "gender.diverse": "Diverse (not for J+S)"
   },
   "team": {
     "delete_button": "Delete Team",
@@ -656,7 +757,9 @@
     "delete_training": "Delete training",
     "delete_training_confirm": "Do you really want to delete this training?",
     "deleted_reason": "Training was deleted",
-    "create_training_confirm": "Should the training be created?"
+    "create_training_confirm": "Should the training be created?",
+    "all_trainings": "All trainings",
+    "exercises_available": "Exercises available"
   },
   "side_bar": {
     "info__and__help": "Info",
@@ -678,7 +781,20 @@
     "created": "Created on",
     "current_period_start": "Start date",
     "current_period_end": "End date",
-    "ended_at": "Ended on"
+    "ended_at": "Ended on",
+    "transparent_prices": "Transparent prices based on your club size. No",
+    "no_feature_differences": "feature differences, no hidden costs - for small clubs",
+    "free_up_to_20": "up to 20 members even completely free. Find your suitable",
+    "for_your_club": "subscription for your club",
+    "current_member_count": "Current number of members (excluding parents):",
+    "already_activated": "This subscription has already been activated.",
+    "cannot_be_selected": "This subscription cannot be selected.",
+    "additional_modules": "Additional modules (available for all subscriptions)",
+    "pay_only_what_you_need": "You pay nothing you don't need. With our additional modules",
+    "customize_myclub": "you can customize myclub to your personal needs.",
+    "module_already_activated": "This module has already been activated.",
+    "find_suitable_subscription": "Find your suitable subscription for your club",
+    "view_invoice": "View invoice"
   },
   "club-request-list": {
     "requests": "Requests",
@@ -689,7 +805,9 @@
   "club-team-list": {
     "teams": "Teams",
     "add_team": "Add team",
-    "no_teams": "No teams available"
+    "no_teams": "No teams available",
+    "add_team_header": "Add team",
+    "add_team_message": "Add a team"
   },
   "club-admin-list": {
     "admins": "Administrators",
@@ -709,7 +827,13 @@
     "birthdate": "Birthdate",
     "phone": "Phone number",
     "email": "Email",
-    "address": "Address"
+    "address": "Address",
+    "invoices": "Invoices",
+    "my_invoices": "My invoices",
+    "my_clubs": "My clubs",
+    "my_teams": "My teams",
+    "children_requests": "Children requests",
+    "children": "Children"
   },
   "link": {
     "create_link": "New Link",
@@ -753,6 +877,60 @@
     "communication": "Communication",
     "communication_desc": "Stay connected with your club",
     "start_onboarding": "Start onboarding",
-    "skip": "Skip"
+    "skip": "Skip",
+    "keep_track_games": "Keep track of all your games, results and upcoming matches in one place.",
+    "chat_with_members": "Chat with team members, receive notifications and stay informed about club news."
+  },
+  "championship-create": {
+    "new__game": "New game",
+    "team": "Team",
+    "team_home": "Home team",
+    "team_away": "Guest team",
+    "liga": "League",
+    "game__details": "Game details",
+    "date": "Date",
+    "time": "Time",
+    "optional__details": "Optional details",
+    "referee1": "Referee 1",
+    "referee2": "Referee 2",
+    "spectators": "Spectators",
+    "result": "Result"
+  },
+  "club-billing-period": {
+    "team_member_fees_accordion": "Team member fees accordion",
+    "surcharges_deductions_accordion": "Surcharges/deductions accordion",
+    "no_surcharges_recorded": "No surcharges or deductions recorded yet.",
+    "period_deleted": "Period deleted",
+    "change_annual_fee": "Change annual fee",
+    "currency_placeholder": "Currency (e.g. CHF)",
+    "add_surcharge_deduction": "Add surcharge/deduction",
+    "amount_placeholder": "Amount (e.g. -30 for deduction, 50 for surcharge)",
+    "surcharges_deductions_saved": "Surcharges/deductions saved"
+  },
+  "club-invoice": {
+    "members_view": "Members",
+    "invoices_view": "Invoices",
+    "team_label": "Team",
+    "none_button": "none",
+    "warning_no_fee": "Warning if no contribution is stored",
+    "no_fee_in_team": "No contribution stored in the team!",
+    "no_members_yet": "No members yet.",
+    "camt_format_required": "The file must be in CAMT.053 format.",
+    "invoices_label": "Invoices",
+    "no_invoices_yet": "No invoices yet.",
+    "generate_invoices": "Generate invoices",
+    "send_invoices": "Send invoice(s)"
+  },
+  "club-invoice-detail": {
+    "invoice_details": "Invoice details",
+    "reference_number_label": "Reference number for invoice",
+    "send_invoice": "Send invoice",
+    "delete_invoice": "Delete invoice",
+    "invoice_deleted": "Invoice deleted",
+    "no_surcharges_available": "No surcharges/deductions available",
+    "no_surcharges_defined": "No club surcharges or deductions defined. Please create surcharges/deductions in the club area first.",
+    "select_surcharge_deduction": "Select surcharge/deduction",
+    "positions_added": "Position(s) added",
+    "position_deleted": "Position deleted"
   }
 }
