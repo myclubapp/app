@@ -8,6 +8,7 @@ const config: CapacitorConfig = {
     allowNavigation: ["http://developers.google.com/*"],
   },
   android: {
+    adjustMarginsForEdgeToEdge: "auto",
     buildOptions: {
       keystorePath: "KeyStore",
       keystoreAlias: "myclub",

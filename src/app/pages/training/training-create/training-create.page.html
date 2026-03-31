@@ -148,7 +148,7 @@
       </ion-select>
     </ion-item>
     <ion-item id="startDateItem">
-      <ion-label position="default">
+      <ion-label>
         {{"training-create.first__training" | translate}}:
       </ion-label>
       <ion-datetime-button
@@ -171,9 +171,7 @@
     </ion-item>
 
     <ion-item id="endDateItem">
-      <ion-label position="default">
-        {{"training-create.last__training" | translate}}:
-      </ion-label>
+      <ion-label> {{"training-create.last__training" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="endDate"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -190,7 +188,7 @@
       </ion-modal>
     </ion-item>
     <ion-item id="timeFromItem">
-      <ion-label position="">
+      <ion-label>
         {{"training-create.start__training" | translate}}:
       </ion-label>
       <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
@@ -211,9 +209,7 @@
     </ion-item>
 
     <ion-item id="timeToItem">
-      <ion-label position="">
-        {{"training-create.end__training" | translate}}:
-      </ion-label>
+      <ion-label> {{"training-create.end__training" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">

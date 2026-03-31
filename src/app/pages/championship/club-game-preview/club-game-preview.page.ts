@@ -3,17 +3,12 @@ import { ModalController, Platform } from "@ionic/angular";
 import { Game } from "src/app/models/game";
 import { GoogleMap } from "@capacitor/google-maps";
 import { Browser } from "@capacitor/browser";
-import {
-  Geolocation,
-  PermissionStatus,
-  Position,
-} from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { Observable, of } from "rxjs";
 import { catchError, map, switchMap } from "rxjs/operators";
-import { environment } from "src/environments/environment";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UiService } from "src/app/services/ui.service";
+import { MapService } from "src/app/services/map.service";
 
 @Component({
   selector: "app-club-game-preview",
@@ -32,7 +27,6 @@ export class ClubGamePreviewPage implements OnInit {
   newMap: GoogleMap;
 
   game$: Observable<Game>;
-  coordinates: Position;
 
   constructor(
     private readonly modalCtrl: ModalController,
@@ -40,6 +34,7 @@ export class ClubGamePreviewPage implements OnInit {
     private readonly championshipService: ChampionshipService,
     private readonly fbService: FirebaseService,
     private uiService: UiService,
+    private mapService: MapService,
   ) {}
 
   async ngOnInit() {
@@ -55,47 +50,7 @@ export class ClubGamePreviewPage implements OnInit {
   }
 
   async geolocationPermission() {
-    console.log("Überprüfe Standort-Berechtigungen...");
-    try {
-      const permission: PermissionStatus = await Geolocation.checkPermissions();
-      console.log(
-        "Aktueller Berechtigungsstatus:",
-        permission.location,
-        permission.coarseLocation,
-      );
-
-      switch (permission.location) {
-        case "granted":
-          console.log("Standort-Berechtigung bereits erteilt");
-          return true;
-
-        case "prompt":
-        case "prompt-with-rationale":
-          console.log("Frage Standort-Berechtigung an");
-          const newPermission = await Geolocation.requestPermissions();
-          return newPermission.location === "granted";
-
-        case "denied":
-          console.log("Standort-Berechtigung verweigert");
-          await this.showLocationPermissionAlert();
-          return false;
-
-        default:
-          console.log("Unbekannter Berechtigungsstatus");
-          return false;
-      }
-    } catch (e) {
-      console.error("Fehler bei der Berechtigungsabfrage:", e);
-      return false;
-    }
-  }
-
-  private async showLocationPermissionAlert() {
-    await this.uiService.showInfoDialog({
-      header: "Standort-Berechtigung benötigt",
-      message:
-        "Um die Karte und Navigationsfunktionen nutzen zu können, wird Zugriff auf Ihren Standort benötigt. Bitte aktivieren Sie die Standort-Berechtigung in den Einstellungen.",
-    });
+    return this.mapService.checkGeolocationPermission();
   }
 
   ionViewDidEnter() {
@@ -150,77 +105,15 @@ export class ClubGamePreviewPage implements OnInit {
     if (this.mapRef == undefined || this.mapRef == null) {
       return;
     }
-
-    this.newMap = await GoogleMap.create({
-      id: "my-map-" + this.game.id,
-      element: this.mapRef.nativeElement,
-      apiKey: environment.googleMapsApiKey,
-      config: {
-        center: {
-          lat: Number(this.game.latitude),
-          lng: Number(this.game.longitude),
-        },
-        zoom: 12,
-      },
-    });
-
-    this.newMap.addMarker({
-      title: `${this.game.location} in ${this.game.city}`,
-      coordinate: {
-        lat: Number(this.game.latitude),
-        lng: Number(this.game.longitude),
-      },
-      snippet: `${this.game.location} in ${this.game.city}`,
-    });
-
-    try {
-      this.coordinates = await Geolocation.getCurrentPosition();
-      if (
-        this.coordinates.coords.latitude &&
-        this.coordinates.coords.longitude
-      ) {
-        this.newMap.addMarker({
-          title: "Meine Position",
-          coordinate: {
-            lat: this.coordinates.coords.latitude,
-            lng: this.coordinates.coords.longitude,
-          },
-          isFlat: true,
-          snippet: "Meine Position",
-        });
-      }
-    } catch (e) {
-      console.log("no coordinates on map");
-    }
+    this.newMap = await this.mapService.createMap(
+      "my-map-" + this.game.id,
+      this.mapRef,
+      this.game,
+    );
   }
 
   async openMaps(game: Game) {
-    const coordinates = await Geolocation.getCurrentPosition();
-    if (coordinates.coords.longitude && coordinates.coords.latitude) {
-      Browser.open({
-        url:
-          "https://www.google.com/maps/dir/?api=1&destination=" +
-          game.latitude +
-          "," +
-          game.longitude +
-          "&origin=" +
-          coordinates.coords.latitude +
-          "," +
-          coordinates.coords.longitude,
-      }).catch((e) => {
-        console.log(e);
-      });
-    } else {
-      Browser.open({
-        url:
-          "https://www.google.com/maps/dir/?api=1&destination=" +
-          game.latitude +
-          "," +
-          game.longitude,
-      }).catch((e) => {
-        console.log(e);
-      });
-    }
+    await this.mapService.openMapsNavigation(game);
   }
 
   async openKanva(game: Game) {

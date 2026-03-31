@@ -260,14 +260,12 @@
               </ion-item>
               -->
     <ion-item>
-      <ion-label position="default">
-        {{"event-add.is__closed__event" | translate}}
-      </ion-label>
       <ion-toggle
         slot="end"
         (ionChange)="updateEvent($event, 'closedEvent')"
         [checked]="event.closedEvent"
-      ></ion-toggle>
+        >{{"event-add.is__closed__event" | translate}}</ion-toggle
+      >
     </ion-item>
   </ion-list>
   } @if (isFuture && !allowEdit && !event.closedEvent) {

@@ -30,7 +30,7 @@ dependencies {
     implementation project(':capacitor-plugin-safe-area')
 
 }
-apply from: "../../node_modules/cordova-plugin-ionic/src/android/cordovapluginionic.gradle"
+
 
 if (hasProperty('postBuildExtras')) {
   postBuildExtras()

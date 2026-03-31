@@ -130,9 +130,7 @@
 
   <ion-list [inset]="true">
     <ion-item id="timeFromItem">
-      <ion-label position="">
-        {{"common.start__event" | translate}}:
-      </ion-label>
+      <ion-label> {{"common.start__event" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="timeFrom"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -150,7 +148,7 @@
     </ion-item>
 
     <ion-item id="timeToItem">
-      <ion-label position=""> {{"common.end__event" | translate}}: </ion-label>
+      <ion-label> {{"common.end__event" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="timeTo"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -167,9 +165,7 @@
     </ion-item>
 
     <ion-item id="startDateItem">
-      <ion-label position="default">
-        {{"common.start__date" | translate}}:
-      </ion-label>
+      <ion-label> {{"common.start__date" | translate}}: </ion-label>
       <ion-datetime-button
         slot="end"
         datetime="startDate"
@@ -190,9 +186,7 @@
     </ion-item>
 
     <ion-item id="endDateItem">
-      <ion-label position="default">
-        {{"common.end__date" | translate}}:
-      </ion-label>
+      <ion-label> {{"common.end__date" | translate}}: </ion-label>
       <ion-datetime-button slot="end" datetime="endDate"></ion-datetime-button>
 
       <ion-modal [keepContentsMounted]="true">
@@ -209,10 +203,9 @@
     </ion-item>
 
     <ion-item>
-      <ion-label position="default">
-        {{"event-add.is__closed__event" | translate}}
-      </ion-label>
-      <ion-toggle slot="end" [checked]="event.closedEvent"></ion-toggle>
+      <ion-toggle slot="end" [checked]="event.closedEvent"
+        >{{"event-add.is__closed__event" | translate}}</ion-toggle
+      >
     </ion-item>
   </ion-list>
 </ion-content>

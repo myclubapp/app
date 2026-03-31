@@ -7,7 +7,9 @@
 			"http://developers.google.com/*"
 		]
 	},
-	"android": {},
+	"android": {
+		"adjustMarginsForEdgeToEdge": "auto"
+	},
 	"plugins": {
 		"PushNotifications": {
 			"presentationOptions": [

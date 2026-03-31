@@ -29,15 +29,14 @@ def capacitor_pods
   pod 'CapacitorSplashScreen', :path => '../../node_modules/@capacitor/splash-screen'
   pod 'CapacitorStatusBar', :path => '../../node_modules/@capacitor/status-bar'
   pod 'CapacitorPluginSafeArea', :path => '../../node_modules/capacitor-plugin-safe-area'
-  pod 'CordovaPlugins', :path => '../capacitor-cordova-ios-plugins'
 end
 
 target 'App' do
   capacitor_pods
   # Add your Pods here
   pod 'GoogleMaps', '~> 9.4'
-  pod 'FirebaseCore', '7.11.0' # Add this line
-  pod 'Firebase/Messaging', '7.11.0' # Add this line
+  pod 'FirebaseCore', '~> 11.0'
+  pod 'Firebase/Messaging', '~> 11.0'
 end
 
 post_install do |installer|

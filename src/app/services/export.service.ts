@@ -151,6 +151,7 @@ export class ExportService {
       path: fileName,
       data: content,
       directory: Directory.Cache,
+      encoding: Encoding.UTF8,
     });
 
     // Share the file

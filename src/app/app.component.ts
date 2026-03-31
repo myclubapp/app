@@ -899,6 +899,33 @@ export class AppComponent implements OnInit, AfterViewInit {
         "pushNotificationActionPerformed",
         (notification: ActionPerformed) => {
           console.log(notification);
+          this.ngZone.run(async () => {
+            let route = "";
+            switch (notification.notification.data?.type) {
+              case "helferEvent":
+                route = "/t/helfer";
+                break;
+              case "clubEvent":
+                route = "/t/events";
+                break;
+              case "news":
+              case "clubNews":
+                route = "/t/news";
+                break;
+              case "training":
+                route = "/t/training";
+                break;
+            }
+            if (route) {
+              this.router
+                .navigateByUrl(route, {
+                  state: notification.notification.data,
+                })
+                .catch((e) => {
+                  console.error("Navigation error:", e);
+                });
+            }
+          });
         },
       );
     } catch (error) {

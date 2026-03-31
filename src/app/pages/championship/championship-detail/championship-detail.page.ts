@@ -3,25 +3,16 @@ import {
   AlertController,
   IonItemSliding,
   ModalController,
-  // NavController,
   Platform,
 } from "@ionic/angular";
 import { Game } from "src/app/models/game";
 import { GoogleMap } from "@capacitor/google-maps";
-import { Browser } from "@capacitor/browser";
-import {
-  Geolocation,
-  PermissionStatus,
-  Position,
-} from "@capacitor/geolocation";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { forkJoin, lastValueFrom, Observable, of } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "@angular/fire/auth";
 import { catchError, map, switchMap, take, tap } from "rxjs/operators";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { environment } from "src/environments/environment";
-// import { ActivatedRoute } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 import { LineupPage } from "../lineup/lineup.page";
 import { Profile } from "src/app/models/user";
@@ -29,6 +20,7 @@ import { MemberPage } from "../../member/member.page";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { Team } from "src/app/models/team";
 import { UiService } from "src/app/services/ui.service";
+import { MapService } from "src/app/services/map.service";
 
 @Component({
   selector: "app-championship-detail",
@@ -54,7 +46,6 @@ export class ChampionshipDetailPage implements OnInit {
 
   user$: Observable<User>;
   user: User;
-  coordinates: Position;
   teamAdminList$: Observable<Team[]>;
   children: Profile[];
   showStatus: boolean;
@@ -69,6 +60,7 @@ export class ChampionshipDetailPage implements OnInit {
     private readonly fbService: FirebaseService,
     private translate: TranslateService,
     private uiService: UiService,
+    private mapService: MapService,
   ) {
     //  this.setMap();
     this.teamAdminList$ = this.fbService.getTeamAdminList();
@@ -99,49 +91,7 @@ export class ChampionshipDetailPage implements OnInit {
   }
 
   async geolocationPermission() {
-    console.log("Überprüfe Standort-Berechtigungen...");
-    try {
-      const permission: PermissionStatus = await Geolocation.checkPermissions();
-      console.log(
-        "Aktueller Berechtigungsstatus:",
-        permission.location,
-        permission.coarseLocation,
-      );
-
-      switch (permission.location) {
-        case "granted":
-          console.log("Standort-Berechtigung bereits erteilt");
-          return true;
-
-        case "prompt":
-        case "prompt-with-rationale":
-          console.log("Frage Standort-Berechtigung an");
-          const newPermission = await Geolocation.requestPermissions();
-          return newPermission.location === "granted";
-
-        case "denied":
-          console.log("Standort-Berechtigung verweigert");
-          // Hier könnte man einen Alert anzeigen, der erklärt, warum die App
-          // Standort-Berechtigungen benötigt und wie man sie in den Einstellungen aktivieren kann
-          await this.showLocationPermissionAlert();
-          return false;
-
-        default:
-          console.log("Unbekannter Berechtigungsstatus");
-          return false;
-      }
-    } catch (e) {
-      console.error("Fehler bei der Berechtigungsabfrage:", e);
-      return false;
-    }
-  }
-
-  private async showLocationPermissionAlert() {
-    await this.uiService.showInfoDialog({
-      header: "Standort-Berechtigung benötigt",
-      message:
-        "Um die Karte und Navigationsfunktionen nutzen zu können, wird Zugriff auf Ihren Standort benötigt. Bitte aktivieren Sie die Standort-Berechtigung in den Einstellungen.",
-    });
+    return this.mapService.checkGeolocationPermission();
   }
 
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
@@ -496,58 +446,14 @@ export class ChampionshipDetailPage implements OnInit {
   }
 
   async setMap() {
-    // if(this.mapRef == null) {
-    //   return;
-    // }
     if (this.mapRef == undefined || this.mapRef == null) {
       return;
     }
-    // console.log("setMap");
-    this.newMap = await GoogleMap.create({
-      id: "my-map-" + this.game.id, // Unique identifier for this map instance
-      element: this.mapRef.nativeElement, // mapRef, // reference to the capacitor-google-map element
-      apiKey: environment.googleMapsApiKey, // Your Google Maps API Key
-      config: {
-        center: {
-          // The initial position to be rendered by the map
-          lat: Number(this.game.latitude),
-          lng: Number(this.game.longitude),
-        },
-        zoom: 12, // The initial zoom level to be rendered by the map
-      },
-    });
-
-    // await this.newMap.enableCurrentLocation(true);
-    // console.log("add Marker");
-    this.newMap.addMarker({
-      title: `${this.game.location} in ${this.game.city}`,
-      coordinate: {
-        lat: Number(this.game.latitude),
-        lng: Number(this.game.longitude),
-      },
-      snippet: `${this.game.location} in ${this.game.city}`,
-    });
-
-    try {
-      this.coordinates = await Geolocation.getCurrentPosition();
-      if (
-        this.coordinates.coords.latitude &&
-        this.coordinates.coords.longitude
-      ) {
-        // console.log("add Marker with current position");
-        this.newMap.addMarker({
-          title: "Meine Position",
-          coordinate: {
-            lat: this.coordinates.coords.latitude,
-            lng: this.coordinates.coords.longitude,
-          },
-          isFlat: true,
-          snippet: "Meine Position",
-        });
-      }
-    } catch (e) {
-      console.log("no coordinates on map");
-    }
+    this.newMap = await this.mapService.createMap(
+      "my-map-" + this.game.id,
+      this.mapRef,
+      this.game,
+    );
   }
   async openMember(member: Profile) {
     console.log("openMember");
@@ -596,31 +502,6 @@ export class ChampionshipDetailPage implements OnInit {
   }
 
   async openMaps(game: Game) {
-    const coordinates = await Geolocation.getCurrentPosition();
-    if (coordinates.coords.longitude && coordinates.coords.latitude) {
-      Browser.open({
-        url:
-          "https://www.google.com/maps/dir/?api=1&destination=" +
-          game.latitude +
-          "," +
-          game.longitude +
-          "&origin=" +
-          coordinates.coords.latitude +
-          "," +
-          coordinates.coords.longitude,
-      }).catch((e) => {
-        console.log(e);
-      });
-    } else {
-      Browser.open({
-        url:
-          "https://www.google.com/maps/dir/?api=1&destination=" +
-          game.latitude +
-          "," +
-          game.longitude,
-      }).catch((e) => {
-        console.log(e);
-      });
-    }
+    await this.mapService.openMapsNavigation(game);
   }
 }
