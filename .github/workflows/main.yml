@@ -37,6 +37,19 @@ jobs:
           name: coverage-report
           path: coverage/
           retention-days: 14
+      - name: Generate Coverage Badge
+        uses: jaywcjlove/coverage-badges-cli@main
+        if: always()
+        with:
+          source: coverage/ngv/coverage-summary.json
+          output: coverage/ngv/badge.svg
+      - name: Deploy Badge to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: github.ref == 'refs/heads/master'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./coverage/ngv
+          destination_dir: coverage
 # -------------------------------------------------------------
 # myclub App
 # -------------------------------------------------------------

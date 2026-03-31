@@ -1,6 +1,7 @@
 # myclub app | the next generation 🏆
 
 [![Build + Prerender + Deploy](https://github.com/myclubapp/app/actions/workflows/main.yml/badge.svg)](https://github.com/myclubapp/app/actions/workflows/main.yml)
+[![Coverage](https://myclubapp.github.io/app/coverage/badge.svg)](https://myclubapp.github.io/app/coverage/)
 
 ## 📱 Übersicht
 
