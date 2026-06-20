@@ -9,7 +9,7 @@ android {
         applicationId "app.myclub.defaultapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 229
+        versionCode 230
         versionName "2.4.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
