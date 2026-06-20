@@ -18,6 +18,9 @@ $RECYCLE.BIN/
 log.txt
 npm-debug.log*
 
+/.claude/settings.json
+/.claude/*
+
 /.angular
 /.idea
 /.ionic

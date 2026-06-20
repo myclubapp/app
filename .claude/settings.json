@@ -1,4 +1,24 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(sudo chown -R 501:20 \"/Users/sandro/.npm\")",
+      "Bash(cat /Users/sandro/.npm/_logs/2026-06-20T10_32_59_039Z-debug-0.log 2>/dev/null | tail -60)",
+      "Read(//Users/sandro/.npm/_logs/**)",
+      "Bash(npm -v)",
+      "Bash(/usr/local/bin/node -v)",
+      "Bash(/usr/local/bin/npm -v)",
+      "Read(//usr/local/bin/**)",
+      "Read(//Applications/**)",
+      "Read(//Users/sandro/.local/bin/**)",
+      "Bash(env -i HOME=/Users/sandro PATH=/usr/bin:/bin:/usr/sbin:/sbin /Users/sandro/.local/bin/npm -v)",
+      "Bash(env -i HOME=/Users/sandro PATH=/usr/bin:/bin:/usr/sbin:/sbin /Users/sandro/.local/bin/npx -v)",
+      "Bash(env -i HOME=/Users/sandro PATH=/usr/bin:/bin:/usr/sbin:/sbin /Users/sandro/.local/bin/node -v)",
+      "Read(//Users/sandro/**)",
+      "Bash(zsh -c 'echo $PATH')",
+      "Bash(env -i HOME=/Users/sandro PATH=/usr/bin:/bin:/usr/sbin:/sbin /bin/zsh -c 'echo \"PATH=$PATH\"; echo \"npm  -> $\\(command -v npm\\)\"; npm -v; echo \"node -> $\\(node -v\\)\"')"
+    ],
+    "additionalDirectories": ["/Users/sandro"]
+  },
   "hooks": {
     "PostToolUse": [
       {
