@@ -1,6 +1,6 @@
 {
   "name": "Capacitor",
-  "version": "8.3.0",
+  "version": "8.4.1",
   "summary": "Capacitor for iOS",
   "license": "MIT",
   "homepage": "https://capacitorjs.com/",
@@ -12,7 +12,7 @@
   },
   "source": {
     "git": "https://github.com/ionic-team/capacitor.git",
-    "tag": "8.3.0"
+    "tag": "8.4.1"
   },
   "source_files": "Capacitor/Capacitor/**/*.{swift,h,m}",
   "module_map": "Capacitor/Capacitor/Capacitor.modulemap",

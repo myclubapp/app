@@ -1,24 +1,27 @@
 {
   "name": "CapacitorCamera",
-  "version": "8.0.2",
+  "version": "8.2.0",
   "summary": "The Camera API provides the ability to take a photo with the camera or choose an existing one from the photo album.",
   "license": "MIT",
   "homepage": "https://capacitorjs.com",
   "authors": "Ionic <hi@ionicframework.com>",
   "source": {
-    "git": "https://github.com/ionic-team/capacitor-plugins.git",
-    "tag": "@capacitor/camera@8.0.2"
+    "git": "https://github.com/ionic-team/capacitor-camera.git",
+    "tag": "v8.2.0"
   },
-  "source_files": [
-    "ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}",
-    "camera/ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}"
-  ],
   "platforms": {
     "ios": "15.0"
   },
+  "source_files": [
+    "ios/Sources/**/*.{swift,h,m,c,cc,mm,cpp}",
+    "15.0"
+  ],
   "dependencies": {
     "Capacitor": [
 
+    ],
+    "IONCameraLib": [
+      "~> 1.0.4"
     ]
   },
   "swift_versions": "5.1",

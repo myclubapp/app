@@ -1,32 +1,33 @@
 PODS:
-  - Capacitor (8.3.0):
+  - Capacitor (8.4.1):
     - CapacitorCordova
-  - CapacitorApp (8.0.1):
+  - CapacitorApp (8.1.0):
     - Capacitor
-  - CapacitorBrowser (8.0.2):
+  - CapacitorBrowser (8.0.3):
     - Capacitor
-  - CapacitorCamera (8.0.2):
+  - CapacitorCamera (8.2.0):
     - Capacitor
+    - IONCameraLib (~> 1.0.4)
   - CapacitorClipboard (8.0.1):
     - Capacitor
-  - CapacitorCordova (8.3.0)
-  - CapacitorDevice (8.0.1):
+  - CapacitorCordova (8.4.1)
+  - CapacitorDevice (8.0.2):
     - Capacitor
   - CapacitorDialog (8.0.1):
     - Capacitor
   - CapacitorFilesystem (8.1.2):
     - Capacitor
     - IONFilesystemLib (~> 1.1.1)
-  - CapacitorGeolocation (8.1.0):
+  - CapacitorGeolocation (8.2.0):
     - Capacitor
-    - IONGeolocationLib (= 2.0.0)
+    - IONGeolocationLib (= 2.1.0)
   - CapacitorGoogleMaps (8.0.1):
     - Capacitor
     - Google-Maps-iOS-Utils (= 6.1.0)
     - GoogleMaps (~> 9.4)
-  - CapacitorHaptics (8.0.1):
+  - CapacitorHaptics (8.0.2):
     - Capacitor
-  - CapacitorKeyboard (8.0.1):
+  - CapacitorKeyboard (8.0.5):
     - Capacitor
   - CapacitorNetwork (8.0.1):
     - Capacitor
@@ -34,13 +35,13 @@ PODS:
     - Capacitor
   - CapacitorPreferences (8.0.1):
     - Capacitor
-  - CapacitorPushNotifications (8.0.2):
+  - CapacitorPushNotifications (8.1.1):
     - Capacitor
   - CapacitorShare (8.0.1):
     - Capacitor
   - CapacitorSplashScreen (8.0.1):
     - Capacitor
-  - CapacitorStatusBar (8.0.1):
+  - CapacitorStatusBar (8.0.2):
     - Capacitor
   - Firebase/CoreOnly (11.15.0):
     - FirebaseCore (~> 11.15.0)
@@ -99,8 +100,9 @@ PODS:
   - GoogleUtilities/UserDefaults (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
+  - IONCameraLib (1.0.4)
   - IONFilesystemLib (1.1.2)
-  - IONGeolocationLib (2.0.0)
+  - IONGeolocationLib (2.1.0)
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -144,6 +146,7 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleMaps
     - GoogleUtilities
+    - IONCameraLib
     - IONFilesystemLib
     - IONGeolocationLib
     - nanopb
@@ -192,26 +195,26 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/status-bar"
 
 SPEC CHECKSUMS:
-  Capacitor: 9f1f99495b474d82bccfd27b15617b84f5938144
-  CapacitorApp: fcd990168c3249d2c5a7ae94920a031d05789e73
-  CapacitorBrowser: a9d79172878eea4b0cbfa7556bc9fa5338ca85fb
-  CapacitorCamera: 28ce747aeb97163dcd23c8ed8a624551b262918c
+  Capacitor: 9c34c6eb2165694e51758f5b425d470cb00f5bea
+  CapacitorApp: a4d8d936cc4390859a3766f141048abe55d4076f
+  CapacitorBrowser: f42210052d25867e64cda9ee28906ca830835ebe
+  CapacitorCamera: a9b5f1a5d09e61b7a979e3510b87cdda99265d2f
   CapacitorClipboard: 1ba60616f1b2d3df52417000217ec810216bbbaf
-  CapacitorCordova: 2e1e2bb93b2f365309dc4ff18b72b9a69a7814a9
-  CapacitorDevice: ebd210e29ae690225291b8616e6cfaf419d2e866
+  CapacitorCordova: eebe6bcf807b1b06f3f48237650f96bbcd0eef09
+  CapacitorDevice: b50f119138a2b69a1e9213f4468d1e75e4239cca
   CapacitorDialog: d43769d1245d315ffc931b2ca3d4eea76870798b
   CapacitorFilesystem: 7d3e3df84be4f0d999a5d6baa23aeb30c2de6450
-  CapacitorGeolocation: a2009727714adfa58bf093300b15856aa59e4b7a
+  CapacitorGeolocation: d3c56eb5285f46f55cd82d2b14f40c1d32d18437
   CapacitorGoogleMaps: ab32ad2cfc3b6db1699b53d6cdd641bffcef01c0
-  CapacitorHaptics: af524744f86b761c13306b4c88a0de6cd28e3062
-  CapacitorKeyboard: cbbe3df7194442bfd18ed4ac1d9ed0294ce579a9
+  CapacitorHaptics: 4e1e84c2b74fb5918e403fb8f0e73a07d05937df
+  CapacitorKeyboard: b7df6f45f1072c292d7de8688aa98b9b266b37fe
   CapacitorNetwork: 7afc28ed4d9abe1d9801264fa485db32e4420546
   CapacitorPluginSafeArea: 5c90e7423e8129641686afe8ae6084b65b20527e
   CapacitorPreferences: 0fa33b3affebf12d96358b491ed7c2b39bec3270
-  CapacitorPushNotifications: ea06743630efa295851de6867b72bd8894c02928
+  CapacitorPushNotifications: 7fa75d28307b23b314b19ec7cfe88611e9659352
   CapacitorShare: 8a565649d321a05a1ae8b525b2a9b4f2d92c70ce
   CapacitorSplashScreen: 1281f7df4d9b4a72bccab8d03e6b2bbd17dff122
-  CapacitorStatusBar: 7fc9bb6737a29524034dfdc51ae1f1880d972b4d
+  CapacitorStatusBar: b692a4cf12b3fe3a7b7ece86da62106065d78fdc
   Firebase: d99ac19b909cd2c548339c2241ecd0d1599ab02e
   FirebaseCore: efb3893e5b94f32b86e331e3bd6dadf18b66568e
   FirebaseCoreInternal: 9afa45b1159304c963da48addb78275ef701c6b4
@@ -221,8 +224,9 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 0608099d4870cac8754bdba9b6953db543432438
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
+  IONCameraLib: f2349804460bd9e3f892e42109b8d996ab3fa19d
   IONFilesystemLib: 21a63377696b2d8fab5632ecfb7d2ac67bddb68a
-  IONGeolocationLib: a5e40b54edc2ee9902036eda5aaa41ddf07bb68d
+  IONGeolocationLib: 6a7b6f76063fb1b01cfb14fae7d0f526e3c9b271
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
 
