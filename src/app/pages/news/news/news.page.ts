@@ -163,6 +163,28 @@ export class NewsPage implements OnInit {
     // Lade Game-Preview Einstellung aus dem User-Profil
     await this.loadGamePreviewSetting();
 
+    /*this.route.snapshot.data['news'].subscribe((news) => {
+      console.log(news)
+    });*/
+
+    const navigation = this.router.currentNavigation();
+    if (navigation) {
+      const state = navigation.extras.state;
+      if (state) {
+        // console.log(state); // 'someValue'
+      } else {
+        // console.log("No state provided");
+      }
+    }
+
+    this.loadData();
+  }
+
+  ionViewWillEnter() {
+    this.loadData();
+  }
+
+  private loadData() {
     this.newsList$ = this.getNews().pipe(shareReplay(1));
     this.filteredNewsList$ = combineLatest([
       this.newsList$ as Observable<
@@ -188,20 +210,6 @@ export class NewsPage implements OnInit {
       console.log("Championship module check result:", hasChampionship);
       this.hasChampionshipModule = hasChampionship;
     });
-
-    /*this.route.snapshot.data['news'].subscribe((news) => {
-      console.log(news)
-    });*/
-
-    const navigation = this.router.currentNavigation();
-    if (navigation) {
-      const state = navigation.extras.state;
-      if (state) {
-        // console.log(state); // 'someValue'
-      } else {
-        // console.log("No state provided");
-      }
-    }
   }
 
   ngOnDestroy(): void {}
@@ -261,10 +269,9 @@ export class NewsPage implements OnInit {
   }
 
   getNews() {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
-        if (!user) throw new Error("User not found");
         this.user = user;
       }),
       switchMap((user) => {
@@ -400,11 +407,8 @@ export class NewsPage implements OnInit {
     );
   }
   getNotifications(): Observable<any[]> {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
-      tap((user) => {
-        if (!user) throw new Error("User not found");
-      }),
       switchMap((user) => {
         return this.notificationService.getNotifications(user);
       }),
@@ -536,10 +540,9 @@ export class NewsPage implements OnInit {
   }
 
   getClubGames(): Observable<Game[]> {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
-        if (!user) throw new Error("User not found");
         this.user = user;
       }),
       switchMap((user) => {

@@ -1,6 +1,6 @@
-import { Injectable, Injector } from "@angular/core";
+import { Injectable, Injector, runInInjectionContext } from "@angular/core";
 import { Router } from "@angular/router";
-import { first } from "rxjs/operators";
+import { filter, first, shareReplay, switchMap } from "rxjs/operators";
 // import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 import {
@@ -18,7 +18,7 @@ import {
   deleteUser,
   User,
 } from "@angular/fire/auth";
-import { Observable, Subject } from "rxjs";
+import { Observable, Subject, defer, from } from "rxjs";
 
 // import firebase from 'firebase/compat/app';
 import {
@@ -49,8 +49,23 @@ export class AuthService {
     private readonly router: Router,
     private readonly injector: Injector,
   ) {
-    // Use the user() Observable from @angular/fire/auth which is injection-context aware
-    this.user$ = user(this.auth);
+    // Use the user() Observable from @angular/fire/auth, always created within an
+    // injection context so AngularFire can zone-wrap it (avoids the dev-mode warning
+    // "Firebase API called outside injection context"). shareReplay keeps a single
+    // onIdTokenChanged listener shared across all getUser$() subscribers.
+    this.user$ = defer(() =>
+      runInInjectionContext(this.injector, () =>
+        // Wait until Firebase has restored the persisted auth state before emitting.
+        // On iOS/Capacitor (indexedDBLocalPersistence) the initial restore is slow,
+        // and user() would otherwise emit a transient `null` first. Consumers that
+        // gate data loading with take(1)/first() grab that null and short-circuit
+        // (e.g. `if (!user) return of([])`), showing empty/skeleton until a later
+        // re-subscription (tab switch) hits the resolved user — that is the "data
+        // only loads after switching tabs" bug. authStateReady() guarantees the
+        // first emission is the settled state (real user, or a genuine logout null).
+        from(this.auth.authStateReady()).pipe(switchMap(() => user(this.auth))),
+      ),
+    ).pipe(shareReplay({ bufferSize: 1, refCount: false }));
     // this.auth = getAuth(); // Removed: This was causing "Firebase API called outside injection context"
     // connectAuthEmulator(this.auth, 'http://localhost:8100')
   }
@@ -60,19 +75,47 @@ export class AuthService {
     return this.user$.pipe(first());
   }
 
+  /**
+   * Like getUser$() but WAITS for an authenticated (non-null) user instead of
+   * emitting a transient null. Use this to gate data-loading chains: it avoids
+   * the race where navigating before auth state is restored yields null and
+   * (previously) threw "User not found", which errored the stream and left the
+   * page stuck on its skeleton until the view was re-created (e.g. tab switch).
+   *
+   * Do NOT use on pre-auth screens (login/onboarding) — it never emits while
+   * logged out. Use getUser$() there.
+   */
+  getAuthenticatedUser$() {
+    return this.user$.pipe(
+      filter((user): user is User => !!user),
+      first(),
+    );
+  }
+
   async login(email: string, password: string) {
     return await signInWithEmailAndPassword(this.auth, email, password);
   }
 
+  /**
+   * Reads auth.currentUser within an injection context so AngularFire can
+   * zone-wrap it (avoids the dev-mode "Firebase API called outside injection
+   * context" warning).
+   */
+  private getCurrentUser(): User | null {
+    return runInInjectionContext(this.injector, () => this.auth.currentUser);
+  }
+
   async sendVerifyEmail() {
-    this.auth.currentUser.getIdToken(true);
-    console.log("resend verification for user " + this.auth.currentUser.email);
-    return await sendEmailVerification(this.auth.currentUser);
+    const user = this.getCurrentUser();
+    user.getIdToken(true);
+    console.log("resend verification for user " + user.email);
+    return await sendEmailVerification(user);
   }
 
   async verifyBeforeUpdateEmail(email) {
-    this.auth.currentUser.getIdToken(true);
-    return await verifyBeforeUpdateEmail(this.auth.currentUser, email);
+    const user = this.getCurrentUser();
+    user.getIdToken(true);
+    return await verifyBeforeUpdateEmail(user, email);
   }
 
   async signup(
@@ -113,7 +156,7 @@ export class AuthService {
 
   async updateEmail(newEmail: string): Promise<void> {
     // verifyBeforeUpdateEmail
-    return updateEmail(this.auth.currentUser, newEmail);
+    return updateEmail(this.getCurrentUser(), newEmail);
   }
 
   async logout(): Promise<any> {
@@ -170,7 +213,7 @@ export class AuthService {
    */
   async validateAndRefreshToken(): Promise<boolean> {
     try {
-      const user = this.auth.currentUser;
+      const user = this.getCurrentUser();
       if (!user) {
         console.log("No user found - cannot validate token");
         return false;
@@ -205,7 +248,7 @@ export class AuthService {
   }
 
   async deleteProfile() {
-    const user = this.auth.currentUser;
+    const user = this.getCurrentUser();
 
     return deleteUser(user);
   }

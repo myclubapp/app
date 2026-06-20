@@ -82,6 +82,24 @@ export class ClubPage implements OnInit {
     // NavParams migration: now using @Input property directly
     this.club = this.data;
 
+    this.loadData();
+  }
+
+  ionViewWillEnter() {
+    this.loadData();
+  }
+
+  private loadData() {
+    // Ensure club is populated from the @Input (ionViewWillEnter can fire
+    // before/independently of ngOnInit, and data may not be set yet).
+    if (!this.club) {
+      this.club = this.data;
+    }
+
+    if (!this.club?.id) {
+      return;
+    }
+
     this.club$ = this.getClub(this.club.id);
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
@@ -131,11 +149,10 @@ export class ClubPage implements OnInit {
       return Math.abs(ageDate.getUTCFullYear() - 1970);
     };
 
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
         this.user = user;
-        if (!user) throw new Error("User not found");
       }),
       switchMap(() => this.fbService.getClubRef(clubId)),
       switchMap((club) => {

@@ -1,4 +1,5 @@
 import { ElementRef, Injectable } from "@angular/core";
+import { Capacitor } from "@capacitor/core";
 import { GoogleMap } from "@capacitor/google-maps";
 import { Browser } from "@capacitor/browser";
 import {
@@ -23,6 +24,13 @@ export class MapService {
   constructor(private uiService: UiService) {}
 
   async checkGeolocationPermission(): Promise<boolean> {
+    // Geolocation permissions are only available on native platforms.
+    // On the web the Capacitor plugin throws "Not implemented on web",
+    // so we skip the check there and let the map open without it.
+    if (!Capacitor.isNativePlatform()) {
+      return false;
+    }
+
     try {
       const permission: PermissionStatus = await Geolocation.checkPermissions();
 

@@ -103,6 +103,14 @@ export class ChampionshipPage implements OnInit {
   }
 
   ngOnInit() {
+    this.loadData();
+  }
+
+  ionViewWillEnter() {
+    this.loadData();
+  }
+
+  private loadData() {
     this.gameList$ = this.getTeamGamesUpcoming().pipe(shareReplay(1));
     this.gameListPast$ = this.getTeamGamesPast().pipe(shareReplay(1));
 
@@ -240,11 +248,10 @@ export class ChampionshipPage implements OnInit {
   }
 
   getTeamGamesUpcoming() {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
         this.user = user;
-        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         if (!user) return of([]);
@@ -428,11 +435,10 @@ export class ChampionshipPage implements OnInit {
   }
 
   getTeamGamesPast() {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
         this.user = user;
-        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         if (!user) return of([]);

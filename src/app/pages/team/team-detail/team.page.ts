@@ -88,7 +88,25 @@ export class TeamPage implements OnInit {
     // NavParams migration: now using @Input property directly
     this.team = this.data;
 
+    this.loadData();
+  }
+
+  ionViewWillEnter() {
+    this.loadData();
+  }
+
+  private loadData() {
     // this.team$ = of(this.team);
+
+    // Ensure team is populated from the @Input (ionViewWillEnter can fire
+    // before/independently of ngOnInit, and data may not be set yet).
+    if (!this.team) {
+      this.team = this.data;
+    }
+
+    if (!this.team?.id) {
+      return;
+    }
 
     this.team$ = this.getTeam(this.team.id);
     // TODO GET CLUB BASED ON TEAM
@@ -181,11 +199,10 @@ export class TeamPage implements OnInit {
       return Math.abs(ageDate.getUTCFullYear() - 1970);
     };
 
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
         // this.user = user;
-        if (!user) throw new Error("User not found");
       }),
       switchMap(() => this.fbService.getTeamRef(teamId)),
       switchMap((team) => {

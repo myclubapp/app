@@ -79,9 +79,6 @@ export class EventsPage implements OnInit {
   }
 
   ngOnInit() {
-    this.eventList$ = this.getClubEvent().pipe(shareReplay(1));
-    this.eventListPast$ = this.getClubEventPast().pipe(shareReplay(1));
-
     /*this.subscription = this.eventList$.pipe(
       tap(async (events) => {
         const event = events[0];
@@ -105,10 +102,21 @@ export class EventsPage implements OnInit {
       })
     ).subscribe();*/
 
+    this.handleNavigationData();
+
+    this.loadData();
+  }
+
+  ionViewWillEnter() {
+    this.loadData();
+  }
+
+  private loadData() {
+    this.eventList$ = this.getClubEvent().pipe(shareReplay(1));
+    this.eventListPast$ = this.getClubEventPast().pipe(shareReplay(1));
+
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
-
-    this.handleNavigationData();
   }
 
   ngOnDestroy() {
@@ -165,11 +173,10 @@ export class EventsPage implements OnInit {
   }
 
   getClubEvent() {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
         this.user = user;
-        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         if (!user) return of([]);

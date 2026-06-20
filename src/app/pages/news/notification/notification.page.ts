@@ -32,6 +32,14 @@ export class NotificationPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.loadData();
+  }
+
+  ionViewWillEnter() {
+    this.loadData();
+  }
+
+  private loadData() {
     this.notifications$ = this.getNotifications();
     /*this.subscription = this.notifications$.subscribe((notifications) => {
       // console.log('Notifications', notifications);
@@ -71,11 +79,8 @@ export class NotificationPage implements OnInit {
   }
 
   getNotifications(): Observable<any[]> {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
-      tap((user) => {
-        if (!user) throw new Error("User not found");
-      }),
       switchMap((user) => {
         return this.notificationService.getNotifications(user).pipe(
           map((notifications) => {
@@ -103,11 +108,8 @@ export class NotificationPage implements OnInit {
     );
   }
   getReadNotifications(): Observable<any[]> {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
-      tap((user) => {
-        if (!user) throw new Error("User not found");
-      }),
       switchMap((user) => {
         return this.notificationService.getReadNotifications(user).pipe(
           tap((notifications) => {

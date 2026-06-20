@@ -82,6 +82,20 @@ export class HelferDetailPage implements OnInit {
       return;
     }
 
+    this.eventHasChanged = {};
+
+    this.loadData();
+  }
+
+  ionViewWillEnter() {
+    this.loadData();
+  }
+
+  private loadData() {
+    if (!this.event) {
+      return;
+    }
+
     this.event$ = this.getHelferEvent(this.event.clubId, this.event.id);
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
@@ -91,7 +105,6 @@ export class HelferDetailPage implements OnInit {
       this.event.clubId,
       this.event.id,
     );
-    this.eventHasChanged = {};
   }
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
@@ -124,11 +137,10 @@ export class HelferDetailPage implements OnInit {
     this.eventHasChanged[field] = event.detail.value;
   }
   getHelferEvent(clubId: string, eventId: string) {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
         this.user = user;
-        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         return this.userProfileService.getChildren(user.uid).pipe(

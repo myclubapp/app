@@ -75,15 +75,29 @@ export class ChampionshipDetailPage implements OnInit {
       return;
     }
 
+    await this.loadData();
+    this.geolocationPermission();
+  }
+
+  ionViewWillEnter() {
+    this.loadData();
+  }
+
+  private async loadData() {
+    if (!this.game) {
+      return;
+    }
+
     this.game$ = this.getGame(this.game.teamId, this.game.id);
     this.user$ = this.authService.getUser$();
     this.teamAdminList$ = this.fbService.getTeamAdminList();
     await this.initUserAndChildren();
-    this.geolocationPermission();
   }
 
   private async initUserAndChildren() {
-    this.user = await lastValueFrom(this.authService.getUser$().pipe(take(1)));
+    this.user = await lastValueFrom(
+      this.authService.getAuthenticatedUser$().pipe(take(1)),
+    );
     this.children = await lastValueFrom(
       this.userProfileService.getChildren(this.user.uid).pipe(take(1)),
     );
@@ -128,11 +142,10 @@ export class ChampionshipDetailPage implements OnInit {
   async openAdminActions() {}
   // ng
   getGame(teamId: string, gameId: string) {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
         this.user = user;
-        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         return this.userProfileService.getChildren(user.uid).pipe(

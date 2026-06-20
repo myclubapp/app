@@ -90,13 +90,9 @@ export class TrainingsPage implements OnInit {
   }
 
   ngOnInit() {
-    // DATA
-    this.trainingList$ = this.getTeamTraining().pipe(shareReplay(1));
-    this.trainingListPast$ = this.getTeamTrainingPast().pipe(shareReplay(1));
-    // CREATE
-    this.teamAdminList$ = this.fbService.getTeamAdminList();
-
     this.handleNavigationData();
+
+    this.loadData();
 
     /*this.subscription = this.trainingList$.pipe(
     /*this.subscription = this.trainingList$.pipe(
@@ -130,6 +126,18 @@ export class TrainingsPage implements OnInit {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+  }
+
+  ionViewWillEnter() {
+    this.loadData();
+  }
+
+  private loadData() {
+    // DATA
+    this.trainingList$ = this.getTeamTraining().pipe(shareReplay(1));
+    this.trainingListPast$ = this.getTeamTrainingPast().pipe(shareReplay(1));
+    // CREATE
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
   }
 
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
@@ -185,11 +193,10 @@ export class TrainingsPage implements OnInit {
   }
 
   getTeamTraining() {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
         this.user = user;
-        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         if (!user) return of([]);
@@ -401,7 +408,7 @@ export class TrainingsPage implements OnInit {
   }
 
   getTeamTrainingPast() {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
         this.user = user;

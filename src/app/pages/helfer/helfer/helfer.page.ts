@@ -76,12 +76,20 @@ export class HelferPage implements OnInit {
   }
 
   ngOnInit() {
+    this.handleNavigationData();
+    this.loadData();
+  }
+
+  ionViewWillEnter() {
+    this.loadData();
+  }
+
+  private loadData() {
     this.helferList$ = this.getHelferEvent().pipe(shareReplay(1));
     this.helferListPast$ = this.getHelferEventPast().pipe(shareReplay(1));
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
-    this.handleNavigationData();
   }
 
   ngOnDestroy() {

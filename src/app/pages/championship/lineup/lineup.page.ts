@@ -60,18 +60,23 @@ export class LineupPage implements OnInit {
 
     this.game.teamId = this.game.teamRef.id;
     //     console.log(this.game)
+
+    this.loadData();
+  }
+
+  ionViewWillEnter() {
+    this.loadData();
+  }
+
+  private loadData() {
     this.game$ = of(this.game);
     this.game$ = this.getGame(this.game.teamRef.id, this.game.id);
   }
   getGame(teamId: string, gameId: string) {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
         this.user = user;
-        if (!user) {
-          console.log("No user found");
-          throw new Error("User not found");
-        }
       }),
       switchMap(() => this.championshipService.getTeamGameRef(teamId, gameId)),
       switchMap((game) => {

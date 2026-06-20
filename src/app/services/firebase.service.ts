@@ -130,13 +130,11 @@ export class FirebaseService {
   }
 
   getClubList(): Observable<Club[]> {
-    return this.authService.getUser$().pipe(
-      take(1),
+    return this.authService.getAuthenticatedUser$().pipe(
       tap((user) => {
         this.user = user;
       }),
       switchMap((user) => {
-        if (!user) return of([]);
         return combineLatest([
           this.getUserClubRefs(user),
           this.userProfileService.getChildren(user.uid).pipe(
@@ -188,13 +186,11 @@ export class FirebaseService {
   }
 
   getClubAdminList() {
-    return this.authService.getUser$().pipe(
-      take(1),
+    return this.authService.getAuthenticatedUser$().pipe(
       tap((user) => {
         this.user = user;
       }),
       switchMap((user) => {
-        if (!user) return of([]);
         return this.getUserClubAdminRefs(user);
       }),
       mergeMap((clubs) => {
@@ -219,13 +215,11 @@ export class FirebaseService {
   }
 
   getClubAdminListByClubId(clubId) {
-    return this.authService.getUser$().pipe(
-      take(1),
+    return this.authService.getAuthenticatedUser$().pipe(
       tap((user) => {
         this.user = user;
       }),
       switchMap((user) => {
-        if (!user) return of([]);
         return this.getUserClubAdminRefs(user);
       }),
       mergeMap((clubs) => {
@@ -253,13 +247,11 @@ export class FirebaseService {
   }
 
   getTeamList() {
-    return this.authService.getUser$().pipe(
-      take(1),
+    return this.authService.getAuthenticatedUser$().pipe(
       tap((user) => {
         this.user = user;
       }),
       switchMap((user) => {
-        if (!user) return of([]);
         // Get user's teams and children's teams
         return combineLatest([
           this.getUserTeamRefs(user),
@@ -324,13 +316,11 @@ export class FirebaseService {
   }
 
   getTeamAdminList() {
-    return this.authService.getUser$().pipe(
-      take(1),
+    return this.authService.getAuthenticatedUser$().pipe(
       tap((user) => {
         this.user = user;
       }),
       switchMap((user) => {
-        if (!user) return of([]);
         return this.getUserTeamAdminRefs(user);
       }),
       mergeMap((teams) => {
@@ -365,13 +355,11 @@ export class FirebaseService {
   }
 
   getTeamAdminListByClubId(clubId) {
-    return this.authService.getUser$().pipe(
-      take(1),
+    return this.authService.getAuthenticatedUser$().pipe(
       tap((user) => {
         this.user = user;
       }),
       switchMap((user) => {
-        if (!user) return of([]);
         return this.getUserTeamAdminRefs(user);
       }),
       mergeMap((teams) => {
@@ -1114,10 +1102,8 @@ export class FirebaseService {
   }
 
   getClubsByContactEmail(): Observable<Club[]> {
-    return this.authService.getUser$().pipe(
-      take(1),
+    return this.authService.getAuthenticatedUser$().pipe(
       switchMap((user) => {
-        if (!user) return of([]);
         return runInInjectionContext(this.injector, () => {
           const q = query(
             collectionGroup(this.firestore, "contacts"),

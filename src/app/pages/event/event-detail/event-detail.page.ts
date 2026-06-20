@@ -80,18 +80,30 @@ export class EventDetailPage implements OnInit {
       return;
     }
 
+    this.eventHasChanged = {};
+
+    this.loadData();
+  }
+
+  ionViewWillEnter() {
+    this.loadData();
+  }
+
+  private loadData() {
+    if (!this.event) {
+      return;
+    }
+
     this.event$ = this.getEvent(this.event.clubId, this.event.id);
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
-    this.eventHasChanged = {};
   }
 
   getEvent(clubId: string, eventId: string) {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
         this.user = user;
-        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         return this.userProfileService.getChildren(user.uid).pipe(

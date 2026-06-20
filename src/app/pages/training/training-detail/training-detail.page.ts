@@ -97,6 +97,18 @@ export class TrainingDetailPage implements OnInit {
       return;
     }
 
+    this.loadData();
+  }
+
+  ionViewWillEnter() {
+    this.loadData();
+  }
+
+  private loadData() {
+    if (!this.training) {
+      return;
+    }
+
     this.training$ = this.getTraining(this.training.teamId, this.training.id);
     this.exerciseList$ = this.exerciseService.getTeamTrainingExerciseRefs(
       this.training.teamId,
@@ -124,11 +136,10 @@ export class TrainingDetailPage implements OnInit {
 
   getTraining(teamId: string, trainingId: string) {
     console.log("getTraining", teamId, trainingId);
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
         this.user = user;
-        if (!user) throw new Error("User not found");
       }),
       switchMap((user) => {
         return this.userProfileService.getChildren(user.uid).pipe(
