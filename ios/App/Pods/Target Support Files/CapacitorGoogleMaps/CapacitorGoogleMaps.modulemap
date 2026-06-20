@@ -1,6 +1,0 @@
-framework module CapacitorGoogleMaps {
-  umbrella header "CapacitorGoogleMaps-umbrella.h"
-
-  export *
-  module * { export * }
-}

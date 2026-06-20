@@ -1,7 +1,7 @@
 {
   "name": "myclub",
   "version": "2.4.8",
-  "buildNumber": "229",
+  "buildNumber": "230",
   "author": "liitu consulting gmbh",
   "homepage": "https://my-club.app/",
   "scripts": {
@@ -42,7 +42,9 @@
     "build-deploy:app-kadetten-handball": "ng build --configuration app-kadetten-handball && firebase deploy --only hosting:app-kadetten-handball",
     "prepare": "husky",
     "lint": "ng lint",
-    "app": "npm run build && npx cap sync && npx cap copy && npx cap open ios"
+    "app:ios": "npm run build:prod && npx cap sync && npx cap open ios",
+    "app:android": "npm run build:prod && npx cap sync && npx cap open android",
+    "appstore": "npm run build:prod && npx cap sync && npx cap open ios && npx cap open android"
   },
   "private": true,
   "dependencies": {
