@@ -17,7 +17,9 @@
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		696C52B52B20E1CC0056E9C4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 696C52B42B20E1CC0056E9C4 /* GoogleService-Info.plist */; };
 		AAC39DF82FE6EE5B005EC3E9 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = AAC39DF72FE6EE5B005EC3E9 /* CapApp-SPM */; };
-		AAC39DFA2FE6EE92005EC3E9 /* debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = AAC39DF92FE6EE92005EC3E9 /* debug.xcconfig */; };
+		AAC39DFD2FE6FC22005EC3E9 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = AAC39DFC2FE6FC22005EC3E9 /* FirebaseCore */; };
+		AAC39E002FE70138005EC3E9 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = AAC39DFF2FE70138005EC3E9 /* FirebaseCore */; };
+		AAC39E022FE70138005EC3E9 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = AAC39E012FE70138005EC3E9 /* FirebaseMessaging */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -58,6 +60,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAC39E022FE70138005EC3E9 /* FirebaseMessaging in Frameworks */,
+				AAC39DFD2FE6FC22005EC3E9 /* FirebaseCore in Frameworks */,
+				AAC39E002FE70138005EC3E9 /* FirebaseCore in Frameworks */,
 				AAC39DF82FE6EE5B005EC3E9 /* CapApp-SPM in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -149,7 +154,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1540;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					504EC3031FED79650016851F = {
 						CreatedOnToolsVersion = 9.2;
@@ -169,6 +174,7 @@
 			mainGroup = 504EC2FB1FED79650016851F;
 			packageReferences = (
 				AAC39DF62FE6EE5B005EC3E9 /* XCLocalSwiftPackageReference "CapApp-SPM" */,
+				AAC39DFE2FE70138005EC3E9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			productRefGroup = 504EC3051FED79650016851F /* Products */;
 			projectDirPath = "";
@@ -191,7 +197,6 @@
 				504EC30D1FED79650016851F /* Main.storyboard in Resources */,
 				2FAD9763203C412B000D30F8 /* config.xml in Resources */,
 				696C52B52B20E1CC0056E9C4 /* GoogleService-Info.plist in Resources */,
-				AAC39DFA2FE6EE92005EC3E9 /* debug.xcconfig in Resources */,
 				0E02955C03A443E6A04F4797 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -266,6 +271,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = U7DQUX87VS;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -287,6 +293,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -328,6 +335,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = U7DQUX87VS;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -342,6 +350,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
@@ -356,7 +365,6 @@
 				CODE_SIGN_ENTITLEMENTS = App/AppDebug.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 230;
-				DEVELOPMENT_TEAM = U7DQUX87VS;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = myclub;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
@@ -381,8 +389,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/AppRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 230;
-				DEVELOPMENT_TEAM = U7DQUX87VS;
+				CURRENT_PROJECT_VERSION = 231;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = myclub;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
@@ -391,7 +398,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.4.8;
+				MARKETING_VERSION = 2.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.myclub.default;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
@@ -430,10 +437,44 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		AAC39DFB2FE6FC22005EC3E9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.15.0;
+			};
+		};
+		AAC39DFE2FE70138005EC3E9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.15.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		AAC39DF72FE6EE5B005EC3E9 /* CapApp-SPM */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = "CapApp-SPM";
+		};
+		AAC39DFC2FE6FC22005EC3E9 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAC39DFB2FE6FC22005EC3E9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		AAC39DFF2FE70138005EC3E9 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAC39DFE2FE70138005EC3E9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		AAC39E012FE70138005EC3E9 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAC39DFE2FE70138005EC3E9 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
