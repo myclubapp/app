@@ -19,6 +19,7 @@ import {
   mergeMap,
   of,
   shareReplay,
+  startWith,
   switchMap,
   take,
   tap,
@@ -275,6 +276,16 @@ export class EventsPage implements OnInit {
                               clubId: club.id,
                             }),
                           ),
+                          // Non-blocking enrichment: emit the row immediately
+                          // with empty attendees so the list renders at once
+                          // instead of gating on the slowest attendees read
+                          // across all events. Real counts fill in next.
+                          startWith({
+                            event,
+                            attendees: [],
+                            clubDetails,
+                            clubId: club.id,
+                          }),
                         ),
                     ),
                   );
@@ -442,6 +453,16 @@ export class EventsPage implements OnInit {
                               clubId: club.id,
                             }),
                           ),
+                          // Non-blocking enrichment: emit the row immediately
+                          // with empty attendees so the list renders at once
+                          // instead of gating on the slowest attendees read
+                          // across all events. Real counts fill in next.
+                          startWith({
+                            event,
+                            attendees: [],
+                            clubDetails,
+                            clubId: club.id,
+                          }),
                         ),
                     ),
                   );

@@ -18,6 +18,7 @@ import {
   mergeMap,
   of,
   shareReplay,
+  startWith,
   switchMap,
   take,
   tap,
@@ -270,6 +271,19 @@ export class HelferPage implements OnInit {
                             countNeeded: 0,
                           }),
                         ),
+                        // Non-blocking enrichment: emit the event row at once
+                        // with placeholder counts. The Schichten/attendees reads
+                        // are nested 3 levels deep, so combineLatest otherwise
+                        // gates the whole list on the slowest leaf read across
+                        // all events — which also starved the (empty) upcoming
+                        // list of connection capacity, leaving its skeleton up.
+                        // Real Schichten/counts fill in on the next emission.
+                        startWith({
+                          ...event,
+                          schichten: [],
+                          countAttendees: 0,
+                          countNeeded: 0,
+                        }),
                       ),
                   ),
                 );
@@ -413,6 +427,19 @@ export class HelferPage implements OnInit {
                             countNeeded: 0,
                           }),
                         ),
+                        // Non-blocking enrichment: emit the event row at once
+                        // with placeholder counts. The Schichten/attendees reads
+                        // are nested 3 levels deep, so combineLatest otherwise
+                        // gates the whole list on the slowest leaf read across
+                        // all events — which also starved the (empty) upcoming
+                        // list of connection capacity, leaving its skeleton up.
+                        // Real Schichten/counts fill in on the next emission.
+                        startWith({
+                          ...event,
+                          schichten: [],
+                          countAttendees: 0,
+                          countNeeded: 0,
+                        }),
                       ),
                   ),
                 );

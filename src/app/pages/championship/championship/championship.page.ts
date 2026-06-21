@@ -27,6 +27,7 @@ import {
   take,
   tap,
   shareReplay,
+  startWith,
 } from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
@@ -373,6 +374,16 @@ export class ChampionshipPage implements OnInit {
                           teamDetails,
                           teamId,
                         })),
+                        // Non-blocking enrichment: emit the row immediately with
+                        // empty attendees so the list renders at once instead of
+                        // gating on the slowest attendees read across all games.
+                        // Real counts/status fill in next.
+                        startWith({
+                          game,
+                          attendees: [],
+                          teamDetails: {},
+                          teamId: team.id,
+                        }),
                       ),
                     ),
                   );
@@ -560,6 +571,16 @@ export class ChampionshipPage implements OnInit {
                           teamDetails,
                           teamId,
                         })),
+                        // Non-blocking enrichment: emit the row immediately with
+                        // empty attendees so the list renders at once instead of
+                        // gating on the slowest attendees read across all games.
+                        // Real counts/status fill in next.
+                        startWith({
+                          game,
+                          attendees: [],
+                          teamDetails: {},
+                          teamId: team.id,
+                        }),
                       ),
                     ),
                   );

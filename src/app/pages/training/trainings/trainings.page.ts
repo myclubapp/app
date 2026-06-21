@@ -17,6 +17,7 @@ import {
   mergeMap,
   of,
   shareReplay,
+  startWith,
   switchMap,
   take,
   tap,
@@ -548,6 +549,20 @@ export class TrainingsPage implements OnInit {
                               teamId,
                             }),
                           ),
+                          // Non-blocking enrichment: emit the row immediately
+                          // with placeholder counts so the past list renders at
+                          // once. Without this, combineLatest gates the whole
+                          // list on the slowest attendees/exercises read across
+                          // up to 30 trainings, so rows appeared only "much
+                          // later". The real counts/badges fill in on the next
+                          // emission.
+                          startWith({
+                            training,
+                            attendees: [],
+                            exercises: [],
+                            teamDetails: {},
+                            teamId: team.id,
+                          }),
                         ),
                       ),
                     );
