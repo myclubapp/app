@@ -1,13 +1,10 @@
-import { ElementRef, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { Capacitor } from "@capacitor/core";
-import { GoogleMap } from "@capacitor/google-maps";
-import { Browser } from "@capacitor/browser";
 import {
   Geolocation,
   PermissionStatus,
   Position,
 } from "@capacitor/geolocation";
-import { environment } from "src/environments/environment";
 import { UiService } from "./ui.service";
 
 export interface MapLocation {
@@ -16,6 +13,13 @@ export interface MapLocation {
   location?: string;
   city?: string;
 }
+
+/** swisstopo Basemap Vector Tiles (gratis, kein API-Key, geo.admin.ch / BGDI). */
+export const SWISSTOPO_STYLE =
+  "https://vectortiles.geo.admin.ch/styles/ch.swisstopo.basemap.vt/style.json";
+
+/** Fallback-Markerfarbe (Light-Mode --ion-color-primary), falls die CSS-Variable nicht lesbar ist. */
+export const MAP_MARKER_COLOR = "#339BDE";
 
 @Injectable({
   providedIn: "root",
@@ -64,77 +68,65 @@ export class MapService {
     });
   }
 
-  async createMap(
-    mapId: string,
-    mapElement: ElementRef<HTMLElement>,
-    location: MapLocation,
-  ): Promise<GoogleMap> {
-    const map = await GoogleMap.create({
-      id: mapId,
-      element: mapElement.nativeElement,
-      apiKey: environment.googleMapsApiKey,
-      config: {
-        center: {
-          lat: Number(location.latitude),
-          lng: Number(location.longitude),
-        },
-        zoom: 12,
-      },
-    });
-
-    // Add location marker
-    const title =
-      location.location && location.city
-        ? `${location.location} in ${location.city}`
-        : "Location";
-
-    map.addMarker({
-      title,
-      coordinate: {
-        lat: Number(location.latitude),
-        lng: Number(location.longitude),
-      },
-      snippet: title,
-    });
-
-    // Try to add current position marker
-    try {
-      const coordinates: Position = await Geolocation.getCurrentPosition();
-      if (coordinates.coords.latitude && coordinates.coords.longitude) {
-        map.addMarker({
-          title: "Meine Position",
-          coordinate: {
-            lat: coordinates.coords.latitude,
-            lng: coordinates.coords.longitude,
-          },
-          isFlat: true,
-          snippet: "Meine Position",
-        });
-      }
-    } catch (e) {
-      console.log("Could not get current position for map");
+  /**
+   * Liest --ion-color-primary aus dem aktiven Theme (Light/Dark) zur Laufzeit.
+   * Fällt auf MAP_MARKER_COLOR zurück, wenn die Variable nicht lesbar ist.
+   */
+  getPrimaryColor(): string {
+    if (
+      typeof getComputedStyle === "undefined" ||
+      typeof document === "undefined"
+    ) {
+      return MAP_MARKER_COLOR;
     }
-
-    return map;
+    const value = getComputedStyle(document.body)
+      .getPropertyValue("--ion-color-primary")
+      .trim();
+    return value || MAP_MARKER_COLOR;
   }
 
-  async openMapsNavigation(location: MapLocation): Promise<void> {
+  /**
+   * Aktuelle Position als [longitude, latitude] für einen MapLibre-Marker.
+   * Gibt null zurück, wenn die Position nicht ermittelt werden kann.
+   */
+  async getCurrentPosition(): Promise<[number, number] | null> {
     try {
-      const coordinates = await Geolocation.getCurrentPosition();
-      if (coordinates.coords.longitude && coordinates.coords.latitude) {
-        await Browser.open({
-          url: `https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}&origin=${coordinates.coords.latitude},${coordinates.coords.longitude}`,
-        });
-      } else {
-        await Browser.open({
-          url: `https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}`,
-        });
+      const coordinates: Position = await Geolocation.getCurrentPosition();
+      const { latitude, longitude } = coordinates.coords;
+      // Explizite null-Prüfung: 0 ist falsy, aber lat/lng 0 sind gültige
+      // Koordinaten (Äquator / Nullmeridian).
+      if (latitude != null && longitude != null) {
+        return [longitude, latitude];
       }
+      return null;
     } catch (e) {
-      // Fallback without origin
-      await Browser.open({
-        url: `https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}`,
-      });
+      console.log("Could not get current position for map");
+      return null;
     }
+  }
+
+  /**
+   * Öffnet die Adresse in der nativen Karten-/Navigations-App.
+   * Plattform-spezifisch: iOS maps:, Android geo:, Web Google Maps.
+   */
+  async openMapsNavigation(location: MapLocation): Promise<void> {
+    const query =
+      location.location || location.city
+        ? `${location.location ?? ""} ${location.city ?? ""}`.trim()
+        : `${location.latitude},${location.longitude}`;
+    const encoded = encodeURIComponent(query);
+    const platform = Capacitor.getPlatform();
+
+    if (platform === "ios") {
+      window.open(`maps:?q=${encoded}`, "_system");
+      return;
+    }
+
+    if (platform === "android") {
+      window.open(`geo:0,0?q=${encoded}`, "_system");
+      return;
+    }
+
+    window.open(`https://maps.google.com/?q=${encoded}`, "_system");
   }
 }

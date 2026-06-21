@@ -1,6 +1,7 @@
 {
   "common": {
     "close": "Close",
+    "navigate": "Start navigation",
     "save": "Save",
     "title": "Title",
     "description": "Description",

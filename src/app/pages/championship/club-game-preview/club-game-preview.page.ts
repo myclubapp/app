@@ -1,14 +1,17 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
-import { ModalController, Platform } from "@ionic/angular";
+import { Component, Input, OnInit } from "@angular/core";
+import { ModalController } from "@ionic/angular";
 import { Game } from "src/app/models/game";
-import { GoogleMap } from "@capacitor/google-maps";
 import { Browser } from "@capacitor/browser";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { Observable, of } from "rxjs";
 import { catchError, map, switchMap } from "rxjs/operators";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UiService } from "src/app/services/ui.service";
-import { MapService } from "src/app/services/map.service";
+import {
+  MapService,
+  SWISSTOPO_STYLE,
+  MAP_MARKER_COLOR,
+} from "src/app/services/map.service";
 
 @Component({
   selector: "app-club-game-preview",
@@ -22,15 +25,14 @@ export class ClubGamePreviewPage implements OnInit {
 
   game: Game;
 
-  @ViewChild("map")
-  mapRef: ElementRef<HTMLElement>;
-  newMap: GoogleMap;
+  readonly mapStyle = SWISSTOPO_STYLE;
+  markerColor = MAP_MARKER_COLOR;
+  ownPosition: [number, number] | null = null;
 
   game$: Observable<Game>;
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public platform: Platform,
     private readonly championshipService: ChampionshipService,
     private readonly fbService: FirebaseService,
     private uiService: UiService,
@@ -45,26 +47,18 @@ export class ClubGamePreviewPage implements OnInit {
       return;
     }
 
+    this.markerColor = this.mapService.getPrimaryColor();
     this.game$ = this.getGame(this.game.teamId, this.game.id);
-    this.geolocationPermission();
+    this.loadCurrentPosition();
   }
 
-  async geolocationPermission() {
-    return this.mapService.checkGeolocationPermission();
-  }
-
-  ionViewDidEnter() {
-    this.game$.subscribe((game) => {
-      if (!this.newMap && game) {
-        if (!this.newMap) this.setMap();
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    if (this.newMap) {
-      this.newMap.destroy();
-    }
+  private async loadCurrentPosition() {
+    // checkGeolocationPermission() triggert auf Native den Berechtigungs-Dialog,
+    // bevor die Position abgefragt wird. Das Resultat blockiert den Abruf bewusst
+    // nicht (auf Web liefert die Prüfung immer false, getCurrentPosition
+    // funktioniert dort dennoch via Browser-API).
+    await this.mapService.checkGeolocationPermission();
+    this.ownPosition = await this.mapService.getCurrentPosition();
   }
 
   // Simplified getGame - only fetches general game data, no members/participants
@@ -99,17 +93,6 @@ export class ClubGamePreviewPage implements OnInit {
 
   async confirm() {
     return await this.modalCtrl.dismiss(this.game, "confirm");
-  }
-
-  async setMap() {
-    if (this.mapRef == undefined || this.mapRef == null) {
-      return;
-    }
-    this.newMap = await this.mapService.createMap(
-      "my-map-" + this.game.id,
-      this.mapRef,
-      this.game,
-    );
   }
 
   async openMaps(game: Game) {

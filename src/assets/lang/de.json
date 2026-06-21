@@ -1,6 +1,7 @@
 {
   "common": {
     "close": "schliessen",
+    "navigate": "Navigation starten",
     "save": "Speichern",
     "title": "Titel",
     "description": "Beschreibung",
