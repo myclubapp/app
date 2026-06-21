@@ -142,12 +142,11 @@ export class ChampionshipPage implements OnInit {
       );
     });
 
-    this.teamAdminList$ = this.fbService
-      .getTeamAdminList()
-      .pipe(shareReplay(1));
-    this.clubAdminList$ = this.fbService
-      .getClubAdminList()
-      .pipe(shareReplay(1));
+    // getTeamAdminList()/getClubAdminList() share their listener internally via
+    // shareReplay, so no extra page-level shareReplay is needed (consistent with
+    // events/helfer/trainings).
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    this.clubAdminList$ = this.fbService.getClubAdminList();
   }
 
   ngOnDestroy(): void {}
