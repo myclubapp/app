@@ -1,13 +1,14 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
 
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from "@ionic/angular";
 
-import { ChampionshipDetailPageRoutingModule } from './championship-detail-routing.module';
+import { ChampionshipDetailPageRoutingModule } from "./championship-detail-routing.module";
 
-import { ChampionshipDetailPage } from './championship-detail.page';
-import { TranslateModule } from '@ngx-translate/core';
+import { ChampionshipDetailPage } from "./championship-detail.page";
+import { TranslateModule } from "@ngx-translate/core";
+import { NgxMapLibreGLModule } from "@maplibre/ngx-maplibre-gl";
 
 @NgModule({
   imports: [
@@ -15,9 +16,10 @@ import { TranslateModule } from '@ngx-translate/core';
     FormsModule,
     IonicModule,
     ChampionshipDetailPageRoutingModule,
-    TranslateModule
+    TranslateModule,
+    NgxMapLibreGLModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  declarations: [ChampionshipDetailPage]
+  declarations: [ChampionshipDetailPage],
 })
 export class ChampionshipDetailPageModule {}

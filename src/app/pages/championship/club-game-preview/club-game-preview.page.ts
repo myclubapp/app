@@ -1,14 +1,17 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { ModalController, Platform } from "@ionic/angular";
 import { Game } from "src/app/models/game";
-import { GoogleMap } from "@capacitor/google-maps";
 import { Browser } from "@capacitor/browser";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { Observable, of } from "rxjs";
 import { catchError, map, switchMap } from "rxjs/operators";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UiService } from "src/app/services/ui.service";
-import { MapService } from "src/app/services/map.service";
+import {
+  MapService,
+  SWISSTOPO_STYLE,
+  MAP_MARKER_COLOR,
+} from "src/app/services/map.service";
 
 @Component({
   selector: "app-club-game-preview",
@@ -22,9 +25,9 @@ export class ClubGamePreviewPage implements OnInit {
 
   game: Game;
 
-  @ViewChild("map")
-  mapRef: ElementRef<HTMLElement>;
-  newMap: GoogleMap;
+  readonly mapStyle = SWISSTOPO_STYLE;
+  markerColor = MAP_MARKER_COLOR;
+  ownPosition: [number, number] | null = null;
 
   game$: Observable<Game>;
 
@@ -50,21 +53,12 @@ export class ClubGamePreviewPage implements OnInit {
   }
 
   async geolocationPermission() {
-    return this.mapService.checkGeolocationPermission();
-  }
-
-  ionViewDidEnter() {
-    this.game$.subscribe((game) => {
-      if (!this.newMap && game) {
-        if (!this.newMap) this.setMap();
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    if (this.newMap) {
-      this.newMap.destroy();
-    }
+    // Auf Native triggert dies den Berechtigungs-Dialog; das Resultat blockiert
+    // den Standortabruf aber nicht (auf Web liefert die Permission-Prüfung
+    // immer false, getCurrentPosition funktioniert dort dennoch via Browser-API).
+    this.markerColor = this.mapService.getPrimaryColor();
+    await this.mapService.checkGeolocationPermission();
+    this.ownPosition = await this.mapService.getCurrentPosition();
   }
 
   // Simplified getGame - only fetches general game data, no members/participants
@@ -99,17 +93,6 @@ export class ClubGamePreviewPage implements OnInit {
 
   async confirm() {
     return await this.modalCtrl.dismiss(this.game, "confirm");
-  }
-
-  async setMap() {
-    if (this.mapRef == undefined || this.mapRef == null) {
-      return;
-    }
-    this.newMap = await this.mapService.createMap(
-      "my-map-" + this.game.id,
-      this.mapRef,
-      this.game,
-    );
   }
 
   async openMaps(game: Game) {

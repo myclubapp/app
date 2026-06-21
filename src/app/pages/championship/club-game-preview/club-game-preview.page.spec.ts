@@ -34,6 +34,7 @@ describe("ClubGamePreviewPage", () => {
           provide: MapService,
           useValue: jasmine.createSpyObj("MapService", [
             "checkGeolocationPermission",
+            "getCurrentPosition",
           ]),
         },
         {

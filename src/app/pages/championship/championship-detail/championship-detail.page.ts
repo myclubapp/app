@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
@@ -6,7 +6,6 @@ import {
   Platform,
 } from "@ionic/angular";
 import { Game } from "src/app/models/game";
-import { GoogleMap } from "@capacitor/google-maps";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { forkJoin, lastValueFrom, Observable, of } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
@@ -20,7 +19,11 @@ import { MemberPage } from "../../member/member.page";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { Team } from "src/app/models/team";
 import { UiService } from "src/app/services/ui.service";
-import { MapService } from "src/app/services/map.service";
+import {
+  MapService,
+  SWISSTOPO_STYLE,
+  MAP_MARKER_COLOR,
+} from "src/app/services/map.service";
 
 @Component({
   selector: "app-championship-detail",
@@ -34,9 +37,9 @@ export class ChampionshipDetailPage implements OnInit {
 
   game: Game;
 
-  @ViewChild("map")
-  mapRef: ElementRef<HTMLElement>;
-  newMap: GoogleMap;
+  readonly mapStyle = SWISSTOPO_STYLE;
+  markerColor = MAP_MARKER_COLOR;
+  ownPosition: [number, number] | null = null;
 
   allowEdit: boolean = false;
 
@@ -105,30 +108,16 @@ export class ChampionshipDetailPage implements OnInit {
   }
 
   async geolocationPermission() {
-    return this.mapService.checkGeolocationPermission();
+    // Auf Native triggert dies den Berechtigungs-Dialog; das Resultat blockiert
+    // den Standortabruf aber nicht (auf Web liefert die Permission-Prüfung
+    // immer false, getCurrentPosition funktioniert dort dennoch via Browser-API).
+    this.markerColor = this.mapService.getPrimaryColor();
+    await this.mapService.checkGeolocationPermission();
+    this.ownPosition = await this.mapService.getCurrentPosition();
   }
 
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
     return this.fbService.isTeamAdmin(teamAdminList, teamId);
-  }
-
-  ionViewDidEnter() {
-    this.game$.pipe(take(1)).subscribe((game) => {
-      // console.log(">> game", game);
-      if (!this.newMap && game) {
-        // console.log("setMap");
-
-        if (!this.newMap) this.setMap();
-      } else {
-        // console.log("MAP ERROR?");
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    if (this.newMap) {
-      this.newMap.destroy();
-    }
   }
 
   async edit() {
@@ -458,16 +447,6 @@ export class ChampionshipDetailPage implements OnInit {
     });*/
   }
 
-  async setMap() {
-    if (this.mapRef == undefined || this.mapRef == null) {
-      return;
-    }
-    this.newMap = await this.mapService.createMap(
-      "my-map-" + this.game.id,
-      this.mapRef,
-      this.game,
-    );
-  }
   async openMember(member: Profile) {
     console.log("openMember");
     const modal = await this.modalCtrl.create({

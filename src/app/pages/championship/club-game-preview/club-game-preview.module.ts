@@ -8,6 +8,7 @@ import { ClubGamePreviewPageRoutingModule } from "./club-game-preview-routing.mo
 
 import { ClubGamePreviewPage } from "./club-game-preview.page";
 import { TranslateModule } from "@ngx-translate/core";
+import { NgxMapLibreGLModule } from "@maplibre/ngx-maplibre-gl";
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import { TranslateModule } from "@ngx-translate/core";
     IonicModule,
     ClubGamePreviewPageRoutingModule,
     TranslateModule,
+    NgxMapLibreGLModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [ClubGamePreviewPage],

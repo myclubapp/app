@@ -42,8 +42,43 @@
       <ion-icon name="close" size="small"></ion-icon>
     </ion-fab-button>
   </ion-fab>-->
-  @if (game.latitude && game.longitude && !platform.is('android')) {
-  <capacitor-google-map #map></capacitor-google-map>
+  @if (game.latitude && game.longitude) {
+  <mgl-map
+    class="venue-map"
+    [mapStyle]="mapStyle"
+    [zoom]="[14]"
+    [center]="[+game.longitude, +game.latitude]"
+    [attributionControl]="{ customAttribution: '© swisstopo' }"
+  >
+    <mgl-marker
+      #venueMarker
+      [lngLat]="[+game.longitude, +game.latitude]"
+      [color]="markerColor"
+    ></mgl-marker>
+    <mgl-popup [marker]="venueMarker" [closeButton]="true" [maxWidth]="'260px'">
+      <div class="venue-popup">
+        @if (game.location) {
+        <strong>{{ game.location }}</strong>
+        } @if (game.city) {
+        <div class="venue-popup__city">{{ game.city }}</div>
+        }
+        <ion-button
+          size="small"
+          expand="block"
+          (click)="openMaps(game)"
+          class="venue-popup__nav"
+        >
+          <ion-icon slot="start" name="navigate-outline"></ion-icon>
+          {{ "common.navigate" | translate }}
+        </ion-button>
+      </div>
+    </mgl-popup>
+    @if (ownPosition) {
+    <mgl-marker [lngLat]="ownPosition">
+      <div class="own-position-marker"></div>
+    </mgl-marker>
+    }
+  </mgl-map>
   }
   <ion-list [inset]="true">
     <ion-item>
