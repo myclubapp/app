@@ -111,8 +111,18 @@ export class ChampionshipPage implements OnInit {
   }
 
   private loadData() {
-    this.gameList$ = this.getTeamGamesUpcoming().pipe(shareReplay(1));
-    this.gameListPast$ = this.getTeamGamesPast().pipe(shareReplay(1));
+    // Build the realtime streams only once — see events.page.ts for the full
+    // rationale: rebuilding on every tab re-enter reflashed the skeleton and
+    // leaked Firestore listeners (and here also re-subscribed getCurrentSeason),
+    // which could leave the skeleton up forever on an empty list.
+    if (this.gameList$) return;
+
+    this.gameList$ = this.getTeamGamesUpcoming().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+    this.gameListPast$ = this.getTeamGamesPast().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
 
     // Get dynamic season from Swiss Unihockey API
     this.swissUnihockeyService.getCurrentSeason().subscribe((season) => {

@@ -185,7 +185,15 @@ export class NewsPage implements OnInit {
   }
 
   private loadData() {
-    this.newsList$ = this.getNews().pipe(shareReplay(1));
+    // Build the realtime streams only once — see events.page.ts for the full
+    // rationale: rebuilding on every tab re-enter reflashed the skeleton and
+    // leaked Firestore listeners, which could leave the skeleton up forever on
+    // an empty list.
+    if (this.newsList$) return;
+
+    this.newsList$ = this.getNews().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
     this.filteredNewsList$ = combineLatest([
       this.newsList$ as Observable<
         (News & { source?: "verein" | "verband" })[]
@@ -197,12 +205,18 @@ export class NewsPage implements OnInit {
         return list.filter((n) => n.source === filter);
       }),
     );
-    this.notifications$ = this.getNotifications().pipe(shareReplay(1));
+    this.notifications$ = this.getNotifications().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
     this.clubAdminList$ = this.fbService
       .getClubAdminList()
-      .pipe(shareReplay(1));
-    this.clubList$ = this.fbService.getClubList().pipe(shareReplay(1));
-    this.clubGames$ = this.getClubGames().pipe(shareReplay(1));
+      .pipe(shareReplay({ bufferSize: 1, refCount: true }));
+    this.clubList$ = this.fbService
+      .getClubList()
+      .pipe(shareReplay({ bufferSize: 1, refCount: true }));
+    this.clubGames$ = this.getClubGames().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
 
     // Prüfe ob der Benutzer in einem Club mit aktiviertem Meisterschaftsmodul ist
     this.clubList$.pipe(take(1)).subscribe((clubList) => {

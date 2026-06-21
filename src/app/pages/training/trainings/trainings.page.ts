@@ -133,9 +133,19 @@ export class TrainingsPage implements OnInit {
   }
 
   private loadData() {
+    // Build the realtime streams only once — see events.page.ts for the full
+    // rationale: rebuilding on every tab re-enter reflashed the skeleton and
+    // leaked Firestore listeners, which could leave the skeleton up forever on
+    // an empty list.
+    if (this.trainingList$) return;
+
     // DATA
-    this.trainingList$ = this.getTeamTraining().pipe(shareReplay(1));
-    this.trainingListPast$ = this.getTeamTrainingPast().pipe(shareReplay(1));
+    this.trainingList$ = this.getTeamTraining().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+    this.trainingListPast$ = this.getTeamTrainingPast().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
     // CREATE
     this.teamAdminList$ = this.fbService.getTeamAdminList();
   }
