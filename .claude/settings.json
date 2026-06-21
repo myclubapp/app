@@ -38,7 +38,19 @@
       "Bash(ls ~/.nvm/versions/node 2>/dev/null; which -a node npm 2>/dev/null; ls /opt/homebrew/bin/node /usr/local/bin/node 2>/dev/null; cat ~/.zshrc 2>/dev/null | grep -iE 'nvm|volta|node|fnm|path' | head)",
       "Read(//opt/homebrew/bin/**)",
       "Bash(cat /tmp/dep-sweep/.nvmrc 2>/dev/null; echo \"---engines---\"; grep -A3 '\"engines\"' /tmp/dep-sweep/package.json; echo \"---\"; /usr/local/bin/node -v; ls ~/.nvm/versions/node)",
-      "Read(//tmp/dep-sweep/**)"
+      "Read(//tmp/dep-sweep/**)",
+      "Bash(grep -n \"loadData\\\\|ionViewWillEnter\\\\|ngOnInit\\\\|\\\\$ =\\\\|combineLatest\\\\|of\\(\\\\[\\\\]\\)\\\\|shareReplay\\\\|getEvents\\\\|EventList\\\\|eventList\" src/app/pages/event/events/events.page.ts)",
+      "Bash(grep -n \"loadData\\\\|ionViewWillEnter\\\\|ngOnInit\\\\|\\\\$ =\\\\|combineLatest\\(\\\\|of\\(\\\\[\\\\]\\)\\\\|shareReplay\\\\|return of\\\\|length === 0\\\\|\\\\.length\" src/app/pages/helfer/helfer/helfer.page.ts)",
+      "Bash(grep -n \"getAuthenticatedUser\\\\$\" src/app/services/auth.service.ts)",
+      "Bash(grep -n \"loadData\\\\|ionViewWillEnter\\\\|ngOnInit\\\\|\\\\$ =\\\\|combineLatest\\(\\\\|of\\(\\\\[\\\\]\\)\\\\|shareReplay\\\\|length === 0\\\\|newsList\" src/app/pages/news/news/news.page.ts)",
+      "Bash(grep -n \"loadData\\\\|ionViewWillEnter\\\\|ngOnInit\\\\|\\\\$ =\\\\|combineLatest\\(\\\\|of\\(\\\\[\\\\]\\)\\\\|shareReplay\\\\|length === 0\\\\|gameList\\\\|gamesList\" src/app/pages/championship/championship/championship.page.ts)",
+      "Bash(echo \"tsc done with status $?\")",
+      "Bash(grep -n \"of\\(team.id\\), // Übergebe die teamId\\\\|map\\(\\\\s*$\\\\|\\\\[attendees, exercises, teamDetails, teamId\\\\]\" src/app/pages/training/trainings/trainings.page.ts)",
+      "Bash(grep -n \"startWith\\\\|shareReplay,\\\\|getTeamMembersAttendeesRef\\\\|teamGames.map\\\\|getTeamGamesPastRefs\\\\|combineLatest\\({\" src/app/pages/championship/championship/championship.page.ts)",
+      "Read(//opt/homebrew/Cellar/gh/2.92.0/bin/**)",
+      "Bash(ssh -T -o BatchMode=yes -o ConnectTimeout=5 git@github.com)",
+      "Bash(ls ~/.nvm/versions/node 2>/dev/null; which -a node npx 2>/dev/null; ls /opt/homebrew/bin/npx /usr/local/bin/npx 2>/dev/null)",
+      "Read(//usr/local/lib/node_modules/npx/**)"
     ],
     "additionalDirectories": ["/Users/sandro"]
   },
