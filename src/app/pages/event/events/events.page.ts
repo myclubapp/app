@@ -19,6 +19,7 @@ import {
   mergeMap,
   of,
   shareReplay,
+  startWith,
   switchMap,
   take,
   tap,
@@ -112,8 +113,21 @@ export class EventsPage implements OnInit {
   }
 
   private loadData() {
-    this.eventList$ = this.getClubEvent().pipe(shareReplay(1));
-    this.eventListPast$ = this.getClubEventPast().pipe(shareReplay(1));
+    // Build the realtime streams only once. They are live Firestore listeners
+    // that keep themselves up to date, so rebuilding them on every tab re-enter
+    // is unnecessary — and harmful: each rebuild reset the async pipe to null
+    // (skeleton reflash) and, with refCount:false, leaked the previous snapshot
+    // listeners. On an empty list the freshly attached listener then competed
+    // with the leaked ones and its initial empty snapshot could stall, leaving
+    // the skeleton up forever. Guarding here fixes both.
+    if (this.eventList$) return;
+
+    this.eventList$ = this.getClubEvent().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+    this.eventListPast$ = this.getClubEventPast().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
@@ -262,6 +276,16 @@ export class EventsPage implements OnInit {
                               clubId: club.id,
                             }),
                           ),
+                          // Non-blocking enrichment: emit the row immediately
+                          // with empty attendees so the list renders at once
+                          // instead of gating on the slowest attendees read
+                          // across all events. Real counts fill in next.
+                          startWith({
+                            event,
+                            attendees: [],
+                            clubDetails,
+                            clubId: club.id,
+                          }),
                         ),
                     ),
                   );
@@ -429,6 +453,16 @@ export class EventsPage implements OnInit {
                               clubId: club.id,
                             }),
                           ),
+                          // Non-blocking enrichment: emit the row immediately
+                          // with empty attendees so the list renders at once
+                          // instead of gating on the slowest attendees read
+                          // across all events. Real counts fill in next.
+                          startWith({
+                            event,
+                            attendees: [],
+                            clubDetails,
+                            clubId: club.id,
+                          }),
                         ),
                     ),
                   );

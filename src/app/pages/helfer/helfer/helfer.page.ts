@@ -18,6 +18,7 @@ import {
   mergeMap,
   of,
   shareReplay,
+  startWith,
   switchMap,
   take,
   tap,
@@ -85,8 +86,18 @@ export class HelferPage implements OnInit {
   }
 
   private loadData() {
-    this.helferList$ = this.getHelferEvent().pipe(shareReplay(1));
-    this.helferListPast$ = this.getHelferEventPast().pipe(shareReplay(1));
+    // Build the realtime streams only once — see events.page.ts for the full
+    // rationale: rebuilding on every tab re-enter reflashed the skeleton and
+    // leaked Firestore listeners, which could leave the skeleton up forever on
+    // an empty list.
+    if (this.helferList$) return;
+
+    this.helferList$ = this.getHelferEvent().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+    this.helferListPast$ = this.getHelferEventPast().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
 
     //Create Events, Helfer, News
     this.clubAdminList$ = this.fbService.getClubAdminList();
@@ -260,6 +271,19 @@ export class HelferPage implements OnInit {
                             countNeeded: 0,
                           }),
                         ),
+                        // Non-blocking enrichment: emit the event row at once
+                        // with placeholder counts. The Schichten/attendees reads
+                        // are nested 3 levels deep, so combineLatest otherwise
+                        // gates the whole list on the slowest leaf read across
+                        // all events — which also starved the (empty) upcoming
+                        // list of connection capacity, leaving its skeleton up.
+                        // Real Schichten/counts fill in on the next emission.
+                        startWith({
+                          ...event,
+                          schichten: [],
+                          countAttendees: 0,
+                          countNeeded: 0,
+                        }),
                       ),
                   ),
                 );
@@ -403,6 +427,19 @@ export class HelferPage implements OnInit {
                             countNeeded: 0,
                           }),
                         ),
+                        // Non-blocking enrichment: emit the event row at once
+                        // with placeholder counts. The Schichten/attendees reads
+                        // are nested 3 levels deep, so combineLatest otherwise
+                        // gates the whole list on the slowest leaf read across
+                        // all events — which also starved the (empty) upcoming
+                        // list of connection capacity, leaving its skeleton up.
+                        // Real Schichten/counts fill in on the next emission.
+                        startWith({
+                          ...event,
+                          schichten: [],
+                          countAttendees: 0,
+                          countNeeded: 0,
+                        }),
                       ),
                   ),
                 );

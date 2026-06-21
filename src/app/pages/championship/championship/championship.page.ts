@@ -27,6 +27,7 @@ import {
   take,
   tap,
   shareReplay,
+  startWith,
 } from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
@@ -111,8 +112,18 @@ export class ChampionshipPage implements OnInit {
   }
 
   private loadData() {
-    this.gameList$ = this.getTeamGamesUpcoming().pipe(shareReplay(1));
-    this.gameListPast$ = this.getTeamGamesPast().pipe(shareReplay(1));
+    // Build the realtime streams only once — see events.page.ts for the full
+    // rationale: rebuilding on every tab re-enter reflashed the skeleton and
+    // leaked Firestore listeners (and here also re-subscribed getCurrentSeason),
+    // which could leave the skeleton up forever on an empty list.
+    if (this.gameList$) return;
+
+    this.gameList$ = this.getTeamGamesUpcoming().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+    this.gameListPast$ = this.getTeamGamesPast().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
 
     // Get dynamic season from Swiss Unihockey API
     this.swissUnihockeyService.getCurrentSeason().subscribe((season) => {
@@ -131,12 +142,11 @@ export class ChampionshipPage implements OnInit {
       );
     });
 
-    this.teamAdminList$ = this.fbService
-      .getTeamAdminList()
-      .pipe(shareReplay(1));
-    this.clubAdminList$ = this.fbService
-      .getClubAdminList()
-      .pipe(shareReplay(1));
+    // getTeamAdminList()/getClubAdminList() share their listener internally via
+    // shareReplay, so no extra page-level shareReplay is needed (consistent with
+    // events/helfer/trainings).
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
+    this.clubAdminList$ = this.fbService.getClubAdminList();
   }
 
   ngOnDestroy(): void {}
@@ -363,6 +373,16 @@ export class ChampionshipPage implements OnInit {
                           teamDetails,
                           teamId,
                         })),
+                        // Non-blocking enrichment: emit the row immediately with
+                        // empty attendees so the list renders at once instead of
+                        // gating on the slowest attendees read across all games.
+                        // Real counts/status fill in next.
+                        startWith({
+                          game,
+                          attendees: [],
+                          teamDetails: {},
+                          teamId: team.id,
+                        }),
                       ),
                     ),
                   );
@@ -550,6 +570,16 @@ export class ChampionshipPage implements OnInit {
                           teamDetails,
                           teamId,
                         })),
+                        // Non-blocking enrichment: emit the row immediately with
+                        // empty attendees so the list renders at once instead of
+                        // gating on the slowest attendees read across all games.
+                        // Real counts/status fill in next.
+                        startWith({
+                          game,
+                          attendees: [],
+                          teamDetails: {},
+                          teamId: team.id,
+                        }),
                       ),
                     ),
                   );

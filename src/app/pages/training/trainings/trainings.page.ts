@@ -17,6 +17,7 @@ import {
   mergeMap,
   of,
   shareReplay,
+  startWith,
   switchMap,
   take,
   tap,
@@ -133,9 +134,19 @@ export class TrainingsPage implements OnInit {
   }
 
   private loadData() {
+    // Build the realtime streams only once — see events.page.ts for the full
+    // rationale: rebuilding on every tab re-enter reflashed the skeleton and
+    // leaked Firestore listeners, which could leave the skeleton up forever on
+    // an empty list.
+    if (this.trainingList$) return;
+
     // DATA
-    this.trainingList$ = this.getTeamTraining().pipe(shareReplay(1));
-    this.trainingListPast$ = this.getTeamTrainingPast().pipe(shareReplay(1));
+    this.trainingList$ = this.getTeamTraining().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+    this.trainingListPast$ = this.getTeamTrainingPast().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
     // CREATE
     this.teamAdminList$ = this.fbService.getTeamAdminList();
   }
@@ -322,6 +333,17 @@ export class TrainingsPage implements OnInit {
                           teamDetails,
                           teamId,
                         })),
+                        // Non-blocking enrichment: emit the row immediately with
+                        // placeholder counts so the list renders at once instead
+                        // of gating on the slowest attendees/exercises read.
+                        // Real counts/status fill in next.
+                        startWith({
+                          training,
+                          attendees: [],
+                          exercises: [],
+                          teamDetails: {},
+                          teamId: team.id,
+                        }),
                       ),
                     ),
                   );
@@ -538,6 +560,20 @@ export class TrainingsPage implements OnInit {
                               teamId,
                             }),
                           ),
+                          // Non-blocking enrichment: emit the row immediately
+                          // with placeholder counts so the past list renders at
+                          // once. Without this, combineLatest gates the whole
+                          // list on the slowest attendees/exercises read across
+                          // up to 30 trainings, so rows appeared only "much
+                          // later". The real counts/badges fill in on the next
+                          // emission.
+                          startWith({
+                            training,
+                            attendees: [],
+                            exercises: [],
+                            teamDetails: {},
+                            teamId: team.id,
+                          }),
                         ),
                       ),
                     );
