@@ -93,7 +93,9 @@ export class MapService {
     try {
       const coordinates: Position = await Geolocation.getCurrentPosition();
       const { latitude, longitude } = coordinates.coords;
-      if (latitude && longitude) {
+      // Explizite null-Prüfung: 0 ist falsy, aber lat/lng 0 sind gültige
+      // Koordinaten (Äquator / Nullmeridian).
+      if (latitude != null && longitude != null) {
         return [longitude, latitude];
       }
       return null;

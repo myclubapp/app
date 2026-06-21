@@ -3,7 +3,6 @@ import {
   AlertController,
   IonItemSliding,
   ModalController,
-  Platform,
 } from "@ionic/angular";
 import { Game } from "src/app/models/game";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
@@ -55,7 +54,6 @@ export class ChampionshipDetailPage implements OnInit {
 
   constructor(
     private readonly modalCtrl: ModalController,
-    public platform: Platform,
     private readonly userProfileService: UserProfileService,
     private readonly alertCtrl: AlertController,
     private readonly championshipService: ChampionshipService,
@@ -78,8 +76,9 @@ export class ChampionshipDetailPage implements OnInit {
       return;
     }
 
+    this.markerColor = this.mapService.getPrimaryColor();
     await this.loadData();
-    this.geolocationPermission();
+    this.loadCurrentPosition();
   }
 
   ionViewWillEnter() {
@@ -107,11 +106,11 @@ export class ChampionshipDetailPage implements OnInit {
     this.showStatus = !(this.children && this.children.length > 0);
   }
 
-  async geolocationPermission() {
-    // Auf Native triggert dies den Berechtigungs-Dialog; das Resultat blockiert
-    // den Standortabruf aber nicht (auf Web liefert die Permission-Prüfung
-    // immer false, getCurrentPosition funktioniert dort dennoch via Browser-API).
-    this.markerColor = this.mapService.getPrimaryColor();
+  private async loadCurrentPosition() {
+    // checkGeolocationPermission() triggert auf Native den Berechtigungs-Dialog,
+    // bevor die Position abgefragt wird. Das Resultat blockiert den Abruf bewusst
+    // nicht (auf Web liefert die Prüfung immer false, getCurrentPosition
+    // funktioniert dort dennoch via Browser-API).
     await this.mapService.checkGeolocationPermission();
     this.ownPosition = await this.mapService.getCurrentPosition();
   }
