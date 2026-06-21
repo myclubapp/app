@@ -333,6 +333,17 @@ export class TrainingsPage implements OnInit {
                           teamDetails,
                           teamId,
                         })),
+                        // Non-blocking enrichment: emit the row immediately with
+                        // placeholder counts so the list renders at once instead
+                        // of gating on the slowest attendees/exercises read.
+                        // Real counts/status fill in next.
+                        startWith({
+                          training,
+                          attendees: [],
+                          exercises: [],
+                          teamDetails: {},
+                          teamId: team.id,
+                        }),
                       ),
                     ),
                   );
