@@ -106,8 +106,10 @@ export class MapService {
   }
 
   /**
-   * Öffnet die Adresse in der nativen Karten-/Navigations-App.
-   * Plattform-spezifisch: iOS maps:, Android geo:, Web Google Maps.
+   * Startet die Navigation zur Adresse in der nativen Karten-/Navigations-App.
+   * Es wird eine Route (aktueller Standort -> Ziel) geöffnet, kein reiner
+   * Karten-Suchtreffer. Plattform-spezifisch: iOS maps:, Android
+   * google.navigation:, Web Google Maps Directions.
    */
   async openMapsNavigation(location: MapLocation): Promise<void> {
     const query =
@@ -118,15 +120,21 @@ export class MapService {
     const platform = Capacitor.getPlatform();
 
     if (platform === "ios") {
-      window.open(`maps:?q=${encoded}`, "_system");
+      // daddr = destination address -> Apple Maps öffnet die Routenplanung
+      window.open(`maps:?daddr=${encoded}`, "_system");
       return;
     }
 
     if (platform === "android") {
-      window.open(`geo:0,0?q=${encoded}`, "_system");
+      // google.navigation:q startet die Turn-by-Turn-Navigation
+      window.open(`google.navigation:q=${encoded}`, "_system");
       return;
     }
 
-    window.open(`https://maps.google.com/?q=${encoded}`, "_system");
+    // Web: Google Maps Directions API (Route vom aktuellen Standort zum Ziel)
+    window.open(
+      `https://www.google.com/maps/dir/?api=1&destination=${encoded}`,
+      "_system",
+    );
   }
 }

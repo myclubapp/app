@@ -401,7 +401,9 @@
     "schichten": "Turni di volontariato"
   },
   "helfer-add": {
-    "new__helper_event": "Nuovo evento di volontariato"
+    "new__helper_event": "Nuovo evento di volontariato",
+    "confirm_create_header": "Crea evento di volontariato",
+    "confirm_create_message": "Vuoi davvero creare questo evento di volontariato? Nota: la data e l'ora non potranno più essere modificate in seguito."
   },
   "helfer-detail": {
     "helfer_innen_for": "Volontari per",

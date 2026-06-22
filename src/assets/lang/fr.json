@@ -401,7 +401,9 @@
     "schichten": "Créneaux de bénévolat"
   },
   "helfer-add": {
-    "new__helper_event": "Nouvel événement de bénévole"
+    "new__helper_event": "Nouvel événement de bénévole",
+    "confirm_create_header": "Créer un événement de bénévole",
+    "confirm_create_message": "Voulez-vous vraiment créer cet événement de bénévole ? Remarque : la date et l'heure ne pourront plus être modifiées par la suite."
   },
   "helfer-detail": {
     "helfer_innen_for": "Bénévoles pour",

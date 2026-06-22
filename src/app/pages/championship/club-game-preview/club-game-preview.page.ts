@@ -2,16 +2,13 @@ import { Component, Input, OnInit } from "@angular/core";
 import { ModalController } from "@ionic/angular";
 import { Game } from "src/app/models/game";
 import { Browser } from "@capacitor/browser";
+import { Capacitor } from "@capacitor/core";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { Observable, of } from "rxjs";
 import { catchError, map, switchMap } from "rxjs/operators";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UiService } from "src/app/services/ui.service";
-import {
-  MapService,
-  SWISSTOPO_STYLE,
-  MAP_MARKER_COLOR,
-} from "src/app/services/map.service";
+import { MapService, SWISSTOPO_STYLE } from "src/app/services/map.service";
 
 @Component({
   selector: "app-club-game-preview",
@@ -26,8 +23,15 @@ export class ClubGamePreviewPage implements OnInit {
   game: Game;
 
   readonly mapStyle = SWISSTOPO_STYLE;
-  markerColor = MAP_MARKER_COLOR;
   ownPosition: [number, number] | null = null;
+
+  /**
+   * Liest die Marker-Farbe live aus dem aktiven Theme. Als Getter bleibt die
+   * Bindung reaktiv, falls zur Laufzeit zwischen Light/Dark gewechselt wird.
+   */
+  get markerColor(): string {
+    return this.mapService.getPrimaryColor();
+  }
 
   game$: Observable<Game>;
 
@@ -47,18 +51,19 @@ export class ClubGamePreviewPage implements OnInit {
       return;
     }
 
-    this.markerColor = this.mapService.getPrimaryColor();
     this.game$ = this.getGame(this.game.teamId, this.game.id);
     this.loadCurrentPosition();
   }
 
   private async loadCurrentPosition() {
     // checkGeolocationPermission() triggert auf Native den Berechtigungs-Dialog,
-    // bevor die Position abgefragt wird. Das Resultat blockiert den Abruf bewusst
-    // nicht (auf Web liefert die Prüfung immer false, getCurrentPosition
-    // funktioniert dort dennoch via Browser-API).
-    await this.mapService.checkGeolocationPermission();
-    this.ownPosition = await this.mapService.getCurrentPosition();
+    // bevor die Position abgefragt wird. Wird sie dort nicht erteilt, sparen wir
+    // uns den ohnehin fehlschlagenden Positionsabruf. Auf Web liefert die Prüfung
+    // immer false, getCurrentPosition funktioniert dort dennoch via Browser-API.
+    const hasPermission = await this.mapService.checkGeolocationPermission();
+    if (hasPermission || !Capacitor.isNativePlatform()) {
+      this.ownPosition = await this.mapService.getCurrentPosition();
+    }
   }
 
   // Simplified getGame - only fetches general game data, no members/participants
