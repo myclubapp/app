@@ -420,7 +420,9 @@
     "schichten": "Helferschichten"
   },
   "helfer-add": {
-    "new__helper_event": "Neuer Helferevent"
+    "new__helper_event": "Neuer Helferevent",
+    "confirm_create_header": "Helferevent erstellen",
+    "confirm_create_message": "Möchten Sie diesen Helferevent wirklich erstellen? Hinweis: Datum und Uhrzeit können nachträglich nicht mehr geändert werden."
   },
   "helfer-detail": {
     "helfer_innen_for": "Helfer für",

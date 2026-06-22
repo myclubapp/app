@@ -50,7 +50,15 @@
       "Read(//opt/homebrew/Cellar/gh/2.92.0/bin/**)",
       "Bash(ssh -T -o BatchMode=yes -o ConnectTimeout=5 git@github.com)",
       "Bash(ls ~/.nvm/versions/node 2>/dev/null; which -a node npx 2>/dev/null; ls /opt/homebrew/bin/npx /usr/local/bin/npx 2>/dev/null)",
-      "Read(//usr/local/lib/node_modules/npx/**)"
+      "Read(//usr/local/lib/node_modules/npx/**)",
+      "Bash(gh api *)",
+      "Bash(mdfind -name \"venova\")",
+      "WebFetch(domain:registry.npmjs.org)",
+      "Bash(~/.nvm/versions/node/v22.21.1/bin/node --version)",
+      "Bash(command -v node)",
+      "Bash(/usr/local/bin/node node_modules/.bin/tsc --noEmit -p tsconfig.app.json)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(./node_modules/.bin/tsc --noEmit -p tsconfig.json)"
     ],
     "additionalDirectories": ["/Users/sandro"]
   },

@@ -88,10 +88,10 @@ export class NewsPage implements OnInit {
   gamePreviewDays: number = 10;
   hasChampionshipModule: boolean = false;
 
-  currentSegment: "all" | "verein" | "verband" = "all";
-  private segmentFilter$ = new BehaviorSubject<"all" | "verein" | "verband">(
-    "all",
-  );
+  // Filter value: "all", "verband" or a specific club id. A club id filters
+  // the list down to that single club's news (source === "verein").
+  currentSegment: string = "all";
+  private segmentFilter$ = new BehaviorSubject<string>("all");
 
   constructor(
     private readonly notificationService: NotificationService,
@@ -202,7 +202,11 @@ export class NewsPage implements OnInit {
     ]).pipe(
       map(([list, filter]) => {
         if (filter === "all") return list;
-        return list.filter((n) => n.source === filter);
+        if (filter === "verband") {
+          return list.filter((n) => n.source === "verband");
+        }
+        // Any other value is a club id: show only that club's news.
+        return list.filter((n) => n.source === "verein" && n.clubId === filter);
       }),
     );
     this.notifications$ = this.getNotifications().pipe(
@@ -237,7 +241,9 @@ export class NewsPage implements OnInit {
     try {
       const { value } = await Preferences.get({ key: "newsFilter" });
       if (value) {
-        const savedFilter = value as "all" | "verein" | "verband";
+        // The legacy generic "verein" value no longer maps to anything (it has
+        // been replaced by per-club filters) — fall back to "all" in that case.
+        const savedFilter = value === "verein" ? "all" : value;
         this.currentSegment = savedFilter;
         this.segmentFilter$.next(savedFilter);
         this.filterValue = savedFilter === "all" ? "" : savedFilter;
@@ -250,7 +256,7 @@ export class NewsPage implements OnInit {
   /**
    * Speichert die aktuelle Filter-Einstellung im lokalen Storage
    */
-  async saveFilter(filter: "all" | "verein" | "verband"): Promise<void> {
+  async saveFilter(filter: string): Promise<void> {
     try {
       await Preferences.set({
         key: "newsFilter",
@@ -356,6 +362,9 @@ export class NewsPage implements OnInit {
                     map((arr) =>
                       arr.map((n) => ({
                         ...n,
+                        // Ensure the club id is set so the per-club filter works
+                        // even if the document itself doesn't carry it.
+                        clubId: club.id,
                         source: "verein" as const,
                       })),
                     ),
@@ -672,31 +681,40 @@ export class NewsPage implements OnInit {
   }
 
   async openFilter() {
+    // Load the user's clubs so each can be offered as its own filter option.
+    const clubs =
+      (await this.clubList$
+        ?.pipe(take(1))
+        .toPromise()
+        .catch(() => [])) ?? [];
+
+    const inputs: any[] = [
+      {
+        name: "all",
+        type: "radio",
+        label: "Alle",
+        value: "all",
+        checked: this.currentSegment === "all",
+      },
+      {
+        name: "verband",
+        type: "radio",
+        label: "Verband",
+        value: "verband",
+        checked: this.currentSegment === "verband",
+      },
+      ...clubs.map((club) => ({
+        name: club.id,
+        type: "radio",
+        label: club.name,
+        value: club.id,
+        checked: this.currentSegment === club.id,
+      })),
+    ];
+
     const alert = await this.alertCtrl.create({
       header: "News filtern",
-      inputs: [
-        {
-          name: "all",
-          type: "radio",
-          label: "Alle",
-          value: "all",
-          checked: this.currentSegment === "all",
-        },
-        {
-          name: "verband",
-          type: "radio",
-          label: "Verband",
-          value: "verband",
-          checked: this.currentSegment === "verband",
-        },
-        {
-          name: "verein",
-          type: "radio",
-          label: "Verein",
-          value: "verein",
-          checked: this.currentSegment === "verein",
-        },
-      ],
+      inputs,
       buttons: [
         {
           text: this.translate.instant("common.cancel") || "Abbrechen",
@@ -713,7 +731,7 @@ export class NewsPage implements OnInit {
     const { data, role } = await alert.onWillDismiss();
     if (role === "confirm") {
       const selected = (data as any)?.values ?? (data as any);
-      const value = (selected as "all" | "verein" | "verband") || "all";
+      const value = (selected as string) || "all";
       this.currentSegment = value;
       this.segmentFilter$.next(value);
       this.filterValue = value === "all" ? "" : value;
@@ -726,10 +744,7 @@ export class NewsPage implements OnInit {
   async onSegmentChanged(event: CustomEvent<{ value?: string | number }>) {
     const raw = event.detail?.value;
     const value =
-      ((typeof raw === "number" ? String(raw) : raw) as
-        | "all"
-        | "verein"
-        | "verband") || "all";
+      (typeof raw === "number" ? String(raw) : (raw as string)) || "all";
     this.currentSegment = value;
     this.segmentFilter$.next(value);
 
