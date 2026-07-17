@@ -14,6 +14,7 @@ Die Dokumente bauen aufeinander auf und werden in dieser Reihenfolge gepflegt:
 | [entity_model.md](entity_model.md) | ER-Diagramm (Mermaid) und Attribut-Tabellen aller Entitäten | `/ai-architect-core:ai-entity-model` |
 | [use_cases.md](use_cases.md) | Use-Case-Diagramm (Mermaid) mit Traceability UC → FR | `/ai-architect-core:ai-use-case-diagram` |
 | [use_cases/](use_cases/) | Detail-Spezifikationen UC-001 bis UC-033 (Szenarien, Business Rules) | `/ai-architect-core:ai-use-case-spec` |
+| [guidelines.md](guidelines.md) | Verbindliche Implementierungs-Guidelines (UI, Styling, Naming, Glossar) | `/ai-architect-dev-tools:ai-guidelines` |
 
 ## Pflegeprozess
 
