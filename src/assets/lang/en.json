@@ -695,6 +695,16 @@
       "cancel": "Cancel",
       "no_members": "No available members found"
     },
+    "change_additional_name": {
+      "header": "Change name suffix",
+      "message": "The team name «{{name}}» is provided by the federation and is overwritten regularly. The suffix is kept and appended to the name for display.",
+      "placeholder": "Name suffix"
+    },
+    "change_name": {
+      "header": "Change team name",
+      "placeholder": "Team name",
+      "empty": "The team name must not be empty"
+    },
     "add_member": {
       "header": "Add member",
       "add": "Add",

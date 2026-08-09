@@ -694,6 +694,16 @@
       "cancel": "Annulla",
       "no_members": "Nessun membro disponibile trovato"
     },
+    "change_additional_name": {
+      "header": "Modifica il suffisso del nome",
+      "message": "Il nome della squadra «{{name}}» è fornito dalla federazione e viene sovrascritto regolarmente. Il suffisso viene mantenuto e aggiunto al nome per la visualizzazione.",
+      "placeholder": "Suffisso del nome"
+    },
+    "change_name": {
+      "header": "Modifica il nome della squadra",
+      "placeholder": "Nome della squadra",
+      "empty": "Il nome della squadra non può essere vuoto"
+    },
     "add_member": {
       "header": "Aggiungi membro",
       "add": "Aggiungi",

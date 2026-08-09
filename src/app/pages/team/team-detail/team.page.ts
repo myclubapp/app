@@ -590,6 +590,129 @@ export class TeamPage implements OnInit {
     }
   }
 
+  /**
+   * Nur Teams vom Typ "Club" dürfen direkt umbenannt werden — bei Verbands-Teams
+   * (z. B. swissunihockey) kommt der Name aus der Verbands-API und wird dort
+   * regelmässig überschrieben; editierbar ist deshalb nur der Namenszusatz.
+   */
+  canEditTeamName(team: Team): boolean {
+    return team?.type === "Club";
+  }
+
+  async editTeamName(team: Team) {
+    if (this.canEditTeamName(team)) {
+      await this.changeTeamName(team);
+    } else {
+      await this.changeAdditionalTeamName(team);
+    }
+  }
+
+  private async changeTeamName(team: Team) {
+    const result = await this.uiService.showFormDialog({
+      header: await lastValueFrom(
+        this.translate.get("team.change_name.header"),
+      ),
+      inputs: [
+        {
+          name: "name",
+          type: "text",
+          placeholder: await lastValueFrom(
+            this.translate.get("team.change_name.placeholder"),
+          ),
+          value: team.baseName ?? team.name,
+        },
+      ],
+      confirmText: await lastValueFrom(this.translate.get("common.save")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    if (!result) {
+      return;
+    }
+
+    const name = (result.values?.name || "").trim();
+
+    if (!name) {
+      await this.uiService.showErrorToast(
+        await lastValueFrom(this.translate.get("team.change_name.empty")),
+      );
+      return;
+    }
+
+    if (name === (team.baseName ?? team.name)) {
+      return;
+    }
+
+    try {
+      await this.fbService.setTeamAttribute(team.id, "name", name);
+      this.team = { ...this.team, baseName: name, name };
+      await this.presentToast();
+    } catch (error) {
+      await this.presentErrorToast(error);
+    }
+  }
+
+  /**
+   * Der Zusatz wird separat gespeichert und überlebt damit jede Synchronisation
+   * des Teamnamens mit der Verbands-API.
+   */
+  private async changeAdditionalTeamName(team: Team) {
+    const result = await this.uiService.showFormDialog({
+      header: await lastValueFrom(
+        this.translate.get("team.change_additional_name.header"),
+      ),
+      message: await lastValueFrom(
+        this.translate.get("team.change_additional_name.message", {
+          name: team.baseName ?? team.name,
+        }),
+      ),
+      inputs: [
+        {
+          name: "additionalName",
+          type: "text",
+          placeholder: await lastValueFrom(
+            this.translate.get("team.change_additional_name.placeholder"),
+          ),
+          value: team.additionalName || "",
+        },
+      ],
+      confirmText: await lastValueFrom(this.translate.get("common.save")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    if (!result) {
+      return;
+    }
+
+    const additionalName = (result.values?.additionalName || "").trim();
+
+    if (additionalName === (team.additionalName || "")) {
+      return;
+    }
+
+    try {
+      await this.fbService.setTeamAttribute(
+        team.id,
+        "additionalName",
+        additionalName,
+      );
+      const baseName = team.baseName ?? team.name;
+      this.team = {
+        ...this.team,
+        baseName,
+        additionalName,
+        name: this.fbService.getTeamDisplayName({
+          ...team,
+          name: baseName,
+          additionalName,
+        }),
+      };
+      await this.presentToast();
+    } catch (error) {
+      await this.presentErrorToast(error);
+    }
+  }
+
   async changeJahresbeitrag(team: Team) {
     const alert = await this.alertCtrl.create({
       header: "Jahresbeitrag ändern",

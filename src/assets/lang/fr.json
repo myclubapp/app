@@ -694,6 +694,16 @@
       "cancel": "Annuler",
       "no_members": "Il n'y a pas d'autres membres disponibles qui pourraient être ajoutés comme administrateurs."
     },
+    "change_additional_name": {
+      "header": "Modifier le complément de nom",
+      "message": "Le nom d'équipe «{{name}}» est fourni par la fédération et régulièrement écrasé. Le complément est conservé et ajouté au nom pour l'affichage.",
+      "placeholder": "Complément de nom"
+    },
+    "change_name": {
+      "header": "Modifier le nom de l'équipe",
+      "placeholder": "Nom de l'équipe",
+      "empty": "Le nom de l'équipe ne peut pas être vide"
+    },
     "add_member": {
       "header": "Ajouter un membre",
       "add": "Ajouter",

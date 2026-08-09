@@ -80,12 +80,14 @@ export class UiService {
    */
   async showFormDialog(options: {
     header: string;
+    message?: string;
     inputs: any[];
     confirmText?: string;
     cancelText?: string;
   }): Promise<any> {
     const alert = await this.alertController.create({
       header: options.header,
+      message: options.message,
       inputs: options.inputs,
       buttons: [
         {

@@ -99,8 +99,16 @@ ion-avatar img {
   }
 }
 
-.team-name {
+.team-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   margin-top: 32px;
+  padding: 0 16px;
+}
+
+.team-name {
   font-size: 1.5rem;
   font-weight: 600;
   text-align: center;

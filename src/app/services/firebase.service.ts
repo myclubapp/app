@@ -518,10 +518,33 @@ export class FirebaseService {
     ) as Observable<Profile[]>;
   }
 
+  /**
+   * Setzt den Anzeigenamen eines Teams zusammen. Bei Verbands-Teams
+   * (z. B. `swissunihockey`) wird `name` regelmässig vom Backend überschrieben;
+   * der vom Verein gepflegte `additionalName` bleibt davon unberührt und wird
+   * nur für die Darstellung angehängt.
+   */
+  getTeamDisplayName(team: Team): string {
+    const name = team?.name || "";
+    const additionalName = (team?.additionalName || "").trim();
+    return additionalName ? `${name} ${additionalName}` : name;
+  }
+
   getTeamRef(teamId) {
     const teamRef = doc(this.firestore, `/teams/${teamId}`);
     return runInInjectionContext(this.injector, () =>
-      docData(teamRef, { idField: "id" }).pipe(shareReplay(1)),
+      docData(teamRef, { idField: "id" }).pipe(
+        map((team: Team) =>
+          team
+            ? {
+                ...team,
+                baseName: team.name,
+                name: this.getTeamDisplayName(team),
+              }
+            : team,
+        ),
+        shareReplay(1),
+      ),
     ) as Observable<Team>;
   }
 
@@ -1365,6 +1388,11 @@ export class FirebaseService {
   async setClubAttribute(clubId: string, fieldname: string, value: any) {
     const clubRef = doc(this.firestore, `/club/${clubId}`);
     return updateDoc(clubRef, { [fieldname]: value });
+  }
+
+  async setTeamAttribute(teamId: string, fieldname: string, value: any) {
+    const teamRef = doc(this.firestore, `/teams/${teamId}`);
+    return updateDoc(teamRef, { [fieldname]: value });
   }
 
   async setClubCreditor(clubId: string, creditor: any) {

@@ -713,6 +713,16 @@
       "cancel": "Abbrechen",
       "no_members": "Keine verfügbaren Mitglieder gefunden"
     },
+    "change_additional_name": {
+      "header": "Namenszusatz ändern",
+      "message": "Der Teamname «{{name}}» wird vom Verband geliefert und regelmässig überschrieben. Der Zusatz bleibt erhalten und wird für die Darstellung an den Namen angehängt.",
+      "placeholder": "Namenszusatz"
+    },
+    "change_name": {
+      "header": "Team-Name ändern",
+      "placeholder": "Team-Name",
+      "empty": "Der Team-Name darf nicht leer sein"
+    },
     "add_member": {
       "header": "Mitglied hinzufügen",
       "add": "Hinzufügen",

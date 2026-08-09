@@ -45,7 +45,21 @@
       </ion-fab>
       } } }
     </div>
-    <ion-text class="team-name"> {{team.name}} </ion-text>
+    <div class="team-name-row">
+      <ion-text class="team-name"> {{team.name}} </ion-text>
+      @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ |
+      async; as clubAdminList) { @if (isTeamAdmin(teamAdminList, team.id) ||
+      isClubAdmin(clubAdminList, team.clubId)) {
+      <ion-button
+        fill="clear"
+        (click)="editTeamName(team)"
+        attr.aria-label='{{(canEditTeamName(team) ? "team.change_name.header" :
+        "team.change_additional_name.header") | translate}}'
+      >
+        <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+      </ion-button>
+      } } }
+    </div>
   </div>
   <ion-list lines="full" [inset]="true">
     <ion-list-header>
