@@ -402,7 +402,9 @@
     "schichten": "Helper shifts"
   },
   "helfer-add": {
-    "new__helper_event": "New helper event"
+    "new__helper_event": "New helper event",
+    "confirm_create_header": "Create helper event",
+    "confirm_create_message": "Do you really want to create this helper event? Note: the date and time cannot be changed afterwards."
   },
   "helfer-detail": {
     "helfer_innen_for": "Helpers for",

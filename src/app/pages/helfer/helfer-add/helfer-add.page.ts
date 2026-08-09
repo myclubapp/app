@@ -11,9 +11,11 @@ import {
   Observable,
   Subscription,
   catchError,
+  lastValueFrom,
   map,
   take,
 } from "rxjs";
+import { TranslateService } from "@ngx-translate/core";
 import { Club } from "src/app/models/club";
 import { HelferEvent, Schicht } from "src/app/models/event";
 import { Game } from "src/app/models/game";
@@ -54,6 +56,7 @@ export class HelferAddPage implements OnInit {
 
     private championshipService: ChampionshipService,
     private uiService: UiService,
+    private translate: TranslateService,
   ) {
     this.event = {
       id: "",
@@ -404,10 +407,15 @@ export class HelferAddPage implements OnInit {
       return null;
     }
 
-    // Bestätigungsdialog anzeigen
+    // Bestätigungsdialog anzeigen, inkl. Hinweis dass Datum/Uhrzeit
+    // nachträglich nicht mehr geändert werden können
     const confirmed = await this.uiService.showConfirmDialog({
-      header: "Event erstellen",
-      message: "Möchten Sie dieses Event wirklich erstellen?",
+      header: await lastValueFrom(
+        this.translate.get("helfer-add.confirm_create_header"),
+      ),
+      message: await lastValueFrom(
+        this.translate.get("helfer-add.confirm_create_message"),
+      ),
     });
 
     if (confirmed) {
