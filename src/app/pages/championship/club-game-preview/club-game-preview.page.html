@@ -1,5 +1,3 @@
-@if (game$ | async; as game) {
-
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="secondary">
@@ -9,6 +7,8 @@
     <ion-title>{{"common.details" | translate}}</ion-title>
   </ion-toolbar>
 </ion-header>
+
+@if (game$ | async; as game) {
 
 <ion-content>
   <ion-header collapse="condense">
@@ -144,16 +144,6 @@
   </ion-text>
 </ion-content>
 } @else {
-
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="secondary">
-      <ion-button (click)="close()">{{"common.close" | translate}}</ion-button>
-    </ion-buttons>
-
-    <ion-title>{{"common.details" | translate}}</ion-title>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content>
   <ion-header collapse="condense">
