@@ -10,6 +10,16 @@
     </ion-buttons>
     }
     <ion-title> {{"common.training" | translate}}</ion-title>
+    @if (!team && (hasMultipleTeams$ | async)) {
+    <ion-buttons slot="end">
+      <ion-button (click)="openTeamFilter()">
+        <ion-icon
+          slot="icon-only"
+          [name]="isTeamFilterActive ? 'filter-circle' : 'filter-circle-outline'"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    }
   </ion-toolbar>
 </ion-header>
 
@@ -29,7 +39,16 @@
     </ion-toolbar>
   </ion-header>
 
-  @if (trainingList$ | async; as trainingList) { @if (trainingList.length > 0) {
+  @if (isTeamFilterActive) {
+  <ion-item lines="none">
+    <ion-chip (click)="clearTeamFilter()">
+      <ion-icon name="filter-circle"></ion-icon>
+      <ion-label>{{currentTeamName}}</ion-label>
+      <ion-icon name="close-circle"></ion-icon>
+    </ion-chip>
+  </ion-item>
+  } @if (filteredTrainingList$ | async; as trainingList) { @if
+  (trainingList.length > 0) {
   <ion-list lines="full">
     <ion-list-header>
       <ion-label>{{"training.upcomming__training" | translate}}</ion-label>
@@ -229,7 +248,7 @@
     </ion-item>
     }
   </ion-list>
-  } @if (trainingListPast$ | async; as trainingListPast) { @if
+  } @if (filteredTrainingListPast$ | async; as trainingListPast) { @if
   (trainingListPast.length > 0) {
   <ion-list lines="full">
     <ion-list-header>

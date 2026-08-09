@@ -769,6 +769,7 @@
     "deleted_reason": "L'entraînement a été supprimé",
     "create_training_confirm": "L'entraînement doit-il être créé ?",
     "all_trainings": "Tous les entraînements",
+    "filter__title": "Filtrer les entraînements",
     "exercises_available": "Exercices disponibles"
   },
   "side_bar": {

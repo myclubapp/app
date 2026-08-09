@@ -25,12 +25,14 @@ describe("TrainingsPage", () => {
     authServiceSpy.getUser$.and.returnValue(of(null));
     const fbServiceSpy = jasmine.createSpyObj("FirebaseService", [
       "getTeamAdminList",
+      "getTeamList",
       "getUserTeamRefs",
       "getTeamMemberRefs",
       "getTeamRef",
       "isTeamAdmin",
     ]);
     fbServiceSpy.getTeamAdminList.and.returnValue(of([]));
+    fbServiceSpy.getTeamList.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
       declarations: [TrainingsPage],

@@ -31,12 +31,16 @@ import { Timestamp } from "@angular/fire/firestore";
 import { TrainingDetailPage } from "../training-detail/training-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Team } from "src/app/models/team";
-// import { FilterService } from "src/app/services/filter.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { Profile } from "src/app/models/user";
 import { UiService } from "src/app/services/ui.service";
+import { Preferences } from "@capacitor/preferences";
+import { BehaviorSubject } from "rxjs";
+
+const ALL_TEAMS = "all";
+const TEAM_FILTER_STORAGE_KEY = "trainingTeamFilter";
 
 @Component({
   selector: "app-trainings",
@@ -54,6 +58,8 @@ export class TrainingsPage implements OnInit {
 
   trainingList$: Observable<Training[]>;
   trainingListPast$: Observable<Training[]>;
+  filteredTrainingList$: Observable<Training[]>;
+  filteredTrainingListPast$: Observable<Training[]>;
 
   subscription: Subscription;
 
@@ -61,15 +67,13 @@ export class TrainingsPage implements OnInit {
   activatedRouteSub: Subscription;
 
   children: Profile[] = [];
-  // teamList$: Observable<Team[]>;
-  // filterList: any[] = [];
-  // filterValue: string = "";
-  // private teamFilterSubscription: Subscription;
-  // trainingListBackup$: Observable<Training[]>;
-  // trainingListPastBackup$: Observable<Training[]>;
 
-  // trainingListBackupSub: Subscription;
-  // trainingListPastBackupSub: Subscription;
+  // Team-Filter der Trainingsliste (Auswahl wird lokal gespeichert)
+  teamList$: Observable<Team[]>;
+  hasMultipleTeams$: Observable<boolean>;
+  currentTeamFilter: string = ALL_TEAMS;
+  currentTeamName: string = "";
+  private teamFilter$ = new BehaviorSubject<string>(ALL_TEAMS);
 
   constructor(
     public toastController: ToastController,
@@ -80,7 +84,6 @@ export class TrainingsPage implements OnInit {
     private readonly trainingService: TrainingService,
     private readonly menuCtrl: MenuController,
     private translate: TranslateService,
-    // private filterService: FilterService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private exerciseService: ExerciseService,
@@ -94,6 +97,11 @@ export class TrainingsPage implements OnInit {
     this.handleNavigationData();
 
     this.loadData();
+
+    // Nicht awaiten: handleNavigationData() braucht die laufende Navigation,
+    // die nach einem await bereits abgeschlossen sein kann. Der Filter wird
+    // reaktiv über teamFilter$ nachgezogen.
+    void this.restoreTeamFilter();
 
     /*this.subscription = this.trainingList$.pipe(
     /*this.subscription = this.trainingList$.pipe(
@@ -147,8 +155,123 @@ export class TrainingsPage implements OnInit {
     this.trainingListPast$ = this.getTeamTrainingPast().pipe(
       shareReplay({ bufferSize: 1, refCount: true }),
     );
+    // FILTER
+    this.teamList$ = this.fbService.getTeamList();
+    this.hasMultipleTeams$ = this.teamList$.pipe(
+      map((teams) => teams.length > 1),
+    );
+    this.filteredTrainingList$ = this.filterTrainingsByTeam(this.trainingList$);
+    this.filteredTrainingListPast$ = this.filterTrainingsByTeam(
+      this.trainingListPast$,
+    );
     // CREATE
     this.teamAdminList$ = this.fbService.getTeamAdminList();
+  }
+
+  private filterTrainingsByTeam(
+    trainings$: Observable<Training[]>,
+  ): Observable<Training[]> {
+    return combineLatest([trainings$, this.teamFilter$]).pipe(
+      map(([trainings, teamId]) =>
+        teamId === ALL_TEAMS
+          ? trainings
+          : trainings.filter((training) => training.teamId === teamId),
+      ),
+    );
+  }
+
+  get isTeamFilterActive(): boolean {
+    return this.currentTeamFilter !== ALL_TEAMS;
+  }
+
+  /**
+   * Öffnet die Team-Auswahl und übernimmt den gewählten Filter.
+   */
+  async openTeamFilter() {
+    const teams = await lastValueFrom(this.teamList$.pipe(take(1)));
+
+    const result = await this.uiService.showFormDialog({
+      header: await lastValueFrom(this.translate.get("training.filter__title")),
+      inputs: [
+        {
+          type: "radio",
+          label: await lastValueFrom(
+            this.translate.get("training.all_trainings"),
+          ),
+          value: ALL_TEAMS,
+          checked: this.currentTeamFilter === ALL_TEAMS,
+        },
+        ...teams.map((team) => ({
+          type: "radio",
+          label: team.name,
+          value: team.id,
+          checked: this.currentTeamFilter === team.id,
+        })),
+      ],
+      confirmText: await lastValueFrom(this.translate.get("common.apply")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    const selectedId = result?.values;
+    if (typeof selectedId !== "string") return;
+
+    const selectedTeam = teams.find((team) => team.id === selectedId);
+    this.setTeamFilter(
+      selectedTeam ? selectedTeam.id : ALL_TEAMS,
+      selectedTeam ? selectedTeam.name : "",
+    );
+    await this.saveTeamFilter();
+  }
+
+  async clearTeamFilter() {
+    this.setTeamFilter(ALL_TEAMS, "");
+    await this.saveTeamFilter();
+  }
+
+  private setTeamFilter(teamId: string, teamName: string) {
+    this.currentTeamFilter = teamId;
+    this.currentTeamName = teamName;
+    this.teamFilter$.next(teamId);
+  }
+
+  /**
+   * Stellt den zuletzt gewählten Team-Filter wieder her. Ein gespeichertes Team,
+   * dem der Benutzer nicht mehr angehört, wird verworfen — sonst bliebe die
+   * Liste dauerhaft leer.
+   */
+  private async restoreTeamFilter(): Promise<void> {
+    if (this.team && this.team.id) return;
+
+    try {
+      const { value } = await Preferences.get({ key: TEAM_FILTER_STORAGE_KEY });
+      if (!value || value === ALL_TEAMS) return;
+
+      const teams = await lastValueFrom(this.teamList$.pipe(take(1)));
+      const savedTeam = teams.find((team) => team.id === value);
+      if (!savedTeam) {
+        await Preferences.remove({ key: TEAM_FILTER_STORAGE_KEY });
+        return;
+      }
+
+      this.setTeamFilter(savedTeam.id, savedTeam.name);
+    } catch (error) {
+      console.error("Error restoring team filter:", error);
+    }
+  }
+
+  private async saveTeamFilter(): Promise<void> {
+    try {
+      if (this.currentTeamFilter === ALL_TEAMS) {
+        await Preferences.remove({ key: TEAM_FILTER_STORAGE_KEY });
+      } else {
+        await Preferences.set({
+          key: TEAM_FILTER_STORAGE_KEY,
+          value: this.currentTeamFilter,
+        });
+      }
+    } catch (error) {
+      console.error("Error saving team filter:", error);
+    }
   }
 
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
@@ -796,8 +919,10 @@ export class TrainingsPage implements OnInit {
   async toggleAll() {
     // User meldet sich für alle Trainings an
     try {
+      // Bewusst die gefilterte Liste: die Aktion gilt für das, was der
+      // Benutzer gerade sieht.
       const trainingList = await lastValueFrom(
-        this.trainingList$.pipe(take(1)),
+        this.filteredTrainingList$.pipe(take(1)),
       );
 
       for (const training of trainingList) {

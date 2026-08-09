@@ -769,6 +769,7 @@
     "deleted_reason": "L'allenamento è stato eliminato",
     "create_training_confirm": "Vuoi creare questo allenamento?",
     "all_trainings": "Tutti gli allenamenti",
+    "filter__title": "Filtra allenamenti",
     "exercises_available": "Esercizi disponibili"
   },
   "side_bar": {

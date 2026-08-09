@@ -770,6 +770,7 @@
     "deleted_reason": "Training was deleted",
     "create_training_confirm": "Should the training be created?",
     "all_trainings": "All trainings",
+    "filter__title": "Filter trainings",
     "exercises_available": "Exercises available"
   },
   "side_bar": {

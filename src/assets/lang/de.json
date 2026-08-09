@@ -789,6 +789,7 @@
     "deleted_reason": "Training wurde gelöscht",
     "create_training_confirm": "Soll das Training erstellt werden?",
     "all_trainings": "Alle Trainings",
+    "filter__title": "Trainings filtern",
     "exercises_available": "Übungen vorhanden"
   },
   "side_bar": {
