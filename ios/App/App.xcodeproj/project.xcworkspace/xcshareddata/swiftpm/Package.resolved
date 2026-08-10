@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ionic-team/capacitor-swift-pm.git",
       "state" : {
-        "revision" : "2231987d85b8b0b289320b1d0947b4ae8345cde4",
-        "version" : "8.4.1"
+        "revision" : "4f71d0b979f2f957326f04353eca7604ee937e1e",
+        "version" : "8.5.0"
       }
     },
     {
@@ -44,15 +44,6 @@
       "state" : {
         "revision" : "9bfcc6cf435b2e7c5562c1900b8680c594fa9a64",
         "version" : "3.6.0"
-      }
-    },
-    {
-      "identity" : "google-maps-ios-utils",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/googlemaps/google-maps-ios-utils.git",
-      "state" : {
-        "revision" : "22c6e764d14daaf5de2aa4a3700bc2e9dccae5ac",
-        "version" : "6.1.0"
       }
     },
     {
@@ -114,8 +105,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ionic-team/ion-ios-camera.git",
       "state" : {
-        "revision" : "2cd4f06b0ece21b6458e23357280c51f94bfceb8",
-        "version" : "1.0.4"
+        "revision" : "9068b2cc9584bfa118c185b8032bbebb3a4a2174",
+        "version" : "1.0.5"
       }
     },
     {
@@ -134,15 +125,6 @@
       "state" : {
         "revision" : "db363927d3a954e3ea24d2e72b6e9814769a84be",
         "version" : "2.1.1"
-      }
-    },
-    {
-      "identity" : "ios-maps-sdk",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/googlemaps/ios-maps-sdk.git",
-      "state" : {
-        "revision" : "02f8f144ef266da44d50a68d1562ca051bac27cc",
-        "version" : "9.4.0"
       }
     },
     {

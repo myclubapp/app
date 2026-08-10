@@ -10,6 +10,7 @@ const config: CapacitorConfig = {
   android: {
     adjustMarginsForEdgeToEdge: "auto",
     buildOptions: {
+      signingType: "apksigner",
       keystorePath: "KeyStore",
       keystoreAlias: "myclub",
     },
