@@ -14,7 +14,7 @@
 (`@fortawesome/angular-fontawesome`). Konfiguration: `src/global.scss` (Ionic-Bundle-CSS) und
 `src/theme/variables.scss`.
 
-**Kein Tailwind CSS** — die Angabe im README ist veraltet; es gibt weder eine Dependency noch eine Config.
+**Kein Tailwind CSS** — es gibt weder eine Dependency noch eine Config.
 
 ### Reuse Before Build
 

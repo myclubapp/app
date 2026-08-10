@@ -431,19 +431,6 @@
   {
     "department": "kessler",
     "relatedTo": "stuff",
-    "name": "@tailwindcss/forms",
-    "licensePeriod": "perpetual",
-    "material": "material",
-    "licenseType": "MIT",
-    "link": "git+https://github.com/tailwindlabs/tailwindcss-forms.git",
-    "remoteVersion": "0.5.7",
-    "installedVersion": "0.5.7",
-    "definedVersion": "0.5.7",
-    "author": "n/a"
-  },
-  {
-    "department": "kessler",
-    "relatedTo": "stuff",
     "name": "@trapezedev/configure",
     "licensePeriod": "perpetual",
     "material": "material",

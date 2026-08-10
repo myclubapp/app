@@ -17,16 +17,10 @@
             "index": "src/index.html",
             "polyfills": ["src/polyfills.ts", "@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
-            "externalDependencies": ["myclub-game-preview"],
             "assets": [
               {
                 "glob": "**/*",
                 "input": "src/assets",
-                "output": "assets"
-              },
-              {
-                "glob": "**/*",
-                "input": "node_modules/myclub-game-preview/dist/components/assets",
                 "output": "assets"
               },
               {
@@ -37,7 +31,6 @@
               "src/manifest.webmanifest"
             ],
             "styles": ["src/global.scss", "src/theme/variables.scss"],
-
             "extractLicenses": false,
             "sourceMap": true,
             "optimization": false,
@@ -68,11 +61,6 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/default",
                   "output": "./"
-                },
-                {
-                  "glob": "**/*",
-                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
-                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -128,11 +116,6 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/default",
                   "output": "./"
-                },
-                {
-                  "glob": "**/*",
-                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
-                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -188,11 +171,6 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/app-unihockey",
                   "output": "./"
-                },
-                {
-                  "glob": "**/*",
-                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
-                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -248,11 +226,6 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/app-volleyball",
                   "output": "./"
-                },
-                {
-                  "glob": "**/*",
-                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
-                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -308,11 +281,6 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/app-handball",
                   "output": "./"
-                },
-                {
-                  "glob": "**/*",
-                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
-                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -323,126 +291,6 @@
               ],
               "styles": [
                 "src/custom-themes/app-handball/variables.scss",
-                "src/global.scss"
-              ],
-              "optimization": {
-                "scripts": true,
-                "styles": {
-                  "minify": true,
-                  "inlineCritical": false
-                },
-                "fonts": true
-              },
-              "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                }
-              ]
-            },
-            "app-fussball": {
-              "index": "src/custom-themes/app-fussball/index.html",
-              "assets": [
-                {
-                  "glob": "**/*",
-                  "input": "src/assets",
-                  "output": "assets"
-                },
-                {
-                  "glob": "**/*.svg",
-                  "input": "node_modules/ionicons/dist/ionicons/svg",
-                  "output": "./svg"
-                },
-                {
-                  "glob": "**/*",
-                  "input": "src/custom-themes/app-fussball/assets",
-                  "output": "./assets"
-                },
-                {
-                  "glob": "manifest.webmanifest",
-                  "input": "src/custom-themes/app-fussball",
-                  "output": "./"
-                },
-                {
-                  "glob": "**/*",
-                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
-                  "output": "assets"
-                }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "styles": [
-                "src/custom-themes/app-fussball/variables.scss",
-                "src/global.scss"
-              ],
-              "optimization": {
-                "scripts": true,
-                "styles": {
-                  "minify": true,
-                  "inlineCritical": false
-                },
-                "fonts": true
-              },
-              "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                }
-              ]
-            },
-            "app-basketball": {
-              "index": "src/custom-themes/app-basketball/index.html",
-              "assets": [
-                {
-                  "glob": "**/*",
-                  "input": "src/assets",
-                  "output": "assets"
-                },
-                {
-                  "glob": "**/*.svg",
-                  "input": "node_modules/ionicons/dist/ionicons/svg",
-                  "output": "./svg"
-                },
-                {
-                  "glob": "**/*",
-                  "input": "src/custom-themes/app-basketball/assets",
-                  "output": "./assets"
-                },
-                {
-                  "glob": "manifest.webmanifest",
-                  "input": "src/custom-themes/app-basketball",
-                  "output": "./"
-                },
-                {
-                  "glob": "**/*",
-                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
-                  "output": "assets"
-                }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "styles": [
-                "src/custom-themes/app-basketball/variables.scss",
                 "src/global.scss"
               ],
               "optimization": {
@@ -488,11 +336,6 @@
                   "glob": "manifest.webmanifest",
                   "input": "src/custom-themes/app-turnverein",
                   "output": "./"
-                },
-                {
-                  "glob": "**/*",
-                  "input": "node_modules/myclub-game-preview/dist/myclub-game-preview/assets",
-                  "output": "assets"
                 }
               ],
               "fileReplacements": [
@@ -882,7 +725,7 @@
             "ssr": false,
             "browserTarget": "app:build:production",
             "firebaseProject": "myclubmanagement",
-            "firebaseHostingSite": "unihockey"
+            "firebaseHostingSite": "my-club"
           }
         }
       }

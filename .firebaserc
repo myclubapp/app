@@ -11,8 +11,17 @@
         "app-myclub": [
           "my-club"
         ],
-        "app-basketball": [
-          "basketballclub"
+        "app-unihockey": [
+          "unihockey"
+        ],
+        "app-volleyball": [
+          "swissvolley"
+        ],
+        "app-handball": [
+          "handballschweiz"
+        ],
+        "app-turnverein": [
+          "turnverein"
         ],
         "app-kadetten-unihockey": [
           "kadetten-unihockey"
@@ -28,21 +37,6 @@
         ],
         "app-kadetten-handball": [
           "kadetten-handball"
-        ],
-        "app-handball": [
-          "handballschweiz"
-        ],
-        "app-volleyball": [
-          "swissvolley"
-        ],
-        "app-unihockey": [
-          "unihockey"
-        ],
-        "app-turnverein": [
-          "turnverein"
-        ],
-        "app-fussball": [
-          "fussballclub"
         ]
       }
     }

@@ -90,13 +90,12 @@ ionic serve
 
 ### Tech Stack
 
-- Ionic Framework 8.7.5
-- Capacitor JS 7.4.3
-- Angular 20.3.3 & Angular PWA
-- Firebase 12.3.0
+- Ionic Framework 8.8.17
+- Capacitor JS 8.5.0
+- Angular 22.1.1 & Angular PWA
+- Firebase 11.10.0
 - RxJS 7.8.2
-- TypeScript 5.9.3
-- Tailwind CSS
+- TypeScript 6.0.3
 - Fontawesome 6.7.2
 - Ionicons v5
 
@@ -167,6 +166,100 @@ Die App ist als PWA verfügbar unter:
 - [my-club.app](https://my-club.app)
 - [my-club.web.app](https://my-club.web.app)
 
+### White-Label-Apps: eine Quelle der Wahrheit
+
+Alle Apps (myclub, Verbands-Apps, Vereins-Apps) werden aus **einem** Codebase
+gebaut und unterscheiden sich nur durch ihr Theme. Verwaltet wird das
+ausschliesslich in [`themes.config.json`](themes.config.json):
+
+```json
+"app-vbc-schaffhausen": {
+  "label": "VBC Schaffhausen",
+  "hostingSite": "vbc-schaffhausen",
+  "workflow": "main"
+}
+```
+
+Daraus generiert `npm run themes:sync` die vier Konfigurationsdateien:
+
+| Datei           | generierter Teil                                   |
+| --------------- | -------------------------------------------------- |
+| `angular.json`  | `architect.build.configurations`                   |
+| `package.json`  | alle Scripts mit Präfix `build:` / `build-deploy:` |
+| `firebase.json` | `hosting`                                          |
+| `.firebaserc`   | `projects.default` + `targets.*.hosting`           |
+
+> ⚠️ **Diese vier Abschnitte nie von Hand editieren.** Änderungen gehören in
+> `themes.config.json`, danach `npm run themes:sync`. Der CI-Job `themes:check`
+> lässt den Build rot laufen, wenn generierter Stand und Config auseinanderlaufen.
+
+Nicht generiert und weiterhin von Hand gepflegt: die Base-Options in
+`angular.json` (Dev-Build), sowie pro Theme `variables.scss`, `index.html`,
+`manifest.webmanifest` und die Assets unter `src/custom-themes/<theme>/`.
+
+### Befehle
+
+```bash
+# Übersicht aller Apps mit Hosting-Target und URL
+npm run themes:list
+
+# Konfigurationen neu generieren / auf Drift prüfen
+npm run themes:sync
+npm run themes:check
+
+# Bauen
+npm run build:app-unihockey          # oder: npx ng build --configuration app-unihockey
+
+# Bauen + deployen
+npm run deploy:apps -- app-unihockey app-volleyball
+npm run deploy:apps -- --all
+npm run deploy:apps -- --all --dry-run   # zeigt nur, was passieren würde
+npm run deploy:apps -- prod --skip-build # bestehendes www/ deployen
+```
+
+Das Deploy-CLI läuft bewusst **sequenziell** — alle Konfigurationen schreiben
+nach `www/`, parallele Builds würden sich gegenseitig überschreiben. In CI läuft
+stattdessen pro App ein eigener Runner (siehe unten).
+
+### Neue Vereins-App anlegen
+
+```bash
+npm run theme:new -- app-fc-musterhausen \
+  --label "FC Musterhausen" \
+  --site fc-musterhausen \
+  --primary "#1d4ed8" \
+  --secondary "#f59e0b"
+```
+
+Das legt `src/custom-themes/app-fc-musterhausen/` aus `empty-template` an,
+berechnet die Ionic-Farbvarianten (`-rgb`, `-shade`, `-tint`, `-contrast`) nach
+Ionic-Formel, füllt `index.html` und `manifest.webmanifest`, trägt die App in
+`themes.config.json` ein und synchronisiert die vier Konfigurationsdateien.
+
+Danach von Hand:
+
+1. Firebase-Site anlegen: `npx firebase hosting:sites:create fc-musterhausen`
+2. Assets ersetzen unter `src/custom-themes/app-fc-musterhausen/assets/`
+   (`logo.png`, `logo_trans.png`, `bg/`, `favicon/`, `icons/`, `splash/`)
+3. Dark Mode in `variables.scss` prüfen — generiert werden nur `primary` und
+   `secondary`, Hintergründe bleiben auf den Werten der Vorlage
+4. `npm run build:app-fc-musterhausen`
+
+Weitere nützliche Flags: `--short-name`, `--contrast`, `--theme-dir`
+(bestehendes Theme mitbenutzen statt ein neues anlegen).
+
+### CI/CD
+
+- **`master`** → [main.yml](.github/workflows/main.yml): Unit Tests +
+  Drift-Check, danach ein paralleler Deploy-Job pro App. Die Matrix wird zur
+  Laufzeit aus `themes.config.json` abgeleitet (`tools/ci-matrix.mjs main`) —
+  eine neue App in der Config bekommt automatisch ihren Job, ohne YAML-Änderung.
+- **`beta`** → [beta.yml](.github/workflows/beta.yml): Tests + Deploy auf
+  `beta-myclub`.
+- Einzelne Apps neu deployen ohne Push: Workflow `main` manuell starten
+  (_Run workflow_) und im Feld **apps** z. B. `app-unihockey,app-volleyball`
+  eintragen. Leer lassen = alle.
+
 ### Native Apps
 
 Für iOS/Android Build:
@@ -211,9 +304,12 @@ Premium-Version mit:
 
 - Keine Custom Implementierungen
 
-#### 🏀 Basketball
+#### 🏀 Basketball / ⚽ Fussball
 
-- Keine Custom Implementierungen
+- Keine Implementierungen. Die früheren Platzhalter-Konfigurationen
+  `app-basketball` und `app-fussball` wurden entfernt — es gab weder
+  Theme-Ordner noch Hosting-Einträge dazu. Neu aufsetzen mit
+  `npm run theme:new`.
 
 ## 📚 Dokumentation
 

@@ -1,0 +1,162 @@
+{
+  "$comment": "Einzige Quelle der Wahrheit für alle White-Label-Apps. Nach jeder Änderung `npm run themes:sync` ausführen — das generiert angular.json, package.json, firebase.json und .firebaserc.",
+  "firebase": {
+    "project": "myclubmanagement",
+    "hostingTemplate": {
+      "public": "www/browser",
+      "ignore": ["**/.*"],
+      "headers": [
+        {
+          "source": "*.[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].+(css|js)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public,max-age=31536000,immutable"
+            }
+          ]
+        },
+        {
+          "source": "/@(ngsw-worker.js|ngsw.json)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  },
+  "angular": {
+    "project": "app",
+    "themeRoot": "src/custom-themes",
+    "buildConfigurationTemplate": {
+      "index": "src/custom-themes/{{theme}}/index.html",
+      "assets": [
+        {
+          "glob": "**/*",
+          "input": "src/assets",
+          "output": "assets"
+        },
+        {
+          "glob": "**/*.svg",
+          "input": "node_modules/ionicons/dist/ionicons/svg",
+          "output": "./svg"
+        },
+        {
+          "glob": "**/*",
+          "input": "src/custom-themes/{{theme}}/assets",
+          "output": "./assets"
+        },
+        {
+          "glob": "manifest.webmanifest",
+          "input": "src/custom-themes/{{theme}}",
+          "output": "./"
+        }
+      ],
+      "fileReplacements": [
+        {
+          "replace": "src/environments/environment.ts",
+          "with": "src/environments/environment.prod.ts"
+        }
+      ],
+      "styles": [
+        "src/custom-themes/{{theme}}/variables.scss",
+        "src/global.scss"
+      ],
+      "optimization": {
+        "scripts": true,
+        "styles": {
+          "minify": true,
+          "inlineCritical": false
+        },
+        "fonts": true
+      },
+      "outputHashing": "all",
+      "sourceMap": false,
+      "namedChunks": false,
+      "aot": true,
+      "extractLicenses": true,
+      "budgets": [
+        {
+          "type": "initial",
+          "maximumWarning": "2mb",
+          "maximumError": "5mb"
+        }
+      ]
+    },
+    "extraConfigurations": {
+      "ci": {
+        "progress": false
+      }
+    }
+  },
+  "apps": {
+    "beta": {
+      "label": "myclub BETA",
+      "themeDir": "default",
+      "hostingSite": "beta-myclub",
+      "script": "beta",
+      "workflow": "beta"
+    },
+    "production": {
+      "label": "myclub",
+      "themeDir": "default",
+      "hostingTarget": "app-myclub",
+      "hostingSite": "my-club",
+      "script": "prod",
+      "workflow": "main"
+    },
+    "app-unihockey": {
+      "label": "swiss unihockey",
+      "hostingSite": "unihockey",
+      "workflow": "main"
+    },
+    "app-volleyball": {
+      "label": "Swiss Volley",
+      "hostingSite": "swissvolley",
+      "workflow": "main"
+    },
+    "app-handball": {
+      "label": "Handball Schweiz",
+      "hostingSite": "handballschweiz",
+      "workflow": "main"
+    },
+    "app-turnverein": {
+      "label": "Schweizerischer Turnverband",
+      "hostingSite": "turnverein",
+      "workflow": "main"
+    },
+    "app-kadetten-unihockey": {
+      "label": "Kadetten Unihockey Schaffhausen",
+      "hostingSite": "kadetten-unihockey",
+      "workflow": "main"
+    },
+    "app-uhc-win-u": {
+      "label": "UHC Winterthur United",
+      "hostingSite": "uhc-win-u",
+      "workflow": "main"
+    },
+    "app-stv-spreitenbach": {
+      "label": "STV Spreitenbach",
+      "hostingSite": "stv-spreitenbach",
+      "workflow": "main"
+    },
+    "app-vbc-schaffhausen": {
+      "label": "VBC Schaffhausen",
+      "hostingSite": "vbc-schaffhausen",
+      "workflow": "main"
+    },
+    "app-kadetten-handball": {
+      "label": "Kadetten Handball Schaffhausen",
+      "hostingSite": "kadetten-handball",
+      "workflow": "main"
+    }
+  }
+}

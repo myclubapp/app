@@ -32,37 +32,6 @@
       ]
     },
     {
-      "target": "app-unihockey",
-      "public": "www/browser",
-      "ignore": ["**/.*"],
-      "headers": [
-        {
-          "source": "*.[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].+(css|js)",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "public,max-age=31536000,immutable"
-            }
-          ]
-        },
-        {
-          "source": "/@(ngsw-worker.js|ngsw.json)",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "no-cache"
-            }
-          ]
-        }
-      ],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
-    },
-    {
       "target": "app-myclub",
       "public": "www/browser",
       "ignore": ["**/.*"],
@@ -94,7 +63,7 @@
       ]
     },
     {
-      "target": "app-turnverein",
+      "target": "app-unihockey",
       "public": "www/browser",
       "ignore": ["**/.*"],
       "headers": [
@@ -187,7 +156,7 @@
       ]
     },
     {
-      "target": "app-fussball",
+      "target": "app-turnverein",
       "public": "www/browser",
       "ignore": ["**/.*"],
       "headers": [
