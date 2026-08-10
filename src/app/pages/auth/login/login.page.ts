@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { Router } from "@angular/router";
 // import { AlertController, LoadingController } from '@ionic/angular';
 import { UserCredential } from "@angular/fire/auth";
@@ -24,6 +24,7 @@ import { UiService } from "src/app/services/ui.service";
   selector: "app-login",
   templateUrl: "./login.page.html",
   styleUrls: ["./login.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class LoginPage implements OnInit {

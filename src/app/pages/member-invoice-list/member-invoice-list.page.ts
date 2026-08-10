@@ -1,4 +1,10 @@
-import { Component, Input, OnInit, Optional } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  Optional,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { ModalController, IonRouterOutlet } from "@ionic/angular";
 import { InvoiceService } from "src/app/services/firebase/invoice.service";
 import { ClubInvoiceDetailPage } from "../club-invoice-detail/club-invoice-detail.page";
@@ -9,6 +15,7 @@ import { User } from "firebase/auth";
   selector: "app-member-invoice-list",
   templateUrl: "./member-invoice-list.page.html",
   styleUrls: ["./member-invoice-list.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class MemberInvoiceListPage implements OnInit {

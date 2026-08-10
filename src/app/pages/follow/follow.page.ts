@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 
 @Component({
-    selector: 'app-follow',
-    templateUrl: './follow.page.html',
-    styleUrls: ['./follow.page.scss'],
-    standalone: false
+  selector: "app-follow",
+  templateUrl: "./follow.page.html",
+  styleUrls: ["./follow.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class FollowPage implements OnInit {
-  constructor () {}
+  constructor() {}
 
-  ngOnInit () {}
+  ngOnInit() {}
 }

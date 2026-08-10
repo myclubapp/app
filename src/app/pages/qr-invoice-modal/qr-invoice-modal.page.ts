@@ -1,10 +1,16 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { ModalController } from "@ionic/angular";
 
 @Component({
   selector: "app-qr-invoice-modal",
   templateUrl: "./qr-invoice-modal.page.html",
   styleUrls: ["./qr-invoice-modal.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class QrInvoiceModalPage implements OnInit {

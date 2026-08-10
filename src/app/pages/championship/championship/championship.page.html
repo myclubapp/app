@@ -95,7 +95,7 @@
           [closedEvent]="false"
           (iconClick)="toggle($event, game)"
           [isMember]="game.isMember"
-          [hasChildren]="game.children?.length > 0"
+          [hasChildren]="$safeNavigationMigration(game.children?.length) > 0"
         ></app-status-icon>
         }
         <ion-label (click)="openChampionshipDetailModal(game, true)">
@@ -161,7 +161,7 @@
       <ion-item>
         <app-status-icon
           slot="start"
-          [status]="child?.status"
+          [status]="$safeNavigationMigration(child?.status)"
           [cancelled]="false"
           [closedEvent]="false"
           (iconClick)="toggleChildren(!child?.status, game, child.id)"
@@ -269,7 +269,7 @@
           [closedEvent]="false"
           [clickable]="false"
           [isMember]="game.isMember"
-          [hasChildren]="game.children?.length > 0"
+          [hasChildren]="$safeNavigationMigration(game.children?.length) > 0"
         ></app-status-icon>
         }
         <ion-label
@@ -306,7 +306,7 @@
     <ion-item>
       <app-status-icon
         slot="start"
-        [status]="child?.status"
+        [status]="$safeNavigationMigration(child?.status)"
         [cancelled]="false"
         [closedEvent]="false"
         [clickable]="false"
@@ -381,7 +381,7 @@
   <ion-list [inset]="true">
     <ion-accordion-group
       [multiple]="true"
-      [value]="teamsWithRankings[0]?.teamId"
+      [value]="$safeNavigationMigration(teamsWithRankings[0]?.teamId)"
     >
       @for (entry of teamsWithRankings; track entry) {
       <div>

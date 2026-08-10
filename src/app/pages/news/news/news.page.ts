@@ -1,4 +1,10 @@
-import { Component, OnInit, Optional, ChangeDetectorRef } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Optional,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   IonRouterOutlet,
   ModalController,
@@ -53,6 +59,7 @@ import { BehaviorSubject, Subject } from "rxjs";
   selector: "app-news",
   templateUrl: "./news.page.html",
   styleUrls: ["./news.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class NewsPage implements OnInit {

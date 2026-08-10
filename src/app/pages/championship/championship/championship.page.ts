@@ -4,6 +4,7 @@ import {
   Input,
   OnInit,
   Optional,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   AlertController,
@@ -49,6 +50,7 @@ import { SwissUnihockeyService } from "src/app/services/swiss-unihockey.service"
   selector: "app-championship",
   templateUrl: "./championship.page.html",
   styleUrls: ["./championship.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ChampionshipPage implements OnInit {

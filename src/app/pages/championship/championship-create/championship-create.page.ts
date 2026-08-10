@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   ModalController,
@@ -19,6 +24,7 @@ import { TranslateService } from "@ngx-translate/core";
   selector: "app-championship-create",
   templateUrl: "./championship-create.page.html",
   styleUrls: ["./championship-create.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ChampionshipCreatePage implements OnInit {

@@ -1,4 +1,10 @@
-import { Component, Input, OnInit, Optional } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  Optional,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { Browser } from "@capacitor/browser";
 import {
   AlertController,
@@ -36,6 +42,7 @@ import { CreateNewClubPage } from "../create-new-club/create-new-club.page";
   selector: "app-onboarding-club",
   templateUrl: "./onboarding-club.page.html",
   styleUrls: ["./onboarding-club.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class OnboardingClubPage implements OnInit {

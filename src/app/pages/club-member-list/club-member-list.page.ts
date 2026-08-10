@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   ModalController,
@@ -35,6 +40,7 @@ import { Club } from "src/app/models/club";
   selector: "app-club-member-list",
   templateUrl: "./club-member-list.page.html",
   styleUrls: ["./club-member-list.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ClubMemberListPage implements OnInit {

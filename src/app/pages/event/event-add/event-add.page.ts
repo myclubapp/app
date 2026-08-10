@@ -1,4 +1,10 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { ModalController, ToastController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
@@ -13,6 +19,7 @@ import { EventService } from "src/app/services/firebase/event.service";
   selector: "app-event-add",
   templateUrl: "./event-add.page.html",
   styleUrls: ["./event-add.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class EventAddPage implements OnInit {

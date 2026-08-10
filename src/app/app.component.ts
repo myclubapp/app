@@ -1,4 +1,10 @@
-import { AfterViewInit, Component, NgZone, OnInit } from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  NgZone,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { SwUpdate, VersionEvent } from "@angular/service-worker";
 import { registerLocaleData } from "@angular/common";
 import localeDe from "@angular/common/locales/de";
@@ -7,6 +13,7 @@ import {
   AlertController,
   MenuController,
   ModalController,
+  NavController,
 } from "@ionic/angular";
 import { App } from "@capacitor/app";
 import { Dialog } from "@capacitor/dialog";
@@ -51,6 +58,7 @@ register();
   selector: "app-root",
   templateUrl: "app.component.html",
   styleUrls: ["app.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class AppComponent implements OnInit, AfterViewInit {
@@ -75,14 +83,23 @@ export class AppComponent implements OnInit, AfterViewInit {
     private readonly fbService: FirebaseService,
     private readonly profileService: UserProfileService,
     private readonly router: Router,
+    private readonly navCtrl: NavController,
     public readonly menuCtrl: MenuController,
     private translate: TranslateService,
     private uiService: UiService,
     private ngZone: NgZone,
   ) {
     this.initializeApp();
-    //for menu layout enable/disable, club liste wird oben schon einmal gelesen, aber als Promise.
-    this.clubList$ = this.fbService.getClubList().pipe(take(1));
+    // For menu layout enable/disable. AppComponent lebt über den gesamten
+    // Session-Lebenszyklus, deshalb muss die Liste an den Auth-State gekoppelt
+    // sein: ein einmaliges getClubList().pipe(take(1)) im Konstruktor wäre nach
+    // dem ersten Emit abgeschlossen und würde nach logout/login nie wieder
+    // nachladen (Menü bleibt leer bis zum Browser-Reload).
+    this.clubList$ = this.authService.user$.pipe(
+      switchMap((user) =>
+        user ? this.fbService.getClubList().pipe(take(1)) : of([] as Club[]),
+      ),
+    );
   }
 
   ngOnInit(): void {
@@ -214,7 +231,13 @@ export class AppComponent implements OnInit, AfterViewInit {
         console.log("User is signed out");
         this.menuCtrl.enable(false, "menu");
         this.email = "";
-        const navLogout = await this.router.navigateByUrl("/login");
+        // navigateRoot statt router.navigateByUrl: Ionic hält die Tab-Seiten im
+        // ion-router-outlet als View-Stack vor. Ohne Root-Navigation überleben
+        // die Instanzen den Logout, und weil Seiten wie news.page ihre Streams
+        // per `if (this.newsList$) return;` nur einmal aufbauen, bleiben nach
+        // dem nächsten Login die beim Logout leer gelaufenen Streams stehen.
+        // navigateRoot räumt den Stack ab, die Seiten werden neu erzeugt.
+        const navLogout = await this.navCtrl.navigateRoot("/login");
         if (navLogout) {
           console.log("Navigation SUCCESS to Logout Page");
         } else {

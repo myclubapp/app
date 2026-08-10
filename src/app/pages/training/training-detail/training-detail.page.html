@@ -227,7 +227,8 @@
                 <ion-label (click)="openMember(member)">
                   <h2>{{member.firstName}} {{member.lastName}}</h2>
                   <p>
-                    {{member?.changedAt?.toDate() | date:'dd.MM.yyyy HH:mm'}}
+                    {{$safeNavigationMigration(member?.changedAt?.toDate()) |
+                    date:'dd.MM.yyyy HH:mm'}}
                   </p>
                   @for (role of member.roles; track role) {
                   <ion-badge>{{role}}</ion-badge>
@@ -277,7 +278,8 @@
                 <ion-label (click)="openMember(member)">
                   <h2>{{member.firstName}} {{member.lastName}}</h2>
                   <p>
-                    {{member?.changedAt?.toDate() | date:'dd.MM.yyyy HH:mm'}}
+                    {{$safeNavigationMigration(member?.changedAt?.toDate()) |
+                    date:'dd.MM.yyyy HH:mm'}}
                   </p>
                   @for (role of member.roles; track role) {
                   <ion-badge>{{role}}</ion-badge>

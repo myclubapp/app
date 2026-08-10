@@ -1,18 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { MenuController } from '@ionic/angular';
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import { MenuController } from "@ionic/angular";
 
 @Component({
-    selector: 'app-logout',
-    templateUrl: './logout.page.html',
-    styleUrls: ['./logout.page.scss'],
-    standalone: false
+  selector: "app-logout",
+  templateUrl: "./logout.page.html",
+  styleUrls: ["./logout.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class LogoutPage implements OnInit {
-  constructor (public menuCtrl: MenuController) {
-    this.menuCtrl.enable(false, 'menu');
+  constructor(public menuCtrl: MenuController) {
+    this.menuCtrl.enable(false, "menu");
   }
 
-  ngOnInit () {
-    this.menuCtrl.enable(false, 'menu');
+  ngOnInit() {
+    this.menuCtrl.enable(false, "menu");
   }
 }

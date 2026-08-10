@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   AlertInput,
@@ -34,6 +39,7 @@ import { Optional } from "@angular/core";
   selector: "app-member",
   templateUrl: "./member.page.html",
   styleUrls: ["./member.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class MemberPage implements OnInit {

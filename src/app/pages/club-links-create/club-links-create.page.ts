@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { ModalController, ToastController } from "@ionic/angular";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { ClubLink } from "src/app/models/club-link";
@@ -10,6 +15,7 @@ import { UiService } from "src/app/services/ui.service";
   selector: "app-club-links-create",
   templateUrl: "./club-links-create.page.html",
   styleUrls: ["./club-links-create.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ClubLinksCreatePage implements OnInit {

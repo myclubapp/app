@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   ModalController,
@@ -34,6 +39,7 @@ import { TranslateService } from "@ngx-translate/core";
   selector: "app-training-create",
   templateUrl: "./training-create.page.html",
   styleUrls: ["./training-create.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class TrainingCreatePage implements OnInit {

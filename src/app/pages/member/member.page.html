@@ -97,7 +97,8 @@
     <ion-item>
       <ion-icon slot="start" name="calendar"></ion-icon>
       <ion-label>
-        {{ userProfile.dateOfBirth?.toDate() | date: 'dd.MM.yyyy' }}
+        {{ $safeNavigationMigration(userProfile.dateOfBirth?.toDate()) | date:
+        'dd.MM.yyyy' }}
       </ion-label>
       <ion-icon
         size="small"

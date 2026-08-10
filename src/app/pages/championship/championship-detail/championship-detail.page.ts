@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
@@ -25,6 +30,7 @@ import { MapService, SWISSTOPO_STYLE } from "src/app/services/map.service";
   selector: "app-championship-detail",
   templateUrl: "./championship-detail.page.html",
   styleUrls: ["./championship-detail.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ChampionshipDetailPage implements OnInit {

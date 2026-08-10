@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
@@ -35,6 +40,7 @@ import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
   selector: "app-event-detail",
   templateUrl: "./event-detail.page.html",
   styleUrls: ["./event-detail.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class EventDetailPage implements OnInit {

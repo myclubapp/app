@@ -1,4 +1,10 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
@@ -36,6 +42,7 @@ import { HelferAddPage } from "../helfer-add/helfer-add.page";
   selector: "app-helfer-detail",
   templateUrl: "./helfer-detail.page.html",
   styleUrls: ["./helfer-detail.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class HelferDetailPage implements OnInit {

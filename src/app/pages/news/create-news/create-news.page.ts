@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { Club } from "src/app/models/club";
 import { AuthService } from "src/app/services/auth.service";
@@ -15,6 +15,7 @@ import { ModalController } from "@ionic/angular";
   selector: "app-create-news",
   templateUrl: "./create-news.page.html",
   styleUrls: ["./create-news.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class CreateNewsPage implements OnInit {

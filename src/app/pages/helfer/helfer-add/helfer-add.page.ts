@@ -1,4 +1,10 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   ModalController,
@@ -29,6 +35,7 @@ import { UiService } from "src/app/services/ui.service";
   selector: "app-helfer-add",
   templateUrl: "./helfer-add.page.html",
   styleUrls: ["./helfer-add.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class HelferAddPage implements OnInit {

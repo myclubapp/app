@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   ModalController,
@@ -30,6 +35,7 @@ import { Browser } from "@capacitor/browser";
   selector: "app-club-subscription",
   templateUrl: "./club-subscription.page.html",
   styleUrls: ["./club-subscription.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ClubSubscriptionPage implements OnInit {

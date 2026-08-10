@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 
 import {
   IonItemSliding,
@@ -44,6 +44,7 @@ import { Optional } from "@angular/core";
   selector: "app-events",
   templateUrl: "./events.page.html",
   styleUrls: ["./events.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class EventsPage implements OnInit {

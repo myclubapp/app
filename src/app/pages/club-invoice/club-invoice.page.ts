@@ -1,4 +1,10 @@
-import { Component, Input, OnInit, Optional } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  Optional,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   ModalController,
   AlertController,
@@ -43,6 +49,7 @@ interface ClubSurcharge {
   selector: "app-club-invoice",
   templateUrl: "./club-invoice.page.html",
   styleUrls: ["./club-invoice.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ClubInvoicePage implements OnInit {

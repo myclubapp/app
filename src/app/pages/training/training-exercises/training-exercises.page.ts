@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { Browser } from "@capacitor/browser";
 import {
   IonItemSliding,
@@ -18,6 +23,7 @@ import { FirebaseService } from "src/app/services/firebase.service";
   selector: "app-training-exercises",
   templateUrl: "./training-exercises.page.html",
   styleUrls: ["./training-exercises.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class TrainingExercisesPage implements OnInit {

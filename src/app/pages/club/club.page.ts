@@ -1,4 +1,10 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   ModalController,
@@ -47,6 +53,7 @@ import { ClubBillingPeriodPage } from "../club-billing-period/club-billing-perio
   selector: "app-club",
   templateUrl: "./club.page.html",
   styleUrls: ["./club.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ClubPage implements OnInit {

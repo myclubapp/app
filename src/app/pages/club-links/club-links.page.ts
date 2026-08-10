@@ -1,4 +1,10 @@
-import { Component, Input, OnInit, Optional } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  Optional,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   ModalController,
   ToastController,
@@ -30,6 +36,7 @@ import { ClubLinksEditPage } from "../club-links-edit/club-links-edit.page";
   selector: "app-club-links",
   templateUrl: "./club-links.page.html",
   styleUrls: ["./club-links.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ClubLinksPage implements OnInit {

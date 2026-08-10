@@ -1,4 +1,9 @@
-import { Component, OnInit, Input } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { ItemReorderEventDetail, ModalController } from "@ionic/angular";
 import { User } from "firebase/auth";
 import {
@@ -22,6 +27,7 @@ import { MemberPage } from "../../member/member.page";
   selector: "app-lineup",
   templateUrl: "./lineup.page.html",
   styleUrls: ["./lineup.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class LineupPage implements OnInit {

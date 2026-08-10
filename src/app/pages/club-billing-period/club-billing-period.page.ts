@@ -1,4 +1,10 @@
-import { Component, Input, OnInit, Optional } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  Optional,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   ModalController,
   AlertController,
@@ -20,6 +26,7 @@ import { UiService } from "src/app/services/ui.service";
   selector: "app-club-billing-period",
   templateUrl: "./club-billing-period.page.html",
   styleUrls: ["./club-billing-period.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ClubBillingPeriodPage implements OnInit {

@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
@@ -35,6 +40,7 @@ import { Firestore } from "@angular/fire/firestore";
   selector: "app-helfer-punkte-club",
   templateUrl: "./helfer-punkte-club.page.html",
   styleUrls: ["./helfer-punkte-club.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class HelferPunkteClubPage implements OnInit {

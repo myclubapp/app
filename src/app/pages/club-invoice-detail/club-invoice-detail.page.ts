@@ -1,4 +1,9 @@
-import { Component, Input, Optional } from "@angular/core";
+import {
+  Component,
+  Input,
+  Optional,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   ModalController,
   ToastController,
@@ -29,6 +34,7 @@ import { QrInvoiceModalPage } from "../qr-invoice-modal/qr-invoice-modal.page";
   selector: "app-club-invoice-detail",
   templateUrl: "./club-invoice-detail.page.html",
   styleUrls: ["./club-invoice-detail.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ClubInvoiceDetailPage {

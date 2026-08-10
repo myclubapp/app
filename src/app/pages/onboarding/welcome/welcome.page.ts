@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { Router } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
 
@@ -13,6 +13,7 @@ interface WelcomeSlide {
   selector: "app-welcome",
   templateUrl: "./welcome.page.html",
   styleUrls: ["./welcome.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class WelcomePage {

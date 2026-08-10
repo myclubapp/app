@@ -4,6 +4,7 @@ import {
   AfterViewInit,
   OnDestroy,
   Optional,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   combineLatest,
@@ -61,6 +62,7 @@ import { Preferences } from "@capacitor/preferences";
   selector: "app-profile",
   templateUrl: "./profile.page.html",
   styleUrls: ["./profile.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {

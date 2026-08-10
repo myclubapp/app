@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { ModalController, ToastController } from "@ionic/angular";
 import {
   Observable,
@@ -26,6 +26,7 @@ interface User {
   selector: "app-helfer-punkte",
   templateUrl: "./helfer-punkte.page.html",
   styleUrls: ["./helfer-punkte.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class HelferPunktePage implements OnInit {

@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 
 import { ModalController } from "@ionic/angular";
 import { TranslateService } from "@ngx-translate/core";
@@ -9,6 +9,7 @@ import { UiService } from "src/app/services/ui.service";
   selector: "app-create-new-club",
   templateUrl: "./create-new-club.page.html",
   styleUrls: ["./create-new-club.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class CreateNewClubPage {

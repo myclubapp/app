@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { ModalController } from "@ionic/angular";
 import { Game } from "src/app/models/game";
 import { Browser } from "@capacitor/browser";
@@ -14,6 +19,7 @@ import { MapService, SWISSTOPO_STYLE } from "src/app/services/map.service";
   selector: "app-club-game-preview",
   templateUrl: "./club-game-preview.page.html",
   styleUrls: ["./club-game-preview.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ClubGamePreviewPage implements OnInit {

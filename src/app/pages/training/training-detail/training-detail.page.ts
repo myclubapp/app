@@ -4,6 +4,7 @@ import {
   Input,
   OnInit,
   Optional,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   AlertController,
@@ -49,6 +50,7 @@ import { TrainingCreatePage } from "../training-create/training-create.page";
   selector: "app-training-detail",
   templateUrl: "./training-detail.page.html",
   styleUrls: ["./training-detail.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class TrainingDetailPage implements OnInit {

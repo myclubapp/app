@@ -1,4 +1,9 @@
-import { Component, OnInit, Optional } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Optional,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { IonRouterOutlet, ModalController, Platform } from "@ionic/angular";
 import { Router } from "@angular/router";
@@ -13,6 +18,7 @@ import { ClubInvoiceDetailPage } from "../../club-invoice-detail/club-invoice-de
   selector: "app-notification",
   templateUrl: "./notification.page.html",
   styleUrls: ["./notification.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class NotificationPage implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
 import { Browser, OpenOptions } from "@capacitor/browser";
 import packagejson from "./../../../../package.json";
@@ -7,6 +7,7 @@ import { SwUpdate } from "@angular/service-worker";
   selector: "app-info",
   templateUrl: "./info.page.html",
   styleUrls: ["./info.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class InfoPage implements OnInit {

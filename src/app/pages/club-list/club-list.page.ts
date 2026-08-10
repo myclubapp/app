@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
 import {
@@ -25,6 +25,7 @@ import { Browser } from "@capacitor/browser";
   selector: "app-club-list",
   templateUrl: "./club-list.page.html",
   styleUrls: ["./club-list.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ClubListPage implements OnInit {

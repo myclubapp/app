@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { ModalController } from "@ionic/angular";
 import { News } from "src/app/models/news";
 import { Share } from "@capacitor/share";
@@ -22,6 +27,7 @@ import { lastValueFrom } from "rxjs";
   selector: "app-news-detail",
   templateUrl: "./news-detail.page.html",
   styleUrls: ["./news-detail.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class NewsDetailPage implements OnInit {

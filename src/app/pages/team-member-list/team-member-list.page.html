@@ -90,7 +90,10 @@
             <h2>{{member.firstName}} {{member.lastName}}</h2>
             @if (teamAdminList$ | async; as teamAdminList) { @if
             (isTeamAdmin(teamAdminList, team.id)) {
-            <h3>{{member.dateOfBirth?.toDate() | date:'dd.MM.yyyy'}}</h3>
+            <h3>
+              {{$safeNavigationMigration(member.dateOfBirth?.toDate()) |
+              date:'dd.MM.yyyy'}}
+            </h3>
             } } @if (member.gameCenterPosition || member.gameCenterShirtNumber)
             {
             <h3>

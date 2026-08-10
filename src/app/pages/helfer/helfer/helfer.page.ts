@@ -1,4 +1,9 @@
-import { Component, OnInit, Optional } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Optional,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
@@ -41,6 +46,7 @@ import { UiService } from "src/app/services/ui.service";
   selector: "app-helfer",
   templateUrl: "./helfer.page.html",
   styleUrls: ["./helfer.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class HelferPage implements OnInit {

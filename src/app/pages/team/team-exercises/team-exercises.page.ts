@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { Browser } from "@capacitor/browser";
 import {
   AlertController,
@@ -33,6 +38,7 @@ import { ExerciseService } from "src/app/services/firebase/exercise.service";
   selector: "app-team-exercises",
   templateUrl: "./team-exercises.page.html",
   styleUrls: ["./team-exercises.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class TeamExercisesPage implements OnInit {

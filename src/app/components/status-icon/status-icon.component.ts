@@ -1,4 +1,10 @@
-import { Component, Input, Output, EventEmitter } from "@angular/core";
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 
 import { IonicModule } from "@ionic/angular";
 
@@ -7,6 +13,7 @@ import { IonicModule } from "@ionic/angular";
   templateUrl: "./status-icon.component.html",
   styleUrls: ["./status-icon.component.scss"],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [IonicModule],
 })
 export class StatusIconComponent {

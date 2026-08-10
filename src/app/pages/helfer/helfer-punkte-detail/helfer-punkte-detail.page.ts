@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
@@ -30,6 +35,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
   standalone: false,
   selector: "app-helfer-punkte-detail",
   templateUrl: "./helfer-punkte-detail.page.html",
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ["./helfer-punkte-detail.page.scss"],
 })
 export class HelferPunkteDetailPage implements OnInit {

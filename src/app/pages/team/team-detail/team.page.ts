@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   ModalController,
@@ -49,6 +54,7 @@ import * as XLSX from "xlsx";
   selector: "app-team",
   templateUrl: "./team.page.html",
   styleUrls: ["./team.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class TeamPage implements OnInit {

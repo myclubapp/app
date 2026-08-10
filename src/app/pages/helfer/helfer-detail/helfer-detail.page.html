@@ -216,7 +216,8 @@
                 <ion-label (click)="openMember(member)">
                   <h2>{{member.firstName}} {{member.lastName}}</h2>
                   <p>
-                    {{member?.changedAt?.toDate() | date:'dd.MM.yyyy HH:mm'}}
+                    {{$safeNavigationMigration(member?.changedAt?.toDate()) |
+                    date:'dd.MM.yyyy HH:mm'}}
                   </p>
                 </ion-label>
               </ion-item>

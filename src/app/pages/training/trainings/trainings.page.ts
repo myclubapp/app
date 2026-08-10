@@ -1,4 +1,10 @@
-import { Component, Input, OnInit, Optional } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  Optional,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   IonItemSliding,
   IonRouterOutlet,
@@ -46,6 +52,7 @@ const TEAM_FILTER_STORAGE_KEY = "trainingTeamFilter";
   selector: "app-trainings",
   templateUrl: "./trainings.page.html",
   styleUrls: ["./trainings.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class TrainingsPage implements OnInit {

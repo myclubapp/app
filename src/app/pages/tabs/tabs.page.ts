@@ -1,19 +1,26 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   MenuController,
   IonTabs,
   NavController,
   AnimationController,
 } from "@ionic/angular";
-import { Observable, shareReplay } from "rxjs";
+import { Observable, of, shareReplay, switchMap } from "rxjs";
 import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
+import { AuthService } from "src/app/services/auth.service";
 import { Analytics, logEvent } from "@angular/fire/analytics";
 
 @Component({
   selector: "app-tabs",
   templateUrl: "./tabs.page.html",
   styleUrls: ["./tabs.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class TabsPage implements OnInit {
@@ -24,6 +31,7 @@ export class TabsPage implements OnInit {
   constructor(
     public menuCtrl: MenuController,
     private readonly fbService: FirebaseService,
+    private readonly authService: AuthService,
     private navCtrl: NavController,
     private animationCtrl: AnimationController,
     private analytics: Analytics,
@@ -32,7 +40,19 @@ export class TabsPage implements OnInit {
   }
 
   ngOnInit() {
-    this.clubList$ = this.fbService.getClubList().pipe(shareReplay(1));
+    // An den Auth-State koppeln statt einmalig in ngOnInit zu laden: das
+    // Template hat vier `clubList$ | async`-Stellen, und shareReplay(1) hätte
+    // sonst das erste Ergebnis für die gesamte Lebensdauer der Instanz
+    // eingefroren. Überlebt die Instanz einen logout/login (Ionic hält
+    // View-Instanzen im Router-Outlet vor), blieb so das während des Logouts
+    // gelesene leere Array stehen -> Tab-Bar ohne Meisterschaft/Helferevents
+    // und "Probe" statt "Training", bis zum Browser-Reload.
+    this.clubList$ = this.authService.user$.pipe(
+      switchMap((user) =>
+        user ? this.fbService.getClubList() : of([] as Club[]),
+      ),
+      shareReplay(1),
+    );
 
     this.menuCtrl.enable(true, "menu");
   }

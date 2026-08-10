@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
 import {
   UntypedFormBuilder,
   UntypedFormGroup,
@@ -16,10 +16,11 @@ import { UserCredentialLogin } from "src/app/models/user";
 import { AuthService } from "src/app/services/auth.service";
 
 @Component({
-    selector: "app-reset-password",
-    templateUrl: "./reset-password.page.html",
-    styleUrls: ["./reset-password.page.scss"],
-    standalone: false
+  selector: "app-reset-password",
+  templateUrl: "./reset-password.page.html",
+  styleUrls: ["./reset-password.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false,
 })
 export class ResetPasswordPage implements OnInit {
   public user: UserCredentialLogin;
@@ -31,7 +32,7 @@ export class ResetPasswordPage implements OnInit {
     private readonly router: Router,
     private readonly formBuilder: UntypedFormBuilder,
     private readonly loadingCtrl: LoadingController,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) {
     this.menuCtrl.enable(false, "menu");
     this.authForm = this.formBuilder.group({
@@ -54,7 +55,7 @@ export class ResetPasswordPage implements OnInit {
       this.alertCtrl
         .create({
           message: await lastValueFrom(
-            this.translate.get("common.error__invalid_form")
+            this.translate.get("common.error__invalid_form"),
           ),
           buttons: [
             {
@@ -96,7 +97,7 @@ export class ResetPasswordPage implements OnInit {
       async () => {
         const alert = await this.alertCtrl.create({
           message: await lastValueFrom(
-            this.translate.get("reset-password.check__email_for_reset_link")
+            this.translate.get("reset-password.check__email_for_reset_link"),
           ),
           buttons: [
             {
@@ -121,7 +122,7 @@ export class ResetPasswordPage implements OnInit {
           ],
         });
         await errorAlert.present();
-      }
+      },
     );
   }
 }

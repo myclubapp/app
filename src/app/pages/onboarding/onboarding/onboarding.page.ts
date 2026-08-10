@@ -1,4 +1,9 @@
-import { Component, OnInit, Input } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Input,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   MenuController,
@@ -37,6 +42,7 @@ import { UiService } from "src/app/services/ui.service";
   selector: "app-onboarding",
   templateUrl: "./onboarding.page.html",
   styleUrls: ["./onboarding.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class OnboardingPage implements OnInit {

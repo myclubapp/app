@@ -54,7 +54,7 @@
           [closedEvent]="event.closedEvent"
           (iconClick)="toggle($event, event)"
           [isMember]="event.isMember"
-          [hasChildren]="event.children?.length > 0"
+          [hasChildren]="$safeNavigationMigration(event.children?.length) > 0"
         ></app-status-icon>
         }
         <ion-label (click)="openEventDetailModal(event, true)">
@@ -130,7 +130,7 @@
       <ion-item>
         <app-status-icon
           slot="start"
-          [status]="child?.status"
+          [status]="$safeNavigationMigration(child?.status)"
           [cancelled]="event.cancelled"
           [closedEvent]="event.closedEvent"
           (iconClick)="toggleChildren(!child?.status, event, child.id)"
@@ -235,7 +235,7 @@
           [closedEvent]="event.closedEvent"
           [clickable]="false"
           [isMember]="event.isMember"
-          [hasChildren]="event.children?.length > 0"
+          [hasChildren]="$safeNavigationMigration(event.children?.length) > 0"
         ></app-status-icon>
         }
         <ion-label (click)="openEventDetailModal(event, false)">
@@ -289,7 +289,7 @@
     <ion-item>
       <app-status-icon
         slot="start"
-        [status]="child?.status"
+        [status]="$safeNavigationMigration(child?.status)"
         [cancelled]="event.cancelled"
         [closedEvent]="event.closedEvent"
         [clickable]="false"

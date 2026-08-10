@@ -1,4 +1,10 @@
-import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ViewChild,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   ModalController,
@@ -36,6 +42,7 @@ import { Club } from "src/app/models/club";
   selector: "app-team-admin-list",
   templateUrl: "./team-admin-list.page.html",
   styleUrls: ["./team-admin-list.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class TeamAdminListPage implements OnInit {

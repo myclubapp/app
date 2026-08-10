@@ -1,4 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   ModalController,
@@ -27,6 +32,7 @@ import { MemberPage } from "../member/member.page";
   selector: "app-club-request-list",
   templateUrl: "./club-request-list.page.html",
   styleUrls: ["./club-request-list.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class ClubRequestListPage implements OnInit {
