@@ -182,7 +182,6 @@ export class HelferDetailPage implements OnInit {
   private toPlaceholderSchicht(
     schicht: Schicht,
     unrespondedMembers: any[] = [],
-    pending: boolean = false,
   ) {
     return {
       ...schicht,
@@ -192,9 +191,10 @@ export class HelferDetailPage implements OnInit {
       unrespondedMembers,
       status: [],
       children: [],
-      // While pending, the attendee counts are not resolved yet, so the
-      // toggle handlers ignore taps (the capacity check would see 0).
-      pending,
+      // A placeholder — whether still loading or an error fallback — has no
+      // resolved attendee data, so the toggle/add handlers ignore taps on it
+      // (the capacity check would otherwise see 0 and allow overbooking).
+      pending: true,
     };
   }
 
@@ -385,7 +385,7 @@ export class HelferDetailPage implements OnInit {
           return schichtenWithMembers$.pipe(
             startWith(
               sortedSchichten.map((schicht) =>
-                this.toPlaceholderSchicht(schicht, [], true),
+                this.toPlaceholderSchicht(schicht),
               ),
             ),
           );

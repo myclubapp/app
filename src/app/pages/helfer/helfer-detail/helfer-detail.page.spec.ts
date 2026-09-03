@@ -694,11 +694,33 @@ describe("HelferDetailPage", () => {
       component
         .getHelferEventSchichtenWithAttendees("club-1", "helfer-1")
         .pipe(take(1))
-        .subscribe((result) => {
+        .subscribe(async (result) => {
           expect(result.length).toBe(1);
           expect(Array.isArray(result[0].status)).toBeTrue();
           expect(result[0].children).toEqual([]);
           expect(result[0].attendeeListTrue).toEqual([]);
+          // Error fallbacks are pending too: with no resolved attendee data
+          // the capacity check would see 0, so taps must be ignored.
+          expect(result[0].pending).toBeTrue();
+
+          const slidingItemMock = {
+            closeOpened: jasmine.createSpy("closeOpened").and.resolveTo(),
+          };
+          fbServiceSpy.getClubMemberRefs.calls.reset();
+          await component.toggleSchicht(
+            slidingItemMock as any,
+            true,
+            mockHelferEvent,
+            result[0],
+          );
+          await component.addMembersToSchicht(
+            slidingItemMock as any,
+            result[0],
+          );
+          expect(fbServiceSpy.getClubMemberRefs).not.toHaveBeenCalled();
+          expect(
+            eventServiceSpy.setClubHelferEventSchichtAttendeeStatusAdmin,
+          ).not.toHaveBeenCalled();
           done();
         });
     });
