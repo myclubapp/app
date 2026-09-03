@@ -6,7 +6,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { TranslateModule } from "@ngx-translate/core";
-import { of } from "rxjs";
+import { NEVER, of, take, throwError } from "rxjs";
 import { Timestamp } from "@angular/fire/firestore";
 
 import { HelferDetailPage } from "./helfer-detail.page";
@@ -64,8 +64,12 @@ describe("HelferDetailPage", () => {
   };
 
   beforeEach(waitForAsync(() => {
-    authServiceSpy = jasmine.createSpyObj("AuthService", ["getUser$"]);
+    authServiceSpy = jasmine.createSpyObj("AuthService", [
+      "getUser$",
+      "getAuthenticatedUser$",
+    ]);
     authServiceSpy.getUser$.and.returnValue(of(mockUser as any));
+    authServiceSpy.getAuthenticatedUser$.and.returnValue(of(mockUser as any));
 
     eventServiceSpy = jasmine.createSpyObj("EventService", [
       "getClubHelferEventRef",
@@ -555,6 +559,119 @@ describe("HelferDetailPage", () => {
       await component.ngOnInit();
       expect(component.event$).toBeDefined();
       expect(component.schichten$).toBeDefined();
+    });
+  });
+
+  describe("getHelferEventSchichtenWithAttendees - loading robustness", () => {
+    const rawSchicht = {
+      id: "schicht-1",
+      name: "Grillstand",
+      countNeeded: 3,
+      points: 2,
+      timeFrom: "10:00",
+      timeTo: "14:00",
+    };
+
+    beforeEach(() => {
+      component.user = mockUser as any;
+      component.children = [];
+    });
+
+    it("should emit even when the club member list is empty (forkJoin guard)", (done) => {
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([{ ...rawSchicht }]),
+      );
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        of([{ id: "member-1", status: true, changedAt: Timestamp.now() }]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(of([]));
+
+      component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1")
+        .pipe(take(1))
+        .subscribe((result) => {
+          // Before the fix, forkJoin([]) completed without emitting and the
+          // Schichten list stayed on its loading state forever.
+          expect(result.length).toBe(1);
+          expect(result[0].attendeeListTrue).toEqual([]);
+          expect(Array.isArray(result[0].status)).toBeTrue();
+          done();
+        });
+    });
+
+    it("should not error when an attendee document has no changedAt", (done) => {
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([{ ...rawSchicht }]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        of([{ id: "user-123" }] as any),
+      );
+      userProfileServiceSpy.getUserProfileById.and.returnValue(
+        of({ id: "user-123", firstName: "Katja", lastName: "F" } as any),
+      );
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        of([{ id: "user-123", status: true }]), // legacy doc without changedAt
+      );
+
+      component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1")
+        .pipe(take(1))
+        .subscribe((result) => {
+          // Before the fix, changedAt.toDate() threw and the error fallback
+          // emitted status: null, which crashed the template.
+          expect(result[0].attendeeListTrue.length).toBe(1);
+          expect(Array.isArray(result[0].status)).toBeTrue();
+          expect(result[0].status[0].id).toBe("user-123");
+          done();
+        });
+    });
+
+    it("should emit a template-safe fallback when club members cannot be loaded", (done) => {
+      spyOn(console, "error");
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([{ ...rawSchicht }]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        throwError(() => new Error("permission-denied")),
+      );
+
+      component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1")
+        .pipe(take(1))
+        .subscribe((result) => {
+          expect(result.length).toBe(1);
+          expect(Array.isArray(result[0].status)).toBeTrue();
+          expect(result[0].children).toEqual([]);
+          expect(result[0].attendeeListTrue).toEqual([]);
+          done();
+        });
+    });
+
+    it("should render schichten immediately while profile reads are pending (eagerPlaceholder)", (done) => {
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([{ ...rawSchicht }]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        of([{ id: "member-1" }] as any),
+      );
+      // Profile read that never resolves — previously this hung the whole list.
+      userProfileServiceSpy.getUserProfileById.and.returnValue(NEVER as any);
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        of([]),
+      );
+
+      component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1", {
+          eagerPlaceholder: true,
+        })
+        .pipe(take(1))
+        .subscribe((result) => {
+          expect(result.length).toBe(1);
+          expect(result[0].id).toBe("schicht-1");
+          expect(result[0].attendeeListTrue).toEqual([]);
+          expect(Array.isArray(result[0].status)).toBeTrue();
+          done();
+        });
     });
   });
 
