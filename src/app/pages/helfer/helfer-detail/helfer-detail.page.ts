@@ -1010,6 +1010,11 @@ export class HelferDetailPage implements OnInit {
 
   async addMembersToSchicht(slidingItem: IonItemSliding, schicht: any) {
     slidingItem.closeOpened();
+    // Placeholder rows have no resolved attendee list yet — the "available
+    // members" filter below would otherwise offer every club member.
+    if (schicht?.pending) {
+      return;
+    }
     // Hole alle Clubmitglieder
     const clubMembers = await firstValueFrom(
       this.fbService.getClubMemberRefs(this.event.clubId).pipe(

@@ -254,12 +254,19 @@ describe("HelferDetailPage", () => {
         placeholderSchicht,
       );
 
+      await component.addMembersToSchicht(
+        slidingItemMock as any,
+        placeholderSchicht,
+      );
+
       // While counts are unresolved, a tap must not bypass the capacity
-      // check and register an attendee.
+      // check, register an attendee, or offer "available" members based on
+      // an empty placeholder attendee list.
       expect(
         eventServiceSpy.setClubHelferEventSchichtAttendeeStatusAdmin,
       ).not.toHaveBeenCalled();
       expect(fbServiceSpy.getClubMemberRefs).not.toHaveBeenCalled();
+      expect(uiServiceSpy.showFormDialog).not.toHaveBeenCalled();
     });
 
     it("should block signup when shift is full (non-admin)", async () => {
