@@ -111,9 +111,10 @@ export class HelferDetailPage implements OnInit {
     this.clubAdminList$ = this.fbService.getClubAdminList();
     // this.teamAdminList$ = this.fbService.getTeamAdminList();
 
-    // The template consumes schichten$ through two async pipes (member view
-    // and admin-edit view) — share one subscription so the member/profile
-    // read cascade doesn't run twice concurrently.
+    // schichten$ is consumed by async pipes in both the member view and the
+    // admin-edit view (mutually exclusive @if branches today) — share the
+    // subscription so any overlapping subscribers reuse one member/profile
+    // read cascade instead of each starting their own.
     this.schichten$ = this.getHelferEventSchichtenWithAttendees(
       this.event.clubId,
       this.event.id,
@@ -181,6 +182,7 @@ export class HelferDetailPage implements OnInit {
   private toPlaceholderSchicht(
     schicht: Schicht,
     unrespondedMembers: any[] = [],
+    pending: boolean = false,
   ) {
     return {
       ...schicht,
@@ -190,6 +192,9 @@ export class HelferDetailPage implements OnInit {
       unrespondedMembers,
       status: [],
       children: [],
+      // While pending, the attendee counts are not resolved yet, so the
+      // toggle handlers ignore taps (the capacity check would see 0).
+      pending,
     };
   }
 
@@ -380,7 +385,7 @@ export class HelferDetailPage implements OnInit {
           return schichtenWithMembers$.pipe(
             startWith(
               sortedSchichten.map((schicht) =>
-                this.toPlaceholderSchicht(schicht),
+                this.toPlaceholderSchicht(schicht, [], true),
               ),
             ),
           );
@@ -562,6 +567,11 @@ export class HelferDetailPage implements OnInit {
     memberId: string,
   ) {
     slidingItem.closeOpened();
+    // Placeholder rows have no resolved attendee counts yet — a tap in that
+    // window would bypass the capacity check below.
+    if (schicht?.pending) {
+      return;
+    }
     console.log("toggleSchichtItem", status, event, schicht, memberId);
 
     const newStartDate = event.date.toDate();
@@ -644,6 +654,11 @@ export class HelferDetailPage implements OnInit {
     event,
     schicht,
   ) {
+    // Placeholder rows have no resolved attendee counts yet — a tap in that
+    // window would bypass the capacity check below.
+    if (schicht?.pending) {
+      return;
+    }
     // Prüfe, ob schon genügend Helferinnen eingetragen sind (aber Admins dürfen überbuchen)
     if (
       schicht.attendeeListTrue &&

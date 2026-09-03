@@ -79,10 +79,8 @@ describe("HelferDetailPage", () => {
 
   beforeEach(waitForAsync(() => {
     authServiceSpy = jasmine.createSpyObj("AuthService", [
-      "getUser$",
       "getAuthenticatedUser$",
     ]);
-    authServiceSpy.getUser$.and.returnValue(of(mockUser as any));
     authServiceSpy.getAuthenticatedUser$.and.returnValue(of(mockUser as any));
 
     eventServiceSpy = jasmine.createSpyObj("EventService", [
@@ -225,6 +223,43 @@ describe("HelferDetailPage", () => {
         "schicht-1",
         "user-123",
       );
+    });
+
+    it("should ignore taps while the shift row is still a placeholder", async () => {
+      component.event = mockHelferEvent as HelferEvent;
+      component.clubAdminList$ = of([]);
+
+      const placeholderSchicht = {
+        ...mockSchicht,
+        attendeeListTrue: [],
+        pending: true,
+      };
+      const eventData = {
+        ...mockHelferEvent,
+        date: Timestamp.fromDate(futureDate),
+        timeFrom: "10:00",
+      };
+
+      await component.toggleSchichtItem(
+        slidingItemMock as any,
+        true,
+        eventData,
+        placeholderSchicht,
+        "user-123",
+      );
+      await component.toggleSchicht(
+        slidingItemMock as any,
+        true,
+        eventData,
+        placeholderSchicht,
+      );
+
+      // While counts are unresolved, a tap must not bypass the capacity
+      // check and register an attendee.
+      expect(
+        eventServiceSpy.setClubHelferEventSchichtAttendeeStatusAdmin,
+      ).not.toHaveBeenCalled();
+      expect(fbServiceSpy.getClubMemberRefs).not.toHaveBeenCalled();
     });
 
     it("should block signup when shift is full (non-admin)", async () => {
