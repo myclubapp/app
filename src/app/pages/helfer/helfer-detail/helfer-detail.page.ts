@@ -169,6 +169,23 @@ export class HelferDetailPage implements OnInit {
     );
   }
 
+  /**
+   * Template-safe empty representation of a Schicht: the template reads
+   * status.length, children and the attendee lists unconditionally, so every
+   * emission (eager placeholder or error fallback) must carry this shape.
+   */
+  private toPlaceholderSchicht(schicht: any, unrespondedMembers: any[] = []) {
+    return {
+      ...schicht,
+      attendees: [],
+      attendeeListTrue: [],
+      attendeeListFalse: [],
+      unrespondedMembers,
+      status: [],
+      children: [],
+    };
+  }
+
   getHelferEventSchichtenWithAttendees(
     clubId: string,
     eventId: string,
@@ -318,18 +335,12 @@ export class HelferDetailPage implements OnInit {
                                 "Error fetching attendees for schicht:",
                                 err,
                               );
-                              // The template reads status.length and children,
-                              // so the fallback must keep the same shape as a
-                              // successful emission (status: null crashed it).
-                              return of({
-                                ...schicht,
-                                attendees: [],
-                                attendeeListTrue: [],
-                                attendeeListFalse: [],
-                                unrespondedMembers: clubMembersWithDetails,
-                                status: [],
-                                children: [],
-                              });
+                              return of(
+                                this.toPlaceholderSchicht(
+                                  schicht,
+                                  clubMembersWithDetails,
+                                ),
+                              );
                             }),
                           ),
                     );
@@ -340,15 +351,9 @@ export class HelferDetailPage implements OnInit {
               catchError((err) => {
                 console.error("Error fetching club members:", err);
                 return of(
-                  sortedSchichten.map((schicht) => ({
-                    ...schicht,
-                    attendees: [],
-                    attendeeListTrue: [],
-                    attendeeListFalse: [],
-                    unrespondedMembers: [],
-                    status: [],
-                    children: [],
-                  })),
+                  sortedSchichten.map((schicht) =>
+                    this.toPlaceholderSchicht(schicht),
+                  ),
                 );
               }),
             );
@@ -362,15 +367,9 @@ export class HelferDetailPage implements OnInit {
           // attendee data replaces the placeholder as soon as it resolves.
           return schichtenWithMembers$.pipe(
             startWith(
-              sortedSchichten.map((schicht) => ({
-                ...schicht,
-                attendees: [],
-                attendeeListTrue: [],
-                attendeeListFalse: [],
-                unrespondedMembers: [],
-                status: [],
-                children: [],
-              })),
+              sortedSchichten.map((schicht) =>
+                this.toPlaceholderSchicht(schicht),
+              ),
             ),
           );
         }),

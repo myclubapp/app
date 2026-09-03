@@ -1,4 +1,10 @@
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+  waitForAsync,
+} from "@angular/core/testing";
 import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import {
   AlertController,
@@ -6,7 +12,7 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { TranslateModule } from "@ngx-translate/core";
-import { NEVER, of, take, throwError } from "rxjs";
+import { NEVER, delay, of, take, throwError } from "rxjs";
 import { Timestamp } from "@angular/fire/firestore";
 
 import { HelferDetailPage } from "./helfer-detail.page";
@@ -646,6 +652,40 @@ describe("HelferDetailPage", () => {
           done();
         });
     });
+
+    it("should degrade a slow profile read to the Unknown fallback via timeout", fakeAsync(() => {
+      spyOn(console, "error");
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([{ ...rawSchicht }]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        of([{ id: "member-1" }] as any),
+      );
+      // Profile read that only resolves after the 10s timeout budget.
+      userProfileServiceSpy.getUserProfileById.and.returnValue(
+        of({
+          id: "member-1",
+          firstName: "Slow",
+          lastName: "Reader",
+        } as any).pipe(delay(20000)),
+      );
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        of([{ id: "member-1", status: true, changedAt: Timestamp.now() }]),
+      );
+
+      let result: any[] | undefined;
+      const subscription = component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1")
+        .subscribe((r) => (result = r));
+
+      expect(result).toBeUndefined(); // still waiting on the profile read
+      tick(10000); // timeout fires and substitutes the Unknown profile
+
+      expect(result).toBeDefined();
+      expect(result![0].attendeeListTrue.length).toBe(1);
+      expect(result![0].attendeeListTrue[0].firstName).toBe("Unknown");
+      subscription.unsubscribe();
+    }));
 
     it("should render schichten immediately while profile reads are pending (eagerPlaceholder)", (done) => {
       eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
