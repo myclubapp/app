@@ -16,6 +16,7 @@ import {
   BehaviorSubject,
   NEVER,
   Subject,
+  defer,
   delay,
   of,
   take,
@@ -863,6 +864,61 @@ describe("HelferDetailPage", () => {
           expect(Array.isArray(result[0].status)).toBeTrue();
           done();
         });
+    });
+  });
+
+  describe("schichten$ stream lifetime", () => {
+    it("should not restart the read cascade on re-subscription or view re-entry", async () => {
+      let memberListSubscriptions = 0;
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([
+          {
+            id: "schicht-1",
+            name: "Grillstand",
+            countNeeded: 3,
+            points: 2,
+            timeFrom: "10:00",
+            timeTo: "14:00",
+          },
+        ]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        defer(() => {
+          memberListSubscriptions++;
+          return of([{ id: "user-123" }] as any);
+        }),
+      );
+      userProfileServiceSpy.getUserProfileById.and.returnValue(
+        of({ id: "user-123", firstName: "Katja", lastName: "F" } as any),
+      );
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        of([]),
+      );
+
+      // The TestBed setup can already have run ngOnInit (initial change
+      // detection) with the default stubs; reset the built streams so
+      // loadData rebuilds them with the stubs configured above.
+      (component as any).schichtenSub?.unsubscribe();
+      (component as any).event$ = undefined;
+      (component as any).schichten$ = undefined;
+
+      await component.ngOnInit();
+      expect(memberListSubscriptions).toBe(1);
+
+      // ionViewWillEnter must not rebuild the streams (second cascade).
+      component.ionViewWillEnter();
+      expect(memberListSubscriptions).toBe(1);
+
+      // Async pipes churn on @if toggles (member view <-> admin-edit view):
+      // unsubscribe/resubscribe must reuse the pinned shared subscription
+      // instead of restarting the member/profile read cascade.
+      component.schichten$.pipe(take(1)).subscribe().unsubscribe();
+      component.schichten$.pipe(take(1)).subscribe().unsubscribe();
+      expect(memberListSubscriptions).toBe(1);
+
+      // ngOnDestroy releases the pinned subscription with the modal.
+      component.ngOnDestroy();
+      expect((component as any).schichtenSub.closed).toBeTrue();
     });
   });
 

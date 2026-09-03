@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   Input,
+  OnDestroy,
   OnInit,
   ChangeDetectionStrategy,
 } from "@angular/core";
@@ -15,6 +16,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
   Observable,
+  Subscription,
   catchError,
   combineLatest,
   firstValueFrom,
@@ -48,7 +50,7 @@ import { HelferAddPage } from "../helfer-add/helfer-add.page";
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
-export class HelferDetailPage implements OnInit {
+export class HelferDetailPage implements OnInit, OnDestroy {
   @Input() data!: HelferEvent;
   @Input() isFuture!: boolean;
 
@@ -56,6 +58,7 @@ export class HelferDetailPage implements OnInit {
 
   event$: Observable<any>;
   schichten$: Observable<any[]>;
+  private schichtenSub: Subscription;
 
   mode = "yes";
 
@@ -105,21 +108,37 @@ export class HelferDetailPage implements OnInit {
     if (!this.event) {
       return;
     }
+    // Build the streams only once: ngOnInit and ionViewWillEnter both call
+    // this, and rebuilding would run the whole read cascade twice per open
+    // (same guard as on the Helfer list page).
+    if (this.event$) {
+      return;
+    }
 
     this.event$ = this.getHelferEvent(this.event.clubId, this.event.id);
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
     // this.teamAdminList$ = this.fbService.getTeamAdminList();
 
-    // schichten$ is consumed by async pipes in both the member view and the
-    // admin-edit view (mutually exclusive @if branches today) — share the
-    // subscription so any overlapping subscribers reuse one member/profile
-    // read cascade instead of each starting their own.
+    // schichten$ is consumed via async pipes in the member view and the
+    // admin-edit view — mutually exclusive @if branches, so on an edit
+    // toggle the subscriber count would briefly drop to 0 and a purely
+    // refCounted shareReplay would tear down and restart the whole read
+    // cascade (placeholder flash included). The component-held subscription
+    // below pins the stream for the page's lifetime; ngOnDestroy releases
+    // it so the Firestore listeners are cleaned up with the modal.
     this.schichten$ = this.getHelferEventSchichtenWithAttendees(
       this.event.clubId,
       this.event.id,
       { eagerPlaceholder: true },
     ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+    this.schichtenSub = this.schichten$.subscribe();
+  }
+
+  ngOnDestroy() {
+    if (this.schichtenSub) {
+      this.schichtenSub.unsubscribe();
+    }
   }
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
