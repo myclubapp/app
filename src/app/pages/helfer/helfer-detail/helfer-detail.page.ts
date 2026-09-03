@@ -22,6 +22,7 @@ import {
   lastValueFrom,
   map,
   of,
+  shareReplay,
   startWith,
   switchMap,
   take,
@@ -110,11 +111,14 @@ export class HelferDetailPage implements OnInit {
     this.clubAdminList$ = this.fbService.getClubAdminList();
     // this.teamAdminList$ = this.fbService.getTeamAdminList();
 
+    // The template consumes schichten$ through two async pipes (member view
+    // and admin-edit view) — share one subscription so the member/profile
+    // read cascade doesn't run twice concurrently.
     this.schichten$ = this.getHelferEventSchichtenWithAttendees(
       this.event.clubId,
       this.event.id,
       { eagerPlaceholder: true },
-    );
+    ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
   }
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
@@ -174,7 +178,10 @@ export class HelferDetailPage implements OnInit {
    * status.length, children and the attendee lists unconditionally, so every
    * emission (eager placeholder or error fallback) must carry this shape.
    */
-  private toPlaceholderSchicht(schicht: any, unrespondedMembers: any[] = []) {
+  private toPlaceholderSchicht(
+    schicht: Schicht,
+    unrespondedMembers: any[] = [],
+  ) {
     return {
       ...schicht,
       attendees: [],

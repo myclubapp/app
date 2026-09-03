@@ -709,6 +709,37 @@ describe("HelferDetailPage", () => {
       subscription.unsubscribe();
     });
 
+    it("should show the placeholder first when the member list itself is slow", fakeAsync(() => {
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([{ ...rawSchicht }]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        of([{ id: "user-123" }] as any).pipe(delay(1000)),
+      );
+      userProfileServiceSpy.getUserProfileById.and.returnValue(
+        of({ id: "user-123", firstName: "Katja", lastName: "F" } as any),
+      );
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        of([{ id: "user-123", status: true, changedAt: Timestamp.now() }]),
+      );
+
+      const emissions: any[][] = [];
+      const subscription = component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1", {
+          eagerPlaceholder: true,
+        })
+        .subscribe((r) => emissions.push(r));
+
+      // Placeholder renders immediately, before the member list resolves.
+      expect(emissions.length).toBe(1);
+      expect(emissions[0][0].attendeeListTrue).toEqual([]);
+
+      tick(1000);
+      expect(emissions.length).toBe(2);
+      expect(emissions[1][0].attendeeListTrue.length).toBe(1);
+      subscription.unsubscribe();
+    }));
+
     it("should degrade a slow profile read to the Unknown fallback via timeout", fakeAsync(() => {
       spyOn(console, "error");
       eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
