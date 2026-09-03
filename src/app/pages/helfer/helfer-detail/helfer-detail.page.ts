@@ -194,7 +194,7 @@ export class HelferDetailPage implements OnInit {
     return this.eventService
       .getClubHelferEventSchichtenRef(clubId, eventId)
       .pipe(
-        switchMap((schichten) => {
+        switchMap((schichten, schichtenEmissionIndex) => {
           if (schichten.length === 0) return of([]); // No schichten found
 
           // Sort the schichten by timeFrom ascending and then by name A-Z
@@ -358,13 +358,18 @@ export class HelferDetailPage implements OnInit {
               }),
             );
 
-          if (!options.eagerPlaceholder) {
+          if (!options.eagerPlaceholder || schichtenEmissionIndex > 0) {
             return schichtenWithMembers$;
           }
           // Show the Schichten immediately with empty attendee lists instead
           // of blocking the whole section on one profile read per club member
           // (same non-blocking pattern as the Helfer list page). The real
           // attendee data replaces the placeholder as soon as it resolves.
+          // Only on the FIRST schichten emission: the collection ref is a live
+          // listener, and replaying the placeholder on later emissions would
+          // flash every viewer's list back to "unanswered" whenever a Schicht
+          // document changes — the async pipe keeps the last resolved state
+          // on screen instead.
           return schichtenWithMembers$.pipe(
             startWith(
               sortedSchichten.map((schicht) =>

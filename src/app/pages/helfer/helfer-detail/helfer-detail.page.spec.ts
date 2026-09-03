@@ -12,7 +12,15 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { TranslateModule } from "@ngx-translate/core";
-import { NEVER, delay, of, take, throwError } from "rxjs";
+import {
+  BehaviorSubject,
+  NEVER,
+  Subject,
+  delay,
+  of,
+  take,
+  throwError,
+} from "rxjs";
 import { Timestamp } from "@angular/fire/firestore";
 
 import { HelferDetailPage } from "./helfer-detail.page";
@@ -651,6 +659,54 @@ describe("HelferDetailPage", () => {
           expect(result[0].attendeeListTrue).toEqual([]);
           done();
         });
+    });
+
+    it("should not replay the eager placeholder on live schichten/attendees updates", () => {
+      const schichtenSubject = new Subject<any[]>();
+      const attendeesSubject = new BehaviorSubject<any[]>([
+        { id: "user-123", status: true, changedAt: Timestamp.now() },
+      ]);
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        schichtenSubject,
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        of([{ id: "user-123" }] as any),
+      );
+      userProfileServiceSpy.getUserProfileById.and.returnValue(
+        of({ id: "user-123", firstName: "Katja", lastName: "F" } as any),
+      );
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        attendeesSubject,
+      );
+
+      const emissions: any[][] = [];
+      const subscription = component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1", {
+          eagerPlaceholder: true,
+        })
+        .subscribe((r) => emissions.push(r));
+
+      // Initial load: placeholder first, then the resolved join.
+      schichtenSubject.next([{ ...rawSchicht }]);
+      expect(emissions.length).toBe(2);
+      expect(emissions[0][0].attendeeListTrue).toEqual([]);
+      expect(emissions[1][0].attendeeListTrue.length).toBe(1);
+
+      // Live attendee update: resolved data only, no placeholder flash.
+      attendeesSubject.next([
+        { id: "user-123", status: false, changedAt: Timestamp.now() },
+      ]);
+      expect(emissions.length).toBe(3);
+      expect(emissions[2][0].attendeeListFalse.length).toBe(1);
+
+      // Live schichten-collection update (e.g. admin renames a Schicht):
+      // no placeholder flash either — viewers keep resolved data.
+      schichtenSubject.next([{ ...rawSchicht, name: "Grillstand neu" }]);
+      expect(emissions.length).toBe(4);
+      expect(emissions[3][0].name).toBe("Grillstand neu");
+      expect(emissions[3][0].attendeeListFalse.length).toBe(1);
+
+      subscription.unsubscribe();
     });
 
     it("should degrade a slow profile read to the Unknown fallback via timeout", fakeAsync(() => {
