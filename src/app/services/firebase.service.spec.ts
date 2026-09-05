@@ -11,9 +11,13 @@ describe("FirebaseService", () => {
   let service: FirebaseService;
 
   beforeEach(() => {
-    const authServiceSpy = jasmine.createSpyObj("AuthService", ["getUser$"], {
-      logout$: of(),
-    });
+    const authServiceSpy = jasmine.createSpyObj(
+      "AuthService",
+      ["getUser$", "getAuthenticatedUser$"],
+      {
+        logout$: of(),
+      },
+    );
 
     TestBed.configureTestingModule({
       providers: [

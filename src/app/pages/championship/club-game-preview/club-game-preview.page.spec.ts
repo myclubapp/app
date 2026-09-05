@@ -6,6 +6,7 @@ import { ChampionshipService } from "src/app/services/firebase/championship.serv
 import { UiService } from "src/app/services/ui.service";
 import { MapService } from "src/app/services/map.service";
 import { ModalController, Platform } from "@ionic/angular";
+import { TranslateModule } from "@ngx-translate/core";
 
 describe("ClubGamePreviewPage", () => {
   let component: ClubGamePreviewPage;
@@ -14,6 +15,8 @@ describe("ClubGamePreviewPage", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ClubGamePreviewPage],
+      // The template uses the translate pipe.
+      imports: [TranslateModule.forRoot()],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {

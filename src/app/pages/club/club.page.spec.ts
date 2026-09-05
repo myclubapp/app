@@ -17,8 +17,12 @@ describe("ClubPage", () => {
   let fixture: ComponentFixture<ClubPage>;
 
   beforeEach(async () => {
-    const authServiceSpy = jasmine.createSpyObj("AuthService", ["getUser$"]);
+    const authServiceSpy = jasmine.createSpyObj("AuthService", [
+      "getUser$",
+      "getAuthenticatedUser$",
+    ]);
     authServiceSpy.getUser$.and.returnValue(of(null));
+    authServiceSpy.getAuthenticatedUser$.and.returnValue(of(null));
     const fbServiceSpy = jasmine.createSpyObj("FirebaseService", [
       "getClubAdminList",
       "getClubRef",
