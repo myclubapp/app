@@ -185,6 +185,9 @@ describe("ProfilePage", () => {
   describe("togglePush", () => {
     it("should call changeSettingsPush", async () => {
       profileServiceSpy.changeSettingsPush.and.resolveTo();
+      // Deterministisch: nicht davon abhängen, ob Device.getInfo() aus
+      // ngOnInit schon aufgelöst ist (war ein zeitabhängiger Flaky-Test).
+      component.deviceInfo = { platform: "web" } as any;
       const event = { detail: { checked: true } };
 
       await component.togglePush(event);

@@ -539,10 +539,10 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     await this.profileService.changeSettingsPush(event.detail.checked);
 
     if (event.detail.checked) {
-      if (
-        this.deviceInfo.platform == "android" ||
-        this.deviceInfo.platform == "ios"
-      ) {
+      // deviceInfo wird in ngOnInit asynchron geladen; ein sehr früher Toggle
+      // (oder ein Test ohne Init) darf nicht an undefined scheitern.
+      const platform = this.deviceInfo?.platform;
+      if (platform === "android" || platform === "ios") {
         this.registerPushDevice();
       } else {
         console.log("implement web push");
