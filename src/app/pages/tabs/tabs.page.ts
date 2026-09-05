@@ -47,7 +47,9 @@ export class TabsPage implements OnInit {
     // View-Instanzen im Router-Outlet vor), blieb so das während des Logouts
     // gelesene leere Array stehen -> Tab-Bar ohne Meisterschaft/Helferevents
     // und "Probe" statt "Training", bis zum Browser-Reload.
-    this.clubList$ = this.authService.user$.pipe(
+    // authState$ (nicht user$): user$ emittiert bei jedem Token-Refresh und
+    // würde hier stündlich neue Firestore-Listener für die Vereinsliste öffnen.
+    this.clubList$ = this.authService.authState$.pipe(
       switchMap((user) =>
         user ? this.fbService.getClubList() : of([] as Club[]),
       ),

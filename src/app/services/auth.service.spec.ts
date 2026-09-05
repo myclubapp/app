@@ -1,6 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 import { Router } from "@angular/router";
-import { AuthService } from "./auth.service";
+import { AuthService, sameSignedInUser } from "./auth.service";
 import {
   Auth,
   signInWithEmailAndPassword,
@@ -106,6 +106,16 @@ describe("AuthService", () => {
       });
       const result = await service.validateAndRefreshToken();
       expect(result).toBeTrue();
+      // Not forced: a forced refresh would re-trigger user$ subscribers.
+      expect(mockUser.getIdToken).toHaveBeenCalledWith(false);
+    });
+
+    it("should force a refresh only when explicitly asked", async () => {
+      Object.defineProperty(service.auth, "currentUser", {
+        value: mockUser,
+        configurable: true,
+      });
+      await service.validateAndRefreshToken(true);
       expect(mockUser.getIdToken).toHaveBeenCalledWith(true);
     });
 
@@ -128,6 +138,19 @@ describe("AuthService", () => {
   describe("user$", () => {
     it("should expose user$ observable", () => {
       expect(service.user$).toBeDefined();
+    });
+
+    it("should expose authState$ observable", () => {
+      expect(service.authState$).toBeDefined();
+    });
+
+    it("sameSignedInUser treats token refreshes of one user as unchanged", () => {
+      const a = { uid: "u1" } as any;
+      const b = { uid: "u1", accessToken: "new" } as any;
+      expect(sameSignedInUser(a, b)).toBeTrue();
+      expect(sameSignedInUser(null, null)).toBeTrue();
+      expect(sameSignedInUser(a, null)).toBeFalse();
+      expect(sameSignedInUser(a, { uid: "u2" } as any)).toBeFalse();
     });
 
     it("getUser$ should return an observable", () => {

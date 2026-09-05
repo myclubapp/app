@@ -19,6 +19,7 @@ describe("AppComponent", () => {
   beforeEach(async () => {
     const authServiceSpy = jasmine.createSpyObj("AuthService", ["getUser$"], {
       user$: of(null),
+      authState$: of(null),
     });
     authServiceSpy.getUser$.and.returnValue(of(null));
     const fbServiceSpy = jasmine.createSpyObj("FirebaseService", [

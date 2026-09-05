@@ -95,7 +95,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     // sein: ein einmaliges getClubList().pipe(take(1)) im Konstruktor wäre nach
     // dem ersten Emit abgeschlossen und würde nach logout/login nie wieder
     // nachladen (Menü bleibt leer bis zum Browser-Reload).
-    this.clubList$ = this.authService.user$.pipe(
+    // authState$ statt user$: user$ feuert auch bei jedem Token-Refresh und
+    // würde die Vereinsliste samt Firestore-Listenern stündlich neu aufbauen.
+    this.clubList$ = this.authService.authState$.pipe(
       switchMap((user) =>
         user ? this.fbService.getClubList().pipe(take(1)) : of([] as Club[]),
       ),
@@ -107,8 +109,10 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.registerBackButton();
     });
 
-    // Subscribe to auth state changes
-    this.authService.user$.subscribe(async (user) => {
+    // Subscribe to auth state changes. authState$ emits on sign-in/sign-out
+    // only; user$ would also fire on every token refresh and re-run this whole
+    // login block (club list reads, push registration, navigation).
+    this.authService.authState$.subscribe(async (user) => {
       if (user) {
         // 0. LOGIN
         this.email = user.email;
@@ -116,7 +120,9 @@ export class AppComponent implements OnInit, AfterViewInit {
         // console.log(">>> user.metadata", user.metadata);
         // console.log(">>> lastSignInTime", user.metadata?.lastSignInTime);
 
-        // Validate and refresh token on app start
+        // Validate the token on app start. Only refreshes if it has expired:
+        // a forced refresh here re-triggered this subscription through
+        // onIdTokenChanged and re-ran the whole login block several times.
         const tokenValid = await this.authService.validateAndRefreshToken();
         if (!tokenValid) {
           console.error(
@@ -126,9 +132,6 @@ export class AppComponent implements OnInit, AfterViewInit {
           await this.authService.logout();
           return;
         }
-
-        // Give Firebase client time to apply the new token
-        await new Promise((resolve) => setTimeout(resolve, 200));
 
         if (!user.emailVerified) {
           const navOnboardingEmail =
@@ -293,7 +296,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     App.addListener("resume", async () => {
       this.applySystemTheme();
 
-      // Validate token when app resumes from background
+      // Validate token when app resumes from background. Refreshes only if it
+      // expired meanwhile; the Firestore SDK picks a new token up on its own.
       if (this.authService.auth.currentUser) {
         const tokenValid = await this.authService.validateAndRefreshToken();
         if (!tokenValid) {
@@ -302,9 +306,6 @@ export class AppComponent implements OnInit, AfterViewInit {
           );
           await this.presentAlertSessionExpired();
           await this.authService.logout();
-        } else {
-          // Give Firebase client time to apply the new token
-          await new Promise((resolve) => setTimeout(resolve, 200));
         }
       }
     });

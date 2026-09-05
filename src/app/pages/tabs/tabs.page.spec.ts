@@ -3,6 +3,7 @@ import { TabsPage } from "./tabs.page";
 import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { of } from "rxjs";
 import { FirebaseService } from "src/app/services/firebase.service";
+import { AuthService } from "src/app/services/auth.service";
 import {
   MenuController,
   NavController,
@@ -20,6 +21,11 @@ describe("TabsPage", () => {
       "getClubList",
     ]);
     fbServiceSpy.getClubList.and.returnValue(of([]));
+    // TabsPage couples its club list to the auth state (authState$).
+    const authServiceSpy = jasmine.createSpyObj("AuthService", ["getUser$"], {
+      user$: of(null),
+      authState$: of(null),
+    });
 
     await TestBed.configureTestingModule({
       declarations: [TabsPage],
@@ -27,6 +33,7 @@ describe("TabsPage", () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: FirebaseService, useValue: fbServiceSpy },
+        { provide: AuthService, useValue: authServiceSpy },
         {
           provide: MenuController,
           useValue: jasmine.createSpyObj("MenuController", ["enable"]),

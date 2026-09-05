@@ -1,6 +1,12 @@
 import { Injectable, Injector, runInInjectionContext } from "@angular/core";
 import { Router } from "@angular/router";
-import { filter, first, shareReplay, switchMap } from "rxjs/operators";
+import {
+  distinctUntilChanged,
+  filter,
+  first,
+  shareReplay,
+  switchMap,
+} from "rxjs/operators";
 // import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 import {
@@ -32,11 +38,28 @@ import {
  *  DOCS https://github.com/angular/angularfire/blob/master/docs/auth/getting-started.md
  *******************************************************************************************/
 
+/**
+ * Two auth emissions describe the same signed-in session when they carry the
+ * same uid (or are both signed-out). Token refreshes hand out the same user
+ * with a new token — those must not count as a state change.
+ */
+export function sameSignedInUser(a: User | null, b: User | null): boolean {
+  return (a?.uid ?? null) === (b?.uid ?? null);
+}
+
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
   user$: Observable<User | null>;
+  /**
+   * Sign-in / sign-out only. user$ is built on onIdTokenChanged and therefore
+   * also emits on every token refresh (about hourly, and after each forced
+   * getIdToken(true)). Session-level wiring that (re)builds Firestore listeners
+   * — app.component, tabs — must subscribe here, otherwise every refresh tears
+   * those listeners down and re-reads their documents.
+   */
+  authState$: Observable<User | null>;
   private logoutSubject = new Subject<void>();
   public logout$ = this.logoutSubject.asObservable();
 
@@ -66,6 +89,7 @@ export class AuthService {
         from(this.auth.authStateReady()).pipe(switchMap(() => user(this.auth))),
       ),
     ).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    this.authState$ = this.user$.pipe(distinctUntilChanged(sameSignedInUser));
     // this.auth = getAuth(); // Removed: This was causing "Firebase API called outside injection context"
     // connectAuthEmulator(this.auth, 'http://localhost:8100')
   }
@@ -208,10 +232,17 @@ export class AuthService {
   }
 
   /**
-   * Validates and refreshes the authentication token
+   * Validates the authentication token and refreshes it if it has expired
+   * (or always, when forceRefresh is set).
+   *
+   * Not forced by default on purpose: a forced refresh emits on
+   * onIdTokenChanged and thus on user$. app.component used to force one inside
+   * its user$ subscription, which re-triggered that very subscription — two to
+   * three rounds on a fast network, unbounded on a slow one — and each round
+   * re-ran the whole login block including its Firestore reads.
    * @returns Promise<boolean> - true if token is valid/refreshed, false if expired/invalid
    */
-  async validateAndRefreshToken(): Promise<boolean> {
+  async validateAndRefreshToken(forceRefresh = false): Promise<boolean> {
     try {
       const user = this.getCurrentUser();
       if (!user) {
@@ -219,15 +250,17 @@ export class AuthService {
         return false;
       }
 
-      // Force token refresh to check if it's still valid
-      const token = await user.getIdToken(true);
+      // getIdToken() returns the cached token while it is valid and only goes
+      // to the network once it has expired — which is also the moment a
+      // disabled or deleted account surfaces as an auth error.
+      const token = await user.getIdToken(forceRefresh);
 
       if (!token) {
         console.error("Token refresh failed - no token returned");
         return false;
       }
 
-      console.log("Token successfully refreshed");
+      console.log("Token validated");
       return true;
     } catch (error) {
       console.error("Token validation failed:", error);
