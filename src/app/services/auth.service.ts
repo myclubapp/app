@@ -235,7 +235,9 @@ export class AuthService {
    * its user$ subscription, which re-triggered that very subscription — two to
    * three rounds on a fast network, unbounded on a slow one — and each round
    * re-ran the whole login block including its Firestore reads.
-   * @returns Promise<boolean> - true if token is valid/refreshed, false if expired/invalid
+   * @returns Promise<boolean> - false only when the session is definitely
+   * invalid (expired/disabled); true when valid, refreshed, or unverifiable
+   * because the device is offline
    */
   async validateAndRefreshToken(forceRefresh = false): Promise<boolean> {
     try {
@@ -258,19 +260,15 @@ export class AuthService {
       console.log("Token validated");
       return true;
     } catch (error) {
-      console.error("Token validation failed:", error);
-
-      // Check for specific auth errors
-      if (
-        error.code === "auth/user-token-expired" ||
-        error.code === "auth/user-disabled" ||
-        error.code === "auth/requires-recent-login" ||
-        error.code === "auth/network-request-failed"
-      ) {
-        console.error("Auth error detected - token is invalid:", error.code);
-        return false;
+      if (error?.code === "auth/network-request-failed") {
+        // Offline: the refresh token is most likely still valid and the SDK
+        // retries the refresh once the network is back. Treating this as an
+        // expired session would log the user out (and wipe the local
+        // Firestore cache) on every flight-mode resume.
+        console.warn("Token validation skipped - no network:", error.code);
+        return true;
       }
-
+      console.error("Token validation failed:", error);
       return false;
     }
   }

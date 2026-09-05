@@ -133,6 +133,20 @@ describe("AuthService", () => {
       const result = await service.validateAndRefreshToken();
       expect(result).toBeFalse();
     });
+
+    it("should keep the session when the refresh fails for lack of network", async () => {
+      const offlineUser = {
+        ...mockUser,
+        getIdToken: jasmine
+          .createSpy("getIdToken")
+          .and.rejectWith({ code: "auth/network-request-failed" }),
+      };
+      Object.defineProperty(service.auth, "currentUser", {
+        value: offlineUser,
+        configurable: true,
+      });
+      expect(await service.validateAndRefreshToken()).toBeTrue();
+    });
   });
 
   describe("user$", () => {
