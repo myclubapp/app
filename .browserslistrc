@@ -1,13 +1,8 @@
 # Entspricht exakt dem Support-Bereich von Angular 22 (Baseline "widely
 # available" zum Stichtag der Angular-Version, siehe
 # @angular/build/src/utils/supported-browsers.js). Ältere Browser – iOS/Safari 16
-# und darunter, Chrome/Edge bis 118, Firefox bis 118 – werden bewusst nicht mehr
-# bedient: die native iOS-App setzt iOS 17 voraus, und Angular baut ausserhalb
-# dieses Bereichs nur "best effort" und meldet das bei jedem Build als Warnung.
+# und darunter, Chrome/Edge/Firefox bis 118 – werden bewusst nicht mehr bedient:
+# die native iOS-App setzt iOS 17 voraus, und Angular baut ausserhalb dieses
+# Bereichs nur "best effort" und meldet das bei jedem Build als Warnung.
 # Nach einem Angular-Update den Stichtag an die neue Version anpassen.
 baseline widely available on 2026-05-07
-Chrome >=107
-Firefox >=106
-Edge >=107
-Safari >=16.1
-iOS >=16.1
