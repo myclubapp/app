@@ -76,6 +76,12 @@ Quellcode der Tools unter `tools/`:
   `production`, das Firebase-Hosting-Target `app-myclub`. Das ist in
   `themes.config.json` über `hostingTarget` abgebildet — nicht "aufräumen".
 - **`npm run themes:sync` nach jeder Config-Änderung**, sonst schlägt CI an.
+- **Firestore läuft mit persistentem Cache (IndexedDB)**, siehe
+  `firestoreFactory()` in `src/app/app.module.ts`. Dokumente überleben einen
+  App-Neustart; `getDocFromCache`/`getDocsFromCache` stehen zur Verfügung.
+  Beim Logout terminiert `AuthService.logout()` den Client, leert den Cache
+  und lädt die App neu — nach `terminate()` darf nichts mehr auf Firestore
+  zugreifen.
 - Generierte JSON-Dateien werden mit dem Prettier des Projekts formatiert,
   damit der husky-Pre-Commit-Hook sie nicht erneut anfasst.
 
