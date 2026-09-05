@@ -619,6 +619,91 @@ describe("HelferDetailPage", () => {
     });
   });
 
+  describe("placeholder flags for the skeleton and the error note", () => {
+    const rawSchicht = {
+      id: "schicht-1",
+      name: "Grillstand",
+      countNeeded: 3,
+      points: 2,
+      timeFrom: "10:00",
+      timeTo: "14:00",
+    };
+
+    beforeEach(() => {
+      component.user = mockUser as any;
+      component.children = [];
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([{ ...rawSchicht }]),
+      );
+    });
+
+    it("marks the eager placeholder as still loading (pending, not loadFailed)", (done) => {
+      fbServiceSpy.getClubMemberRefs.and.returnValue(NEVER);
+
+      component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1", {
+          eagerPlaceholder: true,
+        })
+        .pipe(take(1))
+        .subscribe((result) => {
+          // The template renders skeleton rows for exactly this state.
+          expect(result[0].pending).toBeTrue();
+          expect(result[0].loadFailed).toBeFalse();
+          done();
+        });
+    });
+
+    it("marks the fallback as loadFailed when club members cannot be loaded", (done) => {
+      spyOn(console, "error");
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        throwError(() => new Error("permission-denied")),
+      );
+
+      component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1")
+        .pipe(take(1))
+        .subscribe((result) => {
+          // Without the flag the template would keep showing a skeleton
+          // forever; with it, it shows the error note instead.
+          expect(result[0].pending).toBeTrue();
+          expect(result[0].loadFailed).toBeTrue();
+          done();
+        });
+    });
+
+    it("marks the fallback as loadFailed when a Schicht's attendees cannot be loaded", (done) => {
+      spyOn(console, "error");
+      fbServiceSpy.getClubMemberRefs.and.returnValue(of([]));
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        throwError(() => new Error("permission-denied")),
+      );
+
+      component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1")
+        .pipe(take(1))
+        .subscribe((result) => {
+          expect(result[0].loadFailed).toBeTrue();
+          done();
+        });
+    });
+
+    it("does not flag a resolved Schicht", (done) => {
+      fbServiceSpy.getClubMemberRefs.and.returnValue(of([]));
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        of([]),
+      );
+
+      component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1")
+        .pipe(take(1))
+        .subscribe((result) => {
+          expect(result[0].pending).toBeFalsy();
+          expect(result[0].loadFailed).toBeFalsy();
+          done();
+        });
+    });
+  });
+
   describe("getHelferEventSchichtenWithAttendees - loading robustness", () => {
     const rawSchicht = {
       id: "schicht-1",

@@ -426,6 +426,7 @@
   },
   "helfer-detail": {
     "helfer_innen_for": "Helfer für",
+    "attendees_load_failed": "Die Teilnehmer konnten nicht geladen werden. Bitte schliesse den Einsatz und öffne ihn erneut.",
     "add_members": "Mitglieder hinzufügen",
     "add_members_title": "Mitglieder zum Schicht hinzufügen",
     "add_members_message": "Wählen Sie die Mitglieder aus, die Sie zur Schicht hinzufügen möchten:",
