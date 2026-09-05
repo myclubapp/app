@@ -22,11 +22,12 @@ import {
 } from "@angular/fire/firestore";
 
 // import firebase from 'firebase/compat/app';
-import { Observable, shareReplay } from "rxjs";
+import { Observable } from "rxjs";
 
 import { AuthService } from "src/app/services/auth.service";
 import { Training } from "src/app/models/training";
 import { FirebaseService } from "../firebase.service";
+import { shareLatest } from "../share-latest";
 
 @Injectable({
   providedIn: "root",
@@ -57,7 +58,7 @@ export class TrainingService {
       `teams/${teamId}/trainings/${trainingId}`,
     );
     return runInInjectionContext(this.injector, () =>
-      docData(gameRef, { idField: "id" }).pipe(shareReplay(10)),
+      docData(gameRef, { idField: "id" }).pipe(shareLatest()),
     ) as Observable<Training>;
   }
 
@@ -78,7 +79,7 @@ export class TrainingService {
         ),
         orderBy("date", "asc"),
       );
-      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+      return collectionData(q, { idField: "id" }).pipe(shareLatest());
     }) as unknown as Observable<Training[]>;
   }
 
@@ -100,7 +101,7 @@ export class TrainingService {
         orderBy("date", "desc"),
         limit(30),
       );
-      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+      return collectionData(q, { idField: "id" }).pipe(shareLatest());
     }) as unknown as Observable<Training[]>;
   }
 
@@ -120,7 +121,7 @@ export class TrainingService {
         where("date", "<=", Timestamp.fromMillis(endDate.getTime())),
         orderBy("date", "asc"),
       );
-      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+      return collectionData(q, { idField: "id" }).pipe(shareLatest());
     }) as unknown as Observable<Training[]>;
   }
 
@@ -137,7 +138,7 @@ export class TrainingService {
     return runInInjectionContext(this.injector, () =>
       collectionData(attendeesRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as unknown as Observable<any[]>;
   }
 

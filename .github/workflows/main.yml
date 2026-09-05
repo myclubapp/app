@@ -23,9 +23,10 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
       - name: Install Dependencies
-        run: npm i --force
+        run: npm ci
       - name: Konfigurations-Drift prüfen
         run: npm run themes:check
       - name: Run Unit Tests
@@ -75,7 +76,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Matrix aufbauen
         id: resolve
         env:
@@ -107,9 +108,10 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
       - name: Install Dependencies
-        run: npm i --force
+        run: npm ci
       - name: Build ${{ matrix.app.label }}
         run: npx ng build --configuration ${{ matrix.app.configuration }}
       - name: Deploy to Firebase

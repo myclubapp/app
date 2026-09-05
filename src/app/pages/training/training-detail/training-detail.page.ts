@@ -27,7 +27,6 @@ import {
   lastValueFrom,
   map,
   of,
-  shareReplay,
   switchMap,
   take,
   tap,
@@ -117,10 +116,9 @@ export class TrainingDetailPage implements OnInit {
       this.training.id,
     );
 
-    this.clubList$ = this.fbService.getClubList().pipe(shareReplay(1));
-    this.teamAdminList$ = this.fbService
-      .getTeamAdminList()
-      .pipe(shareReplay(1));
+    // Both lists are shared inside FirebaseService (shareLatest).
+    this.clubList$ = this.fbService.getClubList();
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
   }
 
   ionViewDidEnter() {}

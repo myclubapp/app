@@ -20,9 +20,10 @@ import {
   orderBy,
   Timestamp,
 } from "@angular/fire/firestore";
-import { Observable, shareReplay } from "rxjs";
+import { Observable } from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "../auth.service";
+import { shareLatest } from "../share-latest";
 
 @Injectable({
   providedIn: "root",
@@ -58,7 +59,7 @@ export class ChampionshipService {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const gameRef = doc(this.firestore, `teams/${teamId}/games/${gameId}`);
     return runInInjectionContext(this.injector, () =>
-      docData(gameRef, { idField: "id" }).pipe(shareReplay(10)),
+      docData(gameRef, { idField: "id" }).pipe(shareLatest()),
     ) as Observable<Game>;
   }
 
@@ -76,7 +77,7 @@ export class ChampionshipService {
         ),
         orderBy("dateTime", "asc"),
       ); // heute - 1 Tag
-      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+      return collectionData(q, { idField: "id" }).pipe(shareLatest());
     }) as Observable<Game[]>;
   }
 
@@ -95,7 +96,7 @@ export class ChampionshipService {
         limit(30),
         orderBy("dateTime", "desc"),
       ); // heute - 1 Tag
-      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+      return collectionData(q, { idField: "id" }).pipe(shareLatest());
     }) as Observable<Game[]>;
   }
 
@@ -112,7 +113,7 @@ export class ChampionshipService {
         where("dateTime", "<=", Timestamp.fromMillis(endDate.getTime())),
         orderBy("dateTime", "asc"),
       );
-      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+      return collectionData(q, { idField: "id" }).pipe(shareLatest());
     }) as Observable<Game[]>;
   }
 
@@ -129,7 +130,7 @@ export class ChampionshipService {
         ),
         orderBy("dateTime", "asc"),
       ); // heute - 1 Tag
-      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+      return collectionData(q, { idField: "id" }).pipe(shareLatest());
     }) as Observable<Game[]>;
   }
 
@@ -143,7 +144,7 @@ export class ChampionshipService {
     return runInInjectionContext(this.injector, () =>
       collectionData(attendeesRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<any[]>;
   }
 

@@ -11,7 +11,6 @@ import {
   lastValueFrom,
   Observable,
   of,
-  shareReplay,
   Subscription,
 } from "rxjs";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
@@ -116,7 +115,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     this.deviceInfo = await Device.getInfo();
     // console.log(this.deviceInfo);
 
-    this.clubList$ = this.fbService.getClubList().pipe(shareReplay(1));
+    this.clubList$ = this.fbService.getClubList();
 
     this.userProfile$.pipe(take(1)).subscribe((userProfile) => {
       this.kidsRequests$ = this.profileService

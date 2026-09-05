@@ -56,8 +56,12 @@ describe("TrainingDetailPage", () => {
   };
 
   beforeEach(waitForAsync(() => {
-    authServiceSpy = jasmine.createSpyObj("AuthService", ["getUser$"]);
+    authServiceSpy = jasmine.createSpyObj("AuthService", [
+      "getUser$",
+      "getAuthenticatedUser$",
+    ]);
     authServiceSpy.getUser$.and.returnValue(of(mockUser as any));
+    authServiceSpy.getAuthenticatedUser$.and.returnValue(of(mockUser as any));
 
     trainingServiceSpy = jasmine.createSpyObj("TrainingService", [
       "getTeamTrainingRef",

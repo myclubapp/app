@@ -219,14 +219,10 @@ export class NewsPage implements OnInit {
     this.notifications$ = this.getNotifications().pipe(
       shareReplay({ bufferSize: 1, refCount: true }),
     );
-    // getClubAdminList() shares its listener internally via shareReplay, so no
-    // extra page-level shareReplay is needed (consistent with the other pages).
-    // getClubList() does NOT, so it keeps a page-level shareReplay to share the
-    // single listener across the template + the take(1) check below.
+    // Both lists share their listeners inside FirebaseService (shareLatest),
+    // so no page-level shareReplay is needed.
     this.clubAdminList$ = this.fbService.getClubAdminList();
-    this.clubList$ = this.fbService
-      .getClubList()
-      .pipe(shareReplay({ bufferSize: 1, refCount: true }));
+    this.clubList$ = this.fbService.getClubList();
     this.clubGames$ = this.getClubGames().pipe(
       shareReplay({ bufferSize: 1, refCount: true }),
     );

@@ -33,7 +33,6 @@ import {
   switchMap,
   take,
   tap,
-  shareReplay,
 } from "rxjs";
 import { Club } from "../models/club";
 import { Team } from "../models/team";
@@ -50,6 +49,7 @@ import {
 import { ClubLink } from "../models/club-link";
 import { Storage } from "@angular/fire/storage";
 import { Photo } from "@capacitor/camera";
+import { shareLatest } from "./share-latest";
 
 @Injectable({
   providedIn: "root",
@@ -178,6 +178,7 @@ export class FirebaseService {
           .filter((club): club is Club => club !== null && club !== undefined)
           .sort((a, b) => a.name.localeCompare(b.name)),
       ),
+      shareLatest(),
       catchError((err) => {
         console.error("Error in getClubList:", err);
         return of([]);
@@ -206,9 +207,9 @@ export class FirebaseService {
           .filter((club): club is Club => club !== null && club !== undefined)
           .sort((a, b) => a.name.localeCompare(b.name)),
       ),
-      shareReplay(1),
+      shareLatest(),
       catchError((err) => {
-        console.error("Error in getClubList:", err);
+        console.error("Error in getClubAdminList:", err);
         return of([]);
       }),
     );
@@ -238,7 +239,7 @@ export class FirebaseService {
           )
           .sort((a, b) => a.name.localeCompare(b.name)),
       ),
-      shareReplay(1),
+      shareLatest(),
       catchError((err) => {
         console.error("Error in getClubAdminListByClubId:", err);
         return of([]);
@@ -307,7 +308,7 @@ export class FirebaseService {
           .filter((team): team is Team => team !== null && team !== undefined)
           .sort((a, b) => a.name.localeCompare(b.name)),
       ),
-      shareReplay(1),
+      shareLatest(),
       catchError((err) => {
         console.error("Error in getTeamList:", err);
         return of([]);
@@ -346,7 +347,7 @@ export class FirebaseService {
           .filter((team): team is Team => team !== null && team !== undefined)
           .sort((a, b) => a.name.localeCompare(b.name)),
       ),
-      shareReplay(1),
+      shareLatest(),
       catchError((err) => {
         console.error("Error in getTeamAdminList:", err);
         return of([]);
@@ -388,7 +389,7 @@ export class FirebaseService {
           )
           .sort((a, b) => a.name.localeCompare(b.name)),
       ),
-      shareReplay(1),
+      shareLatest(),
       catchError((err) => {
         console.error("Error in getTeamAdminListByClubId:", err);
         return of([]);
@@ -438,7 +439,7 @@ export class FirebaseService {
         }
         return filteredTeams.sort((a, b) => a.name.localeCompare(b.name));
       }),
-      shareReplay(1),
+      shareLatest(),
       catchError((err) => {
         console.error("Fehler beim Laden der Club-Teams:", err);
         return of([]);
@@ -454,7 +455,7 @@ export class FirebaseService {
     return runInInjectionContext(this.injector, () =>
       collectionData(clubMemberRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<Profile[]>;
   }
 
@@ -466,7 +467,7 @@ export class FirebaseService {
     return runInInjectionContext(this.injector, () =>
       collectionData(clubParentRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<Profile[]>;
   }
 
@@ -478,7 +479,7 @@ export class FirebaseService {
     return runInInjectionContext(this.injector, () =>
       docData(clubMemberRef, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as unknown as Observable<Profile>;
   }
 
@@ -490,7 +491,7 @@ export class FirebaseService {
     return runInInjectionContext(this.injector, () =>
       collectionData(clubMemberRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<Profile[]>;
   }
 
@@ -543,7 +544,7 @@ export class FirebaseService {
               }
             : team,
         ),
-        shareReplay(1),
+        shareLatest(),
       ),
     ) as Observable<Team>;
   }
@@ -556,7 +557,7 @@ export class FirebaseService {
     return runInInjectionContext(this.injector, () =>
       collectionData(teamRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<Team[]>;
   }
 
@@ -568,7 +569,7 @@ export class FirebaseService {
     return runInInjectionContext(this.injector, () =>
       collectionData(teamRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<Team[]>;
   }
 
@@ -580,7 +581,7 @@ export class FirebaseService {
     return runInInjectionContext(this.injector, () =>
       collectionData(clubRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<Club[]>;
   }
 
@@ -633,7 +634,7 @@ export class FirebaseService {
     return runInInjectionContext(this.injector, () =>
       collectionData(teamRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<Team[]>;
   }
 
@@ -645,7 +646,7 @@ export class FirebaseService {
     return runInInjectionContext(this.injector, () =>
       collectionData(teamMemberRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<Profile[]>;
   }
 
@@ -657,7 +658,7 @@ export class FirebaseService {
     return runInInjectionContext(this.injector, () =>
       collectionData(teamMemberRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<Profile[]>;
   }
 
@@ -672,7 +673,7 @@ export class FirebaseService {
   getClubRef(clubId: string) {
     const clubRef = doc(this.firestore, `club/${clubId}`);
     return runInInjectionContext(this.injector, () =>
-      docData(clubRef, { idField: "id" }).pipe(shareReplay(1)),
+      docData(clubRef, { idField: "id" }).pipe(shareLatest()),
     ) as unknown as Observable<Club>;
   }
 
@@ -684,7 +685,7 @@ export class FirebaseService {
     return runInInjectionContext(this.injector, () =>
       collectionData(clubRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<Club[]>;
   }
 
@@ -693,7 +694,7 @@ export class FirebaseService {
     return runInInjectionContext(this.injector, () =>
       collectionData(clubTeamRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<Team[]>;
   }
 
@@ -1104,7 +1105,7 @@ export class FirebaseService {
           console.log("DEBUG: Anzahl gefundener Clubs:", clubs.length);
           console.log("DEBUG: Clubs:", clubs);
         }),
-        shareReplay(1),
+        shareLatest(),
         map((clubs) => {
           const filteredClubs = clubs.filter(
             (club) =>
@@ -1255,7 +1256,7 @@ export class FirebaseService {
           orderBy("order"),
         ),
         { idField: "id" },
-      ).pipe(shareReplay(1));
+      ).pipe(shareLatest());
     }) as Observable<ClubLink[]>;
   }
 

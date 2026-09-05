@@ -16,9 +16,10 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
       - name: Install Dependencies
-        run: npm ci --force
+        run: npm ci
       - name: Konfigurations-Drift prüfen
         run: npm run themes:check
       - name: Run Unit Tests
@@ -52,9 +53,10 @@ jobs:
       - name: Config Node Version because of npm login issues.
         uses: actions/setup-node@master
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
       - name: Install Dependencies
-        run: npm i --force
+        run: npm ci
       - name: Build (BETA)
         run: npm run build:beta
       - name: Deploy to Firebase

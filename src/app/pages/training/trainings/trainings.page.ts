@@ -44,6 +44,7 @@ import { Profile } from "src/app/models/user";
 import { UiService } from "src/app/services/ui.service";
 import { Preferences } from "@capacitor/preferences";
 import { BehaviorSubject } from "rxjs";
+import { shareLatest } from "src/app/services/share-latest";
 
 const ALL_TEAMS = "all";
 const TEAM_FILTER_STORAGE_KEY = "trainingTeamFilter";
@@ -402,7 +403,7 @@ export class TrainingsPage implements OnInit {
               return acc;
             }, {}),
           ),
-          shareReplay(1),
+          shareLatest(),
         );
 
         return combineLatest([
@@ -625,7 +626,7 @@ export class TrainingsPage implements OnInit {
               return acc;
             }, {}),
           ),
-          shareReplay(1),
+          shareLatest(),
         );
 
         return combineLatest([

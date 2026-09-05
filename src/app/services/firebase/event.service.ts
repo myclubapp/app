@@ -25,9 +25,9 @@ import {
 import { Observable } from "rxjs";
 import { HelferEvent, Veranstaltung } from "src/app/models/event";
 import { AuthService } from "../auth.service";
-import { shareReplay } from "rxjs/operators";
 import { FirebaseService } from "../firebase.service";
 import { User } from "@angular/fire/auth";
+import { shareLatest } from "../share-latest";
 
 @Injectable({
   providedIn: "root",
@@ -54,7 +54,7 @@ export class EventService {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const eventRef = doc(this.firestore, `club/${clubId}/events/${eventId}`);
     return runInInjectionContext(this.injector, () =>
-      docData(eventRef, { idField: "id" }).pipe(shareReplay(10)),
+      docData(eventRef, { idField: "id" }).pipe(shareLatest()),
     ) as Observable<Veranstaltung>;
   }
 
@@ -71,7 +71,7 @@ export class EventService {
       ); // StartDatum der Veranstaltung - 12h
       return collectionData(q, {
         idField: "id",
-      }).pipe(shareReplay(1));
+      }).pipe(shareLatest());
     }) as unknown as Observable<Veranstaltung[]>;
   }
   getClubEventsPastRef(clubId: string): Observable<Veranstaltung[]> {
@@ -90,7 +90,7 @@ export class EventService {
 
       return collectionData(q, {
         idField: "id",
-      }).pipe(shareReplay(1));
+      }).pipe(shareLatest());
     }) as unknown as Observable<Veranstaltung[]>;
   }
 
@@ -102,7 +102,7 @@ export class EventService {
     return runInInjectionContext(this.injector, () =>
       collectionData(attendeesRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as unknown as Observable<any[]>;
   }
   async setClubEventAttendeeStatus(
@@ -160,7 +160,7 @@ export class EventService {
       `club/${clubId}/helferEvents/${eventId}`,
     );
     return runInInjectionContext(this.injector, () =>
-      docData(eventRef, { idField: "id" }).pipe(shareReplay(10)),
+      docData(eventRef, { idField: "id" }).pipe(shareLatest()),
     ) as Observable<HelferEvent>;
   }
 
@@ -184,7 +184,7 @@ export class EventService {
       ); // StartDatum der Veranstaltung - 12h
       return collectionData(q, {
         idField: "id",
-      }).pipe(shareReplay(1));
+      }).pipe(shareLatest());
     }) as unknown as Observable<HelferEvent[]>;
   }
 
@@ -204,7 +204,7 @@ export class EventService {
       ); // StartDatum der Veranstaltung - 12h
       return collectionData(q, {
         idField: "id",
-      }).pipe(shareReplay(1));
+      }).pipe(shareLatest());
     }) as unknown as Observable<HelferEvent[]>;
   }
   getClubHelferEventPastRefs(clubId: string): Observable<HelferEvent[]> {
@@ -226,7 +226,7 @@ export class EventService {
 
       return collectionData(q, {
         idField: "id",
-      }).pipe(shareReplay(1));
+      }).pipe(shareLatest());
     }) as Observable<HelferEvent[]>;
   }
 
@@ -241,7 +241,7 @@ export class EventService {
     return runInInjectionContext(this.injector, () =>
       collectionData(attendeesRefList, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<any[]>;
   }
 
@@ -256,7 +256,7 @@ export class EventService {
     return runInInjectionContext(this.injector, () =>
       collectionData(schichtenRefList, {
         idField: "id",
-      }).pipe(shareReplay(10)),
+      }).pipe(shareLatest()),
     ) as Observable<any[]>;
   }
 
@@ -308,7 +308,7 @@ export class EventService {
     return runInInjectionContext(this.injector, () =>
       collectionData(schichtAttendeesListRef, {
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable<any[]>;
   }
 

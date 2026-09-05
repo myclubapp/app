@@ -106,6 +106,16 @@ describe("AuthService", () => {
       });
       const result = await service.validateAndRefreshToken();
       expect(result).toBeTrue();
+      // Not forced: a forced refresh would re-trigger user$ subscribers.
+      expect(mockUser.getIdToken).toHaveBeenCalledWith(false);
+    });
+
+    it("should force a refresh only when explicitly asked", async () => {
+      Object.defineProperty(service.auth, "currentUser", {
+        value: mockUser,
+        configurable: true,
+      });
+      await service.validateAndRefreshToken(true);
       expect(mockUser.getIdToken).toHaveBeenCalledWith(true);
     });
 
@@ -123,11 +133,29 @@ describe("AuthService", () => {
       const result = await service.validateAndRefreshToken();
       expect(result).toBeFalse();
     });
+
+    it("should keep the session when the refresh fails for lack of network", async () => {
+      const offlineUser = {
+        ...mockUser,
+        getIdToken: jasmine
+          .createSpy("getIdToken")
+          .and.rejectWith({ code: "auth/network-request-failed" }),
+      };
+      Object.defineProperty(service.auth, "currentUser", {
+        value: offlineUser,
+        configurable: true,
+      });
+      expect(await service.validateAndRefreshToken()).toBeTrue();
+    });
   });
 
   describe("user$", () => {
     it("should expose user$ observable", () => {
       expect(service.user$).toBeDefined();
+    });
+
+    it("should expose authState$ observable", () => {
+      expect(service.authState$).toBeDefined();
     });
 
     it("getUser$ should return an observable", () => {

@@ -10,11 +10,12 @@ import {
   NavController,
   AnimationController,
 } from "@ionic/angular";
-import { Observable, of, shareReplay, switchMap } from "rxjs";
+import { Observable, of, switchMap } from "rxjs";
 import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { AuthService } from "src/app/services/auth.service";
 import { Analytics, logEvent } from "@angular/fire/analytics";
+import { shareLatest } from "src/app/services/share-latest";
 
 @Component({
   selector: "app-tabs",
@@ -47,11 +48,13 @@ export class TabsPage implements OnInit {
     // View-Instanzen im Router-Outlet vor), blieb so das während des Logouts
     // gelesene leere Array stehen -> Tab-Bar ohne Meisterschaft/Helferevents
     // und "Probe" statt "Training", bis zum Browser-Reload.
-    this.clubList$ = this.authService.user$.pipe(
+    // authState$ (nicht user$): user$ emittiert bei jedem Token-Refresh und
+    // würde hier stündlich neue Firestore-Listener für die Vereinsliste öffnen.
+    this.clubList$ = this.authService.authState$.pipe(
       switchMap((user) =>
         user ? this.fbService.getClubList() : of([] as Club[]),
       ),
-      shareReplay(1),
+      shareLatest(),
     );
 
     this.menuCtrl.enable(true, "menu");

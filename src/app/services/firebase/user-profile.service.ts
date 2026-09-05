@@ -32,7 +32,7 @@ import { Photo } from "@capacitor/camera";
 
 import { AuthService } from "../auth.service";
 import { DeviceId, DeviceInfo } from "@capacitor/device";
-import { shareReplay } from "rxjs/operators";
+import { shareLatest } from "../share-latest";
 
 @Injectable({
   providedIn: "root",
@@ -90,7 +90,7 @@ export class UserProfileService {
       `userProfile/${userId}/children`,
     );
     return runInInjectionContext(this.injector, () =>
-      collectionData(childrenRef, { idField: "id" }).pipe(shareReplay(1)),
+      collectionData(childrenRef, { idField: "id" }).pipe(shareLatest()),
     ) as Observable<any[]>;
   }
 
@@ -137,7 +137,7 @@ export class UserProfileService {
   getUserProfile(user: User): Observable<Profile> {
     const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     return runInInjectionContext(this.injector, () =>
-      docData(userProfileRef, { idField: "id" }).pipe(shareReplay(1)),
+      docData(userProfileRef, { idField: "id" }).pipe(shareLatest()),
     ) as Observable<Profile>;
   }
 
@@ -148,9 +148,7 @@ export class UserProfileService {
     );
 
     return runInInjectionContext(this.injector, () =>
-      docData(userProfileRef, { idField: "id" }).pipe(
-        shareReplay({ bufferSize: 1, refCount: true }),
-      ),
+      docData(userProfileRef, { idField: "id" }).pipe(shareLatest()),
     ) as Observable<Profile>;
   }
 

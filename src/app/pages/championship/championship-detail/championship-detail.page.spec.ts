@@ -22,8 +22,12 @@ describe("ChampionshipDetailPage", () => {
       "isTeamAdmin",
     ]);
     fbServiceSpy.getTeamAdminList.and.returnValue(of([]));
-    const authServiceSpy = jasmine.createSpyObj("AuthService", ["getUser$"]);
+    const authServiceSpy = jasmine.createSpyObj("AuthService", [
+      "getUser$",
+      "getAuthenticatedUser$",
+    ]);
     authServiceSpy.getUser$.and.returnValue(of(null));
+    authServiceSpy.getAuthenticatedUser$.and.returnValue(of(null));
 
     await TestBed.configureTestingModule({
       declarations: [ChampionshipDetailPage],

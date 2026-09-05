@@ -5,6 +5,7 @@ import { filter, first, shareReplay, switchMap } from "rxjs/operators";
 
 import {
   Auth,
+  authState,
   user,
   verifyBeforeUpdateEmail,
   // connectAuthEmulator,
@@ -37,6 +38,15 @@ import {
 })
 export class AuthService {
   user$: Observable<User | null>;
+  /**
+   * Sign-in / sign-out only (AngularFire authState(), i.e. onAuthStateChanged).
+   * user$ is built on onIdTokenChanged and therefore also emits on every token
+   * refresh (about hourly, and after each forced getIdToken(true)).
+   * Session-level wiring that (re)builds Firestore listeners — app.component,
+   * tabs — must subscribe here, otherwise every refresh tears those listeners
+   * down and re-reads their documents.
+   */
+  authState$: Observable<User | null>;
   private logoutSubject = new Subject<void>();
   public logout$ = this.logoutSubject.asObservable();
 
@@ -49,25 +59,34 @@ export class AuthService {
     private readonly router: Router,
     private readonly injector: Injector,
   ) {
-    // Use the user() Observable from @angular/fire/auth, always created within an
-    // injection context so AngularFire can zone-wrap it (avoids the dev-mode warning
-    // "Firebase API called outside injection context"). shareReplay keeps a single
-    // onIdTokenChanged listener shared across all getUser$() subscribers.
-    this.user$ = defer(() =>
-      runInInjectionContext(this.injector, () =>
-        // Wait until Firebase has restored the persisted auth state before emitting.
-        // On iOS/Capacitor (indexedDBLocalPersistence) the initial restore is slow,
-        // and user() would otherwise emit a transient `null` first. Consumers that
-        // gate data loading with take(1)/first() grab that null and short-circuit
-        // (e.g. `if (!user) return of([])`), showing empty/skeleton until a later
-        // re-subscription (tab switch) hits the resolved user — that is the "data
-        // only loads after switching tabs" bug. authStateReady() guarantees the
-        // first emission is the settled state (real user, or a genuine logout null).
-        from(this.auth.authStateReady()).pipe(switchMap(() => user(this.auth))),
-      ),
-    ).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    // Both streams are created within an injection context so AngularFire can
+    // zone-wrap them (avoids the dev-mode warning "Firebase API called outside
+    // injection context"); shareReplay keeps a single Firebase listener per
+    // stream, shared across all subscribers.
+    this.user$ = this.afterAuthStateReady(() => user(this.auth));
+    this.authState$ = this.afterAuthStateReady(() => authState(this.auth));
     // this.auth = getAuth(); // Removed: This was causing "Firebase API called outside injection context"
     // connectAuthEmulator(this.auth, 'http://localhost:8100')
+  }
+
+  /**
+   * Wraps one of AngularFire's auth observables so that it only starts
+   * emitting once Firebase has restored the persisted auth state. On
+   * iOS/Capacitor (indexedDBLocalPersistence) the initial restore is slow, and
+   * user()/authState() would otherwise emit a transient `null` first.
+   * Consumers that gate data loading with take(1)/first() grab that null and
+   * short-circuit (e.g. `if (!user) return of([])`), showing empty/skeleton
+   * until a later re-subscription (tab switch) hits the resolved user — that
+   * was the "data only loads after switching tabs" bug. authStateReady()
+   * guarantees the first emission is the settled state (real user, or a
+   * genuine logout null).
+   */
+  private afterAuthStateReady<T>(source: () => Observable<T>): Observable<T> {
+    return defer(() =>
+      runInInjectionContext(this.injector, () =>
+        from(this.auth.authStateReady()).pipe(switchMap(source)),
+      ),
+    ).pipe(shareReplay({ bufferSize: 1, refCount: false }));
   }
 
   getUser$() {
@@ -208,10 +227,19 @@ export class AuthService {
   }
 
   /**
-   * Validates and refreshes the authentication token
-   * @returns Promise<boolean> - true if token is valid/refreshed, false if expired/invalid
+   * Validates the authentication token and refreshes it if it has expired
+   * (or always, when forceRefresh is set).
+   *
+   * Not forced by default on purpose: a forced refresh emits on
+   * onIdTokenChanged and thus on user$. app.component used to force one inside
+   * its user$ subscription, which re-triggered that very subscription — two to
+   * three rounds on a fast network, unbounded on a slow one — and each round
+   * re-ran the whole login block including its Firestore reads.
+   * @returns Promise<boolean> - false only when the session is definitely
+   * invalid (expired/disabled); true when valid, refreshed, or unverifiable
+   * because the device is offline
    */
-  async validateAndRefreshToken(): Promise<boolean> {
+  async validateAndRefreshToken(forceRefresh = false): Promise<boolean> {
     try {
       const user = this.getCurrentUser();
       if (!user) {
@@ -219,30 +247,28 @@ export class AuthService {
         return false;
       }
 
-      // Force token refresh to check if it's still valid
-      const token = await user.getIdToken(true);
+      // getIdToken() returns the cached token while it is valid and only goes
+      // to the network once it has expired — which is also the moment a
+      // disabled or deleted account surfaces as an auth error.
+      const token = await user.getIdToken(forceRefresh);
 
       if (!token) {
         console.error("Token refresh failed - no token returned");
         return false;
       }
 
-      console.log("Token successfully refreshed");
+      console.log("Token validated");
       return true;
     } catch (error) {
-      console.error("Token validation failed:", error);
-
-      // Check for specific auth errors
-      if (
-        error.code === "auth/user-token-expired" ||
-        error.code === "auth/user-disabled" ||
-        error.code === "auth/requires-recent-login" ||
-        error.code === "auth/network-request-failed"
-      ) {
-        console.error("Auth error detected - token is invalid:", error.code);
-        return false;
+      if (error?.code === "auth/network-request-failed") {
+        // Offline: the refresh token is most likely still valid and the SDK
+        // retries the refresh once the network is back. Treating this as an
+        // expired session would log the user out (and wipe the local
+        // Firestore cache) on every flight-mode resume.
+        console.warn("Token validation skipped - no network:", error.code);
+        return true;
       }
-
+      console.error("Token validation failed:", error);
       return false;
     }
   }
