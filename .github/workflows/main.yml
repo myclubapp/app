@@ -19,9 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -34,21 +34,21 @@ jobs:
         env:
           CHROME_BIN: /usr/bin/google-chrome-stable
       - name: Publish Test Results
-        uses: dorny/test-reporter@v2
+        uses: dorny/test-reporter@v3
         if: always()
         with:
           name: Karma Test Results
           path: TESTS-*.xml
           reporter: java-junit
       - name: Upload Coverage Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: coverage-report
           path: coverage/
           retention-days: 14
       - name: Generate Coverage Badge
-        uses: jaywcjlove/coverage-badges-cli@main
+        uses: jaywcjlove/coverage-badges-cli@v2.3.0
         if: always()
         with:
           source: coverage/ngv/coverage-summary.json
@@ -72,9 +72,9 @@ jobs:
       apps: ${{ steps.resolve.outputs.apps }}
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
       - name: Matrix aufbauen
@@ -104,9 +104,9 @@ jobs:
         app: ${{ fromJSON(needs.resolve_apps.outputs.apps) }}
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
