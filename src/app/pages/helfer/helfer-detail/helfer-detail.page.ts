@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   Input,
+  OnDestroy,
   OnInit,
   ChangeDetectionStrategy,
 } from "@angular/core";
@@ -15,6 +16,7 @@ import { TranslateService } from "@ngx-translate/core";
 import { User } from "firebase/auth";
 import {
   Observable,
+  Subscription,
   catchError,
   combineLatest,
   firstValueFrom,
@@ -22,9 +24,12 @@ import {
   lastValueFrom,
   map,
   of,
+  shareReplay,
+  startWith,
   switchMap,
   take,
   tap,
+  timeout,
 } from "rxjs";
 import { Browser } from "@capacitor/browser";
 import { HelferEvent, Schicht } from "src/app/models/event";
@@ -45,7 +50,7 @@ import { HelferAddPage } from "../helfer-add/helfer-add.page";
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
-export class HelferDetailPage implements OnInit {
+export class HelferDetailPage implements OnInit, OnDestroy {
   @Input() data!: HelferEvent;
   @Input() isFuture!: boolean;
 
@@ -53,6 +58,7 @@ export class HelferDetailPage implements OnInit {
 
   event$: Observable<any>;
   schichten$: Observable<any[]>;
+  private schichtenSub: Subscription;
 
   mode = "yes";
 
@@ -102,16 +108,37 @@ export class HelferDetailPage implements OnInit {
     if (!this.event) {
       return;
     }
+    // Build the streams only once: ngOnInit and ionViewWillEnter both call
+    // this, and rebuilding would run the whole read cascade twice per open
+    // (same guard as on the Helfer list page).
+    if (this.event$) {
+      return;
+    }
 
     this.event$ = this.getHelferEvent(this.event.clubId, this.event.id);
 
     this.clubAdminList$ = this.fbService.getClubAdminList();
     // this.teamAdminList$ = this.fbService.getTeamAdminList();
 
+    // schichten$ is consumed via async pipes in the member view and the
+    // admin-edit view — mutually exclusive @if branches, so on an edit
+    // toggle the subscriber count would briefly drop to 0 and a purely
+    // refCounted shareReplay would tear down and restart the whole read
+    // cascade (placeholder flash included). The component-held subscription
+    // below pins the stream for the page's lifetime; ngOnDestroy releases
+    // it so the Firestore listeners are cleaned up with the modal.
     this.schichten$ = this.getHelferEventSchichtenWithAttendees(
       this.event.clubId,
       this.event.id,
-    );
+      { eagerPlaceholder: true },
+    ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+    this.schichtenSub = this.schichten$.subscribe();
+  }
+
+  ngOnDestroy() {
+    if (this.schichtenSub) {
+      this.schichtenSub.unsubscribe();
+    }
   }
 
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
@@ -166,11 +193,39 @@ export class HelferDetailPage implements OnInit {
     );
   }
 
-  getHelferEventSchichtenWithAttendees(clubId: string, eventId: string) {
+  /**
+   * Template-safe empty representation of a Schicht: the template reads
+   * status.length, children and the attendee lists unconditionally, so every
+   * emission (eager placeholder or error fallback) must carry this shape.
+   */
+  private toPlaceholderSchicht(
+    schicht: Schicht,
+    unrespondedMembers: any[] = [],
+  ) {
+    return {
+      ...schicht,
+      attendees: [],
+      attendeeListTrue: [],
+      attendeeListFalse: [],
+      unrespondedMembers,
+      status: [],
+      children: [],
+      // A placeholder — whether still loading or an error fallback — has no
+      // resolved attendee data, so the toggle/add handlers ignore taps on it
+      // (the capacity check would otherwise see 0 and allow overbooking).
+      pending: true,
+    };
+  }
+
+  getHelferEventSchichtenWithAttendees(
+    clubId: string,
+    eventId: string,
+    options: { eagerPlaceholder?: boolean } = {},
+  ) {
     return this.eventService
       .getClubHelferEventSchichtenRef(clubId, eventId)
       .pipe(
-        switchMap((schichten) => {
+        switchMap((schichten, schichtenEmissionIndex) => {
           if (schichten.length === 0) return of([]); // No schichten found
 
           // Sort the schichten by timeFrom ascending and then by name A-Z
@@ -182,147 +237,176 @@ export class HelferDetailPage implements OnInit {
             return (a.name || "").localeCompare(b.name || ""); // If timeFrom is the same, sort by name A-Z
           });
 
-          return this.fbService.getClubMemberRefs(clubId).pipe(
-            switchMap((clubMembers) => {
-              const clubMemberProfiles$ = clubMembers.map((member) =>
-                this.userProfileService.getUserProfileById(member.id).pipe(
-                  take(1),
-                  catchError((err) => {
-                    console.error(
-                      `Failed to fetch profile for club member ${member.id}:`,
-                      err,
-                    );
-                    return of({
-                      id: member.id,
-                      firstName: "Unknown",
-                      lastName: "Unknown",
-                      status: null,
-                      confirmed: null,
-                    });
-                  }),
-                ),
-              );
-              return forkJoin(clubMemberProfiles$).pipe(
-                switchMap((clubMembersWithDetails) => {
-                  const schichtenWithAttendees$ = sortedSchichten.map(
-                    (schicht) =>
-                      this.eventService
-                        .getClubHelferEventSchichtAttendeesRef(
-                          clubId,
-                          eventId,
-                          schicht.id,
-                        )
-                        .pipe(
-                          map((attendees) => {
-                            const attendeeDetails = attendees
-                              .map((attendee) => {
-                                const detail = clubMembersWithDetails.find(
-                                  (member) =>
-                                    member && member.id === attendee.id,
-                                );
-                                return detail
-                                  ? {
-                                      ...detail,
-                                      status: attendee.status,
-                                      confirmed: attendee.confirmed,
-                                      changedAt: attendee.changedAt,
-                                    }
-                                  : null;
-                              })
-                              .filter((item) => item); // Ensure nulls are removed
+          const schichtenWithMembers$ = this.fbService
+            .getClubMemberRefs(clubId)
+            .pipe(
+              switchMap((clubMembers) => {
+                const clubMemberProfiles$ = clubMembers.map((member) =>
+                  this.userProfileService.getUserProfileById(member.id).pipe(
+                    take(1),
+                    // A single stalled profile read must not block the whole
+                    // Schichten list forever.
+                    timeout(10000),
+                    catchError((err) => {
+                      console.error(
+                        `Failed to fetch profile for club member ${member.id}:`,
+                        err,
+                      );
+                      return of({
+                        id: member.id,
+                        firstName: "Unknown",
+                        lastName: "Unknown",
+                        status: null,
+                        confirmed: null,
+                      });
+                    }),
+                  ),
+                );
+                // forkJoin([]) completes without ever emitting, which would
+                // leave the Schichten list stuck on its loading state.
+                const clubMembersWithDetails$ =
+                  clubMemberProfiles$.length > 0
+                    ? forkJoin(clubMemberProfiles$)
+                    : of([]);
+                return clubMembersWithDetails$.pipe(
+                  switchMap((clubMembersWithDetails) => {
+                    const schichtenWithAttendees$ = sortedSchichten.map(
+                      (schicht) =>
+                        this.eventService
+                          .getClubHelferEventSchichtAttendeesRef(
+                            clubId,
+                            eventId,
+                            schicht.id,
+                          )
+                          .pipe(
+                            map((attendees) => {
+                              const attendeeDetails = attendees
+                                .map((attendee) => {
+                                  const detail = clubMembersWithDetails.find(
+                                    (member) =>
+                                      member && member.id === attendee.id,
+                                  );
+                                  return detail
+                                    ? {
+                                        ...detail,
+                                        status: attendee.status,
+                                        confirmed: attendee.confirmed,
+                                        changedAt: attendee.changedAt,
+                                      }
+                                    : null;
+                                })
+                                .filter((item) => item); // Ensure nulls are removed
 
-                            const attendeeListTrue = attendeeDetails.filter(
-                              (att) => att.status === true,
-                            );
-                            const attendeeListFalse = attendeeDetails.filter(
-                              (att) => att.status === false,
-                            );
-                            const respondedIds = new Set(
-                              attendeeDetails.map((att) => att.id),
-                            );
-                            const unrespondedMembers =
-                              clubMembersWithDetails.filter(
-                                (member) =>
-                                  member && !respondedIds.has(member.id),
+                              const attendeeListTrue = attendeeDetails.filter(
+                                (att) => att.status === true,
                               );
-
-                            return {
-                              ...schicht,
-                              attendees: attendeeDetails,
-                              attendeeListTrue,
-                              attendeeListFalse,
-                              unrespondedMembers,
-                              status: attendeeDetails
-                                .filter((att) =>
-                                  [
-                                    this.user.uid,
-                                    ...this.children.map((child) => child.id),
-                                  ].includes(att.id),
-                                )
-                                .map((att) => ({
-                                  id: att.id,
-                                  status: att.status,
-                                  confirmed: att.confirmed,
-                                  firstName: att.firstName,
-                                  lastName: att.lastName,
-                                  changedAt: att.changedAt,
-                                }))
-                                .sort(
-                                  (b, a) =>
-                                    a.changedAt.toDate().getTime() -
-                                    b.changedAt.toDate().getTime(),
-                                ),
-                              children: this.children.map((child) => {
-                                const attendeeData = attendeeDetails.find(
-                                  (att) => att.id === child.id,
+                              const attendeeListFalse = attendeeDetails.filter(
+                                (att) => att.status === false,
+                              );
+                              const respondedIds = new Set(
+                                attendeeDetails.map((att) => att.id),
+                              );
+                              const unrespondedMembers =
+                                clubMembersWithDetails.filter(
+                                  (member) =>
+                                    member && !respondedIds.has(member.id),
                                 );
-                                return {
-                                  id: child.id,
-                                  status: attendeeData?.status ?? null,
-                                  confirmed: attendeeData?.confirmed ?? false,
-                                  firstName: child.firstName,
-                                  lastName: child.lastName,
-                                  changedAt: attendeeData?.changedAt ?? null,
-                                };
-                              }),
-                            };
-                          }),
 
-                          catchError((err) => {
-                            console.error(
-                              "Error fetching attendees for schicht:",
-                              err,
-                            );
-                            return of({
-                              ...schicht,
-                              attendees: [],
-                              attendeeListTrue: [],
-                              attendeeListFalse: [],
-                              unrespondedMembers: clubMembersWithDetails,
-                              status: null,
-                              confirmed: null,
-                            });
-                          }),
-                        ),
-                  );
-                  return combineLatest(schichtenWithAttendees$);
-                }),
-              );
-            }),
-            catchError((err) => {
-              console.error("Error fetching club members:", err);
-              return of(
-                schichten.map((schicht) => ({
-                  ...schicht,
-                  attendees: [],
-                  attendeeListTrue: [],
-                  attendeeListFalse: [],
-                  unrespondedMembers: [],
-                  status: null,
-                  confirmed: null,
-                })),
-              );
-            }),
+                              return {
+                                ...schicht,
+                                attendees: attendeeDetails,
+                                attendeeListTrue,
+                                attendeeListFalse,
+                                unrespondedMembers,
+                                status: attendeeDetails
+                                  .filter((att) =>
+                                    [
+                                      // schichten$ can emit before event$ has
+                                      // resolved the authenticated user.
+                                      this.user?.uid,
+                                      ...this.children.map((child) => child.id),
+                                    ]
+                                      .filter(Boolean)
+                                      .includes(att.id),
+                                  )
+                                  .map((att) => ({
+                                    id: att.id,
+                                    status: att.status,
+                                    confirmed: att.confirmed,
+                                    firstName: att.firstName,
+                                    lastName: att.lastName,
+                                    changedAt: att.changedAt,
+                                  }))
+                                  .sort(
+                                    // changedAt can be missing on legacy
+                                    // attendee documents — never crash on it.
+                                    (b, a) =>
+                                      (a.changedAt?.toDate?.()?.getTime() ??
+                                        0) -
+                                      (b.changedAt?.toDate?.()?.getTime() ?? 0),
+                                  ),
+                                children: this.children.map((child) => {
+                                  const attendeeData = attendeeDetails.find(
+                                    (att) => att.id === child.id,
+                                  );
+                                  return {
+                                    id: child.id,
+                                    status: attendeeData?.status ?? null,
+                                    confirmed: attendeeData?.confirmed ?? false,
+                                    firstName: child.firstName,
+                                    lastName: child.lastName,
+                                    changedAt: attendeeData?.changedAt ?? null,
+                                  };
+                                }),
+                              };
+                            }),
+
+                            catchError((err) => {
+                              console.error(
+                                "Error fetching attendees for schicht:",
+                                err,
+                              );
+                              return of(
+                                this.toPlaceholderSchicht(
+                                  schicht,
+                                  clubMembersWithDetails,
+                                ),
+                              );
+                            }),
+                          ),
+                    );
+                    return combineLatest(schichtenWithAttendees$);
+                  }),
+                );
+              }),
+              catchError((err) => {
+                console.error("Error fetching club members:", err);
+                return of(
+                  sortedSchichten.map((schicht) =>
+                    this.toPlaceholderSchicht(schicht),
+                  ),
+                );
+              }),
+            );
+
+          if (!options.eagerPlaceholder || schichtenEmissionIndex > 0) {
+            return schichtenWithMembers$;
+          }
+          // Show the Schichten immediately with empty attendee lists instead
+          // of blocking the whole section on one profile read per club member
+          // (same non-blocking pattern as the Helfer list page). The real
+          // attendee data replaces the placeholder as soon as it resolves.
+          // Only on the FIRST schichten emission: the collection ref is a live
+          // listener, and replaying the placeholder on later emissions would
+          // flash every viewer's list back to "unanswered" whenever a Schicht
+          // document changes — the async pipe keeps the last resolved state
+          // on screen instead.
+          return schichtenWithMembers$.pipe(
+            startWith(
+              sortedSchichten.map((schicht) =>
+                this.toPlaceholderSchicht(schicht),
+              ),
+            ),
           );
         }),
         catchError((err) => {
@@ -502,6 +586,11 @@ export class HelferDetailPage implements OnInit {
     memberId: string,
   ) {
     slidingItem.closeOpened();
+    // Placeholder rows have no resolved attendee counts yet — a tap in that
+    // window would bypass the capacity check below.
+    if (schicht?.pending) {
+      return;
+    }
     console.log("toggleSchichtItem", status, event, schicht, memberId);
 
     const newStartDate = event.date.toDate();
@@ -584,6 +673,11 @@ export class HelferDetailPage implements OnInit {
     event,
     schicht,
   ) {
+    // Placeholder rows have no resolved attendee counts yet — a tap in that
+    // window would bypass the capacity check below.
+    if (schicht?.pending) {
+      return;
+    }
     // Prüfe, ob schon genügend Helferinnen eingetragen sind (aber Admins dürfen überbuchen)
     if (
       schicht.attendeeListTrue &&
@@ -935,6 +1029,11 @@ export class HelferDetailPage implements OnInit {
 
   async addMembersToSchicht(slidingItem: IonItemSliding, schicht: any) {
     slidingItem.closeOpened();
+    // Placeholder rows have no resolved attendee list yet — the "available
+    // members" filter below would otherwise offer every club member.
+    if (schicht?.pending) {
+      return;
+    }
     // Hole alle Clubmitglieder
     const clubMembers = await firstValueFrom(
       this.fbService.getClubMemberRefs(this.event.clubId).pipe(

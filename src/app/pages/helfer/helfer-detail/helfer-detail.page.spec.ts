@@ -1,4 +1,10 @@
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+  waitForAsync,
+} from "@angular/core/testing";
 import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import {
   AlertController,
@@ -6,7 +12,16 @@ import {
   ToastController,
 } from "@ionic/angular";
 import { TranslateModule } from "@ngx-translate/core";
-import { of } from "rxjs";
+import {
+  BehaviorSubject,
+  NEVER,
+  Subject,
+  defer,
+  delay,
+  of,
+  take,
+  throwError,
+} from "rxjs";
 import { Timestamp } from "@angular/fire/firestore";
 
 import { HelferDetailPage } from "./helfer-detail.page";
@@ -65,10 +80,8 @@ describe("HelferDetailPage", () => {
 
   beforeEach(waitForAsync(() => {
     authServiceSpy = jasmine.createSpyObj("AuthService", [
-      "getUser$",
       "getAuthenticatedUser$",
     ]);
-    authServiceSpy.getUser$.and.returnValue(of(mockUser as any));
     authServiceSpy.getAuthenticatedUser$.and.returnValue(of(mockUser as any));
 
     eventServiceSpy = jasmine.createSpyObj("EventService", [
@@ -211,6 +224,50 @@ describe("HelferDetailPage", () => {
         "schicht-1",
         "user-123",
       );
+    });
+
+    it("should ignore taps while the shift row is still a placeholder", async () => {
+      component.event = mockHelferEvent as HelferEvent;
+      component.clubAdminList$ = of([]);
+
+      const placeholderSchicht = {
+        ...mockSchicht,
+        attendeeListTrue: [],
+        pending: true,
+      };
+      const eventData = {
+        ...mockHelferEvent,
+        date: Timestamp.fromDate(futureDate),
+        timeFrom: "10:00",
+      };
+
+      await component.toggleSchichtItem(
+        slidingItemMock as any,
+        true,
+        eventData,
+        placeholderSchicht,
+        "user-123",
+      );
+      await component.toggleSchicht(
+        slidingItemMock as any,
+        true,
+        eventData,
+        placeholderSchicht,
+      );
+
+      await component.addMembersToSchicht(
+        slidingItemMock as any,
+        placeholderSchicht,
+      );
+
+      // While counts are unresolved, a tap must not bypass the capacity
+      // check, register an attendee, or offer "available" members based on
+      // an empty placeholder attendee list.
+      expect(
+        eventServiceSpy.setClubHelferEventSchichtAttendeeStatusAdmin,
+      ).not.toHaveBeenCalled();
+      expect(fbServiceSpy.getClubMemberRefs).not.toHaveBeenCalled();
+      expect(uiServiceSpy.showFormDialog).not.toHaveBeenCalled();
     });
 
     it("should block signup when shift is full (non-admin)", async () => {
@@ -559,6 +616,309 @@ describe("HelferDetailPage", () => {
       await component.ngOnInit();
       expect(component.event$).toBeDefined();
       expect(component.schichten$).toBeDefined();
+    });
+  });
+
+  describe("getHelferEventSchichtenWithAttendees - loading robustness", () => {
+    const rawSchicht = {
+      id: "schicht-1",
+      name: "Grillstand",
+      countNeeded: 3,
+      points: 2,
+      timeFrom: "10:00",
+      timeTo: "14:00",
+    };
+
+    beforeEach(() => {
+      component.user = mockUser as any;
+      component.children = [];
+    });
+
+    it("should emit even when the club member list is empty (forkJoin guard)", (done) => {
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([{ ...rawSchicht }]),
+      );
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        of([{ id: "member-1", status: true, changedAt: Timestamp.now() }]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(of([]));
+
+      component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1")
+        .pipe(take(1))
+        .subscribe((result) => {
+          // Before the fix, forkJoin([]) completed without emitting and the
+          // Schichten list stayed on its loading state forever.
+          expect(result.length).toBe(1);
+          expect(result[0].attendeeListTrue).toEqual([]);
+          expect(Array.isArray(result[0].status)).toBeTrue();
+          done();
+        });
+    });
+
+    it("should not error when an attendee document has no changedAt", (done) => {
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([{ ...rawSchicht }]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        of([{ id: "user-123" }] as any),
+      );
+      userProfileServiceSpy.getUserProfileById.and.returnValue(
+        of({ id: "user-123", firstName: "Katja", lastName: "F" } as any),
+      );
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        of([{ id: "user-123", status: true }]), // legacy doc without changedAt
+      );
+
+      component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1")
+        .pipe(take(1))
+        .subscribe((result) => {
+          // Before the fix, changedAt.toDate() threw and the error fallback
+          // emitted status: null, which crashed the template.
+          expect(result[0].attendeeListTrue.length).toBe(1);
+          expect(Array.isArray(result[0].status)).toBeTrue();
+          expect(result[0].status[0].id).toBe("user-123");
+          done();
+        });
+    });
+
+    it("should emit a template-safe fallback when club members cannot be loaded", (done) => {
+      spyOn(console, "error");
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([{ ...rawSchicht }]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        throwError(() => new Error("permission-denied")),
+      );
+
+      component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1")
+        .pipe(take(1))
+        .subscribe(async (result) => {
+          expect(result.length).toBe(1);
+          expect(Array.isArray(result[0].status)).toBeTrue();
+          expect(result[0].children).toEqual([]);
+          expect(result[0].attendeeListTrue).toEqual([]);
+          // Error fallbacks are pending too: with no resolved attendee data
+          // the capacity check would see 0, so taps must be ignored.
+          expect(result[0].pending).toBeTrue();
+
+          const slidingItemMock = {
+            closeOpened: jasmine.createSpy("closeOpened").and.resolveTo(),
+          };
+          fbServiceSpy.getClubMemberRefs.calls.reset();
+          await component.toggleSchicht(
+            slidingItemMock as any,
+            true,
+            mockHelferEvent,
+            result[0],
+          );
+          await component.addMembersToSchicht(
+            slidingItemMock as any,
+            result[0],
+          );
+          expect(fbServiceSpy.getClubMemberRefs).not.toHaveBeenCalled();
+          expect(
+            eventServiceSpy.setClubHelferEventSchichtAttendeeStatusAdmin,
+          ).not.toHaveBeenCalled();
+          done();
+        });
+    });
+
+    it("should not replay the eager placeholder on live schichten/attendees updates", () => {
+      const schichtenSubject = new Subject<any[]>();
+      const attendeesSubject = new BehaviorSubject<any[]>([
+        { id: "user-123", status: true, changedAt: Timestamp.now() },
+      ]);
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        schichtenSubject,
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        of([{ id: "user-123" }] as any),
+      );
+      userProfileServiceSpy.getUserProfileById.and.returnValue(
+        of({ id: "user-123", firstName: "Katja", lastName: "F" } as any),
+      );
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        attendeesSubject,
+      );
+
+      const emissions: any[][] = [];
+      const subscription = component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1", {
+          eagerPlaceholder: true,
+        })
+        .subscribe((r) => emissions.push(r));
+
+      // Initial load: placeholder first, then the resolved join.
+      schichtenSubject.next([{ ...rawSchicht }]);
+      expect(emissions.length).toBe(2);
+      expect(emissions[0][0].attendeeListTrue).toEqual([]);
+      expect(emissions[1][0].attendeeListTrue.length).toBe(1);
+
+      // Live attendee update: resolved data only, no placeholder flash.
+      attendeesSubject.next([
+        { id: "user-123", status: false, changedAt: Timestamp.now() },
+      ]);
+      expect(emissions.length).toBe(3);
+      expect(emissions[2][0].attendeeListFalse.length).toBe(1);
+
+      // Live schichten-collection update (e.g. admin renames a Schicht):
+      // no placeholder flash either — viewers keep resolved data.
+      schichtenSubject.next([{ ...rawSchicht, name: "Grillstand neu" }]);
+      expect(emissions.length).toBe(4);
+      expect(emissions[3][0].name).toBe("Grillstand neu");
+      expect(emissions[3][0].attendeeListFalse.length).toBe(1);
+
+      subscription.unsubscribe();
+    });
+
+    it("should show the placeholder first when the member list itself is slow", fakeAsync(() => {
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([{ ...rawSchicht }]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        of([{ id: "user-123" }] as any).pipe(delay(1000)),
+      );
+      userProfileServiceSpy.getUserProfileById.and.returnValue(
+        of({ id: "user-123", firstName: "Katja", lastName: "F" } as any),
+      );
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        of([{ id: "user-123", status: true, changedAt: Timestamp.now() }]),
+      );
+
+      const emissions: any[][] = [];
+      const subscription = component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1", {
+          eagerPlaceholder: true,
+        })
+        .subscribe((r) => emissions.push(r));
+
+      // Placeholder renders immediately, before the member list resolves.
+      expect(emissions.length).toBe(1);
+      expect(emissions[0][0].attendeeListTrue).toEqual([]);
+
+      tick(1000);
+      expect(emissions.length).toBe(2);
+      expect(emissions[1][0].attendeeListTrue.length).toBe(1);
+      subscription.unsubscribe();
+    }));
+
+    it("should degrade a slow profile read to the Unknown fallback via timeout", fakeAsync(() => {
+      spyOn(console, "error");
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([{ ...rawSchicht }]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        of([{ id: "member-1" }] as any),
+      );
+      // Profile read that only resolves after the 10s timeout budget.
+      userProfileServiceSpy.getUserProfileById.and.returnValue(
+        of({
+          id: "member-1",
+          firstName: "Slow",
+          lastName: "Reader",
+        } as any).pipe(delay(20000)),
+      );
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        of([{ id: "member-1", status: true, changedAt: Timestamp.now() }]),
+      );
+
+      let result: any[] | undefined;
+      const subscription = component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1")
+        .subscribe((r) => (result = r));
+
+      expect(result).toBeUndefined(); // still waiting on the profile read
+      tick(10000); // timeout fires and substitutes the Unknown profile
+
+      expect(result).toBeDefined();
+      expect(result![0].attendeeListTrue.length).toBe(1);
+      expect(result![0].attendeeListTrue[0].firstName).toBe("Unknown");
+      subscription.unsubscribe();
+    }));
+
+    it("should render schichten immediately while profile reads are pending (eagerPlaceholder)", (done) => {
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([{ ...rawSchicht }]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        of([{ id: "member-1" }] as any),
+      );
+      // Profile read that never resolves — previously this hung the whole list.
+      userProfileServiceSpy.getUserProfileById.and.returnValue(NEVER as any);
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        of([]),
+      );
+
+      component
+        .getHelferEventSchichtenWithAttendees("club-1", "helfer-1", {
+          eagerPlaceholder: true,
+        })
+        .pipe(take(1))
+        .subscribe((result) => {
+          expect(result.length).toBe(1);
+          expect(result[0].id).toBe("schicht-1");
+          expect(result[0].attendeeListTrue).toEqual([]);
+          expect(Array.isArray(result[0].status)).toBeTrue();
+          done();
+        });
+    });
+  });
+
+  describe("schichten$ stream lifetime", () => {
+    it("should not restart the read cascade on re-subscription or view re-entry", async () => {
+      let memberListSubscriptions = 0;
+      eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
+        of([
+          {
+            id: "schicht-1",
+            name: "Grillstand",
+            countNeeded: 3,
+            points: 2,
+            timeFrom: "10:00",
+            timeTo: "14:00",
+          },
+        ]),
+      );
+      fbServiceSpy.getClubMemberRefs.and.returnValue(
+        defer(() => {
+          memberListSubscriptions++;
+          return of([{ id: "user-123" }] as any);
+        }),
+      );
+      userProfileServiceSpy.getUserProfileById.and.returnValue(
+        of({ id: "user-123", firstName: "Katja", lastName: "F" } as any),
+      );
+      eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
+        of([]),
+      );
+
+      // The TestBed setup can already have run ngOnInit (initial change
+      // detection) with the default stubs; reset the built streams so
+      // loadData rebuilds them with the stubs configured above.
+      (component as any).schichtenSub?.unsubscribe();
+      (component as any).event$ = undefined;
+      (component as any).schichten$ = undefined;
+
+      await component.ngOnInit();
+      expect(memberListSubscriptions).toBe(1);
+
+      // ionViewWillEnter must not rebuild the streams (second cascade).
+      component.ionViewWillEnter();
+      expect(memberListSubscriptions).toBe(1);
+
+      // Async pipes churn on @if toggles (member view <-> admin-edit view):
+      // unsubscribe/resubscribe must reuse the pinned shared subscription
+      // instead of restarting the member/profile read cascade.
+      component.schichten$.pipe(take(1)).subscribe().unsubscribe();
+      component.schichten$.pipe(take(1)).subscribe().unsubscribe();
+      expect(memberListSubscriptions).toBe(1);
+
+      // ngOnDestroy releases the pinned subscription with the modal.
+      component.ngOnDestroy();
+      expect((component as any).schichtenSub.closed).toBeTrue();
     });
   });
 
