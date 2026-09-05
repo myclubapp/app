@@ -19,8 +19,9 @@ import {
   where,
   Timestamp,
 } from "@angular/fire/firestore";
-import { Observable, shareReplay } from "rxjs";
+import { Observable } from "rxjs";
 import { User } from "@angular/fire/auth";
+import { shareLatest } from "../share-latest";
 
 @Injectable({
   providedIn: "root",
@@ -85,7 +86,7 @@ export class HelferService {
       );
       return collectionData(q, {
         idField: "id",
-      }).pipe(shareReplay(1));
+      }).pipe(shareLatest());
     }) as Observable<any[]>;
   }
 
@@ -103,7 +104,7 @@ export class HelferService {
       );
       return collectionData(q, {
         idField: "id",
-      }).pipe(shareReplay(1));
+      }).pipe(shareLatest());
     }) as Observable<any[]>;
   }
 
@@ -128,7 +129,7 @@ export class HelferService {
       );
       return collectionData(q, {
         idField: "id",
-      }).pipe(shareReplay(1));
+      }).pipe(shareLatest());
     }) as Observable<any[]>;
   }
 

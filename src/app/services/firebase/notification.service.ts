@@ -16,8 +16,9 @@ import {
   doc,
   limit,
 } from "@angular/fire/firestore";
-import { Observable, shareReplay } from "rxjs";
+import { Observable } from "rxjs";
 import { AuthService } from "../auth.service";
+import { shareLatest } from "../share-latest";
 
 @Injectable({
   providedIn: "root",
@@ -42,7 +43,7 @@ export class NotificationService {
         orderBy("date", "desc"),
       );
 
-      return collectionData(queryRef, { idField: "id" }).pipe(shareReplay(1));
+      return collectionData(queryRef, { idField: "id" }).pipe(shareLatest());
     }) as Observable<any[]>;
   }
 
@@ -59,7 +60,7 @@ export class NotificationService {
         orderBy("date", "desc"),
       );
 
-      return collectionData(queryRef, { idField: "id" }).pipe(shareReplay(1));
+      return collectionData(queryRef, { idField: "id" }).pipe(shareLatest());
     }) as Observable<any[]>;
   }
 

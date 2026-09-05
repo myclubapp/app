@@ -20,9 +20,10 @@ import {
   updateDoc,
   deleteDoc,
 } from "@angular/fire/firestore";
-import { Observable, shareReplay } from "rxjs";
+import { Observable } from "rxjs";
 import { DocumentReference } from "@angular/fire/firestore";
 import { News } from "src/app/models/news";
+import { shareLatest } from "../share-latest";
 
 @Injectable({
   providedIn: "root",
@@ -38,14 +39,14 @@ export class NewsService {
   getNewsDetail(newsId: string): Observable<News> {
     const newsRef = doc(this.firestore, `news/${newsId}`);
     return runInInjectionContext(this.injector, () =>
-      docData(newsRef, { idField: "id" }).pipe(shareReplay(10)),
+      docData(newsRef, { idField: "id" }).pipe(shareLatest()),
     ) as Observable<News>;
   }
 
   getClubNewsDetail(clubId: string, newsId: string): Observable<News> {
     const newsRef = doc(this.firestore, `club/${clubId}/news/${newsId}`);
     return runInInjectionContext(this.injector, () =>
-      docData(newsRef, { idField: "id" }).pipe(shareReplay(10)),
+      docData(newsRef, { idField: "id" }).pipe(shareLatest()),
     ) as Observable<News>;
   }
 
@@ -62,7 +63,7 @@ export class NewsService {
         where("date", ">=", this.fourtyDaysAgo.toISOString()),
         limit(30),
       ); // heute - 20 Tage
-      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+      return collectionData(q, { idField: "id" }).pipe(shareLatest());
     }) as unknown as Observable<News[]>;
   }
 
@@ -76,7 +77,7 @@ export class NewsService {
         where("date", ">=", this.sixtyDaysAgo.toISOString()),
         limit(30),
       ); // heute - 20 Tage
-      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+      return collectionData(q, { idField: "id" }).pipe(shareLatest());
     }) as unknown as Observable<News[]>;
   }
 
@@ -90,7 +91,7 @@ export class NewsService {
         where("date", ">=", this.sixtyDaysAgo.toISOString()),
         limit(30),
       ); // heute - 20 Tage
-      return collectionData(q, { idField: "id" }).pipe(shareReplay(1));
+      return collectionData(q, { idField: "id" }).pipe(shareLatest());
     }) as unknown as Observable<News[]>;
   }
 
