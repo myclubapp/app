@@ -178,6 +178,7 @@ export class FirebaseService {
           .filter((club): club is Club => club !== null && club !== undefined)
           .sort((a, b) => a.name.localeCompare(b.name)),
       ),
+      shareLatest(),
       catchError((err) => {
         console.error("Error in getClubList:", err);
         return of([]);
@@ -208,7 +209,7 @@ export class FirebaseService {
       ),
       shareLatest(),
       catchError((err) => {
-        console.error("Error in getClubList:", err);
+        console.error("Error in getClubAdminList:", err);
         return of([]);
       }),
     );

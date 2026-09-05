@@ -13,7 +13,6 @@ import {
   first,
   lastValueFrom,
   of,
-  shareReplay,
   switchMap,
   take,
 } from "rxjs";
@@ -57,7 +56,7 @@ export class TeamListPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.teamList$ = this.fbService.getTeamList().pipe(shareReplay(1));
+    this.teamList$ = this.fbService.getTeamList();
   }
 
   ngOnDestroy() {}

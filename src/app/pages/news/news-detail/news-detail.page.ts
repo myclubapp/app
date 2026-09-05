@@ -15,7 +15,7 @@ import {
   faLinkedin,
 } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faCopy } from "@fortawesome/free-solid-svg-icons";
-import { Observable, shareReplay, take, tap } from "rxjs";
+import { Observable, take, tap } from "rxjs";
 import { NewsService } from "src/app/services/firebase/news.service";
 import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
@@ -69,9 +69,7 @@ export class NewsDetailPage implements OnInit {
     // NavParams migration: now using @Input property directly
     this.news = this.data;
     // console.log("News", this.news);
-    this.clubAdminList$ = this.fbService
-      .getClubAdminList()
-      .pipe(shareReplay(5));
+    this.clubAdminList$ = this.fbService.getClubAdminList();
     // console.log(this.news);
     if (this.news && this.news.clubId) {
       this.news$ = this.getClubNewsDetail(this.news.clubId, this.news.id);

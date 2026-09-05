@@ -11,7 +11,6 @@ import {
   catchError,
   of,
   combineLatest,
-  shareReplay,
 } from "rxjs";
 import { User } from "@angular/fire/auth";
 import { ClubPage } from "../club/club.page";
@@ -20,6 +19,7 @@ import { Router } from "@angular/router";
 import { Optional } from "@angular/core";
 import { OnboardingClubPage } from "../onboarding/onboarding-club/onboarding-club.page";
 import { Browser } from "@capacitor/browser";
+import { shareLatest } from "src/app/services/share-latest";
 
 @Component({
   selector: "app-club-list",
@@ -43,7 +43,6 @@ export class ClubListPage implements OnInit {
 
   ngOnInit() {
     this.clubList$ = this.fbService.getClubList().pipe(
-      shareReplay(1),
       switchMap((clubs) =>
         combineLatest(
           clubs.map((club) =>
@@ -60,6 +59,7 @@ export class ClubListPage implements OnInit {
         console.error("Error loading clubs with links:", error);
         return of([]);
       }),
+      shareLatest(),
     );
 
     if (

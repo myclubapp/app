@@ -19,7 +19,6 @@ import {
   lastValueFrom,
   map,
   of,
-  shareReplay,
   startWith,
   switchMap,
   take,
@@ -116,13 +115,10 @@ export class TeamPage implements OnInit {
 
     this.team$ = this.getTeam(this.team.id);
     // TODO GET CLUB BASED ON TEAM
-    this.clubList$ = this.fbService.getClubList().pipe(shareReplay(1));
-    this.clubAdminList$ = this.fbService
-      .getClubAdminList()
-      .pipe(shareReplay(1));
-    this.teamAdminList$ = this.fbService
-      .getTeamAdminList()
-      .pipe(shareReplay(1));
+    // The lists are shared inside FirebaseService (shareLatest).
+    this.clubList$ = this.fbService.getClubList();
+    this.clubAdminList$ = this.fbService.getClubAdminList();
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
   }
   isClubAdmin(clubAdminList: any[], clubId: string): boolean {
     return this.fbService.isClubAdmin(clubAdminList, clubId);

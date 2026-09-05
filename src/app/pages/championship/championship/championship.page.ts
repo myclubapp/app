@@ -45,6 +45,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { Profile } from "src/app/models/user";
 import { UiService } from "src/app/services/ui.service";
 import { SwissUnihockeyService } from "src/app/services/swiss-unihockey.service";
+import { shareLatest } from "src/app/services/share-latest";
 
 @Component({
   selector: "app-championship",
@@ -326,7 +327,7 @@ export class ChampionshipPage implements OnInit {
               return acc;
             }, {}),
           ),
-          shareReplay(1),
+          shareLatest(),
         );
 
         return combineLatest([
@@ -523,7 +524,7 @@ export class ChampionshipPage implements OnInit {
               return acc;
             }, {}),
           ),
-          shareReplay(1),
+          shareLatest(),
         );
 
         return combineLatest([

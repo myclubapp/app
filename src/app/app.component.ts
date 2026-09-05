@@ -50,6 +50,7 @@ import { lastValueFrom } from "rxjs";
 import { register } from "swiper/element/bundle";
 import { Capacitor } from "@capacitor/core";
 import { Network } from "@capacitor/network";
+import { shareLatest } from "./services/share-latest";
 
 // Register Swiper custom elements
 register();
@@ -101,6 +102,8 @@ export class AppComponent implements OnInit, AfterViewInit {
       switchMap((user) =>
         user ? this.fbService.getClubList().pipe(take(1)) : of([] as Club[]),
       ),
+      // Two `clubList$ | async` bindings in the template share one chain.
+      shareLatest(),
     );
   }
 

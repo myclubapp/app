@@ -10,11 +10,12 @@ import {
   NavController,
   AnimationController,
 } from "@ionic/angular";
-import { Observable, of, shareReplay, switchMap } from "rxjs";
+import { Observable, of, switchMap } from "rxjs";
 import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { AuthService } from "src/app/services/auth.service";
 import { Analytics, logEvent } from "@angular/fire/analytics";
+import { shareLatest } from "src/app/services/share-latest";
 
 @Component({
   selector: "app-tabs",
@@ -53,7 +54,7 @@ export class TabsPage implements OnInit {
       switchMap((user) =>
         user ? this.fbService.getClubList() : of([] as Club[]),
       ),
-      shareReplay(1),
+      shareLatest(),
     );
 
     this.menuCtrl.enable(true, "menu");
