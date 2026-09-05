@@ -105,8 +105,11 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    // removeAllListeners() also drops listeners registered in the constructor,
+    // so every App listener must be (re)registered here, after it resolved.
     App.removeAllListeners().then(() => {
       this.registerBackButton();
+      this.registerResumeListener();
     });
 
     // Subscribe to auth state changes. authState$ emits on sign-in/sign-out
@@ -293,6 +296,14 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.setStatusBar();
     this.setDefaultLanguage();
 
+    this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
+      if (event.type === "VERSION_READY") {
+        this.presentAlertUpdateVersion();
+      }
+    });
+  }
+
+  private registerResumeListener() {
     App.addListener("resume", async () => {
       this.applySystemTheme();
 
@@ -307,12 +318,6 @@ export class AppComponent implements OnInit, AfterViewInit {
           await this.presentAlertSessionExpired();
           await this.authService.logout();
         }
-      }
-    });
-
-    this.swUpdate.versionUpdates.subscribe((event: VersionEvent) => {
-      if (event.type === "VERSION_READY") {
-        this.presentAlertUpdateVersion();
       }
     });
   }
