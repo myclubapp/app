@@ -617,10 +617,14 @@
       "verified": "Verified",
       "pending": "Pending",
       "add_header": "Add child",
-      "add_message": "Please enter the email address of the child you want to add.",
+      "add_message": "Please enter the email address your child uses to sign in to myclub. The request stays \"pending\" until it has been confirmed.",
       "email_placeholder": "Child's email address",
       "max_reached_header": "Maximum number of children reached",
-      "max_reached_message": "You can add a maximum of 3 children."
+      "max_reached_message": "You can add a maximum of 3 children.",
+      "error__invalid_email": "Please enter a valid email address.",
+      "error__self": "You cannot add yourself as a child.",
+      "error__already_linked": "This person is already linked to your profile.",
+      "error__request_pending": "There is already a pending request for this email address."
     },
     "kidsrequestadd": "Add",
     "gender": "Gender",

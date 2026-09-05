@@ -616,10 +616,14 @@
       "verified": "Verificato",
       "pending": "In attesa",
       "add_header": "Aggiungi bambino",
-      "add_message": "Inserisci l'indirizzo email del bambino che desideri aggiungere.",
+      "add_message": "Inserisci l'indirizzo e-mail con cui tuo figlio accede a myclub. La richiesta rimane «in attesa» finché non viene confermata.",
       "email_placeholder": "Indirizzo email del bambino",
       "max_reached_header": "Numero massimo di bambini raggiunto",
-      "max_reached_message": "Puoi aggiungere un massimo di 3 bambini."
+      "max_reached_message": "Puoi aggiungere un massimo di 3 bambini.",
+      "error__invalid_email": "Inserisci un indirizzo e-mail valido.",
+      "error__self": "Non puoi aggiungere te stesso come figlio.",
+      "error__already_linked": "Questa persona è già collegata al tuo profilo.",
+      "error__request_pending": "Esiste già una richiesta in sospeso per questo indirizzo e-mail."
     },
     "kidsrequestadd": "Aggiungi",
     "gender": "Genere",
