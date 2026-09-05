@@ -29,6 +29,7 @@ import {
   debounceTime,
   distinctUntilChanged,
   takeUntil,
+  combineLatest,
 } from "rxjs";
 import { Club } from "src/app/models/club";
 import { Profile } from "src/app/models/user";
@@ -37,6 +38,14 @@ import { FirebaseService } from "src/app/services/firebase.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { UiService } from "src/app/services/ui.service";
 import { CreateNewClubPage } from "../create-new-club/create-new-club.page";
+
+/** A club request of the signed-in user that still awaits an admin decision. */
+interface PendingClubRequest {
+  id: string;
+  clubName: string;
+  isParent: boolean;
+  isNewClub: boolean;
+}
 
 @Component({
   selector: "app-onboarding-club",
@@ -60,6 +69,7 @@ export class OnboardingClubPage implements OnInit {
   user: User;
   userProfile$: Observable<Profile>;
   clubListByContactEmail$: Observable<Club[]>;
+  pendingClubRequests$: Observable<PendingClubRequest[]>;
 
   private subscription: Subscription;
   private subscriptionActiveClubList: Subscription;
@@ -108,6 +118,43 @@ export class OnboardingClubPage implements OnInit {
       }),
     );
 
+    // Offene Vereinsanfragen sichtbar machen: Nutzer landen hier bei jedem
+    // App-Start, solange kein Verein freigegeben ist. Ohne diesen Hinweis
+    // wirkt die App leer, und ein erneuter Beitrittsversuch endete in
+    // "Fehler bei der Club-Anfrage", obwohl die Anfrage nur noch offen war (#256).
+    this.pendingClubRequests$ = this.authService.getUser$().pipe(
+      switchMap((user) =>
+        user ? this.fbService.getUserClubRequestRefs(user) : of([]),
+      ),
+      switchMap((requests: any[]) => {
+        if (!requests?.length) return of([] as PendingClubRequest[]);
+        return combineLatest(
+          requests.map((request) => {
+            const isNewClub = request.clubId === "newClub";
+            const base: PendingClubRequest = {
+              id: request.id,
+              clubName: request.name || request.id,
+              isParent: !!request.isParent,
+              isNewClub,
+            };
+            if (isNewClub) return of(base);
+            return this.fbService.getClubRef(request.id).pipe(
+              take(1),
+              map((club) => ({
+                ...base,
+                clubName: club?.name || base.clubName,
+              })),
+              catchError(() => of(base)),
+            );
+          }),
+        );
+      }),
+      catchError((error) => {
+        console.error("Error loading pending club requests:", error);
+        return of([] as PendingClubRequest[]);
+      }),
+    );
+
     this.subscription = this.authService
       .getUser$()
       .pipe(
@@ -149,6 +196,16 @@ export class OnboardingClubPage implements OnInit {
 
   async joinClub(club: Club) {
     console.log(club);
+
+    // Bereits angefragt? Dann den Status zeigen statt die Anfrage erneut zu
+    // schreiben (das schlug fehl und meldete "Fehler bei der Club-Anfrage").
+    const pending = await lastValueFrom(
+      this.pendingClubRequests$.pipe(take(1)),
+    ).catch(() => [] as PendingClubRequest[]);
+    if (pending.some((request) => request.id === club.id)) {
+      await this.showClubRequestPendingAlert();
+      return;
+    }
     const $clubTeamDetailList = this.fbService.getClubTeamList(club.id);
 
     const teamInputs = [];
@@ -531,9 +588,12 @@ export class OnboardingClubPage implements OnInit {
 
   private async showClubRequestPendingAlert() {
     await this.uiService.showInfoDialog({
-      header: "Anfrage ausstehend",
-      message:
-        "Sie haben bereits eine Anfrage an diesen Club gestellt. Bitte warten Sie auf die Bearbeitung.",
+      header: await lastValueFrom(
+        this.translate.get("onboarding.pending_requests__title"),
+      ),
+      message: await lastValueFrom(
+        this.translate.get("onboarding.pending_requests__member_hint"),
+      ),
     });
   }
 
