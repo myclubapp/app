@@ -27,6 +27,7 @@ import {
   doc,
   setDoc,
   clearIndexedDbPersistence,
+  terminate,
 } from "@angular/fire/firestore";
 
 /******************************************************************************************
@@ -186,19 +187,9 @@ export class AuthService {
       // 2. Sign out from Firebase Auth
       await signOut(this.auth);
 
-      // 3. Clear Firebase Firestore persistence
-      try {
-        await clearIndexedDbPersistence(this.firestore);
-        console.log("Firebase persistence cleared successfully");
-      } catch (error) {
-        // This might fail if there are active listeners, which is normal
-        console.log(
-          "Could not clear Firebase persistence (normal if listeners are active):",
-          error.message,
-        );
-      }
-
-      // 4. Navigate to logout page
+      // 3. Navigate to the logout page first: leaving the tabs destroys the
+      //    pages and with them their Firestore listeners, before the client
+      //    below is terminated.
       const navLogout = await this.router.navigateByUrl("/logout");
       if (navLogout) {
         console.log("Navigation success to Logout Page");
@@ -206,11 +197,53 @@ export class AuthService {
         console.error("Navigation ERROR to Logout Page");
       }
 
+      // 4. Clear the persistent Firestore cache (IndexedDB). Documents cached
+      //    for this account must not be served to the next account on the
+      //    same device. A terminated client cannot be restarted, so the app is
+      //    reloaded on the logout page to get a fresh one.
+      const terminated = await this.clearFirestorePersistence();
+      if (terminated) {
+        this.reloadApp();
+      }
+
       return true;
     } catch (error) {
       console.error("Error during logout:", error);
       throw error;
     }
+  }
+
+  /**
+   * Terminates the Firestore client and clears its persistent cache.
+   * clearIndexedDbPersistence() only works on a terminated client.
+   *
+   * Returns whether the client was terminated — the caller must reload the
+   * app in that case, even when clearing failed (e.g. another browser tab
+   * still holds the cache): after terminate() every Firestore call throws.
+   */
+  private async clearFirestorePersistence(): Promise<boolean> {
+    try {
+      await runInInjectionContext(this.injector, () =>
+        terminate(this.firestore),
+      );
+    } catch (error) {
+      console.warn("Could not terminate Firestore client:", error?.message);
+      return false;
+    }
+    try {
+      await runInInjectionContext(this.injector, () =>
+        clearIndexedDbPersistence(this.firestore),
+      );
+      console.log("Firestore persistence cleared");
+    } catch (error) {
+      console.warn("Could not clear Firestore persistence:", error?.message);
+    }
+    return true;
+  }
+
+  /** Full reload; kept separate so tests can stub it. */
+  reloadApp(): void {
+    window.location.reload();
   }
 
   /**

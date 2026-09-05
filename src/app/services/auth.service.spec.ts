@@ -89,6 +89,16 @@ describe("AuthService", () => {
     it("should expose logout$ observable", () => {
       expect(service.logout$).toBeDefined();
     });
+
+    it("should not reload the app when the Firestore client cannot be terminated", async () => {
+      // firestoreSpy is not a real Firestore instance, so terminate() rejects.
+      const reloadSpy = spyOn(service, "reloadApp");
+
+      const terminated = await (service as any).clearFirestorePersistence();
+
+      expect(terminated).toBeFalse();
+      expect(reloadSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe("validateAndRefreshToken", () => {
