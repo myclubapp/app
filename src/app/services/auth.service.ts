@@ -1,16 +1,11 @@
 import { Injectable, Injector, runInInjectionContext } from "@angular/core";
 import { Router } from "@angular/router";
-import {
-  distinctUntilChanged,
-  filter,
-  first,
-  shareReplay,
-  switchMap,
-} from "rxjs/operators";
+import { filter, first, shareReplay, switchMap } from "rxjs/operators";
 // import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 import {
   Auth,
+  authState,
   user,
   verifyBeforeUpdateEmail,
   // connectAuthEmulator,
@@ -38,26 +33,18 @@ import {
  *  DOCS https://github.com/angular/angularfire/blob/master/docs/auth/getting-started.md
  *******************************************************************************************/
 
-/**
- * Two auth emissions describe the same signed-in session when they carry the
- * same uid (or are both signed-out). Token refreshes hand out the same user
- * with a new token — those must not count as a state change.
- */
-export function sameSignedInUser(a: User | null, b: User | null): boolean {
-  return (a?.uid ?? null) === (b?.uid ?? null);
-}
-
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
   user$: Observable<User | null>;
   /**
-   * Sign-in / sign-out only. user$ is built on onIdTokenChanged and therefore
-   * also emits on every token refresh (about hourly, and after each forced
-   * getIdToken(true)). Session-level wiring that (re)builds Firestore listeners
-   * — app.component, tabs — must subscribe here, otherwise every refresh tears
-   * those listeners down and re-reads their documents.
+   * Sign-in / sign-out only (AngularFire authState(), i.e. onAuthStateChanged).
+   * user$ is built on onIdTokenChanged and therefore also emits on every token
+   * refresh (about hourly, and after each forced getIdToken(true)).
+   * Session-level wiring that (re)builds Firestore listeners — app.component,
+   * tabs — must subscribe here, otherwise every refresh tears those listeners
+   * down and re-reads their documents.
    */
   authState$: Observable<User | null>;
   private logoutSubject = new Subject<void>();
@@ -72,26 +59,34 @@ export class AuthService {
     private readonly router: Router,
     private readonly injector: Injector,
   ) {
-    // Use the user() Observable from @angular/fire/auth, always created within an
-    // injection context so AngularFire can zone-wrap it (avoids the dev-mode warning
-    // "Firebase API called outside injection context"). shareReplay keeps a single
-    // onIdTokenChanged listener shared across all getUser$() subscribers.
-    this.user$ = defer(() =>
-      runInInjectionContext(this.injector, () =>
-        // Wait until Firebase has restored the persisted auth state before emitting.
-        // On iOS/Capacitor (indexedDBLocalPersistence) the initial restore is slow,
-        // and user() would otherwise emit a transient `null` first. Consumers that
-        // gate data loading with take(1)/first() grab that null and short-circuit
-        // (e.g. `if (!user) return of([])`), showing empty/skeleton until a later
-        // re-subscription (tab switch) hits the resolved user — that is the "data
-        // only loads after switching tabs" bug. authStateReady() guarantees the
-        // first emission is the settled state (real user, or a genuine logout null).
-        from(this.auth.authStateReady()).pipe(switchMap(() => user(this.auth))),
-      ),
-    ).pipe(shareReplay({ bufferSize: 1, refCount: false }));
-    this.authState$ = this.user$.pipe(distinctUntilChanged(sameSignedInUser));
+    // Both streams are created within an injection context so AngularFire can
+    // zone-wrap them (avoids the dev-mode warning "Firebase API called outside
+    // injection context"); shareReplay keeps a single Firebase listener per
+    // stream, shared across all subscribers.
+    this.user$ = this.afterAuthStateReady(() => user(this.auth));
+    this.authState$ = this.afterAuthStateReady(() => authState(this.auth));
     // this.auth = getAuth(); // Removed: This was causing "Firebase API called outside injection context"
     // connectAuthEmulator(this.auth, 'http://localhost:8100')
+  }
+
+  /**
+   * Wraps one of AngularFire's auth observables so that it only starts
+   * emitting once Firebase has restored the persisted auth state. On
+   * iOS/Capacitor (indexedDBLocalPersistence) the initial restore is slow, and
+   * user()/authState() would otherwise emit a transient `null` first.
+   * Consumers that gate data loading with take(1)/first() grab that null and
+   * short-circuit (e.g. `if (!user) return of([])`), showing empty/skeleton
+   * until a later re-subscription (tab switch) hits the resolved user — that
+   * was the "data only loads after switching tabs" bug. authStateReady()
+   * guarantees the first emission is the settled state (real user, or a
+   * genuine logout null).
+   */
+  private afterAuthStateReady<T>(source: () => Observable<T>): Observable<T> {
+    return defer(() =>
+      runInInjectionContext(this.injector, () =>
+        from(this.auth.authStateReady()).pipe(switchMap(source)),
+      ),
+    ).pipe(shareReplay({ bufferSize: 1, refCount: false }));
   }
 
   getUser$() {
