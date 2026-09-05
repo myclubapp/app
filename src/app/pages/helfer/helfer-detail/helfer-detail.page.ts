@@ -201,6 +201,7 @@ export class HelferDetailPage implements OnInit, OnDestroy {
   private toPlaceholderSchicht(
     schicht: Schicht,
     unrespondedMembers: any[] = [],
+    options: { loadFailed?: boolean } = {},
   ) {
     return {
       ...schicht,
@@ -214,6 +215,9 @@ export class HelferDetailPage implements OnInit, OnDestroy {
       // resolved attendee data, so the toggle/add handlers ignore taps on it
       // (the capacity check would otherwise see 0 and allow overbooking).
       pending: true,
+      // An error fallback is pending too, but the template must not keep
+      // showing a loading skeleton for it — it shows an error note instead.
+      loadFailed: !!options.loadFailed,
     };
   }
 
@@ -370,6 +374,7 @@ export class HelferDetailPage implements OnInit, OnDestroy {
                                 this.toPlaceholderSchicht(
                                   schicht,
                                   clubMembersWithDetails,
+                                  { loadFailed: true },
                                 ),
                               );
                             }),
@@ -383,7 +388,9 @@ export class HelferDetailPage implements OnInit, OnDestroy {
                 console.error("Error fetching club members:", err);
                 return of(
                   sortedSchichten.map((schicht) =>
-                    this.toPlaceholderSchicht(schicht),
+                    this.toPlaceholderSchicht(schicht, [], {
+                      loadFailed: true,
+                    }),
                   ),
                 );
               }),

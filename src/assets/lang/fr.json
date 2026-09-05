@@ -407,6 +407,7 @@
   },
   "helfer-detail": {
     "helfer_innen_for": "Bénévoles pour",
+    "attendees_load_failed": "Les participants n'ont pas pu être chargés. Veuillez fermer l'événement et le rouvrir.",
     "add_members": "Ajouter des membres",
     "add_members_title": "Ajouter des membres au créneau",
     "add_members_message": "Sélectionnez les membres que vous souhaitez ajouter au créneau :",

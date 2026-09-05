@@ -407,6 +407,7 @@
   },
   "helfer-detail": {
     "helfer_innen_for": "Volontari per",
+    "attendees_load_failed": "Impossibile caricare i partecipanti. Chiudi l'evento e riaprilo.",
     "add_members": "Aggiungi membri",
     "add_members_title": "Aggiungi membri al turno",
     "add_members_message": "Seleziona i membri che desideri aggiungere al turno:",

@@ -408,6 +408,7 @@
   },
   "helfer-detail": {
     "helfer_innen_for": "Helpers for",
+    "attendees_load_failed": "The participants could not be loaded. Please close the event and open it again.",
     "add_members": "Add members",
     "add_members_title": "Add members to shift",
     "add_members_message": "Select the members you want to add to the shift:",
