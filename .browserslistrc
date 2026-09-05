@@ -1,16 +1,13 @@
-# Angular 22 unterstützt offiziell nur Baseline "widely available" (ca. 2,5
-# Jahre alte Browser). Ohne eigene Liste würde esbuild für ältere WebViews
-# nicht mehr heruntertransformieren. Die nativen Apps laufen aber noch auf
-# iOS 15/16 und Android-WebViews ab Chrome 100 – dafür wird weiterhin
-# heruntergestuft (Angular baut sie "best effort", ohne offiziellen Support).
-last 2 Chrome versions
-last 2 ChromeAndroid versions
-last 2 Firefox versions
-Firefox ESR
-last 2 Edge major versions
-last 2 Safari major versions
-last 2 iOS major versions
-Chrome >= 100
-ChromeAndroid >= 100
-iOS >= 15
-Safari >= 15
+# Entspricht exakt dem Support-Bereich von Angular 22 (Baseline "widely
+# available" zum Stichtag der Angular-Version, siehe
+# @angular/build/src/utils/supported-browsers.js). Ältere Browser – iOS/Safari 16
+# und darunter, Chrome/Edge bis 118, Firefox bis 118 – werden bewusst nicht mehr
+# bedient: die native iOS-App setzt iOS 17 voraus, und Angular baut ausserhalb
+# dieses Bereichs nur "best effort" und meldet das bei jedem Build als Warnung.
+# Nach einem Angular-Update den Stichtag an die neue Version anpassen.
+baseline widely available on 2026-05-07
+Chrome >=107
+Firefox >=106
+Edge >=107
+Safari >=16.1
+iOS >=16.1
