@@ -26,7 +26,13 @@ import {
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 import { provideFirebaseApp, getApp, initializeApp } from "@angular/fire/app";
-import { getFirestore, provideFirestore } from "@angular/fire/firestore";
+import {
+  provideFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  persistentSingleTabManager,
+} from "@angular/fire/firestore";
 import { provideAuth, getAuth, initializeAuth } from "@angular/fire/auth";
 import { indexedDBLocalPersistence } from "firebase/auth";
 import { provideStorage, getStorage } from "@angular/fire/storage";
@@ -85,6 +91,35 @@ import { CreateNewsPage } from "./pages/news/create-news/create-news.page";
 import { MemberInvoiceListPage } from "./pages/member-invoice-list/member-invoice-list.page";
 import { QrInvoiceModalPage } from "./pages/qr-invoice-modal/qr-invoice-modal.page";
 import { UserListItemComponent } from "./components/user-list-item/user-list-item.component";
+
+/**
+ * Firestore with a persistent (IndexedDB) cache instead of the default
+ * memory-only cache.
+ *
+ * Why: with the memory cache every app start re-reads every document the
+ * pages listen to, and Firestore bills each of those reads. With the
+ * persistent cache the documents survive restarts, listeners that are
+ * re-attached within 30 minutes only receive changes, and the app can render
+ * cached data while offline. If IndexedDB is unavailable (private mode, old
+ * WebViews) the SDK logs a warning and falls back to the memory cache by
+ * itself, so this never blocks the start.
+ *
+ * The native apps run in a single WebView, so they use the lighter
+ * single-tab manager; the PWA can be open in several browser tabs, which
+ * must share one cache.
+ *
+ * Logout terminates this client and clears the cache (see AuthService), so
+ * the next account on the same device never sees the previous user's data.
+ */
+export function firestoreFactory() {
+  return initializeFirestore(getApp(), {
+    localCache: persistentLocalCache({
+      tabManager: Capacitor.isNativePlatform()
+        ? persistentSingleTabManager(undefined)
+        : persistentMultipleTabManager(),
+    }),
+  });
+}
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient, "./assets/lang/", ".json");
@@ -199,7 +234,7 @@ const getConfig = () => {
   ],
   providers: [
     provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideFirestore(() => getFirestore()),
+    provideFirestore(firestoreFactory),
     provideAuth(() => {
       if (Capacitor.isNativePlatform()) {
         return initializeAuth(getApp(), {
