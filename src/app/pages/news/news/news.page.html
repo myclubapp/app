@@ -6,14 +6,13 @@
     <ion-title>{{"common.news" | translate}}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="openNotification()">
-        @if (notifications$ | async; as notifications) {
-          @if (notifications.length > 0) {
-            <ion-icon slot="icon-only" name="notifications"></ion-icon>
-          } @else {
-            <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
-          }
+        @if (notifications$ | async; as notifications) { @if
+        (notifications.length > 0) {
+        <ion-icon slot="icon-only" name="notifications"></ion-icon>
         } @else {
-          <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+        } } @else {
+        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
         }
       </ion-button>
       <ion-button (click)="openFilter()">
@@ -37,6 +36,27 @@
       </ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <!-- Elternkonto ohne verknüpftes Kind: nächsten Schritt erklären (#256) -->
+  @if (showParentNextStepHint$ | async) {
+  <ion-card color="light">
+    <ion-card-header>
+      <ion-card-title
+        >{{ 'news.parent_hint__title' | translate }}</ion-card-title
+      >
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{ 'news.parent_hint__message' | translate }}</p>
+      <ion-button
+        fill="clear"
+        size="small"
+        (click)="dismissParentNextStepHint()"
+      >
+        {{ 'news.parent_hint__dismiss' | translate }}
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+  }
 
   <!-- Aktuelle Clubspiele -->
   @if (showGamePreview && clubGames$ | async; as clubGames) { @if
