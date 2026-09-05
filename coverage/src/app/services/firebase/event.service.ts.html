@@ -1134,9 +1134,9 @@ import {
 import { Observable } from "rxjs";
 import { HelferEvent, Veranstaltung } from "src/app/models/event";
 import { AuthService } from "../auth.service";
-import { shareReplay } from "rxjs/operators";
 import { FirebaseService } from "../firebase.service";
 import { User } from "@angular/fire/auth";
+import { shareLatest } from "../share-latest";
 &nbsp;
 @Injectable({
   providedIn: "root",
@@ -1163,7 +1163,7 @@ export class EventService {
     // console.log(`Read Team Games Attendees List Ref ${teamId} with game ${gameId}`)
     const eventRef = <span class="cstat-no" title="statement not covered" >doc(this.firestore, `club/${clubId}/events/${eventId}`);</span>
 <span class="cstat-no" title="statement not covered" >    return runInInjectionContext(this.injector, <span class="fstat-no" title="function not covered" >() =</span>&gt;</span>
-<span class="cstat-no" title="statement not covered" >      docData(eventRef, { idField: "id" }).pipe(shareReplay(10)),</span>
+<span class="cstat-no" title="statement not covered" >      docData(eventRef, { idField: "id" }).pipe(shareLatest()),</span>
     ) as Observable&lt;Veranstaltung&gt;;
   }
 &nbsp;
@@ -1180,7 +1180,7 @@ export class EventService {
       ); // StartDatum der Veranstaltung - 12h
 <span class="cstat-no" title="statement not covered" >      return collectionData(q, {</span>
         idField: "id",
-      }).pipe(shareReplay(1));
+      }).pipe(shareLatest());
     }) as unknown as Observable&lt;Veranstaltung[]&gt;;
   }
 <span class="fstat-no" title="function not covered" >  getClubEventsPastRef(</span>clubId: string): Observable&lt;Veranstaltung[]&gt; {
@@ -1199,7 +1199,7 @@ export class EventService {
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      return collectionData(q, {</span>
         idField: "id",
-      }).pipe(shareReplay(1));
+      }).pipe(shareLatest());
     }) as unknown as Observable&lt;Veranstaltung[]&gt;;
   }
 &nbsp;
@@ -1211,7 +1211,7 @@ export class EventService {
 <span class="cstat-no" title="statement not covered" >    return runInInjectionContext(this.injector, <span class="fstat-no" title="function not covered" >() =</span>&gt;</span>
 <span class="cstat-no" title="statement not covered" >      collectionData(attendeesRefList, {</span>
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as unknown as Observable&lt;any[]&gt;;
   }
 <span class="fstat-no" title="function not covered" >  async </span>setClubEventAttendeeStatus(
@@ -1269,7 +1269,7 @@ export class EventService {
       `club/${clubId}/helferEvents/${eventId}`,
     );
 <span class="cstat-no" title="statement not covered" >    return runInInjectionContext(this.injector, <span class="fstat-no" title="function not covered" >() =</span>&gt;</span>
-<span class="cstat-no" title="statement not covered" >      docData(eventRef, { idField: "id" }).pipe(shareReplay(10)),</span>
+<span class="cstat-no" title="statement not covered" >      docData(eventRef, { idField: "id" }).pipe(shareLatest()),</span>
     ) as Observable&lt;HelferEvent&gt;;
   }
 &nbsp;
@@ -1293,7 +1293,7 @@ export class EventService {
       ); // StartDatum der Veranstaltung - 12h
 <span class="cstat-no" title="statement not covered" >      return collectionData(q, {</span>
         idField: "id",
-      }).pipe(shareReplay(1));
+      }).pipe(shareLatest());
     }) as unknown as Observable&lt;HelferEvent[]&gt;;
   }
 &nbsp;
@@ -1313,7 +1313,7 @@ export class EventService {
       ); // StartDatum der Veranstaltung - 12h
 <span class="cstat-no" title="statement not covered" >      return collectionData(q, {</span>
         idField: "id",
-      }).pipe(shareReplay(1));
+      }).pipe(shareLatest());
     }) as unknown as Observable&lt;HelferEvent[]&gt;;
   }
 <span class="fstat-no" title="function not covered" >  getClubHelferEventPastRefs(</span>clubId: string): Observable&lt;HelferEvent[]&gt; {
@@ -1335,7 +1335,7 @@ export class EventService {
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      return collectionData(q, {</span>
         idField: "id",
-      }).pipe(shareReplay(1));
+      }).pipe(shareLatest());
     }) as Observable&lt;HelferEvent[]&gt;;
   }
 &nbsp;
@@ -1350,7 +1350,7 @@ export class EventService {
 <span class="cstat-no" title="statement not covered" >    return runInInjectionContext(this.injector, <span class="fstat-no" title="function not covered" >() =</span>&gt;</span>
 <span class="cstat-no" title="statement not covered" >      collectionData(attendeesRefList, {</span>
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable&lt;any[]&gt;;
   }
 &nbsp;
@@ -1365,7 +1365,7 @@ export class EventService {
 <span class="cstat-no" title="statement not covered" >    return runInInjectionContext(this.injector, <span class="fstat-no" title="function not covered" >() =</span>&gt;</span>
 <span class="cstat-no" title="statement not covered" >      collectionData(schichtenRefList, {</span>
         idField: "id",
-      }).pipe(shareReplay(10)),
+      }).pipe(shareLatest()),
     ) as Observable&lt;any[]&gt;;
   }
 &nbsp;
@@ -1417,7 +1417,7 @@ export class EventService {
 <span class="cstat-no" title="statement not covered" >    return runInInjectionContext(this.injector, <span class="fstat-no" title="function not covered" >() =</span>&gt;</span>
 <span class="cstat-no" title="statement not covered" >      collectionData(schichtAttendeesListRef, {</span>
         idField: "id",
-      }).pipe(shareReplay(1)),
+      }).pipe(shareLatest()),
     ) as Observable&lt;any[]&gt;;
   }
 &nbsp;
@@ -1636,7 +1636,7 @@ export class EventService {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-03-31T15:55:12.868Z
+                at 2026-09-05T17:20:15.030Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

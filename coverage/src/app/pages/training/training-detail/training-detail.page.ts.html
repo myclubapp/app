@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">34.84% </span>
+                <span class="strong">35% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>69/198</span>
+                <span class='fraction'>70/200</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">26.19% </span>
+                <span class="strong">26.74% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>22/84</span>
+                <span class='fraction'>23/86</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">35.56% </span>
+                <span class="strong">35.53% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>69/194</span>
+                <span class='fraction'>70/197</span>
             </div>
         
             
@@ -927,7 +927,19 @@
 <a name='L862'></a><a href='#L862'>862</a>
 <a name='L863'></a><a href='#L863'>863</a>
 <a name='L864'></a><a href='#L864'>864</a>
-<a name='L865'></a><a href='#L865'>865</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L865'></a><a href='#L865'>865</a>
+<a name='L866'></a><a href='#L866'>866</a>
+<a name='L867'></a><a href='#L867'>867</a>
+<a name='L868'></a><a href='#L868'>868</a>
+<a name='L869'></a><a href='#L869'>869</a>
+<a name='L870'></a><a href='#L870'>870</a>
+<a name='L871'></a><a href='#L871'>871</a>
+<a name='L872'></a><a href='#L872'>872</a>
+<a name='L873'></a><a href='#L873'>873</a>
+<a name='L874'></a><a href='#L874'>874</a>
+<a name='L875'></a><a href='#L875'>875</a>
+<a name='L876'></a><a href='#L876'>876</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1027,15 +1039,26 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">25x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25x</span>
 <span class="cline-any cline-yes">25x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">25x</span>
 <span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1056,7 +1079,6 @@
 <span class="cline-any cline-yes">25x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1797,6 +1819,7 @@
   Input,
   OnInit,
   Optional,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import {
   AlertController,
@@ -1819,7 +1842,6 @@ import {
   lastValueFrom,
   map,
   of,
-  shareReplay,
   switchMap,
   take,
   tap,
@@ -1842,6 +1864,7 @@ import { TrainingCreatePage } from "../training-create/training-create.page";
   selector: "app-training-detail",
   templateUrl: "./training-detail.page.html",
   styleUrls: ["./training-detail.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class TrainingDetailPage implements OnInit {
@@ -1890,16 +1913,27 @@ export class TrainingDetailPage implements OnInit {
       return;
     }
 &nbsp;
+    this.loadData();
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ionViewWillEnter(</span>) {
+<span class="cstat-no" title="statement not covered" >    this.loadData();</span>
+  }
+&nbsp;
+  private loadData() {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!this.training) {
+<span class="cstat-no" title="statement not covered" >      return;</span>
+    }
+&nbsp;
     this.training$ = this.getTraining(this.training.teamId, this.training.id);
     this.exerciseList$ = this.exerciseService.getTeamTrainingExerciseRefs(
       this.training.teamId,
       this.training.id,
     );
 &nbsp;
-    this.clubList$ = this.fbService.getClubList().pipe(shareReplay(1));
-    this.teamAdminList$ = this.fbService
-      .getTeamAdminList()
-      .pipe(shareReplay(1));
+    // Both lists are shared inside FirebaseService (shareLatest).
+    this.clubList$ = this.fbService.getClubList();
+    this.teamAdminList$ = this.fbService.getTeamAdminList();
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  ionViewDidEnter(</span>) {}
@@ -1917,11 +1951,10 @@ export class TrainingDetailPage implements OnInit {
 &nbsp;
   getTraining(teamId: string, trainingId: string) {
     console.log("getTraining", teamId, trainingId);
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) =&gt; {
         this.user = user;
-        <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) <span class="cstat-no" title="statement not covered" >throw new Error("User not found");</span>
       }),
       switchMap((user) =&gt; {
         return this.userProfileService.getChildren(user.uid).pipe(
@@ -2662,7 +2695,7 @@ export class TrainingDetailPage implements OnInit {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-03-31T15:55:12.868Z
+                at 2026-09-05T17:20:15.030Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

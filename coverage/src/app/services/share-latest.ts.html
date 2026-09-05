@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/environments/environment.ts</title>
+    <title>Code coverage report for src/app/services/share-latest.ts</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../prettify.css" />
-    <link rel="stylesheet" href="../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../sort-arrow-sprite.png);
+            background-image: url(../../../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/environments</a> environment.ts</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/app/services</a> share-latest.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
@@ -90,7 +90,24 @@
 <a name='L25'></a><a href='#L25'>25</a>
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -117,33 +134,52 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// This file can be replaced during build by using the `fileReplacements` array.
-// `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { MonoTypeOperatorFunction, ReplaySubject, share, timer } from "rxjs";
 &nbsp;
-export const environment = {
-  firebase: {
-    projectId: 'myclubmanagement',
-    appId: '1:631527568360:web:ce837471207da281fc6a5d',
-    databaseURL: 'https://myclubmanagement.firebaseio.com',
-    storageBucket: 'myclubmanagement.appspot.com',
-    locationId: 'europe-west6',
-    apiKey: 'AIzaSyCG9_CYSbjzuvJsC0P6SOYQ7_jGN0Q2E5k',
-    authDomain: 'myclubmanagement.firebaseapp.com',
-    messagingSenderId: '631527568360',
-  },
-  production: false,
-  googleMapsApiKey: "AIzaSyAM5x9P0syj9qtxUmFs98nW0B967xo52Fw",
-};
-&nbsp;
-/*
- * For easier debugging in development mode, you can import the following file
- * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
- *
- * This import should be commented out in production mode because it will have a negative impact
- * on performance if an error is thrown.
+/**
+ * Grace period during which a Firestore listener stays open after its last
+ * subscriber has left. Long enough to bridge the synchronous tear-down and
+ * re-subscription of `switchMap`/`combineLatest` chains (which would otherwise
+ * re-read the whole result set), short enough that abandoned streams are
+ * actually released.
  */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+export const SHARE_LATEST_GRACE_MS = 5000;
+&nbsp;
+/**
+ * Multicasts a Firestore stream to all subscribers and replays the latest
+ * value, like `shareReplay({ bufferSize: 1, refCount: true })`, with one
+ * addition: the underlying listener is released `graceMs` after the last
+ * subscriber unsubscribes instead of immediately.
+ *
+ * Why not `shareReplay(1)`: without `refCount` the source subscription — and
+ * therefore the Firestore snapshot listener — is never released. Every listener
+ * created in a service lived until the app was killed, kept billing for each
+ * document change, and was re-established (and re-read) on every reconnect.
+ *
+ * Why the grace period: the list pages tear down and immediately re-create
+ * their inner listeners whenever an outer query emits. With a plain
+ * `refCount: true` each of those cycles would remove and re-add the listener
+ * on the server, which Firestore bills as a fresh read of every document.
+ * Keeping the listener open for a few seconds lets the re-subscription reuse
+ * it (the SDK deduplicates identical active listeners) at no cost.
+ */
+export function shareLatest&lt;T&gt;(
+  graceMs: number = SHARE_LATEST_GRACE_MS,
+): MonoTypeOperatorFunction&lt;T&gt; {
+  return share&lt;T&gt;({
+    connector: () =&gt; new ReplaySubject&lt;T&gt;(1),
+    resetOnError: true,
+    resetOnComplete: false,
+    resetOnRefCountZero: () =&gt; timer(graceMs),
+  });
+}
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -151,16 +187,16 @@ export const environment = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-03-31T15:55:12.868Z
+                at 2026-09-05T17:20:15.030Z
             </div>
-        <script src="../../prettify.js"></script>
+        <script src="../../../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../sorter.js"></script>
-        <script src="../../block-navigation.js"></script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
     </body>
 </html>
     

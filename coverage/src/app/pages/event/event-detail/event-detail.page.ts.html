@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.86% </span>
+                <span class="strong">38.01% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>64/169</span>
+                <span class='fraction'>65/171</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">29.41% </span>
+                <span class="strong">30% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>20/68</span>
+                <span class='fraction'>21/70</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">38.78% </span>
+                <span class="strong">38.69% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>64/165</span>
+                <span class='fraction'>65/168</span>
             </div>
         
             
@@ -715,7 +715,31 @@
 <a name='L650'></a><a href='#L650'>650</a>
 <a name='L651'></a><a href='#L651'>651</a>
 <a name='L652'></a><a href='#L652'>652</a>
-<a name='L653'></a><a href='#L653'>653</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L653'></a><a href='#L653'>653</a>
+<a name='L654'></a><a href='#L654'>654</a>
+<a name='L655'></a><a href='#L655'>655</a>
+<a name='L656'></a><a href='#L656'>656</a>
+<a name='L657'></a><a href='#L657'>657</a>
+<a name='L658'></a><a href='#L658'>658</a>
+<a name='L659'></a><a href='#L659'>659</a>
+<a name='L660'></a><a href='#L660'>660</a>
+<a name='L661'></a><a href='#L661'>661</a>
+<a name='L662'></a><a href='#L662'>662</a>
+<a name='L663'></a><a href='#L663'>663</a>
+<a name='L664'></a><a href='#L664'>664</a>
+<a name='L665'></a><a href='#L665'>665</a>
+<a name='L666'></a><a href='#L666'>666</a>
+<a name='L667'></a><a href='#L667'>667</a>
+<a name='L668'></a><a href='#L668'>668</a>
+<a name='L669'></a><a href='#L669'>669</a>
+<a name='L670'></a><a href='#L670'>670</a>
+<a name='L671'></a><a href='#L671'>671</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -800,6 +824,19 @@
 <span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -807,7 +844,6 @@
 <span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1367,7 +1403,12 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Component, Input, OnInit } from "@angular/core";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import {
   AlertController,
   IonItemSliding,
@@ -1404,6 +1445,7 @@ import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
   selector: "app-event-detail",
   templateUrl: "./event-detail.page.html",
   styleUrls: ["./event-detail.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class EventDetailPage implements OnInit {
@@ -1449,18 +1491,30 @@ export class EventDetailPage implements OnInit {
       return;
     }
 &nbsp;
+    this.eventHasChanged = {};
+&nbsp;
+    this.loadData();
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ionViewWillEnter(</span>) {
+<span class="cstat-no" title="statement not covered" >    this.loadData();</span>
+  }
+&nbsp;
+  private loadData() {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!this.event) {
+<span class="cstat-no" title="statement not covered" >      return;</span>
+    }
+&nbsp;
     this.event$ = this.getEvent(this.event.clubId, this.event.id);
 &nbsp;
     this.clubAdminList$ = this.fbService.getClubAdminList();
-    this.eventHasChanged = {};
   }
 &nbsp;
   getEvent(clubId: string, eventId: string) {
-    return this.authService.getUser$().pipe(
+    return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) =&gt; {
         this.user = user;
-        <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) <span class="cstat-no" title="statement not covered" >throw new Error("User not found");</span>
       }),
       switchMap((user) =&gt; {
         return this.userProfileService.getChildren(user.uid).pipe(
@@ -2026,7 +2080,7 @@ export class EventDetailPage implements OnInit {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-03-31T15:55:12.868Z
+                at 2026-09-05T17:20:15.030Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

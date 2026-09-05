@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">11.36% </span>
+                <span class="strong">11.62% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/88</span>
+                <span class='fraction'>10/86</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/55</span>
+                <span class='fraction'>0/53</span>
             </div>
         
             
@@ -355,7 +355,21 @@
 <a name='L290'></a><a href='#L290'>290</a>
 <a name='L291'></a><a href='#L291'>291</a>
 <a name='L292'></a><a href='#L292'>292</a>
-<a name='L293'></a><a href='#L293'>293</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a>
+<a name='L296'></a><a href='#L296'>296</a>
+<a name='L297'></a><a href='#L297'>297</a>
+<a name='L298'></a><a href='#L298'>298</a>
+<a name='L299'></a><a href='#L299'>299</a>
+<a name='L300'></a><a href='#L300'>300</a>
+<a name='L301'></a><a href='#L301'>301</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -393,6 +407,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -433,9 +455,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -458,9 +477,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -647,7 +663,12 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Component, OnInit, Optional } from "@angular/core";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {
+  Component,
+  OnInit,
+  Optional,
+  ChangeDetectionStrategy,
+} from "@angular/core";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { IonRouterOutlet, ModalController, Platform } from "@ionic/angular";
 import { Router } from "@angular/router";
@@ -662,6 +683,7 @@ import { ClubInvoiceDetailPage } from "../../club-invoice-detail/club-invoice-de
   selector: "app-notification",
   templateUrl: "./notification.page.html",
   styleUrls: ["./notification.page.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class NotificationPage implements OnInit {
@@ -681,6 +703,14 @@ export class NotificationPage implements OnInit {
   ) {}
 &nbsp;
 <span class="fstat-no" title="function not covered" >  ngOnInit(</span>) {
+<span class="cstat-no" title="statement not covered" >    this.loadData();</span>
+  }
+&nbsp;
+<span class="fstat-no" title="function not covered" >  ionViewWillEnter(</span>) {
+<span class="cstat-no" title="statement not covered" >    this.loadData();</span>
+  }
+&nbsp;
+  private <span class="fstat-no" title="function not covered" >loadData(</span>) {
 <span class="cstat-no" title="statement not covered" >    this.notifications$ = this.getNotifications();</span>
     /*this.subscription = this.notifications$.subscribe((notifications) =&gt; {
       // console.log('Notifications', notifications);
@@ -720,11 +750,8 @@ export class NotificationPage implements OnInit {
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  getNotifications(</span>): Observable&lt;any[]&gt; {
-<span class="cstat-no" title="statement not covered" >    return this.authService.getUser$().pipe(</span>
+<span class="cstat-no" title="statement not covered" >    return this.authService.getAuthenticatedUser$().pipe(</span>
       take(1),
-      tap(<span class="fstat-no" title="function not covered" >(u</span>ser) =&gt; {
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) <span class="cstat-no" title="statement not covered" >throw new Error("User not found");</span></span>
-      }),
       switchMap(<span class="fstat-no" title="function not covered" >(u</span>ser) =&gt; {
 <span class="cstat-no" title="statement not covered" >        return this.notificationService.getNotifications(user).pipe(</span>
           map(<span class="fstat-no" title="function not covered" >(n</span>otifications) =&gt; {
@@ -752,11 +779,8 @@ export class NotificationPage implements OnInit {
     );
   }
 <span class="fstat-no" title="function not covered" >  getReadNotifications(</span>): Observable&lt;any[]&gt; {
-<span class="cstat-no" title="statement not covered" >    return this.authService.getUser$().pipe(</span>
+<span class="cstat-no" title="statement not covered" >    return this.authService.getAuthenticatedUser$().pipe(</span>
       take(1),
-      tap(<span class="fstat-no" title="function not covered" >(u</span>ser) =&gt; {
-<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (!user) <span class="cstat-no" title="statement not covered" >throw new Error("User not found");</span></span>
-      }),
       switchMap(<span class="fstat-no" title="function not covered" >(u</span>ser) =&gt; {
 <span class="cstat-no" title="statement not covered" >        return this.notificationService.getReadNotifications(user).pipe(</span>
           tap(<span class="fstat-no" title="function not covered" >(n</span>otifications) =&gt; {
@@ -946,7 +970,7 @@ export class NotificationPage implements OnInit {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-03-31T15:55:12.868Z
+                at 2026-09-05T17:20:15.030Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>
