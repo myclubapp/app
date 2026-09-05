@@ -755,8 +755,43 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  /**
+   * Returns the translation key of the first validation error, or null. A
+   * member could add themselves (or an already linked person) as their own
+   * child, which showed the same person as member, child and parent at once
+   * (#255).
+   */
+  private validateKidEmail(
+    email: string | undefined,
+    children: Profile[],
+    parents: Profile[],
+    kidsRequests: { email?: string }[],
+  ): string | null {
+    const normalized = (email || "").trim().toLowerCase();
+    if (!normalized || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+      return "profile.kids.error__invalid_email";
+    }
+    if (normalized === (this.user?.email || "").toLowerCase()) {
+      return "profile.kids.error__self";
+    }
+    const linked = [...children, ...parents];
+    if (linked.some((p) => (p?.email || "").toLowerCase() === normalized)) {
+      return "profile.kids.error__already_linked";
+    }
+    if (
+      kidsRequests.some((r) => (r?.email || "").toLowerCase() === normalized)
+    ) {
+      return "profile.kids.error__request_pending";
+    }
+    return null;
+  }
+
   async addKidRequest() {
-    const children = await lastValueFrom(this.children$.pipe(take(1)));
+    const [children, parents, kidsRequests] = await Promise.all([
+      lastValueFrom(this.children$.pipe(take(1))),
+      lastValueFrom((this.parents$ ?? of([])).pipe(take(1))),
+      lastValueFrom((this.kidsRequests$ ?? of([])).pipe(take(1))),
+    ]);
     if (children.length >= 3) {
       const alert = await this.alertController.create({
         header: await lastValueFrom(
@@ -796,7 +831,21 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
           text: await lastValueFrom(this.translate.get("common.add")),
           role: "confirm",
           handler: (data: any) => {
-            this.profileService.addKidRequest(this.user.uid, data.email);
+            const error = this.validateKidEmail(
+              data?.email,
+              children,
+              parents,
+              kidsRequests,
+            );
+            if (error) {
+              void this.uiService.showErrorToast(this.translate.instant(error));
+              return false; // keep the dialog open so the address can be corrected
+            }
+            this.profileService.addKidRequest(
+              this.user.uid,
+              String(data.email).trim(),
+            );
+            return true;
           },
         },
       ],

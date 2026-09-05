@@ -38,8 +38,16 @@ import { shareLatest } from "../share-latest";
   providedIn: "root",
 })
 export class UserProfileService {
+  /**
+   * One shared profile stream per user id (#259). Detail pages and member
+   * lists request the same profiles again and again, mostly with take(1);
+   * without memoisation every call opened its own docData() listener and paid
+   * a fresh read as soon as the previous one had been released. The shared
+   * listener stays open PROFILE_GRACE_MS after its last subscriber, so
+   * re-opening a detail within that window costs no reads at all.
+   */
   private profileCache: Map<string, Observable<Profile>> = new Map();
-  private readonly CACHE_DURATION = 10 * 60 * 1000; // 10 Minuten
+  private readonly PROFILE_GRACE_MS = 10 * 60 * 1000; // 10 Minuten
   private injector = inject(Injector);
 
   /**
@@ -135,21 +143,24 @@ export class UserProfileService {
   }
 
   getUserProfile(user: User): Observable<Profile> {
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return runInInjectionContext(this.injector, () =>
-      docData(userProfileRef, { idField: "id" }).pipe(shareLatest()),
-    ) as Observable<Profile>;
+    return this.getUserProfileById(user.uid);
   }
 
   getUserProfileById(userId: string): Observable<Profile> {
-    const userProfileRef: DocumentReference = doc(
-      this.firestore,
-      `userProfile/${userId}`,
-    );
-
-    return runInInjectionContext(this.injector, () =>
-      docData(userProfileRef, { idField: "id" }).pipe(shareLatest()),
-    ) as Observable<Profile>;
+    let profile$ = this.profileCache.get(userId);
+    if (!profile$) {
+      const userProfileRef: DocumentReference = doc(
+        this.firestore,
+        `userProfile/${userId}`,
+      );
+      profile$ = runInInjectionContext(this.injector, () =>
+        docData(userProfileRef, { idField: "id" }).pipe(
+          shareLatest(this.PROFILE_GRACE_MS),
+        ),
+      ) as Observable<Profile>;
+      this.profileCache.set(userId, profile$);
+    }
+    return profile$;
   }
 
   async setUserProfilePicture(photo: Photo) {

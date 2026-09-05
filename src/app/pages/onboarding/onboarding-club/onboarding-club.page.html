@@ -42,6 +42,34 @@
               <!--<p>Suche deinen Club über das Suchfeld und stelle anschliessend eine Beitrittsanfrage an deinen Verein. Die Verantworlichen Personen werden anschliessend prüfen ob du berechtigt bist, diesem Verein beizutreten und fügen dich einem Team hinzu. Du wirst per E-Mail Benachrichtigt, wenn dein Antrag angenommen wurde.</p>-->
             </ion-text>
 
+            @if (pendingClubRequests$ | async; as pendingRequests) { @if
+            (pendingRequests.length > 0) {
+            <ion-list [inset]="true" class="ion-no-margin">
+              <ion-list-header>
+                {{ 'onboarding.pending_requests__title' | translate }}
+              </ion-list-header>
+              @for (request of pendingRequests; track request.id) {
+              <ion-item lines="full">
+                <ion-icon
+                  slot="start"
+                  name="hourglass-outline"
+                  color="warning"
+                ></ion-icon>
+                <ion-label class="ion-text-wrap">
+                  <h2>{{ request.clubName }}</h2>
+                  <p>
+                    {{ (request.isNewClub ?
+                    'onboarding.pending_requests__new_club_hint' :
+                    request.isParent ?
+                    'onboarding.pending_requests__parent_hint' :
+                    'onboarding.pending_requests__member_hint') | translate }}
+                  </p>
+                </ion-label>
+              </ion-item>
+              }
+            </ion-list>
+            } }
+
             <ion-searchbar
               class="ion-no-padding"
               (ionInput)="handleChange($event)"

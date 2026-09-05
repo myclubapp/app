@@ -42,6 +42,7 @@ import {
   switchMap,
   take,
   tap,
+  from,
 } from "rxjs";
 import { Club } from "src/app/models/club";
 import { TranslateService } from "@ngx-translate/core";
@@ -54,6 +55,8 @@ import { ChampionshipService } from "src/app/services/firebase/championship.serv
 import { Game } from "src/app/models/game";
 import { ClubGamePreviewPage } from "src/app/pages/championship/club-game-preview/club-game-preview.page";
 import { BehaviorSubject, Subject } from "rxjs";
+
+const PARENT_HINT_DISMISSED_KEY = "parentNextStepHintDismissed";
 
 @Component({
   selector: "app-news",
@@ -94,6 +97,7 @@ export class NewsPage implements OnInit {
   showGamePreview: boolean = false;
   gamePreviewDays: number = 10;
   hasChampionshipModule: boolean = false;
+  showParentNextStepHint$: Observable<boolean>;
 
   // Filter value: "all", "verband" or a specific club id. A club id filters
   // the list down to that single club's news (source === "verein").
@@ -223,6 +227,9 @@ export class NewsPage implements OnInit {
     // so no page-level shareReplay is needed.
     this.clubAdminList$ = this.fbService.getClubAdminList();
     this.clubList$ = this.fbService.getClubList();
+    this.showParentNextStepHint$ = this.getParentNextStepHint().pipe(
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
     this.clubGames$ = this.getClubGames().pipe(
       shareReplay({ bufferSize: 1, refCount: true }),
     );
@@ -290,6 +297,45 @@ export class NewsPage implements OnInit {
       console.error("Fehler beim Laden der Game-Preview Einstellung:", error);
       this.showGamePreview = false;
       this.gamePreviewDays = 10;
+    }
+  }
+
+  /**
+   * True while the signed-in user is an approved parent account (isParent)
+   * without a linked child and has not dismissed the hint. Such parents saw
+   * an empty app after approval and did not know that the next step is to
+   * create and link the child's account (#256).
+   */
+  private getParentNextStepHint(): Observable<boolean> {
+    return from(Preferences.get({ key: PARENT_HINT_DISMISSED_KEY })).pipe(
+      switchMap(({ value }) => {
+        if (value === "true") return of(false);
+        return this.authService.getAuthenticatedUser$().pipe(
+          switchMap((user) =>
+            combineLatest([
+              this.userProfileService.getUserProfileById(user.uid),
+              this.userProfileService.getChildren(user.uid),
+            ]),
+          ),
+          map(
+            ([profile, children]) =>
+              !!profile?.isParent && (children?.length ?? 0) === 0,
+          ),
+        );
+      }),
+      catchError((error) => {
+        console.error("Error evaluating parent hint:", error);
+        return of(false);
+      }),
+    );
+  }
+
+  async dismissParentNextStepHint() {
+    this.showParentNextStepHint$ = of(false);
+    try {
+      await Preferences.set({ key: PARENT_HINT_DISMISSED_KEY, value: "true" });
+    } catch (error) {
+      console.error("Error saving parent hint state:", error);
     }
   }
 
