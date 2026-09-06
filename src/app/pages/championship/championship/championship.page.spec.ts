@@ -53,6 +53,7 @@ describe("ChampionshipPage", () => {
           useValue: jasmine.createSpyObj("ChampionshipService", [
             "getTeamGamesRef",
             "getTeamGamesPastRef",
+            "setTeamGameAttendeeStatus",
           ]),
         },
         {
@@ -64,6 +65,7 @@ describe("ChampionshipPage", () => {
           useValue: jasmine.createSpyObj("UiService", [
             "showSuccessToast",
             "showErrorToast",
+            "showInfoDialog",
             "showActionSheet",
           ]),
         },
@@ -107,5 +109,93 @@ describe("ChampionshipPage", () => {
 
   it("should create", () => {
     expect(component).toBeTruthy();
+  });
+
+  it("offers registering and unregistering for all games", async () => {
+    const uiService = TestBed.inject(UiService) as jasmine.SpyObj<UiService>;
+    uiService.showActionSheet.and.resolveTo(undefined as any);
+
+    await component.gameListActions();
+
+    const options = uiService.showActionSheet.calls.mostRecent().args[0] as any;
+    expect(options.buttons.map((button) => button.text)).toEqual([
+      "common.alle_anmelden",
+      "common.alle_abmelden",
+      "common.cancel",
+    ]);
+  });
+
+  describe("toggleAllGames", () => {
+    const inDays = (days: number) => ({
+      toDate: () => new Date(Date.now() + days * 24 * 60 * 60 * 1000),
+    });
+    let championshipService: jasmine.SpyObj<ChampionshipService>;
+    let uiService: jasmine.SpyObj<UiService>;
+
+    beforeEach(() => {
+      championshipService = TestBed.inject(
+        ChampionshipService,
+      ) as jasmine.SpyObj<ChampionshipService>;
+      uiService = TestBed.inject(UiService) as jasmine.SpyObj<UiService>;
+      championshipService.setTeamGameAttendeeStatus.and.resolveTo();
+      uiService.showSuccessToast.and.resolveTo();
+      uiService.showInfoDialog.and.resolveTo();
+
+      component.gameList$ = of([
+        // Frist 24h, Spiel heute 00:00 Uhr -> Abmeldefrist abgelaufen
+        {
+          id: "g-late",
+          teamId: "team-1",
+          dateTime: inDays(0),
+          time: "00:00",
+          team: { championshipThreshold: 24 },
+        },
+        // Frist 24h, Spiel in 10 Tagen -> Abmelden möglich
+        {
+          id: "g-ok",
+          teamId: "team-1",
+          dateTime: inDays(10),
+          time: "14:30",
+          team: { championshipThreshold: 24 },
+        },
+        // Keine Frist -> Abmelden immer möglich
+        {
+          id: "g-no-threshold",
+          teamId: "team-2",
+          dateTime: inDays(0),
+          time: "00:00",
+          team: {},
+        },
+      ] as any);
+    });
+
+    it("registers for every upcoming game", async () => {
+      await component.toggleAllGames(true);
+
+      expect(
+        championshipService.setTeamGameAttendeeStatus,
+      ).toHaveBeenCalledTimes(3);
+      expect(
+        championshipService.setTeamGameAttendeeStatus,
+      ).toHaveBeenCalledWith(true, "team-1", "g-late");
+      expect(uiService.showSuccessToast).toHaveBeenCalled();
+      expect(uiService.showInfoDialog).not.toHaveBeenCalled();
+    });
+
+    it("skips games past the unsubscribe deadline and informs the user", async () => {
+      await component.toggleAllGames(false);
+
+      expect(
+        championshipService.setTeamGameAttendeeStatus,
+      ).toHaveBeenCalledTimes(2);
+      expect(
+        championshipService.setTeamGameAttendeeStatus,
+      ).toHaveBeenCalledWith(false, "team-1", "g-ok");
+      expect(
+        championshipService.setTeamGameAttendeeStatus,
+      ).toHaveBeenCalledWith(false, "team-2", "g-no-threshold");
+      expect(uiService.showSuccessToast).toHaveBeenCalled();
+      expect(uiService.showInfoDialog).toHaveBeenCalledTimes(1);
+    });
   });
 });
