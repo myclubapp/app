@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { TrainingsPage } from "./trainings.page";
 import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
-import { TranslateModule } from "@ngx-translate/core";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { RouterTestingModule } from "@angular/router/testing";
-import { of } from "rxjs";
+import { lastValueFrom, of } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
@@ -131,6 +131,7 @@ describe("TrainingsPage", () => {
       trainingService.setTeamTrainingAttendeeStatus.and.resolveTo();
       uiService.showSuccessToast.and.resolveTo();
       uiService.showInfoDialog.and.resolveTo();
+      uiService.showConfirmDialog.and.resolveTo(true);
 
       component.user = { uid: "user-1" } as any;
       component.filteredTrainingList$ = of([
@@ -188,6 +189,28 @@ describe("TrainingsPage", () => {
       ).toHaveBeenCalledWith(false, "team-2", "t-no-threshold");
       expect(uiService.showSuccessToast).toHaveBeenCalled();
       expect(uiService.showInfoDialog).toHaveBeenCalledTimes(1);
+    });
+
+    it("asks for confirmation with the affected count and stops when cancelled", async () => {
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation("de", {
+        training: { alle_abmelden__confirm: "{{count}} Trainings abmelden?" },
+      });
+      await lastValueFrom(translate.use("de"));
+      uiService.showConfirmDialog.and.resolveTo(false);
+
+      await component.toggleAll(false);
+
+      // Kein jasmine.objectContaining: das von karma-jasmine gebündelte jasmine-core 3.99 wirft
+      // dafür in toHaveBeenCalledWith "ReferenceError: i is not defined".
+      const options = uiService.showConfirmDialog.calls.mostRecent().args[0];
+      expect(options.header).toBe("common.alle_abmelden");
+      expect(options.message).toBe("3 Trainings abmelden?");
+      expect(options.confirmText).toBe("common.abmelden");
+      expect(
+        trainingService.setTeamTrainingAttendeeStatus,
+      ).not.toHaveBeenCalled();
+      expect(uiService.showSuccessToast).not.toHaveBeenCalled();
     });
   });
 });

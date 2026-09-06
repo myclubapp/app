@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { ChampionshipPage } from "./championship.page";
 import { CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef } from "@angular/core";
-import { TranslateModule } from "@ngx-translate/core";
+import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { RouterTestingModule } from "@angular/router/testing";
-import { of } from "rxjs";
+import { lastValueFrom, of } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
@@ -66,6 +66,7 @@ describe("ChampionshipPage", () => {
             "showSuccessToast",
             "showErrorToast",
             "showInfoDialog",
+            "showConfirmDialog",
             "showActionSheet",
           ]),
         },
@@ -140,6 +141,7 @@ describe("ChampionshipPage", () => {
       championshipService.setTeamGameAttendeeStatus.and.resolveTo();
       uiService.showSuccessToast.and.resolveTo();
       uiService.showInfoDialog.and.resolveTo();
+      uiService.showConfirmDialog.and.resolveTo(true);
 
       component.gameList$ = of([
         // Frist 24h, Spiel heute 00:00 Uhr -> Abmeldefrist abgelaufen
@@ -196,6 +198,28 @@ describe("ChampionshipPage", () => {
       ).toHaveBeenCalledWith(false, "team-2", "g-no-threshold");
       expect(uiService.showSuccessToast).toHaveBeenCalled();
       expect(uiService.showInfoDialog).toHaveBeenCalledTimes(1);
+    });
+
+    it("asks for confirmation with the affected count and stops when cancelled", async () => {
+      const translate = TestBed.inject(TranslateService);
+      translate.setTranslation("de", {
+        championship: { alle_abmelden__confirm: "{{count}} Spiele abmelden?" },
+      });
+      await lastValueFrom(translate.use("de"));
+      uiService.showConfirmDialog.and.resolveTo(false);
+
+      await component.toggleAllGames(false);
+
+      // Kein jasmine.objectContaining: das von karma-jasmine gebündelte jasmine-core 3.99 wirft
+      // dafür in toHaveBeenCalledWith "ReferenceError: i is not defined".
+      const options = uiService.showConfirmDialog.calls.mostRecent().args[0];
+      expect(options.header).toBe("common.alle_abmelden");
+      expect(options.message).toBe("3 Spiele abmelden?");
+      expect(options.confirmText).toBe("common.abmelden");
+      expect(
+        championshipService.setTeamGameAttendeeStatus,
+      ).not.toHaveBeenCalled();
+      expect(uiService.showSuccessToast).not.toHaveBeenCalled();
     });
   });
 });

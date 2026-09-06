@@ -734,12 +734,14 @@ export class ChampionshipPage implements OnInit {
       buttons: [
         {
           text: await lastValueFrom(this.translate.get("common.alle_anmelden")),
+          icon: "checkmark-circle-outline",
           handler: () => {
             this.toggleAllGames(true);
           },
         },
         {
           text: await lastValueFrom(this.translate.get("common.alle_abmelden")),
+          icon: "close-circle-outline",
           handler: () => {
             this.toggleAllGames(false);
           },
@@ -759,6 +761,11 @@ export class ChampionshipPage implements OnInit {
   async toggleAllGames(status: boolean) {
     try {
       const gameList = await lastValueFrom(this.gameList$.pipe(take(1)));
+      if (gameList.length === 0) return;
+
+      const confirmed = await this.confirmToggleAll(status, gameList.length);
+      if (!confirmed) return;
+
       let tooLateCount = 0;
       for (const game of gameList) {
         // Abmelden unterliegt der Abmeldefrist des Teams — wie beim einzelnen
@@ -942,6 +949,34 @@ export class ChampionshipPage implements OnInit {
     await this.uiService.showInfoDialog({
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
+    });
+  }
+
+  /**
+   * Lässt die Sammelaktion bestätigen — mit der Anzahl betroffener Termine,
+   * damit "anmelden" und "abmelden" nicht verwechselt werden.
+   */
+  private async confirmToggleAll(
+    status: boolean,
+    count: number,
+  ): Promise<boolean> {
+    return this.uiService.showConfirmDialog({
+      header: await lastValueFrom(
+        this.translate.get(
+          status ? "common.alle_anmelden" : "common.alle_abmelden",
+        ),
+      ),
+      message: await lastValueFrom(
+        this.translate.get(
+          status
+            ? "championship.alle_anmelden__confirm"
+            : "championship.alle_abmelden__confirm",
+          { count },
+        ),
+      ),
+      confirmText: await lastValueFrom(
+        this.translate.get(status ? "common.anmelden" : "common.abmelden"),
+      ),
     });
   }
 

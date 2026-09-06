@@ -935,6 +935,13 @@ export class TrainingsPage implements OnInit {
       const trainingList = await lastValueFrom(
         this.filteredTrainingList$.pipe(take(1)),
       );
+      if (trainingList.length === 0) return;
+
+      const confirmed = await this.confirmToggleAll(
+        status,
+        trainingList.length,
+      );
+      if (!confirmed) return;
 
       let tooLateCount = 0;
       for (const training of trainingList) {
@@ -969,12 +976,14 @@ export class TrainingsPage implements OnInit {
       buttons: [
         {
           text: await lastValueFrom(this.translate.get("common.alle_anmelden")),
+          icon: "checkmark-circle-outline",
           handler: () => {
             this.toggleAll(true);
           },
         },
         {
           text: await lastValueFrom(this.translate.get("common.alle_abmelden")),
+          icon: "close-circle-outline",
           handler: () => {
             this.toggleAll(false);
           },
@@ -1046,6 +1055,34 @@ export class TrainingsPage implements OnInit {
     await this.uiService.showInfoDialog({
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
+    });
+  }
+
+  /**
+   * Lässt die Sammelaktion bestätigen — mit der Anzahl betroffener Termine,
+   * damit "anmelden" und "abmelden" nicht verwechselt werden.
+   */
+  private async confirmToggleAll(
+    status: boolean,
+    count: number,
+  ): Promise<boolean> {
+    return this.uiService.showConfirmDialog({
+      header: await lastValueFrom(
+        this.translate.get(
+          status ? "common.alle_anmelden" : "common.alle_abmelden",
+        ),
+      ),
+      message: await lastValueFrom(
+        this.translate.get(
+          status
+            ? "training.alle_anmelden__confirm"
+            : "training.alle_abmelden__confirm",
+          { count },
+        ),
+      ),
+      confirmText: await lastValueFrom(
+        this.translate.get(status ? "common.anmelden" : "common.abmelden"),
+      ),
     });
   }
 

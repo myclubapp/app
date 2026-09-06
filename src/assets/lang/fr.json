@@ -35,6 +35,8 @@
     "success__exercise_added": "Exercice ajouté avec succès",
     "alle_anmelden": "Inscrire tous",
     "alle_abmelden": "Désinscrire tous",
+    "anmelden": "S'inscrire",
+    "abmelden": "Se désinscrire",
     "alle_abmelden__too_late_header": "Délai de désinscription dépassé",
     "alle_abmelden__too_late_message": "{{count}} rendez-vous n'ont pas pu être annulés, car le délai de désinscription est déjà écoulé. Merci de t'adresser directement à l'équipe d'entraîneurs.",
     "link__web": "Site web / Plus d'informations",
@@ -305,6 +307,8 @@
     "goal__record": "Record de buts",
     "points": "Points",
     "upcomming__games": "Jeux à venir",
+    "alle_anmelden__confirm": "Es-tu sûr de vouloir t'inscrire aux {{count}} prochains matchs de championnat ?",
+    "alle_abmelden__confirm": "Es-tu sûr de vouloir te désinscrire des {{count}} prochains matchs de championnat ?",
     "actions": "Actions du championnat",
     "create_game_confirm": "Voulez-vous vraiment créer ce match ?"
   },
@@ -786,6 +790,8 @@
     "deleted_reason": "L'entraînement a été supprimé",
     "create_training_confirm": "L'entraînement doit-il être créé ?",
     "all_trainings": "Tous les entraînements",
+    "alle_anmelden__confirm": "Es-tu sûr de vouloir t'inscrire aux {{count}} prochains entraînements ?",
+    "alle_abmelden__confirm": "Es-tu sûr de vouloir te désinscrire des {{count}} prochains entraînements ?",
     "filter__title": "Filtrer les entraînements",
     "exercises_available": "Exercices disponibles"
   },

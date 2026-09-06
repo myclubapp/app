@@ -36,6 +36,8 @@
     "success__exercise_added": "Übung erfolgreich hinzugefügt",
     "alle_anmelden": "alle anmelden",
     "alle_abmelden": "alle abmelden",
+    "anmelden": "Anmelden",
+    "abmelden": "Abmelden",
     "alle_abmelden__too_late_header": "Abmeldefrist abgelaufen",
     "alle_abmelden__too_late_message": "{{count}} Termine konnten nicht abgemeldet werden, da die Abmeldefrist bereits abgelaufen ist. Bitte melde dich dafür direkt beim Trainerteam ab.",
     "link__web": "Webseite / Weitere Informationen",
@@ -307,6 +309,8 @@
     "goal__record": "Torbilanz",
     "points": "Punkte",
     "upcomming__games": "Kommende Spiele",
+    "alle_anmelden__confirm": "Bist du sicher, dass du dich für die kommenden {{count}} Meisterschaftsspiele anmelden willst?",
+    "alle_abmelden__confirm": "Bist du sicher, dass du dich von den kommenden {{count}} Meisterschaftsspielen abmelden willst?",
     "create_game_confirm": "Möchten Sie dieses Spiel wirklich erstellen?",
     "actions": "Meisterschaft Aktionen"
   },
@@ -806,6 +810,8 @@
     "deleted_reason": "Training wurde gelöscht",
     "create_training_confirm": "Soll das Training erstellt werden?",
     "all_trainings": "Alle Trainings",
+    "alle_anmelden__confirm": "Bist du sicher, dass du dich für die kommenden {{count}} Trainings anmelden willst?",
+    "alle_abmelden__confirm": "Bist du sicher, dass du dich von den kommenden {{count}} Trainings abmelden willst?",
     "filter__title": "Trainings filtern",
     "exercises_available": "Übungen vorhanden"
   },
