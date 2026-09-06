@@ -29,6 +29,7 @@ import {
   tap,
   shareReplay,
   startWith,
+  BehaviorSubject,
 } from "rxjs";
 import { Game } from "src/app/models/game";
 import { AuthService } from "src/app/services/auth.service";
@@ -46,6 +47,10 @@ import { Profile } from "src/app/models/user";
 import { UiService } from "src/app/services/ui.service";
 import { SwissUnihockeyService } from "src/app/services/swiss-unihockey.service";
 import { shareLatest } from "src/app/services/share-latest";
+import { Preferences } from "@capacitor/preferences";
+
+const ALL_TEAMS = "all";
+const TEAM_FILTER_STORAGE_KEY = "championshipTeamFilter";
 
 @Component({
   selector: "app-championship",
@@ -63,29 +68,24 @@ export class ChampionshipPage implements OnInit {
 
   gameList$!: Observable<Game[]>;
   gameListPast$!: Observable<Game[]>;
+  filteredGameList$!: Observable<Game[]>;
+  filteredGameListPast$!: Observable<Game[]>;
   teamRankings$!: Observable<any[]>;
   teamsWithRankings$!: Observable<any[]>;
 
-  /*gameListBackup$: Observable<Game[]>;
-  gameListPastBackup$: Observable<Game[]>;
-  teamRankingsBackup$: Observable<any[]>;
-
-
-  gameListBackup: Subscription;
-  gameListPastBackup: Subscription;
-  */
-
   mode = "games";
-
-  teamList$!: Observable<Team[]>;
 
   clubAdminList$!: Observable<Club[]>;
   teamAdminList$!: Observable<Team[]>;
 
   children: Profile[] = [];
-  /*filterList: any[] = [];
-  filterValue: string = "";
-  */
+
+  // Team-Filter der Spielliste (Auswahl wird lokal gespeichert)
+  teamList$!: Observable<Team[]>;
+  hasMultipleTeams$!: Observable<boolean>;
+  currentTeamFilter: string = ALL_TEAMS;
+  currentTeamName: string = "";
+  private teamFilter$ = new BehaviorSubject<string>(ALL_TEAMS);
 
   constructor(
     public toastController: ToastController,
@@ -108,6 +108,9 @@ export class ChampionshipPage implements OnInit {
 
   ngOnInit() {
     this.loadData();
+
+    // Nicht awaiten: der Filter wird reaktiv über teamFilter$ nachgezogen.
+    void this.restoreTeamFilter();
   }
 
   ionViewWillEnter() {
@@ -128,12 +131,21 @@ export class ChampionshipPage implements OnInit {
       shareReplay({ bufferSize: 1, refCount: true }),
     );
 
+    // FILTER
+    this.teamList$ = this.fbService.getTeamList();
+    this.hasMultipleTeams$ = this.teamList$.pipe(
+      map((teams) => teams.length > 1),
+    );
+    this.filteredGameList$ = this.filterByTeam(this.gameList$);
+    this.filteredGameListPast$ = this.filterByTeam(this.gameListPast$);
+
     // Get dynamic season from Swiss Unihockey API
     this.swissUnihockeyService.getCurrentSeason().subscribe((season) => {
       console.log("Current season:", season);
       this.teamRankings$ = this.getTeamsWithRankingsForYear(season.toString());
       // Create filtered observable for teams with actual ranking data
-      this.teamsWithRankings$ = this.teamRankings$.pipe(
+      // (zusätzlich auf das gewählte Team eingeschränkt)
+      this.teamsWithRankings$ = this.filterByTeam(this.teamRankings$).pipe(
         map((teams) =>
           teams.filter(
             (entry) =>
@@ -158,6 +170,118 @@ export class ChampionshipPage implements OnInit {
   }
   isTeamAdmin(teamAdminList: any[], teamId: string): boolean {
     return this.fbService.isTeamAdmin(teamAdminList, teamId);
+  }
+
+  /**
+   * Schränkt eine Liste (Spiele oder Tabellen-Einträge) auf das gewählte
+   * Team ein; ohne Filter wird die Liste unverändert durchgereicht.
+   */
+  private filterByTeam<T extends { teamId: string }>(
+    items$: Observable<T[]>,
+  ): Observable<T[]> {
+    return combineLatest([items$, this.teamFilter$]).pipe(
+      map(([items, teamId]) =>
+        teamId === ALL_TEAMS
+          ? items
+          : items.filter((item) => item.teamId === teamId),
+      ),
+    );
+  }
+
+  get isTeamFilterActive(): boolean {
+    return this.currentTeamFilter !== ALL_TEAMS;
+  }
+
+  /**
+   * Öffnet die Team-Auswahl und übernimmt den gewählten Filter.
+   */
+  async openTeamFilter() {
+    const teams = await lastValueFrom(this.teamList$.pipe(take(1)));
+
+    const result = await this.uiService.showFormDialog({
+      header: await lastValueFrom(
+        this.translate.get("championship.filter__title"),
+      ),
+      inputs: [
+        {
+          type: "radio",
+          label: await lastValueFrom(
+            this.translate.get("championship.all_games"),
+          ),
+          value: ALL_TEAMS,
+          checked: this.currentTeamFilter === ALL_TEAMS,
+        },
+        ...teams.map((team) => ({
+          type: "radio",
+          label: team.name,
+          value: team.id,
+          checked: this.currentTeamFilter === team.id,
+        })),
+      ],
+      confirmText: await lastValueFrom(this.translate.get("common.apply")),
+      cancelText: await lastValueFrom(this.translate.get("common.cancel")),
+    });
+
+    const selectedId = result?.values;
+    if (typeof selectedId !== "string") return;
+
+    const selectedTeam = teams.find((team) => team.id === selectedId);
+    this.setTeamFilter(
+      selectedTeam ? selectedTeam.id : ALL_TEAMS,
+      selectedTeam ? selectedTeam.name : "",
+    );
+    await this.saveTeamFilter();
+  }
+
+  async clearTeamFilter() {
+    this.setTeamFilter(ALL_TEAMS, "");
+    await this.saveTeamFilter();
+  }
+
+  private setTeamFilter(teamId: string, teamName: string) {
+    this.currentTeamFilter = teamId;
+    this.currentTeamName = teamName;
+    this.teamFilter$.next(teamId);
+  }
+
+  /**
+   * Stellt den zuletzt gewählten Team-Filter wieder her. Ein gespeichertes Team,
+   * dem der Benutzer nicht mehr angehört, wird verworfen — sonst bliebe die
+   * Liste dauerhaft leer.
+   */
+  private async restoreTeamFilter(): Promise<void> {
+    if (this.team && this.team.id) return;
+
+    try {
+      const { value } = await Preferences.get({ key: TEAM_FILTER_STORAGE_KEY });
+      if (!value || value === ALL_TEAMS) return;
+
+      const teams = await lastValueFrom(this.teamList$.pipe(take(1)));
+      const savedTeam = teams.find((team) => team.id === value);
+      if (!savedTeam) {
+        await Preferences.remove({ key: TEAM_FILTER_STORAGE_KEY });
+        return;
+      }
+
+      this.setTeamFilter(savedTeam.id, savedTeam.name);
+    } catch (error) {
+      console.error("Error restoring team filter:", error);
+    }
+  }
+
+  private async saveTeamFilter(): Promise<void> {
+    try {
+      if (this.currentTeamFilter === ALL_TEAMS) {
+        await Preferences.remove({ key: TEAM_FILTER_STORAGE_KEY });
+      } else {
+        await Preferences.set({
+          key: TEAM_FILTER_STORAGE_KEY,
+          value: this.currentTeamFilter,
+        });
+      }
+    } catch (error) {
+      console.error("Error saving team filter:", error);
+    }
   }
 
   getTeamsWithRankingsForYear(year: string) {
@@ -760,7 +884,11 @@ export class ChampionshipPage implements OnInit {
    */
   async toggleAllGames(status: boolean) {
     try {
-      const gameList = await lastValueFrom(this.gameList$.pipe(take(1)));
+      // Bewusst die gefilterte Liste: die Aktion gilt für das, was der
+      // Benutzer gerade sieht.
+      const gameList = await lastValueFrom(
+        this.filteredGameList$.pipe(take(1)),
+      );
       if (gameList.length === 0) return;
 
       const confirmed = await this.confirmToggleAll(status, gameList.length);
@@ -1024,66 +1152,4 @@ export class ChampionshipPage implements OnInit {
     slidingItem.closeOpened();
     this.processToggle(childrenId, status, game);
   }
-  /*  async openFilter(ev: Event) {
-
-    const alertInputs = [];
-    for (const item of this.filterList) {
-      alertInputs.push({
-        label: item.name,
-        type: 'radio',
-        checked: item.id == this.filterValue,
-        value: item.id,
-      });
-    }
-
-    let alert = await this.alertCtrl.create({
-      header: 'News filtern',
-      message: 'Nach Verein oder Teams filtern.',
-      // subHeader: 'Nach Verein oder Teams filtern.',
-      inputs: alertInputs,
-      buttons: [
-        {
-          text: "OK",
-          role: "confirm",
-          handler: (value) => {
-            console.log(value)
-            this.filterValue = value;
-            
-            this.gameList$ = this.gameListBackup$.pipe(
-              map(items => {
-               return items.filter(element => element.teamId == value)
-              })
-            )  
-            this.gameListPast$ = this.gameListPastBackup$.pipe(
-              map(items => {
-               return items.filter(element => element.teamId == value)
-              })
-            )          
-            this.teamRankings$ = this.teamRankingsBackup$.pipe(
-              map(items => {
-               return items.filter(element => element.teamId == value)
-              })
-            )   
-          }
-        },
-        {
-          text: "abbrechen",
-          role: "cancel",
-          handler:async  (value) => {
-            console.log(value);
-            this.filterValue = "";
-            await Preferences.set({
-              key: 'teamFilter',
-              value: this.filterValue,
-            });
-            this.gameList$ = this.gameListBackup$;
-            this.gameListPast$ = this.gameListPastBackup$;
-            this.teamRankings$ = this.teamRankingsBackup$;
-          }
-        }
-      ],
-      htmlAttributes: { 'aria-label': 'alert dialog' },
-    });
-    alert.present();
-  }*/
 }

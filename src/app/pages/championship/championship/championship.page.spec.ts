@@ -3,12 +3,13 @@ import { ChampionshipPage } from "./championship.page";
 import { CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef } from "@angular/core";
 import { TranslateModule, TranslateService } from "@ngx-translate/core";
 import { RouterTestingModule } from "@angular/router/testing";
-import { lastValueFrom, of } from "rxjs";
+import { lastValueFrom, of, take } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { UiService } from "src/app/services/ui.service";
+import { Preferences } from "@capacitor/preferences";
 import { SwissUnihockeyService } from "src/app/services/swiss-unihockey.service";
 import {
   ModalController,
@@ -32,6 +33,7 @@ describe("ChampionshipPage", () => {
     const fbServiceSpy = jasmine.createSpyObj("FirebaseService", [
       "getClubAdminList",
       "getTeamAdminList",
+      "getTeamList",
       "getUserTeamRefs",
       "getTeamMemberRefs",
       "getTeamRef",
@@ -40,6 +42,18 @@ describe("ChampionshipPage", () => {
     ]);
     fbServiceSpy.getClubAdminList.and.returnValue(of([]));
     fbServiceSpy.getTeamAdminList.and.returnValue(of([]));
+    fbServiceSpy.getTeamList.and.returnValue(of([]));
+    // ngOnInit kann über die Change Detection laufen (z.B. nach einem
+    // awaited Preferences-Aufruf) — loadData() muss dann ohne Fehler durchlaufen.
+    const swissUnihockeySpy = jasmine.createSpyObj("SwissUnihockeyService", [
+      "getTeamRankings",
+      "getCurrentSeason",
+    ]);
+    swissUnihockeySpy.getCurrentSeason.and.returnValue(of(2026));
+    const userProfileSpy = jasmine.createSpyObj("UserProfileService", [
+      "getChildren",
+    ]);
+    userProfileSpy.getChildren.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
       declarations: [ChampionshipPage],
@@ -56,10 +70,7 @@ describe("ChampionshipPage", () => {
             "setTeamGameAttendeeStatus",
           ]),
         },
-        {
-          provide: UserProfileService,
-          useValue: jasmine.createSpyObj("UserProfileService", ["getChildren"]),
-        },
+        { provide: UserProfileService, useValue: userProfileSpy },
         {
           provide: UiService,
           useValue: jasmine.createSpyObj("UiService", [
@@ -67,16 +78,11 @@ describe("ChampionshipPage", () => {
             "showErrorToast",
             "showInfoDialog",
             "showConfirmDialog",
+            "showFormDialog",
             "showActionSheet",
           ]),
         },
-        {
-          provide: SwissUnihockeyService,
-          useValue: jasmine.createSpyObj("SwissUnihockeyService", [
-            "getTeamRankings",
-            "getCurrentSeason",
-          ]),
-        },
+        { provide: SwissUnihockeyService, useValue: swissUnihockeySpy },
         {
           provide: ModalController,
           useValue: jasmine.createSpyObj("ModalController", [
@@ -143,7 +149,7 @@ describe("ChampionshipPage", () => {
       uiService.showInfoDialog.and.resolveTo();
       uiService.showConfirmDialog.and.resolveTo(true);
 
-      component.gameList$ = of([
+      component.filteredGameList$ = of([
         // Frist 24h, Spiel heute 00:00 Uhr -> Abmeldefrist abgelaufen
         {
           id: "g-late",
@@ -220,6 +226,57 @@ describe("ChampionshipPage", () => {
         championshipService.setTeamGameAttendeeStatus,
       ).not.toHaveBeenCalled();
       expect(uiService.showSuccessToast).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("team filter", () => {
+    const games = [
+      { id: "g-1", teamId: "team-1" },
+      { id: "g-2", teamId: "team-2" },
+    ] as any[];
+
+    // Der Filter wird in Preferences (localStorage) gespeichert — nicht in
+    // andere Tests durchsickern lassen.
+    afterEach(async () => {
+      await Preferences.clear();
+    });
+
+    it("passes all games through while no team is selected", async () => {
+      const result = await lastValueFrom(
+        component["filterByTeam"](of(games)).pipe(take(1)),
+      );
+
+      expect(component.isTeamFilterActive).toBeFalse();
+      expect(result.map((game) => game.id)).toEqual(["g-1", "g-2"]);
+    });
+
+    it("only shows the selected team and can be cleared again", async () => {
+      const filtered$ = component["filterByTeam"](of(games));
+
+      component["setTeamFilter"]("team-2", "Team 2");
+      expect(component.isTeamFilterActive).toBeTrue();
+      expect(component.currentTeamName).toBe("Team 2");
+      let result = await lastValueFrom(filtered$.pipe(take(1)));
+      expect(result.map((game) => game.id)).toEqual(["g-2"]);
+
+      await component.clearTeamFilter();
+      expect(component.isTeamFilterActive).toBeFalse();
+      result = await lastValueFrom(filtered$.pipe(take(1)));
+      expect(result.map((game) => game.id)).toEqual(["g-1", "g-2"]);
+    });
+
+    it("applies the team chosen in the filter dialog", async () => {
+      const uiService = TestBed.inject(UiService) as jasmine.SpyObj<UiService>;
+      component.teamList$ = of([
+        { id: "team-1", name: "Team 1" },
+        { id: "team-2", name: "Team 2" },
+      ] as any);
+      uiService.showFormDialog.and.resolveTo({ values: "team-2" });
+
+      await component.openTeamFilter();
+
+      expect(component.currentTeamFilter).toBe("team-2");
+      expect(component.currentTeamName).toBe("Team 2");
     });
   });
 });
