@@ -71,6 +71,18 @@ function chunk<T>(items: T[], size: number): T[][] {
   return slices;
 }
 
+/** Result of one batched profile read, see UserProfileService.fetchProfiles. */
+interface ProfileBatch {
+  profiles: Profile[];
+  /**
+   * True when Firestore answered from the local cache (offline, or the
+   * roughly 10 s reconnect window in which the SDK marks itself offline).
+   * Such an answer proves only the profiles it contains — an id missing
+   * from it may simply not have been cached yet.
+   */
+  fromCache: boolean;
+}
+
 @Injectable({
   providedIn: "root",
 })
@@ -232,9 +244,11 @@ export class UserProfileService {
    * members, attendees) are not read at all: their names come from the live
    * member listener, so the detail pages of a club cost no profile reads.
    *
-   * A batch that cannot be read (offline without cache, permission denied)
-   * yields "Unknown" names for its members and is not memoised, so the next
-   * open retries. Profiles must never block an attendee list.
+   * A batch that cannot be read (permission denied, no connection and no
+   * cache) yields "Unknown" for its members and is not memoised, so the
+   * next open retries. The same goes for ids missing from an answer that
+   * Firestore served from its local cache: only a server answer proves that
+   * a profile does not exist. Profiles must never block an attendee list.
    */
   getMemberProfiles<T extends { id: string }>(
     members: T[],
@@ -259,29 +273,40 @@ export class UserProfileService {
       UserProfileService.PROFILE_BATCH_SIZE,
     ).map((ids) =>
       defer(() => this.fetchProfiles(ids)).pipe(
-        map((profiles) => ({ ids, profiles })),
+        map(({ profiles, fromCache }) => ({ ids, profiles, fromCache })),
         catchError((error) => {
           console.error(
             `Failed to fetch ${ids.length} member profiles:`,
             error,
           );
-          return of({ ids: [] as string[], profiles: [] as Profile[] });
+          return of({
+            ids: [] as string[],
+            profiles: [] as Profile[],
+            fromCache: false,
+          });
         }),
       ),
     );
-    const fetched$: Observable<{ ids: string[]; profiles: Profile[] }[]> =
-      batches$.length > 0 ? forkJoin(batches$) : of([]);
+    const fetched$: Observable<
+      { ids: string[]; profiles: Profile[]; fromCache: boolean }[]
+    > = batches$.length > 0 ? forkJoin(batches$) : of([]);
 
     return fetched$.pipe(
       map((batches) => {
         const readAt = Date.now();
-        for (const { ids, profiles } of batches) {
+        for (const { ids, profiles, fromCache } of batches) {
           const byId = new Map(
             profiles.map((profile) => [profile.id, profile]),
           );
           for (const id of ids) {
+            const profile = byId.get(id);
+            // A cached answer may just not contain the profile yet — leave
+            // the id unmemoised so the next open asks the server.
+            if (!profile && fromCache) {
+              continue;
+            }
             this.memberProfileCache.set(id, {
-              profile: byId.get(id) ?? null,
+              profile: profile ?? null,
               readAt,
             });
           }
@@ -299,7 +324,7 @@ export class UserProfileService {
   }
 
   /** One `documentId() in` read for up to PROFILE_BATCH_SIZE ids. */
-  protected fetchProfiles(ids: string[]): Observable<Profile[]> {
+  protected fetchProfiles(ids: string[]): Observable<ProfileBatch> {
     return runInInjectionContext(this.injector, () =>
       from(
         getDocs(
@@ -310,12 +335,13 @@ export class UserProfileService {
         ),
       ),
     ).pipe(
-      map((snapshot) =>
-        snapshot.docs.map((document) => ({
+      map((snapshot) => ({
+        profiles: snapshot.docs.map((document) => ({
           ...(document.data() as Profile),
           id: document.id,
         })),
-      ),
+        fromCache: snapshot.metadata.fromCache,
+      })),
     );
   }
 

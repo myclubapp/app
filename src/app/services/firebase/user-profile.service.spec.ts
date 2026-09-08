@@ -36,16 +36,18 @@ describe("UserProfileService", () => {
   describe("getMemberProfiles", () => {
     const profile = (id: string, firstName: string) =>
       ({ id, firstName, lastName: "L", roles: ["profile-role"] }) as any;
+    /** Answer for one batch: every id except "missing" has a profile. */
+    const batch = (ids: string[], fromCache = false) => ({
+      profiles: ids
+        .filter((id) => id !== "missing")
+        .map((id) => profile(id, "N-" + id)),
+      fromCache,
+    });
     let fetchSpy: jasmine.Spy;
 
     beforeEach(() => {
       fetchSpy = spyOn(service as any, "fetchProfiles").and.callFake(
-        (ids: string[]) =>
-          of(
-            ids
-              .filter((id) => id !== "missing")
-              .map((id) => profile(id, "N-" + id)),
-          ),
+        (ids: string[]) => of(batch(ids)),
       );
     });
 
@@ -121,9 +123,7 @@ describe("UserProfileService", () => {
       fetchSpy.and.returnValue(throwError(() => new Error("offline")));
       service.getMemberProfiles([{ id: "a" }]).subscribe((result) => {
         expect(result[0].firstName).toBe("Unknown");
-        fetchSpy.and.callFake((ids: string[]) =>
-          of(ids.map((id) => profile(id, "N-" + id))),
-        );
+        fetchSpy.and.callFake((ids: string[]) => of(batch(ids)));
         service.getMemberProfiles([{ id: "a" }]).subscribe((retry) => {
           expect(fetchSpy).toHaveBeenCalledTimes(2);
           expect(retry[0].firstName).toBe("N-a");
@@ -190,6 +190,29 @@ describe("UserProfileService", () => {
             done();
           });
       });
+    });
+
+    it("does not memoise ids missing from a cache-served answer", (done) => {
+      // Offline (or reconnecting) Firestore answers from IndexedDB with the
+      // profiles it happens to hold; "b" may well exist on the server.
+      fetchSpy.and.returnValue(
+        of({ profiles: [profile("a", "N-a")], fromCache: true }),
+      );
+      service
+        .getMemberProfiles([{ id: "a" }, { id: "b" }])
+        .subscribe((first) => {
+          expect(first.map((m) => m.firstName)).toEqual(["N-a", "Unknown"]);
+          fetchSpy.and.callFake((ids: string[]) => of(batch(ids)));
+          service
+            .getMemberProfiles([{ id: "a" }, { id: "b" }])
+            .subscribe((second) => {
+              // "a" comes from the memo, only "b" is asked again.
+              expect(fetchSpy).toHaveBeenCalledTimes(2);
+              expect(fetchSpy.calls.argsFor(1)[0]).toEqual(["b"]);
+              expect(second.map((m) => m.firstName)).toEqual(["N-a", "N-b"]);
+              done();
+            });
+        });
     });
   });
 });
