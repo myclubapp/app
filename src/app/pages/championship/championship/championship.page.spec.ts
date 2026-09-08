@@ -206,6 +206,26 @@ describe("ChampionshipPage", () => {
       expect(uiService.showInfoDialog).toHaveBeenCalledTimes(1);
     });
 
+    it("shows no success toast when every item is past the deadline", async () => {
+      component.gameList$ = of([
+        {
+          id: "g-late",
+          teamId: "team-1",
+          dateTime: inDays(0),
+          time: "00:00",
+          team: { championshipThreshold: 24 },
+        },
+      ] as any);
+
+      await component.toggleAllGames(false);
+
+      expect(
+        championshipService.setTeamGameAttendeeStatus,
+      ).not.toHaveBeenCalled();
+      expect(uiService.showSuccessToast).not.toHaveBeenCalled();
+      expect(uiService.showInfoDialog).toHaveBeenCalledTimes(1);
+    });
+
     it("asks for confirmation with the affected count and stops when cancelled", async () => {
       const translate = TestBed.inject(TranslateService);
       translate.setTranslation("de", {
