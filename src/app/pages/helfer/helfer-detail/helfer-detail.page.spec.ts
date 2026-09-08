@@ -108,8 +108,20 @@ describe("HelferDetailPage", () => {
     userProfileServiceSpy = jasmine.createSpyObj("UserProfileService", [
       "getChildren",
       "getUserProfileById",
+      "getMemberProfiles",
     ]);
     userProfileServiceSpy.getChildren.and.returnValue(of([]));
+    // Default: every member resolves to the "Unknown" fallback, like the
+    // service does for members without a profile document.
+    userProfileServiceSpy.getMemberProfiles.and.callFake((members: any[]) =>
+      of(
+        members.map((member) => ({
+          ...member,
+          firstName: "Unknown",
+          lastName: "Unknown",
+        })),
+      ),
+    );
 
     fbServiceSpy = jasmine.createSpyObj("FirebaseService", [
       "getClubRef",
@@ -748,8 +760,14 @@ describe("HelferDetailPage", () => {
       fbServiceSpy.getClubMemberRefs.and.returnValue(
         of([{ id: "user-123" }] as any),
       );
-      userProfileServiceSpy.getUserProfileById.and.returnValue(
-        of({ id: "user-123", firstName: "Katja", lastName: "F" } as any),
+      userProfileServiceSpy.getMemberProfiles.and.callFake((members: any[]) =>
+        of(
+          members.map((member) => ({
+            ...member,
+            firstName: "Katja",
+            lastName: "F",
+          })),
+        ),
       );
       eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
         of([{ id: "user-123", status: true }]), // legacy doc without changedAt
@@ -822,8 +840,14 @@ describe("HelferDetailPage", () => {
       fbServiceSpy.getClubMemberRefs.and.returnValue(
         of([{ id: "user-123" }] as any),
       );
-      userProfileServiceSpy.getUserProfileById.and.returnValue(
-        of({ id: "user-123", firstName: "Katja", lastName: "F" } as any),
+      userProfileServiceSpy.getMemberProfiles.and.callFake((members: any[]) =>
+        of(
+          members.map((member) => ({
+            ...member,
+            firstName: "Katja",
+            lastName: "F",
+          })),
+        ),
       );
       eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
         attendeesSubject,
@@ -866,8 +890,14 @@ describe("HelferDetailPage", () => {
       fbServiceSpy.getClubMemberRefs.and.returnValue(
         of([{ id: "user-123" }] as any).pipe(delay(1000)),
       );
-      userProfileServiceSpy.getUserProfileById.and.returnValue(
-        of({ id: "user-123", firstName: "Katja", lastName: "F" } as any),
+      userProfileServiceSpy.getMemberProfiles.and.callFake((members: any[]) =>
+        of(
+          members.map((member) => ({
+            ...member,
+            firstName: "Katja",
+            lastName: "F",
+          })),
+        ),
       );
       eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
         of([{ id: "user-123", status: true, changedAt: Timestamp.now() }]),
@@ -890,39 +920,45 @@ describe("HelferDetailPage", () => {
       subscription.unsubscribe();
     }));
 
-    it("should degrade a slow profile read to the Unknown fallback via timeout", fakeAsync(() => {
-      spyOn(console, "error");
+    it("should resolve member profiles through the shared batched read, not per member", (done) => {
       eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
         of([{ ...rawSchicht }]),
       );
-      fbServiceSpy.getClubMemberRefs.and.returnValue(
-        of([{ id: "member-1" }] as any),
-      );
-      // Profile read that only resolves after the 10s timeout budget.
-      userProfileServiceSpy.getUserProfileById.and.returnValue(
-        of({
-          id: "member-1",
-          firstName: "Slow",
-          lastName: "Reader",
-        } as any).pipe(delay(20000)),
+      const clubMembers = [{ id: "member-1" }, { id: "member-2" }];
+      fbServiceSpy.getClubMemberRefs.and.returnValue(of(clubMembers as any));
+      // The service merges the profile onto the member ref and substitutes
+      // "Unknown" where no profile exists — the page must not add its own
+      // per-member logic (no take(1)/timeout chain) on top of it.
+      userProfileServiceSpy.getMemberProfiles.and.returnValue(
+        of([
+          { id: "member-1", firstName: "Katja", lastName: "F" },
+          { id: "member-2", firstName: "Unknown", lastName: "Unknown" },
+        ] as any),
       );
       eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
-        of([{ id: "member-1", status: true, changedAt: Timestamp.now() }]),
+        of([
+          { id: "member-1", status: true, changedAt: Timestamp.now() },
+          { id: "member-2", status: true, changedAt: Timestamp.now() },
+        ]),
       );
 
-      let result: any[] | undefined;
-      const subscription = component
+      component
         .getHelferEventSchichtenWithAttendees("club-1", "helfer-1")
-        .subscribe((r) => (result = r));
-
-      expect(result).toBeUndefined(); // still waiting on the profile read
-      tick(10000); // timeout fires and substitutes the Unknown profile
-
-      expect(result).toBeDefined();
-      expect(result![0].attendeeListTrue.length).toBe(1);
-      expect(result![0].attendeeListTrue[0].firstName).toBe("Unknown");
-      subscription.unsubscribe();
-    }));
+        .pipe(take(1))
+        .subscribe((result) => {
+          expect(userProfileServiceSpy.getMemberProfiles).toHaveBeenCalledWith(
+            clubMembers,
+          );
+          expect(
+            userProfileServiceSpy.getUserProfileById,
+          ).not.toHaveBeenCalled();
+          const names = result[0].attendeeListTrue.map(
+            (attendee) => attendee.firstName,
+          );
+          expect(names).toEqual(["Katja", "Unknown"]);
+          done();
+        });
+    });
 
     it("should render schichten immediately while profile reads are pending (eagerPlaceholder)", (done) => {
       eventServiceSpy.getClubHelferEventSchichtenRef.and.returnValue(
@@ -932,7 +968,7 @@ describe("HelferDetailPage", () => {
         of([{ id: "member-1" }] as any),
       );
       // Profile read that never resolves — previously this hung the whole list.
-      userProfileServiceSpy.getUserProfileById.and.returnValue(NEVER as any);
+      userProfileServiceSpy.getMemberProfiles.and.returnValue(NEVER as any);
       eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
         of([]),
       );
@@ -973,8 +1009,14 @@ describe("HelferDetailPage", () => {
           return of([{ id: "user-123" }] as any);
         }),
       );
-      userProfileServiceSpy.getUserProfileById.and.returnValue(
-        of({ id: "user-123", firstName: "Katja", lastName: "F" } as any),
+      userProfileServiceSpy.getMemberProfiles.and.callFake((members: any[]) =>
+        of(
+          members.map((member) => ({
+            ...member,
+            firstName: "Katja",
+            lastName: "F",
+          })),
+        ),
       );
       eventServiceSpy.getClubHelferEventSchichtAttendeesRef.and.returnValue(
         of([]),

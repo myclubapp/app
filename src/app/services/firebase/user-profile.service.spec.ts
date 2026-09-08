@@ -4,7 +4,7 @@ import { Firestore } from "@angular/fire/firestore";
 import { Storage } from "@angular/fire/storage";
 import { AuthService } from "../auth.service";
 import { Injector } from "@angular/core";
-import { of } from "rxjs";
+import { of, throwError } from "rxjs";
 
 describe("UserProfileService", () => {
   let service: UserProfileService;
@@ -31,5 +31,165 @@ describe("UserProfileService", () => {
 
   it("should be created", () => {
     expect(service).toBeTruthy();
+  });
+
+  describe("getMemberProfiles", () => {
+    const profile = (id: string, firstName: string) =>
+      ({ id, firstName, lastName: "L", roles: ["profile-role"] }) as any;
+    let fetchSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      fetchSpy = spyOn(service as any, "fetchProfiles").and.callFake(
+        (ids: string[]) =>
+          of(
+            ids
+              .filter((id) => id !== "missing")
+              .map((id) => profile(id, "N-" + id)),
+          ),
+      );
+    });
+
+    it("emits an empty list for no members without reading", (done) => {
+      service.getMemberProfiles([]).subscribe((result) => {
+        expect(result).toEqual([]);
+        expect(fetchSpy).not.toHaveBeenCalled();
+        done();
+      });
+    });
+
+    it("merges profiles onto the member refs and falls back to Unknown", (done) => {
+      const members = [
+        { id: "a", roles: ["captain"] },
+        { id: "missing", roles: undefined },
+      ];
+      service.getMemberProfiles(members).subscribe((result) => {
+        expect(result.length).toBe(2);
+        expect(result[0].id).toBe("a");
+        expect(result[0].firstName).toBe("N-a");
+        // Team roles from the member doc win over the profile's roles.
+        expect(result[0].roles).toEqual(["captain"] as any);
+        expect(result[1].firstName).toBe("Unknown");
+        expect(result[1].lastName).toBe("Unknown");
+        expect(result[1].roles).toEqual([] as any);
+        done();
+      });
+    });
+
+    it("reads in batches of at most 30 ids and emits once", (done) => {
+      const members = Array.from({ length: 65 }, (_, i) => ({ id: "u" + i }));
+      let emissions = 0;
+      service.getMemberProfiles(members).subscribe({
+        next: (result) => {
+          emissions++;
+          expect(result.length).toBe(65);
+          expect(result[64].firstName).toBe("N-u64");
+        },
+        complete: () => {
+          expect(emissions).toBe(1);
+          expect(fetchSpy).toHaveBeenCalledTimes(3);
+          expect(fetchSpy.calls.argsFor(0)[0].length).toBe(30);
+          expect(fetchSpy.calls.argsFor(1)[0].length).toBe(30);
+          expect(fetchSpy.calls.argsFor(2)[0].length).toBe(5);
+          done();
+        },
+      });
+    });
+
+    it("memoises profiles, so a second read within the grace period costs nothing", (done) => {
+      service
+        .getMemberProfiles([{ id: "a" }, { id: "missing" }])
+        .subscribe(() => {
+          service
+            .getMemberProfiles([{ id: "a" }, { id: "b" }, { id: "missing" }])
+            .subscribe((result) => {
+              // Only the unknown id "b" is read again; "a" and the known-missing
+              // "missing" come from the memo.
+              expect(fetchSpy).toHaveBeenCalledTimes(2);
+              expect(fetchSpy.calls.argsFor(1)[0]).toEqual(["b"]);
+              expect(result.map((m) => m.firstName)).toEqual([
+                "N-a",
+                "N-b",
+                "Unknown",
+              ]);
+              done();
+            });
+        });
+    });
+
+    it("degrades a failed batch to Unknown without memoising it", (done) => {
+      spyOn(console, "error");
+      fetchSpy.and.returnValue(throwError(() => new Error("offline")));
+      service.getMemberProfiles([{ id: "a" }]).subscribe((result) => {
+        expect(result[0].firstName).toBe("Unknown");
+        fetchSpy.and.callFake((ids: string[]) =>
+          of(ids.map((id) => profile(id, "N-" + id))),
+        );
+        service.getMemberProfiles([{ id: "a" }]).subscribe((retry) => {
+          expect(fetchSpy).toHaveBeenCalledTimes(2);
+          expect(retry[0].firstName).toBe("N-a");
+          done();
+        });
+      });
+    });
+
+    it("forgets memoised profiles on clearCache", (done) => {
+      service.getMemberProfiles([{ id: "a" }]).subscribe(() => {
+        service.clearCache();
+        service.getMemberProfiles([{ id: "a" }]).subscribe(() => {
+          expect(fetchSpy).toHaveBeenCalledTimes(2);
+          done();
+        });
+      });
+    });
+
+    // #259: club member and attendee documents carry the names already.
+    it("takes denormalised names from the member doc without reading them", (done) => {
+      const members = [
+        { id: "a", firstName: "Anna", lastName: "Alpha", roles: ["captain"] },
+        { id: "b" },
+      ];
+      service.getMemberProfiles(members).subscribe((result) => {
+        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        expect(fetchSpy.calls.argsFor(0)[0]).toEqual(["b"]);
+        expect(result[0].firstName).toBe("Anna");
+        expect(result[0].lastName).toBe("Alpha");
+        expect(result[0].roles).toEqual(["captain"] as any);
+        expect(result[1].firstName).toBe("N-b");
+        done();
+      });
+    });
+
+    it("emits without any read when every member carries a name", (done) => {
+      service
+        .getMemberProfiles([{ id: "a", firstName: "Anna", lastName: "" }])
+        .subscribe((result) => {
+          expect(fetchSpy).not.toHaveBeenCalled();
+          expect(result[0].firstName).toBe("Anna");
+          expect(result[0].lastName).toBe("Unknown");
+          done();
+        });
+    });
+
+    it("still reads a member whose denormalised names are empty", (done) => {
+      service
+        .getMemberProfiles([{ id: "a", firstName: "", lastName: " " }])
+        .subscribe((result) => {
+          expect(fetchSpy).toHaveBeenCalledTimes(1);
+          expect(result[0].firstName).toBe("N-a");
+          done();
+        });
+    });
+
+    it("prefers the member doc's names over a memoised profile", (done) => {
+      service.getMemberProfiles([{ id: "a" }]).subscribe(() => {
+        service
+          .getMemberProfiles([{ id: "a", firstName: "Renamed", lastName: "R" }])
+          .subscribe((result) => {
+            expect(fetchSpy).toHaveBeenCalledTimes(1);
+            expect(result[0].firstName).toBe("Renamed");
+            done();
+          });
+      });
+    });
   });
 });

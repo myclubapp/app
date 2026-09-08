@@ -12,7 +12,7 @@ import {
 import { Game } from "src/app/models/game";
 import { Capacitor } from "@capacitor/core";
 import { ChampionshipService } from "src/app/services/firebase/championship.service";
-import { forkJoin, lastValueFrom, Observable, of } from "rxjs";
+import { lastValueFrom, Observable, of } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { User } from "@angular/fire/auth";
 import { catchError, map, switchMap, take, tap } from "rxjs/operators";
@@ -167,156 +167,129 @@ export class ChampionshipDetailPage implements OnInit {
             // Fetch all team members first
             return this.fbService.getTeamMemberRefs(teamId).pipe(
               switchMap((teamMembers) => {
-                const teamMemberProfiles$ = teamMembers.map((member) =>
-                  this.userProfileService.getUserProfileById(member.id).pipe(
-                    take(1),
-                    map((profile) => ({
-                      ...member, // Spread member to retain all original attributes
-                      ...profile, // Spread profile to overwrite and add profile attributes
-                      firstName: profile.firstName || "Unknown",
-                      lastName: profile.lastName || "Unknown",
-                      roles: member.roles || [],
-                    })),
-                    catchError((err) => {
-                      console.log(
-                        `Failed to fetch profile for team member ${member.id}:`,
-                        err,
-                      );
-                      return of({
-                        ...member,
-                        firstName: "Unknown",
-                        lastName: "Unknown",
-                        roles: member.roles || [],
-                        status: null,
-                      });
+                // One batched read for all profiles (UserProfileService
+                // .getMemberProfiles), then the attendees.
+                return this.userProfileService
+                  .getMemberProfiles(teamMembers)
+                  .pipe(
+                    switchMap((teamMembersWithDetails) => {
+                      return this.championshipService
+                        .getTeamGameAttendeesRef(teamId, gameId)
+                        .pipe(
+                          map((attendees) => {
+                            const attendeeDetails = attendees
+                              .map((attendee) => {
+                                const detail = teamMembersWithDetails.find(
+                                  (member) => member.id === attendee.id,
+                                );
+                                return detail
+                                  ? { ...detail, status: attendee.status }
+                                  : null;
+                              })
+                              .filter((item) => item !== null);
+
+                            const attendeeListTrue = attendeeDetails
+                              .filter((att) => att.status === true)
+                              .sort((a, b) =>
+                                a.firstName.localeCompare(b.firstName),
+                              );
+                            const attendeeListFalse = attendeeDetails
+                              .filter((att) => att.status === false)
+                              .sort((a, b) =>
+                                a.firstName.localeCompare(b.firstName),
+                              );
+                            const respondedIds = new Set(
+                              attendeeDetails.map((att) => att.id),
+                            );
+                            // Modify here to add 'status: null' for each unresponded member
+                            const unrespondedMembers = teamMembersWithDetails
+                              .filter((member) => !respondedIds.has(member.id))
+                              .map((member) => ({ ...member, status: null }))
+                              .sort((a, b) =>
+                                a.firstName.localeCompare(b.firstName),
+                              ); // Ensuring 'status: null' is explicitly set
+
+                            const relevantChildren = teamMembers
+                              .filter((att) =>
+                                this.children.some(
+                                  (child) => child.id === att.id,
+                                ),
+                              )
+                              .map((att) => {
+                                const child = this.children.find(
+                                  (child) => child.id === att.id,
+                                );
+                                const childStatus =
+                                  attendeeDetails.find(
+                                    (attendee) => attendee.id === att.id,
+                                  )?.status ?? null;
+                                return child
+                                  ? {
+                                      firstName: child.firstName,
+                                      lastName: child.lastName,
+                                      status: childStatus,
+                                      id: child.id,
+                                    }
+                                  : {};
+                              });
+
+                            // Build status array: include user if member, plus all children that are members
+                            const userIds = [
+                              this.user.uid,
+                              ...this.children.map((child) => child.id),
+                            ];
+                            const statusArray = userIds
+                              .filter((id) =>
+                                teamMembersWithDetails.some(
+                                  (member) => member.id === id,
+                                ),
+                              )
+                              .map((id) => {
+                                const attendee = attendeeDetails.find(
+                                  (att) => att.id === id,
+                                );
+                                const member = teamMembersWithDetails.find(
+                                  (m) => m.id === id,
+                                );
+                                return {
+                                  id: id,
+                                  status: attendee?.status ?? null,
+                                  firstName: member?.firstName || "Unknown",
+                                  lastName: member?.lastName || "Unknown",
+                                };
+                              });
+
+                            return {
+                              ...game,
+                              team, // Add team details here
+                              teamId: teamId,
+                              attendees: attendeeDetails,
+                              attendeeListTrue,
+                              attendeeListFalse,
+                              unrespondedMembers,
+                              children: relevantChildren,
+                              status: statusArray,
+                            };
+                          }),
+                          catchError((err) => {
+                            console.error("Error fetching attendees:", err);
+                            return of({
+                              ...game,
+                              team, // Add team details here
+                              teamId: teamId,
+                              children: [],
+                              attendees: [],
+                              attendeeListTrue: [],
+                              attendeeListFalse: [],
+                              unrespondedMembers: teamMembersWithDetails
+                                .filter((member) => member !== null)
+                                .map((member) => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
+                              status: [], // Empty array for status in case of error
+                            });
+                          }),
+                        );
                     }),
-                  ),
-                );
-                // Fetch all attendees next
-                return forkJoin(teamMemberProfiles$).pipe(
-                  map((teamMembersWithDetails) =>
-                    teamMembersWithDetails.filter(
-                      (member) => member !== undefined,
-                    ),
-                  ), // Filtering out undefined entries
-                  switchMap((teamMembersWithDetails) => {
-                    return this.championshipService
-                      .getTeamGameAttendeesRef(teamId, gameId)
-                      .pipe(
-                        map((attendees) => {
-                          const attendeeDetails = attendees
-                            .map((attendee) => {
-                              const detail = teamMembersWithDetails.find(
-                                (member) => member.id === attendee.id,
-                              );
-                              return detail
-                                ? { ...detail, status: attendee.status }
-                                : null;
-                            })
-                            .filter((item) => item !== null);
-
-                          const attendeeListTrue = attendeeDetails
-                            .filter((att) => att.status === true)
-                            .sort((a, b) =>
-                              a.firstName.localeCompare(b.firstName),
-                            );
-                          const attendeeListFalse = attendeeDetails
-                            .filter((att) => att.status === false)
-                            .sort((a, b) =>
-                              a.firstName.localeCompare(b.firstName),
-                            );
-                          const respondedIds = new Set(
-                            attendeeDetails.map((att) => att.id),
-                          );
-                          // Modify here to add 'status: null' for each unresponded member
-                          const unrespondedMembers = teamMembersWithDetails
-                            .filter((member) => !respondedIds.has(member.id))
-                            .map((member) => ({ ...member, status: null }))
-                            .sort((a, b) =>
-                              a.firstName.localeCompare(b.firstName),
-                            ); // Ensuring 'status: null' is explicitly set
-
-                          const relevantChildren = teamMembers
-                            .filter((att) =>
-                              this.children.some(
-                                (child) => child.id === att.id,
-                              ),
-                            )
-                            .map((att) => {
-                              const child = this.children.find(
-                                (child) => child.id === att.id,
-                              );
-                              const childStatus =
-                                attendeeDetails.find(
-                                  (attendee) => attendee.id === att.id,
-                                )?.status ?? null;
-                              return child
-                                ? {
-                                    firstName: child.firstName,
-                                    lastName: child.lastName,
-                                    status: childStatus,
-                                    id: child.id,
-                                  }
-                                : {};
-                            });
-
-                          // Build status array: include user if member, plus all children that are members
-                          const userIds = [
-                            this.user.uid,
-                            ...this.children.map((child) => child.id),
-                          ];
-                          const statusArray = userIds
-                            .filter((id) =>
-                              teamMembersWithDetails.some(
-                                (member) => member.id === id,
-                              ),
-                            )
-                            .map((id) => {
-                              const attendee = attendeeDetails.find(
-                                (att) => att.id === id,
-                              );
-                              const member = teamMembersWithDetails.find(
-                                (m) => m.id === id,
-                              );
-                              return {
-                                id: id,
-                                status: attendee?.status ?? null,
-                                firstName: member?.firstName || "Unknown",
-                                lastName: member?.lastName || "Unknown",
-                              };
-                            });
-
-                          return {
-                            ...game,
-                            team, // Add team details here
-                            teamId: teamId,
-                            attendees: attendeeDetails,
-                            attendeeListTrue,
-                            attendeeListFalse,
-                            unrespondedMembers,
-                            children: relevantChildren,
-                            status: statusArray,
-                          };
-                        }),
-                        catchError((err) => {
-                          console.error("Error fetching attendees:", err);
-                          return of({
-                            ...game,
-                            team, // Add team details here
-                            teamId: teamId,
-                            children: [],
-                            attendees: [],
-                            attendeeListTrue: [],
-                            attendeeListFalse: [],
-                            unrespondedMembers: teamMembersWithDetails
-                              .filter((member) => member !== null)
-                              .map((member) => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
-                            status: [], // Empty array for status in case of error
-                          });
-                        }),
-                      );
-                  }),
-                );
+                  );
               }),
               catchError((err) => {
                 console.error("Error fetching team members:", err);
