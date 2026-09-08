@@ -258,7 +258,7 @@ describe("ChampionshipPage", () => {
     // Der Filter wird in Preferences (localStorage) gespeichert — nicht in
     // andere Tests durchsickern lassen.
     afterEach(async () => {
-      await Preferences.clear();
+      await Preferences.remove({ key: "championshipTeamFilter" });
     });
 
     it("passes all games through while no team is selected", async () => {
