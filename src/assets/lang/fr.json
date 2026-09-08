@@ -309,6 +309,8 @@
     "upcomming__games": "Jeux à venir",
     "alle_anmelden__confirm": "Es-tu sûr de vouloir t'inscrire aux {{count}} prochains matchs de championnat ?",
     "alle_abmelden__confirm": "Es-tu sûr de vouloir te désinscrire des {{count}} prochains matchs de championnat ?",
+    "all_games": "Tous les matchs",
+    "filter__title": "Filtrer les matchs",
     "actions": "Actions du championnat",
     "create_game_confirm": "Voulez-vous vraiment créer ce match ?"
   },

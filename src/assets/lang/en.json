@@ -310,6 +310,8 @@
     "upcomming__games": "Upcoming games",
     "alle_anmelden__confirm": "Are you sure you want to register for the next {{count}} championship games?",
     "alle_abmelden__confirm": "Are you sure you want to unregister from the next {{count}} championship games?",
+    "all_games": "All games",
+    "filter__title": "Filter games",
     "actions": "Championship Actions",
     "create_game_confirm": "Do you really want to create this game?"
   },
