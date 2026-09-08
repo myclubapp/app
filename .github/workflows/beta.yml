@@ -60,8 +60,8 @@ jobs:
       - name: Build (BETA)
         run: npm run build:beta
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@v12.8.0
+        uses: w9jds/firebase-action@v15.29.0
         with:
           args: deploy --only hosting:beta
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}

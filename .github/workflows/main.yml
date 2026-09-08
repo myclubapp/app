@@ -115,7 +115,7 @@ jobs:
       - name: Build ${{ matrix.app.label }}
         run: npx ng build --configuration ${{ matrix.app.configuration }}
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@v12.8.0
+        uses: w9jds/firebase-action@v15.29.0
         with:
           args: deploy --only hosting:${{ matrix.app.hostingTarget }}
         env:
