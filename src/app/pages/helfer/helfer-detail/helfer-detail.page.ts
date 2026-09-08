@@ -9,6 +9,7 @@ import {
 import {
   AlertController,
   IonItemSliding,
+  LoadingController,
   ModalController,
   ToastController,
 } from "@ionic/angular";
@@ -79,6 +80,7 @@ export class HelferDetailPage implements OnInit, OnDestroy {
     private readonly fbService: FirebaseService,
     private readonly toastController: ToastController,
     private readonly alertCtrl: AlertController,
+    private readonly loadingController: LoadingController,
     private readonly authService: AuthService,
     private translate: TranslateService,
     private uiService: UiService,
@@ -406,13 +408,20 @@ export class HelferDetailPage implements OnInit, OnDestroy {
   }
 
   async confirmSchichten() {
+    // Resolving the Schichten with their attendees takes a moment (club
+    // members plus one attendee list per Schicht); show a spinner instead of
+    // a button that seems to do nothing (#259).
+    const loading = await this.loadingController.create({
+      message: await lastValueFrom(this.translate.get("common.loading")),
+    });
+    await loading.present();
     try {
       const schichten = await firstValueFrom(
         this.getHelferEventSchichtenWithAttendees(
           this.event.clubId,
           this.event.id,
         ),
-      );
+      ).finally(() => loading.dismiss());
 
       let alertInputs = schichten.reduce((acc, schicht) => {
         const inputs = schicht.attendeeListTrue
