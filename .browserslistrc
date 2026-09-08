@@ -6,3 +6,8 @@
 # Bereichs nur "best effort" und meldet das bei jedem Build als Warnung.
 # Nach einem Angular-Update den Stichtag an die neue Version anpassen.
 baseline widely available on 2026-05-07
+Chrome >=107
+Firefox >=106
+Edge >=107
+Safari >=16.1
+iOS >=16.1
