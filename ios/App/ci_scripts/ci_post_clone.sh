@@ -20,11 +20,17 @@ npm --version
 # ins Repo-Root wechseln (wo package.json liegt)
 cd "$CI_PRIMARY_REPOSITORY_PATH"
 
-# Dependencies installieren
+# Dependencies installieren (postinstall erzeugt src/environments/build-info.ts)
 npm ci
 
-# Web-Build + Capacitor sync (www/ und ios/App/App/public sind nicht eingecheckt)
-npm run build
+# Buildnummer von Xcode Cloud (CI_BUILD_NUMBER) ins Web-Bundle übernehmen —
+# derselbe Wert landet beim Archivieren als CFBundleVersion im Binary.
+# Explizit, damit der Schritt im Build-Log sichtbar ist.
+node tools/build-number.mjs
+
+# Produktions-Build (myclub-Theme, wie `npm run app:ios`) + Capacitor sync
+# (www/ und ios/App/App/public sind nicht eingecheckt)
+npm run build:prod
 npx cap sync ios
 
 # Xcode Cloud löst Swift-Packages nicht automatisch neu auf, sondern verlangt
