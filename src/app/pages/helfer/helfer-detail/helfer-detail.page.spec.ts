@@ -8,6 +8,7 @@ import {
 import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import {
   AlertController,
+  LoadingController,
   ModalController,
   ToastController,
 } from "@ionic/angular";
@@ -43,6 +44,8 @@ describe("HelferDetailPage", () => {
   let modalCtrlSpy: jasmine.SpyObj<ModalController>;
   let toastCtrlSpy: jasmine.SpyObj<ToastController>;
   let alertCtrlSpy: jasmine.SpyObj<AlertController>;
+  let loadingCtrlSpy: jasmine.SpyObj<LoadingController>;
+  let loadingOverlay: { present: jasmine.Spy; dismiss: jasmine.Spy };
 
   const mockUser = { uid: "user-123", email: "test@example.com" };
 
@@ -155,6 +158,12 @@ describe("HelferDetailPage", () => {
       present: jasmine.createSpy("present"),
     } as any);
     alertCtrlSpy = jasmine.createSpyObj("AlertController", ["create"]);
+    loadingOverlay = {
+      present: jasmine.createSpy("present").and.resolveTo(),
+      dismiss: jasmine.createSpy("dismiss").and.resolveTo(),
+    };
+    loadingCtrlSpy = jasmine.createSpyObj("LoadingController", ["create"]);
+    loadingCtrlSpy.create.and.resolveTo(loadingOverlay as any);
 
     TestBed.configureTestingModule({
       declarations: [HelferDetailPage],
@@ -169,6 +178,7 @@ describe("HelferDetailPage", () => {
         { provide: ModalController, useValue: modalCtrlSpy },
         { provide: AlertController, useValue: alertCtrlSpy },
         { provide: ToastController, useValue: toastCtrlSpy },
+        { provide: LoadingController, useValue: loadingCtrlSpy },
       ],
     }).compileComponents();
 
@@ -1058,6 +1068,86 @@ describe("HelferDetailPage", () => {
       } as HelferEvent;
       component.changeTimeFrom({ detail: { value: "20:00" } });
       expect(component.event.timeTo).toBe("20:00");
+    });
+  });
+
+  describe("confirmSchichten", () => {
+    const resolvedSchicht = {
+      ...mockSchicht,
+      attendeeListTrue: [
+        {
+          id: "member-1",
+          firstName: "Anna",
+          lastName: "B",
+          status: true,
+          confirmed: false,
+        },
+      ],
+    };
+
+    beforeEach(() => {
+      component.event = mockHelferEvent as HelferEvent;
+      alertCtrlSpy.create.and.resolveTo({
+        present: jasmine.createSpy("present").and.resolveTo(),
+      } as any);
+    });
+
+    it("offers the unconfirmed attendees from the pinned schichten$ without re-reading", async () => {
+      const readSpy = spyOn(
+        component,
+        "getHelferEventSchichtenWithAttendees",
+      ).and.callThrough();
+      component.schichten$ = of([resolvedSchicht]);
+
+      await component.confirmSchichten();
+
+      expect(readSpy).not.toHaveBeenCalled();
+      const inputs = (alertCtrlSpy.create.calls.mostRecent().args[0] as any)
+        .inputs as any[];
+      expect(inputs.length).toBe(1);
+      expect(inputs[0].value.memberId).toBe("member-1");
+      expect(loadingOverlay.dismiss).toHaveBeenCalled();
+    });
+
+    it("waits until the eager placeholders have been resolved", async () => {
+      const placeholder = {
+        ...mockSchicht,
+        attendeeListTrue: [],
+        pending: true,
+        loadFailed: false,
+      };
+      component.schichten$ = of([placeholder], [resolvedSchicht]);
+
+      await component.confirmSchichten();
+
+      const inputs = (alertCtrlSpy.create.calls.mostRecent().args[0] as any)
+        .inputs as any[];
+      expect(inputs.length).toBe(1);
+    });
+
+    it("dismisses the spinner and shows an error when the Schichten could not be loaded", async () => {
+      spyOn(console, "error");
+      component.schichten$ = of([
+        { ...mockSchicht, pending: true, loadFailed: true },
+      ]);
+
+      await component.confirmSchichten();
+
+      expect(loadingOverlay.dismiss).toHaveBeenCalled();
+      expect(uiServiceSpy.showErrorToast).toHaveBeenCalled();
+      expect(alertCtrlSpy.create).not.toHaveBeenCalled();
+    });
+
+    it("gives up after the timeout instead of blocking the modal", async () => {
+      spyOn(console, "error");
+      component.confirmSchichtenTimeoutMs = 20;
+      component.schichten$ = NEVER;
+
+      await component.confirmSchichten();
+
+      expect(loadingOverlay.dismiss).toHaveBeenCalled();
+      expect(uiServiceSpy.showErrorToast).toHaveBeenCalled();
+      expect(alertCtrlSpy.create).not.toHaveBeenCalled();
     });
   });
 });

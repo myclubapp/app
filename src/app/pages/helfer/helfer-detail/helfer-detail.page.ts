@@ -20,6 +20,7 @@ import {
   Subscription,
   catchError,
   combineLatest,
+  filter,
   firstValueFrom,
   lastValueFrom,
   map,
@@ -29,6 +30,7 @@ import {
   switchMap,
   take,
   tap,
+  timeout,
 } from "rxjs";
 import { Browser } from "@capacitor/browser";
 import { HelferEvent, Schicht } from "src/app/models/event";
@@ -58,6 +60,8 @@ export class HelferDetailPage implements OnInit, OnDestroy {
   event$: Observable<any>;
   schichten$: Observable<any[]>;
   private schichtenSub: Subscription;
+  /** How long confirmSchichten() waits for schichten$ to resolve. */
+  confirmSchichtenTimeoutMs = 10000;
 
   mode = "yes";
 
@@ -265,8 +269,7 @@ export class HelferDetailPage implements OnInit, OnDestroy {
                                 const attendeeDetails = attendees
                                   .map((attendee) => {
                                     const detail = clubMembersWithDetails.find(
-                                      (member) =>
-                                        member && member.id === attendee.id,
+                                      (member) => member.id === attendee.id,
                                     );
                                     return detail
                                       ? {
@@ -291,8 +294,7 @@ export class HelferDetailPage implements OnInit, OnDestroy {
                                 );
                                 const unrespondedMembers =
                                   clubMembersWithDetails.filter(
-                                    (member) =>
-                                      member && !respondedIds.has(member.id),
+                                    (member) => !respondedIds.has(member.id),
                                   );
 
                                 return {
@@ -408,21 +410,40 @@ export class HelferDetailPage implements OnInit, OnDestroy {
   }
 
   async confirmSchichten() {
-    // Resolving the Schichten with their attendees takes a moment (club
-    // members plus one attendee list per Schicht); show a spinner instead of
-    // a button that seems to do nothing (#259).
+    // schichten$ is pinned for the page's lifetime and already holds the
+    // resolved Schichten with their attendees; re-running the read cascade
+    // here would open every listener a second time. Wait only until the
+    // eager placeholders are gone — never longer than the timeout — so the
+    // spinner (#259) is always dismissed again.
     const loading = await this.loadingController.create({
       message: await lastValueFrom(this.translate.get("common.loading")),
     });
     await loading.present();
+    let schichten: any[];
     try {
-      const schichten = await firstValueFrom(
-        this.getHelferEventSchichtenWithAttendees(
-          this.event.clubId,
-          this.event.id,
+      schichten = await firstValueFrom(
+        this.schichten$.pipe(
+          filter((list) =>
+            list.every((schicht) => !schicht.pending || schicht.loadFailed),
+          ),
+          timeout(this.confirmSchichtenTimeoutMs),
         ),
-      ).finally(() => loading.dismiss());
-
+      );
+      if (schichten.some((schicht) => schicht.loadFailed)) {
+        throw new Error("Schichten could not be loaded");
+      }
+    } catch (error) {
+      console.error("Error in confirmSchichten:", error);
+      await this.uiService.showErrorToast(
+        await lastValueFrom(
+          this.translate.get("common.general__error_occurred"),
+        ),
+      );
+      return;
+    } finally {
+      await loading.dismiss();
+    }
+    try {
       let alertInputs = schichten.reduce((acc, schicht) => {
         const inputs = schicht.attendeeListTrue
           .filter((member) => !member.confirmed && member.status)
@@ -1044,7 +1065,7 @@ export class HelferDetailPage implements OnInit, OnDestroy {
     // Filtere Mitglieder, die bereits in der Schicht sind
     const existingMemberIds = schicht.attendeeListTrue.map((m) => m.id);
     const availableMembers = clubMembers
-      .filter((member) => member && !existingMemberIds.includes(member.id))
+      .filter((member) => !existingMemberIds.includes(member.id))
       .sort((a, b) => a.firstName.localeCompare(b.firstName));
 
     if (availableMembers.length === 0) {

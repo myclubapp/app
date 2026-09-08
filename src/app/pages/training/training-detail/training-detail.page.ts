@@ -108,6 +108,12 @@ export class TrainingDetailPage implements OnInit {
     if (!this.training) {
       return;
     }
+    // Build the streams only once: ngOnInit and ionViewWillEnter both call
+    // this, and rebuilding would drop the batched profile read mid-flight
+    // and issue it again (same guard as on the Helfer detail page).
+    if (this.training$) {
+      return;
+    }
 
     this.training$ = this.getTraining(this.training.teamId, this.training.id);
     this.exerciseList$ = this.exerciseService.getTeamTrainingExerciseRefs(
@@ -176,8 +182,7 @@ export class TrainingDetailPage implements OnInit {
                             const attendeeDetails = attendees
                               .map((attendee) => {
                                 const detail = teamMembersWithDetails.find(
-                                  (member) =>
-                                    member && member.id === attendee.id,
+                                  (member) => member.id === attendee.id,
                                 );
                                 return detail
                                   ? {
@@ -260,8 +265,8 @@ export class TrainingDetailPage implements OnInit {
                                 return {
                                   id: id,
                                   status: attendee?.status ?? null,
-                                  firstName: member?.firstName || "Unknown",
-                                  lastName: member?.lastName || "Unknown",
+                                  firstName: member.firstName,
+                                  lastName: member.lastName,
                                   changedAt: attendee?.changedAt ?? null,
                                 };
                               });
@@ -288,9 +293,9 @@ export class TrainingDetailPage implements OnInit {
                               attendees: [],
                               attendeeListTrue: [],
                               attendeeListFalse: [],
-                              unrespondedMembers: teamMembersWithDetails
-                                .filter((member) => member !== null)
-                                .map((member) => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
+                              unrespondedMembers: teamMembersWithDetails.map(
+                                (member) => ({ ...member, status: null }),
+                              ), // Also ensure 'status: null' here for consistency
                               status: [], // Empty array for status in case of error
                             });
                           }),

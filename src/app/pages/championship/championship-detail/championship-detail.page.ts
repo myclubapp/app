@@ -98,6 +98,12 @@ export class ChampionshipDetailPage implements OnInit {
     if (!this.game) {
       return;
     }
+    // Build the streams only once: ngOnInit and ionViewWillEnter both call
+    // this, and rebuilding would drop the batched profile read mid-flight
+    // and issue it again (same guard as on the Helfer detail page).
+    if (this.game$) {
+      return;
+    }
 
     this.game$ = this.getGame(this.game.teamId, this.game.id);
     this.user$ = this.authService.getUser$();
@@ -254,8 +260,8 @@ export class ChampionshipDetailPage implements OnInit {
                                 return {
                                   id: id,
                                   status: attendee?.status ?? null,
-                                  firstName: member?.firstName || "Unknown",
-                                  lastName: member?.lastName || "Unknown",
+                                  firstName: member.firstName,
+                                  lastName: member.lastName,
                                 };
                               });
 
@@ -281,9 +287,9 @@ export class ChampionshipDetailPage implements OnInit {
                               attendees: [],
                               attendeeListTrue: [],
                               attendeeListFalse: [],
-                              unrespondedMembers: teamMembersWithDetails
-                                .filter((member) => member !== null)
-                                .map((member) => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
+                              unrespondedMembers: teamMembersWithDetails.map(
+                                (member) => ({ ...member, status: null }),
+                              ), // Also ensure 'status: null' here for consistency
                               status: [], // Empty array for status in case of error
                             });
                           }),
