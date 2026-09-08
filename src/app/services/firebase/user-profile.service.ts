@@ -32,9 +32,8 @@ import {
 
 import {
   Observable,
-  catchError,
   defer,
-  forkJoin,
+  firstValueFrom,
   from,
   map,
   of,
@@ -110,6 +109,18 @@ export class UserProfileService {
     string,
     { profile: Profile | null; readAt: number }
   >();
+  /**
+   * Batched reads still in flight, per member id. Concurrent callers await
+   * the same read instead of issuing their own, and because the read writes
+   * the memo itself, its result is kept even when the page that started it
+   * has already moved on (switchMap on a live member list).
+   */
+  private pendingProfileReads = new Map<string, Promise<void>>();
+  /**
+   * Bumped by clearCache() so that a read started before a logout cannot
+   * repopulate the memo afterwards.
+   */
+  private memberProfileGeneration = 0;
 
   /**
    * Clears all cached data - should be called on logout
@@ -117,6 +128,8 @@ export class UserProfileService {
   clearCache(): void {
     this.profileCache.clear();
     this.memberProfileCache.clear();
+    this.pendingProfileReads.clear();
+    this.memberProfileGeneration++;
   }
 
   constructor(
@@ -256,71 +269,99 @@ export class UserProfileService {
     if (!members || members.length === 0) {
       return of([]);
     }
-    const now = Date.now();
-    const missingIds = [
-      ...new Set(
-        members
-          .filter((member) => !hasDenormalizedName(member))
-          .map((member) => member.id)
-          .filter((id) => {
-            const cached = this.memberProfileCache.get(id);
-            return !cached || now - cached.readAt > this.PROFILE_GRACE_MS;
-          }),
-      ),
-    ];
-    const batches$ = chunk(
-      missingIds,
-      UserProfileService.PROFILE_BATCH_SIZE,
-    ).map((ids) =>
-      defer(() => this.fetchProfiles(ids)).pipe(
-        map(({ profiles, fromCache }) => ({ ids, profiles, fromCache })),
-        catchError((error) => {
-          console.error(
-            `Failed to fetch ${ids.length} member profiles:`,
-            error,
-          );
-          return of({
-            ids: [] as string[],
-            profiles: [] as Profile[],
-            fromCache: false,
-          });
-        }),
-      ),
-    );
-    const fetched$: Observable<
-      { ids: string[]; profiles: Profile[]; fromCache: boolean }[]
-    > = batches$.length > 0 ? forkJoin(batches$) : of([]);
-
-    return fetched$.pipe(
-      map((batches) => {
-        const readAt = Date.now();
-        for (const { ids, profiles, fromCache } of batches) {
-          const byId = new Map(
-            profiles.map((profile) => [profile.id, profile]),
-          );
-          for (const id of ids) {
-            const profile = byId.get(id);
-            // A cached answer may just not contain the profile yet — leave
-            // the id unmemoised so the next open asks the server.
-            if (!profile && fromCache) {
-              continue;
-            }
-            this.memberProfileCache.set(id, {
-              profile: profile ?? null,
-              readAt,
-            });
-          }
-        }
-        return members.map((member) =>
+    return defer(() => {
+      const now = Date.now();
+      const missingIds = [
+        ...new Set(
+          members
+            .filter((member) => !hasDenormalizedName(member))
+            .map((member) => member.id)
+            .filter((id) => {
+              const cached = this.memberProfileCache.get(id);
+              return !cached || now - cached.readAt > this.PROFILE_GRACE_MS;
+            }),
+        ),
+      ];
+      const reads = this.readProfiles(missingIds);
+      return reads.length > 0 ? from(Promise.all(reads)) : of(null);
+    }).pipe(
+      map(() =>
+        members.map((member) =>
           this.mergeMemberProfile(
             member,
             hasDenormalizedName(member)
               ? null
               : (this.memberProfileCache.get(member.id)?.profile ?? null),
           ),
-        );
-      }),
+        ),
+      ),
     );
+  }
+
+  /**
+   * Starts the batched reads for the `ids` that are not already in flight
+   * and returns one promise per read to wait for. Each read memoises its
+   * own result, so nothing is lost when the subscriber is gone by then.
+   */
+  private readProfiles(ids: string[]): Promise<void>[] {
+    const reads = new Set<Promise<void>>();
+    const idsToRead: string[] = [];
+    for (const id of ids) {
+      const inFlight = this.pendingProfileReads.get(id);
+      if (inFlight) {
+        reads.add(inFlight);
+      } else {
+        idsToRead.push(id);
+      }
+    }
+    const generation = this.memberProfileGeneration;
+    for (const batch of chunk(
+      idsToRead,
+      UserProfileService.PROFILE_BATCH_SIZE,
+    )) {
+      const read: Promise<void> = firstValueFrom(this.fetchProfiles(batch))
+        .then((result) => {
+          if (generation === this.memberProfileGeneration) {
+            this.memoiseProfiles(batch, result);
+          }
+        })
+        .catch((error) => {
+          // Not memoised, so the next open retries.
+          console.error(
+            `Failed to fetch ${batch.length} member profiles:`,
+            error,
+          );
+        })
+        .finally(() => {
+          for (const id of batch) {
+            if (this.pendingProfileReads.get(id) === read) {
+              this.pendingProfileReads.delete(id);
+            }
+          }
+        });
+      for (const id of batch) {
+        this.pendingProfileReads.set(id, read);
+      }
+      reads.add(read);
+    }
+    return [...reads];
+  }
+
+  private memoiseProfiles(
+    ids: string[],
+    { profiles, fromCache }: ProfileBatch,
+  ): void {
+    const readAt = Date.now();
+    const byId = new Map(profiles.map((profile) => [profile.id, profile]));
+    for (const id of ids) {
+      const profile = byId.get(id);
+      // A cached answer may just not contain the profile yet — leave the id
+      // unmemoised so the next open asks the server.
+      if (!profile && fromCache) {
+        continue;
+      }
+      this.memberProfileCache.set(id, { profile: profile ?? null, readAt });
+    }
   }
 
   /** One `documentId() in` read for up to PROFILE_BATCH_SIZE ids. */

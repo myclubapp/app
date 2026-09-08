@@ -4,7 +4,7 @@ import { Firestore } from "@angular/fire/firestore";
 import { Storage } from "@angular/fire/storage";
 import { AuthService } from "../auth.service";
 import { Injector } from "@angular/core";
-import { of, throwError } from "rxjs";
+import { Subject, of, throwError } from "rxjs";
 
 describe("UserProfileService", () => {
   let service: UserProfileService;
@@ -213,6 +213,63 @@ describe("UserProfileService", () => {
               done();
             });
         });
+    });
+
+    it("shares an in-flight read between concurrent calls", (done) => {
+      const pending = new Subject<any>();
+      fetchSpy.and.returnValue(pending);
+      const names: string[] = [];
+      const collect = (result: any[]) => {
+        names.push(result[0].firstName);
+        if (names.length === 2) {
+          expect(fetchSpy).toHaveBeenCalledTimes(1);
+          expect(names).toEqual(["N-a", "N-a"]);
+          done();
+        }
+      };
+      service.getMemberProfiles([{ id: "a" }]).subscribe(collect);
+      service.getMemberProfiles([{ id: "a" }]).subscribe(collect);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      pending.next(batch(["a"]));
+      pending.complete();
+    });
+
+    it("keeps the result of a read whose subscriber went away", (done) => {
+      const pending = new Subject<any>();
+      fetchSpy.and.returnValue(pending);
+      // A switchMap on a live member list tears the read down mid-flight;
+      // the read is billed either way, so its result must land in the memo.
+      service
+        .getMemberProfiles([{ id: "a" }])
+        .subscribe()
+        .unsubscribe();
+      pending.next(batch(["a"]));
+      pending.complete();
+      fetchSpy.and.callFake((ids: string[]) => of(batch(ids)));
+      // The promise chain writes the memo in microtasks; read after them.
+      setTimeout(() => {
+        service.getMemberProfiles([{ id: "a" }]).subscribe((result) => {
+          expect(fetchSpy).toHaveBeenCalledTimes(1);
+          expect(result[0].firstName).toBe("N-a");
+          done();
+        });
+      });
+    });
+
+    it("does not let a read started before clearCache repopulate the memo", (done) => {
+      const pending = new Subject<any>();
+      fetchSpy.and.returnValue(pending);
+      service.getMemberProfiles([{ id: "a" }]).subscribe();
+      service.clearCache(); // logout
+      pending.next(batch(["a"]));
+      pending.complete();
+      fetchSpy.and.callFake((ids: string[]) => of(batch(ids)));
+      setTimeout(() => {
+        service.getMemberProfiles([{ id: "a" }]).subscribe(() => {
+          expect(fetchSpy).toHaveBeenCalledTimes(2);
+          done();
+        });
+      });
     });
   });
 });
