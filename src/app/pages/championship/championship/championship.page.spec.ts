@@ -207,7 +207,7 @@ describe("ChampionshipPage", () => {
     });
 
     it("shows no success toast when every item is past the deadline", async () => {
-      component.gameList$ = of([
+      component.filteredGameList$ = of([
         {
           id: "g-late",
           teamId: "team-1",
