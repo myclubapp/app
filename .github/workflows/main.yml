@@ -119,4 +119,4 @@ jobs:
         with:
           args: deploy --only hosting:${{ matrix.app.hostingTarget }}
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
