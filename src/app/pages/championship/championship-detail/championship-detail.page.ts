@@ -260,8 +260,8 @@ export class ChampionshipDetailPage implements OnInit {
                                 return {
                                   id: id,
                                   status: attendee?.status ?? null,
-                                  firstName: member?.firstName || "Unknown",
-                                  lastName: member?.lastName || "Unknown",
+                                  firstName: member.firstName,
+                                  lastName: member.lastName,
                                 };
                               });
 
@@ -287,9 +287,9 @@ export class ChampionshipDetailPage implements OnInit {
                               attendees: [],
                               attendeeListTrue: [],
                               attendeeListFalse: [],
-                              unrespondedMembers: teamMembersWithDetails
-                                .filter((member) => member !== null)
-                                .map((member) => ({ ...member, status: null })), // Also ensure 'status: null' here for consistency
+                              unrespondedMembers: teamMembersWithDetails.map(
+                                (member) => ({ ...member, status: null }),
+                              ), // Also ensure 'status: null' here for consistency
                               status: [], // Empty array for status in case of error
                             });
                           }),

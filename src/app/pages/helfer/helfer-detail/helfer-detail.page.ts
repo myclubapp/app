@@ -269,8 +269,7 @@ export class HelferDetailPage implements OnInit, OnDestroy {
                                 const attendeeDetails = attendees
                                   .map((attendee) => {
                                     const detail = clubMembersWithDetails.find(
-                                      (member) =>
-                                        member && member.id === attendee.id,
+                                      (member) => member.id === attendee.id,
                                     );
                                     return detail
                                       ? {
@@ -295,8 +294,7 @@ export class HelferDetailPage implements OnInit, OnDestroy {
                                 );
                                 const unrespondedMembers =
                                   clubMembersWithDetails.filter(
-                                    (member) =>
-                                      member && !respondedIds.has(member.id),
+                                    (member) => !respondedIds.has(member.id),
                                   );
 
                                 return {
@@ -1067,7 +1065,7 @@ export class HelferDetailPage implements OnInit, OnDestroy {
     // Filtere Mitglieder, die bereits in der Schicht sind
     const existingMemberIds = schicht.attendeeListTrue.map((m) => m.id);
     const availableMembers = clubMembers
-      .filter((member) => member && !existingMemberIds.includes(member.id))
+      .filter((member) => !existingMemberIds.includes(member.id))
       .sort((a, b) => a.firstName.localeCompare(b.firstName));
 
     if (availableMembers.length === 0) {

@@ -149,8 +149,7 @@ export class EventDetailPage implements OnInit {
                             const attendeeDetails = attendees
                               .map((attendee) => {
                                 const detail = clubMembersWithDetails.find(
-                                  (member) =>
-                                    member && member.id === attendee.id,
+                                  (member) => member.id === attendee.id,
                                 );
                                 return detail
                                   ? { ...detail, status: attendee.status }
@@ -172,10 +171,7 @@ export class EventDetailPage implements OnInit {
                               attendeeDetails.map((att) => att.id),
                             );
                             const unrespondedMembers = clubMembersWithDetails
-                              .filter(
-                                (member) =>
-                                  member && !respondedIds.has(member.id),
-                              )
+                              .filter((member) => !respondedIds.has(member.id))
                               .sort((a, b) =>
                                 a.firstName.localeCompare(b.firstName),
                               );
@@ -212,7 +208,7 @@ export class EventDetailPage implements OnInit {
                             const orderedStatuses = userIds
                               .filter((id) =>
                                 clubMembersWithDetails.some(
-                                  (member) => member && member.id === id,
+                                  (member) => member.id === id,
                                 ),
                               )
                               .map((id) => {
@@ -220,13 +216,13 @@ export class EventDetailPage implements OnInit {
                                   (att) => att.id === id,
                                 );
                                 const member = clubMembersWithDetails.find(
-                                  (m) => m && m.id === id,
+                                  (m) => m.id === id,
                                 );
                                 return {
                                   id: id,
                                   status: attendee?.status ?? null,
-                                  firstName: member?.firstName || "Unknown",
-                                  lastName: member?.lastName || "Unknown",
+                                  firstName: member.firstName,
+                                  lastName: member.lastName,
                                 };
                               });
 
@@ -249,9 +245,7 @@ export class EventDetailPage implements OnInit {
                               attendees: [],
                               attendeeListTrue: [],
                               attendeeListFalse: [],
-                              unrespondedMembers: clubMembersWithDetails.filter(
-                                (member) => member !== null,
-                              ),
+                              unrespondedMembers: clubMembersWithDetails,
                               status: null,
                             });
                           }),
