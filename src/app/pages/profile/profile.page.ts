@@ -38,7 +38,13 @@ import {
   PermissionStatus,
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { catchError, switchMap, take, tap } from "rxjs/operators";
+import { catchError, map, switchMap, take, tap } from "rxjs/operators";
+import {
+  describeKidRequest,
+  isClosedKidRequest,
+  KidRequest,
+  KidRequestView,
+} from "./kid-request-status";
 import {
   AlertController,
   IonRouterOutlet,
@@ -74,7 +80,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   teamList$: Observable<Team[]>;
   clubList$: Observable<Club[]>;
 
-  kidsRequests$: Observable<any[]>;
+  kidsRequests$: Observable<(KidRequest & { view: KidRequestView })[]>;
   children$: Observable<any[]>;
 
   parents$: Observable<Profile[]>;
@@ -118,12 +124,18 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     this.clubList$ = this.fbService.getClubList();
 
     this.userProfile$.pipe(take(1)).subscribe((userProfile) => {
+      // The backend drives the lifecycle of a request (invited, pending
+      // verification, rejected, expired — #255); describeKidRequest turns
+      // it into the label and hint the list shows.
       this.kidsRequests$ = this.profileService
         .getKidsRequests(userProfile.id)
         .pipe(
-          tap((kidsRequests) => {
-            console.log(kidsRequests);
-          }),
+          map((kidsRequests: KidRequest[]) =>
+            kidsRequests.map((request) => ({
+              ...request,
+              view: describeKidRequest(request),
+            })),
+          ),
         );
 
       this.children$ = this.profileService.getChildren(userProfile.id).pipe(
@@ -765,7 +777,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     email: string | undefined,
     children: Profile[],
     parents: Profile[],
-    kidsRequests: { email?: string }[],
+    kidsRequests: Pick<KidRequest, "email" | "status">[],
   ): string | null {
     const normalized = (email || "").trim().toLowerCase();
     if (!normalized || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
@@ -778,8 +790,14 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     if (linked.some((p) => (p?.email || "").toLowerCase() === normalized)) {
       return "profile.kids.error__already_linked";
     }
+    // A rejected request no longer blocks the address (same rule as the
+    // backend's duplicate check), so the parent can simply try again.
     if (
-      kidsRequests.some((r) => (r?.email || "").toLowerCase() === normalized)
+      kidsRequests.some(
+        (r) =>
+          !isClosedKidRequest(r) &&
+          (r?.email || "").toLowerCase() === normalized,
+      )
     ) {
       return "profile.kids.error__request_pending";
     }

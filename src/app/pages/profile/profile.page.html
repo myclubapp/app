@@ -761,14 +761,22 @@
     <ion-list-header>
       <ion-label> {{"profile.kidsRequests" | translate}}</ion-label>
     </ion-list-header>
-    @for (kidRequest of kidsRequests; track kidRequest) {
+    @for (kidRequest of kidsRequests; track kidRequest.id) {
     <ion-item>
-      <ion-label>
+      <ion-label class="ion-text-wrap">
         <h2>{{kidRequest.email}}</h2>
-        @if (kidRequest.verified) {
-        <p color="success">{{"profile.kids.verified" | translate}}</p>
-        } @if (!kidRequest.verified) {
-        <p color="warning">{{"profile.kids.pending" | translate}}</p>
+        <p>
+          <ion-text [color]="kidRequest.view.color"
+            >{{kidRequest.view.labelKey | translate}}</ion-text
+          >
+        </p>
+        @if (kidRequest.view.hintKey) {
+        <p>{{kidRequest.view.hintKey | translate}}</p>
+        } @if (kidRequest.view.expiresAt) {
+        <p>
+          {{"profile.kids.status__valid_until" | translate}}
+          {{kidRequest.view.expiresAt | date:'dd.MM.yyyy'}}
+        </p>
         }
       </ion-label>
       <ion-button
@@ -780,6 +788,14 @@
       </ion-button>
     </ion-item>
     }
+    <ion-item lines="none">
+      <ion-icon
+        color="medium"
+        name="information-circle-outline"
+        slot="start"
+      ></ion-icon>
+      <ion-note>{{"profile.kids.requests_info" | translate}}</ion-note>
+    </ion-item>
   </ion-list>
   } }
   <div class="ion-padding">
