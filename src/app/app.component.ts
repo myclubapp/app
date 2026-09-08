@@ -152,63 +152,7 @@ export class AppComponent implements OnInit, AfterViewInit {
           // console.log("E-Mail IS verified. Go ahead..");
           // console.log(user.email, user.displayName, user.emailVerified);
 
-          try {
-            const clubList = await lastValueFrom(
-              this.fbService.getClubList().pipe(take(1)),
-            );
-
-            if (clubList.length === 0) {
-              // console.log("NO! Club Data received. > Call Club Onboarding");
-              try {
-                // Check network status before onboarding
-                // const networkStatus = await Network.getStatus();
-                const navOnboardingClub =
-                  await this.router.navigateByUrl("/onboarding-club");
-                if (navOnboardingClub) {
-                  // console.log("Navigation success to onboarding Club Page");
-                } else {
-                  console.error("Navigation ERROR to onboarding Club Page");
-                }
-              } catch (error) {
-                console.error("Navigation Exception:", error);
-                window.location.reload();
-              }
-            } else {
-              const inactiveClub = clubList.find(
-                (club: any) => club.subscriptionActive === false,
-              );
-
-              if (inactiveClub) {
-                // console.log("NO SUBSCRIPTION FOUND");
-                const modal = await this.modalCtrl.create({
-                  component: ClubSubscriptionPage,
-                  presentingElement: await this.modalCtrl.getTop(),
-                  canDismiss: true,
-                  showBackdrop: true,
-                  componentProps: {
-                    clubId: inactiveClub.id,
-                  },
-                });
-                modal.present();
-
-                const { role } = await modal.onWillDismiss();
-                // console.log(role);
-                if (role === "close" || role === "backdrop") {
-                  this.authService.logout();
-                }
-              } else {
-                // console.log("Club is active");
-
-                const currentPath = this.router.url;
-                if (currentPath === "/login") {
-                  this.menuCtrl.enable(true, "menu");
-                  await this.router.navigateByUrl("/t");
-                }
-              }
-            }
-          } catch (error) {
-            console.error("Error processing club list:", error);
-          }
+          await this.routeByClubList(user);
         }
         // }
 
@@ -760,6 +704,101 @@ export class AppComponent implements OnInit, AfterViewInit {
         console.log("Already on latest version");
       }
     }
+  }
+
+  /**
+   * Decides where a verified user goes after login, based on their club list.
+   *
+   * An empty list is not proof of "no club": with the persistent Firestore
+   * cache, an offline client with an empty cache answers immediately with an
+   * empty snapshot. So before sending the user into the club onboarding, the
+   * club refs are confirmed on the server. If the server is not reachable,
+   * the user stays where they are (the tabs work from cache) and gets an
+   * offline alert with a retry button instead of the onboarding.
+   */
+  async routeByClubList(user: User, retried = false): Promise<void> {
+    try {
+      const clubList = await lastValueFrom(
+        this.fbService.getClubList().pipe(take(1)),
+      );
+
+      if (clubList.length === 0) {
+        const serverCount = await this.fbService.countClubRefsOnServer(
+          user.uid,
+        );
+        if (serverCount === null) {
+          await this.presentAlertOffline(() => this.routeByClubList(user));
+          return;
+        }
+        if (serverCount > 0 && !retried) {
+          // The cache was stale; the server read has refreshed it.
+          await this.routeByClubList(user, true);
+          return;
+        }
+        const navOnboardingClub =
+          await this.router.navigateByUrl("/onboarding-club");
+        if (!navOnboardingClub) {
+          console.error("Navigation ERROR to onboarding Club Page");
+        }
+        return;
+      }
+
+      const inactiveClub = clubList.find(
+        (club: any) => club.subscriptionActive === false,
+      );
+
+      if (inactiveClub) {
+        const modal = await this.modalCtrl.create({
+          component: ClubSubscriptionPage,
+          presentingElement: await this.modalCtrl.getTop(),
+          canDismiss: true,
+          showBackdrop: true,
+          componentProps: {
+            clubId: inactiveClub.id,
+          },
+        });
+        modal.present();
+
+        const { role } = await modal.onWillDismiss();
+        if (role === "close" || role === "backdrop") {
+          this.authService.logout();
+        }
+        return;
+      }
+
+      const currentPath = this.router.url;
+      if (currentPath === "/login") {
+        this.menuCtrl.enable(true, "menu");
+        await this.router.navigateByUrl("/t");
+      }
+    } catch (error) {
+      console.error("Error processing club list:", error);
+    }
+  }
+
+  async presentAlertOffline(retry: () => Promise<void>) {
+    const translations = await Promise.all([
+      lastValueFrom(this.translate.get("common.offline")),
+      lastValueFrom(this.translate.get("common.offline_retry_message")),
+      lastValueFrom(this.translate.get("common.retry")),
+    ]);
+
+    const alert = await this.alertController.create({
+      header: translations[0],
+      message: translations[1],
+      backdropDismiss: false,
+      buttons: [
+        {
+          text: translations[2],
+          role: "confirm",
+          handler: () => {
+            retry();
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 
   async presentAlertSessionExpired() {
