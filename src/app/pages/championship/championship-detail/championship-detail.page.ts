@@ -98,6 +98,12 @@ export class ChampionshipDetailPage implements OnInit {
     if (!this.game) {
       return;
     }
+    // Build the streams only once: ngOnInit and ionViewWillEnter both call
+    // this, and rebuilding would drop the batched profile read mid-flight
+    // and issue it again (same guard as on the Helfer detail page).
+    if (this.game$) {
+      return;
+    }
 
     this.game$ = this.getGame(this.game.teamId, this.game.id);
     this.user$ = this.authService.getUser$();

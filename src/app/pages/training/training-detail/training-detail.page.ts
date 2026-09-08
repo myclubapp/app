@@ -108,6 +108,12 @@ export class TrainingDetailPage implements OnInit {
     if (!this.training) {
       return;
     }
+    // Build the streams only once: ngOnInit and ionViewWillEnter both call
+    // this, and rebuilding would drop the batched profile read mid-flight
+    // and issue it again (same guard as on the Helfer detail page).
+    if (this.training$) {
+      return;
+    }
 
     this.training$ = this.getTraining(this.training.teamId, this.training.id);
     this.exerciseList$ = this.exerciseService.getTeamTrainingExerciseRefs(

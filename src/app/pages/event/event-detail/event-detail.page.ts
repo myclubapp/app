@@ -98,6 +98,12 @@ export class EventDetailPage implements OnInit {
     if (!this.event) {
       return;
     }
+    // Build the streams only once: ngOnInit and ionViewWillEnter both call
+    // this, and rebuilding would drop the batched profile read mid-flight
+    // and issue it again (same guard as on the Helfer detail page).
+    if (this.event$) {
+      return;
+    }
 
     this.event$ = this.getEvent(this.event.clubId, this.event.id);
 
