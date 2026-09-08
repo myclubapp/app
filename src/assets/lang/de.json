@@ -164,6 +164,8 @@
     "app_update_available": "App Update verfügbar",
     "app_update_message": "Eine neue Version {{version}} ist verfügbar. Neue Version laden?",
     "offline": "Du bist offline",
+    "offline_retry_message": "Die Verbindung zum Server ist unterbrochen. Bitte prüfe deine Internetverbindung und versuche es erneut.",
+    "retry": "Erneut versuchen",
     "online": "Du bist online",
     "error__push_notification_not_available": "Push-Benachrichtigung nicht verfügbar",
     "error_device_not_support_push_notifications": "Leider unterstützt Ihr Gerät/Browser keine Push-Benachrichtigungen",

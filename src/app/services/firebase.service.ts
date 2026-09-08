@@ -20,6 +20,7 @@ import {
   writeBatch,
   DocumentReference,
   getDocs,
+  getDocsFromServer,
   collectionGroup,
   Timestamp,
 } from "@angular/fire/firestore";
@@ -675,6 +676,39 @@ export class FirebaseService {
     return runInInjectionContext(this.injector, () =>
       docData(clubRef, { idField: "id" }).pipe(shareLatest()),
     ) as unknown as Observable<Club>;
+  }
+
+  /**
+   * Counts the user's own club refs directly on the server, bypassing the
+   * persistent cache. Used to tell "no club" apart from "offline with an empty
+   * cache" before sending the user into the club onboarding.
+   *
+   * @returns the number of club refs, or `null` when the server could not be
+   * reached within `timeoutMs`.
+   */
+  async countClubRefsOnServer(
+    uid: string,
+    timeoutMs = 10000,
+  ): Promise<number | null> {
+    const clubRefList = collection(this.firestore, `userProfile/${uid}/clubs`);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<null>((resolve) => {
+      timer = setTimeout(() => resolve(null), timeoutMs);
+    });
+    try {
+      const snapshot = await Promise.race([
+        runInInjectionContext(this.injector, () =>
+          getDocsFromServer(clubRefList),
+        ),
+        timeout,
+      ]);
+      return snapshot ? snapshot.size : null;
+    } catch (error) {
+      console.warn("Club refs not reachable on server:", error);
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   getUserClubRefs(user: User): Observable<Club[]> {
