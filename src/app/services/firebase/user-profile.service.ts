@@ -32,14 +32,14 @@ import {
 
 import {
   Observable,
-  catchError,
   defer,
-  forkJoin,
+  firstValueFrom,
   from,
   map,
   of,
   takeUntil,
 } from "rxjs";
+import { TranslateService } from "@ngx-translate/core";
 import { Profile } from "../../models/user";
 import { Photo } from "@capacitor/camera";
 
@@ -56,10 +56,12 @@ import { shareLatest } from "../share-latest";
  */
 function hasDenormalizedName(member: object): boolean {
   const { firstName, lastName } = member as Partial<Profile>;
-  return (
-    (typeof firstName === "string" && firstName.trim() !== "") ||
-    (typeof lastName === "string" && lastName.trim() !== "")
-  );
+  return isNonBlank(firstName) || isNonBlank(lastName);
+}
+
+/** A name counts as known only if it contains more than whitespace. */
+function isNonBlank(value: unknown): value is string {
+  return typeof value === "string" && value.trim() !== "";
 }
 
 /** Splits `items` into consecutive slices of at most `size` elements. */
@@ -69,6 +71,18 @@ function chunk<T>(items: T[], size: number): T[][] {
     slices.push(items.slice(i, i + size));
   }
   return slices;
+}
+
+/** Result of one batched profile read, see UserProfileService.fetchProfiles. */
+interface ProfileBatch {
+  profiles: Profile[];
+  /**
+   * True when Firestore answered from the local cache (offline, or the
+   * roughly 10 s reconnect window in which the SDK marks itself offline).
+   * Such an answer proves only the profiles it contains — an id missing
+   * from it may simply not have been cached yet.
+   */
+  fromCache: boolean;
 }
 
 @Injectable({
@@ -98,6 +112,18 @@ export class UserProfileService {
     string,
     { profile: Profile | null; readAt: number }
   >();
+  /**
+   * Batched reads still in flight, per member id. Concurrent callers await
+   * the same read instead of issuing their own, and because the read writes
+   * the memo itself, its result is kept even when the page that started it
+   * has already moved on (switchMap on a live member list).
+   */
+  private pendingProfileReads = new Map<string, Promise<void>>();
+  /**
+   * Bumped by clearCache() so that a read started before a logout cannot
+   * repopulate the memo afterwards.
+   */
+  private memberProfileGeneration = 0;
 
   /**
    * Clears all cached data - should be called on logout
@@ -105,12 +131,15 @@ export class UserProfileService {
   clearCache(): void {
     this.profileCache.clear();
     this.memberProfileCache.clear();
+    this.pendingProfileReads.clear();
+    this.memberProfileGeneration++;
   }
 
   constructor(
     private firestore: Firestore,
     private readonly storage: Storage,
     private readonly authService: AuthService,
+    private readonly translate: TranslateService,
   ) {
     // Aktiviere Offline Persistenz
     // Listen to logout events to clear cache
@@ -232,9 +261,11 @@ export class UserProfileService {
    * members, attendees) are not read at all: their names come from the live
    * member listener, so the detail pages of a club cost no profile reads.
    *
-   * A batch that cannot be read (offline without cache, permission denied)
-   * yields "Unknown" names for its members and is not memoised, so the next
-   * open retries. Profiles must never block an attendee list.
+   * A batch that cannot be read (permission denied, no connection and no
+   * cache) yields "Unbekannt" for its members and is not memoised, so the
+   * next open retries. The same goes for ids missing from an answer that
+   * Firestore served from its local cache: only a server answer proves that
+   * a profile does not exist. Profiles must never block an attendee list.
    */
   getMemberProfiles<T extends { id: string }>(
     members: T[],
@@ -242,64 +273,103 @@ export class UserProfileService {
     if (!members || members.length === 0) {
       return of([]);
     }
-    const now = Date.now();
-    const missingIds = [
-      ...new Set(
-        members
-          .filter((member) => !hasDenormalizedName(member))
-          .map((member) => member.id)
-          .filter((id) => {
-            const cached = this.memberProfileCache.get(id);
-            return !cached || now - cached.readAt > this.PROFILE_GRACE_MS;
-          }),
-      ),
-    ];
-    const batches$ = chunk(
-      missingIds,
-      UserProfileService.PROFILE_BATCH_SIZE,
-    ).map((ids) =>
-      defer(() => this.fetchProfiles(ids)).pipe(
-        map((profiles) => ({ ids, profiles })),
-        catchError((error) => {
-          console.error(
-            `Failed to fetch ${ids.length} member profiles:`,
-            error,
-          );
-          return of({ ids: [] as string[], profiles: [] as Profile[] });
-        }),
-      ),
-    );
-    const fetched$: Observable<{ ids: string[]; profiles: Profile[] }[]> =
-      batches$.length > 0 ? forkJoin(batches$) : of([]);
-
-    return fetched$.pipe(
-      map((batches) => {
-        const readAt = Date.now();
-        for (const { ids, profiles } of batches) {
-          const byId = new Map(
-            profiles.map((profile) => [profile.id, profile]),
-          );
-          for (const id of ids) {
-            this.memberProfileCache.set(id, {
-              profile: byId.get(id) ?? null,
-              readAt,
-            });
-          }
-        }
-        return members.map((member) =>
+    return defer(() => {
+      const now = Date.now();
+      const missingIds = [
+        ...new Set(
+          members
+            .filter((member) => !hasDenormalizedName(member))
+            .map((member) => member.id)
+            .filter((id) => {
+              const cached = this.memberProfileCache.get(id);
+              return !cached || now - cached.readAt > this.PROFILE_GRACE_MS;
+            }),
+        ),
+      ];
+      const reads = this.readProfiles(missingIds);
+      return reads.length > 0 ? from(Promise.all(reads)) : of(null);
+    }).pipe(
+      map(() =>
+        members.map((member) =>
           this.mergeMemberProfile(
             member,
             hasDenormalizedName(member)
               ? null
               : (this.memberProfileCache.get(member.id)?.profile ?? null),
           ),
-        );
-      }),
+        ),
+      ),
     );
   }
 
+  /**
+   * Starts the batched reads for the `ids` that are not already in flight
+   * and returns one promise per read to wait for. Each read memoises its
+   * own result, so nothing is lost when the subscriber is gone by then.
+   */
+  private readProfiles(ids: string[]): Promise<void>[] {
+    const reads = new Set<Promise<void>>();
+    const idsToRead: string[] = [];
+    for (const id of ids) {
+      const inFlight = this.pendingProfileReads.get(id);
+      if (inFlight) {
+        reads.add(inFlight);
+      } else {
+        idsToRead.push(id);
+      }
+    }
+    const generation = this.memberProfileGeneration;
+    for (const batch of chunk(
+      idsToRead,
+      UserProfileService.PROFILE_BATCH_SIZE,
+    )) {
+      const read: Promise<void> = firstValueFrom(this.fetchProfiles(batch))
+        .then((result) => {
+          if (generation === this.memberProfileGeneration) {
+            this.memoiseProfiles(batch, result);
+          }
+        })
+        .catch((error) => {
+          // Not memoised, so the next open retries.
+          console.error(
+            `Failed to fetch ${batch.length} member profiles:`,
+            error,
+          );
+        })
+        .finally(() => {
+          for (const id of batch) {
+            if (this.pendingProfileReads.get(id) === read) {
+              this.pendingProfileReads.delete(id);
+            }
+          }
+        });
+      for (const id of batch) {
+        this.pendingProfileReads.set(id, read);
+      }
+      reads.add(read);
+    }
+    return [...reads];
+  }
+
+  private memoiseProfiles(
+    ids: string[],
+    { profiles, fromCache }: ProfileBatch,
+  ): void {
+    const readAt = Date.now();
+    const byId = new Map(profiles.map((profile) => [profile.id, profile]));
+    for (const id of ids) {
+      const profile = byId.get(id);
+      // A cached answer may just not contain the profile yet — leave the id
+      // unmemoised so the next open asks the server.
+      if (!profile && fromCache) {
+        continue;
+      }
+      this.memberProfileCache.set(id, { profile: profile ?? null, readAt });
+    }
+  }
+
   /** One `documentId() in` read for up to PROFILE_BATCH_SIZE ids. */
-  protected fetchProfiles(ids: string[]): Observable<Profile[]> {
+  protected fetchProfiles(ids: string[]): Observable<ProfileBatch> {
     return runInInjectionContext(this.injector, () =>
       from(
         getDocs(
@@ -310,12 +380,13 @@ export class UserProfileService {
         ),
       ),
     ).pipe(
-      map((snapshot) =>
-        snapshot.docs.map((document) => ({
+      map((snapshot) => ({
+        profiles: snapshot.docs.map((document) => ({
           ...(document.data() as Profile),
           id: document.id,
         })),
-      ),
+        fromCache: snapshot.metadata.fromCache,
+      })),
     );
   }
 
@@ -324,14 +395,17 @@ export class UserProfileService {
     profile: Profile | null,
   ): T & Profile {
     // Without a profile read the names come from the member document itself
-    // (denormalised by the backend) — or stay "Unknown".
+    // (denormalised by the backend) — or fall back to "Unbekannt" in the
+    // user's language. Whitespace-only names count as missing, like in
+    // hasDenormalizedName().
     const names = profile ?? (member as Partial<Profile>);
+    const unknown = this.translate.instant("common.unknown");
     return {
       ...member,
       ...(profile ?? {}),
       id: member.id,
-      firstName: names.firstName || "Unknown",
-      lastName: names.lastName || "Unknown",
+      firstName: isNonBlank(names.firstName) ? names.firstName : unknown,
+      lastName: isNonBlank(names.lastName) ? names.lastName : unknown,
       // Team/club roles live on the member document, not on the profile.
       roles: (member as { roles?: string[] }).roles ?? [],
     } as unknown as T & Profile;
@@ -348,18 +422,27 @@ export class UserProfileService {
 
     await updateProfile(user, { photoURL: url });
 
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { profilePicture: url });
+    return this.updateOwnProfile({ profilePicture: url });
   }
 
   async setUserProfile(userProfile: Profile) {
     const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     await updateProfile(user, {
       displayName: userProfile.firstName + " " + userProfile.lastName,
     });
 
-    return updateDoc(userProfileRef, { userProfile });
+    return this.updateOwnProfile({ userProfile });
+  }
+
+  /**
+   * Writes `fields` to the signed-in user's profile document and drops the
+   * user's memoised member profile: getMemberProfiles() would otherwise show
+   * the old name or picture on team pages for up to PROFILE_GRACE_MS.
+   */
+  private updateOwnProfile(fields: { [field: string]: unknown }) {
+    const user = this.authService.auth.currentUser;
+    this.memberProfileCache.delete(user.uid);
+    return updateDoc(doc(this.firestore, `userProfile/${user.uid}`), fields);
   }
 
   getPushDeviceList(): Observable<DocumentData[]> {
@@ -411,56 +494,38 @@ export class UserProfileService {
   }
 
   async changeSettingsPush(state: boolean) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { settingsPush: state });
+    return this.updateOwnProfile({ settingsPush: state });
   }
   async changeSettingsPushModule(state: boolean, module) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { ["settingsPush" + module]: state });
+    return this.updateOwnProfile({ ["settingsPush" + module]: state });
   }
 
   async changeSettingsEmail(state: boolean) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { settingsEmail: state });
+    return this.updateOwnProfile({ settingsEmail: state });
   }
 
   async changeSettingsEmailReporting(state: boolean) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { settingsEmailReporting: state });
+    return this.updateOwnProfile({ settingsEmailReporting: state });
   }
 
   async changeShowGamePreview(state: boolean) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { showGamePreview: state });
+    return this.updateOwnProfile({ showGamePreview: state });
   }
 
   async changeGamePreviewDays(days: number) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { gamePreviewDays: days });
+    return this.updateOwnProfile({ gamePreviewDays: days });
   }
 
   async changeHideEmail(state: boolean) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { hideEmail: state });
+    return this.updateOwnProfile({ hideEmail: state });
   }
 
   async changeHidePhoneNumber(state: boolean) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { hidePhoneNumber: state });
+    return this.updateOwnProfile({ hidePhoneNumber: state });
   }
 
   changeProfileAttribute(value: any, fieldname) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { [fieldname]: value });
+    return this.updateOwnProfile({ [fieldname]: value });
   }
 
   async deleteChild(userId: string, childId: string) {
