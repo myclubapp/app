@@ -47,6 +47,21 @@ import { AuthService } from "../auth.service";
 import { DeviceId, DeviceInfo } from "@capacitor/device";
 import { shareLatest } from "../share-latest";
 
+/**
+ * Club member and attendee documents carry `firstName`, `lastName` and
+ * `profilePicture` copied from the profile (#259: backend trigger
+ * denormalizeAttendee, kept current by syncProfileNames). Such a document
+ * needs no profile read at all. Team member documents are not denormalised
+ * yet and still go through the batched read.
+ */
+function hasDenormalizedName(member: object): boolean {
+  const { firstName, lastName } = member as Partial<Profile>;
+  return (
+    (typeof firstName === "string" && firstName.trim() !== "") ||
+    (typeof lastName === "string" && lastName.trim() !== "")
+  );
+}
+
 /** Splits `items` into consecutive slices of at most `size` elements. */
 function chunk<T>(items: T[], size: number): T[][] {
   const slices: T[][] = [];
@@ -213,6 +228,10 @@ export class UserProfileService {
    * queries of PROFILE_BATCH_SIZE — one remote event per batch — and the
    * results are memoised for PROFILE_GRACE_MS.
    *
+   * Members whose document already carries the denormalised name (club
+   * members, attendees) are not read at all: their names come from the live
+   * member listener, so the detail pages of a club cost no profile reads.
+   *
    * A batch that cannot be read (offline without cache, permission denied)
    * yields "Unknown" names for its members and is not memoised, so the next
    * open retries. Profiles must never block an attendee list.
@@ -227,6 +246,7 @@ export class UserProfileService {
     const missingIds = [
       ...new Set(
         members
+          .filter((member) => !hasDenormalizedName(member))
           .map((member) => member.id)
           .filter((id) => {
             const cached = this.memberProfileCache.get(id);
@@ -269,7 +289,9 @@ export class UserProfileService {
         return members.map((member) =>
           this.mergeMemberProfile(
             member,
-            this.memberProfileCache.get(member.id)?.profile ?? null,
+            hasDenormalizedName(member)
+              ? null
+              : (this.memberProfileCache.get(member.id)?.profile ?? null),
           ),
         );
       }),
@@ -301,12 +323,15 @@ export class UserProfileService {
     member: T,
     profile: Profile | null,
   ): T & Profile {
+    // Without a profile read the names come from the member document itself
+    // (denormalised by the backend) — or stay "Unknown".
+    const names = profile ?? (member as Partial<Profile>);
     return {
       ...member,
       ...(profile ?? {}),
       id: member.id,
-      firstName: profile?.firstName || "Unknown",
-      lastName: profile?.lastName || "Unknown",
+      firstName: names.firstName || "Unknown",
+      lastName: names.lastName || "Unknown",
       // Team/club roles live on the member document, not on the profile.
       roles: (member as { roles?: string[] }).roles ?? [],
     } as unknown as T & Profile;

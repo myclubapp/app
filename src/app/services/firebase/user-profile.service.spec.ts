@@ -141,5 +141,55 @@ describe("UserProfileService", () => {
         });
       });
     });
+
+    // #259: club member and attendee documents carry the names already.
+    it("takes denormalised names from the member doc without reading them", (done) => {
+      const members = [
+        { id: "a", firstName: "Anna", lastName: "Alpha", roles: ["captain"] },
+        { id: "b" },
+      ];
+      service.getMemberProfiles(members).subscribe((result) => {
+        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        expect(fetchSpy.calls.argsFor(0)[0]).toEqual(["b"]);
+        expect(result[0].firstName).toBe("Anna");
+        expect(result[0].lastName).toBe("Alpha");
+        expect(result[0].roles).toEqual(["captain"] as any);
+        expect(result[1].firstName).toBe("N-b");
+        done();
+      });
+    });
+
+    it("emits without any read when every member carries a name", (done) => {
+      service
+        .getMemberProfiles([{ id: "a", firstName: "Anna", lastName: "" }])
+        .subscribe((result) => {
+          expect(fetchSpy).not.toHaveBeenCalled();
+          expect(result[0].firstName).toBe("Anna");
+          expect(result[0].lastName).toBe("Unknown");
+          done();
+        });
+    });
+
+    it("still reads a member whose denormalised names are empty", (done) => {
+      service
+        .getMemberProfiles([{ id: "a", firstName: "", lastName: " " }])
+        .subscribe((result) => {
+          expect(fetchSpy).toHaveBeenCalledTimes(1);
+          expect(result[0].firstName).toBe("N-a");
+          done();
+        });
+    });
+
+    it("prefers the member doc's names over a memoised profile", (done) => {
+      service.getMemberProfiles([{ id: "a" }]).subscribe(() => {
+        service
+          .getMemberProfiles([{ id: "a", firstName: "Renamed", lastName: "R" }])
+          .subscribe((result) => {
+            expect(fetchSpy).toHaveBeenCalledTimes(1);
+            expect(result[0].firstName).toBe("Renamed");
+            done();
+          });
+      });
+    });
   });
 });
