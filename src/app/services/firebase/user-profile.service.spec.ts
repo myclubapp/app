@@ -4,6 +4,7 @@ import { Firestore } from "@angular/fire/firestore";
 import { Storage } from "@angular/fire/storage";
 import { AuthService } from "../auth.service";
 import { Injector } from "@angular/core";
+import { TranslateService } from "@ngx-translate/core";
 import { Subject, of, throwError } from "rxjs";
 
 describe("UserProfileService", () => {
@@ -23,6 +24,13 @@ describe("UserProfileService", () => {
         {
           provide: Injector,
           useValue: jasmine.createSpyObj("Injector", ["get"]),
+        },
+        {
+          provide: TranslateService,
+          useValue: {
+            instant: (key: string) =>
+              key === "common.unknown" ? "Unknown" : key,
+          },
         },
       ],
     });
@@ -270,6 +278,17 @@ describe("UserProfileService", () => {
           done();
         });
       });
+    });
+
+    it("treats whitespace-only names as unknown without reading", (done) => {
+      service
+        .getMemberProfiles([{ id: "a", firstName: " ", lastName: "Müller" }])
+        .subscribe((result) => {
+          expect(fetchSpy).not.toHaveBeenCalled();
+          expect(result[0].firstName).toBe("Unknown");
+          expect(result[0].lastName).toBe("Müller");
+          done();
+        });
     });
   });
 });

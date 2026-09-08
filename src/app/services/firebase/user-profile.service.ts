@@ -39,6 +39,7 @@ import {
   of,
   takeUntil,
 } from "rxjs";
+import { TranslateService } from "@ngx-translate/core";
 import { Profile } from "../../models/user";
 import { Photo } from "@capacitor/camera";
 
@@ -55,10 +56,12 @@ import { shareLatest } from "../share-latest";
  */
 function hasDenormalizedName(member: object): boolean {
   const { firstName, lastName } = member as Partial<Profile>;
-  return (
-    (typeof firstName === "string" && firstName.trim() !== "") ||
-    (typeof lastName === "string" && lastName.trim() !== "")
-  );
+  return isNonBlank(firstName) || isNonBlank(lastName);
+}
+
+/** A name counts as known only if it contains more than whitespace. */
+function isNonBlank(value: unknown): value is string {
+  return typeof value === "string" && value.trim() !== "";
 }
 
 /** Splits `items` into consecutive slices of at most `size` elements. */
@@ -136,6 +139,7 @@ export class UserProfileService {
     private firestore: Firestore,
     private readonly storage: Storage,
     private readonly authService: AuthService,
+    private readonly translate: TranslateService,
   ) {
     // Aktiviere Offline Persistenz
     // Listen to logout events to clear cache
@@ -258,7 +262,7 @@ export class UserProfileService {
    * member listener, so the detail pages of a club cost no profile reads.
    *
    * A batch that cannot be read (permission denied, no connection and no
-   * cache) yields "Unknown" for its members and is not memoised, so the
+   * cache) yields "Unbekannt" for its members and is not memoised, so the
    * next open retries. The same goes for ids missing from an answer that
    * Firestore served from its local cache: only a server answer proves that
    * a profile does not exist. Profiles must never block an attendee list.
@@ -391,14 +395,17 @@ export class UserProfileService {
     profile: Profile | null,
   ): T & Profile {
     // Without a profile read the names come from the member document itself
-    // (denormalised by the backend) — or stay "Unknown".
+    // (denormalised by the backend) — or fall back to "Unbekannt" in the
+    // user's language. Whitespace-only names count as missing, like in
+    // hasDenormalizedName().
     const names = profile ?? (member as Partial<Profile>);
+    const unknown = this.translate.instant("common.unknown");
     return {
       ...member,
       ...(profile ?? {}),
       id: member.id,
-      firstName: names.firstName || "Unknown",
-      lastName: names.lastName || "Unknown",
+      firstName: isNonBlank(names.firstName) ? names.firstName : unknown,
+      lastName: isNonBlank(names.lastName) ? names.lastName : unknown,
       // Team/club roles live on the member document, not on the profile.
       roles: (member as { roles?: string[] }).roles ?? [],
     } as unknown as T & Profile;

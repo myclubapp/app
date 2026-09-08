@@ -129,6 +129,7 @@
     "logout": "Logout",
     "profile": "Profile",
     "loading": "Loading",
+    "unknown": "Unknown",
     "training": "Training",
     "probe": "Practice",
     "events": "Events",
