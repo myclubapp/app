@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">13.8% </span>
+                <span class="strong">13.48% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>37/268</span>
+                <span class='fraction'>36/267</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">13.8% </span>
+                <span class="strong">13.48% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>37/268</span>
+                <span class='fraction'>36/267</span>
             </div>
         
             
@@ -1030,7 +1030,8 @@
 <a name='L965'></a><a href='#L965'>965</a>
 <a name='L966'></a><a href='#L966'>966</a>
 <a name='L967'></a><a href='#L967'>967</a>
-<a name='L968'></a><a href='#L968'>968</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L968'></a><a href='#L968'>968</a>
+<a name='L969'></a><a href='#L969'>969</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1049,24 +1050,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1094,9 +1077,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2003,6 +2005,7 @@
   NgZone,
   OnInit,
   ChangeDetectionStrategy,
+  inject,
 } from "@angular/core";
 import { SwUpdate, VersionEvent } from "@angular/service-worker";
 import { registerLocaleData } from "@angular/common";
@@ -2017,7 +2020,7 @@ import {
 import { App } from "@capacitor/app";
 import { Dialog } from "@capacitor/dialog";
 import { AuthService } from "./services/auth.service";
-import packagejson from "./../../package.json";
+import { AppVersionService } from "./services/app-version.service";
 import { FirebaseService } from "./services/firebase.service";
 import { Router } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
@@ -2063,8 +2066,8 @@ register();
 })
 export class AppComponent implements OnInit, AfterViewInit {
   public email: string;
-  public appVersion: string = packagejson.version;
-  public buildNumber: string = packagejson.buildNumber;
+  /** Version/Buildnummer — auf dem Gerät aus dem nativen Bundle, sonst Build-Konstanten. */
+  readonly appInfo = inject(AppVersionService).info;
 &nbsp;
   clubList$: Observable&lt;Club[]&gt;;
 &nbsp;
@@ -2724,7 +2727,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       lastValueFrom(this.translate.get("common.app_update_available")),
       lastValueFrom(
         this.translate.get("common.app_update_message", {
-          version: this.appVersion,
+          version: this.appInfo().version,
         }),
       ),
       lastValueFrom(this.translate.get("common.cancel")),
@@ -2971,7 +2974,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-09-08T09:20:09.267Z
+                at 2026-09-08T09:21:58.334Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
