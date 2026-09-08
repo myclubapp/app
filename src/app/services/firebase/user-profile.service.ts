@@ -415,18 +415,27 @@ export class UserProfileService {
 
     await updateProfile(user, { photoURL: url });
 
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { profilePicture: url });
+    return this.updateOwnProfile({ profilePicture: url });
   }
 
   async setUserProfile(userProfile: Profile) {
     const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
     await updateProfile(user, {
       displayName: userProfile.firstName + " " + userProfile.lastName,
     });
 
-    return updateDoc(userProfileRef, { userProfile });
+    return this.updateOwnProfile({ userProfile });
+  }
+
+  /**
+   * Writes `fields` to the signed-in user's profile document and drops the
+   * user's memoised member profile: getMemberProfiles() would otherwise show
+   * the old name or picture on team pages for up to PROFILE_GRACE_MS.
+   */
+  private updateOwnProfile(fields: { [field: string]: unknown }) {
+    const user = this.authService.auth.currentUser;
+    this.memberProfileCache.delete(user.uid);
+    return updateDoc(doc(this.firestore, `userProfile/${user.uid}`), fields);
   }
 
   getPushDeviceList(): Observable<DocumentData[]> {
@@ -478,56 +487,38 @@ export class UserProfileService {
   }
 
   async changeSettingsPush(state: boolean) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { settingsPush: state });
+    return this.updateOwnProfile({ settingsPush: state });
   }
   async changeSettingsPushModule(state: boolean, module) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { ["settingsPush" + module]: state });
+    return this.updateOwnProfile({ ["settingsPush" + module]: state });
   }
 
   async changeSettingsEmail(state: boolean) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { settingsEmail: state });
+    return this.updateOwnProfile({ settingsEmail: state });
   }
 
   async changeSettingsEmailReporting(state: boolean) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { settingsEmailReporting: state });
+    return this.updateOwnProfile({ settingsEmailReporting: state });
   }
 
   async changeShowGamePreview(state: boolean) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { showGamePreview: state });
+    return this.updateOwnProfile({ showGamePreview: state });
   }
 
   async changeGamePreviewDays(days: number) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { gamePreviewDays: days });
+    return this.updateOwnProfile({ gamePreviewDays: days });
   }
 
   async changeHideEmail(state: boolean) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { hideEmail: state });
+    return this.updateOwnProfile({ hideEmail: state });
   }
 
   async changeHidePhoneNumber(state: boolean) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { hidePhoneNumber: state });
+    return this.updateOwnProfile({ hidePhoneNumber: state });
   }
 
   changeProfileAttribute(value: any, fieldname) {
-    const user = this.authService.auth.currentUser;
-    const userProfileRef = doc(this.firestore, `userProfile/${user.uid}`);
-    return updateDoc(userProfileRef, { [fieldname]: value });
+    return this.updateOwnProfile({ [fieldname]: value });
   }
 
   async deleteChild(userId: string, childId: string) {
