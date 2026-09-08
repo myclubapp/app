@@ -23,9 +23,25 @@ cd "$CI_PRIMARY_REPOSITORY_PATH"
 # Dependencies installieren
 npm ci
 
-# Web-Build + Capacitor sync (falls dein dist/ nicht eingecheckt ist)
+# Web-Build + Capacitor sync (www/ und ios/App/App/public sind nicht eingecheckt)
 npm run build
 npx cap sync ios
 
-# CocoaPods, falls du Pods statt SPM nutzt
-# cd ios/App && pod install
+# Xcode Cloud löst Swift-Packages nicht automatisch neu auf, sondern verlangt
+# eine zur Package.swift passende, eingecheckte Package.resolved. `cap sync`
+# regeneriert ios/App/CapApp-SPM/Package.swift aus der installierten
+# @capacitor/ios-Version. Weicht das Ergebnis vom Commit ab, ist auch die
+# Package.resolved veraltet und xcodebuild bricht später mit
+# "an out-of-date resolved file was detected" ab — deshalb hier früh und mit
+# klarer Anleitung scheitern.
+if ! git diff --quiet -- ios/App/CapApp-SPM/Package.swift; then
+  echo "FEHLER: ios/App/CapApp-SPM/Package.swift ist nicht aktuell (Diff nach 'npx cap sync ios'):" >&2
+  git --no-pager diff -- ios/App/CapApp-SPM/Package.swift >&2
+  echo >&2
+  echo "Lokal beheben: 'npx cap sync ios' ausführen, danach" >&2
+  echo "  xcodebuild -resolvePackageDependencies -project ios/App/App.xcodeproj -scheme App" >&2
+  echo "(oder in Xcode: File > Packages > Resolve Package Versions) und beide Dateien committen:" >&2
+  echo "  ios/App/CapApp-SPM/Package.swift" >&2
+  echo "  ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved" >&2
+  exit 1
+fi
