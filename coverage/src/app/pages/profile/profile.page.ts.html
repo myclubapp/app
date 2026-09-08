@@ -23,23 +23,23 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">45.37% </span>
+                <span class="strong">45.16% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>98/216</span>
+                <span class='fraction'>98/217</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.25% </span>
+                <span class="strong">35.84% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>19/51</span>
+                <span class='fraction'>19/53</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">38.02% </span>
+                <span class="strong">37.5% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>27/71</span>
+                <span class='fraction'>27/72</span>
             </div>
         
             
@@ -1018,7 +1018,31 @@
 <a name='L953'></a><a href='#L953'>953</a>
 <a name='L954'></a><a href='#L954'>954</a>
 <a name='L955'></a><a href='#L955'>955</a>
-<a name='L956'></a><a href='#L956'>956</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L956'></a><a href='#L956'>956</a>
+<a name='L957'></a><a href='#L957'>957</a>
+<a name='L958'></a><a href='#L958'>958</a>
+<a name='L959'></a><a href='#L959'>959</a>
+<a name='L960'></a><a href='#L960'>960</a>
+<a name='L961'></a><a href='#L961'>961</a>
+<a name='L962'></a><a href='#L962'>962</a>
+<a name='L963'></a><a href='#L963'>963</a>
+<a name='L964'></a><a href='#L964'>964</a>
+<a name='L965'></a><a href='#L965'>965</a>
+<a name='L966'></a><a href='#L966'>966</a>
+<a name='L967'></a><a href='#L967'>967</a>
+<a name='L968'></a><a href='#L968'>968</a>
+<a name='L969'></a><a href='#L969'>969</a>
+<a name='L970'></a><a href='#L970'>970</a>
+<a name='L971'></a><a href='#L971'>971</a>
+<a name='L972'></a><a href='#L972'>972</a>
+<a name='L973'></a><a href='#L973'>973</a>
+<a name='L974'></a><a href='#L974'>974</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1138,11 +1162,17 @@
 <span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1324,7 +1354,7 @@
 <span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">21x</span>
-<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1798,8 +1828,14 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2013,7 +2049,13 @@ import {
   PermissionStatus,
 } from "@capacitor/camera";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { catchError, switchMap, take, tap } from "rxjs/operators";
+import { catchError, map, switchMap, take, tap } from "rxjs/operators";
+import {
+  describeKidRequest,
+  isClosedKidRequest,
+  KidRequest,
+  KidRequestView,
+} from "./kid-request-status";
 import {
   AlertController,
   IonRouterOutlet,
@@ -2049,7 +2091,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
   teamList$: Observable&lt;Team[]&gt;;
   clubList$: Observable&lt;Club[]&gt;;
 &nbsp;
-  kidsRequests$: Observable&lt;any[]&gt;;
+  kidsRequests$: Observable&lt;(KidRequest &amp; { view: KidRequestView })[]&gt;;
   children$: Observable&lt;any[]&gt;;
 &nbsp;
   parents$: Observable&lt;Profile[]&gt;;
@@ -2093,12 +2135,18 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     this.clubList$ = this.fbService.getClubList();
 &nbsp;
     this.userProfile$.pipe(take(1)).subscribe((userProfile) =&gt; {
+      // The backend drives the lifecycle of a request (invited, pending
+      // verification, rejected, expired — #255); describeKidRequest turns
+      // it into the label and hint the list shows.
       this.kidsRequests$ = this.profileService
         .getKidsRequests(userProfile.id)
         .pipe(
-          tap(<span class="fstat-no" title="function not covered" >(k</span>idsRequests) =&gt; {
-<span class="cstat-no" title="statement not covered" >            console.log(kidsRequests);</span>
-          }),
+          map(<span class="fstat-no" title="function not covered" >(k</span>idsRequests: KidRequest[]) =&gt;
+<span class="cstat-no" title="statement not covered" >            kidsRequests.map(<span class="fstat-no" title="function not covered" >(r</span>equest) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
+              ...request,
+              view: describeKidRequest(request),
+            })),
+          ),
         );
 &nbsp;
       this.children$ = this.profileService.getChildren(userProfile.id).pipe(
@@ -2740,7 +2788,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
     email: string | undefined,
     children: Profile[],
     parents: Profile[],
-    kidsRequests: { email?: string }[],
+    kidsRequests: Pick&lt;KidRequest, "email" | "status"&gt;[],
   ): string | null {
     const normalized = <span class="cstat-no" title="statement not covered" >(email || "").trim().toLowerCase();</span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!normalized || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {</span>
@@ -2753,8 +2801,14 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (linked.some(<span class="fstat-no" title="function not covered" >(p</span>) =&gt; <span class="cstat-no" title="statement not covered" >(p?.email || "").toLowerCase() === normalized)</span>) {</span>
 <span class="cstat-no" title="statement not covered" >      return "profile.kids.error__already_linked";</span>
     }
+    // A rejected request no longer blocks the address (same rule as the
+    // backend's duplicate check), so the parent can simply try again.
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (</span>
-      kidsRequests.some(<span class="fstat-no" title="function not covered" >(r</span>) =&gt; <span class="cstat-no" title="statement not covered" >(r?.email || "").toLowerCase() === normalized)</span>
+      kidsRequests.some(
+<span class="fstat-no" title="function not covered" >        (r</span>) =&gt;
+<span class="cstat-no" title="statement not covered" >          !isClosedKidRequest(r) &amp;&amp;</span>
+          (r?.email || "").toLowerCase() === normalized,
+      )
     ) {
 <span class="cstat-no" title="statement not covered" >      return "profile.kids.error__request_pending";</span>
     }
@@ -2935,7 +2989,7 @@ export class ProfilePage implements OnInit, AfterViewInit, OnDestroy {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-09-08T13:38:16.798Z
+                at 2026-09-08T13:39:27.799Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
