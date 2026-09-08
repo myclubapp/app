@@ -163,8 +163,8 @@
           </ion-item>
         </ion-list>
         <ion-note>
-          {{ "side_bar.version" | translate }} {{ appVersion }}({{
-            buildNumber
+          {{ "side_bar.version" | translate }} {{ appInfo().version }}({{
+            appInfo().build
           }})
         </ion-note>
         <!--

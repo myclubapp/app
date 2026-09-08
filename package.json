@@ -1,7 +1,6 @@
 {
   "name": "myclub",
   "version": "2.5.4",
-  "buildNumber": "240",
   "author": "Sandro Scalco",
   "homepage": "https://my-club.app/",
   "scripts": {
@@ -10,7 +9,7 @@
     "build": "ng build",
     "test": "ng test",
     "e2e": "ng e2e",
-    "postinstall": "sed -i '' \"s/proguard-android.txt/proguard-android-optimize.txt/g\" node_modules/capacitor-plugin-safe-area/android/build.gradle 2>/dev/null || true",
+    "postinstall": "node tools/build-number.mjs; sed -i '' \"s/proguard-android.txt/proguard-android-optimize.txt/g\" node_modules/capacitor-plugin-safe-area/android/build.gradle 2>/dev/null || true",
     "deploy": "firebase deploy --only hosting",
     "build:beta": "ng build --configuration beta",
     "build:prod": "ng build --configuration production",
@@ -40,6 +39,7 @@
     "themes:check": "node tools/sync-themes.mjs --check",
     "themes:list": "node tools/deploy.mjs --list",
     "theme:new": "node tools/new-theme.mjs",
+    "version:bump": "node tools/build-number.mjs bump",
     "deploy:apps": "node tools/deploy.mjs",
     "app:ios": "npm run build:prod && npx cap sync && npx cap open ios",
     "app:android": "npm run build:prod && npx cap sync && npx cap open android",

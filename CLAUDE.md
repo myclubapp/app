@@ -32,6 +32,17 @@ Der Rest dieser Dateien wird normal von Hand gepflegt — insbesondere die
 `options` (Dev-Build) und die Targets `serve`/`test`/`lint`/`deploy` in
 `angular.json`.
 
+### Buildnummer (`src/environments/build-info.ts`)
+
+Ebenfalls generiert und **nicht eingecheckt**: `tools/build-number.mjs`
+schreibt die Konstante `BUILD_NUMBER` bei `npm install` (postinstall) und im
+Xcode-Cloud-Post-Clone-Script. Quelle in dieser Reihenfolge: `CI_BUILD_NUMBER`
+(Xcode Cloud) → gemeinsame Buildnummer aus `project.pbxproj` (alle
+Konfigurationen) und `android/app/build.gradle` → `"local"`. Die Konstante ist
+nur der Fallback für Browser und Tests — auf dem Gerät liest
+`AppVersionService` Version und Buildnummer zur Laufzeit via `App.getInfo()`
+aus dem nativen Bundle. `package.json` enthält **keine** Buildnummer mehr.
+
 ### Was pro Theme von Hand gepflegt wird
 
 `src/custom-themes/<theme>/`:
@@ -54,6 +65,9 @@ npm run themes:check                    # Drift prüfen (Exit 1) — läuft in C
 
 npm run theme:new -- app-fc-x --label "FC X" --site fc-x --primary "#1d4ed8"
 
+npm run version:bump                    # native Buildnummer +1 (iOS Debug/Release + Android)
+npm run version:bump -- 250             # expliziten Wert setzen
+
 npm run build:app-unihockey
 npm run deploy:apps -- app-unihockey     # Build + Firebase Deploy
 npm run deploy:apps -- --all --dry-run
@@ -62,6 +76,7 @@ npm run deploy:apps -- --all --dry-run
 Quellcode der Tools unter `tools/`:
 
 - `themes.mjs` — gemeinsame Bibliothek (Config laden, Ableitungen berechnen)
+- `build-number.mjs` — `build-info.ts` generieren, native Buildnummer bumpen
 - `sync-themes.mjs` — Generator inkl. `--check`
 - `new-theme.mjs` — Scaffolder für neue Themes
 - `deploy.mjs` — Build/Deploy-CLI
@@ -76,6 +91,10 @@ Quellcode der Tools unter `tools/`:
   `production`, das Firebase-Hosting-Target `app-myclub`. Das ist in
   `themes.config.json` über `hostingTarget` abgebildet — nicht "aufräumen".
 - **`npm run themes:sync` nach jeder Config-Änderung**, sonst schlägt CI an.
+- **Fehlt `src/environments/build-info.ts`** (z. B. nach `npm ci
+--ignore-scripts`), kompiliert die App nicht: `node tools/build-number.mjs`
+  ausführen. Weichen die nativen Buildnummern voneinander ab, warnt das Tool
+  und schreibt `"local"` — mit `npm run version:bump -- <N>` angleichen.
 - **Firestore läuft mit persistentem Cache (IndexedDB)**, siehe
   `firestoreFactory()` in `src/app/app.module.ts`. Dokumente überleben einen
   App-Neustart; `getDocFromCache`/`getDocsFromCache` stehen zur Verfügung.

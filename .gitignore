@@ -51,3 +51,5 @@ android_backup/KeyStore
 android_backup/private_key.pepk
 
 project-summary.md
+# generiert von tools/build-number.mjs (postinstall / Xcode Cloud)
+/src/environments/build-info.ts

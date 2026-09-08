@@ -4,6 +4,7 @@ import {
   NgZone,
   OnInit,
   ChangeDetectionStrategy,
+  inject,
 } from "@angular/core";
 import { SwUpdate, VersionEvent } from "@angular/service-worker";
 import { registerLocaleData } from "@angular/common";
@@ -18,7 +19,7 @@ import {
 import { App } from "@capacitor/app";
 import { Dialog } from "@capacitor/dialog";
 import { AuthService } from "./services/auth.service";
-import packagejson from "./../../package.json";
+import { AppVersionService } from "./services/app-version.service";
 import { FirebaseService } from "./services/firebase.service";
 import { Router } from "@angular/router";
 import { SplashScreen } from "@capacitor/splash-screen";
@@ -64,8 +65,8 @@ register();
 })
 export class AppComponent implements OnInit, AfterViewInit {
   public email: string;
-  public appVersion: string = packagejson.version;
-  public buildNumber: string = packagejson.buildNumber;
+  /** Version/Buildnummer — auf dem Gerät aus dem nativen Bundle, sonst Build-Konstanten. */
+  readonly appInfo = inject(AppVersionService).info;
 
   clubList$: Observable<Club[]>;
 
@@ -725,7 +726,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       lastValueFrom(this.translate.get("common.app_update_available")),
       lastValueFrom(
         this.translate.get("common.app_update_message", {
-          version: this.appVersion,
+          version: this.appInfo().version,
         }),
       ),
       lastValueFrom(this.translate.get("common.cancel")),

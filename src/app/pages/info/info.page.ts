@@ -1,8 +1,13 @@
-import { Component, OnInit, ChangeDetectionStrategy } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  inject,
+} from "@angular/core";
 import { Device, DeviceId, DeviceInfo } from "@capacitor/device";
 import { Browser, OpenOptions } from "@capacitor/browser";
-import packagejson from "./../../../../package.json";
 import { SwUpdate } from "@angular/service-worker";
+import { AppVersionService } from "../../services/app-version.service";
 @Component({
   selector: "app-info",
   templateUrl: "./info.page.html",
@@ -11,8 +16,8 @@ import { SwUpdate } from "@angular/service-worker";
   standalone: false,
 })
 export class InfoPage implements OnInit {
-  public appVersion: string = packagejson.version;
-  public buildNumber: string = packagejson.buildNumber;
+  /** Version/Buildnummer — auf dem Gerät aus dem nativen Bundle, sonst Build-Konstanten. */
+  readonly appInfo = inject(AppVersionService).info;
   deviceId: DeviceId;
   deviceInfo: DeviceInfo;
 
