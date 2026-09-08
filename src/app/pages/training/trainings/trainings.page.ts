@@ -960,7 +960,11 @@ export class TrainingsPage implements OnInit {
           training.id,
         );
       }
-      await this.presentToast();
+      // Erfolgs-Toast nur, wenn tatsächlich etwas geändert wurde — sonst
+      // widerspricht er dem folgenden Hinweis auf die abgelaufene Frist.
+      if (tooLateCount < trainingList.length) {
+        await this.presentToast();
+      }
       if (tooLateCount > 0) {
         await this.tooLateToggleAll(tooLateCount);
       }

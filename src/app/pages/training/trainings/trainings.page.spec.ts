@@ -191,6 +191,26 @@ describe("TrainingsPage", () => {
       expect(uiService.showInfoDialog).toHaveBeenCalledTimes(1);
     });
 
+    it("shows no success toast when every item is past the deadline", async () => {
+      component.filteredTrainingList$ = of([
+        {
+          id: "t-late",
+          teamId: "team-1",
+          date: inDays(0),
+          timeFrom: "00:00",
+          team: { trainingThreshold: 24 },
+        },
+      ] as any);
+
+      await component.toggleAll(false);
+
+      expect(
+        trainingService.setTeamTrainingAttendeeStatus,
+      ).not.toHaveBeenCalled();
+      expect(uiService.showSuccessToast).not.toHaveBeenCalled();
+      expect(uiService.showInfoDialog).toHaveBeenCalledTimes(1);
+    });
+
     it("asks for confirmation with the affected count and stops when cancelled", async () => {
       const translate = TestBed.inject(TranslateService);
       translate.setTranslation("de", {
