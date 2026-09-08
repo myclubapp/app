@@ -47,6 +47,7 @@ describe("ChampionshipDetailPage", () => {
           provide: UserProfileService,
           useValue: jasmine.createSpyObj("UserProfileService", [
             "getUserProfileById",
+            "getMemberProfiles",
             "getChildren",
           ]),
         },

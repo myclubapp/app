@@ -20,7 +20,6 @@ import {
   catchError,
   combineLatest,
   firstValueFrom,
-  forkJoin,
   lastValueFrom,
   map,
   of,
@@ -29,7 +28,6 @@ import {
   switchMap,
   take,
   tap,
-  timeout,
 } from "rxjs";
 import { Browser } from "@capacitor/browser";
 import { HelferEvent, Schicht } from "src/app/models/event";
@@ -245,144 +243,128 @@ export class HelferDetailPage implements OnInit, OnDestroy {
             .getClubMemberRefs(clubId)
             .pipe(
               switchMap((clubMembers) => {
-                const clubMemberProfiles$ = clubMembers.map((member) =>
-                  this.userProfileService.getUserProfileById(member.id).pipe(
-                    take(1),
-                    // A single stalled profile read must not block the whole
-                    // Schichten list forever.
-                    timeout(10000),
-                    catchError((err) => {
-                      console.error(
-                        `Failed to fetch profile for club member ${member.id}:`,
-                        err,
-                      );
-                      return of({
-                        id: member.id,
-                        firstName: "Unknown",
-                        lastName: "Unknown",
-                        status: null,
-                        confirmed: null,
-                      });
-                    }),
-                  ),
-                );
-                // forkJoin([]) completes without ever emitting, which would
-                // leave the Schichten list stuck on its loading state.
-                const clubMembersWithDetails$ =
-                  clubMemberProfiles$.length > 0
-                    ? forkJoin(clubMemberProfiles$)
-                    : of([]);
-                return clubMembersWithDetails$.pipe(
-                  switchMap((clubMembersWithDetails) => {
-                    const schichtenWithAttendees$ = sortedSchichten.map(
-                      (schicht) =>
-                        this.eventService
-                          .getClubHelferEventSchichtAttendeesRef(
-                            clubId,
-                            eventId,
-                            schicht.id,
-                          )
-                          .pipe(
-                            map((attendees) => {
-                              const attendeeDetails = attendees
-                                .map((attendee) => {
-                                  const detail = clubMembersWithDetails.find(
-                                    (member) =>
-                                      member && member.id === attendee.id,
-                                  );
-                                  return detail
-                                    ? {
-                                        ...detail,
-                                        status: attendee.status,
-                                        confirmed: attendee.confirmed,
-                                        changedAt: attendee.changedAt,
-                                      }
-                                    : null;
-                                })
-                                .filter((item) => item); // Ensure nulls are removed
+                // One batched read for all profiles (UserProfileService
+                // .getMemberProfiles), then the Schicht attendees. The
+                // same read as on the event/training detail pages.
+                return this.userProfileService
+                  .getMemberProfiles(clubMembers)
+                  .pipe(
+                    switchMap((clubMembersWithDetails) => {
+                      const schichtenWithAttendees$ = sortedSchichten.map(
+                        (schicht) =>
+                          this.eventService
+                            .getClubHelferEventSchichtAttendeesRef(
+                              clubId,
+                              eventId,
+                              schicht.id,
+                            )
+                            .pipe(
+                              map((attendees) => {
+                                const attendeeDetails = attendees
+                                  .map((attendee) => {
+                                    const detail = clubMembersWithDetails.find(
+                                      (member) =>
+                                        member && member.id === attendee.id,
+                                    );
+                                    return detail
+                                      ? {
+                                          ...detail,
+                                          status: attendee.status,
+                                          confirmed: attendee.confirmed,
+                                          changedAt: attendee.changedAt,
+                                        }
+                                      : null;
+                                  })
+                                  .filter((item) => item); // Ensure nulls are removed
 
-                              const attendeeListTrue = attendeeDetails.filter(
-                                (att) => att.status === true,
-                              );
-                              const attendeeListFalse = attendeeDetails.filter(
-                                (att) => att.status === false,
-                              );
-                              const respondedIds = new Set(
-                                attendeeDetails.map((att) => att.id),
-                              );
-                              const unrespondedMembers =
-                                clubMembersWithDetails.filter(
-                                  (member) =>
-                                    member && !respondedIds.has(member.id),
+                                const attendeeListTrue = attendeeDetails.filter(
+                                  (att) => att.status === true,
                                 );
-
-                              return {
-                                ...schicht,
-                                attendees: attendeeDetails,
-                                attendeeListTrue,
-                                attendeeListFalse,
-                                unrespondedMembers,
-                                status: attendeeDetails
-                                  .filter((att) =>
-                                    [
-                                      // schichten$ can emit before event$ has
-                                      // resolved the authenticated user.
-                                      this.user?.uid,
-                                      ...this.children.map((child) => child.id),
-                                    ]
-                                      .filter(Boolean)
-                                      .includes(att.id),
-                                  )
-                                  .map((att) => ({
-                                    id: att.id,
-                                    status: att.status,
-                                    confirmed: att.confirmed,
-                                    firstName: att.firstName,
-                                    lastName: att.lastName,
-                                    changedAt: att.changedAt,
-                                  }))
-                                  .sort(
-                                    // changedAt can be missing on legacy
-                                    // attendee documents — never crash on it.
-                                    (b, a) =>
-                                      (a.changedAt?.toDate?.()?.getTime() ??
-                                        0) -
-                                      (b.changedAt?.toDate?.()?.getTime() ?? 0),
-                                  ),
-                                children: this.children.map((child) => {
-                                  const attendeeData = attendeeDetails.find(
-                                    (att) => att.id === child.id,
+                                const attendeeListFalse =
+                                  attendeeDetails.filter(
+                                    (att) => att.status === false,
                                   );
-                                  return {
-                                    id: child.id,
-                                    status: attendeeData?.status ?? null,
-                                    confirmed: attendeeData?.confirmed ?? false,
-                                    firstName: child.firstName,
-                                    lastName: child.lastName,
-                                    changedAt: attendeeData?.changedAt ?? null,
-                                  };
-                                }),
-                              };
-                            }),
+                                const respondedIds = new Set(
+                                  attendeeDetails.map((att) => att.id),
+                                );
+                                const unrespondedMembers =
+                                  clubMembersWithDetails.filter(
+                                    (member) =>
+                                      member && !respondedIds.has(member.id),
+                                  );
 
-                            catchError((err) => {
-                              console.error(
-                                "Error fetching attendees for schicht:",
-                                err,
-                              );
-                              return of(
-                                this.toPlaceholderSchicht(
-                                  schicht,
-                                  clubMembersWithDetails,
-                                  { loadFailed: true },
-                                ),
-                              );
-                            }),
-                          ),
-                    );
-                    return combineLatest(schichtenWithAttendees$);
-                  }),
-                );
+                                return {
+                                  ...schicht,
+                                  attendees: attendeeDetails,
+                                  attendeeListTrue,
+                                  attendeeListFalse,
+                                  unrespondedMembers,
+                                  status: attendeeDetails
+                                    .filter((att) =>
+                                      [
+                                        // schichten$ can emit before event$ has
+                                        // resolved the authenticated user.
+                                        this.user?.uid,
+                                        ...this.children.map(
+                                          (child) => child.id,
+                                        ),
+                                      ]
+                                        .filter(Boolean)
+                                        .includes(att.id),
+                                    )
+                                    .map((att) => ({
+                                      id: att.id,
+                                      status: att.status,
+                                      confirmed: att.confirmed,
+                                      firstName: att.firstName,
+                                      lastName: att.lastName,
+                                      changedAt: att.changedAt,
+                                    }))
+                                    .sort(
+                                      // changedAt can be missing on legacy
+                                      // attendee documents — never crash on it.
+                                      (b, a) =>
+                                        (a.changedAt?.toDate?.()?.getTime() ??
+                                          0) -
+                                        (b.changedAt?.toDate?.()?.getTime() ??
+                                          0),
+                                    ),
+                                  children: this.children.map((child) => {
+                                    const attendeeData = attendeeDetails.find(
+                                      (att) => att.id === child.id,
+                                    );
+                                    return {
+                                      id: child.id,
+                                      status: attendeeData?.status ?? null,
+                                      confirmed:
+                                        attendeeData?.confirmed ?? false,
+                                      firstName: child.firstName,
+                                      lastName: child.lastName,
+                                      changedAt:
+                                        attendeeData?.changedAt ?? null,
+                                    };
+                                  }),
+                                };
+                              }),
+
+                              catchError((err) => {
+                                console.error(
+                                  "Error fetching attendees for schicht:",
+                                  err,
+                                );
+                                return of(
+                                  this.toPlaceholderSchicht(
+                                    schicht,
+                                    clubMembersWithDetails,
+                                    { loadFailed: true },
+                                  ),
+                                );
+                              }),
+                            ),
+                      );
+                      return combineLatest(schichtenWithAttendees$);
+                    }),
+                  );
               }),
               catchError((err) => {
                 console.error("Error fetching club members:", err);
@@ -1045,19 +1027,7 @@ export class HelferDetailPage implements OnInit, OnDestroy {
     const clubMembers = await firstValueFrom(
       this.fbService.getClubMemberRefs(this.event.clubId).pipe(
         switchMap((members) => {
-          const memberProfiles$ = members.map((member) =>
-            this.userProfileService.getUserProfileById(member.id).pipe(
-              take(1),
-              catchError((err) => {
-                console.error(
-                  `Failed to fetch profile for member ${member.id}:`,
-                  err,
-                );
-                return of(null);
-              }),
-            ),
-          );
-          return forkJoin(memberProfiles$);
+          return this.userProfileService.getMemberProfiles(members);
         }),
       ),
     );

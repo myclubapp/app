@@ -41,8 +41,10 @@ describe("TrainingDetailPage", () => {
     name: "Dienstag Training",
     teamId: "team-1",
     date: Timestamp.fromDate(futureDate),
-    timeFrom: "18:00",
-    timeTo: "20:00",
+    // ISO strings like the app stores them (training-create); the template
+    // renders them with `date:'HH:mm'`.
+    timeFrom: futureDate.toISOString(),
+    timeTo: new Date(futureDate.getTime() + 2 * 60 * 60 * 1000).toISOString(),
     location: "Sportplatz",
     cancelled: false,
   };
@@ -80,7 +82,17 @@ describe("TrainingDetailPage", () => {
     userProfileServiceSpy = jasmine.createSpyObj("UserProfileService", [
       "getChildren",
       "getUserProfileById",
+      "getMemberProfiles",
     ]);
+    userProfileServiceSpy.getMemberProfiles.and.callFake((members: any[]) =>
+      of(
+        members.map((member) => ({
+          ...member,
+          firstName: "Unknown",
+          lastName: "Unknown",
+        })),
+      ),
+    );
     userProfileServiceSpy.getChildren.and.returnValue(of([]));
 
     fbServiceSpy = jasmine.createSpyObj("FirebaseService", [

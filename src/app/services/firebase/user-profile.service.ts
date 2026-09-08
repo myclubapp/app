@@ -18,6 +18,10 @@ import {
   setDoc,
   DocumentData,
   addDoc,
+  documentId,
+  getDocs,
+  query,
+  where,
 } from "@angular/fire/firestore";
 import {
   Storage,
@@ -26,13 +30,31 @@ import {
   getDownloadURL,
 } from "@angular/fire/storage";
 
-import { Observable, takeUntil } from "rxjs";
+import {
+  Observable,
+  catchError,
+  defer,
+  forkJoin,
+  from,
+  map,
+  of,
+  takeUntil,
+} from "rxjs";
 import { Profile } from "../../models/user";
 import { Photo } from "@capacitor/camera";
 
 import { AuthService } from "../auth.service";
 import { DeviceId, DeviceInfo } from "@capacitor/device";
 import { shareLatest } from "../share-latest";
+
+/** Splits `items` into consecutive slices of at most `size` elements. */
+function chunk<T>(items: T[], size: number): T[][] {
+  const slices: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    slices.push(items.slice(i, i + size));
+  }
+  return slices;
+}
 
 @Injectable({
   providedIn: "root",
@@ -50,11 +72,24 @@ export class UserProfileService {
   private readonly PROFILE_GRACE_MS = 10 * 60 * 1000; // 10 Minuten
   private injector = inject(Injector);
 
+  /** Firestore accepts at most 30 values in a `documentId() in` filter. */
+  private static readonly PROFILE_BATCH_SIZE = 30;
+  /**
+   * Profiles read by getMemberProfiles(), kept PROFILE_GRACE_MS like the
+   * shared streams above so that re-opening a detail page costs no reads.
+   * `null` records a member that has no profile document.
+   */
+  private memberProfileCache = new Map<
+    string,
+    { profile: Profile | null; readAt: number }
+  >();
+
   /**
    * Clears all cached data - should be called on logout
    */
   clearCache(): void {
     this.profileCache.clear();
+    this.memberProfileCache.clear();
   }
 
   constructor(
@@ -161,6 +196,120 @@ export class UserProfileService {
       this.profileCache.set(userId, profile$);
     }
     return profile$;
+  }
+
+  /**
+   * Resolves the profiles of club or team member refs in one shot and merges
+   * them onto the refs: member fields first, profile fields on top, "Unknown"
+   * names where no profile exists. Emits exactly once and completes, so it
+   * replaces `forkJoin(members.map((m) => getUserProfileById(m.id).pipe(take(1))))`
+   * on the detail pages — and unlike forkJoin it also emits for an empty list.
+   *
+   * Why not one listener per member: with the persistent cache every
+   * docData() listener costs about five sequential IndexedDB transactions.
+   * A club with a few hundred members therefore needed several seconds
+   * (Firefox: more than 10 s) until the last profile arrived, and forkJoin
+   * waits for the slowest one. Here the ids are read with `documentId() in`
+   * queries of PROFILE_BATCH_SIZE — one remote event per batch — and the
+   * results are memoised for PROFILE_GRACE_MS.
+   *
+   * A batch that cannot be read (offline without cache, permission denied)
+   * yields "Unknown" names for its members and is not memoised, so the next
+   * open retries. Profiles must never block an attendee list.
+   */
+  getMemberProfiles<T extends { id: string }>(
+    members: T[],
+  ): Observable<(T & Profile)[]> {
+    if (!members || members.length === 0) {
+      return of([]);
+    }
+    const now = Date.now();
+    const missingIds = [
+      ...new Set(
+        members
+          .map((member) => member.id)
+          .filter((id) => {
+            const cached = this.memberProfileCache.get(id);
+            return !cached || now - cached.readAt > this.PROFILE_GRACE_MS;
+          }),
+      ),
+    ];
+    const batches$ = chunk(
+      missingIds,
+      UserProfileService.PROFILE_BATCH_SIZE,
+    ).map((ids) =>
+      defer(() => this.fetchProfiles(ids)).pipe(
+        map((profiles) => ({ ids, profiles })),
+        catchError((error) => {
+          console.error(
+            `Failed to fetch ${ids.length} member profiles:`,
+            error,
+          );
+          return of({ ids: [] as string[], profiles: [] as Profile[] });
+        }),
+      ),
+    );
+    const fetched$: Observable<{ ids: string[]; profiles: Profile[] }[]> =
+      batches$.length > 0 ? forkJoin(batches$) : of([]);
+
+    return fetched$.pipe(
+      map((batches) => {
+        const readAt = Date.now();
+        for (const { ids, profiles } of batches) {
+          const byId = new Map(
+            profiles.map((profile) => [profile.id, profile]),
+          );
+          for (const id of ids) {
+            this.memberProfileCache.set(id, {
+              profile: byId.get(id) ?? null,
+              readAt,
+            });
+          }
+        }
+        return members.map((member) =>
+          this.mergeMemberProfile(
+            member,
+            this.memberProfileCache.get(member.id)?.profile ?? null,
+          ),
+        );
+      }),
+    );
+  }
+
+  /** One `documentId() in` read for up to PROFILE_BATCH_SIZE ids. */
+  protected fetchProfiles(ids: string[]): Observable<Profile[]> {
+    return runInInjectionContext(this.injector, () =>
+      from(
+        getDocs(
+          query(
+            collection(this.firestore, "userProfile"),
+            where(documentId(), "in", ids),
+          ),
+        ),
+      ),
+    ).pipe(
+      map((snapshot) =>
+        snapshot.docs.map((document) => ({
+          ...(document.data() as Profile),
+          id: document.id,
+        })),
+      ),
+    );
+  }
+
+  private mergeMemberProfile<T extends { id: string }>(
+    member: T,
+    profile: Profile | null,
+  ): T & Profile {
+    return {
+      ...member,
+      ...(profile ?? {}),
+      id: member.id,
+      firstName: profile?.firstName || "Unknown",
+      lastName: profile?.lastName || "Unknown",
+      // Team/club roles live on the member document, not on the profile.
+      roles: (member as { roles?: string[] }).roles ?? [],
+    } as unknown as T & Profile;
   }
 
   async setUserProfilePicture(photo: Photo) {

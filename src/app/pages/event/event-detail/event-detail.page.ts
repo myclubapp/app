@@ -15,7 +15,6 @@ import { User } from "firebase/auth";
 import {
   Observable,
   catchError,
-  forkJoin,
   lastValueFrom,
   map,
   of,
@@ -131,142 +130,128 @@ export class EventDetailPage implements OnInit {
             // Fetch all club members first
             return this.fbService.getClubMemberRefs(clubId).pipe(
               switchMap((clubMembers) => {
-                const clubMemberProfiles$ = clubMembers.map((member) =>
-                  this.userProfileService.getUserProfileById(member.id).pipe(
-                    take(1),
-                    catchError((err) => {
-                      console.log(
-                        `Failed to fetch profile for club member ${member.id}:`,
-                        err,
-                      );
-                      return of({
-                        id: member.id,
-                        firstName: "Unknown",
-                        lastName: "Unknown",
-                        status: null,
-                      });
-                    }),
-                  ),
-                );
+                // One batched read for all profiles (UserProfileService
+                // .getMemberProfiles), then the attendees.
+                return this.userProfileService
+                  .getMemberProfiles(clubMembers)
+                  .pipe(
+                    switchMap((clubMembersWithDetails) => {
+                      return this.eventService
+                        .getClubEventAttendeesRef(clubId, eventId)
+                        .pipe(
+                          map((attendees) => {
+                            const attendeeDetails = attendees
+                              .map((attendee) => {
+                                const detail = clubMembersWithDetails.find(
+                                  (member) =>
+                                    member && member.id === attendee.id,
+                                );
+                                return detail
+                                  ? { ...detail, status: attendee.status }
+                                  : null;
+                              })
+                              .filter((item) => item !== null);
 
-                // Fetch all attendees next
-                return forkJoin(clubMemberProfiles$).pipe(
-                  switchMap((clubMembersWithDetails) => {
-                    return this.eventService
-                      .getClubEventAttendeesRef(clubId, eventId)
-                      .pipe(
-                        map((attendees) => {
-                          const attendeeDetails = attendees
-                            .map((attendee) => {
-                              const detail = clubMembersWithDetails.find(
-                                (member) => member && member.id === attendee.id,
+                            const attendeeListTrue = attendeeDetails
+                              .filter((att) => att.status === true)
+                              .sort((a, b) =>
+                                a.firstName.localeCompare(b.firstName),
                               );
-                              return detail
-                                ? { ...detail, status: attendee.status }
-                                : null;
-                            })
-                            .filter((item) => item !== null);
-
-                          const attendeeListTrue = attendeeDetails
-                            .filter((att) => att.status === true)
-                            .sort((a, b) =>
-                              a.firstName.localeCompare(b.firstName),
-                            );
-                          const attendeeListFalse = attendeeDetails
-                            .filter((att) => att.status === false)
-                            .sort((a, b) =>
-                              a.firstName.localeCompare(b.firstName),
-                            );
-                          const respondedIds = new Set(
-                            attendeeDetails.map((att) => att.id),
-                          );
-                          const unrespondedMembers = clubMembersWithDetails
-                            .filter(
-                              (member) =>
-                                member && !respondedIds.has(member.id),
-                            )
-                            .sort((a, b) =>
-                              a.firstName.localeCompare(b.firstName),
-                            );
-
-                          // Status-Liste: zuerst ich, dann Kinder alphabetisch
-                          const myId = this.user.uid;
-                          const childIds = this.children.map(
-                            (child) => child.id,
-                          );
-
-                          // Build children array with status (like in training/championship)
-                          const relevantChildren = clubMembers
-                            .filter((member) => childIds.includes(member.id))
-                            .map((member) => {
-                              const child = this.children.find(
-                                (c) => c.id === member.id,
+                            const attendeeListFalse = attendeeDetails
+                              .filter((att) => att.status === false)
+                              .sort((a, b) =>
+                                a.firstName.localeCompare(b.firstName),
                               );
-                              const childAttendee = attendeeDetails.find(
-                                (att) => att.id === member.id,
+                            const respondedIds = new Set(
+                              attendeeDetails.map((att) => att.id),
+                            );
+                            const unrespondedMembers = clubMembersWithDetails
+                              .filter(
+                                (member) =>
+                                  member && !respondedIds.has(member.id),
+                              )
+                              .sort((a, b) =>
+                                a.firstName.localeCompare(b.firstName),
                               );
-                              return {
-                                id: member.id,
-                                firstName: child?.firstName || "Unknown",
-                                lastName: child?.lastName || "Unknown",
-                                status: childAttendee?.status ?? null,
-                              };
-                            })
-                            .sort((a, b) =>
-                              a.firstName.localeCompare(b.firstName),
+
+                            // Status-Liste: zuerst ich, dann Kinder alphabetisch
+                            const myId = this.user.uid;
+                            const childIds = this.children.map(
+                              (child) => child.id,
                             );
 
-                          // Build status array: include user if member, plus all children that are members
-                          const userIds = [myId, ...childIds];
-                          const orderedStatuses = userIds
-                            .filter((id) =>
-                              clubMembersWithDetails.some(
-                                (member) => member && member.id === id,
+                            // Build children array with status (like in training/championship)
+                            const relevantChildren = clubMembers
+                              .filter((member) => childIds.includes(member.id))
+                              .map((member) => {
+                                const child = this.children.find(
+                                  (c) => c.id === member.id,
+                                );
+                                const childAttendee = attendeeDetails.find(
+                                  (att) => att.id === member.id,
+                                );
+                                return {
+                                  id: member.id,
+                                  firstName: child?.firstName || "Unknown",
+                                  lastName: child?.lastName || "Unknown",
+                                  status: childAttendee?.status ?? null,
+                                };
+                              })
+                              .sort((a, b) =>
+                                a.firstName.localeCompare(b.firstName),
+                              );
+
+                            // Build status array: include user if member, plus all children that are members
+                            const userIds = [myId, ...childIds];
+                            const orderedStatuses = userIds
+                              .filter((id) =>
+                                clubMembersWithDetails.some(
+                                  (member) => member && member.id === id,
+                                ),
+                              )
+                              .map((id) => {
+                                const attendee = attendeeDetails.find(
+                                  (att) => att.id === id,
+                                );
+                                const member = clubMembersWithDetails.find(
+                                  (m) => m && m.id === id,
+                                );
+                                return {
+                                  id: id,
+                                  status: attendee?.status ?? null,
+                                  firstName: member?.firstName || "Unknown",
+                                  lastName: member?.lastName || "Unknown",
+                                };
+                              });
+
+                            return {
+                              ...event,
+                              club,
+                              attendees: attendeeDetails,
+                              attendeeListTrue,
+                              attendeeListFalse,
+                              unrespondedMembers,
+                              children: relevantChildren,
+                              status: orderedStatuses,
+                            };
+                          }),
+                          catchError((err) => {
+                            console.error("Error fetching attendees:", err);
+                            return of({
+                              ...event,
+                              club,
+                              attendees: [],
+                              attendeeListTrue: [],
+                              attendeeListFalse: [],
+                              unrespondedMembers: clubMembersWithDetails.filter(
+                                (member) => member !== null,
                               ),
-                            )
-                            .map((id) => {
-                              const attendee = attendeeDetails.find(
-                                (att) => att.id === id,
-                              );
-                              const member = clubMembersWithDetails.find(
-                                (m) => m && m.id === id,
-                              );
-                              return {
-                                id: id,
-                                status: attendee?.status ?? null,
-                                firstName: member?.firstName || "Unknown",
-                                lastName: member?.lastName || "Unknown",
-                              };
+                              status: null,
                             });
-
-                          return {
-                            ...event,
-                            club,
-                            attendees: attendeeDetails,
-                            attendeeListTrue,
-                            attendeeListFalse,
-                            unrespondedMembers,
-                            children: relevantChildren,
-                            status: orderedStatuses,
-                          };
-                        }),
-                        catchError((err) => {
-                          console.error("Error fetching attendees:", err);
-                          return of({
-                            ...event,
-                            club,
-                            attendees: [],
-                            attendeeListTrue: [],
-                            attendeeListFalse: [],
-                            unrespondedMembers: clubMembersWithDetails.filter(
-                              (member) => member !== null,
-                            ),
-                            status: null,
-                          });
-                        }),
-                      );
-                  }),
-                );
+                          }),
+                        );
+                    }),
+                  );
               }),
               catchError((err) => {
                 console.error("Error fetching club members:", err);
