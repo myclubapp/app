@@ -924,26 +924,50 @@ export class TrainingsPage implements OnInit {
     }
   }
 
-  async toggleAll() {
-    // User meldet sich für alle Trainings an
+  /**
+   * Meldet den Benutzer für alle sichtbaren Trainings an (status = true)
+   * oder ab (status = false).
+   */
+  async toggleAll(status: boolean) {
     try {
       // Bewusst die gefilterte Liste: die Aktion gilt für das, was der
       // Benutzer gerade sieht.
       const trainingList = await lastValueFrom(
         this.filteredTrainingList$.pipe(take(1)),
       );
+      if (trainingList.length === 0) return;
 
+      const confirmed = await this.confirmToggleAll(
+        status,
+        trainingList.length,
+      );
+      if (!confirmed) return;
+
+      let tooLateCount = 0;
       for (const training of trainingList) {
+        // Abmelden unterliegt der Abmeldefrist des Teams — wie beim einzelnen
+        // Training wird ein verspätetes Abmelden übersprungen.
+        if (!status && this.isTooLateToUnsubscribe(training)) {
+          tooLateCount++;
+          continue;
+        }
         console.log(
-          `Set Status true for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`,
+          `Set Status ${status} for user ${this.user.uid} and team ${training.teamId} and training ${training.id}`,
         );
         await this.trainingService.setTeamTrainingAttendeeStatus(
-          true,
+          status,
           training.teamId,
           training.id,
         );
       }
-      await this.presentToast();
+      // Erfolgs-Toast nur, wenn tatsächlich etwas geändert wurde — sonst
+      // widerspricht er dem folgenden Hinweis auf die abgelaufene Frist.
+      if (tooLateCount < trainingList.length) {
+        await this.presentToast();
+      }
+      if (tooLateCount > 0) {
+        await this.tooLateToggleAll(tooLateCount);
+      }
     } catch (error) {
       console.error("Error during toggleAll operation:", error);
       // Optionally handle the error, e.g., show an error message
@@ -956,8 +980,16 @@ export class TrainingsPage implements OnInit {
       buttons: [
         {
           text: await lastValueFrom(this.translate.get("common.alle_anmelden")),
+          icon: "checkmark-circle-outline",
           handler: () => {
-            this.toggleAll();
+            this.toggleAll(true);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.alle_abmelden")),
+          icon: "close-circle-outline",
+          handler: () => {
+            this.toggleAll(false);
           },
         },
         {
@@ -999,17 +1031,7 @@ export class TrainingsPage implements OnInit {
     console.log(
       `Set Status ${status} for user ${userId} and team ${training.teamId} and training ${training.id}`,
     );
-    const newStartDate = training.date.toDate();
-    newStartDate.setHours(Number(training.timeFrom.substring(0, 2)));
-
-    const trainingThreshold = training.team.trainingThreshold || 0;
-
-    if (
-      newStartDate.getTime() - new Date().getTime() <
-        1000 * 60 * 60 * trainingThreshold &&
-      status == false &&
-      trainingThreshold
-    ) {
+    if (!status && this.isTooLateToUnsubscribe(training)) {
       console.log("too late");
       await this.tooLateToggle();
     } else {
@@ -1038,6 +1060,63 @@ export class TrainingsPage implements OnInit {
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
     });
+  }
+
+  /**
+   * Lässt die Sammelaktion bestätigen — mit der Anzahl betroffener Termine,
+   * damit "anmelden" und "abmelden" nicht verwechselt werden.
+   */
+  private async confirmToggleAll(
+    status: boolean,
+    count: number,
+  ): Promise<boolean> {
+    return this.uiService.showConfirmDialog({
+      header: await lastValueFrom(
+        this.translate.get(
+          status ? "common.alle_anmelden" : "common.alle_abmelden",
+        ),
+      ),
+      message: await lastValueFrom(
+        this.translate.get(
+          status
+            ? "training.alle_anmelden__confirm"
+            : "training.alle_abmelden__confirm",
+          { count },
+        ),
+      ),
+      confirmText: await lastValueFrom(
+        this.translate.get(status ? "common.anmelden" : "common.abmelden"),
+      ),
+    });
+  }
+
+  async tooLateToggleAll(count: number) {
+    await this.uiService.showInfoDialog({
+      header: await lastValueFrom(
+        this.translate.get("common.alle_abmelden__too_late_header"),
+      ),
+      message: await lastValueFrom(
+        this.translate.get("common.alle_abmelden__too_late_message", { count }),
+      ),
+    });
+  }
+
+  /**
+   * Prüft, ob die Abmeldefrist des Teams (trainingThreshold in Stunden) für
+   * dieses Training bereits abgelaufen ist. Ohne Frist ist Abmelden immer
+   * möglich.
+   */
+  private isTooLateToUnsubscribe(training: any): boolean {
+    const trainingThreshold = training.team?.trainingThreshold || 0;
+    if (!trainingThreshold) return false;
+
+    const startDate = training.date.toDate();
+    startDate.setHours(Number(training.timeFrom.substring(0, 2)));
+
+    return (
+      startDate.getTime() - new Date().getTime() <
+      1000 * 60 * 60 * trainingThreshold
+    );
   }
 
   async cancelTraining(training: any) {

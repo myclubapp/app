@@ -734,8 +734,16 @@ export class ChampionshipPage implements OnInit {
       buttons: [
         {
           text: await lastValueFrom(this.translate.get("common.alle_anmelden")),
+          icon: "checkmark-circle-outline",
           handler: () => {
-            this.toggleAllGames();
+            this.toggleAllGames(true);
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get("common.alle_abmelden")),
+          icon: "close-circle-outline",
+          handler: () => {
+            this.toggleAllGames(false);
           },
         },
         {
@@ -746,17 +754,40 @@ export class ChampionshipPage implements OnInit {
     });
   }
 
-  async toggleAllGames() {
+  /**
+   * Meldet den Benutzer für alle kommenden Spiele an (status = true) oder ab
+   * (status = false).
+   */
+  async toggleAllGames(status: boolean) {
     try {
       const gameList = await lastValueFrom(this.gameList$.pipe(take(1)));
+      if (gameList.length === 0) return;
+
+      const confirmed = await this.confirmToggleAll(status, gameList.length);
+      if (!confirmed) return;
+
+      let tooLateCount = 0;
       for (const game of gameList) {
+        // Abmelden unterliegt der Abmeldefrist des Teams — wie beim einzelnen
+        // Spiel wird ein verspätetes Abmelden übersprungen.
+        if (!status && this.isTooLateToUnsubscribe(game)) {
+          tooLateCount++;
+          continue;
+        }
         await this.championshipService.setTeamGameAttendeeStatus(
-          true,
+          status,
           game.teamId,
           game.id,
         );
       }
-      await this.presentToast();
+      // Erfolgs-Toast nur, wenn tatsächlich etwas geändert wurde — sonst
+      // widerspricht er dem folgenden Hinweis auf die abgelaufene Frist.
+      if (tooLateCount < gameList.length) {
+        await this.presentToast();
+      }
+      if (tooLateCount > 0) {
+        await this.tooLateToggleAll(tooLateCount);
+      }
     } catch (error) {
       console.error("Error during toggleAllGames operation:", error);
       await this.uiService.showErrorToast(
@@ -854,17 +885,7 @@ export class ChampionshipPage implements OnInit {
     console.log(
       `Set Status ${status} for user ${userId} and team ${game.teamId} and game ${game.id}`,
     );
-    const newStartDate = game.dateTime.toDate();
-    newStartDate.setHours(Number(game.time.substring(0, 2)));
-
-    const championshipTreshold = game.team.championshipThreshold || 0;
-
-    if (
-      newStartDate.getTime() - new Date().getTime() <
-        1000 * 60 * 60 * championshipTreshold &&
-      status == false &&
-      championshipTreshold
-    ) {
+    if (!status && this.isTooLateToUnsubscribe(game)) {
       console.log("too late");
       await this.tooLateToggle();
     } else {
@@ -885,22 +906,8 @@ export class ChampionshipPage implements OnInit {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and team ${game.teamId} and training ${game.id}`,
     );
-    console.log(game);
-    const newStartDate = game.dateTime.toDate();
-    newStartDate.setHours(Number(game.time.substring(0, 2)));
-    console.log(newStartDate);
-
-    // Get team threshold via training.teamId
-    console.log("Grenzwert ");
-    const championshipTreshold = game.team.championshipThreshold || 0;
-    console.log(championshipTreshold);
-    // Verpätete Abmeldung?
-    if (
-      newStartDate.getTime() - new Date().getTime() <
-        1000 * 60 * 60 * championshipTreshold &&
-      status == false &&
-      championshipTreshold
-    ) {
+    // Verspätete Abmeldung?
+    if (!status && this.isTooLateToUnsubscribe(game)) {
       console.log("too late");
       await this.tooLateToggle();
     } else {
@@ -947,6 +954,63 @@ export class ChampionshipPage implements OnInit {
       header: "Abmelden nicht möglich",
       message: "Bitte melde dich direkt beim Trainerteam um dich abzumelden",
     });
+  }
+
+  /**
+   * Lässt die Sammelaktion bestätigen — mit der Anzahl betroffener Termine,
+   * damit "anmelden" und "abmelden" nicht verwechselt werden.
+   */
+  private async confirmToggleAll(
+    status: boolean,
+    count: number,
+  ): Promise<boolean> {
+    return this.uiService.showConfirmDialog({
+      header: await lastValueFrom(
+        this.translate.get(
+          status ? "common.alle_anmelden" : "common.alle_abmelden",
+        ),
+      ),
+      message: await lastValueFrom(
+        this.translate.get(
+          status
+            ? "championship.alle_anmelden__confirm"
+            : "championship.alle_abmelden__confirm",
+          { count },
+        ),
+      ),
+      confirmText: await lastValueFrom(
+        this.translate.get(status ? "common.anmelden" : "common.abmelden"),
+      ),
+    });
+  }
+
+  async tooLateToggleAll(count: number) {
+    await this.uiService.showInfoDialog({
+      header: await lastValueFrom(
+        this.translate.get("common.alle_abmelden__too_late_header"),
+      ),
+      message: await lastValueFrom(
+        this.translate.get("common.alle_abmelden__too_late_message", { count }),
+      ),
+    });
+  }
+
+  /**
+   * Prüft, ob die Abmeldefrist des Teams (championshipThreshold in Stunden)
+   * für dieses Spiel bereits abgelaufen ist. Ohne Frist ist Abmelden immer
+   * möglich.
+   */
+  private isTooLateToUnsubscribe(game: any): boolean {
+    const championshipThreshold = game.team?.championshipThreshold || 0;
+    if (!championshipThreshold) return false;
+
+    const startDate = game.dateTime.toDate();
+    startDate.setHours(Number(game.time.substring(0, 2)));
+
+    return (
+      startDate.getTime() - new Date().getTime() <
+      1000 * 60 * 60 * championshipThreshold
+    );
   }
 
   toggleChildren(status: boolean, game: any, childrenId: string) {
