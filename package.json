@@ -89,7 +89,7 @@
     "firebase": "11.10.0",
     "husky-init": "^8.0.0",
     "lottie-web": "^5.13.0",
-    "maplibre-gl": "^5.24.0",
+    "maplibre-gl": "^6.4.1",
     "rxjs": "^7.8.2",
     "save-svg-as-png": "^1.4.17",
     "swiper": "^12.1.2",
