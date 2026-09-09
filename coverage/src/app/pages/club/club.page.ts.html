@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">7.05% </span>
+                <span class="strong">7.53% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>11/156</span>
+                <span class='fraction'>11/146</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/46</span>
+                <span class='fraction'>0/42</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">3.44% </span>
+                <span class="strong">3.7% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/58</span>
+                <span class='fraction'>2/54</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">7.09% </span>
+                <span class="strong">7.58% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>11/155</span>
+                <span class='fraction'>11/145</span>
             </div>
         
             
@@ -643,25 +643,7 @@
 <a name='L578'></a><a href='#L578'>578</a>
 <a name='L579'></a><a href='#L579'>579</a>
 <a name='L580'></a><a href='#L580'>580</a>
-<a name='L581'></a><a href='#L581'>581</a>
-<a name='L582'></a><a href='#L582'>582</a>
-<a name='L583'></a><a href='#L583'>583</a>
-<a name='L584'></a><a href='#L584'>584</a>
-<a name='L585'></a><a href='#L585'>585</a>
-<a name='L586'></a><a href='#L586'>586</a>
-<a name='L587'></a><a href='#L587'>587</a>
-<a name='L588'></a><a href='#L588'>588</a>
-<a name='L589'></a><a href='#L589'>589</a>
-<a name='L590'></a><a href='#L590'>590</a>
-<a name='L591'></a><a href='#L591'>591</a>
-<a name='L592'></a><a href='#L592'>592</a>
-<a name='L593'></a><a href='#L593'>593</a>
-<a name='L594'></a><a href='#L594'>594</a>
-<a name='L595'></a><a href='#L595'>595</a>
-<a name='L596'></a><a href='#L596'>596</a>
-<a name='L597'></a><a href='#L597'>597</a>
-<a name='L598'></a><a href='#L598'>598</a>
-<a name='L599'></a><a href='#L599'>599</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L581'></a><a href='#L581'>581</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -813,14 +795,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -939,22 +913,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1409,14 +1373,6 @@ export class ClubPage implements OnInit {
     });
   }
 <span class="fstat-no" title="function not covered" >  getClub(</span>clubId: string) {
-    const calculateAge = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(d</span>ateOfBirth) =&gt; {</span>
-      // console.log("DoB: " + JSON.stringify(dateOfBirth));
-      const birthday = <span class="cstat-no" title="statement not covered" >new Date(dateOfBirth.seconds * 1000);</span>
-      const ageDifMs = <span class="cstat-no" title="statement not covered" >Date.now() - birthday.getTime();</span>
-      const ageDate = <span class="cstat-no" title="statement not covered" >new Date(ageDifMs);</span> // miliseconds from epoch
-<span class="cstat-no" title="statement not covered" >      return Math.abs(ageDate.getUTCFullYear() - 1970);</span>
-    };
-&nbsp;
 <span class="cstat-no" title="statement not covered" >    return this.authService.getAuthenticatedUser$().pipe(</span>
       take(1),
       tap(<span class="fstat-no" title="function not covered" >(u</span>ser) =&gt; {
@@ -1537,27 +1493,17 @@ export class ClubPage implements OnInit {
               clubTeams,
               clubParents,
             }) =&gt; {
-              const ages = <span class="cstat-no" title="statement not covered" >clubMembers</span>
-                .map(<span class="fstat-no" title="function not covered" >(m</span>ember) =&gt;
-<span class="cstat-no" title="statement not covered" >                  member.hasOwnProperty("dateOfBirth")</span>
-                    ? calculateAge(member.dateOfBirth)
-                    : 0,
-                )
-                .filter(<span class="fstat-no" title="function not covered" >(a</span>ge) =&gt; <span class="cstat-no" title="statement not covered" >age &gt; 0)</span>; // Filter out invalid or 'Unknown' ages
-              // console.log(ages);
-&nbsp;
-              const averageAge =
-<span class="cstat-no" title="statement not covered" >                ages.length &gt; 0</span>
-                  ? ages.reduce(<span class="fstat-no" title="function not covered" >(a</span>, b) =&gt; <span class="cstat-no" title="statement not covered" >a + b,</span> 0) / ages.length
-                  : 0; // Calculate average or set to 0 if no valid ages
               // console.log(clubTeams)
+              // averageAge kommt aus dem Club-Dokument; der Scheduler
+              // jobAverageAge im Backend rechnet den Wert einmal pro Monat
+              // vor, statt ihn bei jedem Seitenaufruf aus allen
+              // Mitgliederprofilen zusammenzurechnen.
 <span class="cstat-no" title="statement not covered" >              return {</span>
                 ...club,
                 clubTeams,
                 updated: Timestamp.fromMillis(club.updated.seconds * 1000)
                   .toDate()
                   .toISOString(),
-                averageAge: averageAge.toFixed(1), // Keep two decimal places
                 clubMembers,
                 clubAdmins,
                 clubRequests,
@@ -1864,7 +1810,7 @@ export class ClubPage implements OnInit {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-09-08T15:48:31.484Z
+                at 2026-09-09T12:05:18.300Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
