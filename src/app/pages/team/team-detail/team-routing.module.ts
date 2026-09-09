@@ -8,13 +8,6 @@ const routes: Routes = [
     path: "",
     component: TeamPage,
   },
-  {
-    path: "team-exercises",
-    loadChildren: () =>
-      import("../team-exercises/team-exercises.module").then(
-        (m) => m.TeamExercisesPageModule
-      ),
-  },
 ];
 
 @NgModule({

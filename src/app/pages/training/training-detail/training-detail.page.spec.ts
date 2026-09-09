@@ -16,7 +16,6 @@ import { AuthService } from "src/app/services/auth.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { FirebaseService } from "src/app/services/firebase.service";
-import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { UiService } from "src/app/services/ui.service";
 import { Training } from "src/app/models/training";
 
@@ -27,7 +26,6 @@ describe("TrainingDetailPage", () => {
   let trainingServiceSpy: jasmine.SpyObj<TrainingService>;
   let userProfileServiceSpy: jasmine.SpyObj<UserProfileService>;
   let fbServiceSpy: jasmine.SpyObj<FirebaseService>;
-  let exerciseServiceSpy: jasmine.SpyObj<ExerciseService>;
   let uiServiceSpy: jasmine.SpyObj<UiService>;
   let modalCtrlSpy: jasmine.SpyObj<ModalController>;
   let alertCtrlSpy: jasmine.SpyObj<AlertController>;
@@ -110,11 +108,6 @@ describe("TrainingDetailPage", () => {
     fbServiceSpy.getClubList.and.returnValue(of([]));
     fbServiceSpy.isTeamAdmin.and.returnValue(false);
 
-    exerciseServiceSpy = jasmine.createSpyObj("ExerciseService", [
-      "getTeamTrainingExerciseRefs",
-    ]);
-    exerciseServiceSpy.getTeamTrainingExerciseRefs.and.returnValue(of([]));
-
     uiServiceSpy = jasmine.createSpyObj("UiService", [
       "showSuccessToast",
       "showErrorToast",
@@ -139,7 +132,6 @@ describe("TrainingDetailPage", () => {
         { provide: TrainingService, useValue: trainingServiceSpy },
         { provide: UserProfileService, useValue: userProfileServiceSpy },
         { provide: FirebaseService, useValue: fbServiceSpy },
-        { provide: ExerciseService, useValue: exerciseServiceSpy },
         { provide: UiService, useValue: uiServiceSpy },
         { provide: ModalController, useValue: modalCtrlSpy },
         { provide: AlertController, useValue: alertCtrlSpy },
@@ -355,11 +347,6 @@ describe("TrainingDetailPage", () => {
       // The template shows ion-skeleton-text until training$ emits data
       component.ngOnInit();
       expect(component.training$).toBeDefined();
-    });
-
-    it("should set up exerciseList$ observable for template rendering", () => {
-      component.ngOnInit();
-      expect(component.exerciseList$).toBeDefined();
     });
   });
 

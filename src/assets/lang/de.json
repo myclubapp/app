@@ -32,8 +32,6 @@
     "success__helfer_deleted": "Helferevent erfolgreich gelöscht",
     "success__training_deleted": "Training erfolgreich gelöscht",
     "success__news_deleted": "News erfolgreich gelöscht",
-    "success__exercise_deleted": "Übung erfolgreich entfernt",
-    "success__exercise_added": "Übung erfolgreich hinzugefügt",
     "alle_anmelden": "alle anmelden",
     "alle_abmelden": "alle abmelden",
     "anmelden": "Anmelden",
@@ -91,8 +89,6 @@
     "my_device_id": "Meine Geräte Id",
     "js_activities_training": "Aktivitäten J+S-Kurse (Trainings)",
     "js_activities_competitions": "Aktivitäten J+S-Kurse (Wettkämpfe)",
-    "exercise_selection": "Auswahl von Übungen",
-    "exercises": "Übungen",
     "export": "Exportieren",
     "export_error": "Fehler beim Export",
     "firstName": "Vorname",
@@ -228,7 +224,6 @@
     "select_surcharges_deductions": "Zuschläge/Abzüge auswählen",
     "function_not_available": "Diese Funktion ist leider nicht verfügbar",
     "change_helper_point": "Helferpunkt ändern",
-    "select_member": "Mitglied auswählen",
     "please_select_member": "Bitte wählen Sie ein Mitglied aus",
     "fill_all_fields_required": "Bitte füllen Sie alle Felder aus",
     "helper_point_changed_success": "Helferpunkt erfolgreich geändert",
@@ -258,7 +253,6 @@
     "header_placeholder": "Header Platzhalter",
     "lead_text_placeholder": "LeadText Platzhalter",
     "author_line_placeholder": "Autorenzeile Platzhalter",
-    "training_and_exercises": "Training & Übungen",
     "helper_list_accordion": "Helper List Accordion",
     "login_form_column": "Login Form Column",
     "open_accordion": "Open Accordion"
@@ -723,8 +717,6 @@
       "error": "Fehler beim Löschen des Teams"
     },
     "delete_team__confirm": "Möchtest du das Team wirklich löschen?",
-    "training_exercises": "Training & Übungen (bald verfügbar)",
-    "exercises": "Übungen",
     "export": {
       "header": "Export",
       "success": "Export erfolgreich",
@@ -807,8 +799,6 @@
     "cancel_reason_required": "Bitte geben Sie einen Grund für die Absage an",
     "cancelled": "Training abgesagt",
     "cancelled_reason": "Grund für die Absage",
-    "exercises": "Übungen",
-    "no_exercises": "Keine Übungen vorhanden",
     "send_reminder": "Erinnerung senden",
     "send_reminder_confirm": "Möchten Sie eine Erinnerung an {{count}} Mitglieder senden, die noch nicht geantwortet haben?",
     "reminder_sent": "Erinnerung wurde erfolgreich gesendet",
@@ -824,8 +814,7 @@
     "all_trainings": "Alle Trainings",
     "alle_anmelden__confirm": "Bist du sicher, dass du dich für die kommenden {{count}} Trainings anmelden willst?",
     "alle_abmelden__confirm": "Bist du sicher, dass du dich von den kommenden {{count}} Trainings abmelden willst?",
-    "filter__title": "Trainings filtern",
-    "exercises_available": "Übungen vorhanden"
+    "filter__title": "Trainings filtern"
   },
   "side_bar": {
     "info__and__help": "Info",

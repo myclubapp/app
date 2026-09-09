@@ -7,7 +7,6 @@ import { lastValueFrom, of } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
-import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { UiService } from "src/app/services/ui.service";
 import {
@@ -52,12 +51,6 @@ describe("TrainingsPage", () => {
             "getTeamTrainingsPastRefs",
             "getTeamTrainingsAttendeesRef",
             "setTeamTrainingAttendeeStatus",
-          ]),
-        },
-        {
-          provide: ExerciseService,
-          useValue: jasmine.createSpyObj("ExerciseService", [
-            "getTeamTrainingExerciseRefs",
           ]),
         },
         {

@@ -91,13 +91,7 @@
             <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
             {{training.liga}} {{training.teamName}}
           </h3>
-          @if (training.exercises.length > 0) {
-          <h3>
-            <ion-badge color="light"
-              >{{training.exercises.length}} Übungen vorhanden</ion-badge
-            >
-          </h3>
-          } @if (training.cancelled === true && training.cancelledReason) {
+          @if (training.cancelled === true && training.cancelledReason) {
           <h3>
             <ion-icon
               slot="icon-only"
@@ -292,13 +286,7 @@
             <ion-icon slot="icon-only" name="trophy-outline"></ion-icon>
             {{training.liga}} {{training.teamName}}
           </h3>
-          @if (training.exercises.length > 0) {
-          <h3>
-            <ion-badge color="light"
-              >{{training.exercises.length}} Übungen vorhanden</ion-badge
-            >
-          </h3>
-          } @if (training.cancelled === true && training.cancelledReason) {
+          @if (training.cancelled === true && training.cancelledReason) {
           <h3>
             <ion-icon
               slot="icon-only"

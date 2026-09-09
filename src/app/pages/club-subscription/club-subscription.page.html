@@ -169,14 +169,7 @@
       <ion-accordion [value]="module.id">
         <ion-item slot="header" color="light">
           <ion-label>{{module.name}}</ion-label>
-          @if (module.stripe_metadata_addon=='training' &&
-          club.hasFeatureTrainingExercise) {
-          <ion-icon
-            slot="start"
-            color="success"
-            name="checkmark-circle-outline"
-          ></ion-icon>
-          } @if (module.stripe_metadata_addon=='helfer' &&
+          @if (module.stripe_metadata_addon=='helfer' &&
           club.hasFeatureHelferEvent) {
           <ion-icon
             slot="start"
@@ -200,12 +193,7 @@
           }
         </ion-item>
         <div class="ion-padding" slot="content">
-          @if (module.stripe_metadata_addon=='training' &&
-          club.hasFeatureTrainingExercise) {
-          <ion-note color="success"
-            >Dieses Modul wurde bereits aktiviert.</ion-note
-          >
-          } @if (module.stripe_metadata_addon=='helfer' &&
+          @if (module.stripe_metadata_addon=='helfer' &&
           club.hasFeatureHelferEvent) {
           <ion-note color="success"
             >Dieses Modul wurde bereits aktiviert.</ion-note
@@ -220,10 +208,9 @@
           <ion-note color="success"
             >Dieses Modul wurde bereits aktiviert.</ion-note
           >
-          } @if (( module.stripe_metadata_addon=='training' &&
-          !club.hasFeatureTrainingExercise ) || (
-          module.stripe_metadata_addon=='helfer' && !club.hasFeatureHelferEvent
-          ) || ( module.stripe_metadata_addon=='championship' &&
+          } @if (( module.stripe_metadata_addon=='helfer' &&
+          !club.hasFeatureHelferEvent ) || (
+          module.stripe_metadata_addon=='championship' &&
           !club.hasFeatureChampionship ) || (
           module.stripe_metadata_addon=='myclubpro' && !club.hasFeatureMyClubPro
           )) {

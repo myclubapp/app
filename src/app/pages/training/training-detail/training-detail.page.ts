@@ -34,10 +34,8 @@ import { Training } from "src/app/models/training";
 import { AuthService } from "src/app/services/auth.service";
 import { TrainingService } from "src/app/services/firebase/training.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
-import { TrainingExercisesPage } from "../training-exercises/training-exercises.page";
 import { MemberPage } from "../../member/member.page";
 import { Profile } from "src/app/models/user";
-import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
@@ -60,7 +58,6 @@ export class TrainingDetailPage implements OnInit {
   private backButtonSub: Subscription;
 
   training$: Observable<any>;
-  exerciseList$: Observable<any[]>;
 
   mode = "yes";
   allowEdit: boolean = false;
@@ -84,7 +81,6 @@ export class TrainingDetailPage implements OnInit {
     private readonly alertCtrl: AlertController,
     private readonly authService: AuthService,
     private translate: TranslateService,
-    private readonly exerciseService: ExerciseService,
     private readonly uiService: UiService,
   ) {}
 
@@ -116,10 +112,6 @@ export class TrainingDetailPage implements OnInit {
     }
 
     this.training$ = this.getTraining(this.training.teamId, this.training.id);
-    this.exerciseList$ = this.exerciseService.getTeamTrainingExerciseRefs(
-      this.training.teamId,
-      this.training.id,
-    );
 
     // Both lists are shared inside FirebaseService (shareLatest).
     this.clubList$ = this.fbService.getClubList();
@@ -761,28 +753,6 @@ export class TrainingDetailPage implements OnInit {
       );
     }
   }
-  async openTrainingExerciseModal() {
-    const topModal = await this.modalCtrl.getTop();
-    const presentingElement = topModal || this.routerOutlet?.nativeEl;
-
-    // const presentingElement = await this.modalCtrl.getTop();
-    const modal = await this.modalCtrl.create({
-      component: TrainingExercisesPage,
-      presentingElement: await this.modalCtrl.getTop(),
-      canDismiss: true,
-      showBackdrop: true,
-      componentProps: {
-        training: this.training,
-      },
-    });
-    modal.present();
-
-    const { data, role } = await modal.onWillDismiss();
-
-    if (role === "confirm") {
-    }
-  }
-
   async tooLateToggle() {
     const alert = await this.alertCtrl.create({
       header: "Abmelden nicht möglich",

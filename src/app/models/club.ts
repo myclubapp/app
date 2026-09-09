@@ -33,7 +33,6 @@ export interface Club {
   creditor?: Creditor;
   surcharges?: { name: string; amount: number; currency: string }[];
   hasFeatureChampionship?: boolean;
-  hasFeatureTrainingExercise?: boolean;
   hasFeatureHelferEvent?: boolean;
   hasFeatureMyClubPro?: boolean;
 }

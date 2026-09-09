@@ -32,8 +32,6 @@
     "success__helfer_deleted": "Helper event successfully deleted",
     "success__training_deleted": "Training successfully deleted",
     "success__news_deleted": "News successfully deleted",
-    "success__exercise_deleted": "Exercise successfully removed",
-    "success__exercise_added": "Exercise successfully added",
     "alle_anmelden": "Register all",
     "alle_abmelden": "Unregister all",
     "anmelden": "Register",
@@ -213,8 +211,6 @@
     "delete_team_message": "Do you really want to delete this team?",
     "delete_training_header": "Delete training",
     "delete_training_message": "Do you really want to delete this training?",
-    "exercise_selection": "Exercise selection",
-    "exercises": "Exercises",
     "fab_button_placeholder": "FAB button placeholder",
     "fill_all_fields": "Please fill in all fields.",
     "fill_all_fields_required": "Please fill in all fields",
@@ -257,7 +253,6 @@
     "team_deleted_success": "The team was successfully deleted.",
     "team_member_fees": "Team member fees",
     "teams_and_game_info": "Teams and game info",
-    "training_and_exercises": "Training & exercises",
     "training_delete_error": "An error occurred while deleting the training. Please try again later.",
     "training_deleted_success": "The training was successfully deleted.",
     "want_to_purchase_subscription": "Do you want to purchase the subscription for"
@@ -705,8 +700,6 @@
       "error": "Error while deleting team"
     },
     "delete_team__confirm": "Do you really want to delete the team?",
-    "training_exercises": "Training & Exercises (coming soon)",
-    "exercises": "Exercises",
     "export": {
       "header": "Export",
       "success": "Export successful",
@@ -788,8 +781,6 @@
     "cancel_reason_required": "Please enter a reason for cancellation",
     "cancelled": "Training cancelled",
     "cancelled_reason": "Reason for cancellation",
-    "exercises": "Exercises",
-    "no_exercises": "No exercises available",
     "send_reminder": "Send reminder",
     "send_reminder_confirm": "Do you want to send a reminder to {{count}} members who haven't responded yet?",
     "reminder_sent": "Reminder was sent successfully",
@@ -805,8 +796,7 @@
     "all_trainings": "All trainings",
     "alle_anmelden__confirm": "Are you sure you want to register for the next {{count}} trainings?",
     "alle_abmelden__confirm": "Are you sure you want to unregister from the next {{count}} trainings?",
-    "filter__title": "Filter trainings",
-    "exercises_available": "Exercises available"
+    "filter__title": "Filter trainings"
   },
   "side_bar": {
     "info__and__help": "Info",

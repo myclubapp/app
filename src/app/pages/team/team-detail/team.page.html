@@ -187,21 +187,6 @@
     </ion-item>
   </ion-list>
   } } } } }
-  <!-- Training & Übungen -->
-  @if (teamAdminList$ | async; as teamAdminList) { @if (clubAdminList$ | async;
-  as clubAdminList) { @if (isTeamAdmin(teamAdminList, team.id) ||
-  isClubAdmin(clubAdminList, team.clubId)) { @if (clubList$ | async; as
-  clubList) { @if (enableMyClubPro(clubList)) {
-  <ion-list [inset]="true" lines="none">
-    <ion-list-header>
-      <ion-label>{{"team.training_exercises" | translate}}</ion-label>
-    </ion-list-header>
-    <ion-item (click)="openTeamTrainingExercise()" detail="true">
-      <ion-icon name="barbell-outline" slot="start"></ion-icon>
-      <ion-label>{{"team.exercises" | translate}}</ion-label>
-    </ion-item>
-  </ion-list>
-  } } } } }
   <ion-list lines="full" [inset]="true">
     <ion-list-header>
       <ion-label> {{ "common.details" | translate}} </ion-label>

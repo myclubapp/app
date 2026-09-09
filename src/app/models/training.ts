@@ -34,7 +34,6 @@ export interface Training {
   status: boolean;
   countAttendees: number;
   attendees: any;
-  exercises: any;
   children: any;
   cancelled: boolean;
   cancelledReason: string;

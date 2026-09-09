@@ -35,7 +35,6 @@ import { TeamAdminListPage } from "../../team-admin-list/team-admin-list.page";
 import { TeamMemberListPage } from "../../team-member-list/team-member-list.page";
 import { Timestamp } from "@angular/fire/firestore";
 import { Club } from "src/app/models/club";
-import { TeamExercisesPage } from "../team-exercises/team-exercises.page";
 import { ChampionshipPage } from "../../championship/championship/championship.page";
 import { TrainingsPage } from "../../training/trainings/trainings.page";
 import { UiService } from "src/app/services/ui.service";
@@ -172,26 +171,6 @@ export class TeamPage implements OnInit {
     }
   }
 
-  async openTeamTrainingExercise() {
-    const topModal = await this.modalCtrl.getTop();
-    const presentingElement = topModal || this.routerOutlet?.nativeEl;
-
-    const modal = await this.modalCtrl.create({
-      component: TeamExercisesPage,
-      presentingElement,
-      canDismiss: true,
-      showBackdrop: true,
-      componentProps: {
-        training: { teamId: this.team.id, clubId: this.team.clubId },
-      },
-    });
-    modal.present();
-
-    const { role } = await modal.onWillDismiss();
-
-    if (role === "confirm") {
-    }
-  }
   getTeam(teamId: string) {
     const calculateAge = (dateOfBirth) => {
       // console.log("DoB: " + JSON.stringify(dateOfBirth));

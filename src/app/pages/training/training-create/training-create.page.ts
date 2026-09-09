@@ -102,7 +102,6 @@ export class TrainingCreatePage implements OnInit {
       status: true,
       isMember: true,
       attendees: [],
-      exercises: [],
       countAttendees: 0,
       children: [],
       cancelled: false,
