@@ -172,14 +172,6 @@ export class TeamPage implements OnInit {
   }
 
   getTeam(teamId: string) {
-    const calculateAge = (dateOfBirth) => {
-      // console.log("DoB: " + JSON.stringify(dateOfBirth));
-      const birthday = new Date(dateOfBirth.seconds * 1000);
-      const ageDifMs = Date.now() - birthday.getTime();
-      const ageDate = new Date(ageDifMs); // miliseconds from epoch
-      return Math.abs(ageDate.getUTCFullYear() - 1970);
-    };
-
     return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
@@ -235,25 +227,15 @@ export class TeamPage implements OnInit {
             );
           }),
           map(({ teamMembers, teamAdmins, teamRequests }) => {
-            const ages = teamMembers
-              .map((member) =>
-                member.hasOwnProperty("dateOfBirth")
-                  ? calculateAge(member.dateOfBirth)
-                  : 0,
-              )
-              .filter((age) => age > 0); // Filter out invalid or 'Unknown' ages
-            // console.log(ages);
-
-            const averageAge =
-              ages.length > 0
-                ? ages.reduce((a, b) => a + b, 0) / ages.length
-                : 0; // Calculate average or set to 0 if no valid ages
+            // averageAge kommt aus dem Team-Dokument; der Scheduler
+            // jobAverageAge im Backend rechnet den Wert einmal pro Monat vor,
+            // statt ihn bei jedem Seitenaufruf aus allen Mitgliederprofilen
+            // zusammenzurechnen.
             return {
               ...team,
               updated: Timestamp.fromMillis(team.updated.seconds * 1000)
                 .toDate()
                 .toISOString(),
-              averageAge: averageAge.toFixed(1), // Keep two decimal places
               teamMembers,
               teamAdmins,
               teamRequests,

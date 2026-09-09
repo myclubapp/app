@@ -65,7 +65,9 @@
     <ion-item>
       <ion-icon name="stats-chart-outline" slot="start"></ion-icon>
       <ion-label> {{"common.average__age" | translate}} </ion-label>
-      <ion-note slot="end"> {{club.averageAge}}</ion-note>
+      <ion-note slot="end">
+        {{ (club.averageAge | number: "1.1-1") || "–" }}
+      </ion-note>
     </ion-item>
     @if (club['clubRequests'].length > 0) {
     <ion-item detail="true" (click)="openRequestList()">
