@@ -30,10 +30,19 @@ export interface Club {
   helferReportingDateTo: string;
   helferPunkte: number;
   links: ClubLink[];
+  /**
+   * Durchschnittsalter der Clubmitglieder, einmal pro Monat vom Backend-Job
+   * `jobAverageAge` geschrieben. `null`, wenn kein Mitglied ein Geburtsdatum
+   * hinterlegt hat; fehlend, solange der Job den Club noch nie erfasst hat.
+   */
+  averageAge?: number | null;
+  /** Anzahl Mitglieder, die in `averageAge` eingeflossen sind. */
+  averageAgeMembers?: number;
+  /** Zeitpunkt der letzten Berechnung von `averageAge`. */
+  averageAgeUpdated?: Timestamp;
   creditor?: Creditor;
   surcharges?: { name: string; amount: number; currency: string }[];
   hasFeatureChampionship?: boolean;
-  hasFeatureTrainingExercise?: boolean;
   hasFeatureHelferEvent?: boolean;
   hasFeatureMyClubPro?: boolean;
 }

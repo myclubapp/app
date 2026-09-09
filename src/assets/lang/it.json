@@ -31,8 +31,6 @@
     "success__helfer_deleted": "Evento di aiuto eliminato con successo",
     "success__training_deleted": "Allenamento eliminato con successo",
     "success__news_deleted": "Notizia eliminata con successo",
-    "success__exercise_deleted": "Esercizio rimosso con successo",
-    "success__exercise_added": "Esercizio aggiunto con successo",
     "alle_anmelden": "Registra tutti",
     "alle_abmelden": "Disiscrivi tutti",
     "anmelden": "Iscriviti",
@@ -214,8 +212,6 @@
     "delete_team_message": "Vuoi davvero eliminare questa squadra?",
     "delete_training_header": "Elimina allenamento",
     "delete_training_message": "Vuoi davvero eliminare questo allenamento?",
-    "exercise_selection": "Selezione esercizi",
-    "exercises": "Esercizi",
     "fab_button_placeholder": "Segnaposto per il pulsante FAB",
     "fill_all_fields": "Si prega di compilare tutti i campi.",
     "fill_all_fields_required": "Si prega di compilare tutti i campi",
@@ -258,7 +254,6 @@
     "team_deleted_success": "La squadra è stata eliminata con successo.",
     "team_member_fees": "Quote associative dei membri della squadra",
     "teams_and_game_info": "Informazioni squadre e partite",
-    "training_and_exercises": "Allenamento & esercizi",
     "training_delete_error": "Si è verificato un errore durante l'eliminazione dell'allenamento. Riprova più tardi.",
     "training_deleted_success": "L'allenamento è stato eliminato con successo.",
     "want_to_purchase_subscription": "Vuoi acquistare l'abbonamento per"
@@ -706,8 +701,6 @@
       "error": "Errore durante l'eliminazione della squadra"
     },
     "delete_team__confirm": "Vuoi davvero eliminare questa squadra?",
-    "training_exercises": "Allenamento & Esercizi (presto disponibile)",
-    "exercises": "Esercizi",
     "export": {
       "header": "Esporta",
       "success": "Esportazione riuscita",
@@ -789,8 +782,6 @@
     "cancel_reason_required": "Inserisci un motivo per l'annullamento",
     "cancelled": "Allenamento annullato",
     "cancelled_reason": "Motivo dell'annullamento",
-    "exercises": "Esercizi",
-    "no_exercises": "Nessun esercizio disponibile",
     "send_reminder": "Invia promemoria",
     "send_reminder_confirm": "Vuoi inviare un promemoria a {{count}} membri che non hanno ancora risposto?",
     "reminder_sent": "Il promemoria è stato inviato con successo",
@@ -806,8 +797,7 @@
     "all_trainings": "Tutti gli allenamenti",
     "alle_anmelden__confirm": "Sei sicuro di volerti iscrivere ai prossimi {{count}} allenamenti?",
     "alle_abmelden__confirm": "Sei sicuro di volerti disiscrivere dai prossimi {{count}} allenamenti?",
-    "filter__title": "Filtra allenamenti",
-    "exercises_available": "Esercizi disponibili"
+    "filter__title": "Filtra allenamenti"
   },
   "side_bar": {
     "info__and__help": "Info",

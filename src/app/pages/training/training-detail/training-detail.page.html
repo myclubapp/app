@@ -86,20 +86,7 @@
       </ion-label>
     </ion-item>
   </ion-list>
-  } @if (clubList$ | async; as clubList) { @if (enableMyClubPro(clubList) &&
-  !allowEdit) {
-  <ion-list [inset]="true" lines="none">
-    <ion-item (click)="openTrainingExerciseModal()" detail="true">
-      <ion-label>{{"training.exercises" | translate}}</ion-label>
-      @if (exerciseList$ | async; as exerciseList) { @if (exerciseList.length >
-      0) {
-      <ion-badge slot="end"> {{exerciseList.length}} </ion-badge>
-      } @if (exerciseList.length == 0) {
-      <ion-note> {{"training.no_exercises" | translate}} </ion-note>
-      } }
-    </ion-item>
-  </ion-list>
-  } } @if (isFuture && !allowEdit) {
+  } @if (isFuture && !allowEdit) {
   <ion-list [inset]="true" lines="none">
     <ion-list-header>
       {{"common.attendances__absences" | translate}}
@@ -531,19 +518,6 @@
         <ion-skeleton-text animated style="width: 80%"></ion-skeleton-text>
         <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
       </ion-label>
-    </ion-item>
-  </ion-list>
-  <!-- Exercises Section -->
-  <ion-list [inset]="true" lines="none">
-    <ion-item>
-      <ion-label>
-        <ion-skeleton-text animated style="width: 100px"></ion-skeleton-text>
-      </ion-label>
-      <ion-skeleton-text
-        slot="end"
-        animated
-        style="width: 40px; margin-right: 16px"
-      ></ion-skeleton-text>
     </ion-item>
   </ion-list>
   <!-- Attendance Section -->

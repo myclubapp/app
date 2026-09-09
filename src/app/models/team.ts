@@ -25,6 +25,16 @@ export interface Team {
   liga: string;
   type: string;
   updated: Timestamp;
+  /**
+   * Durchschnittsalter der Teammitglieder, einmal pro Monat vom Backend-Job
+   * `jobAverageAge` geschrieben. `null`, wenn kein Mitglied ein Geburtsdatum
+   * hinterlegt hat; fehlend, solange der Job das Team noch nie erfasst hat.
+   */
+  averageAge?: number | null;
+  /** Anzahl Mitglieder, die in `averageAge` eingeflossen sind. */
+  averageAgeMembers?: number;
+  /** Zeitpunkt der letzten Berechnung von `averageAge`. */
+  averageAgeUpdated?: Timestamp;
   trainingThreshold: number;
   championshipThreshold: number;
   jahresbeitragWert?: number;

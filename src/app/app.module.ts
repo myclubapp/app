@@ -48,7 +48,6 @@ import { HelferPunktePage } from "./pages/helfer/helfer-punkte/helfer-punkte.pag
 import { ChampionshipCreatePage } from "./pages/championship/championship-create/championship-create.page";
 import { TrainingDetailPage } from "./pages/training/training-detail/training-detail.page";
 import { TrainingCreatePage } from "./pages/training/training-create/training-create.page";
-import { TrainingExercisesPage } from "./pages/training/training-exercises/training-exercises.page";
 import { EventAddPage } from "./pages/event/event-add/event-add.page";
 import { EventDetailPage } from "./pages/event/event-detail/event-detail.page";
 import { ClubPage } from "./pages/club/club.page";
@@ -72,7 +71,6 @@ import { TeamMemberListPage } from "./pages/team-member-list/team-member-list.pa
 import { ClubAdminListPage } from "./pages/club-admin-list/club-admin-list.page";
 import { TeamAdminListPage } from "./pages/team-admin-list/team-admin-list.page";
 import { ClubTeamListPage } from "./pages/club-team-list/club-team-list.page";
-import { TeamExercisesPage } from "./pages/team/team-exercises/team-exercises.page";
 import { ClubRequestListPage } from "./pages/club-request-list/club-request-list.page";
 import { TeamCreatePage } from "./pages/team/team-create/team-create.page";
 import { HelferPunkteClubPage } from "./pages/helfer/helfer-punkte-club/helfer-punkte-club.page";
@@ -176,7 +174,6 @@ const getConfig = () => {
     HelferDetailPage,
     HelferPunkteDetailPage,
     HelferAddPage,
-    TrainingExercisesPage,
     TrainingDetailPage,
     TrainingCreatePage,
     ChampionshipCreatePage,
@@ -199,7 +196,6 @@ const getConfig = () => {
     TeamPage,
     TeamMemberListPage,
     TeamAdminListPage,
-    TeamExercisesPage,
     TeamCreatePage,
     QrInvoiceModalPage,
     UserListItemComponent,

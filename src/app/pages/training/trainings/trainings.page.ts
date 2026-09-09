@@ -38,7 +38,6 @@ import { TrainingDetailPage } from "../training-detail/training-detail.page";
 import { TranslateService } from "@ngx-translate/core";
 import { Team } from "src/app/models/team";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ExerciseService } from "src/app/services/firebase/exercise.service";
 import { UserProfileService } from "src/app/services/firebase/user-profile.service";
 import { Profile } from "src/app/models/user";
 import { UiService } from "src/app/services/ui.service";
@@ -94,7 +93,6 @@ export class TrainingsPage implements OnInit {
     private translate: TranslateService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private exerciseService: ExerciseService,
     private userProfileService: UserProfileService,
     private uiService: UiService,
   ) {
@@ -322,7 +320,6 @@ export class TrainingsPage implements OnInit {
           isMember: true,
           countAttendees: 0,
           attendees: undefined,
-          exercises: undefined,
           children: undefined,
           cancelled: false,
           cancelledReason: "",
@@ -435,17 +432,6 @@ export class TrainingsPage implements OnInit {
                               return of([]);
                             }),
                           ),
-                        this.exerciseService
-                          .getTeamTrainingExerciseRefs(team.id, training.id)
-                          .pipe(
-                            catchError((err) => {
-                              console.error(
-                                "Permission error in fetching getTeamTrainingExerciseRefs:",
-                                err,
-                              );
-                              return of([]);
-                            }),
-                          ),
                         this.fbService.getTeamRef(team.id).pipe(
                           catchError((err) => {
                             console.error(
@@ -457,21 +443,19 @@ export class TrainingsPage implements OnInit {
                         ),
                         of(team.id),
                       ]).pipe(
-                        map(([attendees, exercises, teamDetails, teamId]) => ({
+                        map(([attendees, teamDetails, teamId]) => ({
                           training,
                           attendees,
-                          exercises,
                           teamDetails,
                           teamId,
                         })),
                         // Non-blocking enrichment: emit the row immediately with
                         // placeholder counts so the list renders at once instead
-                        // of gating on the slowest attendees/exercises read.
+                        // of gating on the slowest attendees read.
                         // Real counts/status fill in next.
                         startWith({
                           training,
                           attendees: [],
-                          exercises: [],
                           teamDetails: {},
                           teamId: team.id,
                         }),
@@ -532,7 +516,6 @@ export class TrainingsPage implements OnInit {
                 ...item.training,
                 cancelled: item.training.cancelled ?? false,
                 attendees: item.attendees,
-                exercises: item.exercises,
                 isMember: teamMembers.some(
                   (member) => member.id === this.user.uid,
                 ),
@@ -660,17 +643,6 @@ export class TrainingsPage implements OnInit {
                                 return of([]);
                               }),
                             ),
-                          this.exerciseService
-                            .getTeamTrainingExerciseRefs(team.id, training.id)
-                            .pipe(
-                              catchError((err) => {
-                                console.error(
-                                  "Permission error in fetching getTeamTrainingExerciseRefs:",
-                                  err,
-                                );
-                                return of([]);
-                              }),
-                            ),
                           this.fbService.getTeamRef(team.id).pipe(
                             catchError((err) => {
                               console.error(
@@ -682,26 +654,21 @@ export class TrainingsPage implements OnInit {
                           ),
                           of(team.id), // Übergebe die teamId statt erneut Members zu laden
                         ]).pipe(
-                          map(
-                            ([attendees, exercises, teamDetails, teamId]) => ({
-                              training,
-                              attendees,
-                              exercises,
-                              teamDetails,
-                              teamId,
-                            }),
-                          ),
+                          map(([attendees, teamDetails, teamId]) => ({
+                            training,
+                            attendees,
+                            teamDetails,
+                            teamId,
+                          })),
                           // Non-blocking enrichment: emit the row immediately
                           // with placeholder counts so the past list renders at
                           // once. Without this, combineLatest gates the whole
-                          // list on the slowest attendees/exercises read across
-                          // up to 30 trainings, so rows appeared only "much
-                          // later". The real counts/badges fill in on the next
-                          // emission.
+                          // list on the slowest attendees read across up to 30
+                          // trainings, so rows appeared only "much later". The
+                          // real counts/badges fill in on the next emission.
                           startWith({
                             training,
                             attendees: [],
-                            exercises: [],
                             teamDetails: {},
                             teamId: team.id,
                           }),
@@ -762,7 +729,6 @@ export class TrainingsPage implements OnInit {
                 ...item.training,
                 cancelled: item.training.cancelled ?? false,
                 attendees: item.attendees,
-                exercises: item.exercises,
                 isMember: teamMembers.some(
                   (member) => member.id === this.user.uid,
                 ),

@@ -148,14 +148,6 @@ export class ClubPage implements OnInit {
     });
   }
   getClub(clubId: string) {
-    const calculateAge = (dateOfBirth) => {
-      // console.log("DoB: " + JSON.stringify(dateOfBirth));
-      const birthday = new Date(dateOfBirth.seconds * 1000);
-      const ageDifMs = Date.now() - birthday.getTime();
-      const ageDate = new Date(ageDifMs); // miliseconds from epoch
-      return Math.abs(ageDate.getUTCFullYear() - 1970);
-    };
-
     return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
@@ -276,27 +268,17 @@ export class ClubPage implements OnInit {
               clubTeams,
               clubParents,
             }) => {
-              const ages = clubMembers
-                .map((member) =>
-                  member.hasOwnProperty("dateOfBirth")
-                    ? calculateAge(member.dateOfBirth)
-                    : 0,
-                )
-                .filter((age) => age > 0); // Filter out invalid or 'Unknown' ages
-              // console.log(ages);
-
-              const averageAge =
-                ages.length > 0
-                  ? ages.reduce((a, b) => a + b, 0) / ages.length
-                  : 0; // Calculate average or set to 0 if no valid ages
               // console.log(clubTeams)
+              // averageAge kommt aus dem Club-Dokument; der Scheduler
+              // jobAverageAge im Backend rechnet den Wert einmal pro Monat
+              // vor, statt ihn bei jedem Seitenaufruf aus allen
+              // Mitgliederprofilen zusammenzurechnen.
               return {
                 ...club,
                 clubTeams,
                 updated: Timestamp.fromMillis(club.updated.seconds * 1000)
                   .toDate()
                   .toISOString(),
-                averageAge: averageAge.toFixed(1), // Keep two decimal places
                 clubMembers,
                 clubAdmins,
                 clubRequests,

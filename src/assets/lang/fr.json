@@ -31,8 +31,6 @@
     "success__helfer_deleted": "Événement d'aide supprimé avec succès",
     "success__training_deleted": "Entraînement supprimé avec succès",
     "success__news_deleted": "Actualité supprimée avec succès",
-    "success__exercise_deleted": "Exercice supprimé avec succès",
-    "success__exercise_added": "Exercice ajouté avec succès",
     "alle_anmelden": "Inscrire tous",
     "alle_abmelden": "Désinscrire tous",
     "anmelden": "S'inscrire",
@@ -214,8 +212,6 @@
     "delete_team_message": "Voulez-vous vraiment supprimer cette équipe ?",
     "delete_training_header": "Supprimer l'entraînement",
     "delete_training_message": "Voulez-vous vraiment supprimer cet entraînement ?",
-    "exercise_selection": "Sélection d'exercices",
-    "exercises": "Exercices",
     "fab_button_placeholder": "Espace réservé pour le bouton FAB",
     "fill_all_fields": "Veuillez remplir tous les champs.",
     "fill_all_fields_required": "Veuillez remplir tous les champs",
@@ -258,7 +254,6 @@
     "team_deleted_success": "L'équipe a été supprimée avec succès.",
     "team_member_fees": "Cotisations des membres de l'équipe",
     "teams_and_game_info": "Informations sur les équipes et les matchs",
-    "training_and_exercises": "Entraînement & exercices",
     "training_delete_error": "Une erreur s'est produite lors de la suppression de l'entraînement. Veuillez réessayer plus tard.",
     "training_deleted_success": "L'entraînement a été supprimé avec succès.",
     "want_to_purchase_subscription": "Voulez-vous acheter l'abonnement pour"
@@ -706,8 +701,6 @@
       "error": "Une erreur s'est produite lors de la suppression de l'équipe. Veuillez réessayer plus tard."
     },
     "delete_team__confirm": "Voulez-vous vraiment supprimer cette équipe ?",
-    "training_exercises": "Entraînement & Exercices (bientôt disponible)",
-    "exercises": "Exercices",
     "export": {
       "header": "Exporter",
       "success": "Export réussi",
@@ -789,8 +782,6 @@
     "cancel_reason_required": "Veuillez indiquer une raison pour l'annulation",
     "cancelled": "Entraînement annulé",
     "cancelled_reason": "Raison de l'annulation",
-    "exercises": "Exercices",
-    "no_exercises": "Aucun exercice disponible",
     "send_reminder": "Envoyer un rappel",
     "send_reminder_confirm": "Voulez-vous envoyer un rappel à {{count}} membres qui n'ont pas encore répondu ?",
     "reminder_sent": "Le rappel a été envoyé avec succès",
@@ -806,8 +797,7 @@
     "all_trainings": "Tous les entraînements",
     "alle_anmelden__confirm": "Es-tu sûr de vouloir t'inscrire aux {{count}} prochains entraînements ?",
     "alle_abmelden__confirm": "Es-tu sûr de vouloir te désinscrire des {{count}} prochains entraînements ?",
-    "filter__title": "Filtrer les entraînements",
-    "exercises_available": "Exercices disponibles"
+    "filter__title": "Filtrer les entraînements"
   },
   "side_bar": {
     "info__and__help": "Info",

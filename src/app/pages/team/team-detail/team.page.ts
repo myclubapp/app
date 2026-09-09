@@ -35,7 +35,6 @@ import { TeamAdminListPage } from "../../team-admin-list/team-admin-list.page";
 import { TeamMemberListPage } from "../../team-member-list/team-member-list.page";
 import { Timestamp } from "@angular/fire/firestore";
 import { Club } from "src/app/models/club";
-import { TeamExercisesPage } from "../team-exercises/team-exercises.page";
 import { ChampionshipPage } from "../../championship/championship/championship.page";
 import { TrainingsPage } from "../../training/trainings/trainings.page";
 import { UiService } from "src/app/services/ui.service";
@@ -172,35 +171,7 @@ export class TeamPage implements OnInit {
     }
   }
 
-  async openTeamTrainingExercise() {
-    const topModal = await this.modalCtrl.getTop();
-    const presentingElement = topModal || this.routerOutlet?.nativeEl;
-
-    const modal = await this.modalCtrl.create({
-      component: TeamExercisesPage,
-      presentingElement,
-      canDismiss: true,
-      showBackdrop: true,
-      componentProps: {
-        training: { teamId: this.team.id, clubId: this.team.clubId },
-      },
-    });
-    modal.present();
-
-    const { role } = await modal.onWillDismiss();
-
-    if (role === "confirm") {
-    }
-  }
   getTeam(teamId: string) {
-    const calculateAge = (dateOfBirth) => {
-      // console.log("DoB: " + JSON.stringify(dateOfBirth));
-      const birthday = new Date(dateOfBirth.seconds * 1000);
-      const ageDifMs = Date.now() - birthday.getTime();
-      const ageDate = new Date(ageDifMs); // miliseconds from epoch
-      return Math.abs(ageDate.getUTCFullYear() - 1970);
-    };
-
     return this.authService.getAuthenticatedUser$().pipe(
       take(1),
       tap((user) => {
@@ -256,25 +227,15 @@ export class TeamPage implements OnInit {
             );
           }),
           map(({ teamMembers, teamAdmins, teamRequests }) => {
-            const ages = teamMembers
-              .map((member) =>
-                member.hasOwnProperty("dateOfBirth")
-                  ? calculateAge(member.dateOfBirth)
-                  : 0,
-              )
-              .filter((age) => age > 0); // Filter out invalid or 'Unknown' ages
-            // console.log(ages);
-
-            const averageAge =
-              ages.length > 0
-                ? ages.reduce((a, b) => a + b, 0) / ages.length
-                : 0; // Calculate average or set to 0 if no valid ages
+            // averageAge kommt aus dem Team-Dokument; der Scheduler
+            // jobAverageAge im Backend rechnet den Wert einmal pro Monat vor,
+            // statt ihn bei jedem Seitenaufruf aus allen Mitgliederprofilen
+            // zusammenzurechnen.
             return {
               ...team,
               updated: Timestamp.fromMillis(team.updated.seconds * 1000)
                 .toDate()
                 .toISOString(),
-              averageAge: averageAge.toFixed(1), // Keep two decimal places
               teamMembers,
               teamAdmins,
               teamRequests,
