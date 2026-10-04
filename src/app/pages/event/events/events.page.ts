@@ -769,7 +769,9 @@ export class EventsPage implements OnInit {
     });
 
     if (result) {
-      if (!result.reason) {
+      // showFormDialog returns the alert data: { values: { reason } }
+      const reason = result.reason ?? result.values?.reason;
+      if (!reason) {
         await this.uiService.showErrorToast(
           await lastValueFrom(
             this.translate.get("events.cancel_reason_required"),
@@ -782,7 +784,7 @@ export class EventsPage implements OnInit {
         await this.eventService.changeClubEvent(
           {
             cancelled: true,
-            cancelledReason: result.reason,
+            cancelledReason: reason,
           },
           event.clubId,
           event.id,
