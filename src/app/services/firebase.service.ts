@@ -29,7 +29,6 @@ import {
   catchError,
   combineLatest,
   map,
-  mergeMap,
   of,
   switchMap,
   take,
@@ -166,7 +165,7 @@ export class FirebaseService {
           }),
         );
       }),
-      mergeMap((clubs) => {
+      switchMap((clubs) => {
         if (clubs.length === 0) return of([]);
         return combineLatest(
           clubs.map((club) =>
@@ -195,7 +194,7 @@ export class FirebaseService {
       switchMap((user) => {
         return this.getUserClubAdminRefs(user);
       }),
-      mergeMap((clubs) => {
+      switchMap((clubs) => {
         if (clubs.length === 0) return of([]);
         return combineLatest(
           clubs.map((club) =>
@@ -224,7 +223,7 @@ export class FirebaseService {
       switchMap((user) => {
         return this.getUserClubAdminRefs(user);
       }),
-      mergeMap((clubs) => {
+      switchMap((clubs) => {
         if (clubs.length === 0) return of([]);
         return combineLatest(
           clubs.map((club) =>
@@ -286,7 +285,7 @@ export class FirebaseService {
           }),
         );
       }),
-      mergeMap((teams) => {
+      switchMap((teams) => {
         if (teams.length === 0) return of([]);
         const validTeams = teams.filter((team) => team && team.id);
         if (validTeams.length === 0) return of([]);
@@ -325,7 +324,7 @@ export class FirebaseService {
       switchMap((user) => {
         return this.getUserTeamAdminRefs(user);
       }),
-      mergeMap((teams) => {
+      switchMap((teams) => {
         if (teams.length === 0) return of([]);
         const validTeams = teams.filter((team) => team && team.id);
         if (validTeams.length === 0) return of([]);
@@ -364,7 +363,7 @@ export class FirebaseService {
       switchMap((user) => {
         return this.getUserTeamAdminRefs(user);
       }),
-      mergeMap((teams) => {
+      switchMap((teams) => {
         if (teams.length === 0) return of([]);
         const validTeams = teams.filter((team) => team && team.id);
         if (validTeams.length === 0) return of([]);
@@ -410,7 +409,7 @@ export class FirebaseService {
           );
         }
       }),
-      mergeMap((teams) => {
+      switchMap((teams) => {
         if (teams.length === 0) {
           return of([]);
         }
@@ -1171,7 +1170,7 @@ export class FirebaseService {
             tap((contacts) => {
               console.log("DEBUG: Gefundene Kontakte:", contacts);
             }),
-            mergeMap((contacts) => {
+            switchMap((contacts) => {
               if (contacts.length === 0) return of([]);
               return combineLatest(
                 contacts.map((contact) => {

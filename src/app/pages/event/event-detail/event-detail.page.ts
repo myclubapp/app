@@ -34,6 +34,7 @@ import { Club } from "src/app/models/club";
 import { UiService } from "src/app/services/ui.service";
 import { EventAddPage } from "../event-add/event-add.page";
 import { HelferAddPage } from "../../helfer/helfer-add/helfer-add.page";
+import { startDateTime } from "src/app/services/start-date-time";
 
 @Component({
   selector: "app-event-detail",
@@ -407,7 +408,9 @@ export class EventDetailPage implements OnInit {
     });
 
     if (result) {
-      if (!result.reason) {
+      // showFormDialog returns the alert data: { values: { reason } }
+      const reason = result.reason ?? result.values?.reason;
+      if (!reason) {
         await this.uiService.showErrorToast(
           await lastValueFrom(
             this.translate.get("events.cancel_reason_required"),
@@ -419,7 +422,7 @@ export class EventDetailPage implements OnInit {
         await this.eventService.changeClubEvent(
           {
             cancelled: true,
-            cancelledReason: result.reason,
+            cancelledReason: reason,
           },
           event.clubId,
           event.id,
@@ -528,8 +531,7 @@ export class EventDetailPage implements OnInit {
     console.log(
       `Set Status ${status} for user ${userId} and team ${event.clubId} and event ${event.id}`,
     );
-    const newStartDate = event.date.toDate();
-    newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
+    const newStartDate = startDateTime(event.date, event.timeFrom);
 
     const club = await lastValueFrom(
       this.fbService.getClubRef(event.clubId).pipe(take(1)),
@@ -568,8 +570,7 @@ export class EventDetailPage implements OnInit {
       console.log(
         `Set Status ${status} for user ${this.user.uid} and club ${this.event.clubId} and event ${event.id}`,
       );
-      const newStartDate = event.date.toDate();
-      newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
+      const newStartDate = startDateTime(event.date, event.timeFrom);
   
       // Get team threshold via training.teamId
       console.log("Grenzwert ");

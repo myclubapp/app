@@ -78,8 +78,7 @@ export class TeamMemberListPage implements OnInit {
 
   ngOnInit() {
     // NavParams migration: now using @Input property directly
-    if (this.team.roles && this.team.roles.lenght > 0) {
-    } else {
+    if (!this.team.roles) {
       this.team.roles = [];
     }
 

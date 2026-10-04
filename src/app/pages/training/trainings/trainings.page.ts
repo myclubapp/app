@@ -44,6 +44,7 @@ import { UiService } from "src/app/services/ui.service";
 import { Preferences } from "@capacitor/preferences";
 import { BehaviorSubject } from "rxjs";
 import { shareLatest } from "src/app/services/share-latest";
+import { startDateTime } from "src/app/services/start-date-time";
 
 const ALL_TEAMS = "all";
 const TEAM_FILTER_STORAGE_KEY = "trainingTeamFilter";
@@ -1076,8 +1077,7 @@ export class TrainingsPage implements OnInit {
     const trainingThreshold = training.team?.trainingThreshold || 0;
     if (!trainingThreshold) return false;
 
-    const startDate = training.date.toDate();
-    startDate.setHours(Number(training.timeFrom.substring(0, 2)));
+    const startDate = startDateTime(training.date, training.timeFrom);
 
     return (
       startDate.getTime() - new Date().getTime() <

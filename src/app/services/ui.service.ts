@@ -300,6 +300,9 @@ export class UiService {
         ],
       });
 
+      // Backdrop tap / Android back: resolve too, otherwise the caller
+      // waits forever. A second resolve after a button press is a no-op.
+      alert.onDidDismiss().then(() => resolve(false));
       await alert.present();
     });
   }

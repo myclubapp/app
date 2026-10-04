@@ -41,6 +41,7 @@ import { Team } from "src/app/models/team";
 import { Club } from "src/app/models/club";
 import { UiService } from "src/app/services/ui.service";
 import { TrainingCreatePage } from "../training-create/training-create.page";
+import { startDateTime } from "src/app/services/start-date-time";
 
 @Component({
   selector: "app-training-detail",
@@ -460,8 +461,7 @@ export class TrainingDetailPage implements OnInit {
     console.log(
       `Set Status ${status} for user ${userId} and team ${training.teamId} and training ${training.id}`,
     );
-    const newStartDate = training.date.toDate();
-    newStartDate.setHours(Number(training.timeFrom.substring(0, 2)));
+    const newStartDate = startDateTime(training.date, training.timeFrom);
 
     const team = await lastValueFrom(
       this.fbService.getTeamRef(training.teamId).pipe(take(1)),

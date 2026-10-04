@@ -66,13 +66,17 @@ export class NotificationPage implements OnInit {
 
   async markALlAsRead() {
     try {
-      this.subscription = this.notifications$.subscribe((notifications) => {
-        notifications.forEach((notification) => {
-          if (!notification.opened) {
-            this.toggle(notification);
-          }
+      // take(1): otherwise the live listener stays subscribed and marks
+      // every notification arriving later as read while the page is open.
+      this.subscription = this.notifications$
+        .pipe(take(1))
+        .subscribe((notifications) => {
+          notifications.forEach((notification) => {
+            if (!notification.opened) {
+              this.toggle(notification);
+            }
+          });
         });
-      });
       if (this.platform.is("capacitor")) {
         await PushNotifications.removeAllDeliveredNotifications();
       }

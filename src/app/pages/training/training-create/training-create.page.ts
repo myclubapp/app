@@ -134,9 +134,13 @@ export class TrainingCreatePage implements OnInit {
     }
 
     this.teamAdminList$ = this.fbService.getTeamAdminList();
-    this.teamAdminList$.forEach((teamList) => {
-      this.training.teamId = teamList[0].id;
-      this.training.teamName = teamList[0].name;
+    // Preselect the first team once; don't overwrite a copied training's
+    // team or the user's choice on later emissions of the live list.
+    this.teamAdminList$.pipe(take(1)).subscribe((teamList) => {
+      if (!this.training.teamId && teamList?.length) {
+        this.training.teamId = teamList[0].id;
+        this.training.teamName = teamList[0].name;
+      }
     });
   }
 
