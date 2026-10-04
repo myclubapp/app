@@ -146,7 +146,12 @@ export function appInitializerFactory(
           .pipe(take(1))
           .subscribe(
             () => {},
-            (err) => console.error(err),
+            (err) => {
+              // Don't block bootstrap: without this the app stays blank
+              // when the language file can't be loaded (e.g. offline PWA).
+              console.error(err);
+              resolve(null);
+            },
             () => resolve(null),
           );
       });
