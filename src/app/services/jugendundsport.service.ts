@@ -25,6 +25,20 @@ export class JugendundsportService {
 
   private calculateDuration(timeFrom: string, timeTo: string): string {
     if (!timeFrom || !timeTo) return "90";
+
+    // Trainings store timeFrom/timeTo as ISO timestamps.
+    if (timeFrom.includes("T") && timeTo.includes("T")) {
+      const from = new Date(timeFrom);
+      const to = new Date(timeTo);
+      if (!isNaN(from.getTime()) && !isNaN(to.getTime())) {
+        let minutes =
+          to.getHours() * 60 +
+          to.getMinutes() -
+          (from.getHours() * 60 + from.getMinutes());
+        if (minutes <= 0) minutes += 24 * 60; // Falls über Mitternacht
+        return minutes.toString();
+      }
+    }
     if (
       !/^[0-9]{1,2}:[0-9]{2}$/.test(timeFrom) ||
       !/^[0-9]{1,2}:[0-9]{2}$/.test(timeTo)
@@ -163,7 +177,7 @@ export class JugendundsportService {
             minute: "2-digit",
           }), // ZEIT
           this.calculateDuration("", ""), // DAUER
-          game.location + " " + game.city || "", // ORT
+          `${game.location ?? ""} ${game.city ?? ""}`.trim(), // ORT
           `${game.teamHome} vs ${game.teamAway}`, // FOKUS
         ];
       });
@@ -260,12 +274,6 @@ export class JugendundsportService {
         // Für jedes anwesende Mitglied einen Eintrag erstellen
         for (const attendee of attendees) {
           if (attendee.status === true) {
-            const memberProfile = await lastValueFrom(
-              this.userProfileService
-                .getUserProfileById(attendee.id)
-                .pipe(take(1)),
-            );
-
             csvData.push([
               "", // PERSONENNUMMER
               "Teilnehmer", // FUNKTION
@@ -315,7 +323,10 @@ export class JugendundsportService {
       const profileObservables = members.map((member) =>
         this.userProfileService.getUserProfileById(member.id).pipe(take(1)),
       );
-      const profiles = await lastValueFrom(forkJoin(profileObservables));
+      // Members without a (readable) profile document emit undefined.
+      const profiles = (
+        await lastValueFrom(forkJoin(profileObservables))
+      ).filter(Boolean);
 
       // CSV-Header gemäß Vorlage
       const headers = [
