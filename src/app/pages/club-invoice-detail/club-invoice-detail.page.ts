@@ -219,6 +219,11 @@ export class ClubInvoiceDetailPage {
             },
             reference: reference,
           };
+          // Purpose (e.g. "Jahresbeitrag 2026") as "Zusätzliche Informationen"
+          // on the payment slip; the QR-bill standard allows 140 characters.
+          if (invoice.purpose) {
+            data.message = String(invoice.purpose).slice(0, 140);
+          }
 
           try {
             const svg = new SwissQRBill(data);

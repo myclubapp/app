@@ -90,11 +90,13 @@ export class ClubBillingPeriodPage implements OnInit {
   async addPeriod() {
     const alert = await this.alertCtrl.create({
       header: "Neue Abrechnungsperiode",
+      message: this.translate.instant("club-billing-period.purpose_hint"),
       inputs: [
         {
           name: "name",
           type: "text",
           placeholder: "z.B. Jahresbeitrag 2025",
+          attributes: { maxlength: 140 },
         },
       ],
       buttons: [
@@ -150,12 +152,14 @@ export class ClubBillingPeriodPage implements OnInit {
   async editPeriod(period: any) {
     const alert = await this.alertCtrl.create({
       header: "Periode bearbeiten",
+      message: this.translate.instant("club-billing-period.purpose_hint"),
       inputs: [
         {
           name: "name",
           type: "text",
           value: period.name,
           placeholder: "Name der Periode",
+          attributes: { maxlength: 140 },
         },
       ],
       buttons: [
