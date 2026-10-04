@@ -140,7 +140,8 @@ export class HelferPunkteClubPage implements OnInit {
 
       // CSV Header
       let csvContent =
-        "Vorname,Nachname,Rollen,Gesamtpunkte,Helferpunkte Details\n";
+        "Vorname,Nachname,Rollen,Soll-Punkte,Gesamtpunkte,Helferpunkte Details\n";
+      const q = (value: string) => `"${String(value).replace(/"/g, '""')}"`;
 
       // CSV Daten
       members.forEach((member) => {
@@ -159,7 +160,7 @@ export class HelferPunkteClubPage implements OnInit {
             )
             ?.join("; ") || "";
 
-        csvContent += `"${firstName}","${lastName}","${roles}",${helferPunkte},${totalPoints},"${helferDetails}"\n`;
+        csvContent += `${q(firstName)},${q(lastName)},${q(roles)},${helferPunkte},${totalPoints},${q(helferDetails)}\n`;
       });
 
       // Erstelle Blob und Download

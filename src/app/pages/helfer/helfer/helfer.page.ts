@@ -302,7 +302,7 @@ export class HelferPage implements OnInit {
           map((clubsEvents) => clubsEvents.flat()), // Flatten to get all events across all clubs
           map((allEvents) =>
             allEvents.sort(
-              (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(), // Sort events by date
+              (a, b) => (a.date?.seconds ?? 0) - (b.date?.seconds ?? 0), // Sort events by date (Firestore Timestamp)
             ),
           ),
         );

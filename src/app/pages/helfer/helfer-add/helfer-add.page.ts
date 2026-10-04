@@ -275,11 +275,19 @@ export class HelferAddPage implements OnInit {
 
     if (data) {
       this.event.schichten.push({
-        id: this.event.schichten.length + 1,
-        ...data,
+        id: this.nextSchichtId(),
+        ...(data.values ?? data),
         count: 0,
       });
     }
+  }
+
+  // length + 1 can collide with an existing id after a shift in the middle
+  // was deleted; edit/delete look shifts up by id.
+  private nextSchichtId(): number {
+    return (
+      Math.max(0, ...this.event.schichten.map((s) => Number(s.id) || 0)) + 1
+    );
   }
 
   async editSchicht(schicht: Schicht) {
@@ -336,7 +344,7 @@ export class HelferAddPage implements OnInit {
       if (index !== -1) {
         this.event.schichten[index] = {
           id: schicht.id,
-          ...data,
+          ...(data.values ?? data),
           count: 0,
         };
       }
@@ -390,7 +398,7 @@ export class HelferAddPage implements OnInit {
 
     if (data) {
       this.event.schichten.push({
-        id: this.event.schichten.length + 1,
+        id: this.nextSchichtId(),
         ...data.values,
         count: 0,
       });
