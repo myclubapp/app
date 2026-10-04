@@ -935,6 +935,7 @@
     "result": "Risultato"
   },
   "club-billing-period": {
+    "purpose_hint": "Il nome appare come causale di pagamento su ogni fattura e sulla polizza di versamento QR (max. 140 caratteri).",
     "team_member_fees_accordion": "Fisarmonica quote associative squadra",
     "surcharges_deductions_accordion": "Fisarmonica sovrapprezzi/detrazioni",
     "no_surcharges_recorded": "Nessun sovrapprezio o detrazione registrato.",

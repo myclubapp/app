@@ -936,6 +936,7 @@
     "result": "Result"
   },
   "club-billing-period": {
+    "purpose_hint": "The name appears as the payment purpose on every invoice and on the QR payment slip (max. 140 characters).",
     "team_member_fees_accordion": "Team member fees accordion",
     "surcharges_deductions_accordion": "Surcharges/deductions accordion",
     "no_surcharges_recorded": "No surcharges or deductions recorded yet.",

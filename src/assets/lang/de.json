@@ -886,6 +886,7 @@
     "position_deleted": "Position gelöscht"
   },
   "club-billing-period": {
+    "purpose_hint": "Der Name erscheint als Zahlungszweck auf jeder Rechnung und auf dem QR-Einzahlungsschein (max. 140 Zeichen).",
     "team_member_fees_accordion": "Team-Mitgliederbeiträge Accordion",
     "surcharges_deductions_accordion": "Zuschläge/Abzüge Accordion",
     "no_surcharges_recorded": "Noch keine Zuschläge oder Abzüge erfasst.",

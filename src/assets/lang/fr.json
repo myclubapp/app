@@ -935,6 +935,7 @@
     "result": "Résultat"
   },
   "club-billing-period": {
+    "purpose_hint": "Le nom apparaît comme motif de paiement sur chaque facture et sur le bulletin de versement QR (max. 140 caractères).",
     "team_member_fees_accordion": "Accordéon des cotisations membres d'équipe",
     "surcharges_deductions_accordion": "Accordéon des suppléments/déductions",
     "no_surcharges_recorded": "Aucun supplément ou déduction enregistré pour l'instant.",
