@@ -199,6 +199,7 @@ export class ClubBillingPeriodPage implements OnInit {
 
   async saveCreditor() {
     await this.fbService.setClubCreditor(this.club.id, this.creditor);
+    this.club.creditor = { ...this.creditor };
     this.uiService.showSuccessToast("Bankverbindung gespeichert");
   }
 
@@ -338,6 +339,10 @@ export class ClubBillingPeriodPage implements OnInit {
 
   async saveSurcharges() {
     await this.fbService.setClubSurcharges(this.club.id, this.surcharges);
+    // `club` is a snapshot handed in by the club page and passed on to the
+    // invoice modal. Keep it in sync, otherwise the invoice offers the old
+    // surcharges and reopening this page edits (and overwrites) a stale list.
+    this.club.surcharges = [...this.surcharges];
     this.uiService.showSuccessToast("Zuschläge/Abzüge gespeichert");
   }
 }
