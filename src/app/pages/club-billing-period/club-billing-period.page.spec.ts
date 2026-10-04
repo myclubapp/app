@@ -78,4 +78,31 @@ describe("ClubBillingPeriodPage", () => {
   it("should create", () => {
     expect(component).toBeTruthy();
   });
+
+  it("keeps the club snapshot in sync after saving surcharges", async () => {
+    component.surcharges = [{ name: "Rabatt", amount: -20, currency: "CHF" }];
+
+    await component.saveSurcharges();
+
+    expect(component.club.surcharges).toEqual([
+      { name: "Rabatt", amount: -20, currency: "CHF" },
+    ]);
+    expect(component.club.surcharges).not.toBe(component.surcharges);
+  });
+
+  it("keeps the club snapshot in sync after saving the creditor", async () => {
+    component.creditor = {
+      account: "CH4431999123000889012",
+      name: "FC Test",
+      address: "Hauptstrasse",
+      buildingNumber: "1",
+      zip: "8000",
+      city: "Zürich",
+      country: "CH",
+    };
+
+    await component.saveCreditor();
+
+    expect(component.club.creditor).toEqual(component.creditor);
+  });
 });
