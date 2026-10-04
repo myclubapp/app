@@ -233,9 +233,12 @@ export class TeamPage implements OnInit {
             // zusammenzurechnen.
             return {
               ...team,
-              updated: Timestamp.fromMillis(team.updated.seconds * 1000)
-                .toDate()
-                .toISOString(),
+              updated:
+                team.updated?.seconds != null
+                  ? Timestamp.fromMillis(team.updated.seconds * 1000)
+                      .toDate()
+                      .toISOString()
+                  : null,
               teamMembers,
               teamAdmins,
               teamRequests,

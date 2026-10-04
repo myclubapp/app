@@ -237,10 +237,12 @@
       <ion-icon name="heart-circle-outline" slot="start"></ion-icon>
       <ion-label> {{team.type}} </ion-label>
     </ion-item>
+    @if (team.updated) {
     <ion-item>
       <ion-icon name="time" slot="start" color="medium"></ion-icon>
       <ion-note> {{team.updated | date:'dd.MM.yyyy HH:mm'}} Uhr</ion-note>
     </ion-item>
+    }
     <!--<ion-item >
             <ion-icon name="key" slot="start"></ion-icon>
             <ion-label> {{club.apiKey}} </ion-label>

@@ -44,16 +44,20 @@ export class ClubListPage implements OnInit {
   ngOnInit() {
     this.clubList$ = this.fbService.getClubList().pipe(
       switchMap((clubs) =>
-        combineLatest(
-          clubs.map((club) =>
-            this.fbService.getClubLinksShowOnCard(club.id).pipe(
-              map((links) => ({
-                ...club,
-                links: links,
-              })),
+        // combineLatest([]) never emits: leaving the last club would keep
+        // showing the old card.
+        clubs.length === 0
+          ? of([])
+          : combineLatest(
+              clubs.map((club) =>
+                this.fbService.getClubLinksShowOnCard(club.id).pipe(
+                  map((links) => ({
+                    ...club,
+                    links: links,
+                  })),
+                ),
+              ),
             ),
-          ),
-        ),
       ),
       catchError((error) => {
         console.error("Error loading clubs with links:", error);
