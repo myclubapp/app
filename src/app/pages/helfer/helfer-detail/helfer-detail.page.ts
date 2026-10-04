@@ -43,6 +43,7 @@ import { Club } from "src/app/models/club";
 import { FirebaseService } from "src/app/services/firebase.service";
 import { UiService } from "src/app/services/ui.service";
 import { HelferAddPage } from "../helfer-add/helfer-add.page";
+import { startDateTime } from "src/app/services/start-date-time";
 
 @Component({
   selector: "app-helfer-detail",
@@ -612,8 +613,7 @@ export class HelferDetailPage implements OnInit, OnDestroy {
     }
     console.log("toggleSchichtItem", status, event, schicht, memberId);
 
-    const newStartDate = event.date.toDate();
-    newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
+    const newStartDate = startDateTime(event.date, event.timeFrom);
 
     const club = await lastValueFrom(
       this.fbService.getClubRef(event.clubId).pipe(take(1)),

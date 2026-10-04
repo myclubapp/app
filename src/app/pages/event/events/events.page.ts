@@ -39,6 +39,7 @@ import { UserProfileService } from "src/app/services/firebase/user-profile.servi
 import { Profile } from "src/app/models/user";
 import { UiService } from "src/app/services/ui.service";
 import { Optional } from "@angular/core";
+import { startDateTime } from "src/app/services/start-date-time";
 
 @Component({
   selector: "app-events",
@@ -626,8 +627,7 @@ export class EventsPage implements OnInit {
     status: boolean,
     event: Veranstaltung | any,
   ) {
-    const newStartDate = event.date.toDate();
-    newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
+    const newStartDate = startDateTime(event.date, event.timeFrom);
     const eventThreshold = event.club.eventThreshold || 0;
     if (
       newStartDate.getTime() - new Date().getTime() <
@@ -657,8 +657,7 @@ export class EventsPage implements OnInit {
     console.log(
       `Set Status ${status} for user ${this.user.uid} and club ${event.clubId} and event ${event.id}`,
     );
-    const newStartDate = event.date.toDate();
-    newStartDate.setHours(Number(event.timeFrom.substring(0, 2)));
+    const newStartDate = startDateTime(event.date, event.timeFrom);
     // console.log(newStartDate);
 
     // Get team threshold via training.teamId
