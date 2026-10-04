@@ -326,6 +326,8 @@ export class ClubInvoiceDetailPage {
           amount: newAmount,
         },
       );
+      // The QR slip encodes the amount; rebuild it with the new total.
+      this.generateQRCode();
       this.uiService.showSuccessToast("Position(en) hinzugefügt");
     }
   }
@@ -348,6 +350,7 @@ export class ClubInvoiceDetailPage {
         amount: newAmount,
       },
     );
+    this.generateQRCode();
     this.uiService.showSuccessToast("Position gelöscht");
   }
 }
